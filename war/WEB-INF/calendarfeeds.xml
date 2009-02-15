@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="calendarCache" class="nz.co.searchwellington.feeds.calendars.CalendarCache" />
+	
+	<bean id="calendarHttpFetcher" class="nz.co.searchwellington.feeds.calendars.CalendarHttpFetcher">
+		<constructor-arg ref="httpFetcher" />
+	</bean>
+		
+	<bean id="calendarPrefetcher" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="calendarPrefetcherTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	<bean id="calendarPrefetcherTarget" class="nz.co.searchwellington.feeds.calendars.CalendarPrecachingFetcher">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="calendarHttpFetcher" />
+		<constructor-arg ref="calendarCache" />
+	</bean>
+</beans>

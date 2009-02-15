@@ -1,0 +1,46 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+
+
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Autotagging $tag.displayName</h2>
+
+<p>The following items might be a match for the tag $tag.displayName.toLowerCase()</p>
+
+<form method="POST" action="$site_information.url/autotag/apply">
+<ul class="flat_list">
+#foreach($item in $resources_to_tag)
+		<li>#parse("includes/content_element.vm")
+		
+		<ul>
+		<li><input name="autotag" value="$item.id" type="checkbox" checked> apply $tag.displayName.toLowerCase() tag</li>
+		</ul>
+		
+		</li>
+#end
+</ul>
+
+		<input type="hidden" name="tag" value="$tag.name">
+		<input type="submit" value="Apply" />	
+
+
+</form>
+
+<form action="$site_information.url/cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+
+</div>
+
+#parse("includes/footer.vm")

@@ -1,0 +1,40 @@
+<h2>Tags</h2>
+
+#macro( showNode $tagToRender )
+	#set ($class = "selected")
+	#if ($tag) 
+		#if ($tagToRender.id == $tag.id || $tagToRender.isParentOf($tag)) 
+			#set ($class="visable")
+		#end
+	#end
+
+	
+	<li>
+	#if ($tag) 
+		#if ($tag.id == $tagToRender.id) 
+			<b>$tagToRender.displayName</b>
+		#else
+			<a href="${site_information.url}/tag/$tagToRender.name">$tagToRender.displayName</a>
+		#end		
+	#else
+		<a href="${site_information.url}/tag/$tagToRender.name">$tagToRender.displayName</a>
+	#end
+
+
+	#if ($tagToRender.getChildren().size() > 0) 		
+		<ul class="$class">
+		#foreach ($childtag in $tagToRender.getChildren())
+			#showNode($childtag)
+		#end
+		</ul>
+	#end
+	</li>
+#end
+
+<ul class="tagtree">
+#foreach($tree_tag in $top_level_tags) 
+	#showNode($tree_tag)
+#end
+
+<li><a href="${site_information.url}/tags">All Tags...</a></li>
+</ul>

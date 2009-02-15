@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="rssHttpFetcher" class="nz.co.searchwellington.feeds.rss.RssHttpFetcher" />
+		
+	<bean id="rssCache" class="nz.co.searchwellington.feeds.rss.RssCache" />
+	
+	<bean id="rssPrefetcher" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="rssPrefetcherTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	<bean id="rssPrefetcherTarget" class="nz.co.searchwellington.feeds.rss.RssPrefetcher" >
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="rssHttpFetcher" />
+		<constructor-arg ref="rssCache" />
+	</bean>
+		
+	<bean id="rssFeedDAO" class="nz.co.searchwellington.feeds.rss.RssFeedDAO">
+		<constructor-arg ref="rssCache" />
+	</bean>
+	
+</beans>

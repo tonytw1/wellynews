@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+<bean id="commentReaderJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="feedReaderJob" />
+  <property name="targetMethod" value="runComments" />
+  <property name="concurrent" value="false" />
+</bean>
+<bean id="commentReaderTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
+    <property name="jobDetail" ref="commentReaderJobRun" />
+    <property name="startDelay"     value="3600000" />
+    <property name="repeatInterval" value="3600000" />
+</bean>
+
+
+<bean id="feedReaderJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="feedReaderJob" />
+  <property name="targetMethod" value="runFeeds" />
+  <property name="concurrent" value="false" />
+</bean>
+<bean id="feedReaderTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
+    <property name="jobDetail" ref="feedReaderJobRun" />
+    <property name="startDelay" value="3600000" />
+    <property name="repeatInterval" value="1800000" />
+</bean>
+
+
+<bean id="flickrJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="flickrJob" />
+  <property name="targetMethod" value="run" />
+  <property name="concurrent" value="false" />
+</bean>
+
+<bean id="flickrJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
+    <property name="jobDetail" ref="flickrJobRun" />
+    <property name="startDelay" value="3600000" />
+    <property name="repeatInterval" value="86400000" />
+</bean>
+
+<bean id="linkCheckerJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="linkCheckerJob" />
+  <property name="targetMethod" value="run" />
+  <property name="concurrent" value="false" />
+</bean>
+<bean id="linkCheckerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+    <property name="jobDetail" ref="linkCheckerJobRun" />
+    <property name="startDelay" value="60000" />
+    <property name="repeatInterval" value="60000" />
+</bean>
+
+<bean id="linkCheckerScheduler" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="linkCheckerSchedulerTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+<bean name="linkCheckerSchedulerTarget" class="nz.co.searchwellington.jobs.LinkCheckerScheduler">
+	<constructor-arg ref="resourceDAO" />
+	<constructor-arg ref="linkCheckerQueue" />
+</bean>
+
+
+<bean id="twitterListenerJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="twitterListenerJob" />
+  <property name="targetMethod" value="run" />
+  <property name="concurrent" value="false" />
+</bean>
+
+<bean id="twitterListenerJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
+    <property name="jobDetail" ref="twitterListenerJobRun" />
+    <property name="startDelay" value="600000" />
+    <property name="repeatInterval" value="600000" />
+</bean>
+
+
+
+
+
+
+<bean id="watchlistCheckerSchedulerRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="linkCheckerScheduler" />
+  <property name="targetMethod" value="queueWatchlistItems" />
+  <property name="concurrent" value="false" />
+</bean>
+
+<bean id="watchlistCheckerSchedulerTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">   
+    <property name="jobDetail" ref="watchlistCheckerSchedulerRun" />
+       <property name="cronExpression" value="0 0 6 * * ?" />
+</bean>
+
+<bean id="feedCheckerSchedulerRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="linkCheckerScheduler" />
+  <property name="targetMethod" value="queueFeeds" />
+  <property name="concurrent" value="false" />
+</bean>
+
+<bean id="feedCheckerSchedulerTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">   
+    <property name="jobDetail" ref="feedCheckerSchedulerRun" />
+       <property name="cronExpression" value="0 0 6,18 * * ?" />
+</bean>
+
+
+
+<bean id="expiredCheckerSchedulerRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="linkCheckerScheduler" />
+  <property name="targetMethod" value="queueExpiredItems" />
+  <property name="concurrent" value="false" />
+</bean>
+
+<bean id="expiredCheckerSchedulerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
+    <property name="jobDetail" ref="expiredCheckerSchedulerRun" />
+    <property name="startDelay" value="600000" />
+    <property name="repeatInterval" value="3600000" />
+</bean>
+
+
+
+<bean id="calendarPrefetcherRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="calendarPrefetcher" />
+  <property name="targetMethod" value="run" />
+  <property name="concurrent" value="false" />
+</bean>
+
+
+<bean id="calendarPrefetcherTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
+    <property name="jobDetail" ref="calendarPrefetcherRun" />
+    <property name="startDelay" value="600000" />
+    <property name="repeatInterval" value="7200000" />
+</bean>
+
+
+<bean id="rssPrefetcherRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+  <property name="targetObject" ref="rssPrefetcher" />
+  <property name="targetMethod" value="run" />
+  <property name="concurrent" value="false" />
+</bean>
+
+
+<bean id="rssPrefetcherTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
+    <property name="jobDetail" ref="rssPrefetcherRun" />
+    <property name="startDelay" value="120000" />
+    <property name="repeatInterval" value="3600000" />
+</bean>
+
+
+
+
+<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+	<property name="triggers">
+		<list>
+			<ref bean="linkCheckerTrigger"/>
+			<ref bean="feedReaderTrigger" />
+			<ref bean="commentReaderTrigger" />
+			<ref bean="flickrJobTrigger" />
+			<ref bean="feedCheckerSchedulerTrigger"/>
+			<ref bean="watchlistCheckerSchedulerTrigger"/>
+			<ref bean="expiredCheckerSchedulerTrigger"/>
+			<ref bean="twitterListenerJobTrigger" />
+			<ref bean="calendarPrefetcherTrigger" />
+			<ref bean="rssPrefetcherTrigger" />
+		</list>
+	</property>
+</bean>
+
+</beans>

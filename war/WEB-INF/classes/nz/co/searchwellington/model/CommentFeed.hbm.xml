@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class  name="nz.co.searchwellington.model.CommentFeedImpl" 
+    		proxy="nz.co.searchwellington.model.CommentFeed"
+    		table="comment_feed">
+
+
+		<cache usage="read-write" region="nz.co.searchwellington.model.CommentFeedImpl" />
+
+
+        <id name="id" type="integer" unsaved-value="0" >
+            <column name="id" sql-type="integer" not-null="true"/>
+                    <generator class="native"/>
+        </id>
+
+
+     	<property name="url" type="text">
+            <column name="url" not-null="false"/>
+        </property>
+        
+      	<property name="lastRead" type="timestamp">
+       		<column name="last_read"/>
+       	</property> 	
+        
+        
+    	<list name="comments" cascade="all,all-delete-orphan">
+    		<cache usage="read-write" />
+         <key column="comment_feed" not-null="true" />
+         <list-index base="0" column="comment_order" />
+         <one-to-many class="nz.co.searchwellington.model.CommentImpl" />
+      </list>
+      		
+    </class>
+
+</hibernate-mapping>

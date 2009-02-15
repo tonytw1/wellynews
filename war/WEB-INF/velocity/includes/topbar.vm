@@ -1,0 +1,4 @@
+<b><a href="${site_information.url}/index">Search $site_information.areaname</a></b>
+#parse("includes/signin_status.vm")
+#parse("includes/nav.vm")
+

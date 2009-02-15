@@ -1,0 +1,181 @@
+
+
+				<li #if ($item.status) class="$item.status" #end >
+						
+				<h5><a href="$item.url">$item.name</a></h5>
+				
+				<ul>
+				#if ($item.date && $item.type == "N" && $dateFormatter)
+					<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
+				#end
+				
+				#if ($item.publisher)
+				<li class="publisher">$item.publisher.name</li>
+				#end
+				#if ($item.latestItem)
+					<li>Latest Item: $item.latestItem</li>
+				#end
+				#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItem)
+					<li>Last Changed: 					
+					$dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')					
+					</li>
+				#end
+							
+				#if ($item.acceptancePolicy)
+				<li class="acceptance">$item.acceptancePolicy</li>
+				#end
+				
+								
+				#if ($item.description) 
+					<li>$item.description</li>
+				#end
+						
+				
+				#if ($item.lastRead)
+					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
+				#end
+								
+							
+								
+				#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
+					<ul>
+					#foreach($error in $item.acceptanceErrors) 
+						<li>$error</li>
+					#end
+					</ul>
+				#end
+				
+				
+				
+				#if ($item.newsitems && $item.newsitems.size() > 0) 
+					<li><a href="$site_information.url/browse?publisher=$item.id">				
+					#showItemCount($item.newsitems.size() "Newsitem")	
+					</a></li>
+				#end
+				
+				#if ($item.feeds && $item.feeds.size() > 0) 
+					#if($item.feeds.size() == 1)
+						#set ($feed = $item.feeds.iterator().next())					
+						<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 Feed</a>	
+					#else
+						<li><a href="$site_information.url/browse?publisher=$item.id&type=F">					
+							#showItemCount($item.feeds.size() "Feed")		
+						</a>
+						</li>
+					#end					
+				#end
+				
+				#if ($item.calendars && $item.calendars.size() > 0) 
+					#if($item.calendars.size() == 1)
+						#set ($calendar = $item.calendars.iterator().next())					
+						<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 Calendar</a>	
+					#else
+						<li><a href="$site_information.url/browse?publisher=$item.id&type=C">					
+							#showItemCount($item.calendars.size() "Calendar")		
+						</a>
+						</li>
+					#end					
+				#end				
+				
+				#if ($item.watchlist && $item.watchlist.size() > 0) 
+					<li><a href="$site_information.url/browse?publisher=$item.id&type=L">
+						#showItemCount(	$item.watchlist.size() "Watchlist")
+					</a></li>
+				#end
+			
+			
+				
+				#if ($item.tags && $item.tags.size() > 0)
+
+					<li class="tagged">Tagged as:</li>
+					#foreach ($tag in $item.tags)				
+						<li class="tagged"><a href="$site_information.url/tag/$tag.name">$tag.displayName.toLowerCase()</a></li>
+					#end
+								
+				#end
+				
+				
+				#if ($item.comments && $item.comments.size() > 0) 
+					<li class="commented">
+					#if ($item.comments.size() > 0)
+						#if ($item.publisher)
+							<p>This <i>#stripThePrefix($item.publisher.name)</i> newsitem has #showItemCount($item.commentFeed.comments.size() "comment").</p>
+						#else
+							<p>This newsitem has #showItemCount($item.comments.size() "comment").</p>
+						#end
+						#parse("includes/comments_list.vm")
+						
+						#if ($item.comments.size() <= 3)
+							<p>You can add own comments <a href="$item.url">here</a>.</p>
+						#else
+							<p>You can view the remaining comments and submit your own <a href="$item.url">here</a>.</p>
+						#end
+						
+					#else
+						<p>This newsitem has comments enabled. You can add own comments <a href="$item.url">here</a>.</p>
+					#end							
+					</li>
+				#end
+				
+				
+				#if ($item.twitterSubmitter) 
+					<li class="twitteredby">Twittered by: <a href="http://www.twitter.com/$item.twitterSubmitter">@$item.twitterSubmitter</a></li>
+					#if ($item.twitterMessage) 
+						<li class="twitterMessage">$item.twitterMessage</li>
+					#end						
+				#end
+			
+			
+				#if ($item.geocode && $item.geocode.address) 
+					<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >
+						
+					#if ($item.geocode.isValid())
+						<a href="$site_information.url/geotagged?resource=$item.id">#parse("includes/geotag_icon.vm")</a>
+					#else
+						#parse("includes/geotag_icon.vm") 
+					#end					
+					$item.geocode.address</li>
+				#end
+				
+					#if ($item.editUrl) 
+						#set ($editLabel = "edit")
+					#if ($item.editLabel) 
+						#set($editLabel = $item.editLabel)
+					#end
+					<li class="admin"><a href="$site_information.url/$item.editUrl">$editLabel</a></li>
+					#end
+
+					#if ($item.supressUrl)
+						<li class="admin"><a href="$site_information.url/$item.supressUrl">supress</a></li>
+					#end
+					
+					#if ($item.unsupressUrl) 
+						<li class="admin">supressed</li>
+						<li class="admin"><a href="$site_information.url/$item.unsupressUrl">unsupress</a></li>
+					#end
+
+
+					#if ($item.deleteAndSupressUrl) 
+					<li class="admin"><a href="$site_information.url/$item.deleteAndSupressUrl">delete and supress</a></li>	
+					#end
+					
+					#if ($item.deleteUrl) 
+					<li class="admin"><a href="$site_information.url/$item.deleteUrl">delete</a></li>				
+					#end
+
+					#if ($item.linkCheckUrl)
+					<li class="admin"><a href="$site_information.url/$item.linkCheckUrl">check</a></li>
+					#end
+										
+					#if ($item.editUrl && $item.httpStatus) 
+						<li>Http Status: $item.httpStatus</li>
+					#end
+					</ul>
+				</li>
+				
+				
+				
+			
+				
+			
+				

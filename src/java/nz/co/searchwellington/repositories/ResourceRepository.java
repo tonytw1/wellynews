@@ -1,0 +1,125 @@
+package nz.co.searchwellington.repositories;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.model.CalendarFeed;
+import nz.co.searchwellington.model.CommentFeed;
+import nz.co.searchwellington.model.DiscoveredFeed;
+import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Watchlist;
+import nz.co.searchwellington.model.Website;
+
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.queryParser.ParseException;
+
+
+public interface ResourceRepository {
+
+    public Tag createNewTag();
+    public Resource loadResourceById(int resourceID);
+    public Tag loadTagByName(String tagname);
+    public void saveTag(Tag editTag);   
+    public List <Tag> getAllTags();
+    
+    public boolean isResourceWithUrl(String url);
+    public Resource loadResourceByUrl(String url);
+
+    public List <Newsitem> getLatestNewsitems(int number, boolean showBroken) throws IOException;
+
+    public List <Newsitem> getAllPublisherNewsitems(Website publisher, boolean showBroken);
+    
+    public List <Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken);
+
+    public List <Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) throws IOException, ParseException;
+
+    public List <Resource> getNewsitemsMatchingKeywords(String keywords,  boolean showBroken) throws IOException, ParseException;
+    
+    public List <Newsitem> getNewsitemsForMonth(Date month);
+
+
+    public List <Website> getPublisherFeeds(Website publisher);
+    public List <Website> getPublisherWatchlist(Website publisher);
+
+    public List <Website> getLatestWebsites(int maxNumberOfItems, boolean showBroken) throws IOException;
+
+    
+    public void saveResource(Resource resource);
+        
+    public Website createNewWebsite();
+    public Newsitem createNewNewsitem();
+    public Feed createNewFeed();
+    public Watchlist createNewWatchlist();
+
+    public List<Feed> getAllFeeds();
+    public List<Feed> getFeedsToRead();
+    
+    public List<Resource> getAllCalendarFeeds();
+    public List<Resource> getCalendarFeedsForTag(Tag tag) throws IOException;
+
+    public List<Resource> getAllWatchlists();
+    
+    
+    public Tag loadTagById(int tagID);
+  
+    public List<Resource> getTaggedResources(Tag tag, int max_newsitems);
+
+    public Object getTopLevelTags();
+
+
+
+    public List<Website> getTaggedWebsites(Tag tag, boolean showBroken, int max_newsitems) throws IOException;
+    public List<Website> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites) throws IOException;
+        
+    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int max_newsitems) throws IOException;
+    public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int max_secondary_items) throws IOException;
+    
+
+    public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) throws IOException;
+
+  
+    
+    public void deleteResource(Resource resource) throws IOException;
+    public void deleteTag(Tag tag) throws IOException;
+    
+    public List<Resource> getNotCheckedSince(Date date, int maxItems);
+
+    public List<CommentFeed> getCurrentCommentFeeds(int maxItems);
+    public List<CommentFeed> getCommentFeedsToCheck(int maxItems);
+               
+    public List<Object[]> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems) throws IOException;
+    public List<Tag> getTagsMatchingKeywords(String keywords) throws IOException, ParseException;
+    public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken);
+    public List<Resource> getRecentlyChangedWatchlistItems();
+    public List<DiscoveredFeed> getAllDiscoveredFeeds();
+    public DiscoveredFeed loadDiscoveredFeedByUrl(String discoveredUrl);
+    public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed);
+    public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl);
+    public List<Newsitem> getAllCommentedNewsitems(int maxItems, boolean hasComments);
+    public CommentFeed loadCommentFeedByUrl(String feedLink);
+    public CommentFeed createNewCommentFeed(String discoveredUrl);
+	public void saveCommentFeed(CommentFeed commentFeed);
+    public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) throws IOException;
+    public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken);
+    public int getTaggedNewitemsCount(Tag tag, boolean showBroken) throws IOException;    
+    public List<Newsitem> getRecentUntaggedNewsitems();   
+    public Date getNewslogLastChanged();
+    public int getWebsiteCount(boolean showBroken);
+    public int getNewsitemCount(boolean showBroken);
+    public List<Tag> getCommentedTags(boolean showBroken) throws IOException; 
+    public int getCommentCount();
+    public List<ArchiveLink> getArchiveMonths();
+    public Set<Integer> getAllResourceIds();
+    public CalendarFeed createNewCalendarFeed(String url);
+    public List<Newsitem> getLatestTwitteredNewsitems(int numberOfItems, boolean showBroken) throws IOException;
+    
+    public Date getLastLiveTimeForTag(Tag tag) throws NumberFormatException, CorruptIndexException, IOException;
+	public List<Resource> getAllValidGeocoded(int max_events_to_show_on_front, boolean showBroken);
+    public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxNumber, boolean showBroken) throws IOException;
+}

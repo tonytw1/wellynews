@@ -1,0 +1,30 @@
+#if ($archive_links)
+<h2>Archive</h2>
+
+#if ($site_count && $newsitem_count && $comment_count)
+        <p>Currently tracking $site_count sites, $newsitem_count newsitems and $comment_count comments.</p>
+#end
+
+<ul>
+#set ($first = 1)
+#foreach($link in $archive_links)
+                <li class="archive_link">
+                #if ($archive_month && $link == $archive_month)
+                <b>$dateFormatter.formatDate($link.month, 'MMMM yyyy')</b>
+                #else
+                <a href="$site_information.url$link.href">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a>
+                #end
+                #if ($first == 1)
+                        ($link.count #showPluralWord($link.count "newsitem"))
+                        #set ($first = 0)
+                #else
+                        ($link.count)
+                #end
+                </li>
+        #end
+        
+#if ($archive_more)
+	<li class="more"><a href="$archive_more">More...</a></li>
+#end
+</ul>
+#end

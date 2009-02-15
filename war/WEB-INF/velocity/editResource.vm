@@ -1,0 +1,74 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+
+
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Editing a Resource</h2>
+
+#if ($resource)
+<form action="save" method="POST" > 
+		<fieldset>
+					
+		<p><label for="title">Title: </label>
+		<input name="title" value="$resource.name" /></p>
+		
+		<p><label for="title">Url: </label>	
+		<input name="url" value="$resource.url" /></p>
+		
+		#if ($resource.type != "W")
+		<p><label for="date">Date: </label>	
+		<input name="date" #if($resource.date) value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" #end /></p>
+		#else 
+		<input name="date" #if($resource.date) value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" #end  type="hidden" />
+		#end
+		
+		#if ($publisher_select) 
+			<p><label for="publisher">Publisher: </label>
+	    	$publisher_select	
+			</p>
+		#end
+		
+		#if ($acceptance_select) 	
+			<p><label for="acceptance">Acceptance Policy: </label>
+			$acceptance_select
+		#end
+				
+		
+		#parse("includes/tag_edit_fields.vm")
+		
+		<p><label for="geocode">Geocode: </label>
+		<input name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end /></p>
+		
+		<p><label for="description">Description: </label>
+		<textarea name="description" rows="6" cols="40">$resource.description</textarea>
+		</p>
+		
+		<input type="hidden" name="resource" value="$resource.id" />
+		<input type="submit" value="Save" />		
+	</fieldset>
+</form>
+#else
+<p>There was a problem loading this resource for editing. You may 
+not have permission to edit this paricular listing.</p>
+
+#end
+
+
+<form action="$site_information.url/cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+
+</div>
+
+#parse("includes/footer.vm")

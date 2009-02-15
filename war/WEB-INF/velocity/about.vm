@@ -1,0 +1,128 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+
+<div class="main">
+
+
+
+
+
+
+
+
+
+<h2>$heading</h2>
+
+<p><i>Search $site_information.areaname</i> is ${site_information.areaname}'s own regional web directory.</p>
+  
+<p>The <i><a href="index#newslog">${site_information.areaname} Newslog</a></i>
+draws in notices and newsitems published by local organisations. The resulting 
+content isn't going to be what you'll find in a newspaper but we think that's 
+half the attraction.</p>
+
+
+<p>The Newslog appears daily on the front page of Search $site_information.areaname and is also available
+as an <a href="feeds">RSS feed</a>. It is also possible to generate 
+<a href="feeds#custom">custom RSS feeds</a> of content from specific organisations listed in the archive.</p>
+
+
+<a name="beta"></a>
+<h3>New and Improved!</h3>
+<p>Now with more Welly stuff!</p>
+
+<p>We've changed the way we sort listings and newsitems. The 
+new tag based system should make it easier to find relevant 
+information.</p>
+
+
+
+
+
+<a name="contact"></a>
+<h3>Contact</h3>
+
+<p>
+Search $site_information.areaname is edited from the frozen waste lands
+of Wimbledon, South London by an <a href="http://wah.wellington.gen.nz">expatriate Wellingtonian</a>. New site 
+<a href="index#submit">submissions</a> are always welcomed.
+</p>
+
+<p>Any enquires should be directed to <code>enquires (at) wellington.gen.nz</code></p>
+
+
+
+
+
+<a name="nikau"></a>
+<h3>Nikau Palms</h3>
+
+<img src="/images/civic8.jpg" align="right"
+alt="Nikau Palm in the Civic Square" />
+
+<p><i>Right</i> - One of the copper clad Nikau palm trees which dot the 
+<a href="tour?node=civic8">Civic Square</a> and line the exterior of the Central Library building.</p>
+
+<p>
+Valued at $25,000 NZ each, these
+additions to the Square 
+were suggested by the architect Ian Athfield as a way of making the area 
+more inviting. The Nikaus have become somewhat of an icon for Wellington 
+City.
+</p>
+
+<p>The Nikau, is a distinctive New Zealand native tree. Reassembling a 
+feather duster, it grows to approximately 20ft.</p>
+
+<p>The Nikau palm is found 
+throughout New Zealand, growing as far south as Christchurch. While the trunk 
+of this tree is of no use for building it's large leaves 
+provided useful 
+shelter for the early Maori, who also ate the young shots and buds. Wood 
+Pigeons consume the berries in large quantities. The Nikau berry is 
+extremely hard and was sometimes used as shotgun ammunition by early 
+settlers. 
+</p>
+</div>
+
+
+
+
+<div class="right">
+
+#parse("includes/login.vm")
+
+
+
+
+
+
+
+
+
+
+
+<div class="box">
+#parse("includes/latest_newsitems.vm")
+
+<br clear="all"/>
+#parse("includes/feedburner_prompt.vm")
+</div>
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

@@ -1,0 +1,122 @@
+#set ($heading = "Wellington in a box")
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+
+
+<h2></h2>
+<p>Search $site_information.areaname is ${site_information.areaname}'s own regional web directory;
+it's $site_information.areaname in a box.</p>
+
+
+#parse("includes/search_widget.vm")
+
+#parse("includes/468x60ad.vm")
+
+<div class="tag_main_content">
+
+<a name="newslog" />
+
+<div class="rss">
+#parse("includes/rss_widget.vm")
+</div>
+
+<h2>Meanwhile...</h2>
+
+<p>
+The $site_information.areaname Newslog is an informal roundup of the $site_information.areaname webspace.
+The Newslog is also available as an <a href="feeds">RSS feed</a> or via <a href="twitter">Twitter</a>.</p>
+
+#parse("includes/main_content.vm")
+</div>
+
+
+<div class="tag_secondary_content">
+
+#if ($commented_newsitems)
+#parse("includes/commented_newsitems.vm")
+#end
+
+#parse("includes/secondary_content.vm")
+</div>
+
+
+
+</div>
+
+
+<div class="right">
+<div class="box">
+<a href="$site_information.url/about#nikau"><img src="/images/palm.jpg" width="250" border="0"></a>
+</div>
+
+#parse("includes/login.vm")
+
+$dateFormatter.formatDateToTimeZone($current_time)
+
+#parse("includes/your_listing.vm")
+
+<div class="box">
+#parse("includes/archive.vm")
+</div>
+
+#parse("includes/geocoded.vm")
+
+#parse("includes/events.vm")
+
+<div class="box">
+#parse("includes/featured.vm")
+</div>
+
+<div class="box">
+<a name="submit" />
+<h2>Submit</h2>
+
+<p>Enquiring minds want to know!</p>
+<p>Submit your 
+$site_information.areaname related listings.</p>
+
+<ul>
+<li><a href="edit/submit/website">Submit Website</a></li>
+<li><a href="edit/submit/newsitem">Submit Newsitem</a></li>
+<li><a href="edit/submit/calendar">Submit Calendar</a></li>
+</ul>
+
+#if ($logged_in_user) 
+<ul>
+<li><a href="edit/submit/feed">Submit Feed</a></li>
+<li><a href="edit/submit/watchlist">Submit Watchlist item</a></li>
+<li><a href="edit/tag/submit">Submit Tag</a></li>
+</ul>
+#end
+</div>
+
+<div class="box">
+#parse("includes/tag_related_feed.vm")
+</div>
+
+
+<div class="box">
+#parse("includes/tagless.vm")
+</div>
+
+
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

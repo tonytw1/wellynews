@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<!-- This bean substitutes variables from the env properties file -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>file:conf/springapp.properties</value>
+		</property>
+	</bean>
+
+
+
+
+
+
+<bean id="linkChecker" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="linkCheckerTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+<bean name="linkCheckerJob" class="nz.co.searchwellington.jobs.LinkCheckerJob">
+	<constructor-arg ref="linkCheckerQueue" />
+	<constructor-arg ref="linkChecker" />
+</bean>
+
+
+
+<bean id="flickrJobTarget" class="nz.co.searchwellington.jobs.FlickrJob">
+		<constructor-arg ref="flickrDAO" />
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="configDAO" />
+</bean>
+
+<bean id="flickrJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="flickrJobTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+	
+
+<bean id="twitterListenerJobTarget" class="nz.co.searchwellington.jobs.TwitterListenerJob">
+		<constructor-arg ref="twitterService" />
+		<constructor-arg ref="twitterNewsitemBuilderService" />
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="linkCheckerQueue" />
+		<constructor-arg ref="publisherGuessingService" />	
+</bean>
+
+<bean id="twitterListenerJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="twitterListenerJobTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<import resource="timertasks.xml"/>
+
+
+
+
+<bean id="feedAcceptanceDecider" class="nz.co.searchwellington.feeds.FeedAcceptanceDecider">
+	<constructor-arg ref="resourceDAO" />	
+	<constructor-arg ref="supressionDAO" />
+	<constructor-arg ref="urlCleaner" />
+</bean>
+
+
+<bean id="feedBurnerRedirectResolverService" class="nz.co.searchwellington.feeds.FeedBurnerRedirectResolverService" />
+
+<bean id="urlCleaner" class="nz.co.searchwellington.utils.UrlCleaner">
+	<constructor-arg>
+		<list>
+			<ref bean="feedBurnerRedirectResolverService" />
+			<ref bean="tinyUrlResolverService" />
+		</list>
+	</constructor-arg>
+</bean>
+
+<bean id="feedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="feedReaderTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+
+<bean id="feedReaderTarget" class="nz.co.searchwellington.feeds.FeedReader">
+	<constructor-arg ref="resourceDAO" />
+	<constructor-arg ref="feedDAO" />
+	<constructor-arg ref="linkCheckerQueue" />
+	<constructor-arg ref="placeAutoTagger" />
+	<constructor-arg ref="notifier" />
+	<constructor-arg value="${feedreader.email}" />
+	<constructor-arg ref="feedAcceptanceDecider" />
+	<constructor-arg ref="dateFormatter" />
+	<constructor-arg ref="urlCleaner" />
+</bean>
+
+<bean id="commentFeedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="commentFeedReaderTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+<bean id="commentFeedReaderTarget" class="nz.co.searchwellington.feeds.CommentFeedReader">
+	<constructor-arg ref="resourceDAO" />
+	<constructor-arg ref="commentDAO" />
+</bean>
+
+
+<bean name="feedReaderJob" class="nz.co.searchwellington.jobs.FeedReaderJob">
+	<constructor-arg ref="feedReader" />
+	<constructor-arg ref="commentFeedReader" />
+</bean>
+
+
+
+
+	<!-- DataSource Property -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName">
+   			<value>com.mysql.jdbc.Driver</value>
+ 		</property>
+ 		<property name="url">
+   			<value>jdbc:mysql://localhost/${database.name}?useUnicode=true&amp;characterEncoding=UTF-8</value>
+ 		</property>
+ 		
+ 		<property name="username">
+   			<value>${database.username}</value>
+ 		</property>
+ 		<property name="password">
+   			<value>${database.password}</value>
+ 		</property>
+ 		
+ 		<property name="maxActive">
+   			<value>10</value>
+ 		</property>
+ 		
+ 		<property name="maxIdle">
+   			<value>5</value>
+ 		</property>
+ 		
+	</bean> 
+
+
+<bean id="sessionFactory"
+class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="true">
+  <property name="mappingResources">
+    <list>
+        <value>nz/co/searchwellington/model/Config.hbm.xml</value>
+       	<value>nz/co/searchwellington/model/Comment.hbm.xml</value>
+      	<value>nz/co/searchwellington/model/CommentFeed.hbm.xml</value>	
+      	<value>nz/co/searchwellington/model/DiscoveredFeed.hbm.xml</value>
+      	<value>nz/co/searchwellington/model/Geocode.hbm.xml</value>
+     	<value>nz/co/searchwellington/model/Resource.hbm.xml</value>
+      	<value>nz/co/searchwellington/model/Tag.hbm.xml</value>
+       	<value>nz/co/searchwellington/model/User.hbm.xml</value>
+      	<value>nz/co/searchwellington/model/Supression.hbm.xml</value>	
+    </list>
+  </property>
+  <property name="hibernateProperties">
+    <props>
+    	<prop key="hibernate.transaction.auto_close_session">false</prop>
+      	<prop key="hibernate.current_session_context_class">org.hibernate.context.ThreadLocalSessionContext</prop>      	
+      	<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>      	
+      	<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>      	
+      	<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+      	<prop key="hibernate.cache.use_query_cache">true</prop>
+      	<prop key="hibernate.cache.use_second_level_cache">true</prop>     	      	      	
+      	
+    </props>
+  </property>
+  <property name="dataSource">
+    <ref bean="dataSource"/>
+  </property>
+</bean>
+
+
+
+
+
+
+
+
+
+
+
+<bean id="resourceDAO" class="nz.co.searchwellington.repositories.LuceneBackedResourceDAO">
+ 	<constructor-arg ref="sessionFactory" />
+ 	<constructor-arg value="${lucene.path}" />
+</bean>
+
+<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" />
+
+<bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">
+	<constructor-arg ref="resourceDAO" />
+	<constructor-arg ref="calendarFeedDAO" />
+</bean>
+
+
+
+
+
+ 	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+                <property name="sessionFactory" ref="sessionFactory" />
+   	</bean>
+
+
+
+ 
+    
+    <bean id="publisherSelectFactory"
+    	class="nz.co.searchwellington.widgets.PublisherSelectFactory">
+    	<constructor-arg ref="resourceDAO"/>	
+    </bean>
+    
+     <bean id="tagWidgetFactory"
+    	class="nz.co.searchwellington.widgets.TagWidgetFactory">
+    	<constructor-arg ref="resourceDAO"/>	
+    </bean>
+    
+       <bean id="acceptanceWidgetFactory" class="nz.co.searchwellington.widgets.AcceptanceWidgetFactory" />    		
+
+
+ <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+   <property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
+ </bean>
+
+	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+  		<property name="velocityProperties">
+    <props>
+      <prop key="output.encoding">UTF-8</prop>   
+        <prop key="input.encoding">UTF-8</prop>   
+
+       
+    </props>
+  </property>
+  		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
+  </bean>
+		
+	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />
+		
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+  		<property name="cache" value="true"/>
+  		<property name="prefix" value=""/>
+  		<property name="suffix" value=".vm"/>  
+  		<property name="contentType"><value>text/html;charset=UTF-8</value></property>
+  		 <property name="toolboxConfigLocation" value="/WEB-INF/velocity/toolbox.xml"/>  		
+  			<property name="attributesMap">
+			<map>
+				<entry key="dateFormatter" value-ref="dateFormatter" />
+				<entry key="columnSplitter" value-ref="columnSplitter" />
+				<entry key="site_information" value-ref="siteInformation" />
+				<entry key="chartBuilder" value-ref="chartBuilder" />
+			</map>
+		</property>
+  		
+	</bean>
+
+	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">
+		<property name="areaname" value="${areaname}" />
+		<property name="url" value="${installed}" />
+		<property name="adsenseAccount" value="${adsence.account}" />
+		<property name="twitterUsername" value="${twitter.username}" />
+		<property name="googleMapsApiKey" value="${googlemaps.apikey}" />
+	</bean>
+	
+	<bean id="dateFormatter" class="nz.co.searchwellington.dates.DateFormatter" />	
+	<bean id="columnSplitter" class="nz.co.searchwellington.utils.ColumnSplitter" />	
+	<bean id="googleMapsCleaner" class="nz.co.searchwellington.utils.GoogleMapsDisplayCleaner" />
+
+	<bean id="geocodingService" class="nz.co.searchwellington.geocoding.GoogleGeoCodeService">
+		<property name="apiKey" value="${googlemaps.apikey}" />
+	</bean>
+
+
+	<bean id="flickrDAO" class="nz.co.searchwellington.repositories.FlickrDAO">
+		<property name="apiKey" value="${flickr.apikey}" />	
+	</bean>
+	
+	<bean id="twitterService" class="nz.co.searchwellington.twitter.TwitterService">
+		<property name="username" value="${twitter.username}" />
+		<property name="password" value="${twitter.password}" />		
+	</bean>
+	
+	<bean id="twitterNewsitemBuilderService" class="nz.co.searchwellington.twitter.TwitterNewsitemBuilderService">
+		<constructor-arg ref="urlCleaner" />
+	</bean>
+	
+	<bean id="tinyUrlResolverService" class="nz.co.searchwellington.twitter.TinyUrlResolverService" />
+		
+	<bean id="itemMaker" class="nz.co.searchwellington.controllers.ItemMaker">
+		<constructor-arg ref="siteInformation" />
+	</bean>
+	
+	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
+		
+	<bean id="requestFilter" class="nz.co.searchwellington.filters.RequestFilter">
+		<constructor-arg ref="resourceDAO" />
+	</bean>
+	
+	
+	
+	
+	<bean id="publisherGuessingService" class="nz.co.searchwellington.repositories.PublisherGuessingService">
+		<constructor-arg ref="resourceDAO" />
+	</bean>
+	
+	<bean id ="blogspotCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.BlogspotCommentFeedDetector" />	
+	<bean id ="textureCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TextureCommentFeedDetector" />
+	<bean id ="wellingtonistaCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.WellingtonistaCommentFeedDetector" />
+		  	
+	<bean id="commentFeedDetector" class="nz.co.searchwellington.commentfeeds.CommentFeedDetectorService">
+		<constructor-arg>
+			<list>
+				<ref bean="blogspotCommentFeedDetector" />
+				<ref bean="textureCommentFeedDetector" />
+				<ref bean="wellingtonistaCommentFeedDetector" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	
+	<bean id="linkCheckerTarget" class="nz.co.searchwellington.controllers.LinkChecker" >
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="commentFeedReader" />
+		<constructor-arg ref="commentFeedDetector" />
+		<constructor-arg ref="snapshotDAO" />	
+		<constructor-arg ref="technoratiDAO" />
+	</bean>
+		
+	
+		
+	<bean id="userDAO" class="nz.co.searchwellington.repositories.HibernateBackedUserDAO">
+	 	<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+	
+	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
+	 	<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+			
+	<bean id="urlStack" class="nz.co.searchwellington.controllers.UrlStack">
+	 	<constructor-arg ref="siteInformation" />
+	</bean>
+	
+		
+	<bean id="mailSender" class="nz.co.searchwellington.mail.MailSender">
+		<constructor-arg value="${smtp.host}" />
+		<constructor-arg value="${smtp.username}" />
+		<constructor-arg value="${smtp.password}" />
+		<constructor-arg value="notifications@wellington.gen.nz" />		
+	</bean>
+	
+	<bean id="notifier" class="nz.co.searchwellington.mail.Notifier">
+		<constructor-arg ref="mailSender" />
+		<constructor-arg ref="velocityEngine" />
+	</bean>
+	
+	<bean id="autoTagService" class="nz.co.searchwellington.tagging.AutoTaggingService" />
+	
+	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
+ 		<constructor-arg ref="resourceDAO" />
+ 		<constructor-arg ref="autoTagService" />
+	</bean>
+
+
+	
+	<import resource="rssfeeds.xml" />
+	
+	
+	<bean id="feedDAO" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="feedDAOTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+				
+	
+	<bean id="feedDAOTarget" class="nz.co.searchwellington.repositories.FeedDAO">
+		<constructor-arg ref="urlCleaner" />
+		<constructor-arg ref="rssFeedDAO" />
+	</bean>
+	
+	
+	
+	<bean id="supressionDAO" class="nz.co.searchwellington.repositories.SupressionDAO">
+			<constructor-arg ref="sessionFactory" />
+	</bean>		
+	
+	
+	<bean id="calendarFeedDAO" class="nz.co.searchwellington.repositories.CalendarFeedDAO" >
+		<constructor-arg ref="calendarCache" />
+	</bean>
+	
+	
+	<bean id="commentDAO" class="nz.co.searchwellington.repositories.CommentDAO">
+		<constructor-arg ref="rssHttpFetcher" />
+	</bean>
+	
+	
+	<bean id="sitemapService" class="nz.co.searchwellington.sitemap.GoogleSitemapService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="dateFormatter" />	
+	</bean>
+	
+	
+	<bean id="technoratiDAO" class="nz.co.searchwellington.repositories.TechnoratiDAO">
+		<constructor-arg value="${technorati.apikey}" />
+	</bean>
+	
+		
+	<bean id="httpFetcher" class="nz.co.searchwellington.utils.HttpFetcher" />
+	
+		
+	<import resource="calendarfeeds.xml" />
+	
+		
+</beans>

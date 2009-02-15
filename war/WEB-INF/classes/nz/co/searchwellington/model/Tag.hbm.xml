@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="nz.co.searchwellington.model.TagImpl"
+		proxy="nz.co.searchwellington.model.Tag" table="tag">
+
+	
+		<cache usage="read-write" />
+
+
+		<id name="id" type="integer" unsaved-value="0">
+			<column name="id" sql-type="integer" not-null="true" />
+			<generator class="native" />
+		</id>
+
+		<property name="name">
+			<column name="name" length="255" not-null="true" />
+		</property>
+		
+		<property name="displayName">
+			<column name="display_name" length="255" not-null="false" />
+		</property>
+		
+		<many-to-one name="relatedFeed" 
+			class="nz.co.searchwellington.model.FeedImpl" column="related_feed" 
+			/>
+			
+
+		<property name="mainImage">
+			<column name="main_image" length="255" not-null="false" />
+		</property>
+		
+		<property name="secondaryImage">
+			<column name="secondary_image" length="255" not-null="false" />
+		</property>
+		
+		<many-to-one name="parent"
+			class="nz.co.searchwellington.model.TagImpl" column="parent"
+			cascade="" />
+
+
+		<set name="children" inverse="true"
+			cascade="all,all-delete-orphan" 
+			order-by="name">
+			<cache usage="read-write" />
+			<key column="parent" />
+			<one-to-many class="nz.co.searchwellington.model.TagImpl" />
+		</set>
+
+        <property name="flickrCount" type="integer">
+            <column name="flickr_count" not-null="true"/>
+        </property>
+        
+        
+         	<set name="taggedResources" table="resource_tags">
+			<cache usage="read-write" />		
+			<key column="tag_id" />
+			<many-to-many class="nz.co.searchwellington.model.ResourceImpl"
+				column="resource_id" />
+		</set>    
+        
+	</class>
+
+</hibernate-mapping>

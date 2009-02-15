@@ -1,0 +1,1 @@
+alter table resource add column discovered_feed_url varchar(255);

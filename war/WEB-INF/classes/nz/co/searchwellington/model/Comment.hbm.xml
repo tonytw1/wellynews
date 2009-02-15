@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+    <class  name="nz.co.searchwellington.model.CommentImpl" 
+    		proxy="nz.co.searchwellington.model.Comment"
+    		table="comment">
+
+
+		<cache usage="read-write" region="nz.co.searchwellington.model.CommentImpl" />
+
+
+        <id name="id" type="integer" unsaved-value="0" >
+            <column name="id" sql-type="integer" not-null="true"/>
+                    <generator class="native"/>
+        </id>
+
+     	<property name="title" type="text">
+            <column name="title" not-null="false"/>
+        </property>
+        
+      
+    </class>
+
+
+</hibernate-mapping>

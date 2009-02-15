@@ -1,0 +1,12 @@
+#if ($latest_twitters && $latest_twitters.size() > 0)
+<h2>Latest Twitters</h2>
+
+<p>Newsitems received via Twitter.</p>
+
+#set ($righthand_content_one = $columnSplitter.left($latest_twitters))
+#set ($righthand_content_two = $columnSplitter.right($latest_twitters))
+
+#set ($righthand_content_moreurl = "")
+
+#parse("includes/righthand_two_columns.vm")
+#end

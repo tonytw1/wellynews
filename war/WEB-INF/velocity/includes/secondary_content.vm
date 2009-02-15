@@ -1,0 +1,20 @@
+#if ($secondary_content && $secondary_content.size() > 0)
+<h2>$secondary_heading</h2>
+#if ($secondary_description)
+<p>$secondary_description</p>
+#end
+<ul class="flat_list">
+#foreach($item in $secondary_content)
+		<li>
+			<ul class="secondary_content_item">
+				#parse("includes/content_element.vm")
+			</ul>
+		</li>
+	#end
+	#if ($secondary_content_moreurl) 
+		<li class="more"><a href="$secondary_content_moreurl">
+		#if ($secondary_content_morecount) $secondary_content_morecount #end
+		More...</a></li>
+	#end
+</ul>
+#end

@@ -1,0 +1,69 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+<div class="main">
+<h2>Accepting a Feed Item</h2>
+
+<form action="save" method="POST">
+	<input name="resource" value="$resource.id" type="hidden" />
+	<input name="type" value="N" type="hidden" />	
+	<fieldset>
+					
+		<p><label for="title">Title: </label>
+		<input name="title" value="$resource.name" /></p>
+		
+		<p><label for="url">Url: </label>	
+		<input name="url" value="$resource.url" /></p>
+		
+		<p><label for="date">Date: </label>	
+		<input name="date" value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" /></p>
+		
+		#if ($publisher_select) 
+			<p><label for="publisher">Publisher: </label>
+	    	$publisher_select	
+			</p>
+		#end
+		
+		
+		#if ($tag_select) 
+			<p><label for="tags">Tags: </label>
+	    	$tag_select	
+			</p>
+		#end
+				
+		<p><label for="description">Description: </label>
+		<textarea name="description" rows="6" cols="40">$resource.description</textarea>
+		</p>
+		
+		
+		
+		
+		
+			
+		<input type="submit" value="Save" />	
+	
+	</fieldset>
+	
+</form>
+
+<form action="../cancel">
+	<input type="submit" value="Cancel" />
+</form>
+
+</div>
+
+
+<div class="right">
+
+
+
+</div>
+
+#parse("includes/footer.vm")

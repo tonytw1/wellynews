@@ -1,0 +1,54 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Submitting a New Site</h2>
+
+
+<form action="$site_information.url/edit/save" method="POST">
+		<fieldset>
+					
+					
+		#parse("includes/form_resource_title_and_url.vm")				
+				
+		#if ($publisher_select) 
+			<p><label for="publisher">Publisher: </label>
+	    	$publisher_select	
+			</p>
+		#end
+				
+		<p><label for="description">Description: </label>
+		<textarea name="description" rows="6" cols="40">#if ($resource.description)$resource.description#end</textarea>
+		</p>
+		
+		
+		#parse("includes/tag_edit_fields.vm")
+		
+		
+		#if ($spam_question)
+			#parse("includes/spam_question.vm")
+		#end
+		
+		<input type="hidden" name="type" value="W" />
+		<input type="submit" value="Save" />		
+	</fieldset>
+</form>
+
+<form action="$site_information.url/cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+
+
+</div>
+
+
+#parse("includes/footer.vm")

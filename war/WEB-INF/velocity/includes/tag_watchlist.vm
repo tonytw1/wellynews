@@ -1,0 +1,20 @@
+#if ($tag_watchlist && $tag_watchlist.size() > 0)
+<h2>$tag.displayName watchlist</h2>
+
+<p>Pages which publish $tag.displayName.toLowerCase() related newsitems.</p>
+
+<ul class="flat_list">
+#foreach($item in $tag_watchlist)
+		<li>
+			<ul class="tag_watchlist_item">
+				#parse("includes/content_element.vm")
+			</ul>
+		</li>
+	#end
+	#if ($tag_watchlist_moreurl) 
+		<li class="more"><a href="$tag_watchlist_moreurl">
+		#if ($tag_watchlist_morecount) $tag_watchlist_morecount #end
+		More...</a></li>
+	#end
+</ul>
+#end

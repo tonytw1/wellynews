@@ -1,0 +1,8 @@
+#if ($tag && $tag.children.size() > 0)
+<ul class="childtags">
+#foreach ($child_tag in $tag.children)
+	<li><a href="$site_information.url/tag/$child_tag.name">$child_tag.displayName</a>
+#end
+</ul>
+#end
+

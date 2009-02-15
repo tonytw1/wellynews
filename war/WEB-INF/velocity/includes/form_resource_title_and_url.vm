@@ -1,0 +1,9 @@
+<p><label for="title">Title: </label>
+<input name="title" class="title" value="$resource.name" /></p>
+		
+<p><label for="url">Url: </label>
+<input name="url" id="url" class="url" value="$resource.url" 
+#if ($publisher_select) 
+onChange="refinePublishers()"
+#end
+/></p>

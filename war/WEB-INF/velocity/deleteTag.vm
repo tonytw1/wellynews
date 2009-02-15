@@ -1,0 +1,38 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Deleting a Tag</h2>
+
+#if ($tag)
+
+<p>Tag $tag.name has been deleted.</p>
+
+<form action="../../cancel" method="POST">
+	<input type="submit" value="ok" />
+</form>
+
+#else
+<p>No tag was found on the request. Could not delete (this tag may have already been deleted).</p>
+
+<form action="../../cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+#end
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

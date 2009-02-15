@@ -1,0 +1,39 @@
+#if($discovered_feeds && $discovered_feeds.size() > 0) 
+
+<div class="box">
+<h2>Discovered Feeds</h2>
+
+<p>The following feed urls have been automagically discovered.</p>
+<p>Your mileage may vary. Might be useful; might not be.
+</p>
+ 
+ </p>
+
+<ul>
+#foreach($discovered_feed in $discovered_feeds)
+	#if($velocityCount <= 10) 
+	<li>
+		<ul>
+			<li>$discovered_feed.url</li>
+			<li>Found in $discovered_feed.references.size() places.</li>		
+			<ul class="quotes">
+			#foreach($reference in $discovered_feed.references)
+				#if($velocityCount <= 3)
+					<li>$reference.name</li>
+				#end
+			#end
+			</ul>		
+		</ul>
+	</li>	
+	#end
+#end
+
+
+#if ($discovered_feeds_moreurl) 
+		<li class="more"><a href="$site_information.url/$discovered_feeds_moreurl">More...</a></li>
+#end
+
+</ul>
+</div>
+
+#end

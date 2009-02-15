@@ -1,0 +1,5 @@
+#if ($rss_url) 
+<ul>
+	<li>#parse("includes/rss_icon.vm") geotagged newsitems feed</li>
+</ul>
+#end

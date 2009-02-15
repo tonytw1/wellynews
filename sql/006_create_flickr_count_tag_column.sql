@@ -1,0 +1,1 @@
+alter table tag add column flickr_count int not null default 0;

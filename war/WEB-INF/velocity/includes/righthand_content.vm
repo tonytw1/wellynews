@@ -1,0 +1,13 @@
+#if ($righthand_content && $righthand_content.size() > 0)
+
+<h2>$righthand_heading</h2>
+#if ($righthand_description)
+<p>$righthand_description</p>
+#end
+
+#set ($righthand_content_one = $columnSplitter.left($righthand_content))
+#set ($righthand_content_two = $columnSplitter.right($righthand_content))
+
+#parse("includes/righthand_two_columns.vm")
+
+#end

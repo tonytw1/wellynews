@@ -1,0 +1,59 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+
+<div class="main">
+
+<h2>$heading</h2>
+
+
+
+
+
+<ul>
+#set($year = 0)
+#foreach ($link in $archiveLinks) 
+	#set($current = $link.year)
+	#if ($current != $year)
+		#set($year = $current)		
+		</ul>
+		<h4>$year</h4>
+		<ul>
+	#end
+	<li><a href="$site_information.url/$link.href">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a> ($link.count)</li>	
+#end
+</ul>
+
+</div>
+
+
+
+
+<div class="right">
+
+#parse("includes/login.vm")
+
+<div class="box">
+#parse("includes/latest_newsitems.vm")
+
+<br clear="all"/>
+#parse("includes/feedburner_prompt.vm")
+</div>
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

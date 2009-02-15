@@ -1,0 +1,15 @@
+#if ($latest_newsitems && $latest_newsitems.size() > 0)
+<h2>Latest Newsitems</h2>
+
+<p>The lastest Newslog Items.</p>
+
+#set ($righthand_content_one = $columnSplitter.left($latest_newsitems))
+#set ($righthand_content_two = $columnSplitter.right($latest_newsitems))
+
+#set ($righthand_content_moreurl = "")
+#if ($latest_newsitems_moreurl) 
+	#set ($righthand_content_moreurl = $latest_newsitems_moreurl)
+#end
+
+#parse("includes/righthand_two_columns.vm")
+#end

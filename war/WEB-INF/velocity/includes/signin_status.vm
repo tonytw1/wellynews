@@ -1,0 +1,9 @@
+<div class="signinstatus">
+<ul>
+#if ($logged_in_user)
+	<li>Logged in as ${logged_in_user.getUsername()}</li> <li><a href="$site_information.url/login/logout">logout</a></li>
+#else	
+	<li><a href="$site_information.url/login/prompt">Sign in</a></li>        		
+#end
+</ul>
+</div>

@@ -1,0 +1,25 @@
+<div class="section" id="maincontent">
+#if ($main_heading) 
+<h2>$main_heading</h2>
+#end
+#if ($main_description)
+<p>$main_description</p>
+#end
+<ul class="flat_list">
+	#foreach($item in $main_content)
+		<li class="content_item">
+			<ul class="main_content_item">
+				#parse("includes/content_element.vm")
+			</ul>
+		</li>
+	#end
+	#if ($main_content_moreurl) 
+		<li class="more"><a href="$main_content_moreurl">
+			#if ($main_content_morecount) $main_content_morecount #end
+			More...</a>
+		</li>
+	#end
+</ul>
+</div>
+
+

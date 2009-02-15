@@ -1,0 +1,28 @@
+#if ($tag_calendars && $tag_calendars.size() > 0)
+<div class="box">
+<h2>Calendars</h2>
+#set ($righthand_content_one = $columnSplitter.left($tag_calendars))
+#set ($righthand_content_two = $columnSplitter.right($tag_calendars))
+
+
+#set ($righthand_content_moreurl = "")
+#if ($tag_calendars_moreurl) 
+	#set ($righthand_content_moreurl = $tag_calendars_moreurl)
+#end
+
+
+
+
+#parse("includes/righthand_two_columns.vm")
+
+#if ($tag_events && $tag_events.size() > 0)
+	<br clear="all" />
+	<ul class="flat_list">
+		#foreach($event in $tag_events)
+			#parse("includes/event.vm")
+		#end
+	</ul>
+#end
+
+</div>
+#end

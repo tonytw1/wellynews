@@ -1,0 +1,8 @@
+<h2>Related Information</h2>
+<ul>
+#foreach ($related in $related_information) 
+	
+	<li><a href="$related.link">$related.title</a></li>
+
+#end
+</ul>

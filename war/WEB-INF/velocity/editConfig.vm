@@ -1,0 +1,51 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Editing Configuration</h2>
+
+
+<form action="save" method="POST"> 
+		<fieldset>
+					
+		<p><label for="feedburner_widget">FeedBurner Widget: </label>
+		<textarea name="feedburner_widget" cols="80" rows="10">$feedburner_widget</textarea></p>
+		
+		<p><label for="name">Statitics Tracking code: </label>
+		<textarea name="stats_tracking_code" cols="80" rows="10">$stats_tracking_code</textarea></p>
+		
+		<p><label for="flickr_pool_group_id">Flickr Pool: </label>
+		<input name="flickr_pool_group_id" 
+		#if ($flickr_pool_group_id) 
+		value="$flickr_pool_group_id"
+		#end
+		></p>
+		
+		<p><label for="clickthrough">Use clickthrough tracking: </label>
+		$clickthrough_tracking_select</p>
+		
+
+		<input type="submit" value="Save" />		
+	</fieldset>
+</form>
+
+<form action="../../cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

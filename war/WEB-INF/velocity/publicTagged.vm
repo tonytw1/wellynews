@@ -1,0 +1,42 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+
+
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Tagged</h2>
+
+#if ($resource)
+
+<p>Thanks for tagging this item; the updated listing is shown below.</p>
+
+
+#set ($item = $resource)
+<ul>
+#parse("includes/content_element.vm")
+</ul>
+
+<form action="$site_information.url/cancel" method="POST">
+	<input type="submit" value="ok" />
+</form>
+
+#else
+<p>There was a problem loading this resource for editing. You may 
+not have permission to edit this particular listing.</p>
+
+#end
+
+
+</div>
+
+#parse("includes/footer.vm")

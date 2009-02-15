@@ -1,0 +1,5 @@
+#if ($record_page_impression)
+$stats_tracking_code
+#else
+<!-- Stats disabled -->
+#end

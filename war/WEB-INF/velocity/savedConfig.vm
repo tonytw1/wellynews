@@ -1,0 +1,26 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Configuration Saved</h2>
+
+<form action="../../cancel" method="POST">
+	<input type="submit" value="Done" />
+</form>
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

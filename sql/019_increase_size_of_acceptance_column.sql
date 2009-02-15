@@ -1,0 +1,1 @@
+alter table resource change column acceptance acceptance varchar(20);

@@ -1,0 +1,74 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Editing a Tag</h2>
+
+#if ($tag)
+
+
+
+	
+
+
+<form action="save" method="POST"> 
+		<input name="tag" type="hidden" value="$tag.name" />
+		<fieldset>
+					
+		<p><label for="name">Name: </label>
+		<input name="name" value="$tag.name" /></p>
+		
+		<p><label for="name">Display Name: </label>
+		<input name="displayName" value="$tag.displayName" /></p>
+		
+		#if ($tag_select) 
+			<p><label for="parent">Parent Tag: </label>
+	    	$tag_select	
+			</p>
+		#end
+			
+		<p><label for="feed">Related Feed: </label>
+	    $related_feed_select
+		</p>
+	
+		<p><label for="main_image">Main Image: </label>
+		<input name="main_image" 
+			#if ($tag.mainImage)
+			value="$tag.mainImage" 
+			#end
+			/></p>
+		
+		<p><label for="secondary_image">Secondary Image: </label>
+		<input name="secondary_image" 
+			#if ($tag.secondaryImage)
+			value="$tag.secondaryImage" 
+			#end
+			/></p>
+				
+		<input type="submit" value="Save" />		
+	</fieldset>
+</form>
+#else
+<p>No tag was found on the request. Could not edit.</p>
+#end
+
+<form action="../../cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

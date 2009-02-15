@@ -1,0 +1,25 @@
+<ul>
+#foreach($topcategory in $categories)
+		<li class="category">
+		#if ($category && $topcategory.id == $category.id)
+			<strong><a href="$topcategory.url">$topcategory.name</a></strong>
+		#else 
+			<a href="$topcategory.url">$topcategory.name</a>
+		#end 
+		
+		
+		<ul>
+		#foreach($subcategory in $topcategory.children) 
+			<li>
+			#if ($category && $subcategory.id == $category.id)
+				<strong><a href="$subcategory.url">$subcategory.name</a></strong>
+			#else 
+				<a href="$subcategory.url">$subcategory.name</a>
+			#end		
+			</li>
+		#end	
+		</ul>
+				
+		</li>
+	#end
+</ul>

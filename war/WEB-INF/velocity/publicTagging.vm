@@ -1,0 +1,56 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+
+
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Tagging a Resource</h2>
+
+#if ($resource)
+
+<p>
+Please pick up to 4 tags which describe this listing.<br/>
+ie. Thorndon Tennis Club might be tagged with tennis and thorndon.
+</p>
+
+#set ($item = $resource)
+<ul>
+#parse("includes/content_element.vm")
+</ul>
+
+
+<form action="save" method="POST" > 
+		<fieldset>
+						
+		#parse("includes/tag_edit_fields.vm")
+		
+		<input type="hidden" name="resource" value="$resource.id" />
+		<input type="submit" value="Tag" />		
+	</fieldset>
+</form>
+
+
+#else
+<p>There was a problem loading this resource for editing. You may 
+not have permission to edit this particular listing.</p>
+
+#end
+
+
+<form action="$site_information.url/cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+
+</div>
+
+#parse("includes/footer.vm")

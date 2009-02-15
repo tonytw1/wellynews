@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+
+<project name="springapp" basedir="." default="usage">
+    <property file="build.properties"/>
+
+    <property name="src.dir" value="src"/>
+    <property name="test.dir" value="test"/>
+
+    <property name="web.dir" value="war"/>
+
+    <property name="build.dir" value="${web.dir}/WEB-INF/classes"/>
+    <property name="test.build.dir" value="build/test"/>
+	
+	<property name="build.out.dir" value="build/out"/>
+		
+    <property name="name" value="springapp"/>
+
+
+    <target name="usage">
+        <echo message=""/>
+        <echo message="${name} build file"/>
+        <echo message="-----------------------------------"/>
+        <echo message=""/>
+        <echo message="Available targets are:"/>
+        <echo message=""/>
+        <echo message="build     --> Build the application"/>
+        <echo message="buildwar  --> Build application as a WAR file"/>
+        <echo message=""/>
+    </target>
+
+
+
+    <target name="build" description="Compile main source tree java files">
+    	
+		<mkdir dir="${build.dir}"/>
+    	
+		<delete dir="${build.out.dir}"/>
+		<mkdir dir="${build.out.dir}"/>
+    	
+     	<delete dir="${test.build.dir}"/>
+    	<mkdir dir="${test.build.dir}"/>
+								    	
+        <javac destdir="${build.dir}" debug="true" deprecation="false" optimize="false" failonerror="true">
+            <src path="${src.dir}"/>
+            <classpath refid="master-classpath"/>
+        </javac>
+    </target>
+
+
+
+
+    <path id="master-classpath">
+        <fileset dir="${web.dir}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
+     	
+		<!-- We need the servlet API classes:        -->
+        <fileset dir="lib/buildtime">
+            <include name="servlet*.jar"/>           
+        </fileset>
+        <pathelement path="${build.dir}"/>
+    </path>
+
+
+
+    <path id="testclasspath">
+        <path refid="master-classpath" />
+     	
+		<!-- We need the servlet API classes:        -->
+        <fileset dir="lib/buildtime">
+            <include name="junit*.jar"/>        
+            <include name="easymock.jar"/>
+	    <include name="easymockclassextension.jar"/>
+        </fileset>
+        
+    	<pathelement path="${build.dir}"/>
+    	<pathelement path="${test.build.dir}"/>
+    </path>
+
+
+
+    <target name="compile-tests" depends="build">
+    <javac destdir="${test.build.dir}" debug="true" deprecation="false" optimize="false">
+
+    <include name="**/*.java" />
+    <src path="${test.dir}" />
+            <classpath refid="testclasspath"/>
+    </javac>
+    </target>
+
+		
+    <target name="buildwar" depends="build" description="Deploy application as a WAR file">    	
+        <war destfile="${build.out.dir}/${name}.war" webxml="${web.dir}/WEB-INF/web.xml">
+            <fileset dir="${web.dir}">
+                <include name="**/*.*"/>
+            </fileset>
+        </war>
+    </target>
+
+	
+	
+    <target name="deploy" depends="buildwar" description="Deploy application as a WAR file">
+        <copy todir="${deploy.path}" preservelastmodified="true">
+            <fileset dir="${build.out.dir}">
+                <include name="*.war"/>
+            </fileset>
+        </copy>
+    </target>
+
+	
+	<target name="dev-deploy-views" description="Deploy vm files directly to the development resin">
+		  <copy todir="${deploy.path}/springapp/WEB-INF/velocity" preservelastmodified="true">
+		            <fileset dir="war/WEB-INF/velocity">
+		                <include name="**/*.vm"/>
+		            </fileset>
+		 	</copy>
+	</target>
+	
+
+
+	<target name="test" depends="compile-tests">
+		<mkdir dir="results"/>
+
+	    <sequential>
+	    <junit failureproperty="tests.failed" dir="${test.build.dir}" haltonerror="true" fork="true">
+		    <classpath refid="testclasspath" />
+		    <formatter type="brief" usefile="false" />
+		    <formatter type="xml" />
+	
+	    	<batchtest todir="results">
+	    	<fileset dir="${test.build.dir}">
+	   			<include name="**/*Test.class" />
+			    <include name="**/Test*.class" />
+
+	    		<!-- don't run inner classes -->
+	   			<exclude name="**/*$*.class" />
+	    	</fileset>
+	   	 	</batchtest>
+	    </junit>
+
+	    <antcall target="check-test-failure" />
+    	</sequential>
+    </target>
+
+	<target name="check-test-failure" if="tests.failed">
+		<fail message="Tests failed." />
+	</target>
+
+</project>

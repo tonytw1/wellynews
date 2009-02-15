@@ -1,0 +1,188 @@
+<ehcache>
+
+    <!-- Sets the path to the directory where cache .data files are created.
+
+         If the path is a Java System Property it is replaced by
+         its value in the running VM.
+
+         The following properties are translated:
+         user.home - User's home directory
+         user.dir - User's current working directory
+         java.io.tmpdir - Default temp file path -->
+    <diskStore path="java.io.tmpdir/searchwellington"/>
+
+
+    <!--Default Cache configuration. These will applied to caches programmatically created through
+        the CacheManager.
+
+        The following attributes are required for defaultCache:
+
+        maxInMemory       - Sets the maximum number of objects that will be created in memory
+        eternal           - Sets whether elements are eternal. If eternal,  timeouts are ignored and the element
+                            is never expired.
+        timeToIdleSeconds - Sets the time to idle for an element before it expires.
+                            i.e. The maximum amount of time between accesses before an element expires
+                            Is only used if the element is not eternal.
+                            Optional attribute. A value of 0 means that an Element can idle for infinity
+        timeToLiveSeconds - Sets the time to live for an element before it expires.
+                            i.e. The maximum time between creation time and when an element expires.
+                            Is only used if the element is not eternal.
+        overflowToDisk    - Sets whether elements can overflow to disk when the in-memory cache
+                            has reached the maxInMemory limit.
+
+        -->
+    <defaultCache
+        maxElementsInMemory="500"
+        eternal="false"
+        timeToIdleSeconds="7200"
+        timeToLiveSeconds="7200"
+        overflowToDisk="false"
+        />
+
+		
+	<cache name="nz.co.searchwellington.model.ResourceImpl.tags"
+		maxElementsInMemory="1000"
+		eternal="true"
+		overflowToDisk="false"
+		/>		
+	
+		
+	<!-- cache external RSS SyndFeeds -->
+	<cache name="feeds"
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="7200"
+		timeToLiveSeconds="7200"
+		overflowToDisk="true"
+		/>
+	
+	
+
+	<!-- cache external Calendars -->
+	<cache name="calendars"
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="7200"
+		timeToLiveSeconds="7200"
+		overflowToDisk="true"
+		/>
+	
+	
+	
+	<cache name="snapshots"
+		maxElementsInMemory="100"
+		eternal="true"		
+		overflowToDisk="true"
+		diskPersistent="true"
+		/>
+
+
+			    
+	<cache name="nz.co.searchwellington.model.CommentFeedImpl"
+		maxElementsInMemory="200"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+		
+		
+	<cache name="nz.co.searchwellington.model.CommentFeedImpl.comments"
+		maxElementsInMemory="200"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+		
+	<cache name="nz.co.searchwellington.model.CommentImpl"
+		maxElementsInMemory="500"
+		eternal="false"
+		timeToIdleSeconds="7200"
+		timeToLiveSeconds="7200"
+		overflowToDisk="false"
+		/>	
+		
+		
+		
+	<cache name="nz.co.searchwellington.model.DiscoveredFeedImpl"
+		maxElementsInMemory="500"
+		eternal="false"
+		timeToIdleSeconds="7200"
+		timeToLiveSeconds="7200"
+		overflowToDisk="false"
+		/>		
+		
+			
+	<cache name="nz.co.searchwellington.model.DiscoveredFeedImpl.references"
+		maxElementsInMemory="500"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+		
+	
+		
+			
+
+	<cache name="nz.co.searchwellington.model.ResourceImpl"
+		maxElementsInMemory="1000"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+	
+
+
+	<cache name="nz.co.searchwellington.config.ConfigImpl"
+		maxElementsInMemory="5"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+
+
+		
+		
+		
+	<cache name="nz.co.searchwellington.model.TagImpl.taggedResources"
+		maxElementsInMemory="1000"
+		eternal="true"		
+		overflowToDisk="false"
+		/>
+		
+
+
+
+	<cache name="nz.co.searchwellington.model.TagImpl"
+		maxElementsInMemory="1000"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+		
+		
+		
+			<cache name="nz.co.searchwellington.model.TagImpl.children"
+		maxElementsInMemory="1000"
+		eternal="true"		
+		overflowToDisk="false"
+		/>
+		
+			
+			
+
+
+
+	<cache name="nz.co.searchwellington.model.WebsiteImpl.newsitems"
+		maxElementsInMemory="1000"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+
+	<cache name="nz.co.searchwellington.model.WebsiteImpl.feeds"
+		maxElementsInMemory="500"
+		eternal="true"
+		overflowToDisk="false"
+		/>
+		
+		
+		
+		
+		
+		
+		
+		
+</ehcache>

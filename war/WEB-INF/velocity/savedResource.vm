@@ -1,0 +1,85 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+<div class="left">
+
+#parse("includes/tag_tree.vm")
+</div>
+
+
+<div class="main">
+
+#if ($item) 
+<h2>Submission Saved</h2>
+
+<p>Thank you for submitting this listing. Your submission is previewed below.</p>
+
+
+<div class="main_content">
+<ul class="main_content">
+#parse("includes/content_element.vm")
+</ul>
+</div>
+		
+<p>You may continue to <a href="$site_information.url/edit/edit?resource=$item.id">edit this listing</a>.</p>
+
+
+<form action="$site_information.url/cancel" method="POST">
+	<input type="submit" value="Done" />
+</form>
+
+
+
+#if ($prompt_for_additional_information) 
+<h3>But wait - there's more!</h3>
+
+<p>Does your website include newsitems, notices or match reports?<br/>
+We'd like to help you put these infront of interested people.</p>
+
+If you can tell us the location of a page containing these newsitems,
+we can include them in the <a href="${site_information.url}/index#newslog">${site_information.areaname} newslog</a>.
+</p>
+
+
+<form>Newsitems Url: 
+<input name="url">
+<input type="hidden" name="type" value="L" />
+<input type="hidden" name="publisher" value="$item.id" />
+<input type="submit" value="Add">
+</form>
+
+
+<p>We can also accept newsitems from your sites news feed if you provide one.</p>
+
+<form>Feed Url: 
+<input name="url">
+<input type="hidden" name="type" value="F" />
+<input type="hidden" name="publisher" value="$item.id" />
+<input type="submit" value="Add">
+</form>
+
+#end
+
+
+
+
+
+
+#else 
+
+<h2>Submission Not Saved</h2>
+<p>There was a problem saving your submission. Your changes have not been saved.</p>
+#end
+
+
+
+</div>
+
+
+<div class="right">
+#parse("includes/secondary_content.vm")
+</div>
+
+#parse("includes/footer.vm")

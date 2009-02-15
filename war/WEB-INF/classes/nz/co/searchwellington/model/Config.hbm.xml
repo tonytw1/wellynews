@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping> 
+
+	<class name="nz.co.searchwellington.config.ConfigImpl"
+		proxy="nz.co.searchwellington.config.Config" table="config">
+		
+	
+		<cache usage="read-write" />
+		
+
+		<id name="id" type="integer" unsaved-value="0">
+			<column name="id" sql-type="integer" not-null="true" />
+			<generator class="native" />
+		</id>
+
+		<property name="feedBurnerWidget" type="text">
+			<column name="feedburner_widget" />
+		</property>
+		
+		<property name="statsTracking" type="text">
+			<column name="stats_tracking" />
+		</property>
+		
+		<property name="flickrPoolGroupId" type="text">
+			<column name="flickr_pool_group_id" />
+		</property>
+
+		<property name="UseClickthroughCounter" type="text">
+			<column name="use_clickthrough_tracking" />
+		</property>				
+				
+	</class>
+
+</hibernate-mapping>

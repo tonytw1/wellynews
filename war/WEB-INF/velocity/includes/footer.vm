@@ -1,0 +1,5 @@
+<br clear="all">
+<hr>
+#parse("includes/stats.vm")
+</body>
+</html>

@@ -1,0 +1,635 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<bean id="SimplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="rssUrlBuilder" />
+			
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/about">about</prop>
+						<prop key="/archive">archive</prop>
+						<prop key="/calendars">calendars</prop>
+						<prop key="/comment">commented</prop>
+						<prop key="/feeds/discovered">discovered</prop>
+						<prop key="/feedburner">feedburner</prop>
+						<prop key="/geotagged">geotagged</prop>
+						<prop key="/justin">justin</prop>
+						<prop key="/lastupdated">lastUpdated</prop>
+						<prop key="/tags">tags</prop>
+						<prop key="/twitter">twitter</prop>
+						<prop key="/watchlist">watchlist</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	<bean id="profileController" class="nz.co.searchwellington.controllers.ProfileController">	
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="siteInformation" />
+			
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/profile">profile</prop>					
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+	
+	
+	<bean id="indexController" class="nz.co.searchwellington.controllers.IndexController">		
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="configDAO" />	
+		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="eventsDAO" />
+		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="rssUrlBuilder" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/index">index</prop>						
+					</props>
+				</property>
+			</bean>		
+		</property>
+		
+	</bean>
+
+
+	<bean id="rssUrlBuilder" class="nz.co.searchwellington.controllers.RssUrlBuilder">
+		<constructor-arg ref="siteInformation" />
+	</bean>
+	
+
+	<bean id="browseController" class="nz.co.searchwellington.controllers.BrowseController">	
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="configDAO" />		
+		<constructor-arg ref="rssUrlBuilder" />
+				
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/archive/*/*">archive</prop>
+						<prop key="/browse">publisherContent</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+		
+	</bean>
+	
+	
+	
+	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
+		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="requestFilter" />
+	</bean>
+	
+	
+		
+	<bean id="loginController" class="nz.co.searchwellington.controllers.LoginController">
+		<constructor-arg ref="userDAO" />
+		<constructor-arg ref="urlStack" />	
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/login/login">login</prop>
+						<prop key="/login/logout">logout</prop>
+						<prop key="/login/prompt">prompt</prop>
+						
+						<prop key="/openid/auth">auth</prop>	
+						<prop key="/openid/verify">verify</prop>						
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+
+	<bean id="supressionController" class="nz.co.searchwellington.controllers.admin.SupressionController">	
+		<constructor-arg ref="supressionDAO" />
+		<constructor-arg ref="urlStack" />			
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/supress/supress">supress</prop>
+						<prop key="/supress/unsupress">unsupress</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+
+	
+	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
+		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="rssUrlBuilder" />
+	</bean>
+	
+	<bean id="rssfeedsController" class="nz.co.searchwellington.controllers.RssfeedsController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="publisherSelectFactory" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="tagWidgetFactory"/>	
+		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="rssUrlBuilder" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/feeds">rssfeeds</prop>
+						<prop key="/feeds/**">rssfeeds</prop>					
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+		<bean id="flickrUpdateController" class="nz.co.searchwellington.controllers.admin.FlickrUpdateController">
+			
+			<constructor-arg ref="resourceDAO" />
+			<constructor-arg ref="flickrDAO" />
+			<constructor-arg ref="configDAO" />
+		
+			<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/admin/flickrupdate">update</prop>						
+					</props>
+				</property>
+			</bean>		
+		</property>	
+	</bean>
+	
+	<bean id="luceneIndexBuilderController" class="nz.co.searchwellington.controllers.admin.LuceneIndexBuilderController">
+		<constructor-arg ref="resourceDAO" />
+			<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/admin/luceneindexbuilder">build</prop>						
+					</props>
+				</property>
+			</bean>		
+		</property>	
+	</bean>
+	
+		
+
+
+	<bean id="linkCheckerController" class="nz.co.searchwellington.controllers.admin.LinkCheckerController">
+		<constructor-arg ref="requestFilter" />		
+		<constructor-arg ref="linkCheckerQueue" />
+		<constructor-arg ref="urlStack" />
+	
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="">showStatus</prop>
+						<prop key="/admin/linkchecker/add">addToQueue</prop>								
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+
+	<bean id="searchController" class="nz.co.searchwellington.controllers.SearchController">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="configDAO" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>					
+						<prop key="/search">search</prop>								
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+	
+	
+	<bean id="cancelController" class="nz.co.searchwellington.controllers.CancelController">
+		<constructor-arg ref="urlStack" />
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/cancel">cancel</prop>					
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	<bean id="viewfeedController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="viewfeedControllerTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+
+	<bean id="viewfeedControllerTarget" class="nz.co.searchwellington.controllers.ViewfeedController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="supressionDAO" />
+		<constructor-arg ref="configDAO" />	
+		<constructor-arg ref="feedReader" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/viewfeed/decache">decachefeed</prop>
+						<prop key="/viewfeed/read">readfeed</prop>						
+						<prop key="/viewfeed/">viewfeed</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+			
+			
+	<bean id="viewCalendarController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="viewCalendarControllerTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	
+	
+	<bean id="viewCalendarControllerTarget" class="nz.co.searchwellington.controllers.ViewCalendarController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="requestFilter" />		
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="calendarFeedDAO" />
+		<constructor-arg ref="eventsDAO" />	
+	
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>									
+						<prop key="/viewcalendar/">viewcalendar</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+	
+	
+	
+			
+		
+	<bean id="publishersAjaxController" class="nz.co.searchwellington.controllers.ajax.PublisherAjaxController">
+		<constructor-arg ref="publisherGuessingService" />	
+	</bean>
+	
+	
+	
+	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="itemMaker" />		
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="feedDAO" />		
+		<constructor-arg ref="eventsDAO" />
+		<constructor-arg ref="rssUrlBuilder" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/tag/*">normal</prop>
+						<prop key="/tag/*/comment">comment</prop>	
+						<prop key="/tag/*/news">newsArchive</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>		
+	</bean>
+	
+	
+	
+	
+	
+	<bean id="editController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="editControllerTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+	</bean>
+	
+	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="linkCheckerQueue" />		
+		<constructor-arg ref="tagWidgetFactory" />
+		<constructor-arg ref="publisherSelectFactory" />
+		<constructor-arg ref="supressionDAO" />
+		<constructor-arg ref="notifier" />
+		<constructor-arg ref="placeAutoTagger" />
+		<constructor-arg ref="acceptanceWidgetFactory" />
+		<constructor-arg ref="geocodingService" />
+		<constructor-arg ref="urlCleaner" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/edit/edit">edit</prop>
+						<prop key="/edit/save">save</prop>
+						<prop key="/edit/delete">delete</prop>
+						<prop key="/edit/deleteandsupress">deleteAndSupress</prop>
+						
+						<prop key="/edit/submit/calendar">submitCalendar</prop>
+						<prop key="/edit/submit/feed">submitFeed</prop>
+						<prop key="/edit/submit/newsitem">submitNewsitem</prop>
+						<prop key="/edit/submit/watchlist">submitWatchlist</prop>
+						<prop key="/edit/submit/website">submitWebsite</prop>
+						
+						<prop key="/edit/accept">accept</prop>	
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="tagWidgetFactory" />
+		<constructor-arg ref="notifier" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/tagging/tag">edit</prop>
+						<prop key="/tagging/save">save</prop>						
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	<bean id="tagEditController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="tagEditControllerTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	
+	<bean id="tagEditControllerTarget" class="nz.co.searchwellington.controllers.admin.TagEditController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="tagWidgetFactory" />		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/edit/tag/submit">submit</prop>
+						<prop key="/edit/tag/save">save</prop>												
+						<prop key="/edit/tag/*">edit</prop>
+						<prop key="/delete/tag/*">delete</prop>
+					</props>
+				</property>
+			</bean>
+		</property>
+	</bean>
+	
+
+	
+	<bean id="autoTagController" class="nz.co.searchwellington.controllers.admin.AutoTagController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="itemMaker" />	
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="autoTagService" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>																
+						<prop key="/autotag/tag/*">prompt</prop>
+						<prop key="/autotag/apply">apply</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	<bean id="configEditController" class="nz.co.searchwellington.controllers.admin.ConfigEditController">
+		<constructor-arg ref="configDAO" />	
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/admin/config/edit">edit</prop>
+						<prop key="/admin/config/save">save</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+	<bean id="sitemapController" class="nz.co.searchwellington.controllers.SitemapController">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="siteInformation" />
+			<constructor-arg ref="sitemapService" />
+		
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/sitemap.xml">sitemap</prop>					
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+
+    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+            	
+            	<prop key="/about">SimplePageController</prop>
+            	<prop key="/archive">SimplePageController</prop>
+            	<prop key="/calendars">SimplePageController</prop>
+            	<prop key="/comment">SimplePageController</prop>
+           		<prop key="/feeds/discovered">SimplePageController</prop>
+           		<prop key="/geotagged">SimplePageController</prop>
+            	<prop key="/feedburner">SimplePageController</prop>
+            	<prop key="/justin">SimplePageController</prop>
+				<prop key="/lastupdated">SimplePageController</prop>
+				<prop key="/tags">SimplePageController</prop>
+				<prop key="/twitter">SimplePageController</prop>				
+				<prop key="/watchlist">SimplePageController</prop>
+				            	
+            	<prop key="/archive/**">browseController</prop>
+            	
+            	<prop key="/browse">browseController</prop>
+            	
+            	<prop key="/clickthrough">clickThroughController</prop>
+            	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
+            	<prop key="/edit/*/ajax/publishers">publishersAjaxController</prop>
+            	
+            	
+            	<prop key="/index">indexController</prop>
+				<prop key="/rss/**">rssController</prop>
+				<prop key="/feeds/**">rssfeedsController</prop>
+				<prop key="/search">searchController</prop>
+				
+				<prop key="/viewcalendar">viewCalendarController</prop>
+				
+				<prop key="/viewfeed">viewfeedController</prop>
+				<prop key="/viewfeed/decache">viewfeedController</prop>	
+				<prop key="/viewfeed/read">viewfeedController</prop>
+				
+				<prop key="/edit/edit">editController</prop>
+				<prop key="/edit/delete">editController</prop>
+				<prop key="/edit/deleteandsupress">editController</prop>				
+				<prop key="/edit/save">editController</prop>
+
+				<prop key="/edit/submit/calendar">editController</prop>			
+				<prop key="/edit/submit/feed">editController</prop>				
+				<prop key="/edit/submit/newsitem">editController</prop>
+				<prop key="/edit/submit/watchlist">editController</prop>
+				<prop key="/edit/submit/website">editController</prop>
+				<prop key="/edit/accept">editController</prop>
+				
+				<prop key="/tagging/tag">publicTaggingController</prop>
+				<prop key="/tagging/save">publicTaggingController</prop>
+				
+				<prop key="/edit/tag/submit">tagEditController</prop>
+				<prop key="/edit/tag/save">tagEditController</prop>
+				<prop key="/edit/tag/*">tagEditController</prop>
+				<prop key="/delete/tag/*">tagEditController</prop>
+							
+				<prop key="/autotag/tag/*">autoTagController</prop>
+				<prop key="/autotag/apply">autoTagController</prop>		
+							
+				<prop key="/cancel">cancelController</prop>
+				<prop key="/login/logout">loginController</prop>	
+				<prop key="/login/prompt">loginController</prop>
+				<prop key="/login/login">loginController</prop>
+				
+				<prop key="/openid/auth">loginController</prop>
+				<prop key="/openid/verify">loginController</prop>
+				
+				
+				<prop key="/profile">profileController</prop>
+											
+				<prop key="/admin/flickrupdate">flickrUpdateController</prop>					
+				<prop key="/admin/luceneindexbuilder">luceneIndexBuilderController</prop>
+				<prop key="/admin/linkchecker/*">linkCheckerController</prop>
+				<prop key="/admin/config/edit">configEditController</prop>
+				<prop key="/admin/config/save">configEditController</prop>
+				
+				<prop key="/sitemap.xml">sitemapController</prop>
+				
+				<prop key="/supress/*">supressionController</prop>
+				
+				<prop key="/tag/*">tagController</prop>
+				<prop key="/tag/*/comment">tagController</prop>
+				<prop key="/tag/*/news">tagController</prop>
+            </props>
+        </property>
+    </bean>
+    
+    
+</beans>

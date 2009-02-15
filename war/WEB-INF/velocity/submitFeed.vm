@@ -1,0 +1,52 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+<div class="main">
+<h2>Submitting a Feed</h2>
+
+
+<form action="$site_information.url/edit/save" method="POST">
+		<fieldset>
+					
+		#parse("includes/form_resource_title_and_url.vm")				
+		
+		
+		#if ($publisher_select) 
+			<p><label for="publisher">Publisher: </label>
+	    	$publisher_select	
+			</p>
+		#end
+		
+		#if ($acceptance_select) 	
+			<p><label for="acceptance">Acceptance Policy: </label>
+			$acceptance_select
+		#end
+				
+		<p><label for="description">Description: </label>
+		<textarea name="description" rows="6" cols="40">$resource.description</textarea>
+		</p>
+		
+		#parse("includes/tag_edit_fields.vm")
+				
+		<input type="hidden" name="type" value="F" />
+		<input type="submit" value="Save" />		
+	</fieldset>
+</form>
+
+<form action="$site_information.url/cancel" method="POST">
+	<input type="submit" value="cancel" />
+</form>
+
+
+</div>
+
+#parse("includes/footer.vm")

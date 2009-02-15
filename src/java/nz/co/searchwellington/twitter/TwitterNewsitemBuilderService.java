@@ -1,0 +1,41 @@
+package nz.co.searchwellington.twitter;
+
+import java.util.Calendar;
+
+import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.utils.UrlCleaner;
+
+import org.apache.log4j.Logger;
+
+public class TwitterNewsitemBuilderService {
+
+    Logger log = Logger.getLogger(TwitterNewsitemBuilderService.class);
+    
+    private UrlCleaner urlCleaner;
+    
+    public TwitterNewsitemBuilderService(UrlCleaner urlCleaner) {     
+        this.urlCleaner = urlCleaner;
+    }
+
+
+
+    public Newsitem createNewsitemFromTwitterReply(String message, Newsitem newsitem, String submitter) {							
+		newsitem.setTwitterSubmitter(submitter);
+		newsitem.setTwitterMessage(message);
+        
+		message = message.replaceFirst("@.*? ", "");
+		String titleText = message.replaceFirst("http.*", "").trim();
+		newsitem.setName(titleText);
+
+		String url = message.replace(titleText, "").trim();	
+        if (url != "") {
+            newsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
+            newsitem.setDate(Calendar.getInstance().getTime());		        
+            return newsitem;
+        } else {
+            log.warn("Could not resolve url from twit");
+            return null;
+        }
+	}
+    
+}

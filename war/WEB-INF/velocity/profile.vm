@@ -1,0 +1,55 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+
+<div class="main">
+
+
+
+
+
+
+
+
+
+<h2>$heading</h2>
+
+<ul>
+<li>Username:</li>
+<li>openID</li>
+</ul>
+
+
+</div>
+
+
+
+
+<div class="right">
+
+#parse("includes/login.vm")
+
+<div class="box">
+#parse("includes/latest_newsitems.vm")
+
+<br clear="all"/>
+#parse("includes/feedburner_prompt.vm")
+</div>
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

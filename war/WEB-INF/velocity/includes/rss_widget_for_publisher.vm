@@ -1,0 +1,5 @@
+#if ($rss_url) 
+<ul>
+	<li>#parse("includes/rss_icon.vm") <a href="$site_information.url/feeds?publisher=$publisher.id#custom">news feed</a></li>
+</ul>
+#end

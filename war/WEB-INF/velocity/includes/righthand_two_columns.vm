@@ -1,0 +1,36 @@
+
+<div class="righthand_one">
+<ul class="flat_list">
+	#foreach($item in $righthand_content_one)
+		<li>
+			<ul class="righthand_content_item">
+				#parse("includes/content_element.vm")
+			</ul>
+		</li>
+	#end
+	
+	
+		
+</ul>
+</div>
+
+<div class="righthand_two">
+<ul class="flat_list">
+	#foreach($item in $righthand_content_two)
+		<li>
+			<ul class="righthand_content_item">
+				#parse("includes/content_element.vm")
+			</ul>
+		</li>
+	#end
+
+	#if ($righthand_content_moreurl) 
+		<li class="more"><a href="$site_information.url/$righthand_content_moreurl">
+		#if ($righthand_content_two_morecount) $righthand_content_morecount #end
+		More...</a></li>
+	#end
+</ul>
+</div>
+
+
+

@@ -1,0 +1,7 @@
+<ul class="quotes">
+	#foreach ($comment in $item.comments)
+		#if($velocityCount <= 3)
+    		<li>&lsquo;$comment.title&rsquo;</li>
+		#end
+	#end
+</ul>

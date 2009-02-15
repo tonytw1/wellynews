@@ -1,0 +1,11 @@
+#if ($parent_tag && $sibling_tags && $sibling_tags.size() >= 1)
+<h2>Other tags in $parent_tag.displayName</h2>
+
+<ul>
+#foreach ($sibling_tag in $sibling_tags)
+	<li><a href="$site_information.url/tag/$sibling_tag.name">$sibling_tag.displayName.toLowerCase()</a>
+#end
+</ul>
+#end
+
+
