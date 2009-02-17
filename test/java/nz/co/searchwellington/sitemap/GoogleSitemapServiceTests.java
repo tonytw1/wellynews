@@ -14,7 +14,6 @@ import java.util.List;
 import junit.framework.TestCase;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagImpl;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.dom4j.Document;
@@ -27,10 +26,10 @@ public class GoogleSitemapServiceTests extends TestCase {
     public void testShouldRenderSiteMap() throws Exception {
         
         List<Tag> tags = new ArrayList<Tag>();
-        Tag apples = new TagImpl();
+        Tag apples = new Tag();
         apples.setName("apples");
         
-        Tag bananas = new TagImpl();
+        Tag bananas = new Tag();
         bananas.setName("bananas");
         tags.add(apples);
         tags.add(bananas);  

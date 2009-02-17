@@ -3,19 +3,18 @@ package nz.co.searchwellington.tagging;
 import java.util.HashSet;
 import java.util.Set;
 
+import junit.framework.TestCase;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagImpl;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
-import junit.framework.TestCase;
 
 public class AutoTaggingServiceTest extends TestCase {
 
     
     public void testShouldNotApplyExtraTagsToNewsitemWhichAlreadyHasPublisherTag() throws Exception {
-        Tag publishersTag = new TagImpl();
+        Tag publishersTag = new Tag();
         
         Website publisher = new WebsiteImpl();
         Set<Tag> publishersTags = new HashSet<Tag>();

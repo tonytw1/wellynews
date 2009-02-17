@@ -14,6 +14,7 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -117,11 +118,11 @@ public class TagEditController extends MultiActionController {
 
     
     
-    @Transactional
+    @Transactional(propagation=Propagation.REQUIRED)
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
         
         ModelAndView modelAndView = new ModelAndView("savedTag");    
-        modelAndView.getModel().put("heading", "Tag Saved");
+        modelAndView.addObject("heading", "Tag Saved");
 
         Tag editTag = null;
         requestFilter.loadAttributesOntoRequest(request);
@@ -164,9 +165,8 @@ public class TagEditController extends MultiActionController {
         // TODO validate.
         resourceDAO.saveTag(editTag);
         
-        modelAndView.getModel().put("tag", editTag);
-        modelAndView.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
-    
+        modelAndView.addObject("tag", editTag);
+        modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());    
         return modelAndView;
     }
     

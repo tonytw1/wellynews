@@ -17,7 +17,6 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagImpl;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.WatchlistImpl;
 import nz.co.searchwellington.model.Website;
@@ -58,7 +57,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     }
 
     public Tag createNewTag() {
-        Tag newTag = new TagImpl(0, "", "", null, new HashSet<Tag>(), 0);
+        Tag newTag = new Tag(0, "", "", null, new HashSet<Tag>(), 0);
         log.info("Created tag: " + newTag.getName() + " (#" + newTag.getId() + ")");
 		return newTag;
     }

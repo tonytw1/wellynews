@@ -8,16 +8,15 @@ import java.util.List;
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
-import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagImpl;
+import nz.co.searchwellington.model.TagContentCount;
 
 public class TagInformationServiceTest extends TestCase {
     
-    Tag tag1 = new TagImpl();
-    Tag tag2 = new TagImpl();
-    Tag tag3 = new TagImpl();
-    Tag tag4 = new TagImpl();
+    Tag tag1 = new Tag();
+    Tag tag2 = new Tag();
+    Tag tag3 = new Tag();
+    Tag tag4 = new Tag();
     
     Newsitem newsitem1 = new NewsitemImpl();
     Newsitem newsitem2 = new NewsitemImpl();

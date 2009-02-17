@@ -18,6 +18,7 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
@@ -387,7 +388,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
     @SuppressWarnings("unchecked")
     public Resource loadResourceById(int resourceID) {
-        return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("id", resourceID)).setCacheMode(CacheMode.NORMAL).setCacheable(true).uniqueResult();
+    	return (Resource) sessionFactory.getCurrentSession().load(ResourceImpl.class, resourceID);        
     }
 
     @SuppressWarnings("unchecked")    
@@ -413,8 +414,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     public Tag loadTagById(int tagID) {
-        return (Tag) sessionFactory.getCurrentSession().createCriteria(Tag.class).add(Expression.eq("id", tagID)).setCacheMode(CacheMode.NORMAL).setCacheable(true).uniqueResult();
-       
+        return (Tag) sessionFactory.getCurrentSession().load(Tag.class, tagID);
     }
     
     
@@ -423,18 +423,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     public Tag loadTagByName(String tagName) {
         return (Tag) sessionFactory.getCurrentSession().
         createCriteria(Tag.class).
-        add(Expression.eq("name", tagName)).
-        setCacheable(true).
-        uniqueResult();        
+        add(Restrictions.eq("name", tagName)).
+        uniqueResult();    
     }
     
     
     public void saveResource(Resource resource) {     
         sessionFactory.getCurrentSession().saveOrUpdate(resource);
-        
-        // TODO what are the flushes for? Surely you don't need these with transactional?
-        //sessionFactory.getCurrentSession().flush();
-        
         //if (resource.getType().equals("F")) {
             // TODO can this be done for just the publisher only?
          //   sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
@@ -449,20 +444,17 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(discoveredFeed);
-        sessionFactory.getCurrentSession().flush();
     }
     
     
     public void saveCommentFeed(CommentFeed commentFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(commentFeed);
-        sessionFactory.getCurrentSession().flush();
     }
 
 
 
     public void saveTag(Tag editTag) {
-        sessionFactory.getCurrentSession().saveOrUpdate(editTag);        
-        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().saveOrUpdate(editTag);                
         //sessionFactory.evictCollection("nz.co.searchwellington.model.TagImpl.children");
     }
 
@@ -610,8 +602,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
         
     public void deleteResource(Resource resource) throws IOException {
-        sessionFactory.getCurrentSession().delete(resource);
-        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().delete(resource);       
         // flush collection caches.  
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.newsitems");
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.watchlist");
@@ -621,8 +612,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
     public void deleteTag(Tag tag) throws IOException {
         sessionFactory.getCurrentSession().delete(tag);
-        // TODO this has to manually remove the resource -> tag mappings; is that true still? check.
-        sessionFactory.getCurrentSession().flush();        
+        // TODO this has to manually remove the resource -> tag mappings; is that true still? check.             
     }
 
 

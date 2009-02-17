@@ -1,54 +1,165 @@
 package nz.co.searchwellington.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
-public interface Tag {
-
-    public int getId();
-
-    public void setId(int id);
-
-    public String getName();
-    public void setName(String name);
-
-    public Tag getParent();
-
-    public Set<Tag> getChildren();
+public class Tag {
     
-    public void addChild(Tag tag);
-
-    public void setParent(Tag parent);
-
-    public void setChildren(Set<Tag> children);
-
-    public Set<Tag> getAncestors();
+    int id;
+    String name;
+    String displayName;
+    Tag parent;
+    Set <Tag> children;
+    int flickrCount;
     
-    // TODO Should this reall ybe methods on the Tag or DAO methods?
-    public void setFlickrCount(int tagPhotoCount);
-    public int getFlickrCount();
+    String mainImage;
+    String secondaryImage;
+    
+    Set<Resource> taggedResources;
+    Feed relatedFeed;
+        
+    public Tag() {        
+    }
+    
+    
+    public Tag(int id, String name, String displayName, Tag parent, Set <Tag> children, int flickrCount) {        
+        this.id = id;
+        this.name = name;
+        this.displayName = displayName;
+        this.parent = parent;
+        this.children = children;
+        this.relatedFeed = null;
+    }
+    
+    
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getName() {
+        return name;
+    }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public String getDisplayName();
+    public String getDisplayName() {
+        return displayName;
+    }
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
 
-    public void setDisplayName(String displayName);
-
-    public boolean isParentOf(Tag tag);
-
-    public void setMainImage(String string);
-
-    public void setSecondaryImage(String string);
-
-    public String getMainImage();
-
-    public String getSecondaryImage();
-
-    public Set<Resource> getTaggedResources();
-
-    public void setTaggedResources(Set<Resource> taggedResources);
-
-    public Feed getRelatedFeed();
-
-    public void setRelatedFeed(Feed relatedFeed);
+    public Tag getParent() {
+        return parent;
+    }
 
     
-   
+
+    public void setParent(Tag parent) {
+        this.parent = parent;
+    }
+
+
+    
+
+    public void setChildren(Set<Tag> children) {
+        this.children = children;
+    }
+
+
+    public Set<Tag> getChildren() {
+        return children;
+    }
+    
+    
+
+    public void addChild(Tag tag) {
+        children.add(tag);        
+    }
+
+
+    
+    public Set<Tag> getAncestors() {
+        HashSet<Tag> ancestors = new HashSet<Tag>();   
+        Tag parent = getParent();
+        while (parent != null) {
+            ancestors.add(parent);
+            parent = parent.getParent();
+        }
+        return ancestors;
+    }
+
+
+
+
+    public int getFlickrCount() {
+        return flickrCount;
+    }
+
+
+
+
+    public void setFlickrCount(int flickrCount) {
+        this.flickrCount = flickrCount;
+    }
+    
+    
+    // TODO only used in tag tree vm. Can come off the interface.
+    public boolean isParentOf(Tag tag) {        
+        return tag.getAncestors().contains(this);            
+    }
+
+
+    public String getMainImage() {
+        return mainImage;
+    }
+
+    public void setMainImage(String mainImage) {
+        this.mainImage = mainImage;
+    }
+
+    
+    public String getSecondaryImage() {
+        return secondaryImage;
+    }
+    
+    
+    public void setSecondaryImage(String secondaryImage) {
+        this.secondaryImage = secondaryImage;
+    }
+
+
+
+
+    public Set<Resource> getTaggedResources() {
+        return taggedResources;
+    }
+
+
+
+
+    public void setTaggedResources(Set<Resource> taggedResources) {
+        this.taggedResources = taggedResources;
+    }
+
+
+
+
+    public Feed getRelatedFeed() {
+        return this.relatedFeed;
+    }
+
+    public void setRelatedFeed(Feed relatedFeed) {
+        this.relatedFeed = relatedFeed;
+    }
+
+
+    @Override
+    public String toString() {
+        return name;
+    }
+    
 }
