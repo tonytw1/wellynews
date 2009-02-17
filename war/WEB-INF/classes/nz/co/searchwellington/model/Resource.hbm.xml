@@ -52,7 +52,7 @@
 		<set name="tags" table="resource_tags">
 			<cache usage="read-write" />		
 			<key column="resource_id" />
-			<many-to-many class="nz.co.searchwellington.model.TagImpl"
+			<many-to-many class="nz.co.searchwellington.model.Tag"
 				column="tag_id" order-by="name"/>
 		</set>
 		

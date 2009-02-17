@@ -5,7 +5,7 @@
 
 <hibernate-mapping>
 
-	<class name="nz.co.searchwellington.model.TagImpl"
+	<class name="nz.co.searchwellington.model.Tag"
 		proxy="nz.co.searchwellington.model.Tag" table="tag">
 
 	
@@ -39,7 +39,7 @@
 		</property>
 		
 		<many-to-one name="parent"
-			class="nz.co.searchwellington.model.TagImpl" column="parent"
+			class="nz.co.searchwellington.model.Tag" column="parent"
 			cascade="" />
 
 
@@ -48,7 +48,7 @@
 			order-by="name">
 			<cache usage="read-write" />
 			<key column="parent" />
-			<one-to-many class="nz.co.searchwellington.model.TagImpl" />
+			<one-to-many class="nz.co.searchwellington.model.Tag" />
 		</set>
 
         <property name="flickrCount" type="integer">
