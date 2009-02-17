@@ -196,12 +196,16 @@
     </list>
   </property>
   <property name="hibernateProperties">
-    <props>    	      
+    <props>
       	<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>      	
       	<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-      	<prop key="hibernate.cache.use_query_cache">false</prop>
-      	<prop key="hibernate.cache.use_second_level_cache">false</prop>      	
+      	<prop key="hibernate.cache.use_query_cache">true</prop>
+      	<prop key="hibernate.cache.use_second_level_cache">true</prop>
+      	
+      	<prop key="hibernate.current_session_context_class">thread</prop>
+      	<prop key="hibernate.transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</prop>
     </props>
+    
   </property>
   <property name="dataSource">
     <ref bean="dataSource"/>
