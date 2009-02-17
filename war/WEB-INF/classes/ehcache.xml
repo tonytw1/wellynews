@@ -138,7 +138,7 @@
 		
 		
 		
-	<cache name="nz.co.searchwellington.model.TagImpl.taggedResources"
+	<cache name="nz.co.searchwellington.model.Tag.taggedResources"
 		maxElementsInMemory="1000"
 		eternal="true"		
 		overflowToDisk="false"
@@ -147,7 +147,7 @@
 
 
 
-	<cache name="nz.co.searchwellington.model.TagImpl"
+	<cache name="nz.co.searchwellington.model.Tag"
 		maxElementsInMemory="1000"
 		eternal="true"
 		overflowToDisk="false"
@@ -155,7 +155,7 @@
 		
 		
 		
-			<cache name="nz.co.searchwellington.model.TagImpl.children"
+			<cache name="nz.co.searchwellington.model.Tag.children"
 		maxElementsInMemory="1000"
 		eternal="true"		
 		overflowToDisk="false"
