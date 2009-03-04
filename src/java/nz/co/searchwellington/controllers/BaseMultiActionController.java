@@ -72,8 +72,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
         if (archiveMonths.size() <= MAX_BACK_ISSUES) {
             mv.getModel().put("archive_links", archiveMonths);
         } else {
-            mv.getModel().put("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));
-            mv.getModel().put("archive_more", "/archive");
+            mv.getModel().put("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
         }          
         boolean showBroken = loggedInUser != null;
         populateContentCounts(mv, showBroken);

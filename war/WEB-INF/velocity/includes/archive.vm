@@ -23,8 +23,6 @@
                 </li>
         #end
         
-#if ($archive_more)
-	<li class="more"><a href="$archive_more">More...</a></li>
-#end
+	<li class="more"><a href="$site_information.url/archive">More...</a></li>
 </ul>
 #end
