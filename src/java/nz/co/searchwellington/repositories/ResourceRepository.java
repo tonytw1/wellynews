@@ -112,7 +112,10 @@ public interface ResourceRepository {
     public Date getNewslogLastChanged();
     public int getWebsiteCount(boolean showBroken);
     public int getNewsitemCount(boolean showBroken);
+    
     public List<Tag> getCommentedTags(boolean showBroken) throws IOException; 
+    public List<Tag> getGeotaggedTags(boolean showBroken) throws IOException;	
+    
     public int getCommentCount();
     public List<ArchiveLink> getArchiveMonths();
     public Set<Integer> getAllResourceIds();

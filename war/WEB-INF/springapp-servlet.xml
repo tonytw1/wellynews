@@ -373,6 +373,7 @@
 						<prop key="/tag/*">normal</prop>
 						<prop key="/tag/*/comment">comment</prop>	
 						<prop key="/tag/*/news">newsArchive</prop>
+						<prop key="/geotagged/*">geotagged</prop>
 					</props>
 				</property>
 			</bean>		
@@ -627,6 +628,7 @@
 				<prop key="/tag/*">tagController</prop>
 				<prop key="/tag/*/comment">tagController</prop>
 				<prop key="/tag/*/news">tagController</prop>
+				<prop key="/geotagged/*">tagController</prop>
             </props>
         </property>
     </bean>

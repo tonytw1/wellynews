@@ -190,7 +190,7 @@ public class RequestFilter {
 
         int tagIndex = -1;
         for (int i = 0; i < fields.length; i++) {
-            if (fields[i].equals("tag")) {
+            if (fields[i].equals("tag") || fields[i].equals("geotagged")) {
                 tagIndex = i;
             }
         }

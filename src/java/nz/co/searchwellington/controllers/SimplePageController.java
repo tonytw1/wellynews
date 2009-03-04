@@ -169,9 +169,12 @@ public class SimplePageController extends BaseMultiActionController {
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());        
         populateLocalCommon(mv);
                         
-        mv.addObject("heading", "Geotagged Newsitems");
+        mv.addObject("heading", "Geotagged");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
-
+        
+        // TODO respond to logged in user
+        mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(false));   
+        
         requestFilter.loadAttributesOntoRequest(request);
         
         Resource selected = null;

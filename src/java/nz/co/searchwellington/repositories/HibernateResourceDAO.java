@@ -266,6 +266,20 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
+    public List<Tag> getGeotaggedTags(boolean showBroken) throws IOException {
+        // TODO performance! Don't iterate!
+        List<Tag> geotaggedTags = new ArrayList<Tag>();
+        for(Tag tag : getAllTags()) {
+            final int geotaggedCount = getAllValidGeocodedForTag(tag, 5, showBroken).size();
+            log.debug("Tag " + tag.getDisplayName() + " has " + geotaggedCount + " geotagged newsitems.");
+            if (geotaggedCount > 0) {
+                geotaggedTags.add(tag);
+            }
+        }
+        return geotaggedTags;        
+    }
+    
+    
     
     @SuppressWarnings("unchecked")
     public List<Tag> getTopLevelTags() {

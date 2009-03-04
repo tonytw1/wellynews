@@ -3,6 +3,12 @@
 <h2>Geotagged</h2>
 <div id="map_canvas" style="width: 250px; height: 260px"></div></a>
 #parse("includes/geocodedjs.vm")
-<p><a href="$site_information.url/geotagged">More...</a></p>
+
+
+#if($tag) 
+	<p><a href="$site_information.url/geotagged/$tag.name">More...</a></p>
+#else
+	<p><a href="$site_information.url/geotagged">More...</a></p>
+#end
 </div>
 #end

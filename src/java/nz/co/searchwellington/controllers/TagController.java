@@ -87,10 +87,60 @@ public class TagController extends BaseMultiActionController {
             throw new RuntimeException("Invalid tag name.");            
         }
         
-        return mv;
-        
+        return mv;        
     }
         
+    
+    // TODO duplication with simple
+    protected void populateGeocoded(ModelAndView mv, boolean showBroken, Resource selected, Tag tag) throws IOException {
+        List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, 50, showBroken);
+        log.info("Found " + geocoded.size() + " valid geocoded resources.");        
+        if (selected != null && !geocoded.contains(selected)) {
+        	geocoded.add(selected);
+        }
+                
+        if (geocoded.size() > 0) {
+            mv.addObject("main_content", geocoded);
+            // TODO inject
+            GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();
+            mv.addObject("geocoded", cleaner.dedupe(geocoded, selected));  
+            //setRss(mv, "Geocoded newsitems RSS Feed", siteInformation.getUrl() + "/rss/geotagged");
+        }
+    }
+    
+    
+    public ModelAndView geotagged(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+        ModelAndView mv = new ModelAndView();        
+        mv.setViewName("geotagged");        
+        
+        User loggedInUser = setLoginState(request, mv);
+        boolean showBroken = loggedInUser != null;
+        
+        requestFilter.loadAttributesOntoRequest(request);
+        mv.addObject("tags", request.getAttribute("tags"));
+        
+        if (request.getAttribute("tag") != null) {
+            Tag tag = (Tag) request.getAttribute("tag");
+            populateCommon(request, mv, showBroken, loggedInUser, tag);
+
+            mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(showBroken));   
+            
+            mv.addObject("tag", tag);
+            mv.addObject("heading", tag.getDisplayName() + " related geotagged");
+            // TODO want areaname back in here.
+            mv.addObject("description", tag.getDisplayName() + " listings");                        
+            populateTagFlickrPool(mv, tag);
+            
+            mv.addObject("main_heading", null);
+            populateGeocoded(mv, showBroken, null, tag);
+            populateSecondaryLatestNewsitems(mv, loggedInUser);
+
+        } else {
+            throw new RuntimeException("Invalid tag name.");            
+        }
+        
+        return mv;        
+    }    
    
     
     

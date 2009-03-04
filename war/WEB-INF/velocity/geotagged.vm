@@ -19,7 +19,7 @@
 #parse("includes/rss_widget_for_geotagged.vm")
 </div>
 
-<h2>$heading</h2>
+<h2><a href="$site_information.url/geotagged">Geotagged</a> / $tag.displayName</h2>
 
 
 #if ($geotagged_tags.size() > 0)
