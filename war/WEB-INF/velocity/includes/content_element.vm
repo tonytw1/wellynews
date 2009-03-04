@@ -21,68 +21,127 @@
 					</li>
 				#end
 							
-				#if ($item.acceptancePolicy)
-				<li class="acceptance">$item.acceptancePolicy</li>
-				#end
-				
-								
 				#if ($item.description) 
 					<li>$item.description</li>
 				#end
-						
 				
-				#if ($item.lastRead)
-					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
-				#end
+				#if ($item.type == ('F'))
+					#if ($item.acceptancePolicy)
+						<li class="acceptance">$item.acceptancePolicy</li>
+					#end
+												
+						
+					
+					#if ($item.lastRead)
+						<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
+					#end
 								
 							
 								
-				#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
-					<ul>
-					#foreach($error in $item.acceptanceErrors) 
-						<li>$error</li>
+					#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
+						<ul>
+						#foreach($error in $item.acceptanceErrors) 
+							<li>$error</li>
+						#end
+						</ul>
 					#end
-					</ul>
 				#end
 				
 				
 				
-				#if ($item.newsitems && $item.newsitems.size() > 0) 
-					<li><a href="$site_information.url/browse?publisher=$item.id">				
-					#showItemCount($item.newsitems.size() "Newsitem")	
-					</a></li>
-				#end
 				
-				#if ($item.feeds && $item.feeds.size() > 0) 
-					#if($item.feeds.size() == 1)
-						#set ($feed = $item.feeds.iterator().next())					
-						<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 Feed</a>	
-					#else
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				
+				#if ($item.type == 'W') 
+					#if ($item.newsitems && $item.newsitems.size() > 0) 
+						<li><a href="$site_information.url/browse?publisher=$item.id">				
+						#showItemCount($item.newsitems.size() "Newsitem")	
+						</a></li>
+					#end
+				
+					#if ($item.feeds && $item.feeds.size() > 0) 
+						#if($item.feeds.size() == 1)
+							#set ($feed = $item.feeds.iterator().next())					
+							<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 Feed</a>	
+						#else
 						<li><a href="$site_information.url/browse?publisher=$item.id&type=F">					
 							#showItemCount($item.feeds.size() "Feed")		
 						</a>
 						</li>
-					#end					
-				#end
+						#end					
+					#end
 				
-				#if ($item.calendars && $item.calendars.size() > 0) 
-					#if($item.calendars.size() == 1)
-						#set ($calendar = $item.calendars.iterator().next())					
-						<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 Calendar</a>	
-					#else
-						<li><a href="$site_information.url/browse?publisher=$item.id&type=C">					
-							#showItemCount($item.calendars.size() "Calendar")		
+					#if ($item.calendars && $item.calendars.size() > 0) 
+						#if($item.calendars.size() == 1)
+							#set ($calendar = $item.calendars.iterator().next())					
+							<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 Calendar</a>	
+						#else
+							<li><a href="$site_information.url/browse?publisher=$item.id&type=C">					
+								#showItemCount($item.calendars.size() "Calendar")		
+							</a>
+							</li>
+						#end					
+					#end				
+				
+					#if ($item.watchlist && $item.watchlist.size() > 0) 
+						<li><a href="$site_information.url/browse?publisher=$item.id&type=L">
+							#showItemCount(	$item.watchlist.size() "Watchlist")
+						</a></li>
+					#end
+			#end
+			
+				
+	
+			
+			
+			
+			
+			#if ($item.type == 'W') 
+					#if ($item.newsitems && $item.newsitems.size() > 0) 
+						<li><a href="$site_information.url/browse?publisher=$item.id">				
+						#showItemCount($item.newsitems.size() "Newsitem")	
+						</a></li>
+					#end
+				
+					#if ($item.feeds && $item.feeds.size() > 0) 
+						#if($item.feeds.size() == 1)
+							#set ($feed = $item.feeds.iterator().next())					
+							<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 Feed</a>	
+						#else
+						<li><a href="$site_information.url/browse?publisher=$item.id&type=F">					
+							#showItemCount($item.feeds.size() "Feed")		
 						</a>
 						</li>
-					#end					
-				#end				
+						#end					
+					#end
 				
-				#if ($item.watchlist && $item.watchlist.size() > 0) 
-					<li><a href="$site_information.url/browse?publisher=$item.id&type=L">
-						#showItemCount(	$item.watchlist.size() "Watchlist")
-					</a></li>
-				#end
-			
+					#if ($item.calendars && $item.calendars.size() > 0) 
+						#if($item.calendars.size() == 1)
+							#set ($calendar = $item.calendars.iterator().next())					
+							<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 Calendar</a>	
+						#else
+							<li><a href="$site_information.url/browse?publisher=$item.id&type=C">					
+								#showItemCount($item.calendars.size() "Calendar")		
+							</a>
+							</li>
+						#end					
+					#end				
+				
+					#if ($item.watchlist && $item.watchlist.size() > 0) 
+						<li><a href="$site_information.url/browse?publisher=$item.id&type=L">
+							#showItemCount(	$item.watchlist.size() "Watchlist")
+						</a></li>
+					#end
+			#end
 			
 				
 				#if ($item.tags && $item.tags.size() > 0)
@@ -178,4 +237,10 @@
 			
 				
 			
+				
+			
+				
+				
+				
+				
 				
