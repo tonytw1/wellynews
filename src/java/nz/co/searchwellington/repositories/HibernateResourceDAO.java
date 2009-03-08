@@ -25,7 +25,6 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
 
 import org.apache.lucene.queryParser.ParseException;
-import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -444,6 +443,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     public void saveResource(Resource resource) {     
         sessionFactory.getCurrentSession().saveOrUpdate(resource);
+        sessionFactory.getCurrentSession().flush();
         //if (resource.getType().equals("F")) {
             // TODO can this be done for just the publisher only?
          //   sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
@@ -458,17 +458,20 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(discoveredFeed);
+        sessionFactory.getCurrentSession().flush();
     }
     
     
     public void saveCommentFeed(CommentFeed commentFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(commentFeed);
+        sessionFactory.getCurrentSession().flush();
     }
 
 
 
     public void saveTag(Tag editTag) {
-        sessionFactory.getCurrentSession().saveOrUpdate(editTag);                
+        sessionFactory.getCurrentSession().saveOrUpdate(editTag);
+        sessionFactory.getCurrentSession().flush();
         //sessionFactory.evictCollection("nz.co.searchwellington.model.TagImpl.children");
     }
 
