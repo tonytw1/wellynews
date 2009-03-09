@@ -1,7 +1,7 @@
 package nz.co.searchwellington.model;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.HashSet;
 
 public class Tag {
     
@@ -56,31 +56,21 @@ public class Tag {
         return parent;
     }
 
-    
-
     public void setParent(Tag parent) {
         this.parent = parent;
     }
-
-
     
-
     public void setChildren(Set<Tag> children) {
         this.children = children;
     }
-
 
     public Set<Tag> getChildren() {
         return children;
     }
     
-    
-
     public void addChild(Tag tag) {
         children.add(tag);        
     }
-
-
     
     public Set<Tag> getAncestors() {
         HashSet<Tag> ancestors = new HashSet<Tag>();   
@@ -92,26 +82,18 @@ public class Tag {
         return ancestors;
     }
 
-
-
-
     public int getFlickrCount() {
         return flickrCount;
     }
 
-
-
-
     public void setFlickrCount(int flickrCount) {
         this.flickrCount = flickrCount;
     }
-    
-    
+        
     // TODO only used in tag tree vm. Can come off the interface.
     public boolean isParentOf(Tag tag) {        
         return tag.getAncestors().contains(this);            
     }
-
 
     public String getMainImage() {
         return mainImage;
@@ -120,33 +102,22 @@ public class Tag {
     public void setMainImage(String mainImage) {
         this.mainImage = mainImage;
     }
-
-    
+  
     public String getSecondaryImage() {
         return secondaryImage;
     }
-    
-    
+        
     public void setSecondaryImage(String secondaryImage) {
         this.secondaryImage = secondaryImage;
     }
-
-
-
 
     public Set<Resource> getTaggedResources() {
         return taggedResources;
     }
 
-
-
-
     public void setTaggedResources(Set<Resource> taggedResources) {
         this.taggedResources = taggedResources;
     }
-
-
-
 
     public Feed getRelatedFeed() {
         return this.relatedFeed;
@@ -156,10 +127,9 @@ public class Tag {
         this.relatedFeed = relatedFeed;
     }
 
-
     @Override
     public String toString() {
-        return name;
+        return "Tag: " + name;
     }
     
 }
