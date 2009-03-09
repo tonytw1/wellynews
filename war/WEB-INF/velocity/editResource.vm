@@ -21,10 +21,10 @@
 		<fieldset>
 					
 		<p><label for="title">Title: </label>
-		<input name="title" value="$resource.name" /></p>
+		<input class="title" name="title" value="$resource.name" /></p>
 		
-		<p><label for="title">Url: </label>	
-		<input name="url" value="$resource.url" /></p>
+		<p><label for="url">Url: </label>	
+		<input class="url" name="url" value="$resource.url" /></p>
 		
 		#if ($resource.type != "W")
 		<p><label for="date">Date: </label>	
