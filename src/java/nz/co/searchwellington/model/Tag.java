@@ -17,6 +17,8 @@ public class Tag {
     
     Set<Resource> taggedResources;
     Feed relatedFeed;
+    String relatedTwitter;
+    
         
     public Tag() {        
     }
@@ -131,5 +133,14 @@ public class Tag {
     public String toString() {
         return "Tag: " + name;
     }
-    
+
+
+	public String getRelatedTwitter() {
+		return relatedTwitter;
+	}
+
+	public void setRelatedTwitter(String relatedTwitter) {
+		this.relatedTwitter = relatedTwitter;
+	}
+        
 }

@@ -25,6 +25,10 @@
 			<column name="display_name" length="255" not-null="false" />
 		</property>
 		
+		<property name="relatedTwitter">
+			<column name="related_twitter" length="255" not-null="false" />
+		</property>
+		
 		<many-to-one name="relatedFeed" 
 			class="nz.co.searchwellington.model.FeedImpl" column="related_feed" 
 			/>

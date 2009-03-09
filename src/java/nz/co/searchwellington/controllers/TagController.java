@@ -230,11 +230,10 @@ public class TagController extends BaseMultiActionController {
                 setTagRss(mv, tag);               
             }
             
-            // Twitter
-            if (tag.getName().equals("newtown")) {
-                mv.addObject("twitterUsername", "wedgefm");
+            if (tag.getRelatedTwitter() != null) {
+            	mv.addObject("twitterUsername", tag.getRelatedTwitter());
             }
-                                
+            
             // Edit
             if (loggedInUser != null) {             
                 populateTagEditUrl(mv, tag);
