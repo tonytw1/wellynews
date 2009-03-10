@@ -6,6 +6,7 @@ import java.util.HashSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
@@ -27,20 +28,18 @@ public class TagEditController extends MultiActionController {
     private ResourceRepository resourceDAO;
     private RequestFilter requestFilter;
     private TagWidgetFactory tagWidgetFactory;
+    private UrlStack urlStack;
 
     
-    
-    
-    
-
     public TagEditController() {       
     }
 
 
-    public TagEditController(ResourceRepository resourceDAO, RequestFilter requestFilter, TagWidgetFactory tagWidgetFactory) {
+    public TagEditController(ResourceRepository resourceDAO, RequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.tagWidgetFactory = tagWidgetFactory;
+        this.urlStack = urlStack;
         
     }
     
@@ -95,7 +94,8 @@ public class TagEditController extends MultiActionController {
             mv.getModel().put("tag", tag);
             
             log.info("Tag to be deleted has " + tag.getTaggedResources().size() + " resources.");
-            for (Resource resource : tag.getTaggedResources()) {                
+            for (Resource resource : tag.getTaggedResources()) {
+            	// TODO umodifiable set error
                 resource.getTags().remove(tag);
                 resourceDAO.saveResource(resource);
             }
@@ -105,6 +105,7 @@ public class TagEditController extends MultiActionController {
             }
             log.info("Deleting tag " + tag.getName());
             resourceDAO.deleteTag(tag);
+            urlStack.setUrlStack(request, "/index");
         }
                 
         // TODO should remove this tag from teh urlstack, as it doesn't exist anymore.

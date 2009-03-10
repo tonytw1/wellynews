@@ -31,15 +31,18 @@ public class UrlStack {
     }
     
     
-    @SuppressWarnings("unchecked")
-    public void setUrlStack(HttpServletRequest request) {
-        
+    public void setUrlStack(HttpServletRequest request) {        
         String url = request.getPathInfo();
         if (request.getQueryString() != null) {
             url = url + "?" + request.getQueryString();
-        }        
-        request.getSession().setAttribute("url", url);
-        log.debug("Put url onto the stack: " + url);
+        }
+        setUrlStack(request, url);
     }
+
+
+	public void setUrlStack(HttpServletRequest request, String url) {
+		request.getSession().setAttribute("url", url);
+        log.debug("Put url onto the stack: " + url);
+	}
     
 }
