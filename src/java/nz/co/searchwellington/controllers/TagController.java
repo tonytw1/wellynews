@@ -412,7 +412,7 @@ public class TagController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")
     protected void populateTagEditUrl(ModelAndView mv, Tag tag) {
         // TODO migrate away from parmeters to path.
-        final String editUrl = "/edit/tag/" + UrlFilters.encode(tag.getName());
+        final String editUrl = "edit/tag/" + UrlFilters.encode(tag.getName());
         mv.addObject("editurl", editUrl);
     }
 
@@ -420,7 +420,7 @@ public class TagController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")
     protected void populateTagDeleteUrl(ModelAndView mv, Tag tag) {
         // TODO migrate away from parmeters to path.
-        final String deleteUrl = "/delete/tag/" + UrlFilters.encode(tag.getName());
+        final String deleteUrl = "delete/tag/" + UrlFilters.encode(tag.getName());
         mv.addObject("deleteurl", deleteUrl);
     }
 
@@ -428,7 +428,7 @@ public class TagController extends BaseMultiActionController {
 
     @SuppressWarnings("unchecked")   
     protected void populatePlacesAutotagUrl(ModelAndView mv, Tag tag) {
-        final String autoTagUrl = "/autotag/tag/" + UrlFilters.encode(tag.getName());
+        final String autoTagUrl = "autotag/tag/" + UrlFilters.encode(tag.getName());
         mv.addObject("run_places_autotagger_url", autoTagUrl);
     }
     

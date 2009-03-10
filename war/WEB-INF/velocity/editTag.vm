@@ -41,6 +41,9 @@
 	    $related_feed_select
 		</p>
 	
+		<p><label for="twitter">Related Twitter: </label>
+		<input name="twitter" value="$tag.relatedTwitter" /></p>
+			
 		<p><label for="main_image">Main Image: </label>
 		<input name="main_image" 
 			#if ($tag.mainImage)

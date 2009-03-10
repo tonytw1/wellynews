@@ -73,9 +73,7 @@ public class TagEditController extends MultiActionController {
             editTag = (Tag) request.getAttribute("tag");         
             mv.addObject("tag", editTag);
             mv.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent(), editTag.getChildren()).toString());
-            mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed()));
-            mv.addObject("tag_main_image", editTag.getMainImage());
-            mv.addObject("tag_secondary_image", editTag.getMainImage());
+            mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed()));           
         }
         
         return mv;
@@ -137,6 +135,8 @@ public class TagEditController extends MultiActionController {
         
         editTag.setName(request.getParameter("name"));
         editTag.setDisplayName(request.getParameter("displayName"));
+        
+        editTag.setRelatedTwitter(request.getParameter("twitter"));
         
         Feed relatedFeed = null;      
         if (request.getAttribute("feedAttribute") != null) {

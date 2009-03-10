@@ -1,15 +1,15 @@
 	#if ($editurl || $run_places_autotagger_url)
 		<ul>
 		#if ($editurl) 
-		<li class="admin"><a href="$editurl">Edit</a>
+		<li class="admin"><a href="$site_information.url/$editurl">Edit</a>
 		#end
 	
 		#if ($deleteurl) 
-		<li class="admin"><a href="$deleteurl">Delete</a>
+		<li class="admin"><a href=""$site_information.url/$deleteurl">Delete</a>
 		#end
 		
 		#if ($run_places_autotagger_url)
-		<li class="admin"><a href="$run_places_autotagger_url">Autotag</a>
+		<li class="admin"><a href=""$site_information.url/$run_places_autotagger_url">Autotag</a>
 		#end
 		</ul>
 	#end
