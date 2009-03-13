@@ -2,6 +2,8 @@ package nz.co.searchwellington.controllers.admin;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -93,9 +95,11 @@ public class TagEditController extends MultiActionController {
             tag = (Tag) request.getAttribute("tag");         
             mv.getModel().put("tag", tag);
             
-            log.info("Tag to be deleted has " + tag.getTaggedResources().size() + " resources.");
-            for (Resource resource : tag.getTaggedResources()) {
+            List<Resource> taggedResources = resourceDAO.getResourcesWithTag(tag);
+            log.info("Tag to be deleted has " + taggedResources.size() + " resources.");
+            for (Resource resource : taggedResources) {
             	// TODO umodifiable set error
+            	log.info(resource.getName());
                 resource.getTags().remove(tag);
                 resourceDAO.saveResource(resource);
             }

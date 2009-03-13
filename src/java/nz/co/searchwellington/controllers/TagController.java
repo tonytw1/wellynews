@@ -343,17 +343,6 @@ public class TagController extends BaseMultiActionController {
     }
 
 
-
-
-
-
-   
-
-
-
-
-
-
     private List<Resource> dedupeTaggedNewsitems(List<Resource> commentedNewsitemOnPage, List<Resource> taggedNewsitems, List<Website> taggedWebsites) {      
         // TODO inject
         ContentDedupingService dedupingService = new ContentDedupingService();        
@@ -369,18 +358,18 @@ public class TagController extends BaseMultiActionController {
     }
 
 
-
+    // TODO move all of this lot to a related tag service.
     private void populateRelatedTagLinks(ModelAndView mv, boolean showBroken, Tag tag) throws IOException {
-        // TODO move all of this lot to the DAO.
         List<Tag> relatedTags = resourceDAO.getRelatedLinksForTag(tag, showBroken);
         List<TagContentCount> relatedTagLinks = new ArrayList<TagContentCount>();
-        for (Tag relatedTag : relatedTags) {
-            // TODO is there a count only call for this?
-            int relatedItemCount = resourceDAO.getTaggedWebsites(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
-                        
-            // TODO merge these calls to get a speed up.
-            relatedItemCount = relatedItemCount + resourceDAO.getTaggedNewsitems(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
-            relatedTagLinks.add(new TagContentCount(relatedTag, relatedItemCount));                        
+        for (Tag relatedTag : relatedTags) {                        
+            boolean relatedTagIsNotAncestor = !tag.getAncestors().contains(relatedTag);
+			if (relatedTagIsNotAncestor) {
+				int relatedItemCount = resourceDAO.getTaggedWebsites(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
+            	// TODO merge these calls to get a speed up.
+            	relatedItemCount = relatedItemCount + resourceDAO.getTaggedNewsitems(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
+            	relatedTagLinks.add(new TagContentCount(relatedTag, relatedItemCount));
+            }
         }
                 
         Collections.sort(relatedTagLinks);        
@@ -388,8 +377,6 @@ public class TagController extends BaseMultiActionController {
     }
 
 
-
-    @SuppressWarnings("unchecked")
     private List<Resource> populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken, User loggedInUser) throws IOException {
         List<Resource> allCommentedNewsitems = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, 500);
         
@@ -407,17 +394,14 @@ public class TagController extends BaseMultiActionController {
         return commentedToShow;             
     }
 
-
-
-    @SuppressWarnings("unchecked")
+  
     protected void populateTagEditUrl(ModelAndView mv, Tag tag) {
         // TODO migrate away from parmeters to path.
         final String editUrl = "edit/tag/" + UrlFilters.encode(tag.getName());
         mv.addObject("editurl", editUrl);
     }
 
-
-    @SuppressWarnings("unchecked")
+    
     protected void populateTagDeleteUrl(ModelAndView mv, Tag tag) {
         // TODO migrate away from parmeters to path.
         final String deleteUrl = "delete/tag/" + UrlFilters.encode(tag.getName());
@@ -425,8 +409,6 @@ public class TagController extends BaseMultiActionController {
     }
 
   
-
-    @SuppressWarnings("unchecked")   
     protected void populatePlacesAutotagUrl(ModelAndView mv, Tag tag) {
         final String autoTagUrl = "autotag/tag/" + UrlFilters.encode(tag.getName());
         mv.addObject("run_places_autotagger_url", autoTagUrl);
@@ -434,9 +416,7 @@ public class TagController extends BaseMultiActionController {
     
     
     
-
     // TODO moving the commented items into here might help with the deduping problem
-    @SuppressWarnings("unchecked")
     private boolean populateMainAndSecondaryContent(ModelAndView mv, User loggedInUser, Tag tag, final List<Website> taggedWebsites, int allAvailableNewsitems, List<Resource> taggedNewsitems, String pageName, List<Resource> commentedNewsitemOnPage) {
         List<? extends Resource> mainContent;
         List<? extends Resource> secondaryContent;

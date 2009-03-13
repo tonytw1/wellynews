@@ -679,23 +679,48 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
+    
+    
      
     @SuppressWarnings("unchecked")
-    public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken) {
-        // TODO how to you clear this query from the cache?
-       Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Tag.class).
-                createAlias("taggedResources", "tagged").
-                createAlias("tagged.tags", "rt").
-                addOrder(Order.asc("name")).                
-                add(Restrictions.eq("rt.id", tag.getId())).
-                add(Restrictions.ne("id", tag.getId())).
-                setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY).
-                setCacheable(true);   
-       if (!showBroken) {
-           criteria.add(Expression.eq("tagged.httpStatus", 200)); 
-       }
-       
-       return criteria.list();
+	public List<Resource> getResourcesWithTag(Tag tag) {
+    	log.info(tag.getName());
+    	Criteria taggedResources = sessionFactory.getCurrentSession().createCriteria(Resource.class).
+    		addOrder(Order.desc("date")).
+    		addOrder(Order.desc("id")).
+    		createAlias("tags", "rt").
+    		add(Restrictions.eq("rt.id", tag.getId()));
+    	
+    	return taggedResources.list();
+	}
+
+
+	@SuppressWarnings("unchecked")
+	// TODO move to a service.
+    public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken) {		
+		// select distinct(trts.tag_id) from resource_tags AS rt, resource_tags AS trts where rt.tag_id = 74 AND trts.resource_id = rt.resource_id and trts.tag_id != 74
+		//select tag.* from tag where id IN (select distinct(trts.tag_id) from resource_tags AS rt, resource_tags AS trts where rt.tag_id = 74 AND trts.resource_id = rt.resource_id and trts.tag_id != 74);
+		
+		// TODO 3 operator
+		String showBrokenClause = "";
+        if (!showBroken) {
+            showBrokenClause = " and http_status = 200 ";
+        }
+		
+		// TODO implement 2000
+		List<Tag> relatedTags = sessionFactory.getCurrentSession().createSQLQuery(
+                  "  select {tag.*} from tag {tag} where id IN (" +
+                  "			select distinct(trts.tag_id) from resource_tags AS rt, resource_tags AS trts, resource " +
+                  "					where rt.tag_id = ? " +
+                  "					AND trts.resource_id = rt.resource_id " +
+                  "					AND resource.id = trts.resource_id " +
+                  "					and trts.tag_id != ? " + showBrokenClause + " )",
+                  "tag", Tag.class).
+                  setInteger(0, tag.getId()).
+                  setInteger(1, tag.getId()).
+                  setCacheable(true).                    
+                  list();      
+          return relatedTags;
     }
 
 

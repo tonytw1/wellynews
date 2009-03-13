@@ -58,15 +58,7 @@
         <property name="flickrCount" type="integer">
             <column name="flickr_count" not-null="true"/>
         </property>
-        
-        
-         	<set name="taggedResources" table="resource_tags">
-			<cache usage="read-write" />		
-			<key column="tag_id" />
-			<many-to-many class="nz.co.searchwellington.model.ResourceImpl"
-				column="resource_id" />
-		</set>    
-        
+                
 	</class>
 
 </hibernate-mapping>

@@ -127,20 +127,14 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected void populateRelatedFeed(ModelAndView mv, Tag tag, FeedRepository feedDAO) throws IllegalArgumentException, IOException, FeedException {       
         Feed relatedFeed = tag.getRelatedFeed();        
         if (relatedFeed != null) {
-            logger.info("Related feed is: " + relatedFeed.getName());
-            List<Resource> relatedFeedItems = feedDAO.getFeedNewsitems(relatedFeed);           
-
-            mv.addObject("related_feed", relatedFeed);            
+            logger.info("Related feed for tag " + tag.getName() + " is: " + relatedFeed.getName());
+            List<Resource> relatedFeedItems = feedDAO.getFeedNewsitems(relatedFeed);
+            mv.addObject("related_feed", relatedFeed);
             mv.addObject("related_feed_items", itemMaker.setEditUrls(relatedFeedItems, null));
-            
-        } else {
-            logger.info("No related feed.");
         }
     }
 
     
-   
-   
     
     @SuppressWarnings("unchecked")
     protected void populateUntaggedNewsitem(ModelAndView mv, User loggedInUser) throws IOException {        

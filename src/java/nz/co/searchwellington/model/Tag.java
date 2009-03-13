@@ -14,11 +14,9 @@ public class Tag {
     
     String mainImage;
     String secondaryImage;
-    
-    Set<Resource> taggedResources;
+   
     Feed relatedFeed;
     String relatedTwitter;
-    
         
     public Tag() {        
     }
@@ -111,14 +109,6 @@ public class Tag {
         
     public void setSecondaryImage(String secondaryImage) {
         this.secondaryImage = secondaryImage;
-    }
-
-    public Set<Resource> getTaggedResources() {
-        return taggedResources;
-    }
-
-    public void setTaggedResources(Set<Resource> taggedResources) {
-        this.taggedResources = taggedResources;
     }
 
     public Feed getRelatedFeed() {

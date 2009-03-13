@@ -1,7 +1,7 @@
 #if ($related_tags)
 <h2>Related Tags</h2>
 
-<p>Show items which have been tagged with both $tag.displayName.toLowerCase() and:</p>
+<p>Items tagged with both $tag.displayName.toLowerCase() and:</p>
 
 <ul>
 #set ($first =1)
