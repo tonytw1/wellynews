@@ -3,8 +3,6 @@ package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -15,7 +13,6 @@ import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Event;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
@@ -42,11 +39,13 @@ public class TagController extends BaseMultiActionController {
     private FeedRepository feedDAO;  
     private EventsDAO eventsDAO;
     private RssUrlBuilder rssUrlBuilder;
+    private RelatedTagsService relatedTagsService;
     
+
     final private int MAX_WEBSITES = 100;
 
-    
-    public TagController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, RssUrlBuilder rssUrlBuilder) {     
+
+    public TagController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService) {     
         this.resourceDAO = resourceDAO;    
         this.requestFilter = requestFilter;
         this.itemMaker = itemMaker;
@@ -55,6 +54,7 @@ public class TagController extends BaseMultiActionController {
         this.feedDAO = feedDAO;     
         this.eventsDAO = eventsDAO;
         this.rssUrlBuilder = rssUrlBuilder;
+        this.relatedTagsService = relatedTagsService;
     }
 
     public ModelAndView comment(HttpServletRequest request, HttpServletResponse response) throws IOException {        
@@ -309,7 +309,11 @@ public class TagController extends BaseMultiActionController {
 
 
 
-    private void populateGeocodedForTag(ModelAndView mv, User loggedInUser, Tag tag) throws IOException {
+    private void populateRelatedTagLinks(ModelAndView mv, boolean showBroken, Tag tag) {    	
+    	 mv.addObject("related_tags", relatedTagsService.getRelatedTagLinks(tag, showBroken));
+	}
+
+	private void populateGeocodedForTag(ModelAndView mv, User loggedInUser, Tag tag) throws IOException {
         boolean showBroken = loggedInUser != null;
         List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, 10, showBroken);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());                
@@ -358,24 +362,7 @@ public class TagController extends BaseMultiActionController {
     }
 
 
-    // TODO move all of this lot to a related tag service.
-    private void populateRelatedTagLinks(ModelAndView mv, boolean showBroken, Tag tag) throws IOException {
-        List<Tag> relatedTags = resourceDAO.getRelatedLinksForTag(tag, showBroken);
-        List<TagContentCount> relatedTagLinks = new ArrayList<TagContentCount>();
-        for (Tag relatedTag : relatedTags) {                        
-            boolean relatedTagIsNotAncestor = !tag.getAncestors().contains(relatedTag);
-			if (relatedTagIsNotAncestor) {
-				int relatedItemCount = resourceDAO.getTaggedWebsites(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
-            	// TODO merge these calls to get a speed up.
-            	relatedItemCount = relatedItemCount + resourceDAO.getTaggedNewsitems(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
-            	relatedTagLinks.add(new TagContentCount(relatedTag, relatedItemCount));
-            }
-        }
-                
-        Collections.sort(relatedTagLinks);        
-        mv.addObject("related_tags", relatedTagLinks);
-    }
-
+ 
 
     private List<Resource> populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken, User loggedInUser) throws IOException {
         List<Resource> allCommentedNewsitems = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, 500);
