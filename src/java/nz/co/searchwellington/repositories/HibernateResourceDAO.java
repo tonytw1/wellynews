@@ -330,6 +330,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
    
     
 
+	@SuppressWarnings("unchecked")
 	public List<ArchiveLink> getArchiveMonths() {
         // TODO migrate this to map onto an object; then you might be able to cache it.
         List<ArchiveLink> archiveMonths = new ArrayList<ArchiveLink>();        
@@ -357,7 +358,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     
-    public int getWebsiteCount(boolean showBroken) {       
+    @SuppressWarnings("deprecation")
+	public int getWebsiteCount(boolean showBroken) {       
         if (showBroken) {
             return ((Long) sessionFactory.getCurrentSession().
                 iterate("select count(*) from WebsiteImpl as website").
@@ -370,7 +372,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
     // TODO map onto a cachable object.
-    public int getNewsitemCount(boolean showBroken) {
+    @SuppressWarnings("deprecation")
+	public int getNewsitemCount(boolean showBroken) {
         if (showBroken) {
             return ((Long) sessionFactory.getCurrentSession().
                 iterate("select count(*) from NewsitemImpl as newsitem").
@@ -382,7 +385,9 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         }
     }
        
-    public int getCommentCount() {
+    
+    @SuppressWarnings("deprecation")
+	public int getCommentCount() {
         // TODO implement show broken logic.
         return ((Long) sessionFactory.getCurrentSession().
                 iterate("select count(*) from CommentImpl").
@@ -399,12 +404,11 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    @SuppressWarnings("unchecked")
     public Resource loadResourceById(int resourceID) {
     	return (Resource) sessionFactory.getCurrentSession().load(ResourceImpl.class, resourceID);        
     }
 
-    @SuppressWarnings("unchecked")    
+    
     public Resource loadResourceByUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();        
     }
@@ -629,7 +633,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
     public void deleteTag(Tag tag) throws IOException {
         sessionFactory.getCurrentSession().delete(tag);
-        // TODO this has to manually remove the resource -> tag mappings; is that true still? check.             
+        sessionFactory.getCurrentSession().flush();
     }
 
 
