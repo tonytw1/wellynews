@@ -10,6 +10,11 @@
 	</bean>
 
 
+	 <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+        <property name="configLocation">
+            <value>classpath:application-ehcache.xml</value>
+        </property>
+    </bean> 
 
 
 
@@ -166,7 +171,9 @@
  	<constructor-arg value="${lucene.path}" />
 </bean>
 
-<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" />
+<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
+	<constructor-arg ref="cacheManager" />
+</bean>
 
 <bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">
 	<constructor-arg ref="resourceDAO" />

@@ -1,0 +1,43 @@
+<ehcache>
+
+    <diskStore path="java.io.tmpdir/searchwellington"/>
+    
+    <defaultCache
+        maxElementsInMemory="500"
+        eternal="false"
+        timeToIdleSeconds="7200"
+        timeToLiveSeconds="7200"
+        overflowToDisk="false"
+        />
+    
+		
+	<!-- cache external RSS SyndFeeds -->
+	<cache name="feeds"
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="7200"
+		timeToLiveSeconds="7200"
+		overflowToDisk="true"
+		/>
+	
+	
+
+	<!-- cache external Calendars -->
+	<cache name="calendars"
+		maxElementsInMemory="100"
+		eternal="false"
+		timeToIdleSeconds="7200"
+		timeToLiveSeconds="7200"
+		overflowToDisk="true"
+		/>
+	
+	
+	
+	<cache name="snapshots"
+		maxElementsInMemory="100"
+		eternal="true"		
+		overflowToDisk="true"
+		diskPersistent="true"
+		/>
+		
+</ehcache>

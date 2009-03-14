@@ -4,7 +4,9 @@
 
 	<bean id="rssHttpFetcher" class="nz.co.searchwellington.feeds.rss.RssHttpFetcher" />
 		
-	<bean id="rssCache" class="nz.co.searchwellington.feeds.rss.RssCache" />
+	<bean id="rssCache" class="nz.co.searchwellington.feeds.rss.RssCache" >
+		<constructor-arg ref="cacheManager" />
+	</bean>
 	
 	<bean id="rssPrefetcher" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager" />
