@@ -289,7 +289,8 @@ public class TagController extends BaseMultiActionController {
             
             
             if (!showMainAndSecondaryContent) {
-                mv.setViewName("tagCombinedOneContentType");              
+                mv.setViewName("tagCombinedOneContentType");
+                mv.addObject("main_heading", null);
             }
             
             
