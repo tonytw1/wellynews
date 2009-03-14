@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class TwitterListenerJob {
 
-    Logger log = Logger.getLogger(LinkCheckerJob.class);
+    Logger log = Logger.getLogger(TwitterListenerJob.class);
     
     private TwitterService twitterService;
     private TwitterNewsitemBuilderService newsitemBuilder;
