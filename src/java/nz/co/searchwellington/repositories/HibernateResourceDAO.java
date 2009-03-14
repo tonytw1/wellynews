@@ -700,18 +700,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
 	@SuppressWarnings("unchecked")
-	// TODO move to a service.
-    public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken) {		
-		// select distinct(trts.tag_id) from resource_tags AS rt, resource_tags AS trts where rt.tag_id = 74 AND trts.resource_id = rt.resource_id and trts.tag_id != 74
-		//select tag.* from tag where id IN (select distinct(trts.tag_id) from resource_tags AS rt, resource_tags AS trts where rt.tag_id = 74 AND trts.resource_id = rt.resource_id and trts.tag_id != 74);
-		
+    public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken) {
 		// TODO 3 operator
 		String showBrokenClause = "";
         if (!showBroken) {
             showBrokenClause = " and http_status = 200 ";
         }
 		
-		// TODO implement 2000
 		List<Tag> relatedTags = sessionFactory.getCurrentSession().createSQLQuery(
                   "  select {tag.*} from tag {tag} where id IN (" +
                   "			select distinct(trts.tag_id) from resource_tags AS rt, resource_tags AS trts, resource " +
@@ -723,12 +718,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
                   setInteger(0, tag.getId()).
                   setInteger(1, tag.getId()).
                   setCacheable(true).                    
-                  list();      
+                  list();
           return relatedTags;
     }
-
-
- 
-    
-       
+	
 }
