@@ -5,6 +5,7 @@ import java.util.Set;
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.LuceneAnalyzer;
@@ -40,5 +41,5 @@ public class KeywordHighlightingWebsiteDecorator extends BaseKeywordHighlighting
     public void setCalendars(Set<CalendarFeed> calendars) {
         ((Website) resource).setCalendars(calendars);        
     }
-      
+    
 }

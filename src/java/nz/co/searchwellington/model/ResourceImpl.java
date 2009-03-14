@@ -81,9 +81,11 @@ public abstract class ResourceImpl implements Resource {
         this.tags = tags;        
     }
     
+    public void getRemoveTag(Tag tag) {
+    	tags.remove(tag);
+	}
     
-    
-    public void addTag(Tag tag) {
+	public void addTag(Tag tag) {
         if (!tags.contains(tag)) {
             tags.add(tag);
         }        

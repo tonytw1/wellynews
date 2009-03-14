@@ -218,7 +218,8 @@ public abstract class BaseKeywordHighlightingDecorator implements Resource {
 		return resource.getGeocode();
 	}
     
-    
+	public void getRemoveTag(Tag tag) {	    
+	}
     
          
 }

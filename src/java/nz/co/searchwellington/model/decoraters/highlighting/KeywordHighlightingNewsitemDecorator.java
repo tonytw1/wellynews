@@ -6,6 +6,7 @@ import java.util.List;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.LuceneAnalyzer;
 
@@ -75,6 +76,8 @@ public class KeywordHighlightingNewsitemDecorator extends BaseKeywordHighlightin
     }
     
     
+    public void getRemoveTag(Tag tag) {    
+	}
     
     
 }

@@ -61,7 +61,7 @@ public class ResourceWrapper implements Resource {
     public final String getType() {
         return resource.getType();
     }
-
+    
     public String getUrl() {
         return resource.getUrl();
     }
@@ -132,6 +132,7 @@ public class ResourceWrapper implements Resource {
 	public void setGeocode(Geocode geocode) {
 	}
     
-    
+	public void getRemoveTag(Tag tag) {
+	}
 
 }

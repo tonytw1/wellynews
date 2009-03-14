@@ -97,10 +97,9 @@ public class TagEditController extends MultiActionController {
             
             List<Resource> taggedResources = resourceDAO.getResourcesWithTag(tag);
             log.info("Tag to be deleted has " + taggedResources.size() + " resources.");
-            for (Resource resource : taggedResources) {
-            	// TODO umodifiable set error
-            	log.info(resource.getName());
-                resource.getTags().remove(tag);
+            for (Resource resource : taggedResources) {            	
+            	log.info("Removing tag from: " + resource.getName());
+                resource.getRemoveTag(tag);
                 resourceDAO.saveResource(resource);
             }
                     
@@ -109,6 +108,7 @@ public class TagEditController extends MultiActionController {
             }
             log.info("Deleting tag " + tag.getName());
             resourceDAO.deleteTag(tag);
+            
             urlStack.setUrlStack(request, "/index");
         }
                 
