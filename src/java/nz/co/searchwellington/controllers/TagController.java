@@ -185,7 +185,7 @@ public class TagController extends BaseMultiActionController {
 
 
     private void setTagRss(ModelAndView mv, Tag tag) {
-        setRss(mv, rssUrlBuilder.getRssUrlForTag(tag));
+        setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
     }
     
    
