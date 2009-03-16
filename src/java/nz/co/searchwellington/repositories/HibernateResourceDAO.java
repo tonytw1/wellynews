@@ -405,7 +405,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     public Resource loadResourceById(int resourceID) {
-    	return (Resource) sessionFactory.getCurrentSession().load(ResourceImpl.class, resourceID);        
+    	return (Resource) sessionFactory.getCurrentSession().get(ResourceImpl.class, resourceID);        
     }
 
     
