@@ -166,14 +166,14 @@ public class SimplePageController extends BaseMultiActionController {
         
         urlStack.setUrlStack(request);
         User loggedInUser = setLoginState(request, mv);
+        boolean showBroken = loggedInUser != null;
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());        
         populateLocalCommon(mv);
                         
         mv.addObject("heading", "Geotagged");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
-        
-        // TODO respond to logged in user
-        mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(false));   
+      
+        mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(showBroken));
         
         requestFilter.loadAttributesOntoRequest(request);
         
@@ -185,8 +185,7 @@ public class SimplePageController extends BaseMultiActionController {
         } else {
             log.info("No selected resource seen on request.");
         }
-            
-        boolean showBroken = loggedInUser != null;
+        
         populateGeocoded(mv, showBroken, selected);
         mv.setViewName("geocoded");
         return mv;
