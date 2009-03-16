@@ -26,7 +26,7 @@ import com.sun.syndication.io.FeedException;
 
 public class FeedReader {
     
-    private static final int NUMEBR_OF_FEEDS_TO_READ = 10;
+    private static final int NUMEBR_OF_FEEDS_TO_READ = 100;
 
 	Logger log = Logger.getLogger(FeedReader.class);
     
