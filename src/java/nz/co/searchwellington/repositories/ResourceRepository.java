@@ -14,6 +14,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
+import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
 import org.apache.lucene.index.CorruptIndexException;

@@ -18,7 +18,7 @@ import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
-import nz.co.searchwellington.model.WatchlistImpl;
+import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
 
@@ -52,7 +52,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     
     public Watchlist createNewWatchlist() {
         log.info("Creating new Watchlist.");
-        return new WatchlistImpl(0, "", "", "", null, new HashSet<Tag>(),
+        return new Watchlist(0, "", "", "", null, new HashSet<Tag>(),
                 new HashSet <DiscoveredFeed>());
     }
 

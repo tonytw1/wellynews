@@ -123,7 +123,7 @@
 				
 				<key column="watchlist_publisher" />
 				<one-to-many
-					class="nz.co.searchwellington.model.WatchlistImpl" />
+					class="nz.co.searchwellington.model.Watchlist" />
 			</set>
 		</subclass>
 
@@ -149,16 +149,9 @@
 
 
 
-
-		<subclass name="nz.co.searchwellington.model.WatchlistImpl"
-			proxy="nz.co.searchwellington.model.Watchlist"
-			discriminator-value="L">
-
-			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl"
-				column="watchlist_publisher" cascade="" />
-
+		<subclass name="nz.co.searchwellington.model.Watchlist"	discriminator-value="L">
+			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="watchlist_publisher" cascade="" />
 		</subclass>
-
 
 
 
