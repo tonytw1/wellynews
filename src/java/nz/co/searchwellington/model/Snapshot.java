@@ -18,9 +18,13 @@ public class Snapshot {
     public Snapshot(String url) {
         this.url = url;
     }
-    
-    
-    public String getUrl() {
+        
+    public Snapshot(String url, String body) {
+		this.url = url;
+		this.body = body;
+	}
+
+	public String getUrl() {
         return url;
     }
 
