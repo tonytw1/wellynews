@@ -26,16 +26,13 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.model.SnapshotImpl;
 import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.TechnoratiDAO;
-import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.HttpFetcher;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.syndication.io.FeedException;
@@ -90,7 +87,7 @@ public class LinkChecker {
         if (snapshot != null) {
         	before = snapshot.getBody();
         } else {
-        	snapshot = new SnapshotImpl(checkResource.getUrl());
+        	snapshot = new Snapshot(checkResource.getUrl());
         }
         
         Calendar currentTime = Calendar.getInstance();
