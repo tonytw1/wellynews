@@ -30,10 +30,12 @@ public class SnapshotDAO {
     private void putSyndFeedIntoCache(String url, Snapshot snapshot) {
 		Cache cache = manager.getCache(SNAPSHOTS_CACHE_NAME);
 		if (cache != null && snapshot != null) {
-			Element cachedFeedElement = new Element(url, snapshot);
+			Element cachedFeedElement = new Element(url, snapshot.getBody());
 			cache.put(cachedFeedElement);
-			log.info("Caching snapshot for url: " + url);
+			log.info("Caching snapshot for url: " + url);			
 		}
+		log.info("Flushing snapshots cache.");
+		cache.flush();
 
 	}
 
@@ -43,9 +45,9 @@ public class SnapshotDAO {
 		if (cache != null) {
 			Element cacheElement = cache.get(url);
 			if (cacheElement != null) {
-				Snapshot snapshot = (Snapshot) cacheElement.getObjectValue();
-				log.info("Found snapshot in cache for url: " + url);
-				return snapshot;
+				String snapshotBody = (String) cacheElement.getObjectValue();
+				log.info("Found snapshot body in cache for url: " + url);
+				return new Snapshot(url, snapshotBody);
 			} else {
 				log.info("No cached snapshot found for url: " + url);
 			}
