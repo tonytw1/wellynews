@@ -10,14 +10,12 @@ import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.CommentFeedImpl;
 import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.model.DiscoveredFeedImpl;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
@@ -76,7 +74,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     }
     
     public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl) {
-        DiscoveredFeed discoveredFeed = new DiscoveredFeedImpl();
+        DiscoveredFeed discoveredFeed = new DiscoveredFeed();
         discoveredFeed.setUrl(discoveredUrl);
         discoveredFeed.setReferences(new HashSet<Resource>());
         return discoveredFeed;

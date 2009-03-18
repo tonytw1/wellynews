@@ -390,7 +390,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 	public int getCommentCount() {
         // TODO implement show broken logic.
         return ((Long) sessionFactory.getCurrentSession().
-                iterate("select count(*) from CommentImpl").
+                iterate("select count(*) from Comment").
                 next()).intValue();
     }
     
@@ -627,7 +627,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         // flush collection caches.  
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.newsitems");
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.watchlist");
-        sessionFactory.evictCollection("nz.co.searchwellington.model.DiscoveredFeedImpl.references");
+        sessionFactory.evictCollection("nz.co.searchwellington.model.DiscoveredFeed.references");
     }
 
 

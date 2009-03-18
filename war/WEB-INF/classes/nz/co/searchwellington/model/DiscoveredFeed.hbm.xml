@@ -5,9 +5,7 @@
 
 <hibernate-mapping>
 
-	<class name="nz.co.searchwellington.model.DiscoveredFeedImpl"
-		proxy="nz.co.searchwellington.model.DiscoveredFeed" table="discovered_feeds"
-		>
+	<class name="nz.co.searchwellington.model.DiscoveredFeed" table="discovered_feeds" >
 		
 		
 		<cache usage="read-write" />

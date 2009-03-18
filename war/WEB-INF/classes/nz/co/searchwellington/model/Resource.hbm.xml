@@ -60,7 +60,7 @@
 		<set name="discoveredFeeds" table="discovered_urls_references" >
 				<cache usage="read-write" />
 				<key column="resource_id" />				
-				<many-to-many column="discovered_url_id" class="nz.co.searchwellington.model.DiscoveredFeedImpl" />
+				<many-to-many column="discovered_url_id" class="nz.co.searchwellington.model.DiscoveredFeed" />
 		</set>
 		
 

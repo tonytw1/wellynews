@@ -1,13 +1,25 @@
 package nz.co.searchwellington.model;
 
-public interface Comment {
-  
-    
-    public int getId();
-    public void setId(int id);
-    
-    public String getTitle();
+public class Comment {
 
-    public void setTitle(String title);
-
+    int id;
+    String title;
+   
+    public Comment() {
+    }
+    
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public String getTitle() {
+        return title;
+    }
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    
 }

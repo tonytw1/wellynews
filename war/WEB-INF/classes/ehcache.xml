@@ -59,7 +59,7 @@
 		overflowToDisk="false"
 		/>
 		
-	<cache name="nz.co.searchwellington.model.CommentImpl"
+	<cache name="nz.co.searchwellington.model.Comment"
 		maxElementsInMemory="500"
 		eternal="false"
 		timeToIdleSeconds="7200"
@@ -69,7 +69,7 @@
 		
 		
 		
-	<cache name="nz.co.searchwellington.model.DiscoveredFeedImpl"
+	<cache name="nz.co.searchwellington.model.DiscoveredFeed"
 		maxElementsInMemory="500"
 		eternal="false"
 		timeToIdleSeconds="7200"
@@ -78,7 +78,7 @@
 		/>		
 		
 			
-	<cache name="nz.co.searchwellington.model.DiscoveredFeedImpl.references"
+	<cache name="nz.co.searchwellington.model.DiscoveredFeed.references"
 		maxElementsInMemory="500"
 		eternal="true"
 		overflowToDisk="false"
@@ -119,7 +119,12 @@
 		
 			
 			
-
+			
+	<cache name="nz.co.searchwellington.model.WebsiteImpl.calendars"
+		maxElementsInMemory="500"
+		eternal="true"
+		overflowToDisk="false"
+		/>
 
 
 	<cache name="nz.co.searchwellington.model.WebsiteImpl.newsitems"
@@ -134,7 +139,17 @@
 		overflowToDisk="false"
 		/>
 		
+	<cache name="nz.co.searchwellington.model.WebsiteImpl.discoveredFeeds"
+		maxElementsInMemory="500"
+		eternal="true"
+		overflowToDisk="false"
+		/>	
 		
+	<cache name="nz.co.searchwellington.model.WebsiteImpl.watchlist"
+		maxElementsInMemory="500"
+		eternal="true"
+		overflowToDisk="false"
+		/>	
 		
 		
 		

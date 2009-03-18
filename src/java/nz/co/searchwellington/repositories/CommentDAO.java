@@ -53,7 +53,7 @@ public class CommentDAO {
 
    
     private Comment extractCommentFeedEntire(SyndEntry item) {
-        Comment comment = new CommentImpl();
+        Comment comment = new Comment();
         String title = item.getTitle();
         comment.setTitle(title);
                 

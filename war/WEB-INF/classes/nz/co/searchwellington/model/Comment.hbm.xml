@@ -5,13 +5,9 @@
 
 <hibernate-mapping>
 
-    <class  name="nz.co.searchwellington.model.CommentImpl" 
-    		proxy="nz.co.searchwellington.model.Comment"
-    		table="comment">
+    <class  name="nz.co.searchwellington.model.Comment" table="comment">
 
-
-		<cache usage="read-write" region="nz.co.searchwellington.model.CommentImpl" />
-
+		<cache usage="read-write" region="nz.co.searchwellington.model.Comment" />
 
         <id name="id" type="integer" unsaved-value="0" >
             <column name="id" sql-type="integer" not-null="true"/>
@@ -24,6 +20,5 @@
         
       
     </class>
-
 
 </hibernate-mapping>

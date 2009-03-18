@@ -32,7 +32,7 @@
     		<cache usage="read-write" />
          <key column="comment_feed" not-null="true" />
          <list-index base="0" column="comment_order" />
-         <one-to-many class="nz.co.searchwellington.model.CommentImpl" />
+         <one-to-many class="nz.co.searchwellington.model.Comment" />
       </list>
       		
     </class>

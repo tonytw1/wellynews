@@ -2,15 +2,58 @@ package nz.co.searchwellington.model;
 
 import java.util.Set;
 
-public interface DiscoveredFeed {
+public class DiscoveredFeed {
+    
+    int id;
+    String url;
+    Set<Resource> references;
+    
+    
+    public DiscoveredFeed() {       
+    }
+    
+    
+    
+    
+    public int getId() {
+        return id;
+    }
 
-    public int getId();
-    public void setId(int id);
-
-    public String getUrl();
-    public void setUrl(String url);
-    public Set<Resource> getReferences();
-    public void setReferences(Set<Resource> references);
 
 
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+
+
+
+    public Set<Resource> getReferences() {
+        return references;
+    }
+
+
+
+
+    public void setReferences(Set<Resource> references) {
+        this.references = references;
+    }
+    
+    
+    
+    
+    
+    
+    
+
+    
 }
