@@ -19,7 +19,7 @@ public class PlaceAutoTaggerTest extends TestCase {
     private Tag aroValleyTag;
     
     ResourceRepository resourceDAO;
-    AutoTaggingService autoTaggingService;
+    ImpliedTagService autoTaggingService;
     Newsitem aroValleyNewsitem;
     
     @Override
@@ -37,7 +37,7 @@ public class PlaceAutoTaggerTest extends TestCase {
     public void testShouldTagNewsitemsWithPlaceTags() throws Exception {     
         aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the Aro Valley... Test", null, null, new HashSet<Tag>(), null);       
         
-        AutoTaggingService autoTaggingService = createMock(AutoTaggingService.class);
+        ImpliedTagService autoTaggingService = createMock(ImpliedTagService.class);
         expect(autoTaggingService.alreadyHasTag(aroValleyNewsitem, aroValleyTag)).andReturn(false);
         replay(autoTaggingService);
               
@@ -51,7 +51,7 @@ public class PlaceAutoTaggerTest extends TestCase {
     public void testPlaceAutoTaggingShouldBeCaseInsensitive() throws Exception {                
         Newsitem aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the aro valley... Test", null, null, new HashSet<Tag>(), null);
         
-        AutoTaggingService autoTaggingService = createMock(AutoTaggingService.class);
+        ImpliedTagService autoTaggingService = createMock(ImpliedTagService.class);
         expect(autoTaggingService.alreadyHasTag(aroValleyNewsitem, aroValleyTag)).andReturn(false);
         replay(autoTaggingService);
        

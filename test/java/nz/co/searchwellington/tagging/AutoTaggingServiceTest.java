@@ -25,7 +25,7 @@ public class AutoTaggingServiceTest extends TestCase {
         newsitem.setTags(new HashSet<Tag>());
         newsitem.setPublisher(publisher);
                 
-        AutoTaggingService service = new AutoTaggingService();
+        ImpliedTagService service = new ImpliedTagService();
         service.applyTag(newsitem, publishersTag);    
         assertFalse(newsitem.getTags().contains(publishersTag)); 
         

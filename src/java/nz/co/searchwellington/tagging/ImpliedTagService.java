@@ -4,9 +4,12 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 
-public class AutoTaggingService {
+public class ImpliedTagService {
 
-    public void applyTag(Resource resource, Tag tag) {                
+    private PlaceAutoTagger placeAutoTagger;
+
+    @Deprecated
+	public void applyTag(Resource resource, Tag tag) {                
         boolean resourceAlreadyHasTag = alreadyHasTag(resource, tag);
         if (!resourceAlreadyHasTag) {
             resource.addTag(tag);
@@ -18,9 +21,6 @@ public class AutoTaggingService {
         boolean resourceAlreadyHasTag = resource.getTags().contains(tag) || isNewsitemWithPublisherTag;
         return resourceAlreadyHasTag;
     }
-    
-    
-    
-    
 
+    
 }

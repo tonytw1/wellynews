@@ -130,7 +130,7 @@
 	<constructor-arg ref="resourceDAO" />
 	<constructor-arg ref="feedDAO" />
 	<constructor-arg ref="linkCheckerQueue" />
-	<constructor-arg ref="placeAutoTagger" />
+	<constructor-arg ref="autoTaggingService" />
 	<constructor-arg ref="notifier" />
 	<constructor-arg value="${feedreader.email}" />
 	<constructor-arg ref="feedAcceptanceDecider" />
@@ -335,14 +335,16 @@
 		<constructor-arg ref="velocityEngine" />
 	</bean>
 	
-	<bean id="autoTagService" class="nz.co.searchwellington.tagging.AutoTaggingService" />
+	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService" />
 	
 	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
- 		<constructor-arg ref="resourceDAO" />
- 		<constructor-arg ref="autoTagService" />
+ 		<constructor-arg ref="resourceDAO" /> 		
 	</bean>
 
-
+	<bean id="autoTaggingService" class="nz.co.searchwellington.tagging.AutoTaggingService"> 
+		<constructor-arg ref="impliedTagService" />
+ 		<constructor-arg ref="placeAutoTagger" />
+	</bean>
 	
 	<import resource="rssfeeds.xml" />
 	

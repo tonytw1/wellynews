@@ -13,6 +13,8 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.tagging.AutoTaggingService;
+import nz.co.searchwellington.tagging.ImpliedTagService;
 import nz.co.searchwellington.tagging.PlaceAutoTagger;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -33,7 +35,7 @@ public class FeedReader {
     private ResourceRepository resourceDAO;
     private FeedRepository feedDAO;
     private LinkCheckerQueue linkCheckerQueue;
-    private PlaceAutoTagger placeAutoTagger;   
+    private AutoTaggingService autoTagger;   
     private Notifier notifier;
     private String notificationReciept;
     private FeedAcceptanceDecider feedAcceptanceDecider;
@@ -46,11 +48,11 @@ public class FeedReader {
     
     
     
-    public FeedReader(ResourceRepository resourceDAO, FeedRepository feedDAO, LinkCheckerQueue linkCheckerQueue, PlaceAutoTagger placeAutoTagger, Notifier notifier, String notificationReciept, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner) {
+    public FeedReader(ResourceRepository resourceDAO, FeedRepository feedDAO, LinkCheckerQueue linkCheckerQueue, AutoTaggingService autoTagger, Notifier notifier, String notificationReciept, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner) {
         this.resourceDAO = resourceDAO;
         this.feedDAO = feedDAO;
         this.linkCheckerQueue = linkCheckerQueue;
-        this.placeAutoTagger = placeAutoTagger;        
+        this.autoTagger = autoTagger;
         this.notifier = notifier;
         this.notificationReciept = notificationReciept;
         this.feedAcceptanceDecider = feedAcceptanceDecider;      
@@ -132,11 +134,11 @@ public class FeedReader {
 
 
 
-    private void tagAcceptedFeedItem(Resource resource, Set<Tag> feedTags) {
-        placeAutoTagger.tag(resource);
+    private void tagAcceptedFeedItem(Resource resource, Set<Tag> feedTags) {       
         for (Tag tag : feedTags) {
             resource.addTag(tag);
         }
+        autoTagger.autotag(resource);
     }
     
     

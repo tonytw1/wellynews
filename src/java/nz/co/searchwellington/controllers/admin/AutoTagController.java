@@ -16,7 +16,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.tagging.AutoTaggingService;
+import nz.co.searchwellington.tagging.ImpliedTagService;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.queryParser.ParseException;
@@ -28,12 +28,12 @@ public class AutoTagController extends BaseMultiActionController {
     Logger log = Logger.getLogger(AutoTagController.class);
     
     private RequestFilter requestFilter;
-    private AutoTaggingService autoTagService;
+    private ImpliedTagService autoTagService;
 
 
           
   
-	public AutoTagController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, AutoTaggingService autoTagService) {      
+	public AutoTagController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, ImpliedTagService autoTagService) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;
         this.itemMaker = itemMaker;
