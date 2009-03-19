@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.admin;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -142,6 +141,8 @@ public class TagEditController extends MultiActionController {
         editTag.setDisplayName(request.getParameter("displayName"));
         
         editTag.setRelatedTwitter(request.getParameter("twitter"));
+        editTag.setAutotagHints(request.getParameter("autotag_hints"));
+        
         
         Feed relatedFeed = null;      
         if (request.getAttribute("feedAttribute") != null) {

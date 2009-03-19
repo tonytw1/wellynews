@@ -43,6 +43,10 @@
 	
 		<p><label for="twitter">Related Twitter: </label>
 		<input name="twitter" value="$tag.relatedTwitter" /></p>
+		
+			<p><label for="autotag_hints">Autotag hints: </label>
+		<input name="autotag_hints" value="$tag.autotagHints" /></p>
+		
 			
 		<p><label for="main_image">Main Image: </label>
 		<input name="main_image" 

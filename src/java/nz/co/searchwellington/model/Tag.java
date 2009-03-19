@@ -17,6 +17,7 @@ public class Tag {
    
     Feed relatedFeed;
     String relatedTwitter;
+    private String autotagHints;
         
     public Tag() {        
     }
@@ -131,6 +132,16 @@ public class Tag {
 
 	public void setRelatedTwitter(String relatedTwitter) {
 		this.relatedTwitter = relatedTwitter;
+	}
+
+
+	public void setAutotagHints(String autotagHints) {
+		this.autotagHints = autotagHints;
+	}
+
+
+	public String getAutotagHints() {
+		return autotagHints;
 	}
         
 }

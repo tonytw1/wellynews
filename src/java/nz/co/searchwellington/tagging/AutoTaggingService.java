@@ -14,16 +14,19 @@ public class AutoTaggingService {
 
 	private ImpliedTagService impliedTagService;
 	private PlaceAutoTagger placeAutoTagger;
+	private TagHintAutoTagger tagHintAutoTagger;
 	
 	
-	public AutoTaggingService(ImpliedTagService impliedTagService, PlaceAutoTagger placeAutoTagger) {
+	public AutoTaggingService(ImpliedTagService impliedTagService, PlaceAutoTagger placeAutoTagger, TagHintAutoTagger tagHintAutoTagger) {
 		this.impliedTagService = impliedTagService;
 		this.placeAutoTagger = placeAutoTagger;
+		this.tagHintAutoTagger = tagHintAutoTagger;
 	}
 
 	
 	public void autotag(Resource resource) {
 		Set<Tag> suggestedTags = placeAutoTagger.suggestTags(resource);
+		suggestedTags.addAll(tagHintAutoTagger.suggestTags(resource));
 		for (Tag tag : suggestedTags) {
 			if (!impliedTagService.alreadyHasTag(resource, tag)) {
 				resource.addTag(tag);

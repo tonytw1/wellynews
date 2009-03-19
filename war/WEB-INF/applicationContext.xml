@@ -340,10 +340,15 @@
 	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
  		<constructor-arg ref="resourceDAO" /> 		
 	</bean>
+	
+	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">   
+ 		<constructor-arg ref="resourceDAO" /> 		
+	</bean>
 
 	<bean id="autoTaggingService" class="nz.co.searchwellington.tagging.AutoTaggingService"> 
 		<constructor-arg ref="impliedTagService" />
  		<constructor-arg ref="placeAutoTagger" />
+ 		<constructor-arg ref="tagHintAutoTagger" />
 	</bean>
 	
 	<import resource="rssfeeds.xml" />
