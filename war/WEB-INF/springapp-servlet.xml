@@ -406,7 +406,7 @@
 		<constructor-arg ref="publisherSelectFactory" />
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="notifier" />
-		<constructor-arg ref="placeAutoTagger" />
+		<constructor-arg ref="autoTaggingService" />
 		<constructor-arg ref="acceptanceWidgetFactory" />
 		<constructor-arg ref="geocodingService" />
 		<constructor-arg ref="urlCleaner" />

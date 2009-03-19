@@ -28,6 +28,7 @@ import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
+import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.tagging.PlaceAutoTagger;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -58,7 +59,7 @@ public class ResourceEditController extends BaseTagEditingController {
     private PublisherSelectFactory publisherSelectFactory;
     private SupressionRepository supressionDAO;
     private Notifier notifier;
-    private PlaceAutoTagger autoTagger;
+    private AutoTaggingService autoTagger;
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
     private GoogleGeoCodeService geocodeService;
     private UrlCleaner urlCleaner;
@@ -68,7 +69,7 @@ public class ResourceEditController extends BaseTagEditingController {
     public ResourceEditController(ResourceRepository resourceDAO, FeedRepository feedDAO, RequestFilter requestFilter, 
             ItemMaker itemMaker, LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
-            Notifier notifier, PlaceAutoTagger autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
+            Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner) {
         this.resourceDAO = resourceDAO;
         this.feedDAO = feedDAO;        
@@ -393,7 +394,7 @@ public class ResourceEditController extends BaseTagEditingController {
             // Apply the auto tagger if this submission is by a logged in user.
             if (newSubmission && loggedInUser != null) {
                 log.info("Applying the auto tagged to new submission.");
-                autoTagger.tag(editResource);
+                autoTagger.autotag(editResource);
             }
             
                         

@@ -17,7 +17,7 @@ public class PlaceAutoTagger {
         
     private ResourceRepository resourceDAO;
     
-    public PlaceAutoTagger(ResourceRepository resourceDAO, ImpliedTagService autoTaggingService) {
+    public PlaceAutoTagger(ResourceRepository resourceDAO) {
         this.resourceDAO = resourceDAO;       
     }
     
