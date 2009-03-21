@@ -11,6 +11,7 @@
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="twitterService" />
 			
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

@@ -15,6 +15,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.statistics.StatsTracking;
+import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -31,8 +32,9 @@ public class SimplePageController extends BaseMultiActionController {
     private SiteInformation siteInformation;
     private RequestFilter requestFilter;
     private RssUrlBuilder rssUrlBuilder;
+	private TwitterService twitterService;
     
-    public SimplePageController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder) {       
+    public SimplePageController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService) {
         this.resourceDAO = resourceDAO;
         this.itemMaker = itemMaker;
         this.urlStack = urlStack;
@@ -40,6 +42,7 @@ public class SimplePageController extends BaseMultiActionController {
         this.siteInformation = siteInformation;
         this.requestFilter = requestFilter;
         this.rssUrlBuilder = rssUrlBuilder;
+        this.twitterService = twitterService;
     }
     
        
@@ -289,6 +292,11 @@ public class SimplePageController extends BaseMultiActionController {
         populateLatestTwitters(mv, loggedInUser);
         
         populateSecondaryLatestNewsitems(mv, loggedInUser);
+        
+        if(loggedInUser != null) {        	       	        	
+        	mv.addObject("twitterReplies", twitterService.getReplies());        	
+        }
+        	
         
         mv.setViewName("twitter");
         return mv;

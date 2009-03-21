@@ -1,0 +1,13 @@
+<h2>Twitter Replies</h2>
+
+<ul>
+#foreach($reply in $twitterReplies)
+		<li>
+		<ul>
+		<li>$reply.getText()</li>
+			<li>$reply.getCreatedAt()</li>
+			<li><a href="http://twitter.com/$reply.getUser().getScreenName()">$reply.getUser().getScreenName()</a></li>
+		</ul>
+		</li>
+#end
+</ul>

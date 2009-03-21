@@ -62,6 +62,12 @@ Twitter badge code provided by <a href="http://chrisjf.blogspot.com/2007/03/chri
 </div>
 
 
+#if ($twitterReplies) 
+<div class="box">
+#parse("includes/twitter_replies.vm")
+</div>
+#end
+
 <div class="box">
 #parse("includes/latest_newsitems.vm")
 
