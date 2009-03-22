@@ -58,6 +58,10 @@
         <property name="flickrCount" type="integer">
             <column name="flickr_count" not-null="true"/>
         </property>
+        
+        <property name="autotagHints">
+			<column name="autotag_hints" length="255" not-null="false" />
+		</property>
                 
 	</class>
 
