@@ -5,7 +5,6 @@ import java.util.Calendar;
 import java.util.HashSet;
 
 import nz.co.searchwellington.model.CalendarFeed;
-import nz.co.searchwellington.model.CalendarFeedImpl;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
@@ -68,7 +67,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     
     
     public CalendarFeed createNewCalendarFeed(String url) {
-        CalendarFeed calendar = new CalendarFeedImpl(0, url, "", "", new HashSet<Tag>());
+        CalendarFeed calendar = new CalendarFeed(0, url, "", "", new HashSet<Tag>());
         return calendar;
     }
     

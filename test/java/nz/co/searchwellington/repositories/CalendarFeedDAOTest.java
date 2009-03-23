@@ -9,8 +9,6 @@ import junit.framework.TestCase;
 import net.fortuna.ical4j.model.Calendar;
 import nz.co.searchwellington.feeds.calendars.CalendarCache;
 import nz.co.searchwellington.model.CalendarFeed;
-import nz.co.searchwellington.model.CalendarFeedImpl;
-import nz.co.searchwellington.repositories.CalendarFeedDAO;
 
 
 public class CalendarFeedDAOTest extends TestCase {
@@ -23,7 +21,7 @@ public class CalendarFeedDAOTest extends TestCase {
     protected void setUp() throws Exception {    
         calendarCache = mock(CalendarCache.class);
         calendarDAO = new CalendarFeedDAO(calendarCache);    
-        calendarFeed = new CalendarFeedImpl();
+        calendarFeed = new CalendarFeed();
         calendarFeed.setUrl("http://testdata/ical.ics");
     }
         

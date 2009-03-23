@@ -9,11 +9,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import net.fortuna.ical4j.model.Calendar;
-import nz.co.searchwellington.feeds.calendars.CalendarCache;
-import nz.co.searchwellington.feeds.calendars.CalendarHttpFetcher;
-import nz.co.searchwellington.feeds.calendars.CalendarPrecachingFetcher;
 import nz.co.searchwellington.model.CalendarFeed;
-import nz.co.searchwellington.model.CalendarFeedImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
@@ -31,10 +27,10 @@ public class CalendarPrecachingFetcherTest extends TestCase {
         fetcher = new CalendarPrecachingFetcher(resourceDAO, calendarFetcher, calendarCache);
         
         calendarFeeds = new ArrayList<Resource>();
-        CalendarFeed firstCalendarFeed = new CalendarFeedImpl();
-        firstCalendarFeed.setUrl("http://test/1");        
-        CalendarFeed secondCalendarFeed = new CalendarFeedImpl();
-        secondCalendarFeed.setUrl("http://test/2");        
+        CalendarFeed firstCalendarFeed = new CalendarFeed();
+        firstCalendarFeed.setUrl("http://test/1"); 
+        CalendarFeed secondCalendarFeed = new CalendarFeed();
+        secondCalendarFeed.setUrl("http://test/2");
         calendarFeeds.add(firstCalendarFeed);
         calendarFeeds.add(secondCalendarFeed);
         

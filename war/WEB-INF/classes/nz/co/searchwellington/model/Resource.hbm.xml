@@ -112,7 +112,7 @@
 				
 				<key column="calendar_publisher" />
 				<one-to-many
-					class="nz.co.searchwellington.model.CalendarFeedImpl" />
+					class="nz.co.searchwellington.model.CalendarFeed" />
 			</set>
 	
 
@@ -155,7 +155,7 @@
 
 
 
-		<subclass name="nz.co.searchwellington.model.CalendarFeedImpl"
+		<subclass name="nz.co.searchwellington.model.CalendarFeed"
 			proxy="nz.co.searchwellington.model.CalendarFeed"
 			discriminator-value="C">
 
