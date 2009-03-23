@@ -135,8 +135,8 @@
 			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="publisher"
 				cascade="" />
 
-			<many-to-one name="commentFeed" class="nz.co.searchwellington.model.CommentFeedImpl" column="comment_feed"
-					cascade="" />
+			<many-to-one name="commentFeed" class="nz.co.searchwellington.model.CommentFeed" 
+				column="comment_feed" cascade="" />
 		    
 	       	<property name="twitterSubmitter" type="string">
         		<column name="twitter_submitter"/>

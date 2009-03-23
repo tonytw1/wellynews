@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
-import nz.co.searchwellington.model.CommentFeedImpl;
 import nz.co.searchwellington.repositories.CommentDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 public class CommentFeedReaderTest extends TestCase {
@@ -18,7 +17,7 @@ public class CommentFeedReaderTest extends TestCase {
         ResourceRepository resourceDAO = mock(ResourceRepository.class);
         CommentDAO commentDAO = mock(CommentDAO.class);
         
-        CommentFeed commentFeed = new CommentFeedImpl();        
+        CommentFeed commentFeed = new CommentFeed();        
         commentFeed.setComments(new ArrayList<Comment>());
                 
         CommentFeedReader commentFeedReader = new CommentFeedReader(resourceDAO, commentDAO);

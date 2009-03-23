@@ -46,14 +46,14 @@
 		overflowToDisk="false"
 		/>		
 			    
-	<cache name="nz.co.searchwellington.model.CommentFeedImpl"
+	<cache name="nz.co.searchwellington.model.CommentFeed"
 		maxElementsInMemory="200"
 		eternal="true"
 		overflowToDisk="false"
 		/>
 		
 		
-	<cache name="nz.co.searchwellington.model.CommentFeedImpl.comments"
+	<cache name="nz.co.searchwellington.model.CommentFeed.comments"
 		maxElementsInMemory="200"
 		eternal="true"
 		overflowToDisk="false"

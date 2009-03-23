@@ -8,7 +8,6 @@ import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CalendarFeedImpl;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
-import nz.co.searchwellington.model.CommentFeedImpl;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedImpl;
@@ -63,7 +62,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     
     
     public CommentFeed createNewCommentFeed(String commentFeedUrl) {
-        CommentFeed commentFeed = new CommentFeedImpl(0, commentFeedUrl, new ArrayList<Comment>(), null, null, new HashSet<Resource>());     
+        CommentFeed commentFeed = new CommentFeed(0, commentFeedUrl, new ArrayList<Comment>(), null, null, new HashSet<Resource>());
         return commentFeed;
     }
     

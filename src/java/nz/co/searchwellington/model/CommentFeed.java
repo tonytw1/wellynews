@@ -1,23 +1,77 @@
+
 package nz.co.searchwellington.model;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
-public interface CommentFeed {
+
+// TODO CommentFeeds should subclass Feeds
+public class CommentFeed {
     
-    public int getId();
-    public void setId(int id);
+    int id;
+    String url;
+    List<Comment> comments;
+    Newsitem newsitem;
+    Date lastRead;
+   
+    
+    public CommentFeed() {
+    }
+    
+    public CommentFeed(int id, String url, List<Comment> comments, Newsitem newsitem, Date lastRead, Set<Resource> references) {		
+		this.id = id;
+		this.url = url;
+		this.comments = comments;
+		this.newsitem = newsitem;
+		this.lastRead = lastRead;		
+	}
 
-    public String getUrl();
 
-    public void setUrl(String url);
 
-    public List<Comment> getComments();
 
-    public void setComments(List<Comment> comments);
-  
-    public Date getLastRead();
 
-    public void setLastRead(Date lastRead);
-  
+	public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
+
+    public Newsitem getNewsitem() {
+        return newsitem;
+    }
+
+
+    public void setNewsitem(Newsitem newsitem) {
+        this.newsitem = newsitem;
+    }
+
+
+	public Date getLastRead() {
+		return lastRead;
+	}
+
+
+	public void setLastRead(Date lastRead) {
+		this.lastRead = lastRead;
+	}
+	
 }

@@ -14,8 +14,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.tagging.AutoTaggingService;
-import nz.co.searchwellington.tagging.ImpliedTagService;
-import nz.co.searchwellington.tagging.PlaceAutoTagger;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 

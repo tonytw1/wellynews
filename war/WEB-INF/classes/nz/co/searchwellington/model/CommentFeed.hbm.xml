@@ -5,9 +5,7 @@
 
 <hibernate-mapping>
 
-    <class  name="nz.co.searchwellington.model.CommentFeedImpl" 
-    		proxy="nz.co.searchwellington.model.CommentFeed"
-    		table="comment_feed">
+    <class name="nz.co.searchwellington.model.CommentFeed" table="comment_feed">
 
 
 		<cache usage="read-write" region="nz.co.searchwellington.model.CommentFeedImpl" />
@@ -30,10 +28,11 @@
         
     	<list name="comments" cascade="all,all-delete-orphan">
     		<cache usage="read-write" />
-         <key column="comment_feed" not-null="true" />
-         <list-index base="0" column="comment_order" />
-         <one-to-many class="nz.co.searchwellington.model.Comment" />
-      </list>
+    	   	<key column="comment_feed" not-null="true" />
+         
+ 	       	<list-index base="0" column="comment_order" />
+         	<one-to-many class="nz.co.searchwellington.model.Comment" />
+	      </list>
       		
     </class>
 
