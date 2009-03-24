@@ -41,5 +41,10 @@ public class KeywordHighlightingWebsiteDecorator extends BaseKeywordHighlighting
     public void setCalendars(Set<CalendarFeed> calendars) {
         ((Website) resource).setCalendars(calendars);        
     }
+
+
+	public String getUrlWords() {
+		return null;
+	}
     
 }

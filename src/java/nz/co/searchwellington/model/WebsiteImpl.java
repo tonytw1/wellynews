@@ -90,4 +90,9 @@ public class WebsiteImpl extends ResourceImpl implements Website {
         this.calendars = calendars;
     }
     
+    public String getUrlWords() {
+		String urlWords = new String(getName());		
+		return urlWords.replaceAll(" ", "-").replaceAll("\\s", "").toLowerCase();
+	}
+    
 }

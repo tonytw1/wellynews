@@ -34,6 +34,18 @@ public class BrowseController extends BaseMultiActionController {
         this.rssUrlBuilder = rssUrlBuilder;
 	}
 
+	
+	public ModelAndView publisherNewsitems(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		 ModelAndView mv = new ModelAndView();		 
+		 User loggedInUser = populateLocalCommon(request, mv);           		   
+		 requestFilter.loadAttributesOntoRequest(request);
+		 if (request.getAttribute("publisher") != null) {
+			 Website publisher = (Website) request.getAttribute("publisher");
+			 populatePublisherNewsitems(mv, publisher, loggedInUser);             
+		 }
+		 mv.setViewName("browse");
+		 return mv;
+	}
     
     
     @SuppressWarnings("unchecked")

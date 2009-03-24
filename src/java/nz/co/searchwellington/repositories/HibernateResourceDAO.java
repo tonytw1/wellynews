@@ -95,6 +95,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     
+    @SuppressWarnings("unchecked")
+    final public List<Resource> getAllWebsites() {
+        return sessionFactory.getCurrentSession().createCriteria(Website.class).       
+        addOrder(Order.asc("name")). 
+        setCacheable(true).
+        list();
+    }
     
     
     
@@ -721,5 +728,24 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
                   list();
           return relatedTags;
     }
+
+
+	// TODO Performance! Put Urlwords into the model.
+	public Website getPublisherByUrlWords(String publisherUrlWords) {
+		List<Resource> publishers = getAllWebsites();
+		for (Resource publisher : publishers) {
+			String urlWords = ((Website) publisher).getUrlWords();
+			if (publisherUrlWords.equals(urlWords)) {
+				return (Website) publisher;				
+			}
+		}		
+		return null;
+	}
+	
+	
+	
+	
+	
+	
 	
 }

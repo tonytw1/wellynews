@@ -103,6 +103,7 @@
 					<props>														
 						<prop key="/archive/*/*">archive</prop>
 						<prop key="/browse">publisherContent</prop>
+						<prop key="/*/newsitems">publisherNewsitems</prop>
 					</props>
 				</property>
 			</bean>		
@@ -570,6 +571,7 @@
             	<prop key="/archive/**">browseController</prop>
             	
             	<prop key="/browse">browseController</prop>
+            	<prop key="/*/newsitems">browseController</prop>
             	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>

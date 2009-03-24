@@ -1,10 +1,10 @@
 package nz.co.searchwellington.filters;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import junit.framework.TestCase;
-import nz.co.searchwellington.model.NewsitemImpl;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -108,11 +108,20 @@ public class RequestFilterTest extends TestCase {
     
     
     
-    public void testShouldFindTagOnEditTagUrl() throws Exception {
-        
+    public void testShouldFindTagOnEditTagUrl() throws Exception {        
         RequestFilter filter = new RequestFilter(null);        
         List <String> tags = filter.getTagNamesFromPath("/edit/tag/waterwhirler");
         assertEquals(1, tags.size());
         assertTrue(tags.contains("waterwhirler")); 
     }
+    
+    
+    public void testShouldExtractNewsitemsPublisherUrlWordsFromPathInfo() {
+        RequestFilter filter = new RequestFilter(null);               
+        String pathInfo = "/wellingtoncitycouncil/newsitems";
+        assertEquals("wellingtoncitycouncil", filter.getPublisherUrlWordsFromPath(pathInfo));
+    }
+    
+    
+    
 }

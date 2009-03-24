@@ -16,5 +16,6 @@ public interface Website extends Resource {
 
     public void setCalendars(Set<CalendarFeed> calendars);
 
-    
+	public String getUrlWords();
+	
 }

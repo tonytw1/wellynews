@@ -5,12 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
@@ -131,6 +134,13 @@ public class RequestFilter {
             }
         }
         
+        final String publisherUrlWords = getPublisherUrlWordsFromPath(request.getPathInfo());
+        if (publisherUrlWords != null) {
+        	Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
+        	request.setAttribute("publisher", publisher);
+        }
+        
+        
         if (request.getParameter("feed") != null) {
             final int feedID = Integer.parseInt(request.getParameter("feed"));
             if (feedID > 0) {
@@ -234,6 +244,17 @@ public class RequestFilter {
             return "L";
         } else if (url.equals("/rss/justin")) {
             return "W";
+        }
+        return null;
+    }
+    
+    
+    
+    protected String getPublisherUrlWordsFromPath(String pathInfo) {       
+        Pattern pattern = Pattern.compile("^/(.*)/newsitems$");
+        Matcher matcher = pattern.matcher(pathInfo);
+        if (matcher.matches()) {
+        	return matcher.group(1);
         }
         return null;
     }

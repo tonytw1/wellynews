@@ -38,6 +38,11 @@ public class EditableWebsiteWrapper extends EditableResourceWrapper implements W
         // TODO Auto-generated method stub
         return null;
     }
+
+
+	public String getUrlWords() {
+		return null;
+	}
    
     
     

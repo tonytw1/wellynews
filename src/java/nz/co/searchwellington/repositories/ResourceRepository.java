@@ -127,4 +127,5 @@ public interface ResourceRepository {
 	public List<Resource> getAllValidGeocoded(int max_events_to_show_on_front, boolean showBroken);
     public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxNumber, boolean showBroken) throws IOException;
 	public List<Resource> getResourcesWithTag(Tag tag);
+	public Website getPublisherByUrlWords(String publisherUrlWords);
 }
