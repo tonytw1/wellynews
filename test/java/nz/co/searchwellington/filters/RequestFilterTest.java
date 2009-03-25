@@ -115,13 +115,18 @@ public class RequestFilterTest extends TestCase {
         assertTrue(tags.contains("waterwhirler")); 
     }
     
-    
     public void testShouldExtractNewsitemsPublisherUrlWordsFromPathInfo() {
         RequestFilter filter = new RequestFilter(null);               
         String pathInfo = "/wellingtoncitycouncil/newsitems";
         assertEquals("wellingtoncitycouncil", filter.getPublisherUrlWordsFromPath(pathInfo));
     }
+
     
     
+    public void testShouldExtractFeedsPublisherUrlWordsFromPathInfo() throws Exception {
+        RequestFilter filter = new RequestFilter(null);               
+        String pathInfo = "/wellingtoncitycouncil/feeds";
+        assertEquals("wellingtoncitycouncil", filter.getPublisherUrlWordsFromPath(pathInfo));
+    }
     
 }

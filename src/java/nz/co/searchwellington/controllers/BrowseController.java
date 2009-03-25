@@ -33,6 +33,47 @@ public class BrowseController extends BaseMultiActionController {
         this.configDAO = configDAO;     
         this.rssUrlBuilder = rssUrlBuilder;
 	}
+	
+	
+	public ModelAndView publisherCalendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		 ModelAndView mv = new ModelAndView();		 
+		 User loggedInUser = populateLocalCommon(request, mv);           		   
+		 requestFilter.loadAttributesOntoRequest(request);
+		 if (request.getAttribute("publisher") != null) {
+			 Website publisher = (Website) request.getAttribute("publisher");
+			 log.info("Calendar publisher is: " + publisher.getName());
+			 populatePublisherCalendars(mv, publisher, loggedInUser);             
+		 }
+		 mv.setViewName("browse");
+		 return mv;
+	}
+	
+	
+	public ModelAndView publisherFeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		 ModelAndView mv = new ModelAndView();		 
+		 User loggedInUser = populateLocalCommon(request, mv);           		   
+		 requestFilter.loadAttributesOntoRequest(request);
+		 if (request.getAttribute("publisher") != null) {
+			 Website publisher = (Website) request.getAttribute("publisher");
+			 populatePublisherFeeds(mv, publisher, loggedInUser);             
+		 }
+		 mv.setViewName("browse");
+		 return mv;
+	}
+	
+	
+	
+	public ModelAndView publisherWatchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		 ModelAndView mv = new ModelAndView();		 
+		 User loggedInUser = populateLocalCommon(request, mv);           		   
+		 requestFilter.loadAttributesOntoRequest(request);
+		 if (request.getAttribute("publisher") != null) {
+			 Website publisher = (Website) request.getAttribute("publisher");
+			 populatePublisherWatchlist(mv, publisher, loggedInUser);             
+		 }
+		 mv.setViewName("browse");
+		 return mv;
+	}
 
 	
 	public ModelAndView publisherNewsitems(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -149,6 +190,15 @@ public class BrowseController extends BaseMultiActionController {
             setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));            
             mv.getModel().put("publisher", publisher);
         }
+        populateSecondaryLatestNewsitems(mv, loggedInUser);
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    private void populatePublisherCalendars(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
+        mv.getModel().put("heading", publisher.getName() + " Calendars");
+        // TODO can't set edit urls on calendars?
+        mv.getModel().put("main_content", publisher.getCalendars());
         populateSecondaryLatestNewsitems(mv, loggedInUser);
     }
     

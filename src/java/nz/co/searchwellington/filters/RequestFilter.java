@@ -124,8 +124,7 @@ public class RequestFilter {
         
         
         
-        
-        
+        // TODO move to a spring controller binding and depricate the publisher id on get.
         if (request.getParameter("publisher") != null) {
             final int publisherID = Integer.parseInt(request.getParameter("publisher"));
             if (publisherID > 0) {
@@ -256,6 +255,35 @@ public class RequestFilter {
         if (matcher.matches()) {
         	return matcher.group(1);
         }
+        
+        
+        // TODO merge with the above.
+        Pattern patternE = Pattern.compile("^/(.*)/calendars$");
+        Matcher matcherE = patternE.matcher(pathInfo);
+        if (matcherE.matches()) {
+        	return matcherE.group(1);
+        }
+        
+        
+        // TODO merge with the above.
+        Pattern patternB = Pattern.compile("^/(.*)/feeds$");
+        Matcher matcherB = patternB.matcher(pathInfo);
+        if (matcherB.matches()) {
+        	return matcherB.group(1);
+        }
+        
+        Pattern patternC = Pattern.compile("^/(.*)/watchlist");
+        Matcher matcherC = patternC.matcher(pathInfo);
+        if (matcherC.matches()) {
+        	return matcherC.group(1);
+        }
+        
+        Pattern patternD = Pattern.compile("^/(.*)/newsitems/rss$");
+        Matcher matcherD = patternD.matcher(pathInfo);
+        if (matcherD.matches()) {
+        	return matcherD.group(1);
+        }
+        
         return null;
     }
     

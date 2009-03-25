@@ -50,7 +50,8 @@ public class RssController extends AbstractController {
 
         requestFilter.loadAttributesOntoRequest(request);
         
-        boolean isMainRssFeed = request.getPathInfo().equals("/rss") || request.getPathInfo().equals("/rss/");
+        boolean hasNoParameters = request.getParameterMap().size() == 0;
+        boolean isMainRssFeed = (request.getPathInfo().equals("/rss") || request.getPathInfo().equals("/rss/")) && hasNoParameters;
         final String userAgent = request.getHeader("User-Agent");
 		boolean clientIsFeedburner = userAgent != null && userAgent.startsWith("FeedBurner");
 		if (isMainRssFeed && !clientIsFeedburner) {

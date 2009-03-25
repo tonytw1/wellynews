@@ -103,7 +103,10 @@
 					<props>														
 						<prop key="/archive/*/*">archive</prop>
 						<prop key="/browse">publisherContent</prop>
+						<prop key="/*/calendars">publisherCalendars</prop>
+						<prop key="/*/feeds">publisherFeeds</prop>
 						<prop key="/*/newsitems">publisherNewsitems</prop>
+						<prop key="/*/watchlist">publisherWatchlist</prop>
 					</props>
 				</property>
 			</bean>		
@@ -571,7 +574,10 @@
             	<prop key="/archive/**">browseController</prop>
             	
             	<prop key="/browse">browseController</prop>
+            	<prop key="/*/calendars">browseController</prop>
+            	<prop key="/*/feeds">browseController</prop>
             	<prop key="/*/newsitems">browseController</prop>
+            	<prop key="/*/watchlist">browseController</prop>
             	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
@@ -580,6 +586,7 @@
             	
             	<prop key="/index">indexController</prop>
 				<prop key="/rss/**">rssController</prop>
+				<prop key="/*/newsitems/rss">rssController</prop>
 				<prop key="/feeds/**">rssfeedsController</prop>
 				<prop key="/search">searchController</prop>
 				

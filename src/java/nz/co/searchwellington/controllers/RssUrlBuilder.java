@@ -17,7 +17,7 @@ public class RssUrlBuilder {
     }
        
     public String getRssUrlForPublisher(Website publisher) {
-        return siteInformation.getUrl() + "/rss?publisher=" + publisher.getId();  
+        return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "/newsitems/rss";
     }
     
     public String getRssUrlForTag(Tag tag) {          
