@@ -1,6 +1,9 @@
 package nz.co.searchwellington.controllers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +16,7 @@ import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.views.RssView;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -20,6 +24,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class RssController extends AbstractController {
 
+    Logger log = Logger.getLogger(RssController.class);
+    	
 	// TODO move this to the config object.
     private static final int MAX_RSS_ITEMS = 30;
     private SiteInformation siteInformation;
@@ -42,11 +48,13 @@ public class RssController extends AbstractController {
     }
 
     
-    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    @SuppressWarnings("unchecked")
+	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String type = null;
         Website publisher = null;
         Tag tag = null;
+        List<Tag> tags = new ArrayList<Tag>();
 
         requestFilter.loadAttributesOntoRequest(request);
         
@@ -73,6 +81,12 @@ public class RssController extends AbstractController {
             tag = (Tag) request.getAttribute("tag");
         }
         
+        if (request.getAttribute("tags") != null) {
+        	tags = (List<Tag>) request.getAttribute("tags");
+        }
+        
+        log.info("Tag: " + tag);
+        log.info("Tags: " + tags);
 
         HashMap <String, Object> model = new HashMap <String, Object>();
         
@@ -101,6 +115,16 @@ public class RssController extends AbstractController {
             model.put("description", "Newsitems published by " + publisher.getName());
             model.put("main_content", resourceDAO.getPublisherNewsitems(publisher, MAX_RSS_ITEMS, false));
             
+        } else if (tags.size() == 2) {
+        	log.info("Building combiner rss feed");
+        	Tag firstTag = tags.get(0);
+			Tag secondTag = tags.get(1);
+			model.put("link", siteInformation.getUrl() + firstTag.getName() + "+" + secondTag.getName() + "/rss");
+        	model.put("title", rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag));
+        	// TODO descriptions
+        	model.put("description", "");
+        	model.put("main_content", resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), false, MAX_RSS_ITEMS));
+        	
         } else if (tag != null) {            
             model.put("title", rssUrlBuilder.getRssTitleForTag(tag));
             // TODO do we have a UrlBuilder to make these? - should have
@@ -109,6 +133,7 @@ public class RssController extends AbstractController {
             model.put("main_content", resourceDAO.getTaggedNewitems(tag, false, MAX_RSS_ITEMS)); 
         
         } else {
+        	log.info("Building full site rss feed");
             model.put("title", "Search " + siteInformation.getAreaname() + " - " + siteInformation.getAreaname() + " Newslog");
             model.put("link", siteInformation.getUrl());
             model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");

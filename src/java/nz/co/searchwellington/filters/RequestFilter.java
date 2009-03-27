@@ -194,6 +194,9 @@ public class RequestFilter {
    
     protected List<String> getTagNamesFromPath(String path) {
 
+    	// TODO needs to support /soccer+newtown/rss";
+    	
+    	
         List<String> tagNames = new ArrayList<String>();
         String[] fields = path.split("/");
 

@@ -587,6 +587,9 @@
             	<prop key="/index">indexController</prop>
 				<prop key="/rss/**">rssController</prop>
 				<prop key="/*/newsitems/rss">rssController</prop>
+				<prop key="/tag/*+*/rss">rssController</prop>
+				<prop key="/tag/*%2B*/rss">rssController</prop>
+				
 				<prop key="/feeds/**">rssfeedsController</prop>
 				<prop key="/search">searchController</prop>
 				

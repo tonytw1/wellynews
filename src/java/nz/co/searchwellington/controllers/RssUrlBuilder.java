@@ -55,5 +55,13 @@ public class RssUrlBuilder {
     public String getRssTitleForWatchlist() {
         return siteInformation.getSitename() + " - News watchlist";
     }
+
+	public String getRssTitleForTagCombiner(Tag tag, Tag tag2) {
+		return siteInformation.getSitename() + " - " + tag.getDisplayName() + " + " + tag2.getDisplayName();
+	}
+
+	public String getRssUrlForTagCombiner(Tag tag, Tag tag2) {
+		return siteInformation.getUrl() + "/tag/" + tag.getName() + "+" + tag2.getName() + "/rss";
+	}
     
 }

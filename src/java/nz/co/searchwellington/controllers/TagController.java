@@ -284,6 +284,10 @@ public class TagController extends BaseMultiActionController {
             final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  
             final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);
        
+            if (taggedNewsitems.size() > 0) {
+            	 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
+            }
+            
             // TODO can you have commented newsitems on a combiner page?
             final boolean showMainAndSecondaryContent = populateMainAndSecondaryContent(mv, loggedInUser, firstTag, taggedWebsites, taggedWebsites.size(), taggedNewsitems, tagsTitle, null);
             
