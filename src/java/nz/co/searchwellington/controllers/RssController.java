@@ -119,7 +119,7 @@ public class RssController extends AbstractController {
         	log.info("Building combiner rss feed");
         	Tag firstTag = tags.get(0);
 			Tag secondTag = tags.get(1);
-			model.put("link", siteInformation.getUrl() + firstTag.getName() + "+" + secondTag.getName() + "/rss");
+			model.put("link", siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName() + "/rss");
         	model.put("title", rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag));
         	// TODO descriptions
         	model.put("description", "");
