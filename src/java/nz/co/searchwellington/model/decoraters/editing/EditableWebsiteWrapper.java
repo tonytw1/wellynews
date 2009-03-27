@@ -41,7 +41,7 @@ public class EditableWebsiteWrapper extends EditableResourceWrapper implements W
 
 
 	public String getUrlWords() {
-		return null;
+		return resource.getUrlWords();
 	}
    
     
