@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.feeds.rss.RssPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.mail.Notifier;
@@ -63,6 +64,7 @@ public class ResourceEditController extends BaseTagEditingController {
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
     private GoogleGeoCodeService geocodeService;
     private UrlCleaner urlCleaner;
+    private RssPrefetcher rssPrefetcher;
 
     
       
@@ -70,7 +72,7 @@ public class ResourceEditController extends BaseTagEditingController {
             ItemMaker itemMaker, LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssPrefetcher rssPrefetcher) {
         this.resourceDAO = resourceDAO;
         this.feedDAO = feedDAO;        
         this.requestFilter = requestFilter;
@@ -84,6 +86,7 @@ public class ResourceEditController extends BaseTagEditingController {
         this.acceptanceWidgetFactory = acceptanceWidgetFactory;
         this.geocodeService = geocodeService;
         this.urlCleaner = urlCleaner;
+        this.rssPrefetcher = rssPrefetcher;
     }
    
     
@@ -242,7 +245,7 @@ public class ResourceEditController extends BaseTagEditingController {
         
         ModelAndView modelAndView = new ModelAndView("submitFeed");
         modelAndView.addObject("heading", "Submitting a Feed");
-        Resource editResource = resourceDAO.createNewWebsite();
+        Resource editResource = resourceDAO.createNewFeed();
         modelAndView.addObject("resource", editResource);
         modelAndView.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect(null));
         
@@ -383,14 +386,13 @@ public class ResourceEditController extends BaseTagEditingController {
             if (isPublishedResource) {
                 ((PublishedResource) editResource).setPublisher((Website) request.getAttribute("publisher"));           
             }
-           
-            // Feed acceptance
+            
             if (editResource.getType().equals("F")) {              
                 ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
                 log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
+                rssPrefetcher.decacheAndLoad(editResource.getUrl());
             }
-            
-            
+                        
             // Apply the auto tagger if this submission is by a logged in user.
             if (newSubmission && loggedInUser != null) {
                 log.info("Applying the auto tagged to new submission.");

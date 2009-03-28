@@ -416,6 +416,7 @@
 		<constructor-arg ref="acceptanceWidgetFactory" />
 		<constructor-arg ref="geocodingService" />
 		<constructor-arg ref="urlCleaner" />
+		<constructor-arg ref="rssPrefetcher" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
