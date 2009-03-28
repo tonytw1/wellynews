@@ -31,15 +31,25 @@ public class RssPrefetcher {
 		for (Feed feed : feedsToLoad) {
 			if (feed != null) {
 				final String feedUrl = feed.getUrl();
-				if (feedUrl != null) {
-					SyndFeed loadedFeed = rssHttpFetcher.httpFetch(feedUrl);
-					if (loadedFeed != null) {
-						rssCache.putFeedIntoCache(feedUrl, loadedFeed);
-					}
-				}
+				loadAndCacheFeed(feedUrl);
 			}
 		}
 	}
 
+	public void decacheAndLoad(String feedUrl) {
+		rssCache.decache(feedUrl);
+		loadAndCacheFeed(feedUrl);		
+	}
+	
+	private void loadAndCacheFeed(String feedUrl) {
+		if (feedUrl != null) {
+			SyndFeed loadedFeed = rssHttpFetcher.httpFetch(feedUrl);
+			if (loadedFeed != null) {
+				rssCache.putFeedIntoCache(feedUrl, loadedFeed);
+			}
+		}
+	}
+
+	
 	
 }

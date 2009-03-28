@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.feeds.FeedReader;
+import nz.co.searchwellington.feeds.rss.RssPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
@@ -37,11 +38,10 @@ public class ViewfeedController extends BaseMultiActionController {
     private FeedRepository feedDAO;
     private SupressionRepository supressionDAO;
     private FeedReader feedReader;
+	private RssPrefetcher rssPrefetcher;
     
     
-    
-    
-    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter, FeedRepository feedDAO, ItemMaker itemMaker, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader) {
+    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter, FeedRepository feedDAO, ItemMaker itemMaker, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.feedDAO = feedDAO;
@@ -49,10 +49,10 @@ public class ViewfeedController extends BaseMultiActionController {
         this.urlStack = urlStack;
         this.supressionDAO = supressionDAO;
         this.configDAO = configDAO;        
-        this.feedReader = feedReader;      
+        this.feedReader = feedReader;
+        this.rssPrefetcher = rssPrefetcher;
     }
 
-    
     
     @SuppressWarnings("unchecked")
     @Transactional
@@ -63,11 +63,16 @@ public class ViewfeedController extends BaseMultiActionController {
         if (request.getAttribute("feedAttribute") != null) {
             feed = (Feed) request.getAttribute("feedAttribute");
             log.info("Decaching feed: " + feed.getName());
-            feedDAO.decacheFeed(feed);
+            decacheFeed(feed);
         } else {
             log.info("No feed seen on request; nothing to decache.");            
         }
         return viewfeed(request, response);        
+    }
+    
+    
+    private void decacheFeed(Feed feed) {
+    	rssPrefetcher.decacheAndLoad(feed.getUrl());
     }
     
     
@@ -76,15 +81,13 @@ public class ViewfeedController extends BaseMultiActionController {
         Feed feed = null;
         if (request.getAttribute("feedAttribute") != null) {
             feed = (Feed) request.getAttribute("feedAttribute");
-            log.info("Decaching and reading feed: " + feed.getName());
-            feedDAO.decacheFeed(feed);           
+            log.info("Reading feed: " + feed.getName());           
             feedReader.processFeed(feed);            
         } else {
             log.info("No feed seen on request; nothing to reread.");
         }        
         return viewfeed(request, response);    
     }
-     
     
     
     @SuppressWarnings("unchecked")

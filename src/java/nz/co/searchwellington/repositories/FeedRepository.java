@@ -13,7 +13,4 @@ public interface FeedRepository {
     public List <Resource> getFeedNewsitems(Feed feed) throws IllegalArgumentException, FeedException, IOException;
     public Date getLatestPublicationDate(Feed feed) throws IllegalArgumentException, IOException;
 
-    // TODO these are really CachingFedRepository methods?     
-    public void decacheFeed(Feed feed);
-    
 }

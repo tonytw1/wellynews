@@ -70,15 +70,6 @@ public class FeedDAO implements FeedRepository {
         return latestPublicationDate;
     }
 
-    // TODO reimplement
-    public void decacheFeed(Feed feed) {
-        if (feed != null) {            
-            //this.decacheSyndFeed(feed.getUrl());
-        }
-        
-    }
-    
-    
     
     private Resource extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
         String description = null;

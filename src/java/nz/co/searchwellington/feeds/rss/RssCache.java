@@ -47,4 +47,11 @@ public class RssCache {
 		}
 	}
 
+
+	public void decache(String feedUrl) {
+		Cache cache = manager.getCache(RSS_CACHE_NAME);
+		log.info("Decaching: " + feedUrl);
+		cache.remove(feedUrl);		
+	}
+
 }

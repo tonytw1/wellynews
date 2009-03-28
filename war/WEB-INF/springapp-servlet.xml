@@ -301,6 +301,7 @@
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="configDAO" />	
 		<constructor-arg ref="feedReader" />
+		<constructor-arg ref="rssPrefetcher" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
