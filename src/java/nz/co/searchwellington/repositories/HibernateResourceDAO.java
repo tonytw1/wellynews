@@ -635,6 +635,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.newsitems");
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.watchlist");
         sessionFactory.evictCollection("nz.co.searchwellington.model.DiscoveredFeed.references");
+        sessionFactory.getCurrentSession().flush();
     }
 
 
