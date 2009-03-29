@@ -48,14 +48,13 @@ public class TagEditController extends MultiActionController {
     @Transactional
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitTag");    
-        modelAndView.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
-        modelAndView.getModel().put("heading", "Submitting a Tag");
+        modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        modelAndView.addObject("heading", "Submitting a Tag");
 
         Tag editTag = resourceDAO.createNewTag();
 
-        modelAndView.getModel().put("tag", editTag);
-        modelAndView.getModel().put("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent(), new HashSet<Tag>()).toString());
-
+        modelAndView.addObject("tag", editTag);
+        modelAndView.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent(), new HashSet<Tag>()).toString());
         return modelAndView;
     }
     
@@ -84,15 +83,15 @@ public class TagEditController extends MultiActionController {
     @Transactional
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
         ModelAndView mv = new ModelAndView("deleteTag"); 
-        mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
-        mv.getModel().put("heading", "Editing a Tag");
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("heading", "Editing a Tag");
 
         Tag tag = null;
         requestFilter.loadAttributesOntoRequest(request);
            
         if (request.getAttribute("tag") != null) {
             tag = (Tag) request.getAttribute("tag");         
-            mv.getModel().put("tag", tag);
+            mv.addObject("tag", tag);
             
             List<Resource> taggedResources = resourceDAO.getResourcesWithTag(tag);
             log.info("Tag to be deleted has " + taggedResources.size() + " resources.");
@@ -109,17 +108,12 @@ public class TagEditController extends MultiActionController {
             resourceDAO.deleteTag(tag);
             
             urlStack.setUrlStack(request, "/index");
-        }
-                
-        // TODO should remove this tag from teh urlstack, as it doesn't exist anymore.
-               
+        }              
         return mv;
     }
     
     
 
-    
-    
     @Transactional(propagation=Propagation.REQUIRED)
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
         
@@ -140,10 +134,9 @@ public class TagEditController extends MultiActionController {
         editTag.setName(request.getParameter("name"));
         editTag.setDisplayName(request.getParameter("displayName"));
         
-        editTag.setRelatedTwitter(request.getParameter("twitter"));
+        populateRelatedTwitter(request, editTag);        
         editTag.setAutotagHints(request.getParameter("autotag_hints"));
-        
-        
+                
         Feed relatedFeed = null;      
         if (request.getAttribute("feedAttribute") != null) {
             relatedFeed = (Feed) request.getAttribute("feedAttribute");            
@@ -175,6 +168,16 @@ public class TagEditController extends MultiActionController {
         modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());    
         return modelAndView;
     }
+
+
+	private void populateRelatedTwitter(HttpServletRequest request, Tag editTag) {
+		final String requestTwitter = request.getParameter("twitter");
+        if (requestTwitter != null && !requestTwitter.trim().equals("")) {
+        	editTag.setRelatedTwitter(requestTwitter);        	
+        } else {
+        	editTag.setRelatedTwitter(null);
+        }
+	}
     
     
     private void readImageFieldFromRequest(Tag editTag, HttpServletRequest request) {
