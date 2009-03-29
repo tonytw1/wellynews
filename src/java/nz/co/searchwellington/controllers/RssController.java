@@ -20,9 +20,10 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.AbstractController;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class RssController extends AbstractController {
+public class RssController extends MultiActionController {
 
     Logger log = Logger.getLogger(RssController.class);
     	
@@ -38,8 +39,7 @@ public class RssController extends AbstractController {
     
     
     
-    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder) {
-        super();
+    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder) {     
         this.siteInformation = siteInformation;
         this.requestFilter = requestFilter;
         this.resourceDAO = resourceDAO;
@@ -49,7 +49,7 @@ public class RssController extends AbstractController {
 
     
     @SuppressWarnings("unchecked")
-	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	public ModelAndView rss(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         String type = null;
         Website publisher = null;
@@ -91,25 +91,7 @@ public class RssController extends AbstractController {
         HashMap <String, Object> model = new HashMap <String, Object>();
         
         boolean isGeotaggedFeed = request.getPathInfo().startsWith("/rss/geotagged");            
-        if (isGeotaggedFeed) {
-            model.put("title", rssUrlBuilder.getRssTitleForGeotagged());
-            model.put("link", siteInformation.getUrl() + "/geotagged");
-            model.put("description", "Newsitems with geotagging information.");
-            model.put("main_content", resourceDAO.getAllValidGeocoded(MAX_RSS_ITEMS, false));
-            
-        } else if (type != null && type.equals("W")) {    
-            model.put("title", rssUrlBuilder.getRssTitleForJustin());
-            model.put("link", siteInformation.getUrl());
-            model.put("description", "The most recently submitted website listings.");
-            model.put("main_content", resourceDAO.getLatestWebsites(MAX_RSS_ITEMS, false));
-            
-        } else if (type != null && type.equals("L")) {      
-            model.put("title", rssUrlBuilder.getTitleForWatchlist());
-            model.put("link", siteInformation.getUrl());
-            model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
-            model.put("main_content", resourceDAO.getRecentlyChangedWatchlistItems());
-                        
-        } else if (publisher != null) {
+        if (publisher != null) {
             model.put("title", rssUrlBuilder.getRssTitleForPublisher(publisher));
             model.put("link", publisher.getUrl());
             model.put("description", "Newsitems published by " + publisher.getName());
@@ -132,13 +114,7 @@ public class RssController extends AbstractController {
             model.put("description", siteInformation.getAreaname() + " related newsitems tagged as " + tag.getDisplayName());
             model.put("main_content", resourceDAO.getTaggedNewitems(tag, false, MAX_RSS_ITEMS)); 
         
-        } else {
-        	log.info("Building full site rss feed");
-            model.put("title", "Search " + siteInformation.getAreaname() + " - " + siteInformation.getAreaname() + " Newslog");
-            model.put("link", siteInformation.getUrl());
-            model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");
-            model.put("main_content", resourceDAO.getLatestNewsitems(MAX_RSS_ITEMS, false));
-        }
+        } 
 
         RssView rssView = new RssView();
         if (configDAO.getUseClickThroughCounter()) {
@@ -147,12 +123,70 @@ public class RssController extends AbstractController {
         
         return new ModelAndView(rssView, model);
     }
+    
+    
+    
+    public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception { 
+    	final String userAgent = request.getHeader("User-Agent");
+		boolean clientIsFeedburner = userAgent != null && userAgent.startsWith("FeedBurner");
+		if (!clientIsFeedburner) {
+        	return redirectToFeedburnerMainFeed();
+        }
+
+		HashMap <String, Object> model = new HashMap <String, Object>();
+		log.info("Building full site rss feed");
+		model.put("title", "Search " + siteInformation.getAreaname() + " - " + siteInformation.getAreaname() + " Newslog");
+		model.put("link", siteInformation.getUrl());
+        model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");
+        model.put("main_content", resourceDAO.getLatestNewsitems(MAX_RSS_ITEMS, false));
+        
+        RssView rssView = new RssView();        
+        return new ModelAndView(rssView, model);        
+    }
+    
+    
+    
+    public ModelAndView geotaggedRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	HashMap <String, Object> model = new HashMap <String, Object>();    	
+    	model.put("title", rssUrlBuilder.getRssTitleForGeotagged());
+    	model.put("link", siteInformation.getUrl() + "/geotagged");
+    	model.put("description", "Newsitems with geotagging information.");
+    	model.put("main_content", resourceDAO.getAllValidGeocoded(MAX_RSS_ITEMS, false));
+    	
+        RssView rssView = new RssView();        
+        return new ModelAndView(rssView, model);        
+    }
+    
+    
+    public ModelAndView justinRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	HashMap <String, Object> model = new HashMap <String, Object>();     
+    	model.put("title", rssUrlBuilder.getRssTitleForJustin());
+    	model.put("link", siteInformation.getUrl());
+    	model.put("description", "The most recently submitted website listings.");
+    	model.put("main_content", resourceDAO.getLatestWebsites(MAX_RSS_ITEMS, false));
+    	
+        RssView rssView = new RssView();        
+        return new ModelAndView(rssView, model);        
+    }
+    
+    
+    public ModelAndView watchlistRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	HashMap <String, Object> model = new HashMap <String, Object>();     
+    	model.put("title", rssUrlBuilder.getTitleForWatchlist());
+    	model.put("link", siteInformation.getUrl());
+    	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
+    	model.put("main_content", resourceDAO.getRecentlyChangedWatchlistItems());
+    	
+        RssView rssView = new RssView();        
+        return new ModelAndView(rssView, model);
+        
+    }
+    
 
 
 	private ModelAndView redirectToFeedburnerMainFeed() {
 		View redirectView = new RedirectView("http://feeds2.feedburner.com/wellynews");
-		return new ModelAndView(redirectView);
-		
+		return new ModelAndView(redirectView);		
 	}
 
 }

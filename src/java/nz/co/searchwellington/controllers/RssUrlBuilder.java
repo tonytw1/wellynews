@@ -24,12 +24,16 @@ public class RssUrlBuilder {
         return siteInformation.getUrl() + "/rss/tag/" + tag.getName();      
     }
 
+    public String getRssUrlForGeotagged() {
+    	return siteInformation.getUrl() + "/geotagged/rss";
+	}
+    
     public String getRssUrlForJustin() {
-        return siteInformation.getUrl() + "/rss/justin";
+        return siteInformation.getUrl() + "/justin/rss";
     }
     
     public String getRssUrlForWatchlist() {
-        return siteInformation.getUrl() + "/rss/watchlist";
+        return siteInformation.getUrl() + "/watchlist/rss";
     }
     
 	public String getRssTitleForTag(Tag tag) {

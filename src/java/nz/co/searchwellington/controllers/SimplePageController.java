@@ -207,7 +207,7 @@ public class SimplePageController extends BaseMultiActionController {
             // TODO inject
             GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();
             mv.addObject("geocoded", cleaner.dedupe(geocoded, selected));  
-            setRss(mv, "Geocoded newsitems RSS Feed", siteInformation.getUrl() + "/rss/geotagged");
+            setRss(mv, "Geocoded newsitems RSS Feed", siteInformation.getUrl() + rssUrlBuilder.getRssUrlForGeotagged());
         }
     }
 
