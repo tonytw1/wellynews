@@ -25,9 +25,9 @@ import nz.co.searchwellington.statistics.StatsTracking;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.sun.syndication.io.FeedException;
-
 
 
 public class ViewfeedController extends BaseMultiActionController {
@@ -39,9 +39,10 @@ public class ViewfeedController extends BaseMultiActionController {
     private SupressionRepository supressionDAO;
     private FeedReader feedReader;
 	private RssPrefetcher rssPrefetcher;
+    private UrlBuilder urlBuilder;
     
     
-    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter, FeedRepository feedDAO, ItemMaker itemMaker, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher) {
+    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter, FeedRepository feedDAO, ItemMaker itemMaker, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.feedDAO = feedDAO;
@@ -51,12 +52,11 @@ public class ViewfeedController extends BaseMultiActionController {
         this.configDAO = configDAO;        
         this.feedReader = feedReader;
         this.rssPrefetcher = rssPrefetcher;
+        this.urlBuilder = urlBuilder;
     }
 
     
-    @SuppressWarnings("unchecked")
-    @Transactional
-    // TODO should redirect to viewfeed url on exit.
+    @Transactional   
     public ModelAndView decachefeed(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {          
         requestFilter.loadAttributesOntoRequest(request);
         Feed feed = null;
@@ -66,16 +66,12 @@ public class ViewfeedController extends BaseMultiActionController {
             decacheFeed(feed);
         } else {
             log.info("No feed seen on request; nothing to decache.");            
-        }
-        return viewfeed(request, response);        
+        }        
+        return new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)));
     }
     
-    
-    private void decacheFeed(Feed feed) {
-    	rssPrefetcher.decacheAndLoad(feed.getUrl());
-    }
-    
-    
+        
+    @Transactional
     public ModelAndView readfeed(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         requestFilter.loadAttributesOntoRequest(request);
         Feed feed = null;
@@ -86,11 +82,10 @@ public class ViewfeedController extends BaseMultiActionController {
         } else {
             log.info("No feed seen on request; nothing to reread.");
         }        
-        return viewfeed(request, response);    
+        return new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)));   
     }
     
     
-    @SuppressWarnings("unchecked")
     @Transactional
     public ModelAndView viewfeed(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         ModelAndView mv = new ModelAndView();
@@ -99,7 +94,7 @@ public class ViewfeedController extends BaseMultiActionController {
         User loggedInUser = setLoginState(request, mv);
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
                 
-        mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         
         requestFilter.loadAttributesOntoRequest(request);
 
@@ -108,11 +103,10 @@ public class ViewfeedController extends BaseMultiActionController {
             feed = (Feed) request.getAttribute("feedAttribute");
         }
 
-        if (feed != null) {
-                       
+        if (feed != null) {                       
             if (loggedInUser != null) {
                 log.info("Wrapping feed with EditableFeedWrapper:" + feed.getName());
-                mv.getModel().put("feed", new EditableFeedWrapper(feed));                
+                mv.addObject("feed", new EditableFeedWrapper(feed));                
             } else {
                 mv.addObject("feed", feed);
             }
@@ -120,7 +114,7 @@ public class ViewfeedController extends BaseMultiActionController {
             
             List<Resource> feedNewsitems = feedDAO.getFeedNewsitems(feed);
             if (feedNewsitems != null && feedNewsitems.size() > 0) {
-                mv.getModel().put("main_content", setEditUrls(feedNewsitems, feed, loggedInUser));
+                mv.addObject("main_content", setEditUrls(feedNewsitems, feed, loggedInUser));
             } else {
               log.warn("No newsitems were loaded from feed: " + feed.getName());
             }
@@ -138,8 +132,6 @@ public class ViewfeedController extends BaseMultiActionController {
     }
 
     
-    
-    @SuppressWarnings("unchecked")
     protected List<Resource> setEditUrls(List<Resource> resources, Feed feed, User loggedInUser) {        
         if (loggedInUser == null) {
             return resources;
@@ -155,4 +147,8 @@ public class ViewfeedController extends BaseMultiActionController {
         return items;        
     }
 
+    private void decacheFeed(Feed feed) {
+    	rssPrefetcher.decacheAndLoad(feed.getUrl());
+    }
+    
 }

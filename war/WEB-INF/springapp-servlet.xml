@@ -84,6 +84,10 @@
 	</bean>
 
 
+	<bean id="urlBuilder" class="nz.co.searchwellington.controllers.UrlBuilder">
+		<constructor-arg ref="siteInformation" />
+	</bean>
+	
 	<bean id="rssUrlBuilder" class="nz.co.searchwellington.controllers.RssUrlBuilder">
 		<constructor-arg ref="siteInformation" />
 	</bean>
@@ -317,6 +321,7 @@
 		<constructor-arg ref="configDAO" />	
 		<constructor-arg ref="feedReader" />
 		<constructor-arg ref="rssPrefetcher" />
+		<constructor-arg ref="urlBuilder" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
