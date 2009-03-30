@@ -2,9 +2,13 @@ package nz.co.searchwellington.commentfeeds;
 
 import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
 
+import org.apache.log4j.Logger;
+
 public class CommentFeedDetectorService {
 
-	
+    Logger log = Logger.getLogger(CommentFeedDetectorService.class);
+    
+
 	private CommentFeedDetector[] detectors;
     
     
@@ -14,6 +18,7 @@ public class CommentFeedDetectorService {
 
 	
 	public boolean isCommentFeedUrl(String url) {
+		log.info("Checking is comment feed url: " + url);
         for (CommentFeedDetector detector : detectors) {
             if (detector.isValid(url)) {
                 return true;

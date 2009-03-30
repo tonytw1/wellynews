@@ -6,12 +6,12 @@ import java.util.HashSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.CalendarFeedDAO;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.statistics.StatsTracking;
@@ -32,9 +32,10 @@ public class RssfeedsController extends BaseMultiActionController {
     private TagWidgetFactory tagWidgetFactory;    
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
+	private DiscoveredFeedRepository discoveredFeedsRepository;
  
     
-    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder) {   
+    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository) {   
         this.resourceDAO = resourceDAO;       
         this.requestFilter = requestFilter;
         this.itemMaker = itemMaker;
@@ -44,6 +45,7 @@ public class RssfeedsController extends BaseMultiActionController {
         this.tagWidgetFactory = tagWidgetFactory;       
         this.siteInformation = siteInformation;
         this.rssUrlBuilder = rssUrlBuilder;
+        this.discoveredFeedsRepository = discoveredFeedsRepository;
     }
     
         
@@ -119,7 +121,7 @@ public class RssfeedsController extends BaseMultiActionController {
 
 
     private void populateDiscoveredFeeds(ModelAndView mv) {
-        mv.addObject("discovered_feeds", resourceDAO.getAllDiscoveredFeeds());
+        mv.addObject("discovered_feeds", discoveredFeedsRepository);
         mv.addObject("discovered_feeds_moreurl", "feeds/discovered");
     }
 

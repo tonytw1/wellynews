@@ -313,6 +313,11 @@
 	</bean>
 	
 	
+	<bean id="discoveredFeedsRespository" class="nz.co.searchwellington.feeds.DiscoveredFeedRespository">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="commentedFeedDetectorService" />
+	</bean>
+	
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
 	 	<constructor-arg ref="sessionFactory" />
 	</bean>

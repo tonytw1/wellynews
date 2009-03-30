@@ -6,8 +6,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
@@ -33,8 +35,9 @@ public class SimplePageController extends BaseMultiActionController {
     private RequestFilter requestFilter;
     private RssUrlBuilder rssUrlBuilder;
 	private TwitterService twitterService;
+	private DiscoveredFeedRepository discoveredFeedRepository;
     
-    public SimplePageController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService) {
+    public SimplePageController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository) {
         this.resourceDAO = resourceDAO;
         this.itemMaker = itemMaker;
         this.urlStack = urlStack;
@@ -43,6 +46,7 @@ public class SimplePageController extends BaseMultiActionController {
         this.requestFilter = requestFilter;
         this.rssUrlBuilder = rssUrlBuilder;
         this.twitterService = twitterService;
+        this.discoveredFeedRepository = discoveredFeedRepository;
     }
     
        
@@ -137,10 +141,14 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "Discovered Feeds");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
         
-        mv.addObject("discovered_feeds", resourceDAO.getAllDiscoveredFeeds());        
+        List<DiscoveredFeed> nonCommentFeeds = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds();        
+		mv.addObject("discovered_feeds", nonCommentFeeds);        
         mv.setViewName("discoveredFeeds");
         return mv;
     }
+
+
+	
     
     
     

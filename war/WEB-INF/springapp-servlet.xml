@@ -12,6 +12,7 @@
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="twitterService" />
+		<constructor-arg ref="discoveredFeedRespository" />		
 			
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -197,6 +198,7 @@
 		<constructor-arg ref="tagWidgetFactory"/>	
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="discoveredFeedRespository" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
