@@ -30,7 +30,6 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
-import nz.co.searchwellington.tagging.PlaceAutoTagger;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
@@ -123,21 +122,8 @@ public class ResourceEditController extends BaseTagEditingController {
     }
 
 
-
-  
-
-
-    
-    
-        
-
-
-
-   
-
     @Transactional
-    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-        
+    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {        
         ModelAndView modelAndView = new ModelAndView("acceptResource");
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Submitting a Resource");
@@ -255,11 +241,8 @@ public class ResourceEditController extends BaseTagEditingController {
     }
     
     
-    
-    @SuppressWarnings("unchecked")
     @Transactional
     public ModelAndView submitWatchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
         ModelAndView modelAndView = new ModelAndView("submitWatchlist");
         modelAndView.addObject("heading", "Submitting a Watchlist Item");
         Resource editResource = resourceDAO.createNewWebsite();
@@ -271,16 +254,10 @@ public class ResourceEditController extends BaseTagEditingController {
     }
    
     
-    
-    
-    
-    
-    
    @Transactional
-    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {
-       
+    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
-        populateCommonLocal(modelAndView);   
+        populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
         requestFilter.loadAttributesOntoRequest(request);    
@@ -294,12 +271,8 @@ public class ResourceEditController extends BaseTagEditingController {
     }
     
     
-    
-  
-    
    @Transactional
-    public ModelAndView deleteAndSupress(HttpServletRequest request, HttpServletResponse response) throws IOException {
-       
+    public ModelAndView deleteAndSupress(HttpServletRequest request, HttpServletResponse response) throws IOException {   
         ModelAndView modelAndView = new ModelAndView("deletedResource");
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
@@ -325,10 +298,7 @@ public class ResourceEditController extends BaseTagEditingController {
     }
     
     
-    
-    
-    
-    
+       
    @Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         
