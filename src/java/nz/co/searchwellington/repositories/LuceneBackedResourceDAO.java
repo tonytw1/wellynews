@@ -203,20 +203,36 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
         deleteLuceneTag(tag);
         super.deleteTag(tag);         
     }
-
     
-    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int max_items) throws IOException {        
-        log.debug("Searching for Newsitems tagged: " + tag.getName());
-               
-        // Compose a lucene query.        
-        BooleanQuery query = new BooleanQuery();
-        
+    
+    private BooleanQuery makeTagNewsitemsQuery(Tag tag, boolean showBroken) {
+    	BooleanQuery query = new BooleanQuery();        
         if (!showBroken) {
             addHttpStatusRestriction(query);            
         }                
         addTagRestriction(query, tag);        
-        addTypeRestriction(query, "N");
-        
+        addTypeRestriction(query, "N");        
+        return query;
+    }
+
+    
+    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int max_items) throws IOException {        
+        log.debug("Searching for newsitems tagged: " + tag.getName());
+                   
+        BooleanQuery query = makeTagNewsitemsQuery(tag, showBroken);
+ 
+        Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
+        Sort sort = dateDescendingSort();
+        Hits hits = searcher.search(query, sort);
+        log.debug("Found " + hits.length() + " matching.");
+                
+        return loadResourcesFromHits(max_items, hits);                
+    }
+    
+    public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) throws IOException {         
+    	BooleanQuery query = makeTagNewsitemsQuery(tag, showBroken);
+        addPublisherRestriction(query, publisher);
+    	    	
         Sort sort = dateDescendingSort();
         Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
         
@@ -224,8 +240,9 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
         Hits hits = searcher.search(query, sort);
         log.debug("Found " + hits.length() + " matching.");
                 
-        return loadResourcesFromHits(max_items, hits);                
+        return loadResourcesFromHits(500, hits);      	
     }
+    
     
     
     @Override
@@ -381,7 +398,9 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
         }
     }
     
-    
+    private void addPublisherRestriction(BooleanQuery query, Website publisher) {
+    	  query.add(new TermQuery(new Term("publisher", new Integer(publisher.getId()).toString())), Occur.MUST);      
+    }
     
     
     
@@ -612,8 +631,12 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
             if (newsitem.getCommentFeed() != null) {
                 commentCount = newsitem.getCommentFeed().getComments().size();
             }
-            doc.add(new Field("comment_count", Integer.toString(commentCount), Field.Store.YES, Field.Index.UN_TOKENIZED));
             
+            if (newsitem.getPublisher() != null) {
+            	doc.add(new Field("publisher", Integer.toString(newsitem.getPublisher().getId()), Field.Store.YES, Field.Index.UN_TOKENIZED));
+            }
+            
+            doc.add(new Field("comment_count", Integer.toString(commentCount), Field.Store.YES, Field.Index.UN_TOKENIZED));            
             if (newsitem.getCommentFeed() != null) {
                 for (Comment comment : newsitem.getCommentFeed().getComments()) {
                     doc.add(new Field("comment", comment.getTitle(), Field.Store.YES, Field.Index.TOKENIZED));                

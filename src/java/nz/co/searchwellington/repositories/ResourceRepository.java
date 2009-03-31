@@ -128,4 +128,5 @@ public interface ResourceRepository {
     public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxNumber, boolean showBroken) throws IOException;
 	public List<Resource> getResourcesWithTag(Tag tag);
 	public Website getPublisherByUrlWords(String publisherUrlWords);
+	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) throws IOException;
 }

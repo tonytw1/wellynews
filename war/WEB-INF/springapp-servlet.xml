@@ -111,6 +111,8 @@
 						<prop key="/*/calendars">publisherCalendars</prop>
 						<prop key="/*/feeds">publisherFeeds</prop>
 						<prop key="/*/newsitems">publisherNewsitems</prop>
+						<prop key="/*+*">publisherTagCombiner</prop>
+						<prop key="*%2B*">publisherTagCombiner</prop>
 						<prop key="/*/watchlist">publisherWatchlist</prop>
 					</props>
 				</property>
@@ -171,6 +173,7 @@
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="urlBuilder" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

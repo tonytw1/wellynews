@@ -313,9 +313,9 @@
 	</bean>
 	
 	
-	<bean id="discoveredFeedsRespository" class="nz.co.searchwellington.feeds.DiscoveredFeedRespository">
+	<bean id="discoveredFeedRespository" class="nz.co.searchwellington.feeds.DiscoveredFeedRepository" >
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="commentedFeedDetectorService" />
+		<constructor-arg ref="commentFeedDetector" />
 	</bean>
 	
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">

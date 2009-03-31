@@ -11,6 +11,7 @@ import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
@@ -87,9 +88,24 @@ public class BrowseController extends BaseMultiActionController {
 		 mv.setViewName("browse");
 		 return mv;
 	}
+	
+	
+	public ModelAndView publisherTagCombiner(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		ModelAndView mv = new ModelAndView();		 
+		 User loggedInUser = populateLocalCommon(request, mv);           		   
+		 requestFilter.loadAttributesOntoRequest(request);
+		 if (request.getAttribute("publisher") != null && request.getAttribute("tag") != null) {
+			 Website publisher = (Website) request.getAttribute("publisher");
+			 Tag tag = (Tag) request.getAttribute("tag");
+			 populatePublisherTagCombinerNewsitems(mv, publisher, tag, loggedInUser);
+		 }
+		 mv.setViewName("browse");
+		 return mv;		
+	}
     
     
-    @SuppressWarnings("unchecked")
+ 
+	@SuppressWarnings("unchecked")
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {       
         ModelAndView mv = new ModelAndView();
            
@@ -181,7 +197,7 @@ public class BrowseController extends BaseMultiActionController {
 
 
     @SuppressWarnings("unchecked")
-      private void populatePublisherNewsitems(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
+    private void populatePublisherNewsitems(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
         boolean showBroken = loggedInUser != null;
         mv.getModel().put("heading", publisher.getName() + " Newsitems");
         final List<Newsitem> publisherNewsitems = resourceDAO.getAllPublisherNewsitems(publisher, showBroken);
@@ -192,6 +208,14 @@ public class BrowseController extends BaseMultiActionController {
         }
         populateSecondaryLatestNewsitems(mv, loggedInUser);
     }
+    
+    
+    private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, User loggedInUser) throws IOException {
+    	  boolean showBroken = loggedInUser != null;
+          mv.addObject("heading", publisher.getName() + " + " + tag.getDisplayName() + " newsitems");
+          final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken);
+          mv.addObject("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));		
+	}
     
     
     @SuppressWarnings("unchecked")

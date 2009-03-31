@@ -19,64 +19,46 @@ import nz.co.searchwellington.views.RssView;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class RssController extends MultiActionController {
 
-    Logger log = Logger.getLogger(RssController.class);
-    	
-	// TODO move this to the config object.
+	// TODO push to config
+    private static final String FEEDBURNER_RSS_URL = "http://feeds2.feedburner.com/wellynews";
+
+	Logger log = Logger.getLogger(RssController.class);
+    
     private static final int MAX_RSS_ITEMS = 30;
     private SiteInformation siteInformation;
     private RequestFilter requestFilter;
     private ResourceRepository resourceDAO;
     private ConfigRepository configDAO;
     private RssUrlBuilder rssUrlBuilder;
+	private UrlBuilder urlBuilder;
 
     
-    
-    
-    
-    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder) {     
+       
+    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {     
         this.siteInformation = siteInformation;
         this.requestFilter = requestFilter;
         this.resourceDAO = resourceDAO;
         this.configDAO = configDAO;
         this.rssUrlBuilder = rssUrlBuilder;
+        this.urlBuilder = urlBuilder;
     }
-
     
     @SuppressWarnings("unchecked")
 	public ModelAndView rss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-        String type = null;
+    	
         Website publisher = null;
         Tag tag = null;
         List<Tag> tags = new ArrayList<Tag>();
 
-        requestFilter.loadAttributesOntoRequest(request);
-        
-        boolean hasNoParameters = request.getParameterMap().size() == 0;
-        boolean isMainRssFeed = (request.getPathInfo().equals("/rss") || request.getPathInfo().equals("/rss/")) && hasNoParameters;
-        final String userAgent = request.getHeader("User-Agent");
-		boolean clientIsFeedburner = userAgent != null && userAgent.startsWith("FeedBurner");
-		if (isMainRssFeed && !clientIsFeedburner) {
-        	return redirectToFeedburnerMainFeed();
-        }
-        
-
-        type = request.getParameter("type");
-        if (type == null) {
-            // Try to extract type from url.
-            type = requestFilter.getRssTypeFromRequest(request.getPathInfo());                    
-        }
-        
-        
+        requestFilter.loadAttributesOntoRequest(request);        
         if (request.getAttribute("publisher") != null) {
             publisher = (Website) request.getAttribute("publisher");
-        } 
+        }
         if (request.getAttribute("tag") != null) {
             tag = (Tag) request.getAttribute("tag");
         }
@@ -84,13 +66,8 @@ public class RssController extends MultiActionController {
         if (request.getAttribute("tags") != null) {
         	tags = (List<Tag>) request.getAttribute("tags");
         }
-        
-        log.info("Tag: " + tag);
-        log.info("Tags: " + tags);
-
-        HashMap <String, Object> model = new HashMap <String, Object>();
-        
-        boolean isGeotaggedFeed = request.getPathInfo().startsWith("/rss/geotagged");            
+ 
+        HashMap <String, Object> model = new HashMap <String, Object>();           
         if (publisher != null) {
             model.put("title", rssUrlBuilder.getRssTitleForPublisher(publisher));
             model.put("link", publisher.getUrl());
@@ -101,19 +78,16 @@ public class RssController extends MultiActionController {
         	log.info("Building combiner rss feed");
         	Tag firstTag = tags.get(0);
 			Tag secondTag = tags.get(1);
-			model.put("link", siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName() + "/rss");
+			model.put("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
         	model.put("title", rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag));
-        	// TODO descriptions
-        	model.put("description", "");
+        	model.put("description", siteInformation.getAreaname() + " related newsitems tagged with " + firstTag.getDisplayName() + " and " + secondTag.getDisplayName());
         	model.put("main_content", resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), false, MAX_RSS_ITEMS));
         	
         } else if (tag != null) {            
-            model.put("title", rssUrlBuilder.getRssTitleForTag(tag));
-            // TODO do we have a UrlBuilder to make these? - should have
-            model.put("link", siteInformation.getUrl() + "/tag/" + tag.getName());
+            model.put("title", rssUrlBuilder.getRssTitleForTag(tag));        
+            model.put("link", urlBuilder.getTagUrl(tag));
             model.put("description", siteInformation.getAreaname() + " related newsitems tagged as " + tag.getDisplayName());
-            model.put("main_content", resourceDAO.getTaggedNewitems(tag, false, MAX_RSS_ITEMS)); 
-        
+            model.put("main_content", resourceDAO.getTaggedNewitems(tag, false, MAX_RSS_ITEMS));         
         } 
 
         RssView rssView = new RssView();
@@ -132,7 +106,7 @@ public class RssController extends MultiActionController {
 		if (!clientIsFeedburner) {
         	return redirectToFeedburnerMainFeed();
         }
-
+		
 		HashMap <String, Object> model = new HashMap <String, Object>();
 		log.info("Building full site rss feed");
 		model.put("title", "Search " + siteInformation.getAreaname() + " - " + siteInformation.getAreaname() + " Newslog");
@@ -153,8 +127,8 @@ public class RssController extends MultiActionController {
     	model.put("description", "Newsitems with geotagging information.");
     	model.put("main_content", resourceDAO.getAllValidGeocoded(MAX_RSS_ITEMS, false));
     	
-        RssView rssView = new RssView();        
-        return new ModelAndView(rssView, model);        
+        RssView rssView = new RssView();
+        return new ModelAndView(rssView, model);
     }
     
     
@@ -183,9 +157,8 @@ public class RssController extends MultiActionController {
     }
     
 
-
 	private ModelAndView redirectToFeedburnerMainFeed() {
-		View redirectView = new RedirectView("http://feeds2.feedburner.com/wellynews");
+		View redirectView = new RedirectView(FEEDBURNER_RSS_URL);
 		return new ModelAndView(redirectView);		
 	}
 

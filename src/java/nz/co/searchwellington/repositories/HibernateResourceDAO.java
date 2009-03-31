@@ -709,6 +709,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 	@SuppressWarnings("unchecked")
     public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken) {
+		// TODO doesn't recurse; can this be done in lucene?
 		// TODO 3 operator
 		String showBrokenClause = "";
         if (!showBroken) {
@@ -730,6 +731,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
           return relatedTags;
     }
 
+	
+	public List<Tag> getRelatedTagsForPublisher(Website publisher, boolean showBroken) {
+		// TODO would be nice to have
+		return null;		
+	}
+	
+	
 
 	// TODO Performance! Put Urlwords into the model.
 	public Website getPublisherByUrlWords(String publisherUrlWords) {
