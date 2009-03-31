@@ -135,7 +135,7 @@ public class TagEditController extends MultiActionController {
         editTag.setDisplayName(request.getParameter("displayName"));
         
         populateRelatedTwitter(request, editTag);        
-        editTag.setAutotagHints(request.getParameter("autotag_hints"));
+        populateAutotagHints(request, editTag);
                 
         Feed relatedFeed = null;      
         if (request.getAttribute("feedAttribute") != null) {
@@ -168,6 +168,16 @@ public class TagEditController extends MultiActionController {
         modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());    
         return modelAndView;
     }
+
+
+	private void populateAutotagHints(HttpServletRequest request, Tag editTag) {
+		final String autotagHints = request.getParameter("autotag_hints");
+        if (autotagHints != null && !autotagHints.trim().equals("")) {
+        	editTag.setAutotagHints(autotagHints);
+        } else {	
+        	editTag.setAutotagHints(null);
+        }
+	}
 
 
 	private void populateRelatedTwitter(HttpServletRequest request, Tag editTag) {
