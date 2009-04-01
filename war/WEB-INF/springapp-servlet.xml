@@ -183,6 +183,10 @@
 						<prop key="/geotagged/rss">geotaggedRss</prop>
 						<prop key="/justin/rss">justinRss</prop>
 						<prop key="/watchlist/rss">watchlistRss</prop>
+						
+						<prop key="/*+*/rss">combinerRss</prop>
+            			<prop key="/*%2B*/rss">combinerRss</prop>
+            	
 						<prop key="/**">rss</prop>
 					</props>
 				</property>
@@ -605,6 +609,9 @@
             	<prop key="/*/feeds">browseController</prop>
             	<prop key="/*/newsitems">browseController</prop>
             	<prop key="/*/watchlist">browseController</prop>
+
+            	<prop key="/*+*">browseController</prop>
+            	<prop key="/*%2B*">browseController</prop>
             	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
@@ -616,10 +623,13 @@
 				<prop key="/geotagged/rss">rssController</prop>
 				<prop key="/justin/rss">rssController</prop>
 				<prop key="/watchlist/rss">rssController</prop>
-				
+								
 				<prop key="/*/newsitems/rss">rssController</prop>
-				<prop key="/tag/*+*/rss">rssController</prop>
-				<prop key="/tag/*%2B*/rss">rssController</prop>
+					<prop key="/tag/*+*/rss">rssController</prop>
+					<prop key="/tag/*%2B*/rss">rssController</prop>
+				
+				<prop key="/*+*/rss">rssController</prop>
+            	<prop key="/*%2B*/rss">rssController</prop>
 				
 				<prop key="/feeds/**">rssfeedsController</prop>
 				<prop key="/search">searchController</prop>

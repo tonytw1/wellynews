@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -53,7 +54,6 @@ public class RssController extends MultiActionController {
     	
         Website publisher = null;
         Tag tag = null;
-        List<Tag> tags = new ArrayList<Tag>();
 
         requestFilter.loadAttributesOntoRequest(request);        
         if (request.getAttribute("publisher") != null) {
@@ -63,9 +63,7 @@ public class RssController extends MultiActionController {
             tag = (Tag) request.getAttribute("tag");
         }
         
-        if (request.getAttribute("tags") != null) {
-        	tags = (List<Tag>) request.getAttribute("tags");
-        }
+     
  
         HashMap <String, Object> model = new HashMap <String, Object>();           
         if (publisher != null) {
@@ -74,15 +72,6 @@ public class RssController extends MultiActionController {
             model.put("description", "Newsitems published by " + publisher.getName());
             model.put("main_content", resourceDAO.getPublisherNewsitems(publisher, MAX_RSS_ITEMS, false));
             
-        } else if (tags.size() == 2) {
-        	log.info("Building combiner rss feed");
-        	Tag firstTag = tags.get(0);
-			Tag secondTag = tags.get(1);
-			model.put("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
-        	model.put("title", rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag));
-        	model.put("description", siteInformation.getAreaname() + " related newsitems tagged with " + firstTag.getDisplayName() + " and " + secondTag.getDisplayName());
-        	model.put("main_content", resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), false, MAX_RSS_ITEMS));
-        	
         } else if (tag != null) {            
             model.put("title", rssUrlBuilder.getRssTitleForTag(tag));        
             model.put("link", urlBuilder.getTagUrl(tag));
@@ -116,6 +105,44 @@ public class RssController extends MultiActionController {
         
         RssView rssView = new RssView();        
         return new ModelAndView(rssView, model);        
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+	public ModelAndView combinerRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	log.info("Starting combiner rss feed");
+    	HashMap <String, Object> model = new HashMap <String, Object>();
+
+        requestFilter.loadAttributesOntoRequest(request);       
+    	List<Tag> tags = new ArrayList<Tag>();
+    	if (request.getAttribute("tags") != null) {
+    		tags = (List<Tag>) request.getAttribute("tags");
+    	}
+    	
+    	boolean isTagCombiner = tags.size() == 2;
+    	Website publisher = (Website) request.getAttribute("publisher");
+    	Tag tag = (Tag) request.getAttribute("tag");
+		boolean isPublisherCombiner = !isTagCombiner && (publisher != null && tag != null);
+		RssView rssView = new RssView();
+		if (isTagCombiner) {
+			log.info("Building tag combiner rss feed");
+			Tag firstTag = tags.get(0);
+			Tag secondTag = tags.get(1);
+			model.put("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
+			model.put("title", rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag));
+			model.put("description", siteInformation.getAreaname() + " related newsitems tagged with " + firstTag.getDisplayName() + " and " + secondTag.getDisplayName());
+			model.put("main_content", resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), false, MAX_RSS_ITEMS));
+			return new ModelAndView(rssView, model);			
+		} else if (isPublisherCombiner) {
+			log.info("Building publisher combiner rss feed");
+			model.put("link", urlBuilder.getPublisherCombinerUrl(publisher, tag));
+			model.put("title", rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag));
+			model.put("description", publisher.getName() + " newsitems tagged with " + tag.getDisplayName());
+			model.put("main_content", resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, false));
+			return new ModelAndView(rssView, model);
+		}
+		
+		return null;
     }
     
     

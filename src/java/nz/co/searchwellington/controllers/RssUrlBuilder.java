@@ -65,7 +65,15 @@ public class RssUrlBuilder {
 	}
 
 	public String getRssUrlForTagCombiner(Tag tag, Tag tag2) {
-		return siteInformation.getUrl() + "/tag/" + tag.getName() + "+" + tag2.getName() + "/rss";
+		return siteInformation.getUrl() + "/" + tag.getName() + "+" + tag2.getName() + "/rss";
+	}
+
+	public String getRssTitleForPublisherCombiner(Website publisher, Tag tag) {
+		return siteInformation.getSitename() + " - " + publisher.getName() + " + " + tag.getDisplayName();
+	}
+
+	public String getRssUrlForPublisherCombiner(Website publisher, Tag tag) {
+		 return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "+" + tag.getName() + "/rss";
 	}
     
 }

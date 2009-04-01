@@ -214,7 +214,10 @@ public class BrowseController extends BaseMultiActionController {
     	  boolean showBroken = loggedInUser != null;
           mv.addObject("heading", publisher.getName() + " + " + tag.getDisplayName() + " newsitems");
           final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken);
-          mv.addObject("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));		
+          mv.addObject("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));
+          if (publisherNewsitems.size() > 0) {            
+              setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));
+          }
 	}
     
     

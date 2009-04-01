@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 
 public class UrlBuilder {
 
@@ -26,6 +27,11 @@ public class UrlBuilder {
 
 	public String getTagCombinerUrl(Tag firstTag, Tag secondTag) {
 		return siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName();
+	}
+
+
+	public Object getPublisherCombinerUrl(Website publisher, Tag tag) {
+		return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "+" + tag.getName();
 	}
 
 }

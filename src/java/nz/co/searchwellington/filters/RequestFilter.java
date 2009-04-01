@@ -139,6 +139,38 @@ public class RequestFilter {
         	request.setAttribute("publisher", publisher);
         }
         
+        log.info("Looking for combiner urls");
+        // Publisher tag and tag combiners
+        Pattern pattern = Pattern.compile("^/(.*)\\+(.*?)(/rss)?$");
+        Matcher matcher = pattern.matcher(request.getPathInfo());
+        if (matcher.matches()) {
+        	final String left = matcher.group(1);
+        	final String right = matcher.group(2);        	
+        	log.info("Path matches combiner pattern for '" + left + "', '" + right + "'");
+        	
+        	// righthand side is always a tag;
+        	// Left could be a publisher or a tag.
+        	Tag rightHandTag = resourceDAO.loadTagByName(right);        	
+        	if (rightHandTag != null) {
+	        	Website publisher = resourceDAO.getPublisherByUrlWords(left);
+	        	if (publisher != null) {
+	        		log.info("Left matches publisher: " + publisher.getName());
+	        		request.setAttribute("publisher", publisher);
+	        		request.setAttribute("tag", rightHandTag);
+	        	} else {
+	        		Tag leftHandTag = resourceDAO.loadTagByName(left);
+	        		if (leftHandTag != null) {
+	        			log.info("Left matches tag: " + leftHandTag.getName());
+	        			log.info("Setting tags '" + leftHandTag.getName() + "', '" + rightHandTag.getName() + "'");
+	        			List<Tag> tags = new ArrayList<Tag>();
+	        			tags.add(leftHandTag);
+	        			tags.add(rightHandTag);
+	        			request.setAttribute("tags", tags);
+	        		}
+	        	}
+        	}
+        }
+        
         
         if (request.getParameter("feed") != null) {
             final int feedID = Integer.parseInt(request.getParameter("feed"));
