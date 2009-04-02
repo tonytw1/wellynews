@@ -92,7 +92,14 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     
     public String getUrlWords() {
 		String urlWords = new String(getName());		
-		return urlWords.replaceAll(" ", "-").replaceAll("\\s", "").toLowerCase();
+		return urlWords.
+			replaceAll("\\(.*?\\)", "").
+			trim().
+			replaceAll(" ", "-").
+			replaceAll("\\s", "").
+			replaceAll("[^\\w-]","").
+			replaceAll("-+", "-").
+			toLowerCase();
 	}
     
 }

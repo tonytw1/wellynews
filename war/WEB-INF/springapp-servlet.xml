@@ -27,6 +27,7 @@
 						<prop key="/geotagged">geotagged</prop>
 						<prop key="/justin">justin</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
+						<prop key="/publishers">publishers</prop>
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
 						<prop key="/watchlist">watchlist</prop>
@@ -598,6 +599,7 @@
             	<prop key="/feedburner">SimplePageController</prop>
             	<prop key="/justin">SimplePageController</prop>
 				<prop key="/lastupdated">SimplePageController</prop>
+				<prop key="/publishers">SimplePageController</prop>
 				<prop key="/tags">SimplePageController</prop>
 				<prop key="/twitter">SimplePageController</prop>				
 				<prop key="/watchlist">SimplePageController</prop>

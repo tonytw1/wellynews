@@ -14,6 +14,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.statistics.StatsTracking;
@@ -123,6 +124,33 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("main_content", itemMaker.setEditUrls(resourceDAO.getAllCommentedNewsitems(500, true), loggedInUser));
         populateSecondaryLatestNewsitems(mv, loggedInUser);
         
+        mv.setViewName("commented");
+        return mv;      
+    }
+
+    
+    
+    
+    public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mv = new ModelAndView();
+        populateLocalCommon(mv);
+        
+        urlStack.setUrlStack(request);
+        User loggedInUser = setLoginState(request, mv);
+        boolean showBroken = loggedInUser != null;
+        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
+        
+        mv.addObject("heading", "Publishers");
+        
+        List<Object[]> publisherIds = resourceDAO.getAllPublishers(showBroken, true); 
+        for (Object[] objects : publisherIds) {
+			int publisherId = (Integer) objects[0];
+			Website publisher = (Website) resourceDAO.loadResourceById(publisherId);
+			log.info(publisher.getUrlWords());
+		
+		}
+        
+        populateSecondaryLatestNewsitems(mv, loggedInUser);        
         mv.setViewName("commented");
         return mv;      
     }
