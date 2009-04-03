@@ -77,19 +77,6 @@ public class BrowseController extends BaseMultiActionController {
 	}
 
 	
-	public ModelAndView publisherNewsitems(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		 ModelAndView mv = new ModelAndView();		 
-		 User loggedInUser = populateLocalCommon(request, mv);           		   
-		 requestFilter.loadAttributesOntoRequest(request);
-		 if (request.getAttribute("publisher") != null) {
-			 Website publisher = (Website) request.getAttribute("publisher");
-			 populatePublisherNewsitems(mv, publisher, loggedInUser);             
-		 }
-		 mv.setViewName("browse");
-		 return mv;
-	}
-	
-	
 	public ModelAndView publisherTagCombiner(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		ModelAndView mv = new ModelAndView();		 
 		 User loggedInUser = populateLocalCommon(request, mv);           		   
@@ -159,34 +146,7 @@ public class BrowseController extends BaseMultiActionController {
     }
 
     
-    @SuppressWarnings("unchecked")
-	public ModelAndView publisherContent(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		ModelAndView mv = new ModelAndView();
-		       
-        User loggedInUser = populateLocalCommon(request, mv);
-
-        requestFilter.loadAttributesOntoRequest(request);
-        
-        // TODO Could do with nicer urls. 
-        // is currently: /browse?publisher=7930&type=W                
-        String type = request.getParameter("type");       
-        Website publisher = null;
-        if (request.getAttribute("publisher") != null) {
-            publisher = (Website) request.getAttribute("publisher");
-        }
-        
-        if (publisher != null) {
-		    if (type != null && type.equals("F")) {
-		        populatePublisherFeeds(mv, publisher, loggedInUser);
-            } else if (type != null && type.equals("L")) {
-                populatePublisherWatchlist(mv, publisher, loggedInUser);
-            } else {
-                populatePublisherNewsitems(mv, publisher, loggedInUser);
-            }            
-        }       
-        mv.setViewName("browse");
-		return mv;
-	}
+   
     
     
     @SuppressWarnings("unchecked")

@@ -47,7 +47,7 @@
 							
 				#if ($item.type == 'W') 
 					#if ($item.newsitems && $item.newsitems.size() > 0) 
-						<li><a href="$site_information.url/$item.urlWords/newsitems">				
+						<li><a href="$site_information.url/$item.urlWords">
 						#showItemCount($item.newsitems.size() "Newsitem")	
 						</a></li>
 					#end

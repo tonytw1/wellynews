@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Event;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
@@ -25,6 +26,7 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.sun.syndication.io.FeedException;
 
@@ -188,6 +190,11 @@ public class TagController extends BaseMultiActionController {
         setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
     }
     
+    
+    
+    
+    
+    
    
     @SuppressWarnings("unchecked")
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
@@ -204,6 +211,27 @@ public class TagController extends BaseMultiActionController {
         List<Tag> tags = (List<Tag>) request.getAttribute("tags");
         log.info("Tags: " + tags);
         
+        
+        
+        Website publisher = (Website) request.getAttribute("publisher");
+		if (publisher != null) {
+			log.info("Populating publisher newsitems screen");
+			
+			populateCommon(request, mv, showBroken, loggedInUser, null);
+			mv.getModel().put("heading", publisher.getName() + " Newsitems");
+			final List<Newsitem> publisherNewsitems = resourceDAO.getAllPublisherNewsitems(publisher, showBroken);
+			mv.getModel().put("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));
+			if (publisherNewsitems.size() > 0) {
+				setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
+				mv.getModel().put("publisher", publisher);
+			}
+			populateSecondaryLatestNewsitems(mv, loggedInUser);
+			mv.setViewName("browse");
+			return mv;
+		}
+        
+        
+		
         if (tags.size() == 1) {
 
             Tag tag = null;
@@ -470,7 +498,7 @@ public class TagController extends BaseMultiActionController {
        
         mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());        
                 
-        if (tag.getName().equals("realestate")) {      
+        if (tag != null && tag.getName().equals("realestate")) {      
         	mv.addObject("use_big_ads", 1);
         }
     }

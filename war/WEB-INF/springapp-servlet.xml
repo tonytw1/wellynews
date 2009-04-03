@@ -110,8 +110,7 @@
 						<prop key="/archive/*/*">archive</prop>
 						<prop key="/browse">publisherContent</prop>
 						<prop key="/*/calendars">publisherCalendars</prop>
-						<prop key="/*/feeds">publisherFeeds</prop>
-						<prop key="/*/newsitems">publisherNewsitems</prop>
+						<prop key="/*/feeds">publisherFeeds</prop>					
 						<prop key="/*+*">publisherTagCombiner</prop>
 						<prop key="*%2B*">publisherTagCombiner</prop>
 						<prop key="/*/watchlist">publisherWatchlist</prop>
@@ -618,8 +617,7 @@
             	
             	<prop key="/browse">browseController</prop>
             	<prop key="/*/calendars">browseController</prop>
-            	<prop key="/*/feeds">browseController</prop>
-            	<prop key="/*/newsitems">browseController</prop>
+            	<prop key="/*/feeds">browseController</prop>            	
             	<prop key="/*/watchlist">browseController</prop>
 
           <prop key="/*+*">tagController</prop>
