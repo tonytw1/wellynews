@@ -192,7 +192,15 @@ public class TagController extends BaseMultiActionController {
     
     
     
-    
+    private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, User loggedInUser) throws IOException {
+  	  boolean showBroken = loggedInUser != null;
+        mv.addObject("heading", publisher.getName() + " + " + tag.getDisplayName() + " newsitems");
+        final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken);
+        mv.addObject("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));
+        if (publisherNewsitems.size() > 0) {            
+            setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));
+        }
+	}
     
     
    
@@ -213,8 +221,10 @@ public class TagController extends BaseMultiActionController {
         
         
         
+        Tag tag = (Tag) request.getAttribute("tag");
         Website publisher = (Website) request.getAttribute("publisher");
-		if (publisher != null) {
+        
+		if (publisher != null && tag == null) {
 			log.info("Populating publisher newsitems screen");
 			
 			populateCommon(request, mv, showBroken, loggedInUser, null);
@@ -228,13 +238,23 @@ public class TagController extends BaseMultiActionController {
 			populateSecondaryLatestNewsitems(mv, loggedInUser);
 			mv.setViewName("browse");
 			return mv;
+			
+		} else if (publisher != null && tag != null) {
+			populateCommon(request, mv, showBroken, loggedInUser, null);
+			populatePublisherTagCombinerNewsitems(mv, publisher, tag, loggedInUser);			
+			mv.setViewName("browse");
+			return mv;		
 		}
-        
-        
+		
+		
+		
+		
+		
+		
 		
         if (tags.size() == 1) {
 
-            Tag tag = null;
+            
             final Tag firstTag = tags.get(0);
             tag = firstTag;
             populateTagFlickrPool(mv, tag);

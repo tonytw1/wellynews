@@ -153,6 +153,7 @@ public class RequestFilter {
         	Tag rightHandTag = resourceDAO.loadTagByName(right);        	
         	if (rightHandTag != null) {
 	        	Website publisher = resourceDAO.getPublisherByUrlWords(left);
+	        	log.info("Right matches tag: " + rightHandTag.getName());
 	        	if (publisher != null) {
 	        		log.info("Left matches publisher: " + publisher.getName());
 	        		request.setAttribute("publisher", publisher);
@@ -169,31 +170,32 @@ public class RequestFilter {
 	        		}
 	        	}
         	}
-        }
+        } else {
         
-        // Looking for content on stem
-        Pattern contentPattern = Pattern.compile("^/(.*?)(/rss)?$");
-        Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
-        if (contentMatcher.matches()) {
-        	final String match = contentMatcher.group(1);
-        	log.debug("'" + match + "' matches content");
-        	
-        	log.info("Looking for tag '" + match + "'");
-        	Tag tag = resourceDAO.loadTagByName(match);
-        	if (tag != null) {
-        		log.info("Setting tag: " + tag.getName());
-        		request.setAttribute("tag", tag);
-        		List<Tag> tags = new ArrayList<Tag>();
-        		tags.add(tag);
-        		request.setAttribute("tags", tags);
-        	} else {
-        		log.info("Looking for publisher '" + match + "'");
-        		Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
-        		if (publisher != null) {
-        			log.info("Setting publisher: " + publisher.getName());
-        			request.setAttribute("publisher", publisher);
-        		}
-        	}
+	        // Looking for content on stem
+	        Pattern contentPattern = Pattern.compile("^/(.*?)(/rss)?$");
+	        Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
+	        if (contentMatcher.matches()) {
+	        	final String match = contentMatcher.group(1);
+	        	log.debug("'" + match + "' matches content");
+	        	
+	        	log.info("Looking for tag '" + match + "'");
+	        	Tag tag = resourceDAO.loadTagByName(match);
+	        	if (tag != null) {
+	        		log.info("Setting tag: " + tag.getName());
+	        		request.setAttribute("tag", tag);
+	        		List<Tag> tags = new ArrayList<Tag>();
+	        		tags.add(tag);
+	        		request.setAttribute("tags", tags);
+	        	} else {
+	        		log.info("Looking for publisher '" + match + "'");
+	        		Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
+	        		if (publisher != null) {
+	        			log.info("Setting publisher: " + publisher.getName());
+	        			request.setAttribute("publisher", publisher);
+	        		}
+	        	}
+	        }
         }
         
         

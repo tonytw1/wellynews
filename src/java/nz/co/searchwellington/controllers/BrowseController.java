@@ -76,21 +76,6 @@ public class BrowseController extends BaseMultiActionController {
 		 return mv;
 	}
 
-	
-	public ModelAndView publisherTagCombiner(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		ModelAndView mv = new ModelAndView();		 
-		 User loggedInUser = populateLocalCommon(request, mv);           		   
-		 requestFilter.loadAttributesOntoRequest(request);
-		 if (request.getAttribute("publisher") != null && request.getAttribute("tag") != null) {
-			 Website publisher = (Website) request.getAttribute("publisher");
-			 Tag tag = (Tag) request.getAttribute("tag");
-			 populatePublisherTagCombinerNewsitems(mv, publisher, tag, loggedInUser);
-		 }
-		 mv.setViewName("browse");
-		 return mv;		
-	}
-    
-    
  
 	@SuppressWarnings("unchecked")
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {       
@@ -170,15 +155,7 @@ public class BrowseController extends BaseMultiActionController {
     }
     
     
-    private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, User loggedInUser) throws IOException {
-    	  boolean showBroken = loggedInUser != null;
-          mv.addObject("heading", publisher.getName() + " + " + tag.getDisplayName() + " newsitems");
-          final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken);
-          mv.addObject("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));
-          if (publisherNewsitems.size() > 0) {            
-              setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));
-          }
-	}
+    
     
     
     @SuppressWarnings("unchecked")

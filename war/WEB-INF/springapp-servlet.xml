@@ -110,9 +110,7 @@
 						<prop key="/archive/*/*">archive</prop>
 						<prop key="/browse">publisherContent</prop>
 						<prop key="/*/calendars">publisherCalendars</prop>
-						<prop key="/*/feeds">publisherFeeds</prop>					
-						<prop key="/*+*">publisherTagCombiner</prop>
-						<prop key="*%2B*">publisherTagCombiner</prop>
+						<prop key="/*/feeds">publisherFeeds</prop>				
 						<prop key="/*/watchlist">publisherWatchlist</prop>
 					</props>
 				</property>
