@@ -1,0 +1,99 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+<div class="left">
+
+#parse("includes/tag_tree.vm")
+
+
+</div>
+
+
+<div class="main">
+
+<div class="rss">
+#parse("includes/rss_widget_for_publisher.vm")
+</div>
+
+
+<h2>$heading</h2>
+
+<p>It seems that all of the big kids are providing content APIs as of late.</p>
+
+<p>In that spirit, nearly all of the content indexed on this site can be extracted programatically by manipulating the rss feed urls.</p>
+
+<p><b>Tag newitems</b></p>
+
+<p>Newsitems tagged with a given tag.
+<p>$site_information.url/soccer/rss</p>
+
+
+<p><b>Publisher newsitems</b></p>
+
+<p>Newsitems published by a specific organisation.</p>
+
+<p><p>$site_information.url/capital-times/rss</p>
+
+
+<p><b>Combinations</b> *</p>
+
+<p>Retrieve newsitems tagged with a combination of two tags, or a publisher and a tag.</p>
+<p>Some of these combinations can be quite useful.</p>
+
+<p>ie. Newsitems tagged with <a href="$site_information.url/tag/transport+consultation">transport and consultation</a>
+or <a href="$site_information.url/wellington-city-council+indoorsportscentre">Wellington City Council media releases about the indoor sports centre</a>.
+</p>
+
+
+<p>The desired tags and publishers are specified by subsituting the approiate url snippet into
+the url formats described above. A complete list of available tag and publisher url snippets is shown below.
+</p>
+
+
+
+<h3>Available Tags</h3>	
+<table>
+	<tr><td>Tag</td><td>URL snippet</td></tr>
+	#foreach($item in $api_tags)
+		<tr><td>$item.displayName</td><td>$item.name</td></tr>
+	#end
+</table>
+
+
+<h3>Available Publishers</h3>	
+<table>
+	<tr><td>Publisher</td><td>URL snippet</td></tr>
+	#foreach($item in $publishers)
+		<tr><td>$item.name</td><td>$item.urlWords</td></tr>
+	#end
+</table>	
+
+
+<p>* The combination url scheme was shameless inspired by the Guardians' tag combiners.</p>
+
+
+
+
+</div>
+
+<div class="right">
+#parse("includes/login.vm")
+
+
+
+<div class="box">
+#parse("includes/archive.vm")
+</div>
+
+<div class="box">
+#parse("includes/latest_newsitems.vm")
+</div>
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

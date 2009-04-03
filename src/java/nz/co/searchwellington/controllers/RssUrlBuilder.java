@@ -17,11 +17,11 @@ public class RssUrlBuilder {
     }
        
     public String getRssUrlForPublisher(Website publisher) {
-        return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "/newsitems/rss";
+        return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "/rss";
     }
     
     public String getRssUrlForTag(Tag tag) {          
-        return siteInformation.getUrl() + "/rss/tag/" + tag.getName();      
+        return siteInformation.getUrl() + "/" + tag.getName() + "/rss";
     }
 
     public String getRssUrlForGeotagged() {

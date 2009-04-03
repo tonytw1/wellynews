@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -49,7 +48,7 @@ public class RssController extends MultiActionController {
         this.urlBuilder = urlBuilder;
     }
     
-    @SuppressWarnings("unchecked")
+    
 	public ModelAndView rss(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
         Website publisher = null;
@@ -63,8 +62,6 @@ public class RssController extends MultiActionController {
             tag = (Tag) request.getAttribute("tag");
         }
         
-     
- 
         HashMap <String, Object> model = new HashMap <String, Object>();           
         if (publisher != null) {
             model.put("title", rssUrlBuilder.getRssTitleForPublisher(publisher));
@@ -143,6 +140,22 @@ public class RssController extends MultiActionController {
 		}
 		
 		return null;
+    }
+    
+    
+    public ModelAndView contentRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	HashMap <String, Object> model = new HashMap <String, Object>();
+    	
+    	Tag tag = (Tag) request.getAttribute("tag");
+    	if (tag != null) {
+    		log.info("Building tag rss feed");
+    		model.put("title", rssUrlBuilder.getRssTitleForTag(tag));        
+    		model.put("link", urlBuilder.getTagUrl(tag));
+    		model.put("description", siteInformation.getAreaname() + " related newsitems tagged as " + tag.getDisplayName());
+    		model.put("main_content", resourceDAO.getTaggedNewitems(tag, false, MAX_RSS_ITEMS));
+    	}
+    
+    	return null;
     }
     
     

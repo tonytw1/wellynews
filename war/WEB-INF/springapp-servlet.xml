@@ -185,6 +185,8 @@
 						<prop key="/justin/rss">justinRss</prop>
 						<prop key="/watchlist/rss">watchlistRss</prop>
 						
+						<prop key="/*/rss">contentRss</prop>
+						
 						<prop key="/*+*/rss">combinerRss</prop>
             			<prop key="/*%2B*/rss">combinerRss</prop>
             	
@@ -622,11 +624,12 @@
             	
             	<prop key="/index">indexController</prop>
 				<prop key="/rss/**">rssController</prop>
+				<prop key="/*/rss">rssController</prop>
+				
 				<prop key="/geotagged/rss">rssController</prop>
 				<prop key="/justin/rss">rssController</prop>
 				<prop key="/watchlist/rss">rssController</prop>
-								
-				<prop key="/*/newsitems/rss">rssController</prop>
+					
 					<prop key="/tag/*+*/rss">rssController</prop>
 					<prop key="/tag/*%2B*/rss">rssController</prop>
 				

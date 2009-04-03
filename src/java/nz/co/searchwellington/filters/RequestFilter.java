@@ -171,6 +171,28 @@ public class RequestFilter {
         	}
         }
         
+        // Looking for content on stem
+        Pattern contentPattern = Pattern.compile("^/(.*?)(/rss)?$");
+        Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
+        if (contentMatcher.matches()) {
+        	final String match = contentMatcher.group(1);
+        	log.debug("'" + match + "' matches content");
+        	
+        	log.info("Looking for tag '" + match + "'");
+        	Tag tag = resourceDAO.loadTagByName(match);
+        	if (tag != null) {
+        		log.info("Setting tag: " + tag.getName());
+        		request.setAttribute("tag", tag);
+        	} else {
+        		log.info("Looking for publisher '" + match + "'");
+        		Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
+        		if (publisher != null) {
+        			log.info("Setting publisher: " + publisher.getName());
+        			request.setAttribute("publisher", publisher);
+        		}
+        	}
+        }
+        
         
         if (request.getParameter("feed") != null) {
             final int feedID = Integer.parseInt(request.getParameter("feed"));
