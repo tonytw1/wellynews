@@ -14,10 +14,10 @@
 		#if ($tag.id == $tagToRender.id) 
 			<b>$tagToRender.displayName</b>
 		#else
-			<a href="${site_information.url}/tag/$tagToRender.name">$tagToRender.displayName</a>
+			<a href="${site_information.url}/$tagToRender.name">$tagToRender.displayName</a>
 		#end		
 	#else
-		<a href="${site_information.url}/tag/$tagToRender.name">$tagToRender.displayName</a>
+		<a href="${site_information.url}/$tagToRender.name">$tagToRender.displayName</a>
 	#end
 
 

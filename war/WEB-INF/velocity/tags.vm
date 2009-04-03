@@ -24,7 +24,7 @@
 		<ul>
 	#end
 	
-	<li><a href="$site_information.url/tag/$tag.name">$tag.displayName</a></li>
+	<li><a href="$site_information.url/$tag.name">$tag.displayName</a></li>
 	
 #end
 </ul>

@@ -6,7 +6,7 @@
 <ul>
 #set ($first =1)
 #foreach ($related_tag in $related_tags)
-        <li><a href="$site_information.url/tag/$tag.name+$related_tag.tag.name">$related_tag.tag.displayName.toLowerCase()</a>
+        <li><a href="$site_information.url/$tag.name+$related_tag.tag.name">$related_tag.tag.displayName.toLowerCase()</a>
         #if ($first == 1)
                 ($related_tag.count #showPluralWord($related_tag.count "item"))
                 #set ($first =0)

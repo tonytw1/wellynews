@@ -3,7 +3,7 @@
 
 <ul>
 #foreach ($sibling_tag in $sibling_tags)
-	<li><a href="$site_information.url/tag/$sibling_tag.name">$sibling_tag.displayName.toLowerCase()</a>
+	<li><a href="$site_information.url/$sibling_tag.name">$sibling_tag.displayName.toLowerCase()</a>
 #end
 </ul>
 #end

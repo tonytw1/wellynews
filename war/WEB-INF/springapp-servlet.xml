@@ -416,6 +416,14 @@
 						<prop key="/tag/*/comment">comment</prop>	
 						<prop key="/tag/*/news">newsArchive</prop>
 						<prop key="/geotagged/*">geotagged</prop>
+						
+						
+						<prop key="/*">normal</prop>
+						<prop key="/*/comment">comment</prop>	
+						<prop key="/*/news">newsArchive</prop>
+						<prop key="/*/geotagged">geotagged</prop>
+						
+						
 					</props>
 				</property>
 			</bean>		
@@ -614,8 +622,8 @@
             	<prop key="/*/newsitems">browseController</prop>
             	<prop key="/*/watchlist">browseController</prop>
 
-            	<prop key="/*+*">browseController</prop>
-            	<prop key="/*%2B*">browseController</prop>
+          <prop key="/*+*">tagController</prop>
+          <prop key="/*%2B*">tagController</prop>
             	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
@@ -689,6 +697,9 @@
 				
 				<prop key="/supress/*">supressionController</prop>
 				
+				
+					<prop key="/*">tagController</prop>
+					
 				<prop key="/tag/*">tagController</prop>
 				<prop key="/tag/*/comment">tagController</prop>
 				<prop key="/tag/*/news">tagController</prop>

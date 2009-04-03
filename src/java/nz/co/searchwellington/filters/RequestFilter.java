@@ -183,6 +183,9 @@ public class RequestFilter {
         	if (tag != null) {
         		log.info("Setting tag: " + tag.getName());
         		request.setAttribute("tag", tag);
+        		List<Tag> tags = new ArrayList<Tag>();
+        		tags.add(tag);
+        		request.setAttribute("tags", tags);
         	} else {
         		log.info("Looking for publisher '" + match + "'");
         		Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
