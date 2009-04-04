@@ -43,7 +43,7 @@
 <p>Retrieve newsitems tagged with a combination of two tags, or a publisher and a tag.</p>
 <p>Some of these combinations can be quite useful.</p>
 
-<p>ie. Newsitems tagged with <a href="$site_information.url/tag/transport+consultation">transport and consultation</a>
+<p>ie. Newsitems tagged with <a href="$site_information.url/transport+consultation">transport and consultation</a>
 or <a href="$site_information.url/wellington-city-council+indoorsportscentre">Wellington City Council media releases about the indoor sports centre</a>.
 </p>
 

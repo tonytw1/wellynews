@@ -132,7 +132,7 @@ public class SimplePageController extends BaseMultiActionController {
     
     
     
-    public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         populateLocalCommon(mv);
         
