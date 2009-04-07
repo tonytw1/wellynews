@@ -108,7 +108,8 @@ the url. A complete list of available tag and publisher url snippets is shown be
 <table>
 	<tr><td>Tag</td><td>URL snippet</td></tr>
 	#foreach($item in $api_tags)
-		<tr><td>$item.displayName</td><td>$item.name</td></tr>
+		<tr><td>$item.displayName</td>
+		<td><code>$item.name</code></td></tr>
 	#end
 </table>
 
@@ -117,7 +118,8 @@ the url. A complete list of available tag and publisher url snippets is shown be
 <table>
 	<tr><td>Publisher</td><td>URL snippet</td></tr>
 	#foreach($item in $publishers)
-		<tr><td>$item.name</td><td>$item.urlWords</td></tr>
+		<tr><td>$item.name</td>
+		<td><code>$item.urlWords</code></td></tr>
 	#end
 </table>	
 
