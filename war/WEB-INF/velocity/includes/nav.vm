@@ -8,6 +8,7 @@
 <li><a href="$site_information.url/feeds">Feeds</a></li>
 <li><a href="$site_information.url/index#submit">Submit</a></li>
 <li><a href="$site_information.url/tags">Tags</a></li>
+<li><a href="$site_information.url/publishers">Publishers</a></li>
 <li><a href="$site_information.url/watchlist">Watchlist</a></li>
 #if($last_updated)
 	<li>Last updated $dateFormatter.timeSince($last_updated)</li>

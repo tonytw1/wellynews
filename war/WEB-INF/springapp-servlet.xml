@@ -28,6 +28,7 @@
 						<prop key="/justin">justin</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
 						<prop key="/api">api</prop>
+						<prop key="/publishers">publishers</prop>
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
 						<prop key="/watchlist">watchlist</prop>
@@ -86,9 +87,7 @@
 	</bean>
 
 
-	<bean id="urlBuilder" class="nz.co.searchwellington.controllers.UrlBuilder">
-		<constructor-arg ref="siteInformation" />
-	</bean>
+
 	
 	<bean id="rssUrlBuilder" class="nz.co.searchwellington.controllers.RssUrlBuilder">
 		<constructor-arg ref="siteInformation" />
@@ -607,6 +606,7 @@
             	<prop key="/justin">SimplePageController</prop>
 				<prop key="/lastupdated">SimplePageController</prop>
 				<prop key="/api">SimplePageController</prop>
+				<prop key="/publishers">SimplePageController</prop>
 				<prop key="/tags">SimplePageController</prop>
 				<prop key="/twitter">SimplePageController</prop>				
 				<prop key="/watchlist">SimplePageController</prop>

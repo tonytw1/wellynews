@@ -143,14 +143,7 @@ public class SimplePageController extends BaseMultiActionController {
         
         mv.addObject("heading", "Wellynews API");
 
-        List<Website> publishers = new ArrayList<Website>();
-        List<Object[]> publisherIds = resourceDAO.getAllPublishers(showBroken, true); 
-        for (Object[] objects : publisherIds) {
-			int publisherId = (Integer) objects[0];
-			Website publisher = (Website) resourceDAO.loadResourceById(publisherId);
-			publishers.add(publisher);			
-			log.info("Redirect /rss?publisher=" + publisher.getId() + " http://wellington.gen.nz/" + publisher.getUrlWords() + "newsitems/rss");
-		}
+        List<Website> publishers = getAllPublishers(showBroken);
         
         mv.addObject("publishers", publishers);
         mv.addObject("api_tags", resourceDAO.getTopLevelTags());
@@ -158,6 +151,19 @@ public class SimplePageController extends BaseMultiActionController {
         mv.setViewName("api");
         return mv;      
     }
+
+
+    // TODO extremely non preformant
+	private List<Website> getAllPublishers(boolean showBroken) throws IOException {
+		List<Website> publishers = new ArrayList<Website>();
+        List<Object[]> publisherIds = resourceDAO.getAllPublishers(showBroken, true); 
+        for (Object[] objects : publisherIds) {
+			int publisherId = (Integer) objects[0];
+			Website publisher = (Website) resourceDAO.loadResourceById(publisherId);
+			publishers.add(publisher);			
+		}
+		return publishers;
+	}
 
 
     
@@ -315,6 +321,25 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
+    
+    
+    
+    public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+        ModelAndView mv = new ModelAndView();
+        populateLocalCommon(mv);
+        
+        urlStack.setUrlStack(request);
+        User loggedInUser = setLoginState(request, mv);
+        boolean showBroken = loggedInUser != null;
+        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
+                        
+        mv.addObject("heading", "All Publishers");    
+        mv.addObject("publishers", getAllPublishers(showBroken));
+        
+        populateSecondaryLatestNewsitems(mv, loggedInUser);       
+        mv.setViewName("publishers");
+        return mv;
+    }
     
     
     

@@ -21,40 +21,90 @@
 
 <h2>$heading</h2>
 
-<p>It seems that all of the big kids are providing content APIs as of late.</p>
+<p>Lately it seems that all of the big kids have been releasing content APIs.</p> 
+<p>The Wellynews API lets you do something simular with local newsitems.</p>
 
-<p>In that spirit, nearly all of the content indexed on this site can be extracted programatically by manipulating the rss feed urls.</p>
+<p>The API allows indexed newsitems to be extracted programatically in RSS or JSON formats.</p>
+
+<p>Queries are specficed by manipulating the urls.</p>
+
+
+
+<h3>Supported Queries</h3>
+
 
 <p><b>Tag newitems</b></p>
 
-<p>Newsitems tagged with a given tag.
-<p>$site_information.url/soccer/rss</p>
+<p>Returns newsitems tagged with a given tag.</p>
+	
+	<ul>
+	<li><code>$site_information.url/[tag url snippet]/[rss|json]</code>
+	</ul>
+
+<p>ie. All newsitems tagged with soccer.</p>
+
+	<ul>
+	<li><code>$site_information.url/soccer/rss</code></li>
+	</ul>
 
 
 <p><b>Publisher newsitems</b></p>
 
-<p>Newsitems published by a specific organisation.</p>
+<p>Returns newsitems published by a specific organisation.</p>
 
-<p><p>$site_information.url/capital-times/rss</p>
+	<ul>
+	<li><code>$site_information.url/[publisher url snippet]/[rss|json]</code>
+	</ul>
+
+<p>ie. newsitems published by the Capital Times:</p>
+
+	<ul>
+	<li><code>$site_information.url/capital-times/rss</code></li>
+	</ul>
+
+<p><b>Combinations</b></p>
+
+<p>Returns newsitems tagged with a combination of two tags, or a publisher and a tag. 
+Some of these combinations can be quite useful.</p> 
+
+	<ul>
+	<li><code>$site_information.url/[tag|publisher]+[tag]/[rss|json]</code>
+	</ul>
+
+ie. newsitems tagged with transport and consultation and Wellington City Council media releases tagged with indoor sports centre</a>.
+</p>
+
+	<ul>
+	<li><code>$site_information.url/transport+consultation/rss</code></li>
+	<li><code>$site_information.url/wellington-city-council+indoorsportcentre/rss</code></li>
+	</ul>
+
+<p>The combination url scheme was shameless inspired by the Guardians' tag combiners.</p>
 
 
-<p><b>Combinations</b> *</p>
+<h3>Supported Formats</h3>
 
-<p>Retrieve newsitems tagged with a combination of two tags, or a publisher and a tag.</p>
-<p>Some of these combinations can be quite useful.</p>
+<p>Newsitems can be returned in RSS or JSON format. The desired format is specified by appending ethier <code>rss</code> or <code>json</code>
+to the end of the query url.</p>
 
-<p>ie. Newsitems tagged with <a href="$site_information.url/transport+consultation">transport and consultation</a>
-or <a href="$site_information.url/wellington-city-council+indoorsportscentre">Wellington City Council media releases about the indoor sports centre</a>.
+<p>ie. Transport newsitems in JSON format:</p>
+
+	<ul>
+	<li><code>$site_information.url/transport/json</code></li>
+	</ul>
+
+
+<h3>Specifing tags and publishers</h3>
+
+<p>In the url formats described above, tags and publishers are specified by subsituting the approriaite url snippet into
+the url. A complete list of available tag and publisher url snippets is shown below.
 </p>
 
 
-<p>The desired tags and publishers are specified by subsituting the approiate url snippet into
-the url formats described above. A complete list of available tag and publisher url snippets is shown below.
-</p>
 
 
 
-<h3>Available Tags</h3>	
+<b>Available Tags</b>	
 <table>
 	<tr><td>Tag</td><td>URL snippet</td></tr>
 	#foreach($item in $api_tags)
@@ -63,16 +113,13 @@ the url formats described above. A complete list of available tag and publisher 
 </table>
 
 
-<h3>Available Publishers</h3>	
+<b>Available Publishers</b>
 <table>
 	<tr><td>Publisher</td><td>URL snippet</td></tr>
 	#foreach($item in $publishers)
 		<tr><td>$item.name</td><td>$item.urlWords</td></tr>
 	#end
 </table>	
-
-
-<p>* The combination url scheme was shameless inspired by the Guardians' tag combiners.</p>
 
 
 

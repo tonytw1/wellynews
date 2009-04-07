@@ -228,9 +228,13 @@
 				<entry key="columnSplitter" value-ref="columnSplitter" />
 				<entry key="site_information" value-ref="siteInformation" />
 				<entry key="chartBuilder" value-ref="chartBuilder" />
+				<entry key="urlBuilder" value-ref="urlBuilder" />
 			</map>
-		</property>
-  		
+		</property>  		
+	</bean>
+	
+	<bean id="urlBuilder" class="nz.co.searchwellington.controllers.UrlBuilder">
+		<constructor-arg ref="siteInformation" />
 	</bean>
 
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">

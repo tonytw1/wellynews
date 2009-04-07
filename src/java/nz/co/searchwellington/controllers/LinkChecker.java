@@ -318,6 +318,7 @@ public class LinkChecker {
     }
 
 
+    // TODO make method of httpFetcher
     private static String readEncodedResponse(InputStream is, String charSet) throws IOException {
         BufferedReader d = new BufferedReader(new InputStreamReader(is, charSet));        
         StringBuffer responseBody = new StringBuffer();

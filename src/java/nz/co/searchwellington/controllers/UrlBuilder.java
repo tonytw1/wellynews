@@ -29,9 +29,13 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName();
 	}
 
+	public String getPublisherUrl(Website publisher) {
+		return siteInformation.getUrl() + "/" + publisher.getUrlWords();
+	}
 
-	public Object getPublisherCombinerUrl(Website publisher, Tag tag) {
+	public String getPublisherCombinerUrl(Website publisher, Tag tag) {
 		return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "+" + tag.getName();
 	}
+	
 
 }
