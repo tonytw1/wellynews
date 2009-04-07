@@ -82,9 +82,6 @@ public class RomeRssFeed {
             log.error(e);
         } catch (FeedException e) {
             log.error(e);
-        } catch (Exception e) {
-            // Catchs an illegal data error inside JDOM.
-            log.error(e);
         }
 
         return null;

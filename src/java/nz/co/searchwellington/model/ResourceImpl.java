@@ -94,19 +94,21 @@ public abstract class ResourceImpl implements Resource {
     
     public SyndEntry getRssItem() {
         SyndEntry entry = new SyndEntryImpl();      
-        entry.setTitle(name);
-        entry.setLink(url);       
+        entry.setTitle(stripIllegalCharacters(name));
+        entry.setLink(url);
 
         SyndContent description = new SyndContentImpl();
         description.setType("text/plain");
-        description.setValue(this.description);
-        entry.setDescription(description);        
+        description.setValue(stripIllegalCharacters(this.description));
+        entry.setDescription(description);
         return entry;
     }
+        
+    private String stripIllegalCharacters(String input) {
+		return input.replaceAll("[^\\u0020-\\uFFFF]", "");
+	}
     
-    
-    
-    public Date getLastScanned() {
+	public Date getLastScanned() {
         return lastScanned;
     }
     public void setLastScanned(Date lastScanned) {
