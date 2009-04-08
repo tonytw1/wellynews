@@ -21,7 +21,11 @@
 
 <h2>$heading</h2>
 
-<p>Lately it seems that all of the big kids have been releasing content APIs.</p> 
+<center>
+<img src="/images/wordel.png" width="520">
+</center>
+
+<p>Lately it seems that all of the big kids have been releasing content APIs.
 <p>The Wellynews API lets you do something simular with local newsitems.</p>
 
 <p>The API allows indexed newsitems to be extracted programatically in RSS or JSON formats.</p>

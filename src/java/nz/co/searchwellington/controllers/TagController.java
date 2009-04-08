@@ -25,8 +25,8 @@ import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.sun.syndication.io.FeedException;
 
@@ -206,159 +206,180 @@ public class TagController extends BaseMultiActionController {
    
     @SuppressWarnings("unchecked")
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-        logger.info("Starting normal tag.");
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("tag");
-
-        User loggedInUser = setLoginState(request, mv);
-        boolean showBroken = loggedInUser != null;
-            
-        populateSecondaryLatestNewsitems(mv, loggedInUser);                        
+        logger.info("Starting normal content");
+                                  
         requestFilter.loadAttributesOntoRequest(request);
-        
-        List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-        log.info("Tags: " + tags);
-        
-        
-        
+        List<Tag> tags = (List<Tag>) request.getAttribute("tags");        
         Tag tag = (Tag) request.getAttribute("tag");
         Website publisher = (Website) request.getAttribute("publisher");
-        
-		if (publisher != null && tag == null) {
+                
+		boolean isPublisherPage = publisher != null && tag == null;
+		if (isPublisherPage) {
 			log.info("Populating publisher newsitems screen");
+			return populatePublisherPageModelAndView(request, publisher);
 			
-			populateCommon(request, mv, showBroken, loggedInUser, null);
-			mv.getModel().put("heading", publisher.getName() + " Newsitems");
-			final List<Newsitem> publisherNewsitems = resourceDAO.getAllPublisherNewsitems(publisher, showBroken);
-			mv.getModel().put("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));
-			if (publisherNewsitems.size() > 0) {
-				setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
-				mv.getModel().put("publisher", publisher);
+		} else {
+			boolean isPublisherTagCombiner = publisher != null && tag != null;
+			if (isPublisherTagCombiner) {
+				return populatePublisherTagCombinerPageModelAndView(request, tag, publisher);
 			}
-			populateSecondaryLatestNewsitems(mv, loggedInUser);
-			mv.setViewName("browse");
-			return mv;
-			
-		} else if (publisher != null && tag != null) {
-			populateCommon(request, mv, showBroken, loggedInUser, null);
-			populatePublisherTagCombinerNewsitems(mv, publisher, tag, loggedInUser);			
-			mv.setViewName("browse");
-			return mv;		
 		}
-		
-		
-		
-		
-		
-		
-		
-        if (tags.size() == 1) {
-
-            
-            final Tag firstTag = tags.get(0);
-            tag = firstTag;
-            populateTagFlickrPool(mv, tag);
-            populateCommon(request, mv, showBroken, loggedInUser, tag);
-            
-            mv.addObject("tag", tag);
-            mv.addObject("heading", tag.getDisplayName());
-            mv.addObject("description", tag.getDisplayName() + " listings.");
-          
-            mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
-            
-            populateTagImages(mv, tag);
-
-            final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
-           
-            List<Resource> commentedNewsitemOnPage = populateCommentedTaggedNewsitems(mv, tag, showBroken, loggedInUser);
-            List<Resource> taggedNewsitems = resourceDAO.getTaggedNewitems(tag, showBroken, MAX_NEWSITEMS + commentedNewsitemOnPage.size());
-                       
-            // RSS
-            if (taggedNewsitems.size() > 0) {
-                setTagRss(mv, tag);               
-            }
-            
-            if (tag.getRelatedTwitter() != null) {
-            	mv.addObject("twitterUsername", tag.getRelatedTwitter());
-            }
-            
-            // Edit
-            if (loggedInUser != null) {             
-                populateTagEditUrl(mv, tag);
-                populateTagDeleteUrl(mv, tag);
-                populatePlacesAutotagUrl(mv, tag);                
-            }
-
-            populateRelatedTagLinks(mv, showBroken, tag);
-            
-            populateRelatedFeed(mv, tag, feedDAO);
-            
-            List <Resource> tagCalendars = resourceDAO.getCalendarFeedsForTag(tag);
-            populateRelatedCalendars(mv, tagCalendars, loggedInUser);
-            populateRelatedEvents(mv, tagCalendars);
-            
-            
-            final int allAvailableNewsitems = resourceDAO.getTaggedNewitemsCount(tag, showBroken);            
-            
-            final boolean showMainAndSecondaryContent = populateMainAndSecondaryContent(mv, loggedInUser, tag, taggedWebsites, allAvailableNewsitems, taggedNewsitems, tag.getDisplayName(), commentedNewsitemOnPage);
-            if (!showMainAndSecondaryContent) {
-                mv.setViewName("tagOneContentType");
-                mv.addObject("main_heading", null);
-            }
-
-            
-            if (tag.getParent() != null) {
-                mv.addObject("parent_tag", tag.getParent());
-                List tagSiblings = new ArrayList<Tag>(tag.getParent().getChildren());
-                tagSiblings.remove(tag);
-                mv.addObject("sibling_tags", tagSiblings);
-            }
-                        
-            populateGeocodedForTag(mv, loggedInUser, tag);
-
-            mv.addObject("tag_watchlist", itemMaker.setEditUrls(resourceDAO.getTagWatchlist(tag, showBroken), loggedInUser));
-   
-        } else if (tags.size() == 2) {
-            mv.addObject("tags", tags);
-            
-            final Tag firstTag = tags.get(0);
-            populateTagFlickrPool(mv, firstTag);
-            populateCommon(request, mv, showBroken, loggedInUser, firstTag);
-            
-            final String tagsTitle = firstTag.getDisplayName() + " and " + tags.get(1).getDisplayName();
-            mv.addObject("heading", tagsTitle);
-            mv.addObject("description", tagsTitle + " listings.");
-            
-            final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  
-            final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);
-       
-            if (taggedNewsitems.size() > 0) {
-            	 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
-            }
-            
-            // TODO can you have commented newsitems on a combiner page?
-            final boolean showMainAndSecondaryContent = populateMainAndSecondaryContent(mv, loggedInUser, firstTag, taggedWebsites, taggedWebsites.size(), taggedNewsitems, tagsTitle, null);
-            
-            
-            if (!showMainAndSecondaryContent) {
-                mv.setViewName("tagCombinedOneContentType");
-                mv.addObject("main_heading", null);
-            }
-            
-            
-            populateRelatedTagLinks(mv, showBroken, firstTag);
-            
-                  
-            mv.addObject("tag", firstTag);
+				
+        boolean isSingleTagPage = tags != null && tags.size() == 1;
+		if (isSingleTagPage) {
+        	return populateTagPageModelAndView(request, tag);
             
         } else {
-            // TODO return a 404; how do you do this from spring?  
-            throw new RuntimeException("Invalid tag name.");
-        }
+			boolean isTagCombinerPage = tags != null && tags.size() == 2;
+			if (isTagCombinerPage) {
+				return populateTagCombinerModelAndView(request, tags);		    
+			} else {
+				logger.info("Returning 404 for path: " + request.getPathInfo());
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+		}
 
-        logger.info("Finishing normal tag.");
-        return mv;
+        logger.info("Finishing normal content");
+        return null;
     }
+
+    
+	private ModelAndView populateTagCombinerModelAndView(
+			HttpServletRequest request, List<Tag> tags) throws IOException {
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("tags", tags);
+		
+		final Tag firstTag = tags.get(0);
+		populateTagFlickrPool(mv, firstTag);
+		User loggedInUser = setLoginState(request, mv);
+		boolean showBroken = loggedInUser != null;            
+		populateSecondaryLatestNewsitems(mv, loggedInUser);
+		populateCommon(request, mv, showBroken, loggedInUser, firstTag);
+		
+		final String tagsTitle = firstTag.getDisplayName() + " and " + tags.get(1).getDisplayName();
+		mv.addObject("heading", tagsTitle);
+		mv.addObject("description", tagsTitle + " listings.");
+		
+		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  
+		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);
+     
+		if (taggedNewsitems.size() > 0) {
+			 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
+		}
+		
+		// TODO can you have commented newsitems on a combiner page?
+		final boolean showMainAndSecondaryContent = populateMainAndSecondaryContent(mv, loggedInUser, firstTag, taggedWebsites, taggedWebsites.size(), taggedNewsitems, tagsTitle, null);
+			
+		if (!showMainAndSecondaryContent) {
+		    mv.setViewName("tagCombinedOneContentType");
+		    mv.addObject("main_heading", null);
+		}
+		            
+		populateRelatedTagLinks(mv, showBroken, firstTag);                              
+		mv.addObject("tag", firstTag);
+		mv.setViewName("tag");
+		return mv;
+	}
+
+	
+	private ModelAndView populateTagPageModelAndView(HttpServletRequest request, Tag tag) throws IOException, CorruptIndexException, FeedException {		
+		ModelAndView mv = new ModelAndView();            
+		
+		populateTagFlickrPool(mv, tag);
+		User loggedInUser = setLoginState(request, mv);
+		boolean showBroken = loggedInUser != null;            
+		populateSecondaryLatestNewsitems(mv, loggedInUser);   
+		populateCommon(request, mv, showBroken, loggedInUser, tag);
+		
+		mv.addObject("tag", tag);
+		mv.addObject("heading", tag.getDisplayName());
+		mv.addObject("description", tag.getDisplayName() + " listings.");
+        
+		mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
+		
+		populateTagImages(mv, tag);
+
+		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
+         
+		List<Resource> commentedNewsitemOnPage = populateCommentedTaggedNewsitems(mv, tag, showBroken, loggedInUser);
+		List<Resource> taggedNewsitems = resourceDAO.getTaggedNewitems(tag, showBroken, MAX_NEWSITEMS + commentedNewsitemOnPage.size());
+		           
+		// RSS
+		if (taggedNewsitems.size() > 0) {
+		    setTagRss(mv, tag);               
+		}
+		
+		if (tag.getRelatedTwitter() != null) {
+			mv.addObject("twitterUsername", tag.getRelatedTwitter());
+		}
+		
+		// Edit
+		if (loggedInUser != null) {             
+		    populateTagEditUrl(mv, tag);
+		    populateTagDeleteUrl(mv, tag);
+		    populatePlacesAutotagUrl(mv, tag);                
+		}
+
+		populateRelatedTagLinks(mv, showBroken, tag);
+		
+		populateRelatedFeed(mv, tag, feedDAO);
+		
+		List <Resource> tagCalendars = resourceDAO.getCalendarFeedsForTag(tag);
+		populateRelatedCalendars(mv, tagCalendars, loggedInUser);
+		populateRelatedEvents(mv, tagCalendars);
+		
+		
+		final int allAvailableNewsitems = resourceDAO.getTaggedNewitemsCount(tag, showBroken);            
+		
+		final boolean showMainAndSecondaryContent = populateMainAndSecondaryContent(mv, loggedInUser, tag, taggedWebsites, allAvailableNewsitems, taggedNewsitems, tag.getDisplayName(), commentedNewsitemOnPage);
+		if (!showMainAndSecondaryContent) {
+		    mv.setViewName("tagOneContentType");
+		    mv.addObject("main_heading", null);
+		}
+		
+		if (tag.getParent() != null) {
+		    mv.addObject("parent_tag", tag.getParent());
+		    List<Tag> tagSiblings = new ArrayList<Tag>(tag.getParent().getChildren());
+		    tagSiblings.remove(tag);
+		    mv.addObject("sibling_tags", tagSiblings);
+		}
+		            
+		populateGeocodedForTag(mv, loggedInUser, tag);
+		mv.addObject("tag_watchlist", itemMaker.setEditUrls(resourceDAO.getTagWatchlist(tag, showBroken), loggedInUser));
+		mv.setViewName("tag");
+		return mv;
+	}
+
+	
+	private ModelAndView populatePublisherTagCombinerPageModelAndView(HttpServletRequest request, Tag tag, Website publisher) throws IOException {
+		ModelAndView mv = new ModelAndView();
+		User loggedInUser = setLoginState(request, mv);
+		boolean showBroken = loggedInUser != null;            
+		populateSecondaryLatestNewsitems(mv, loggedInUser);   
+		populateCommon(request, mv, showBroken, loggedInUser, null);
+		populatePublisherTagCombinerNewsitems(mv, publisher, tag, loggedInUser);			
+		mv.setViewName("browse");
+		return mv;
+	}
+
+	
+	private ModelAndView populatePublisherPageModelAndView(HttpServletRequest request, Website publisher) throws IOException {
+		ModelAndView mv = new ModelAndView();
+		User loggedInUser = setLoginState(request, mv);
+		boolean showBroken = loggedInUser != null;
+		populateSecondaryLatestNewsitems(mv, loggedInUser);   
+		populateCommon(request, mv, showBroken, loggedInUser, null);
+		mv.addObject("heading", publisher.getName() + " Newsitems");
+		final List<Newsitem> publisherNewsitems = resourceDAO.getAllPublisherNewsitems(publisher, showBroken);
+		mv.addObject("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));
+		if (publisherNewsitems.size() > 0) {
+			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
+			mv.addObject("publisher", publisher);
+		}
+		populateSecondaryLatestNewsitems(mv, loggedInUser);
+		mv.setViewName("browse");
+		return mv;
+	}
 
 
 
