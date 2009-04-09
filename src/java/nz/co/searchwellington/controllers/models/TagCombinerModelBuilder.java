@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
@@ -25,11 +26,14 @@ public class TagCombinerModelBuilder implements ModelBuilder {
 	private ResourceRepository resourceDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
+	private RelatedTagsService relatedTagsService;
 	
-	public TagCombinerModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {		
+	
+	public TagCombinerModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {		
 		this.resourceDAO = resourceDAO;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
+		this.relatedTagsService = relatedTagsService;
 	}
 	
 	
@@ -50,8 +54,16 @@ public class TagCombinerModelBuilder implements ModelBuilder {
 		return null;
 	}
 	
-		
-	public ModelAndView populateTagCombinerModelAndView(List<Tag> tags, boolean showBroken) throws IOException {
+	
+	@SuppressWarnings("unchecked")
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+		Tag tag = tags.get(0);
+		mv.addObject("related_tags", relatedTagsService.getRelatedTagLinks(tag, showBroken));
+	}
+
+
+	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, boolean showBroken) throws IOException {
 		ModelAndView mv = new ModelAndView();		
 		final Tag firstTag = tags.get(0);
 		final Tag secondTag = tags.get(1);

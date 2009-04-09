@@ -1,19 +1,18 @@
 #if ($related_tags)
-<h2>Related Tags</h2>
+	<h2>Related Tags</h2>
+	<p>Items tagged with both $tag.displayName.toLowerCase() and:</p>
 
-<p>Items tagged with both $tag.displayName.toLowerCase() and:</p>
-
-<ul>
-#set ($first =1)
-#foreach ($related_tag in $related_tags)
+	<ul>
+	#set ($first =1)
+	#foreach ($related_tag in $related_tags)
         <li><a href="$site_information.url/$tag.name+$related_tag.tag.name">$related_tag.tag.displayName.toLowerCase()</a>
         #if ($first == 1)
-                ($related_tag.count #showPluralWord($related_tag.count "item"))
-                #set ($first =0)
+          	($related_tag.count #showPluralWord($related_tag.count "item"))
+           	#set ($first =0)
         #else
-                ($related_tag.count)
+           	($related_tag.count)
         #end
         </li>
-#end
-</ul>
+	#end
+	</ul>
 #end

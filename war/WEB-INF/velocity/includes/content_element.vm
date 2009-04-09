@@ -48,17 +48,17 @@
 				#if ($item.type == 'W') 
 					#if ($item.newsitems && $item.newsitems.size() > 0) 
 						<li><a href="$site_information.url/$item.urlWords">
-						#showItemCount($item.newsitems.size() "Newsitem")	
+						#showItemCount($item.newsitems.size() "newsitem")	
 						</a></li>
 					#end
 				
 					#if ($item.feeds && $item.feeds.size() > 0) 
 						#if($item.feeds.size() == 1)
 							#set ($feed = $item.feeds.iterator().next())					
-							<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 Feed</a>	
+							<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 feed</a>	
 						#else
 						<li><a href="$site_information.url/$item.urlWords/feeds">					
-							#showItemCount($item.feeds.size() "Feed")		
+							#showItemCount($item.feeds.size() "feed")		
 						</a>
 						</li>
 						#end					
@@ -67,10 +67,10 @@
 					#if ($item.calendars && $item.calendars.size() > 0) 
 						#if($item.calendars.size() == 1)
 							#set ($calendar = $item.calendars.iterator().next())					
-							<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 Calendar</a>	
+							<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 calendar</a>	
 						#else
 							<li><a href="$site_information.url/$item.urlWords/calendars">					
-								#showItemCount($item.calendars.size() "Calendar")		
+								#showItemCount($item.calendars.size() "calendar")		
 							</a>
 							</li>
 						#end					
@@ -78,7 +78,7 @@
 				
 					#if ($item.watchlist && $item.watchlist.size() > 0) 
 						<li><a href="$site_information.url/$item.urlWords/watchlist">
-							#showItemCount(	$item.watchlist.size() "Watchlist")
+							#showItemCount(	$item.watchlist.size() "watchlist")
 						</a></li>
 					#end
 				#end

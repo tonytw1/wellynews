@@ -52,7 +52,11 @@ public class PublisherModelBuilder implements ModelBuilder {
 	}
 	
 	
-	public ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken) throws IOException {
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
+	}
+
+		
+	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken) throws IOException {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
 		mv.addObject("description", publisher.getName());

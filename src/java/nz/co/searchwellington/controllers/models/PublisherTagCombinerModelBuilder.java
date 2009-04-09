@@ -39,7 +39,8 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 		boolean isPublisherTagCombiner = publisher != null && tag != null;
 		return isPublisherTagCombiner;
 	}
-
+	
+	
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) throws IOException, CorruptIndexException, FeedException {
 		if (isValid(request)) {
 			logger.info("Building publisher tag combiner page model");
@@ -55,6 +56,11 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 		}
 		return null;
 	}
+	
+	
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
+	}
+
 
 	
 	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) throws IOException {		

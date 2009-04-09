@@ -73,42 +73,28 @@
 
 
 <div class="tag_main_content">
-
-#if ($tag_image) 
-<p>
-<img src="$tag_image" width="320">
-</p>
-#end
-#parse("includes/main_content.vm")
+	#if ($tag.getMainImage()) 
+		<p><img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320"></p>
+	#end
+	
+	#set($main_heading = "$tag.getDisplayName() related newsitems")
+	#parse("includes/main_content.vm")
 </div>
 
 
-
-
-
 <div class="tag_secondary_content">
-
-#if ($secondary_tag_image)
-<p><img src="$secondary_tag_image" width="168"></p>
-#end
-
-#if ($commented_newsitems)
-	#if($secondary_content.size() < 4)
-		#parse("includes/secondary_content.vm")
-		#parse("includes/commented_tagged_newsitems.vm")
-	#else 
-		#parse("includes/commented_tagged_newsitems.vm")
-		#parse("includes/secondary_content.vm")
+	#if ($tag.getSecondaryImage())
+		<p><img src="$urlBuilder.getImageUrl($tag.getSecondaryImage())" width="168"></p>
 	#end
-#else
-#parse("includes/secondary_content.vm")
-#end
 
+	#if ($commented_newsitems)
+		#parse("includes/commented_tagged_newsitems.vm")
+	#end
 
-
-
-
-
+	#set($secondary_heading = "Related sites")
+	#set($secondary_content = $websites)
+	#parse("includes/secondary_content.vm")
+	
 
 #parse("includes/tag_watchlist.vm")
 

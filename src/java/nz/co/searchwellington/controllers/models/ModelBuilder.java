@@ -16,5 +16,7 @@ public interface ModelBuilder {
 	public abstract ModelAndView populateContentModel(
 			HttpServletRequest request, boolean showBroken) throws IOException,
 			CorruptIndexException, FeedException;
+	
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv);
 
 }

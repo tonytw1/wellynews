@@ -62,18 +62,22 @@ public class TagController extends BaseMultiActionController {
        
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         logger.info("Starting normal content");                                  
-        requestFilter.loadAttributesOntoRequest(request);                
+        requestFilter.loadAttributesOntoRequest(request);
+        boolean showBroken = false;
+        
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {
-			addCommonModelElements(mv);
+			addCommonModelElements(mv, showBroken);
 			return mv;
 		}
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
     }
 	
-    private void addCommonModelElements(ModelAndView mv) {
+    private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
 		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());		
+        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(5, showBroken);
+        mv.addObject("latest_newsitems", latestNewsitems);
 	}
 
 

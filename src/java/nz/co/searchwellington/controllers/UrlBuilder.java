@@ -14,6 +14,9 @@ public class UrlBuilder {
 		this.siteInformation = siteInformation;
 	}
 
+	public String getImageUrl(String filename) {
+		return siteInformation.getUrl() + "/images/" + filename;
+	}
 
 	public String getFeedUrl(Feed feed) {		
 		return siteInformation.getUrl() + "/viewfeed?feed=" + feed.getId();
@@ -36,6 +39,9 @@ public class UrlBuilder {
 	public String getPublisherCombinerUrl(Website publisher, Tag tag) {
 		return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "+" + tag.getName();
 	}
-	
 
+	public String getTagCommentUrl(Tag tag) {
+		return siteInformation.getUrl() + "/" + tag.getName() + "/comment";
+	}
+	
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
@@ -22,19 +23,22 @@ public class TagModelBuilder implements ModelBuilder {
 
 	private static final int MAX_WEBSITES = 500;
 	private static final int MAX_NEWSITEMS = 30;
+	private static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 3;
 	
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	
 	private ResourceRepository resourceDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
+	private RelatedTagsService relatedTagsService;
 
 		
 	
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {
 		this.resourceDAO = resourceDAO;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
+		this.relatedTagsService = relatedTagsService;
 	}
 
 	
@@ -56,8 +60,22 @@ public class TagModelBuilder implements ModelBuilder {
 		return null;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+		Tag tag = tags.get(0);
+		mv.addObject("related_tags", relatedTagsService.getRelatedTagLinks(tag, showBroken));
+		try {
+			populateCommentedTaggedNewsitems(mv, tag, showBroken);
+			mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+ 	
 	
-	public ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken) throws IOException, CorruptIndexException, FeedException {		
+	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken) throws IOException, CorruptIndexException, FeedException {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName());        		
@@ -77,6 +95,22 @@ public class TagModelBuilder implements ModelBuilder {
 		mv.setViewName("tag");
 		return mv;
 	}
+	
+	
+
+    private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) throws IOException {
+        List<Resource> allCommentedNewsitems = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, MAX_NUMBER_OF_COMMENTED_TO_SHOW + 1);        
+        List<Resource>commentedToShow;
+        if (allCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW) {
+            commentedToShow = allCommentedNewsitems;            
+        } else {
+            commentedToShow = allCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW);
+            final String moreCommentsUrl = urlBuilder.getTagCommentUrl(tag);
+            mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
+            // TODO count
+        }        
+        mv.addObject("commented_newsitems", commentedToShow);        
+    }
 	
 	
 	private void setRss(ModelAndView mv, String title, String url) {

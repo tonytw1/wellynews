@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -38,21 +39,24 @@ public class ContentModelBuilderService {
 		modelBuilders = new ModelBuilder[4];
 		modelBuilders[0] = new PublisherModelBuilder(resourceDAO, rssUrlBuilder, urlBuilder);
 		modelBuilders[1] = new PublisherTagCombinerModelBuilder(resourceDAO, rssUrlBuilder, urlBuilder);
-		modelBuilders[2] = new TagModelBuilder(resourceDAO, rssUrlBuilder, urlBuilder);
-		modelBuilders[3] = new TagCombinerModelBuilder(resourceDAO, rssUrlBuilder, urlBuilder);			
+		modelBuilders[2] = new TagModelBuilder(resourceDAO, rssUrlBuilder, urlBuilder, new RelatedTagsService(resourceDAO));
+		modelBuilders[3] = new TagCombinerModelBuilder(resourceDAO, rssUrlBuilder, urlBuilder,  new RelatedTagsService(resourceDAO));			
 	}
 
 
 	public ModelAndView populateContentModel(HttpServletRequest request) throws IOException, CorruptIndexException, FeedException {
 		logger.info("Building content model");
 		boolean showBroken = false;	
-		
+				
 		for (int i = 0; i < modelBuilders.length; i++) {
 			ModelBuilder modelBuilder = modelBuilders[i];
 			if (modelBuilder.isValid(request)) {
-				return modelBuilder.populateContentModel(request, showBroken);
-			}			
+				ModelAndView mv = modelBuilder.populateContentModel(request, showBroken);
+				modelBuilder.populateExtraModelConent(request, showBroken, mv);
+				return mv;
+			}
 		}
+		
         return null;
 	}
 	

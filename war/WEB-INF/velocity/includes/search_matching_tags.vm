@@ -6,7 +6,7 @@
 	
 	<ul>
 	#foreach($tag in $matching_tags)
-		<li><a href="${site_information.url}/tag/$tag.name">$tag.displayName</a></li>
+		<li><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></li>
 	#end
 	</ul>	
 #end
