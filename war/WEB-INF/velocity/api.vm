@@ -85,6 +85,13 @@ ie. newsitems tagged with transport and consultation and Wellington City Council
 
 <p>The combination url scheme was shameless inspired by the Guardians' tag combiners.</p>
 
+<p><b>All tags</b></p>
+
+<p>Returns a list of all available tags.<p>
+
+	<ul>
+	<li><code>$site_information.url/tags/[rss|json]</code>
+	</ul>
 
 <h3>Supported Formats</h3>
 

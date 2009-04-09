@@ -3,7 +3,12 @@ package nz.co.searchwellington.model;
 import java.util.Set;
 import java.util.HashSet;
 
-public class Tag {
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndContentImpl;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
+
+public class Tag implements RssFeedable {
     
     int id;
     String name;
@@ -143,5 +148,18 @@ public class Tag {
 	public String getAutotagHints() {
 		return autotagHints;
 	}
+	
+	
+	 public SyndEntry getRssItem() {
+	        SyndEntry entry = new SyndEntryImpl();      
+	        entry.setTitle(displayName);
+	        entry.setLink(name);
+	        
+	        SyndContent description = new SyndContentImpl();
+	        description.setType("text/plain");
+	        description.setValue(name);
+	        entry.setDescription(description);
+	        return entry;
+	 }
         
 }

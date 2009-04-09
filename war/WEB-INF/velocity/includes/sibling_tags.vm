@@ -1,11 +1,14 @@
-#if ($parent_tag && $sibling_tags && $sibling_tags.size() >= 1)
-<h2>Other tags in $parent_tag.displayName</h2>
-
-<ul>
-#foreach ($sibling_tag in $sibling_tags)
-	<li><a href="$site_information.url/$sibling_tag.name">$sibling_tag.displayName.toLowerCase()</a>
+#if ($tag)
+	#set($parent_tag = $tag.getParent())
+	#set($sibling_tags = $parent_tag.getChildren())
+	#if ($parent_tag && $sibling_tags && $sibling_tags.size() >= 1)
+		<h2>Other tags in $parent_tag.displayName</h2>
+		<ul>
+		#foreach ($sibling_tag in $sibling_tags)
+			#if (!($tag == $sibling_tag ))
+				<li><a href="$urlBuilder.getTagUrl($sibling_tag)">$sibling_tag.displayName.toLowerCase()</a>
+			#end
+		#end
+		</ul>
+	#end
 #end
-</ul>
-#end
-
-

@@ -1,0 +1,78 @@
+package nz.co.searchwellington.controllers.models;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.UrlBuilder;
+import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.ResourceRepository;
+
+import org.apache.log4j.Logger;
+import org.apache.lucene.index.CorruptIndexException;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.sun.syndication.io.FeedException;
+
+public class PublisherModelBuilder implements ModelBuilder {
+	
+	Logger logger = Logger.getLogger(PublisherModelBuilder.class);
+	
+	private ResourceRepository resourceDAO;
+	private RssUrlBuilder rssUrlBuilder;
+	private UrlBuilder urlBuilder;
+
+	
+	public PublisherModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {		
+		this.resourceDAO = resourceDAO;
+		this.rssUrlBuilder = rssUrlBuilder;
+		this.urlBuilder = urlBuilder;
+	}
+
+
+	public boolean isValid(HttpServletRequest request) {
+        Tag tag = (Tag) request.getAttribute("tag");
+        Website publisher = (Website) request.getAttribute("publisher");   
+        boolean isPublisherPage = publisher != null && tag == null;
+        return isPublisherPage;
+	}
+	
+	
+	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) throws IOException, CorruptIndexException, FeedException {				
+		if (isValid(request)) {
+			logger.info("Building publisher page model");
+			Website publisher = (Website) request.getAttribute("publisher"); 
+			return populatePublisherPageModelAndView(publisher, showBroken);
+		}
+		return null;
+	}
+	
+	
+	public ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken) throws IOException {
+		ModelAndView mv = new ModelAndView();
+		mv.addObject("heading", publisher.getName());
+		mv.addObject("description", publisher.getName());
+		mv.addObject("link", urlBuilder.getPublisherUrl(publisher));
+		
+		final List<Newsitem> publisherNewsitems = resourceDAO.getAllPublisherNewsitems(publisher, showBroken);
+		mv.addObject("main_content", publisherNewsitems);
+		if (publisherNewsitems.size() > 0) {
+			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
+			mv.addObject("publisher", publisher);
+		}		
+		mv.setViewName("browse");
+		return mv;
+	}
+	
+	
+	private void setRss(ModelAndView mv, String title, String url) {
+		mv.addObject("rss_title", title);
+		mv.addObject("rss_url", url);
+	}  
+	
+
+}

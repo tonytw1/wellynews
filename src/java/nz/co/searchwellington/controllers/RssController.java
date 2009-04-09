@@ -1,17 +1,13 @@
 package nz.co.searchwellington.controllers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.views.RssView;
@@ -36,56 +32,21 @@ public class RssController extends MultiActionController {
     private ConfigRepository configDAO;
     private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
+	private ContentModelBuilderService contentModelBuilderService;
 
     
        
-    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {     
+    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, ContentModelBuilderService contentModelBuilderService) {     
         this.siteInformation = siteInformation;
         this.requestFilter = requestFilter;
         this.resourceDAO = resourceDAO;
         this.configDAO = configDAO;
         this.rssUrlBuilder = rssUrlBuilder;
         this.urlBuilder = urlBuilder;
+        this.contentModelBuilderService = contentModelBuilderService;
     }
     
-    
-	public ModelAndView rss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	
-        Website publisher = null;
-        Tag tag = null;
-
-        requestFilter.loadAttributesOntoRequest(request);        
-        if (request.getAttribute("publisher") != null) {
-            publisher = (Website) request.getAttribute("publisher");
-        }
-        if (request.getAttribute("tag") != null) {
-            tag = (Tag) request.getAttribute("tag");
-        }
-        
-        HashMap <String, Object> model = new HashMap <String, Object>();           
-        if (publisher != null) {
-            model.put("title", rssUrlBuilder.getRssTitleForPublisher(publisher));
-            model.put("link", publisher.getUrl());
-            model.put("description", "Newsitems published by " + publisher.getName());
-            model.put("main_content", resourceDAO.getPublisherNewsitems(publisher, MAX_RSS_ITEMS, false));
-            
-        } else if (tag != null) {            
-            model.put("title", rssUrlBuilder.getRssTitleForTag(tag));        
-            model.put("link", urlBuilder.getTagUrl(tag));
-            model.put("description", siteInformation.getAreaname() + " related newsitems tagged as " + tag.getDisplayName());
-            model.put("main_content", resourceDAO.getTaggedNewitems(tag, false, MAX_RSS_ITEMS));         
-        } 
-
-        RssView rssView = new RssView();
-        if (configDAO.getUseClickThroughCounter()) {
-            rssView.setClickThroughUrl(siteInformation.getUrl() + "/clickthrough");
-        }
-        
-        return new ModelAndView(rssView, model);
-    }
-    
-    
-    
+       
     public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception { 
     	final String userAgent = request.getHeader("User-Agent");
 		boolean clientIsFeedburner = userAgent != null && userAgent.startsWith("FeedBurner");
@@ -104,62 +65,17 @@ public class RssController extends MultiActionController {
         return new ModelAndView(rssView, model);        
     }
     
+       
     
-    @SuppressWarnings("unchecked")
-	public ModelAndView combinerRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	log.info("Starting combiner rss feed");
-    	HashMap <String, Object> model = new HashMap <String, Object>();
-
-        requestFilter.loadAttributesOntoRequest(request);       
-    	List<Tag> tags = new ArrayList<Tag>();
-    	if (request.getAttribute("tags") != null) {
-    		tags = (List<Tag>) request.getAttribute("tags");
-    	}
-    	
-    	boolean isTagCombiner = tags.size() == 2;
-    	Website publisher = (Website) request.getAttribute("publisher");
-    	Tag tag = (Tag) request.getAttribute("tag");
-		boolean isPublisherCombiner = !isTagCombiner && (publisher != null && tag != null);
-		RssView rssView = new RssView();
-		if (isTagCombiner) {
-			log.info("Building tag combiner rss feed");
-			Tag firstTag = tags.get(0);
-			Tag secondTag = tags.get(1);
-			model.put("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
-			model.put("title", rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag));
-			model.put("description", siteInformation.getAreaname() + " related newsitems tagged with " + firstTag.getDisplayName() + " and " + secondTag.getDisplayName());
-			model.put("main_content", resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), false, MAX_RSS_ITEMS));
-			return new ModelAndView(rssView, model);			
-		} else if (isPublisherCombiner) {
-			log.info("Building publisher combiner rss feed");
-			model.put("link", urlBuilder.getPublisherCombinerUrl(publisher, tag));
-			model.put("title", rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag));
-			model.put("description", publisher.getName() + " newsitems tagged with " + tag.getDisplayName());
-			model.put("main_content", resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, false));
-			return new ModelAndView(rssView, model);
-		}
-		
-		return null;
+	public ModelAndView contentRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    
+    	log.info("Building content rss");
+    	 requestFilter.loadAttributesOntoRequest(request);  
+         ModelAndView mv = contentModelBuilderService.populateContentModel(request);
+         mv.setView(new RssView());
+         return mv;
     }
     
-    
-    public ModelAndView contentRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	HashMap <String, Object> model = new HashMap <String, Object>();
-    	
-    	Tag tag = (Tag) request.getAttribute("tag");
-    	if (tag != null) {
-    		log.info("Building tag rss feed");
-    		model.put("title", rssUrlBuilder.getRssTitleForTag(tag));        
-    		model.put("link", urlBuilder.getTagUrl(tag));
-    		model.put("description", siteInformation.getAreaname() + " related newsitems tagged as " + tag.getDisplayName());
-    		model.put("main_content", resourceDAO.getTaggedNewitems(tag, false, MAX_RSS_ITEMS));
-    	}
-    
-    	return null;
-    }
-    
-    
-    
+       
     public ModelAndView geotaggedRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	HashMap <String, Object> model = new HashMap <String, Object>();    	
     	model.put("title", rssUrlBuilder.getRssTitleForGeotagged());
@@ -196,7 +112,19 @@ public class RssController extends MultiActionController {
         
     }
     
-
+    
+    public ModelAndView tagsRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	HashMap <String, Object> model = new HashMap <String, Object>();     
+    	model.put("title", rssUrlBuilder.getRssTitleForJustin());
+    	model.put("link", siteInformation.getUrl());
+    	model.put("description", "Available tags");
+    	model.put("main_content", resourceDAO.getAllTags());
+    	
+        RssView rssView = new RssView();        
+        return new ModelAndView(rssView, model);        
+    }
+    
+    
 	private ModelAndView redirectToFeedburnerMainFeed() {
 		View redirectView = new RedirectView(FEEDBURNER_RSS_URL);
 		return new ModelAndView(redirectView);		

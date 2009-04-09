@@ -21,7 +21,7 @@ public class UrlBuilder {
 
 
 	public String getTagUrl(Tag tag) {
-		return siteInformation.getUrl() + "/tag/" + tag.getName();
+		return siteInformation.getUrl() + "/" + tag.getName();
 	}
 
 

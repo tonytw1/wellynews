@@ -88,7 +88,7 @@
 				#if ($item.tags && $item.tags.size() > 0)
 					<li class="tagged">Tagged as:</li>
 					#foreach ($tag in $item.tags)				
-						<li class="tagged"><a href="$site_information.url/tag/$tag.name">$tag.displayName.toLowerCase()</a></li>
+						<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
 					#end
 				#end
 				

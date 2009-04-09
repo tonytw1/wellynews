@@ -24,13 +24,13 @@ public class RomeRssFeed {
     private String title;
     private String linkUrl;
     private String description;
-    private List<Newsitem> contents;
+    private List<RssFeedable> contents;
 
     private String clickThroughTrackingUrl;
 
     
     
-    public RomeRssFeed(String title, String linkUrl, String description, List<Newsitem> contents, String clickThroughTrackingUrl) {
+    public RomeRssFeed(String title, String linkUrl, String description, List<RssFeedable> contents, String clickThroughTrackingUrl) {
         this.title = title;
         this.contents = contents;
         this.description = description;
@@ -54,14 +54,12 @@ public class RomeRssFeed {
         if (contents.size() > 0) {
             Iterator iterator = contents.iterator();
             while (iterator.hasNext()) {
-                Resource selectedResource = (Resource) iterator.next();
+                RssFeedable selectedResource = (RssFeedable) iterator.next();
 
                 SyndEntry entry = selectedResource.getRssItem();
-                if (clickThroughTrackingUrl != null) {
-                    entry.setLink(clickThroughTrackingUrl + "?resource=" + selectedResource.getId());
-                }
-                               
-                addGeoRSSModule(selectedResource, entry);                
+               
+                // TODO reimplement geo
+             //   addGeoRSSModule(selectedResource, entry);
                 entries.add(entry);
             }
             

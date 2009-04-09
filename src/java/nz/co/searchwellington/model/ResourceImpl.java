@@ -11,7 +11,7 @@ import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 
 
-public abstract class ResourceImpl implements Resource {
+public abstract class ResourceImpl implements Resource, RssFeedable {
 
     protected int id;
     protected String name;

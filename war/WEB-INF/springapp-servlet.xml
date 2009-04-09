@@ -171,22 +171,17 @@
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="contentModelBuilder" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
-					<props>														
+					<props>		
 						<prop key="/rss">mainRss</prop>
 						<prop key="/geotagged/rss">geotaggedRss</prop>
 						<prop key="/justin/rss">justinRss</prop>
-						<prop key="/watchlist/rss">watchlistRss</prop>
-						
-						<prop key="/*/rss">contentRss</prop>
-						
-						<prop key="/*+*/rss">combinerRss</prop>
-            			<prop key="/*%2B*/rss">combinerRss</prop>
-            	
-						<prop key="/**">rss</prop>
+						<prop key="/watchlist/rss">watchlistRss</prop>						
+						<prop key="/*/rss">contentRss</prop>											
 					</props>
 				</property>
 			</bean>		
@@ -393,6 +388,13 @@
 	</bean>
 	
 	
+	<bean id="contentModelBuilder"
+	class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
+	<constructor-arg ref="resourceDAO" />
+	<constructor-arg ref="rssUrlBuilder" />
+	<constructor-arg ref="urlBuilder" />
+	</bean>
+	
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="requestFilter" />
@@ -403,23 +405,16 @@
 		<constructor-arg ref="eventsDAO" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
+		<constructor-arg ref="contentModelBuilder" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
-					<props>
-						<prop key="/tag/*">normal</prop>
-						<prop key="/tag/*/comment">comment</prop>	
-						<prop key="/tag/*/news">newsArchive</prop>
-						<prop key="/geotagged/*">geotagged</prop>
-						
-						
+					<props>											
 						<prop key="/*">normal</prop>
 						<prop key="/*/comment">comment</prop>	
 						<prop key="/*/news">newsArchive</prop>
-						<prop key="/*/geotagged">geotagged</prop>
-						
-						
+						<prop key="/*/geotagged">geotagged</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -626,20 +621,16 @@
             	<prop key="/edit/*/ajax/publishers">publishersAjaxController</prop>
             	
             	
-            	<prop key="/index">indexController</prop>
-				<prop key="/rss/**">rssController</prop>
-				<prop key="/*/rss">rssController</prop>
+            	<prop key="/index">indexController</prop>				
+
+
 				
+				<prop key="/rss">rssController</prop>
 				<prop key="/geotagged/rss">rssController</prop>
 				<prop key="/justin/rss">rssController</prop>
 				<prop key="/watchlist/rss">rssController</prop>
-					
-					<prop key="/tag/*+*/rss">rssController</prop>
-					<prop key="/tag/*%2B*/rss">rssController</prop>
-				
-				<prop key="/*+*/rss">rssController</prop>
-            	<prop key="/*%2B*/rss">rssController</prop>
-				
+				<prop key="/*/rss">rssController</prop>
+								
 				<prop key="/feeds/**">rssfeedsController</prop>
 				<prop key="/search">searchController</prop>
 				
@@ -694,11 +685,8 @@
 				<prop key="/supress/*">supressionController</prop>
 				
 				
-					<prop key="/*">tagController</prop>
-					
-				<prop key="/tag/*">tagController</prop>
-				<prop key="/tag/*/comment">tagController</prop>
-				<prop key="/tag/*/news">tagController</prop>
+				<prop key="/*">tagController</prop>
+				<prop key="/*/comment">tagController</prop>
 				<prop key="/geotagged/*">tagController</prop>
             </props>
         </property>

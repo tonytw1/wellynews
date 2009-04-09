@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.RomeRssFeed;
+import nz.co.searchwellington.model.RssFeedable;
 
 import org.springframework.web.servlet.View;
 
@@ -22,11 +23,14 @@ public class RssView implements View {
 
     public void render(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
         
-        List <Newsitem> mainContent =  (List <Newsitem>) model.get("main_content");        
+        List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");        
 		res.setContentType("text/xml");
         res.setCharacterEncoding("UTF-8");
         
-        RomeRssFeed outputFeed = new RomeRssFeed((String) model.get("title"), (String) model.get("link"), (String) model.get("description"), mainContent, clickThroughUrl);
+        RomeRssFeed outputFeed = new RomeRssFeed(	(String) model.get("heading"), 
+        		(String) model.get("link"), 
+        		(String) model.get("description"), 
+        		mainContent, clickThroughUrl);
         res.getOutputStream().print(outputFeed.outputAsXml());        
 		res.getOutputStream().flush();
 	}
