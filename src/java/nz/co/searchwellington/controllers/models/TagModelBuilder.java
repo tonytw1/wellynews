@@ -10,8 +10,11 @@ import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.CorruptIndexException;
@@ -31,14 +34,15 @@ public class TagModelBuilder implements ModelBuilder {
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
-
-		
+	private ConfigDAO configDAO;
 	
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {
+	 
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO) {
 		this.resourceDAO = resourceDAO;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
+		this.configDAO = configDAO;
 	}
 
 	
@@ -64,16 +68,28 @@ public class TagModelBuilder implements ModelBuilder {
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
-		mv.addObject("related_tags", relatedTagsService.getRelatedTagLinks(tag, showBroken));
+		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagLinks(tag, showBroken);
+		if (relatedTagLinks.size() > 0) {
+			mv.addObject("related_tags", relatedTagLinks);
+		}
 		try {
 			populateCommentedTaggedNewsitems(mv, tag, showBroken);
 			mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}		
+		populateTagFlickrPool(mv, tag);	 
 	}
  	
+	
+
+    private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
+        if (tag.getFlickrCount() > 0) {
+            mv.addObject("flickr_count", tag.getFlickrCount());
+            mv.addObject("escaped_flickr_group_id", UrlFilters.encode(configDAO.getFlickrPoolGroupId()));
+        }
+    }
 	
 	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken) throws IOException, CorruptIndexException, FeedException {		
 		ModelAndView mv = new ModelAndView();				

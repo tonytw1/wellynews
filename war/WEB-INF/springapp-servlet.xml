@@ -388,12 +388,13 @@
 	</bean>
 	
 	
-	<bean id="contentModelBuilder"
-	class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
-	<constructor-arg ref="resourceDAO" />
-	<constructor-arg ref="rssUrlBuilder" />
-	<constructor-arg ref="urlBuilder" />
-	</bean>
+	
+	<import resource="modelbuilders.xml"/>
+
+
+	
+	
+	
 	
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
 		<constructor-arg ref="resourceDAO" />

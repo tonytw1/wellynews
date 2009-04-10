@@ -45,7 +45,7 @@ public class RelatedTagsService {
 					log.warn("Exception while going item count for related tag " + tag, e);
 				}
             }
-        }                
+        }
         Collections.sort(relatedTagLinks);
         return relatedTagLinks;
     }
