@@ -1,23 +1,23 @@
 package nz.co.searchwellington.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Website;
+
+import org.apache.log4j.Logger;
 
 public class ContentDedupingService {
+	
+	Logger log = Logger.getLogger(ContentDedupingService.class);
 
-    public void dedupeIndexPageNewsitems(List<Newsitem> latestNewsitems, List<Newsitem> commentedNewsitems) { 
-        latestNewsitems.removeAll(commentedNewsitems);        
+    public List<Resource> dedupeNewsitems(List<Resource> latestNewsitems, List<Resource> commentedNewsitems) { 
+    	List <Resource> depuded  = new ArrayList<Resource>(latestNewsitems);
+    	depuded.removeAll(commentedNewsitems);
+    	if (depuded.size() < latestNewsitems.size()) {
+    		log.info("Removed " + (latestNewsitems.size() - depuded.size()) + " duplicates");
+    	}
+    	return depuded;
     }
 
-    
-    public void dedupeTagPageNewsitems(List<Resource> newsitemsOnPage, List<Resource> commentedNewsitemOnPage, List<Website> taggedWebsites) {
-        boolean isSingleColumnLayout = !taggedWebsites.isEmpty();
-        if (isSingleColumnLayout) {
-            newsitemsOnPage.removeAll(commentedNewsitemOnPage);
-        }
-    }
-    
 }

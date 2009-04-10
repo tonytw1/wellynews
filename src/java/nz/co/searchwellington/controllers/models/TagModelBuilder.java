@@ -23,7 +23,7 @@ public class TagModelBuilder implements ModelBuilder {
 
 	private static final int MAX_WEBSITES = 500;
 	private static final int MAX_NEWSITEMS = 30;
-	private static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 3;
+	private static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 2;
 	
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	

@@ -75,13 +75,8 @@ public class IndexController extends BaseMultiActionController {
         // TODO dedupe between main and comments.
         List<Newsitem> commentedNewsitems = populateCommentedNewsitems(mv);
         
-        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS + commentedNewsitems.size(), showBroken);
-        
-        // TODO inject.
-        ContentDedupingService dedupingService = new ContentDedupingService();
-        dedupingService.dedupeIndexPageNewsitems(latestNewsitems, commentedNewsitems);
-                
-        mv.getModel().put("main_content", itemMaker.setEditUrls(latestNewsitems, loggedInUser));
+        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS + commentedNewsitems.size(), showBroken);                
+        mv.addObject("main_content", itemMaker.setEditUrls(latestNewsitems, loggedInUser));
         
         List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths();
 		populateArchiveLinks(mv, loggedInUser, archiveMonths);

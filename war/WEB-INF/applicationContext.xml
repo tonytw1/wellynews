@@ -215,6 +215,9 @@
   </bean>
 		
 	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />
+
+	<bean id="contentDeduper" class="nz.co.searchwellington.controllers.ContentDedupingService" />
+
 		
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
   		<property name="cache" value="true"/>
@@ -229,6 +232,7 @@
 				<entry key="site_information" value-ref="siteInformation" />
 				<entry key="chartBuilder" value-ref="chartBuilder" />
 				<entry key="urlBuilder" value-ref="urlBuilder" />
+				<entry key="contentDeduper" value-ref="contentDeduper" />
 			</map>
 		</property>  		
 	</bean>
