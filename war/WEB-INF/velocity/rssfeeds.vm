@@ -27,7 +27,7 @@ wide range of local organisations.</p>
 	</ul>
 #end
 
-#parse("includes/feedburner_prompt.vm")
+
 
 <p>Many of the sites which regularly have items included in the newslog 
 are also listed on the <a href="watchlist">News Watchlist</a>.</p>

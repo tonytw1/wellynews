@@ -8,11 +8,13 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigDAO;
+import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.utils.UrlFilters;
 
@@ -35,14 +37,16 @@ public class TagModelBuilder implements ModelBuilder {
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	private ConfigDAO configDAO;
+	private FeedRepository feedDAO;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, FeedRepository feedDAO) {
 		this.resourceDAO = resourceDAO;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.configDAO = configDAO;
+		this.feedDAO = feedDAO;
 	}
 
 	
@@ -75,11 +79,18 @@ public class TagModelBuilder implements ModelBuilder {
 		try {
 			populateCommentedTaggedNewsitems(mv, tag, showBroken);
 			mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
+			populateRelatedFeed(mv, tag);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (FeedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}		
-		populateTagFlickrPool(mv, tag);	 
+		populateTagFlickrPool(mv, tag);
 	}
  	
 	
@@ -125,10 +136,24 @@ public class TagModelBuilder implements ModelBuilder {
             mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
             // TODO count
         }        
-        mv.addObject("commented_newsitems", commentedToShow);        
+        mv.addObject("commented_newsitems", commentedToShow);
+        mv.addObject("tag_watchlist", resourceDAO.getTagWatchlist(tag, showBroken));        
     }
 	
 	
+    
+    protected void populateRelatedFeed(ModelAndView mv, Tag tag) throws IllegalArgumentException, IOException, FeedException {       
+        Feed relatedFeed = tag.getRelatedFeed(); 
+        if (relatedFeed != null) {
+            log.info("Related feed is: " + relatedFeed.getName());
+            List<Resource> relatedFeedItems = feedDAO.getFeedNewsitems(relatedFeed);
+            mv.addObject("related_feed", relatedFeed);   
+            mv.addObject("related_feed_items", relatedFeedItems);            
+        } else {
+            log.debug("No related feed.");
+        }
+    }
+    
 	private void setRss(ModelAndView mv, String title, String url) {
 		mv.addObject("rss_title", title);
 		mv.addObject("rss_url", url);

@@ -105,7 +105,7 @@ settlers.
 #parse("includes/latest_newsitems.vm")
 
 <br clear="all"/>
-#parse("includes/feedburner_prompt.vm")
+
 </div>
 
 
