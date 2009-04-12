@@ -17,10 +17,7 @@
 
 <form action="save" method="POST"> 
 		<fieldset>
-					
-		<p><label for="feedburner_widget">FeedBurner Widget: </label>
-		<textarea name="feedburner_widget" cols="80" rows="10">$feedburner_widget</textarea></p>
-		
+			
 		<p><label for="name">Statitics Tracking code: </label>
 		<textarea name="stats_tracking_code" cols="80" rows="10">$stats_tracking_code</textarea></p>
 		

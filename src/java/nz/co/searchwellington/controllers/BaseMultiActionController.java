@@ -39,8 +39,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     final protected int MAX_NEWSITEMS = 20;
     final protected int MAX_EVENTS_TO_SHOW_ON_FRONT = 10;
     
-    protected ResourceRepository resourceDAO;
-    protected ItemMaker itemMaker;
+    protected ResourceRepository resourceDAO;   
     protected UrlStack urlStack;
     protected ConfigRepository configDAO;
     
@@ -53,38 +52,32 @@ public abstract class BaseMultiActionController extends MultiActionController {
         mv.addObject("rss_url", url);
     }
     
-    
-    @SuppressWarnings("unchecked")
+   
     final protected void populateSecondaryLatestNewsitems(ModelAndView mv, User loggedInUser) throws IOException {
         boolean showBroken = loggedInUser != null;      
         final int numberOfItems = 5;
-        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(numberOfItems, showBroken);
-        
-        mv.getModel().put("latest_newsitems", itemMaker.setEditUrls(latestNewsitems, loggedInUser));
-        mv.getModel().put("latest_newsitems_moreurl", "index#newslog");
+        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(numberOfItems, showBroken);        
+        mv.addObject("latest_newsitems", latestNewsitems);
+        mv.addObject("latest_newsitems_moreurl", "index#newslog");
     }
     
-    
-    
-    @SuppressWarnings("unchecked")
+  
     final protected void populateArchiveLinks(ModelAndView mv, User loggedInUser, List<ArchiveLink> archiveMonths) {                        
         final int MAX_BACK_ISSUES = 6;
         if (archiveMonths.size() <= MAX_BACK_ISSUES) {
-            mv.getModel().put("archive_links", archiveMonths);
+            mv.addObject("archive_links", archiveMonths);
         } else {
-            mv.getModel().put("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
-        }          
+            mv.addObject("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
+        }
         boolean showBroken = loggedInUser != null;
         populateContentCounts(mv, showBroken);
     }
 
 
-
-    @SuppressWarnings("unchecked")
     private void populateContentCounts(ModelAndView mv, boolean showBroken) {      
-        mv.getModel().put("site_count",  resourceDAO.getWebsiteCount(showBroken));
-        mv.getModel().put("newsitem_count",  resourceDAO.getNewsitemCount(showBroken));
-        mv.getModel().put("comment_count",  resourceDAO.getCommentCount());
+        mv.addObject("site_count",  resourceDAO.getWebsiteCount(showBroken));
+        mv.addObject("newsitem_count",  resourceDAO.getNewsitemCount(showBroken));
+        mv.addObject("comment_count",  resourceDAO.getCommentCount());
     }
     
 
@@ -94,9 +87,8 @@ public abstract class BaseMultiActionController extends MultiActionController {
         mv.addObject("righthand_description", "Recently updated feeds from local organisations.");
         
         final List<Feed> allFeeds = resourceDAO.getAllFeeds();                       
-        if (allFeeds.size() > 0) {            
-            List<Feed> wrappedFeeds = itemMaker.wrapFeeds(allFeeds, loggedInUser); 
-            mv.addObject("righthand_content", itemMaker.setEditUrls(wrappedFeeds, loggedInUser));             
+        if (allFeeds.size() > 0) {
+            mv.addObject("righthand_content", allFeeds);             
         } 
     }
 
@@ -130,7 +122,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
             logger.info("Related feed for tag " + tag.getName() + " is: " + relatedFeed.getName());
             List<Resource> relatedFeedItems = feedDAO.getFeedNewsitems(relatedFeed);
             mv.addObject("related_feed", relatedFeed);
-            mv.addObject("related_feed_items", itemMaker.setEditUrls(relatedFeedItems, null));
+            mv.addObject("related_feed_items", relatedFeedItems);
         }
     }
 

@@ -39,6 +39,9 @@ it's $site_information.areaname in a box.</p>
 The $site_information.areaname Newslog is an informal roundup of the $site_information.areaname webspace.
 The Newslog is also available as an <a href="feeds">RSS feed</a> or via <a href="twitter">Twitter</a>.</p>
 
+#if ($commented_newsitems)	
+	#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
+#end
 #parse("includes/main_content.vm")
 </div>
 

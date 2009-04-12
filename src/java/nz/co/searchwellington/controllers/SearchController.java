@@ -27,9 +27,8 @@ public class SearchController extends BaseMultiActionController {
     Logger log = Logger.getLogger(SearchController.class);
     RequestFilter requestFilter;
 	
-    public SearchController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO) {    
-		this.resourceDAO = resourceDAO;
-        this.itemMaker = itemMaker;
+    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO) {    
+		this.resourceDAO = resourceDAO;     
         this.urlStack = urlStack;
         this.requestFilter = requestFilter;
         this.configDAO = configDAO;
@@ -78,16 +77,17 @@ public class SearchController extends BaseMultiActionController {
                     
                     mv.getModel().put("main_description", "Found " + matchingSites.size() + " matching sites.");
                     
-                    mv.getModel().put("main_content", itemMaker.setEditUrls(matchingSites, loggedInUser));
+                    mv.getModel().put("main_content", matchingSites);
                     mv.getModel().put("secondary_heading", "Matching Newsitems");
-                    mv.getModel().put("secondary_content", itemMaker.setEditUrls(matchingNewsitems, loggedInUser));
+                    mv.getModel().put("secondary_content", matchingNewsitems);
+                    
                 } else {
                     mv.getModel().put("secondary_heading", "Matching Sites");
                     
                     mv.getModel().put("main_description", "Found " + matchingNewsitems.size() + " matching newsitems.");
-                    mv.getModel().put("secondary_content", itemMaker.setEditUrls(matchingSites, loggedInUser));
+                    mv.getModel().put("secondary_content", matchingSites);
                     mv.getModel().put("main_heading", "Matching Newsitems");
-                    mv.getModel().put("main_content", itemMaker.setEditUrls(matchingNewsitems, loggedInUser));                    
+                    mv.getModel().put("main_content", matchingNewsitems);                    
                 }
          
             mv.getModel().put("search_keywords", keywords);

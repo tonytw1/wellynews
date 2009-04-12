@@ -28,9 +28,7 @@ public class ConfigEditController extends MultiActionController {
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView modelAndView = new ModelAndView("editConfig");
         
-        modelAndView.getModel().put("heading", "Editing Configuration");
-        
-        modelAndView.getModel().put("feedburner_widget", StringEscapeUtils.escapeHtml(configDAO.getFeedBurnerWidget()));
+        modelAndView.getModel().put("heading", "Editing Configuration");      
         modelAndView.getModel().put("stats_tracking_code", StringEscapeUtils.escapeHtml(configDAO.getStatsTracking()));
         modelAndView.getModel().put("flickr_pool_group_id", StringEscapeUtils.escapeHtml(configDAO.getFlickrPoolGroupId()));                
         modelAndView.getModel().put("clickthrough_tracking_select", makeClickThroughSelect(configDAO.getUseClickThroughCounter()).toString());
@@ -45,7 +43,6 @@ public class ConfigEditController extends MultiActionController {
     
     
     private Select makeClickThroughSelect(boolean selected) {
-
         Select select = new Select("use_clickthrough_tracking");
 
         Option noOption = new Option("0");
@@ -76,8 +73,7 @@ public class ConfigEditController extends MultiActionController {
         ModelAndView modelAndView = new ModelAndView("savedConfig");
         modelAndView.getModel().put("heading", "Configuration Saved");
         
-        Config config = configDAO.getConfig();
-        config.setFeedBurnerWidget(request.getParameter("feedburner_widget"));
+        Config config = configDAO.getConfig();        
         config.setStatsTracking(request.getParameter("stats_tracking_code"));
         config.setFlickrPoolGroupId(request.getParameter("flickr_pool_group_id"));
         

@@ -9,12 +9,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
-import nz.co.searchwellington.controllers.ItemMaker;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
@@ -33,10 +31,9 @@ public class AutoTagController extends BaseMultiActionController {
 
           
   
-	public AutoTagController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, ImpliedTagService autoTagService) {      
+	public AutoTagController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService) {      
 		this.resourceDAO = resourceDAO;        
-        this.requestFilter = requestFilter;
-        this.itemMaker = itemMaker;
+        this.requestFilter = requestFilter;       
         this.urlStack = urlStack;
         this.autoTagService = autoTagService;
 	}
@@ -53,9 +50,6 @@ public class AutoTagController extends BaseMultiActionController {
         requestFilter.loadAttributesOntoRequest(request);
         Tag tag = (Tag) request.getAttribute("tag");
         mv.getModel().put("tag", tag);
-
-        User loggedInUser = setLoginState(request, mv);
-
         if (tag != null) {            
         	List<Resource> resourcesToAutoTag = new ArrayList<Resource>();      
             for (Resource resource : getPossibleAutotagResources(tag)) {
@@ -63,7 +57,7 @@ public class AutoTagController extends BaseMultiActionController {
                     resourcesToAutoTag.add(resource);
                 }
             }
-            mv.getModel().put("resources_to_tag", itemMaker.setEditUrls(resourcesToAutoTag, loggedInUser));
+            mv.addObject("resources_to_tag", resourcesToAutoTag);
         }
         return mv;
     }
@@ -74,21 +68,17 @@ public class AutoTagController extends BaseMultiActionController {
 
     
     
-    
-    @SuppressWarnings("unchecked")
     public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException {        
         ModelAndView mv = new ModelAndView();
         mv.setViewName("autoTagApply");
         
-        mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
-        mv.getModel().put("heading", "Autotagging");
-
-        User loggedInUser = setLoginState(request, mv);
-
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("heading", "Autotagging");
+        
         requestFilter.loadAttributesOntoRequest(request);
         Tag editTag = (Tag) request.getAttribute("tag");
         if (editTag != null) {
-            mv.getModel().put("tag", editTag);
+            mv.addObject("tag", editTag);
             
             List<Resource> resourcesAutoTagged = new ArrayList<Resource>();            
             String[] autotaggedResourceIds = request.getParameterValues("autotag");            
@@ -101,7 +91,7 @@ public class AutoTagController extends BaseMultiActionController {
                 resourceDAO.saveResource(resource);
                 resourcesAutoTagged.add(resource);
             }        
-            mv.getModel().put("resources_to_tag", itemMaker.setEditUrls(resourcesAutoTagged, loggedInUser));
+            mv.addObject("resources_to_tag", resourcesAutoTagged);
         }     
         return mv;
     }

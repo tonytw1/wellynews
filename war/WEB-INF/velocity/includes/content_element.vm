@@ -1,58 +1,59 @@
+#set($itemUrl = $item.url)
+#if ($item.type == ('F'))
+	#set($itemUrl = $urlBuilder.getFeedUrl($item))
+#end
 
-
-				<li #if ($item.status) class="$item.status" #end >
-						
-				<h5><a href="$item.url">$item.name</a></h5>
+	<li #if ($item.status) class="$item.status" #end >
+		
+		<h5><a href="$itemUrl">$item.name</a></h5>
+		<ul>		
+			#if ($item.date && $item.type == "N" && $dateFormatter)
+				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
+			#end
 				
-				<ul>
-				#if ($item.date && $item.type == "N" && $dateFormatter)
-					<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
-				#end
-				
-				#if ($item.publisher)
+			
+			#if ($item.publisher)
 				<li class="publisher">$item.publisher.name</li>
-				#end
-				#if ($item.latestItem)
-					<li>Latest Item: $item.latestItem</li>
-				#end
-				#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItem)
-					<li>Last Changed: 					
-					$dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')					
-					</li>
-				#end
+			#end
+			#if ($item.latestItem)
+				<li>Latest Item: $item.latestItem</li>
+			#end
+			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItem)
+				<li>Last Changed: $dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')</li>
+			#end
+			
+			#if ($item.description) 
+				<li>$item.description</li>
+			#end
+			
 							
-				#if ($item.description) 
-					<li>$item.description</li>
-				#end
-				
-				
-				#if ($item.type == ('F'))
-					#if ($item.acceptancePolicy)
-						<li class="acceptance">$item.acceptancePolicy</li>
-					#end						
+			#if ($item.type == ('F') && $editPermissionService.canEdit($item))
+				#if ($item.acceptancePolicy)
+					<li class="acceptance">$item.acceptancePolicy</li>
+				#end						
 					
-					#if ($item.lastRead)
-						<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
-					#end
+				#if ($item.lastRead)
+					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
+				#end
 													
-					#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
-						<ul>
+				#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
+					<ul>
 						#foreach($error in $item.acceptanceErrors) 
 							<li>$error</li>
 						#end
-						</ul>
-					#end
+					</ul>
+				#end
+			#end
+				
+			
+			#if ($item.type == 'W') 
+				#if ($item.newsitems && $item.newsitems.size() > 0) 
+					<li><a href="$site_information.url/$item.urlWords">
+					#showItemCount($item.newsitems.size() "newsitem")	
+					</a></li>
 				#end
 				
-							
-				#if ($item.type == 'W') 
-					#if ($item.newsitems && $item.newsitems.size() > 0) 
-						<li><a href="$site_information.url/$item.urlWords">
-						#showItemCount($item.newsitems.size() "newsitem")	
-						</a></li>
-					#end
-				
-					#if ($item.feeds && $item.feeds.size() > 0) 
+				#if ($item.feeds && $item.feeds.size() > 0) 
 						#if($item.feeds.size() == 1)
 							#set ($feed = $item.feeds.iterator().next())					
 							<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 feed</a>	
@@ -135,51 +136,16 @@
 					$item.geocode.address</li>
 				#end
 				
-					#if ($item.editUrl) 
-						#set ($editLabel = "edit")
-					#if ($item.editLabel) 
-						#set($editLabel = $item.editLabel)
-					#end
-					<li class="admin"><a href="$site_information.url/$item.editUrl">$editLabel</a></li>
-					#end
+				
+				#if ($editPermissionService.canEdit($item)) 
+					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
+					<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>				
+					<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
+					<li>Http Status: $item.httpStatus</li>
+				#end
 
-					#if ($item.supressUrl)
-						<li class="admin"><a href="$site_information.url/$item.supressUrl">supress</a></li>
-					#end
+				
 					
-					#if ($item.unsupressUrl) 
-						<li class="admin">supressed</li>
-						<li class="admin"><a href="$site_information.url/$item.unsupressUrl">unsupress</a></li>
-					#end
-
-
-					#if ($item.deleteAndSupressUrl) 
-					<li class="admin"><a href="$site_information.url/$item.deleteAndSupressUrl">delete and supress</a></li>	
-					#end
-					
-					#if ($item.deleteUrl) 
-					<li class="admin"><a href="$site_information.url/$item.deleteUrl">delete</a></li>				
-					#end
-
-					#if ($item.linkCheckUrl)
-					<li class="admin"><a href="$site_information.url/$item.linkCheckUrl">check</a></li>
-					#end
-										
-					#if ($item.editUrl && $item.httpStatus) 
-						<li>Http Status: $item.httpStatus</li>
-					#end
-					</ul>
-				</li>
-				
-				
-				
 			
-				
-			
-				
-			
-				
-				
-				
 				
 				

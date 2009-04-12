@@ -4,8 +4,7 @@
 <beans>
 
 	<bean id="SimplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="siteInformation" />
@@ -22,8 +21,7 @@
 						<prop key="/archive">archive</prop>
 						<prop key="/calendars">calendars</prop>
 						<prop key="/comment">commented</prop>
-						<prop key="/feeds/discovered">discovered</prop>
-						<prop key="/feedburner">feedburner</prop>
+						<prop key="/feeds/discovered">discovered</prop>						
 						<prop key="/geotagged">geotagged</prop>
 						<prop key="/justin">justin</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
@@ -41,8 +39,7 @@
 	
 	
 	<bean id="profileController" class="nz.co.searchwellington.controllers.ProfileController">	
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="siteInformation" />
@@ -65,8 +62,7 @@
 	
 	
 	<bean id="indexController" class="nz.co.searchwellington.controllers.IndexController">		
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />	
 		<constructor-arg ref="feedDAO" />
@@ -96,8 +92,7 @@
 
 	<bean id="browseController" class="nz.co.searchwellington.controllers.BrowseController">	
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="requestFilter" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />		
 		<constructor-arg ref="rssUrlBuilder" />
@@ -191,8 +186,7 @@
 	
 	<bean id="rssfeedsController" class="nz.co.searchwellington.controllers.RssfeedsController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="requestFilter" />	
 		<constructor-arg ref="publisherSelectFactory" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
@@ -268,8 +262,7 @@
 	</bean>
 
 	<bean id="searchController" class="nz.co.searchwellington.controllers.SearchController">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="configDAO" />
@@ -317,8 +310,7 @@
 	<bean id="viewfeedControllerTarget" class="nz.co.searchwellington.controllers.ViewfeedController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="feedDAO" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="feedDAO" />	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="configDAO" />	
@@ -352,8 +344,7 @@
 	
 	<bean id="viewCalendarControllerTarget" class="nz.co.searchwellington.controllers.ViewCalendarController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />		
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="requestFilter" />	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="calendarFeedDAO" />
@@ -398,8 +389,7 @@
 	
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="itemMaker" />		
+		<constructor-arg ref="requestFilter" />	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="feedDAO" />		
@@ -437,8 +427,7 @@
 	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="feedDAO" />
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="requestFilter" />	
 		<constructor-arg ref="linkCheckerQueue" />		
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="publisherSelectFactory" />
@@ -476,8 +465,7 @@
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="feedDAO" />
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="itemMaker" />
+		<constructor-arg ref="requestFilter" />		
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="notifier" />
 		
@@ -528,8 +516,7 @@
 	
 	<bean id="autoTagController" class="nz.co.searchwellington.controllers.admin.AutoTagController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="itemMaker" />	
+		<constructor-arg ref="requestFilter" />	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="impliedTagService" />
 		
@@ -597,8 +584,7 @@
             	<prop key="/calendars">SimplePageController</prop>
             	<prop key="/comment">SimplePageController</prop>
            		<prop key="/feeds/discovered">SimplePageController</prop>
-           		<prop key="/geotagged">SimplePageController</prop>
-            	<prop key="/feedburner">SimplePageController</prop>
+           		<prop key="/geotagged">SimplePageController</prop>            	
             	<prop key="/justin">SimplePageController</prop>
 				<prop key="/lastupdated">SimplePageController</prop>
 				<prop key="/api">SimplePageController</prop>

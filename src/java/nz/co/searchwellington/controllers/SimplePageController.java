@@ -39,9 +39,8 @@ public class SimplePageController extends BaseMultiActionController {
 	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     
-    public SimplePageController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository) {
-        this.resourceDAO = resourceDAO;
-        this.itemMaker = itemMaker;
+    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository) {
+        this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;
@@ -100,12 +99,10 @@ public class SimplePageController extends BaseMultiActionController {
      
         mv.addObject("heading", "Calendar Feeds");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
-       
-      
-        List<Resource> wrappedCalendars = itemMaker.wrapCalendars(resourceDAO.getAllCalendarFeeds());        
-        mv.addObject("main_content", itemMaker.setEditUrls(wrappedCalendars, loggedInUser));        
-        mv.setViewName("calendars");
-        
+             
+        List<Resource> wrappedCalendars = resourceDAO.getAllCalendarFeeds();        
+        mv.addObject("main_content", wrappedCalendars);        
+        mv.setViewName("calendars");        
         return mv;
     }
     
@@ -122,7 +119,7 @@ public class SimplePageController extends BaseMultiActionController {
         
         mv.addObject("heading", "Comment");           
         mv.addObject("commented_tags", resourceDAO.getCommentedTags(showBroken));                
-        mv.addObject("main_content", itemMaker.setEditUrls(resourceDAO.getAllCommentedNewsitems(500, true), loggedInUser));
+        mv.addObject("main_content", resourceDAO.getAllCommentedNewsitems(500, true));
         populateSecondaryLatestNewsitems(mv, loggedInUser);
         
         mv.setViewName("commented");
@@ -182,30 +179,6 @@ public class SimplePageController extends BaseMultiActionController {
         List<DiscoveredFeed> nonCommentFeeds = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds();        
 		mv.addObject("discovered_feeds", nonCommentFeeds);        
         mv.setViewName("discoveredFeeds");
-        return mv;
-    }
-
-
-	
-    
-    
-    
-
-    public ModelAndView feedburner(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        populateLocalCommon(mv);
-        
-        urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-                
-        mv.addObject("heading", "FeedBurner");
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-        
-        log.info("Feedburner widget code is: " + configDAO.getFeedBurnerWidget());
-        mv.addObject("feedburner_widget", configDAO.getFeedBurnerWidget());
-        mv.addObject("feedburner_widget_escaped", StringEscapeUtils.escapeHtml(configDAO.getFeedBurnerWidget()));
-        mv.setViewName("feedburner");
         return mv;
     }
 
@@ -271,8 +244,8 @@ public class SimplePageController extends BaseMultiActionController {
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         mv.addObject("heading", "Latest Additions");
-        mv.addObject("main_content", itemMaker.setEditUrls(resourceDAO.getLatestWebsites(MAX_NEWSITEMS, showBroken), loggedInUser));
-
+        mv.addObject("main_content", resourceDAO.getLatestWebsites(MAX_NEWSITEMS, showBroken));
+        
         populateSecondaryLatestNewsitems(mv, loggedInUser);
 
         setRss(mv, rssUrlBuilder.getRssTitleForJustin(), rssUrlBuilder.getRssUrlForJustin());
@@ -372,7 +345,7 @@ public class SimplePageController extends BaseMultiActionController {
     private void populateLatestTwitters(ModelAndView mv, User loggedInUser) throws IOException {
         boolean showBroken = loggedInUser != null;       
         final List<Newsitem> latestNewsitems = resourceDAO.getLatestTwitteredNewsitems(MAX_TWITTERS_TO_SHOW, showBroken);        
-        mv.getModel().put("latest_twitters", itemMaker.setEditUrls(latestNewsitems, loggedInUser));  
+        mv.getModel().put("latest_twitters", latestNewsitems);  
     }
     
     
@@ -388,12 +361,11 @@ public class SimplePageController extends BaseMultiActionController {
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         mv.addObject("heading", "News Watchlist");
-        mv.addObject("main_content", itemMaker.setEditUrls(resourceDAO.getAllWatchlists(), loggedInUser));
+        mv.addObject("main_content", resourceDAO.getAllWatchlists());
 
         populateSecondaryLatestNewsitems(mv, loggedInUser);
 
         setRss(mv, rssUrlBuilder.getRssTitleForWatchlist(), rssUrlBuilder.getRssUrlForWatchlist());
-
         mv.setViewName("watchlist");
         return mv;
     }

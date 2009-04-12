@@ -4,9 +4,7 @@ public interface Config {
 
     public int getId();
     public void setId(int id);
-
-    public String getFeedBurnerWidget();    
-    public void setFeedBurnerWidget(String feedBurnerWidget);
+    
     public String getStatsTracking();
     public void setStatsTracking(String statsTracking);
     public String getFlickrPoolGroupId();

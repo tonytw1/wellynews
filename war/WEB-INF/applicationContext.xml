@@ -217,8 +217,9 @@
 	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />
 
 	<bean id="contentDeduper" class="nz.co.searchwellington.controllers.ContentDedupingService" />
-
-		
+	
+	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" />
+			
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
   		<property name="cache" value="true"/>
   		<property name="prefix" value=""/>
@@ -232,12 +233,18 @@
 				<entry key="site_information" value-ref="siteInformation" />
 				<entry key="chartBuilder" value-ref="chartBuilder" />
 				<entry key="urlBuilder" value-ref="urlBuilder" />
+				<entry key="adminUrlBuilder" value-ref="adminUrlBuilder" />
 				<entry key="contentDeduper" value-ref="contentDeduper" />
+				<entry key="editPermissionService" value-ref="editPermissionService" />
 			</map>
 		</property>  		
 	</bean>
 	
 	<bean id="urlBuilder" class="nz.co.searchwellington.controllers.UrlBuilder">
+		<constructor-arg ref="siteInformation" />
+	</bean>
+	
+	<bean id="adminUrlBuilder" class="nz.co.searchwellington.controllers.admin.AdminUrlBuilder">
 		<constructor-arg ref="siteInformation" />
 	</bean>
 
@@ -272,10 +279,6 @@
 	</bean>
 	
 	<bean id="tinyUrlResolverService" class="nz.co.searchwellington.twitter.TinyUrlResolverService" />
-		
-	<bean id="itemMaker" class="nz.co.searchwellington.controllers.ItemMaker">
-		<constructor-arg ref="siteInformation" />
-	</bean>
 	
 	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
 		

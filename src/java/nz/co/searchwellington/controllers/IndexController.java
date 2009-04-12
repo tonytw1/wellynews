@@ -30,10 +30,8 @@ import com.sun.syndication.io.FeedException;
 
 public class IndexController extends BaseMultiActionController {
         
-    private static final int NUMBER_OF_COMMENTED_TO_SHOW = 4;
-  
-
-
+    private static final int NUMBER_OF_COMMENTED_TO_SHOW = 2;
+    
     Logger log = Logger.getLogger(IndexController.class);
 
     private FeedRepository feedDAO;
@@ -43,9 +41,8 @@ public class IndexController extends BaseMultiActionController {
     
     
     
-    public IndexController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder) {   
-        this.resourceDAO = resourceDAO;
-        this.itemMaker = itemMaker;
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder) {   
+        this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.feedDAO = feedDAO;
@@ -71,12 +68,10 @@ public class IndexController extends BaseMultiActionController {
         populateSecondaryJustin(mv, loggedInUser);               
      
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
-
-        // TODO dedupe between main and comments.
-        List<Newsitem> commentedNewsitems = populateCommentedNewsitems(mv);
         
-        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS + commentedNewsitems.size(), showBroken);                
-        mv.addObject("main_content", itemMaker.setEditUrls(latestNewsitems, loggedInUser));
+        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, showBroken);                
+        mv.addObject("main_content", latestNewsitems);
+        populateCommentedNewsitems(mv);
         
         List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths();
 		populateArchiveLinks(mv, loggedInUser, archiveMonths);
@@ -132,37 +127,17 @@ public class IndexController extends BaseMultiActionController {
     }
 
 
-
-    @SuppressWarnings("unchecked")
-    private List<Newsitem> populateCommentedNewsitems(ModelAndView mv) {
-        
-        // TODO performance; would a count query method help?
-        final List<Newsitem> allCommentedNewsitems = resourceDAO.getAllCommentedNewsitems(500, true);
-        final List<Newsitem> recentCommentedNewsitems;
-                
-        if (allCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
-            recentCommentedNewsitems = allCommentedNewsitems;
+    private void populateCommentedNewsitems(ModelAndView mv) {       
+        final List<Newsitem> recentCommentedNewsitems = resourceDAO.getAllCommentedNewsitems(2, true);                
+        if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
+        	mv.addObject("commented_newsitems", recentCommentedNewsitems);
         } else {
-            recentCommentedNewsitems = allCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW);
-        }
-        
-        log.debug("Put " + recentCommentedNewsitems.size() + " commented newsitems onto model.");
-        mv.getModel().put("commented_newsitems", recentCommentedNewsitems);
-                
-        final int commentedNewsitemCount = allCommentedNewsitems.size();
-        if (commentedNewsitemCount > NUMBER_OF_COMMENTED_TO_SHOW) {         
-            final String moreCommentsUrl = "comment";
-            mv.getModel().put("commented_newsitems_moreurl", moreCommentsUrl);
-            mv.getModel().put("commented_newsitems_morecount", new Integer(commentedNewsitemCount - NUMBER_OF_COMMENTED_TO_SHOW));
-        }
-        
-        return recentCommentedNewsitems;
+        	mv.addObject("commented_newsitems", recentCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW));            
+        }   
+        mv.addObject("commented_newsitems_moreurl", "comment");        
     }
 
-
-
- 
-
+    
     // TODO move to requestfilter and make available on all pages.
     private void populateUserOwnedResource(HttpServletRequest request, ModelAndView mv, User loggedInUser) {
         Integer ownedItemId = (Integer) request.getSession().getAttribute("owned");
@@ -199,7 +174,7 @@ public class IndexController extends BaseMultiActionController {
         boolean showBroken = loggedInUser != null;
         mv.getModel().put("secondary_heading", "Just In");
         mv.getModel().put("secondary_description", "New additions.");
-        mv.getModel().put("secondary_content", itemMaker.setEditUrls(resourceDAO.getLatestWebsites(MAX_SECONDARY_ITEMS, showBroken), loggedInUser));                  
+        mv.getModel().put("secondary_content", resourceDAO.getLatestWebsites(MAX_SECONDARY_ITEMS, showBroken));                  
         mv.getModel().put("secondary_content_moreurl", "justin");        
     }
     

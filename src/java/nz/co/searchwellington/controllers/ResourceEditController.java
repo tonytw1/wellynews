@@ -68,14 +68,13 @@ public class ResourceEditController extends BaseTagEditingController {
     
       
     public ResourceEditController(ResourceRepository resourceDAO, FeedRepository feedDAO, RequestFilter requestFilter, 
-            ItemMaker itemMaker, LinkCheckerQueue linkCheckerQueue, 
+    		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssPrefetcher rssPrefetcher) {
         this.resourceDAO = resourceDAO;
         this.feedDAO = feedDAO;        
-        this.requestFilter = requestFilter;
-        this.itemMaker = itemMaker;
+        this.requestFilter = requestFilter;       
         this.linkCheckerQueue = linkCheckerQueue;
         this.tagWidgetFactory = tagWidgetFactory;
         this.publisherSelectFactory = publisherSelectFactory;

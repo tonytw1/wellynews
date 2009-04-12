@@ -2,8 +2,6 @@ package nz.co.searchwellington.controllers;
 
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,12 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.filters.RequestFilter;
-import nz.co.searchwellington.model.Event;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.FeedRepository;
@@ -25,8 +21,6 @@ import nz.co.searchwellington.statistics.StatsTracking;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
-import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
@@ -46,10 +40,9 @@ public class TagController extends BaseMultiActionController {
     final private int MAX_WEBSITES = 100;
 
 
-    public TagController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentModelBuilderService contentModelBuilder) {     
+    public TagController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentModelBuilderService contentModelBuilder) {     
         this.resourceDAO = resourceDAO;    
-        this.requestFilter = requestFilter;
-        this.itemMaker = itemMaker;
+        this.requestFilter = requestFilter;  
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.feedDAO = feedDAO;     
@@ -106,7 +99,7 @@ public class TagController extends BaseMultiActionController {
             populateTagFlickrPool(mv, tag);
             
             final List<Resource> allCommentedForTag = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, 500);
-            mv.addObject("main_content", itemMaker.setEditUrls(allCommentedForTag, loggedInUser));
+            mv.addObject("main_content", allCommentedForTag);
             mv.addObject("main_heading", null);
 
             populateSecondaryLatestNewsitems(mv, loggedInUser);
@@ -196,7 +189,7 @@ public class TagController extends BaseMultiActionController {
             populateTagFlickrPool(mv, tag);
             
             final List<Resource> allTagNewsitems = resourceDAO.getTaggedNewitems(tag, showBroken, 500);
-            mv.addObject("main_content", itemMaker.setEditUrls(allTagNewsitems, loggedInUser));
+            mv.addObject("main_content", allTagNewsitems);
             mv.addObject("main_heading", null);
 
             if (allTagNewsitems.size() > 0) {               

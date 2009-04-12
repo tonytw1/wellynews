@@ -11,7 +11,6 @@ import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
@@ -26,10 +25,9 @@ public class BrowseController extends BaseMultiActionController {
     private RequestFilter requestFilter;    
     private RssUrlBuilder rssUrlBuilder;
     
-	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder) {       
+	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder) {       
 		this.resourceDAO = resourceDAO;     
-        this.requestFilter = requestFilter;
-        this.itemMaker = itemMaker;
+        this.requestFilter = requestFilter;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;     
         this.rssUrlBuilder = rssUrlBuilder;
@@ -136,32 +134,13 @@ public class BrowseController extends BaseMultiActionController {
     
     @SuppressWarnings("unchecked")
     private void populateMonthArchive(ModelAndView mv, Date month, User loggedInUser, List<? extends Resource> newsitemsForMonth) throws IOException {             
-        mv.getModel().put("main_content", itemMaker.setEditUrls(newsitemsForMonth, loggedInUser));
+        mv.getModel().put("main_content", newsitemsForMonth);
         populateSecondaryLatestNewsitems(mv, loggedInUser);
     }
-
-
-    @SuppressWarnings("unchecked")
-    private void populatePublisherNewsitems(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
-        boolean showBroken = loggedInUser != null;
-        mv.getModel().put("heading", publisher.getName() + " Newsitems");
-        final List<Newsitem> publisherNewsitems = resourceDAO.getAllPublisherNewsitems(publisher, showBroken);
-        mv.getModel().put("main_content", itemMaker.setEditUrls(publisherNewsitems, loggedInUser));
-        if (publisherNewsitems.size() > 0) {            
-            setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));            
-            mv.getModel().put("publisher", publisher);
-        }
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-    }
-    
-    
-    
-    
-    
+ 
     @SuppressWarnings("unchecked")
     private void populatePublisherCalendars(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
-        mv.getModel().put("heading", publisher.getName() + " Calendars");
-        // TODO can't set edit urls on calendars?
+        mv.getModel().put("heading", publisher.getName() + " Calendars");       
         mv.getModel().put("main_content", publisher.getCalendars());
         populateSecondaryLatestNewsitems(mv, loggedInUser);
     }
@@ -170,14 +149,14 @@ public class BrowseController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")  
     private void populatePublisherFeeds(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Feeds");
-        mv.getModel().put("main_content", itemMaker.setEditUrls(resourceDAO.getPublisherFeeds(publisher), loggedInUser));
+        mv.getModel().put("main_content", resourceDAO.getPublisherFeeds(publisher));
         populateSecondaryLatestNewsitems(mv, loggedInUser);
     }
 
     @SuppressWarnings("unchecked")
     private void populatePublisherWatchlist(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Watchlist items");
-        mv.getModel().put("main_content", itemMaker.setEditUrls(resourceDAO.getPublisherWatchlist(publisher), loggedInUser));
+        mv.getModel().put("main_content",resourceDAO.getPublisherWatchlist(publisher));
         populateSecondaryLatestNewsitems(mv, loggedInUser);        
     }
     

@@ -1,151 +1,115 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
 
 
-<div class="left">
-
-#if($use_big_ads) 
-#parse("includes/160x600ad.vm")
-#end
-
-
-
-#parse("includes/related_tags.vm")
-
-
-
-
-#parse("includes/tag_tree.vm")
-
-#parse("includes/sibling_tags.vm")
-</div>
+	<div class="left">
+		#if($use_big_ads) 
+			#parse("includes/160x600ad.vm")
+		#end
+		
+		#parse("includes/related_tags.vm")
+		#parse("includes/tag_tree.vm")
+		#parse("includes/sibling_tags.vm")
+	</div>
+	
 
 
+	<div class="main">
+		<div class="rss">
+			#parse("includes/rss_widget_for_tag.vm")
+		</div>
 
-
-<div class="main">
-
-
-<div class="rss">
-#parse("includes/rss_widget_for_tag.vm")
-</div>
-
-
-
-#if ($tags && $tags.size() > 1)
-	<h2>
-  	#set ($counter = 1)
-        #foreach ($dtag in $tags)
+		#if ($tags && $tags.size() > 1)
+			<h2>
+  			#set ($counter = 1)
+        	#foreach ($dtag in $tags)
                 <a href="$dtag.name">$dtag.displayName</a>
                 #if ($counter < $tags.size())
-                +
+                	+
                 #end
                 #set( $counter = $counter + 1 )
-   		#end
-   	</h2>
-
-	<p>Listings tagged with both $heading. <br/>
-	Select an individual tag to see all listings for that tag.</p>
-#else 
-
-	#if ($tag.parent) 
-	<h2><a href="$site_information.url/$tag.parent.name">$tag.parent.displayName</a> / $tag.displayName</h2>
-	#else
-	<h2>$tag.displayName</h2>
-	#end
-
-
-	#parse("includes/tag_admin_links.vm")
+   			#end
+		   	</h2>	
+			<p>Listings tagged with both $heading. <br/>
+			Select an individual tag to see all listings for that tag.</p>			
+		#else
+			#if ($tag.parent) 
+				<h2><a href="$site_information.url/$tag.parent.name">$tag.parent.displayName</a> / $tag.displayName</h2>
+			#else
+				<h2>$tag.displayName</h2>
+			#end
 	
-	#parse("includes/child_tags.vm")
+			#parse("includes/tag_admin_links.vm")	
+			#parse("includes/child_tags.vm")
+		#end
 
-#end
+		#parse("includes/search_widget.vm")
 
+		#parse("includes/468x60ad.vm")
 
-
-#parse("includes/search_widget.vm")
-
-
-
-#parse("includes/468x60ad.vm")
-
-
-<div class="tag_main_content">
-	#if ($tag.getMainImage()) 
-		<p><img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320"></p>
-	#end
+		<div class="tag_main_content">
+			#if ($tag.getMainImage()) 
+				<p><img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320"></p>
+			#end
 	
-	#set($main_heading = "$tag.getDisplayName() related newsitems")
-	#if ($commented_newsitems)
-		#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
-	#end
+			#set($main_heading = "$tag.getDisplayName() related newsitems")
+			#if ($commented_newsitems)
+				#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
+			#end
 	
-	#parse("includes/main_content.vm")	
-</div>
+			#parse("includes/main_content.vm")	
+		</div>
 
 
-<div class="tag_secondary_content">
-	#if ($tag.getSecondaryImage())
-		<p><img src="$urlBuilder.getImageUrl($tag.getSecondaryImage())" width="168"></p>
-	#end
+		<div class="tag_secondary_content">
+			#if ($tag.getSecondaryImage())
+				<p><img src="$urlBuilder.getImageUrl($tag.getSecondaryImage())" width="168"></p>
+			#end
 
-	#if ($commented_newsitems)
-		#parse("includes/commented_tagged_newsitems.vm")
-	#end
+			#if ($commented_newsitems)
+				#parse("includes/commented_tagged_newsitems.vm")
+			#end
 
-	#set($secondary_heading = "Related sites")
-	#set($secondary_content = $websites)
-	#parse("includes/secondary_content.vm")
+			#set($secondary_heading = "Related sites")
+			#set($secondary_content = $websites)
+			#parse("includes/secondary_content.vm")
 	
-
-#parse("includes/tag_watchlist.vm")
-
-</div>
-</div>
-
-
-<div class="right">
-
-#parse("includes/login.vm")
-
-#parse("includes/flickr_group_tag.vm")
-
-#if($last_changed)
-<p>Last updated $dateFormatter.timeSince($last_changed)</p>
-#end
-
-#parse("includes/tag_related_feed.vm")
-
-<div class="box">
-#parse("includes/twitterBadge.vm")
-</div>
-
-#parse("includes/geocoded.vm")
-
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-
-<br clear="all"/>
-
-</div>
+			#parse("includes/tag_watchlist.vm")
+		</div>
+		
+	</div>
 
 
 
-#parse("includes/tag_calendars.vm")
-
-#parse("includes/tagless.vm")
+	<div class="right">	
+		#parse("includes/login.vm")
+		#parse("includes/flickr_group_tag.vm")
+	
+		#if($last_changed)
+			<p>Last updated $dateFormatter.timeSince($last_changed)</p>
+		#end
+	
+		#parse("includes/tag_related_feed.vm")
+	
+		<div class="box">
+			#parse("includes/twitterBadge.vm")
+		</div>
+	
+		#parse("includes/geocoded.vm")
+	
+		<div class="box">
+			#parse("includes/latest_newsitems.vm")
+			<br clear="all"/>
+		</div>
+	
+		#parse("includes/tag_calendars.vm")	
+		#parse("includes/tagless.vm")	
+	</div>
 
 
 </div>
-
-
-</div>
-
-
-
-
 
 
 #parse("includes/footer.vm")

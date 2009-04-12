@@ -19,12 +19,10 @@ public class ProfileController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ProfileController.class);
     
-    
     private SiteInformation siteInformation;
      
-    public ProfileController(ResourceRepository resourceDAO, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation) {       
+    public ProfileController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation) {       
         this.resourceDAO = resourceDAO;
-        this.itemMaker = itemMaker;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;

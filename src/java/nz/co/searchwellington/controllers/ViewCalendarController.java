@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
+import com.sun.tools.doclets.formats.html.AllClassesFrameWriter;
 
 
 
@@ -36,10 +37,9 @@ public class ViewCalendarController extends BaseMultiActionController {
     private EventsDAO eventsDAO;
    
     
-    public ViewCalendarController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, UrlStack urlStack, ConfigRepository configDAO, CalendarFeedDAO calendarFeedDAO, EventsDAO eventsDAO) {
+    public ViewCalendarController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, CalendarFeedDAO calendarFeedDAO, EventsDAO eventsDAO) {
         this.resourceDAO = resourceDAO;
-        this.requestFilter = requestFilter;       
-        this.itemMaker = itemMaker;
+        this.requestFilter = requestFilter;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.calendarFeedDAO = calendarFeedDAO;
@@ -89,12 +89,10 @@ public class ViewCalendarController extends BaseMultiActionController {
     
     final protected void populateSecondaryCalendars(ModelAndView mv, User loggedInUser) {      
         mv.addObject("righthand_heading", "Calendars");                
-        mv.addObject("righthand_description", "Calendars published by local organisations.");
-               
+        mv.addObject("righthand_description", "Calendars published by local organisations.");               
         final List<Resource> allCalendars = resourceDAO.getAllCalendarFeeds();
         if (allCalendars.size() > 0) {
-            List<Resource> wrappedFeeds = itemMaker.wrapCalendars(allCalendars);
-            mv.addObject("righthand_content", itemMaker.setEditUrls(wrappedFeeds, loggedInUser));               
+            mv.addObject("righthand_content", allCalendars);               
         }
     }
     

@@ -31,20 +31,7 @@ public class ConfigDAO implements ConfigRepository {
         sessionFactory.getCurrentSession().flush();        
     }
     
-    
-    public String getFeedBurnerWidget() {
-        Config config  = loadConfigObject();     
-        if (config != null && config.getFeedBurnerWidget() != null && !config.getFeedBurnerWidget().trim().equals("")) {
-            log.debug("Loaded Config object from database.");
-            return config.getFeedBurnerWidget();
-        } else {
-            log.warn("Failed to load Config object from database.");
-        }
-        return null;
-    }
-    
-    
-    
+       
     public String getStatsTracking() {
         Config config  = loadConfigObject();            
         if (config != null) {

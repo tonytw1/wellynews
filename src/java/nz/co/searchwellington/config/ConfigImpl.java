@@ -2,8 +2,7 @@ package nz.co.searchwellington.config;
 
 public class ConfigImpl implements Config {
     
-    int id;
-    String feedBurnerWidget;
+    int id;  
     String statsTracking;
     String flickrPoolGroupId;
     String useClickthroughCounter;
@@ -20,17 +19,7 @@ public class ConfigImpl implements Config {
     public void setId(int id) {
         this.id = id;
     }
-
-
-    public String getFeedBurnerWidget() {
-        return feedBurnerWidget;
-    }
-
-    public void setFeedBurnerWidget(String feedBurnerWidget) {
-        this.feedBurnerWidget = feedBurnerWidget;
-    }
-
-
+    
     public String getStatsTracking() {
         return statsTracking;
     }

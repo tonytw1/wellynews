@@ -25,34 +25,30 @@ import org.springframework.web.servlet.ModelAndView;
  *
  */
 public class PublicTaggingController extends BaseTagEditingController {
-
         
     Logger log = Logger.getLogger(PublicTaggingController.class);
-    
-    
+        
     private RequestFilter requestFilter;    
     private TagWidgetFactory tagWidgetFactory;
     private Notifier notifier;
 
     
     public PublicTaggingController(ResourceRepository resourceDAO, FeedRepository feedDAO, 
-                RequestFilter requestFilter, ItemMaker itemMaker, 
+                RequestFilter requestFilter, 
                 TagWidgetFactory tagWidgetFactory, Notifier notifier) {       
         this.resourceDAO = resourceDAO;      
         this.requestFilter = requestFilter;
-        this.itemMaker = itemMaker;
         this.tagWidgetFactory = tagWidgetFactory;
         this.notifier = notifier;
     }
    
     
-        
-    @SuppressWarnings("unchecked")
+    
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         ModelAndView mv = new ModelAndView("publicTagging");    
-        mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
-        mv.getModel().put("heading", "Tagging a Resource");
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("heading", "Tagging a Resource");
         
         User loggedInUser = setLoginState(request, mv);
            
@@ -62,11 +58,11 @@ public class PublicTaggingController extends BaseTagEditingController {
         if (request.getAttribute("resource") != null) {
             editResource = (Resource) request.getAttribute("resource");        
             log.info("Loaded resource #" + editResource.getId() + " for tagging.");
-            mv.getModel().put("resource", editResource);
-            mv.getModel().put("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
+            mv.addObject("resource", editResource);
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
             
             if (loggedInUser != null) {
-                mv.getModel().put("show_additional_tags", 1);
+                mv.addObject("show_additional_tags", 1);
             }
             
         } else {
@@ -79,29 +75,23 @@ public class PublicTaggingController extends BaseTagEditingController {
 
     
     
-    
-    @SuppressWarnings("unchecked")
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-                
+      
+    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {                
         ModelAndView modelAndView = new ModelAndView("publicTagged");   
-        modelAndView.getModel().put("heading", "Resource Saved");
-        modelAndView.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());        
+        modelAndView.addObject("heading", "Resource Saved");
+        modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());        
         
         User loggedInUser = setLoginState(request, modelAndView);
         
         Resource editResource = null;
-        requestFilter.loadAttributesOntoRequest(request);   
-        
+        requestFilter.loadAttributesOntoRequest(request);           
         
         if (request.getAttribute("resource") != null) {         
             editResource = (Resource) request.getAttribute("resource");
-                        
             processTags(request, editResource, loggedInUser);
-            resourceDAO.saveResource(editResource);
-           
-            notifier.sendTaggingNotification("tony@ditonics.com", "Public Tagging", editResource);
-            
-            modelAndView.getModel().put("resource", editResource);    
+            resourceDAO.saveResource(editResource);           
+            notifier.sendTaggingNotification("tony@ditonics.com", "Public Tagging", editResource);            
+            modelAndView.addObject("resource", editResource);    
         }
         
         return modelAndView;

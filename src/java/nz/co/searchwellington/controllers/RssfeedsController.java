@@ -35,10 +35,9 @@ public class RssfeedsController extends BaseMultiActionController {
 	private DiscoveredFeedRepository discoveredFeedsRepository;
  
     
-    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, ItemMaker itemMaker, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository) {   
+    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository) {   
         this.resourceDAO = resourceDAO;       
-        this.requestFilter = requestFilter;
-        this.itemMaker = itemMaker;
+        this.requestFilter = requestFilter;       
         this.publisherSelectFactory = publisherSelectFactory;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
@@ -82,18 +81,17 @@ public class RssfeedsController extends BaseMultiActionController {
         if (publisher != null) {
             mv.getModel().put("heading", publisher.getName() + " RSS Feed");
             mv.getModel().put("custom", new Boolean(true));                        
-            mv.getModel().put("main_content", itemMaker.setEditUrls(resourceDAO.getPublisherNewsitems(publisher, MAX_NEWSITEMS, showBroken), loggedInUser));
+            mv.getModel().put("main_content", resourceDAO.getPublisherNewsitems(publisher, MAX_NEWSITEMS, showBroken));
             setRss(mv, rssUrlBuilder.getRssUrlForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));  
                
         } else if (tag != null) {
             mv.getModel().put("heading", tag.getDisplayName() + " RSS Feed");
             mv.getModel().put("custom", new Boolean(true));            
-            mv.getModel().put("main_content", itemMaker.setEditUrls(resourceDAO.getTaggedNewitems(tag, showBroken, MAX_NEWSITEMS), loggedInUser));
+            mv.getModel().put("main_content", resourceDAO.getTaggedNewitems(tag, showBroken, MAX_NEWSITEMS));
             setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));        
   
         } else {
-            mv.getModel().put("main_content", itemMaker.setEditUrls(resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, false), loggedInUser));
-            
+            mv.getModel().put("main_content", resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, false));            
             mv.getModel().put("heading", "RSS Feeds");
             mv.getModel().put("rss_url", siteInformation.getUrl() + "/rss");
             mv.getModel().put("rss_title", "Newslog");            
