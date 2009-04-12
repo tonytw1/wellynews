@@ -50,6 +50,15 @@ public class RequestFilterNewTest extends TestCase {
 		 assertEquals(capitalTimesPublisher, request.getAttribute("publisher"));
 	 }
 	 
+	 public void testShouldPopulatePublisherForPublisherWatchlistRequest() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/capital-times/watchlist");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(resourceDAO).getPublisherByUrlWords("capital-times");
+		 assertEquals(capitalTimesPublisher, request.getAttribute("publisher"));
+	 }
+	 
+	 
 	 
 	 public void testShouldPopulateTagForSingleTagGeotagRequest() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();

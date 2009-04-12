@@ -22,16 +22,11 @@ public class RequestFilter {
 
     Logger log = Logger.getLogger(RequestFilter.class);
     
-    
-    
     protected ResourceRepository resourceDAO;
-
 
     public RequestFilter(ResourceRepository resourceDAO) {
         this.resourceDAO = resourceDAO;     
     }
-
-    
     
     public void loadAttributesOntoRequest(HttpServletRequest request) {
           
@@ -57,8 +52,13 @@ public class RequestFilter {
                 request.setAttribute("publisher", publisher);
             }
         }
+        if (request.getParameter("item") != null) {
+            Integer item = Integer.parseInt(request.getParameter("item"));
+            request.setAttribute("item", item);            
+        }
         
         
+        log.info("Looking for publiser watchlist and feeds urls");
         final String publisherUrlWords = getPublisherUrlWordsFromPath(request.getPathInfo());
         if (publisherUrlWords != null) {
         	Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
@@ -66,9 +66,7 @@ public class RequestFilter {
         	return;
         }
         
-        
-        log.info("Looking for combiner urls");
-        // Publisher tag and tag combiners
+        log.info("Looking for combiner urls");        
         Pattern pattern = Pattern.compile("^/(.*)\\+(.*?)(/rss)?$");
         Matcher matcher = pattern.matcher(request.getPathInfo());
         if (matcher.matches()) {
@@ -103,9 +101,8 @@ public class RequestFilter {
         	return;
         } 
         
-        
-      
-        // Looking for content on stem; publishers and single tags.
+             
+        log.info("Looking for single publisher and tag urls");
         Pattern contentPattern = Pattern.compile("^/(.*?)(/(rss|comment|geotagged))?$");
         Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
         if (contentMatcher.matches()) {
@@ -133,8 +130,7 @@ public class RequestFilter {
 	        return;
         }
         
-        
-        
+                
         if (request.getParameter("feed") != null) {
             final int feedID = Integer.parseInt(request.getParameter("feed"));
             if (feedID > 0) {
@@ -143,8 +139,6 @@ public class RequestFilter {
                 request.setAttribute("feedAttribute", feed);
             }
         }
-
-        
         
         if (request.getParameter("calendarfeed") != null) {
             final int feedID = Integer.parseInt(request.getParameter("calendarfeed"));
@@ -159,12 +153,6 @@ public class RequestFilter {
             request.setAttribute("month", getArchiveDateFromPath(request.getPathInfo()));
         }
         
-        
-        if (request.getParameter("item") != null) {
-            Integer item = Integer.parseInt(request.getParameter("item"));
-            request.setAttribute("item", item);            
-        }
-
     }
 
     private void loadResourceFromRequestParameter(HttpServletRequest request) {        
@@ -186,10 +174,6 @@ public class RequestFilter {
     }
     
     
-   
-   
-    
-    
     public Date getArchiveDateFromPath(String path) {
         // TODO this method can probably be written in alot less lines, with regexs and a matches check.
         if (path.startsWith("/archive/")) {
@@ -207,42 +191,14 @@ public class RequestFilter {
         }
         return null;
     }
+    
 
-    
-    
-    public String getRssTypeFromRequest(String url) {
-        if (url.equals("/rss/watchlist")) {
-            return "L";
-        } else if (url.equals("/rss/justin")) {
-            return "W";
+    protected String getPublisherUrlWordsFromPath(String pathInfo) {     
+        Pattern pattern = Pattern.compile("^/(.*)/(calendars|feeds|watchlist)$");
+        Matcher matcher = pattern.matcher(pathInfo);
+        if (matcher.matches()) {
+        	return matcher.group(1);
         }
-        return null;
-    }
-    
-    
-    
-    protected String getPublisherUrlWordsFromPath(String pathInfo) {                
-        // TODO merge with the above.
-        Pattern patternE = Pattern.compile("^/(.*)/calendars$");
-        Matcher matcherE = patternE.matcher(pathInfo);
-        if (matcherE.matches()) {
-        	return matcherE.group(1);
-        }
-        
-        
-        // TODO merge with the above.
-        Pattern patternB = Pattern.compile("^/(.*)/feeds$");
-        Matcher matcherB = patternB.matcher(pathInfo);
-        if (matcherB.matches()) {
-        	return matcherB.group(1);
-        }
-        
-        Pattern patternC = Pattern.compile("^/(.*)/watchlist");
-        Matcher matcherC = patternC.matcher(pathInfo);
-        if (matcherC.matches()) {
-        	return matcherC.group(1);
-        }
-                
         return null;
     }
     

@@ -16,12 +16,9 @@ public class ContentModelBuilderService {
 		
 	private ModelBuilder[] modelBuilders;
 	
-	
-	
 	public ContentModelBuilderService(ModelBuilder... modelBuilders) {		
 		this.modelBuilders = modelBuilders;	
 	}
-
 
 	public ModelAndView populateContentModel(HttpServletRequest request) throws IOException, CorruptIndexException, FeedException {
 		logger.info("Building content model");
@@ -29,7 +26,9 @@ public class ContentModelBuilderService {
 				
 		for (int i = 0; i < modelBuilders.length; i++) {
 			ModelBuilder modelBuilder = modelBuilders[i];
+			logger.info("Checking " + modelBuilder);
 			if (modelBuilder.isValid(request)) {
+				logger.info("Using " + modelBuilder);
 				ModelAndView mv = modelBuilder.populateContentModel(request, showBroken);
 				modelBuilder.populateExtraModelConent(request, showBroken, mv);
 				return mv;

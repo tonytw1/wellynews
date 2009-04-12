@@ -28,8 +28,6 @@ import com.sun.syndication.io.FeedException;
 
 public class TagController extends BaseMultiActionController {
 
-    private static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 3;
-    
     private RequestFilter requestFilter;
     private FeedRepository feedDAO;  
     private EventsDAO eventsDAO;
@@ -75,43 +73,6 @@ public class TagController extends BaseMultiActionController {
 
 
     
-    
-    
-    
-	public ModelAndView comment(HttpServletRequest request, HttpServletResponse response) throws IOException {        
-        ModelAndView mv = new ModelAndView();        
-        mv.setViewName("tagComment");
-                
-        User loggedInUser = setLoginState(request, mv);
-        boolean showBroken = loggedInUser != null;
-        
-        requestFilter.loadAttributesOntoRequest(request);
-        mv.addObject("tags", request.getAttribute("tags"));
-        
-        if (request.getAttribute("tag") != null) {
-            Tag tag = (Tag) request.getAttribute("tag");
-            populateCommon(request, mv, showBroken, loggedInUser, tag);
-
-            mv.addObject("tag", tag);
-            mv.addObject("heading", tag.getDisplayName() + " related comment");
-            // TODO want areaname back in here.
-            mv.addObject("description", tag.getDisplayName() + " listings");                        
-            populateTagFlickrPool(mv, tag);
-            
-            final List<Resource> allCommentedForTag = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, 500);
-            mv.addObject("main_content", allCommentedForTag);
-            mv.addObject("main_heading", null);
-
-            populateSecondaryLatestNewsitems(mv, loggedInUser);
-
-        } else {
-            throw new RuntimeException("Invalid tag name.");            
-        }
-        
-        return mv;        
-    }
-        
-    
     // TODO duplication with simple
     protected void populateGeocoded(ModelAndView mv, boolean showBroken, Resource selected, Tag tag) throws IOException {
         List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, 50, showBroken);
@@ -142,7 +103,7 @@ public class TagController extends BaseMultiActionController {
         
         if (request.getAttribute("tag") != null) {
             Tag tag = (Tag) request.getAttribute("tag");
-            populateCommon(request, mv, showBroken, loggedInUser, tag);
+            populateCommon(request, mv, showBroken, tag);
 
             mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(showBroken));   
             
@@ -167,8 +128,7 @@ public class TagController extends BaseMultiActionController {
     
     
 
-    public ModelAndView newsArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        
+    public ModelAndView newsArchive(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();        
         mv.setViewName("tagNewsArchive");
                 
@@ -180,7 +140,7 @@ public class TagController extends BaseMultiActionController {
         
         if (request.getAttribute("tag") != null) {
             Tag tag = (Tag) request.getAttribute("tag");
-            populateCommon(request, mv, showBroken, loggedInUser, tag);
+            populateCommon(request, mv, showBroken, tag);
 
             mv.addObject("tag", tag);
             mv.addObject("heading", tag.getDisplayName() + " related newsitems");
@@ -256,13 +216,11 @@ public class TagController extends BaseMultiActionController {
     }
     
     
-     private void populateCommon(HttpServletRequest request, ModelAndView mv, boolean showBroken, User loggedInUser, Tag tag) {
+     private void populateCommon(HttpServletRequest request, ModelAndView mv, boolean showBroken, Tag tag) {
         urlStack.setUrlStack(request);
         populateAds(request, mv, showBroken);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-       
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());        
-                
+        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());       
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());                
         if (tag != null && tag.getName().equals("realestate")) {      
         	mv.addObject("use_big_ads", 1);
         }

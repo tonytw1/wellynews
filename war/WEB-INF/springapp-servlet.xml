@@ -402,10 +402,10 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>											
-						<prop key="/*">normal</prop>
-						<prop key="/*/comment">comment</prop>	
-						<prop key="/*/news">newsArchive</prop>
 						<prop key="/*/geotagged">geotagged</prop>						
+						<prop key="/*/news">newsArchive</prop>
+						<prop key="/*/comment">normal</prop>	
+						<prop key="/*">normal</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -600,8 +600,7 @@
             	<prop key="/*/feeds">browseController</prop>            	
             	<prop key="/*/watchlist">browseController</prop>
 
-          <prop key="/*+*">tagController</prop>
-          <prop key="/*%2B*">tagController</prop>
+        
             	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
@@ -672,9 +671,12 @@
 				<prop key="/supress/*">supressionController</prop>
 				
 				
-				<prop key="/*">tagController</prop>
+				<prop key="/*+*">tagController</prop>
+          		<prop key="/*%2B*">tagController</prop>				
 				<prop key="/*/comment">tagController</prop>
 				<prop key="/geotagged/*">tagController</prop>
+				<prop key="/*">tagController</prop>
+				
             </props>
         </property>
     </bean>
