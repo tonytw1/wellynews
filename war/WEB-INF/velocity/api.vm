@@ -137,6 +137,34 @@ the url. A complete list of available tag and publisher url snippets is shown be
 
 
 
+<pre>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+  $(document).ready(function(){
+  $.getJSON("http://localhost:8080/springapp/transport+newtown/rss",
+     function(data) {
+        $.each(data, function(i,item) {
+            $("<li><a href=\"" + item.url + "\">" + item.name + "</a></li>").appendTo("#newsitems");
+            if ( i == 2 ) return false;
+        });
+     });
+  });
+</script>
+</head>
+<body>
+  <div id="newsitems">
+  </div>
+</body>
+</html>
+
+
+
+</pre>
+
+
 </div>
 
 <div class="right">
