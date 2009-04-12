@@ -75,5 +75,13 @@ public class RssUrlBuilder {
 	public String getRssUrlForPublisherCombiner(Website publisher, Tag tag) {
 		 return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "+" + tag.getName() + "/rss";
 	}
+
+	public String getRssTitleForTagComment(Tag tag) {
+		return siteInformation.getSitename() + " - " + tag.getDisplayName() + " comment";
+	}
+
+	public String getRssUrlForTagComment(Tag tag) {
+		return siteInformation.getUrl() + "/" + tag.getName() + "/comment/rss";
+	}
     
 }

@@ -162,10 +162,8 @@
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="rssUrlBuilder" />
-		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="rssUrlBuilder" />		
 		<constructor-arg ref="contentModelBuilder" />
 		
 		<property name="methodNameResolver">
@@ -176,7 +174,8 @@
 						<prop key="/geotagged/rss">geotaggedRss</prop>
 						<prop key="/justin/rss">justinRss</prop>
 						<prop key="/watchlist/rss">watchlistRss</prop>						
-						<prop key="/*/rss">contentRss</prop>											
+						<prop key="/*/rss">contentRss</prop>
+						<prop key="/*/comment/rss">contentRss</prop>														
 					</props>
 				</property>
 			</bean>		
@@ -616,6 +615,7 @@
 				<prop key="/justin/rss">rssController</prop>
 				<prop key="/watchlist/rss">rssController</prop>
 				<prop key="/*/rss">rssController</prop>
+				<prop key="/*/comment/rss">rssController</prop>			
 								
 				<prop key="/feeds/**">rssfeedsController</prop>
 				<prop key="/search">searchController</prop>

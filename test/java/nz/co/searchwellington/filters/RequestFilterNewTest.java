@@ -42,6 +42,14 @@ public class RequestFilterNewTest extends TestCase {
 	 }
 	 
 	 
+	 public void testShouldPopulateTagForSingleTagCommentRssRequest() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/transport/comment/rss");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(resourceDAO).loadTagByName("transport");		
+	 }
+	 
+	 
 	 public void testShouldPopulatePublisherForPublisherRequest() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/capital-times");

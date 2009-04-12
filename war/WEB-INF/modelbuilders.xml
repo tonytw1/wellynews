@@ -25,7 +25,8 @@
 	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="urlBuilder" />	
+		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="rssUrlBuilder" />	
 	</bean>
 
 	<bean id="TagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.TagCombinerModelBuilder">

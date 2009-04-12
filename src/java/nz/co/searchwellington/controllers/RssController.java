@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.views.RssView;
 
@@ -29,20 +28,16 @@ public class RssController extends MultiActionController {
     private SiteInformation siteInformation;
     private RequestFilter requestFilter;
     private ResourceRepository resourceDAO;
-    private ConfigRepository configDAO;
     private RssUrlBuilder rssUrlBuilder;
-	private UrlBuilder urlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
 
     
        
-    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, ContentModelBuilderService contentModelBuilderService) {     
+    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService) {     
         this.siteInformation = siteInformation;
         this.requestFilter = requestFilter;
-        this.resourceDAO = resourceDAO;
-        this.configDAO = configDAO;
-        this.rssUrlBuilder = rssUrlBuilder;
-        this.urlBuilder = urlBuilder;
+        this.resourceDAO = resourceDAO;       
+        this.rssUrlBuilder = rssUrlBuilder;      
         this.contentModelBuilderService = contentModelBuilderService;
     }
     
