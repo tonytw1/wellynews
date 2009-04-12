@@ -16,11 +16,7 @@
 			<column name="id" sql-type="integer" not-null="true" />
 			<generator class="native" />
 		</id>
-
-		<property name="feedBurnerWidget" type="text">
-			<column name="feedburner_widget" />
-		</property>
-		
+				
 		<property name="statsTracking" type="text">
 			<column name="stats_tracking" />
 		</property>

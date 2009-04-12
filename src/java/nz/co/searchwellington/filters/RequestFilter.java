@@ -31,99 +31,24 @@ public class RequestFilter {
         this.resourceDAO = resourceDAO;     
     }
 
+    
+    
     public void loadAttributesOntoRequest(HttpServletRequest request) {
-        
-        // old redirects support.
-        if (request.getParameter("category") != null) {
-            try {
-                int categoryId = Integer.parseInt(request.getParameter("category"));
-                if (categoryId > 0) {
-                    Tag tag = resourceDAO.loadTagById(categoryId);            
-                    request.setAttribute("tag", tag);
-                }
-            } catch (NumberFormatException e) {
-                log.warn("category parmeter was not a valid number: " + request.getParameter("category"));
-            }
-        }
-        
-        
-        
-        if (request.getParameter("date") != null) {
-
-            SimpleDateFormat sdfInput = new SimpleDateFormat("d MMM yyyy");
-            try {
-                Date date = sdfInput.parse(request.getParameter("date"));
-                request.setAttribute("date", date);
-                
-            } catch (ParseException e) {
-                log.warn("Invalid date input; defaulting to null.");
-            }
-   
-        }
-        
-  
+          
+    	// TODO only used in admin - move to adminFilter?
         loadResourceFromRequestParameter(request);
-             
-        
-        List<String> tagNames = getTagNamesFromPath(request.getPathInfo());
-        log.debug("Found " + tagNames.size() + " tag names on request.");
-        if (tagNames.size() > 0) {
-            List<Tag> tags = new ArrayList<Tag>();
-            for (String tagname : tagNames) {
-                if (tagname != null) {
-                    Tag tag = resourceDAO.loadTagByName(tagname);
-                    if (tag != null) {
-                        tags.add(tag);
-                    } else {
-                        log.warn("Failed to load tagname: " + tagname);
-                    }
-                }
-            }
-            
-            if (tags.size() == 1) {
-                Tag mainTag = tags.get(0);
-                request.setAttribute("tag", mainTag);
-            }
-            
-            request.setAttribute("tags", tags);
+        // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
+        if (request.getParameter("tag") != null) {
+            String tagName = request.getParameter("tag");        
+            Tag tag = resourceDAO.loadTagByName(tagName);             
+               request.setAttribute("tag", tag);            
         }
-        
-        //      TODO why is this still using ints?
-        // TODO duplication.
-        if (request.getParameter("tags") != null) {
-           String[] tagIds = request.getParameterValues("tags");
-           List <Tag> tags = new ArrayList <Tag>();
-           for (int i = 0; i < tagIds.length; i++) {             
-               String tagIdString = tagIds[i];
-               int tagID = Integer.parseInt(tagIdString);
-               if (tagID > 0) {          
-                   Tag tag = resourceDAO.loadTagById(tagID);
-                   tags.add(tag);
-               }
-           }           
-           request.setAttribute("tags", tags);
-        }
-        
-        
-       // TODO depricate be using a url tagname instead of a form parameter.
-       if (request.getParameter("tag") != null) {
-           String tagName = request.getParameter("tag");        
-           Tag tag = resourceDAO.loadTagByName(tagName);             
-              request.setAttribute("tag", tag);            
-       }
-        
-        
-        
+        // TODO admin only
         if (request.getParameter("parent") != null) {
             String tagName = request.getParameter("parent");
             Tag tag = resourceDAO.loadTagByName(tagName);
             request.setAttribute("parent_tag", tag); 
-        }
-        
-        
-        
-        
-        
+        }       
         // TODO move to a spring controller binding and depricate the publisher id on get.
         if (request.getParameter("publisher") != null) {
             final int publisherID = Integer.parseInt(request.getParameter("publisher"));
@@ -133,11 +58,14 @@ public class RequestFilter {
             }
         }
         
+        
         final String publisherUrlWords = getPublisherUrlWordsFromPath(request.getPathInfo());
         if (publisherUrlWords != null) {
         	Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
         	request.setAttribute("publisher", publisher);
+        	return;
         }
+        
         
         log.info("Looking for combiner urls");
         // Publisher tag and tag combiners
@@ -146,8 +74,7 @@ public class RequestFilter {
         if (matcher.matches()) {
         	final String left = matcher.group(1);
         	final String right = matcher.group(2);        	
-        	log.info("Path matches combiner pattern for '" + left + "', '" + right + "'");
-        	
+        	log.info("Path matches combiner pattern for '" + left + "', '" + right + "'");        	
         	// righthand side is always a tag;
         	// Left could be a publisher or a tag.
         	Tag rightHandTag = resourceDAO.loadTagByName(right);        	
@@ -158,6 +85,8 @@ public class RequestFilter {
 	        		log.info("Left matches publisher: " + publisher.getName());
 	        		request.setAttribute("publisher", publisher);
 	        		request.setAttribute("tag", rightHandTag);
+	        		return;
+	        		
 	        	} else {
 	        		Tag leftHandTag = resourceDAO.loadTagByName(left);
 	        		if (leftHandTag != null) {
@@ -167,36 +96,43 @@ public class RequestFilter {
 	        			tags.add(leftHandTag);
 	        			tags.add(rightHandTag);
 	        			request.setAttribute("tags", tags);
+	        			return;
 	        		}
 	        	}
         	}
-        } else {
+        	return;
+        } 
         
-	        // Looking for content on stem
-	        Pattern contentPattern = Pattern.compile("^/(.*?)(/rss)?$");
-	        Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
-	        if (contentMatcher.matches()) {
-	        	final String match = contentMatcher.group(1);
-	        	log.debug("'" + match + "' matches content");
+        
+      
+        // Looking for content on stem; publishers and single tags.
+        Pattern contentPattern = Pattern.compile("^/(.*?)(/(rss|comment|geotagged))?$");
+        Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
+        if (contentMatcher.matches()) {
+        	final String match = contentMatcher.group(1);
+        	log.debug("'" + match + "' matches content");
 	        	
-	        	log.info("Looking for tag '" + match + "'");
-	        	Tag tag = resourceDAO.loadTagByName(match);
-	        	if (tag != null) {
-	        		log.info("Setting tag: " + tag.getName());
-	        		request.setAttribute("tag", tag);
-	        		List<Tag> tags = new ArrayList<Tag>();
-	        		tags.add(tag);
-	        		request.setAttribute("tags", tags);
-	        	} else {
-	        		log.info("Looking for publisher '" + match + "'");
-	        		Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
-	        		if (publisher != null) {
-	        			log.info("Setting publisher: " + publisher.getName());
-	        			request.setAttribute("publisher", publisher);
-	        		}
-	        	}
-	        }
+        	log.info("Looking for tag '" + match + "'");
+        	Tag tag = resourceDAO.loadTagByName(match);
+	        if (tag != null) {
+	        	log.info("Setting tag: " + tag.getName());
+	        	request.setAttribute("tag", tag);
+	        	List<Tag> tags = new ArrayList<Tag>();
+	        	tags.add(tag);
+	        	request.setAttribute("tags", tags);
+	        	return;
+	        } else {
+	        	log.info("Looking for publisher '" + match + "'");
+	        	Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
+	        	if (publisher != null) {
+	        		log.info("Setting publisher: " + publisher.getName());
+	        		request.setAttribute("publisher", publisher);
+	        		return;
+	       		}
+	       	}
+	        return;
         }
+        
         
         
         if (request.getParameter("feed") != null) {
@@ -251,33 +187,7 @@ public class RequestFilter {
     
     
    
-    protected List<String> getTagNamesFromPath(String path) {
-
-    	// TODO needs to support /soccer+newtown/rss";
-    	
-    	
-        List<String> tagNames = new ArrayList<String>();
-        String[] fields = path.split("/");
-
-        int tagIndex = -1;
-        for (int i = 0; i < fields.length; i++) {
-            if (fields[i].equals("tag") || fields[i].equals("geotagged")) {
-                tagIndex = i;
-            }
-        }
-
-        boolean urlContainsTag = tagIndex > -1;
-        if (urlContainsTag && fields.length > tagIndex + 1) {
-            String tagsString = fields[tagIndex + 1];
-
-            String[] tagnames = tagsString.split("\\+");
-            for (int i = 0; i < tagnames.length; i++) {
-                tagNames.add(tagnames[i]);
-            }
-        }
-        return tagNames;
-    }
-
+   
     
     
     public Date getArchiveDateFromPath(String path) {
@@ -311,14 +221,7 @@ public class RequestFilter {
     
     
     
-    protected String getPublisherUrlWordsFromPath(String pathInfo) {       
-        Pattern pattern = Pattern.compile("^/(.*)/newsitems$");
-        Matcher matcher = pattern.matcher(pathInfo);
-        if (matcher.matches()) {
-        	return matcher.group(1);
-        }
-        
-        
+    protected String getPublisherUrlWordsFromPath(String pathInfo) {                
         // TODO merge with the above.
         Pattern patternE = Pattern.compile("^/(.*)/calendars$");
         Matcher matcherE = patternE.matcher(pathInfo);
@@ -339,13 +242,7 @@ public class RequestFilter {
         if (matcherC.matches()) {
         	return matcherC.group(1);
         }
-        
-        Pattern patternD = Pattern.compile("^/(.*)/newsitems/rss$");
-        Matcher matcherD = patternD.matcher(pathInfo);
-        if (matcherD.matches()) {
-        	return matcherD.group(1);
-        }
-        
+                
         return null;
     }
     

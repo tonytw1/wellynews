@@ -14,7 +14,7 @@
 #if ($commented_tags.size() > 0)
 <ul class="childtags">
 #foreach ($commented_tag in $commented_tags)
-	<li><a href="$site_information.url/tag/$commented_tag.name/comment">$commented_tag.displayName</a>
+	<li><a href="$urlBuilder.getTagCommentUrl($commented_tag)">$commented_tag.displayName</a>
 #end
 </ul>
 #end

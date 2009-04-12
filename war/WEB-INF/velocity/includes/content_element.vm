@@ -3,7 +3,7 @@
 	#set($itemUrl = $urlBuilder.getFeedUrl($item))
 #end
 
-	<li #if ($item.status) class="$item.status" #end >
+	<li>
 		
 		<h5><a href="$itemUrl">$item.name</a></h5>
 		<ul>		
@@ -54,38 +54,28 @@
 				#end
 				
 				#if ($item.feeds && $item.feeds.size() > 0) 
-						#if($item.feeds.size() == 1)
-							#set ($feed = $item.feeds.iterator().next())					
-							<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 feed</a>	
-						#else
-						<li><a href="$site_information.url/$item.urlWords/feeds">					
-							#showItemCount($item.feeds.size() "feed")		
-						</a>
-						</li>
-						#end					
-					#end
-				
-					#if ($item.calendars && $item.calendars.size() > 0) 
-						#if($item.calendars.size() == 1)
-							#set ($calendar = $item.calendars.iterator().next())					
-							<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 calendar</a>	
-						#else
-							<li><a href="$site_information.url/$item.urlWords/calendars">					
-								#showItemCount($item.calendars.size() "calendar")		
-							</a>
-							</li>
-						#end					
-					#end				
-				
-					#if ($item.watchlist && $item.watchlist.size() > 0) 
-						<li><a href="$site_information.url/$item.urlWords/watchlist">
-							#showItemCount(	$item.watchlist.size() "watchlist")
-						</a></li>
+					#if($item.feeds.size() == 1)
+						#set ($feed = $item.feeds.iterator().next())					
+						<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 feed</a></li>
+					#else
+						<li><a href="$site_information.url/$item.urlWords/feeds">#showItemCount($item.feeds.size() "feed")</a></li>
 					#end
 				#end
-			
-			
 				
+				#if ($item.calendars && $item.calendars.size() > 0) 
+					#if($item.calendars.size() == 1)
+						#set ($calendar = $item.calendars.iterator().next())					
+							<li><a href="${site_information.url}/viewcalendar?calendarfeed=$calendar.id">1 calendar</a>	
+						#else
+							<li><a href="$site_information.url/$item.urlWords/calendars">#showItemCount($item.calendars.size() "calendar")</a></li>
+						#end
+					#end			
+				
+					#if ($item.watchlist && $item.watchlist.size() > 0) 
+						<li><a href="$site_information.url/$item.urlWords/watchlist">#showItemCount(	$item.watchlist.size() "watchlist")</a></li>
+					#end
+				#end
+								
 				#if ($item.tags && $item.tags.size() > 0)
 					<li class="tagged">Tagged as:</li>
 					#foreach ($tag in $item.tags)				
@@ -93,7 +83,7 @@
 					#end
 				#end
 				
-				
+								
 				#if ($item.comments && $item.comments.size() > 0) 
 					<li class="commented">
 					#if ($item.comments.size() > 0)
@@ -102,8 +92,7 @@
 						#else
 							<p>This newsitem has #showItemCount($item.comments.size() "comment").</p>
 						#end
-						#parse("includes/comments_list.vm")
-						
+						#parse("includes/comments_list.vm")						
 						#if ($item.comments.size() <= 3)
 							<p>You can add own comments <a href="$item.url">here</a>.</p>
 						#else
@@ -126,13 +115,12 @@
 			
 			
 				#if ($item.geocode && $item.geocode.address) 
-					<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >
-						
+					<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >						
 					#if ($item.geocode.isValid())
 						<a href="$site_information.url/geotagged?resource=$item.id">#parse("includes/geotag_icon.vm")</a>
 					#else
 						#parse("includes/geotag_icon.vm") 
-					#end					
+					#end
 					$item.geocode.address</li>
 				#end
 				
@@ -143,8 +131,8 @@
 					<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
 					<li>Http Status: $item.httpStatus</li>
 				#end
-
-				
+		</ul>				
+	</li>
 					
 			
 				
