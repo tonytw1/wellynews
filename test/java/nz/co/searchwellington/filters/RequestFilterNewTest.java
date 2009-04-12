@@ -9,6 +9,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -20,21 +21,33 @@ public class RequestFilterNewTest extends TestCase {
 	private RequestFilter filter;
 	private Tag transportTag = mock(Tag.class);
 	private Tag soccerTag = mock(Tag.class);
+	private Website capitalTimesPublisher = mock(Website.class);
 	
-	 @Override
-	 protected void setUp() throws Exception {		 
-		 stub(resourceDAO.loadTagByName("transport")).toReturn(transportTag);
-		 stub(resourceDAO.loadTagByName("soccer")).toReturn(soccerTag);
-		 filter = new RequestFilter(resourceDAO);		 
+	
+	@Override
+	protected void setUp() throws Exception {		 
+		stub(resourceDAO.loadTagByName("transport")).toReturn(transportTag);
+		stub(resourceDAO.loadTagByName("soccer")).toReturn(soccerTag);
+		stub(resourceDAO.getPublisherByUrlWords("capital-times")).toReturn(capitalTimesPublisher);
+		filter = new RequestFilter(resourceDAO);
 	 }
-		
 	
+		
 	 public void testShouldPopulateTagForSingleTagCommentRequest() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport/comment");
 		 filter.loadAttributesOntoRequest(request);
 		 verify(resourceDAO).loadTagByName("transport");
 		 assertEquals(transportTag, request.getAttribute("tag"));
+	 }
+	 
+	 
+	 public void testShouldPopulatePublisherForPublisherRequest() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/capital-times");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(resourceDAO).getPublisherByUrlWords("capital-times");
+		 assertEquals(capitalTimesPublisher, request.getAttribute("publisher"));
 	 }
 	 
 	 
@@ -62,7 +75,32 @@ public class RequestFilterNewTest extends TestCase {
 		 assertEquals(transportTag, request.getAttribute("tag"));
 	 }
 	 
-	
+	 
+	 public void testShouldPopulateAttributesForPublisherTagCombinerRequest() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/capital-times+soccer");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
+		 verify(resourceDAO).loadTagByName("soccer");
+		 Website publisher = (Website) request.getAttribute("publisher");
+		 Tag tag = (Tag) request.getAttribute("tag");
+		 assertEquals(capitalTimesPublisher, publisher);
+		 assertEquals(soccerTag, tag);
+	 }
+
+	 
+	 public void testShouldPopulateAttributesForPublisherTagCombinerRssRequest() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/capital-times+soccer/rss");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
+		 verify(resourceDAO).loadTagByName("soccer");
+		 Website publisher = (Website) request.getAttribute("publisher");
+		 Tag tag = (Tag) request.getAttribute("tag");
+		 assertEquals(capitalTimesPublisher, publisher);
+		 assertEquals(soccerTag, tag);
+	 }
+
 	 
 	 public void testShouldPopulateTagsForTagCombinerRequest() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
