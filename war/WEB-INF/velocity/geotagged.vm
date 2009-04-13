@@ -1,3 +1,4 @@
+#set($geocoded = $main_content)
 #parse("includes/header.vm")
 
 <div class="page">
@@ -19,7 +20,7 @@
 #parse("includes/rss_widget_for_geotagged.vm")
 </div>
 
-<h2><a href="$site_information.url/geotagged">Geotagged</a> / $tag.displayName</h2>
+<h2><a href="$site_information.url/geotagged">Geotagged</a> / <a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2>
 
 
 #if ($geotagged_tags.size() > 0)

@@ -1,4 +1,4 @@
-package nz.co.searchwellington.controllers.models;
+ package nz.co.searchwellington.controllers.models;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,6 +16,7 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
@@ -29,6 +30,7 @@ public class TagModelBuilder implements ModelBuilder {
 	private static final int MAX_WEBSITES = 500;
 	private static final int MAX_NEWSITEMS = 30;
 	private static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 2;
+	private static final int MAX_GEOCODED_TO_SHOW = 30;
 	
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	
@@ -80,6 +82,7 @@ public class TagModelBuilder implements ModelBuilder {
 			populateCommentedTaggedNewsitems(mv, tag, showBroken);
 			mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
 			populateRelatedFeed(mv, tag);
+			populateGeocoded(mv, showBroken, tag);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -136,13 +139,21 @@ public class TagModelBuilder implements ModelBuilder {
             mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
             // TODO count
         }        
-        mv.addObject("commented_newsitems", commentedToShow);
+        mv.addObject("commented_newsitems", commentedToShow);        
         mv.addObject("tag_watchlist", resourceDAO.getTagWatchlist(tag, showBroken));        
     }
 	
+    
+    private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) throws IOException {
+        List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, MAX_GEOCODED_TO_SHOW, showBroken);
+        log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
+        if (geocoded.size() > 0) {
+            mv.addObject("geocoded", geocoded);
+        }
+    }
 	
     
-    protected void populateRelatedFeed(ModelAndView mv, Tag tag) throws IllegalArgumentException, IOException, FeedException {       
+    private void populateRelatedFeed(ModelAndView mv, Tag tag) throws IllegalArgumentException, IOException, FeedException {       
         Feed relatedFeed = tag.getRelatedFeed(); 
         if (relatedFeed != null) {
             log.info("Related feed is: " + relatedFeed.getName());

@@ -345,6 +345,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         List<Object[]> rows = sessionFactory.getCurrentSession().createSQLQuery(
                 "select date_format(resource.date, '%Y-%m') as month, count(id) " +
                 "       from resource where http_status = 200 and type='N' " +
+                " 		and resource.date is not NULL and resource.date !=\"\"" + 
                 "       group by month " +
                 "       order by month desc"
                 ).             

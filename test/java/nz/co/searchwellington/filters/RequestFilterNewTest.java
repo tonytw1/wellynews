@@ -132,4 +132,18 @@ public class RequestFilterNewTest extends TestCase {
 	 }
 	 
 	 
+	 
+	 public void testShouldPopulateTagsForTagCombinerJSONRequest() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/transport+soccer/json");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(resourceDAO).loadTagByName("transport");
+		 verify(resourceDAO).loadTagByName("soccer");		 
+		 List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+		 assertEquals(2, tags.size());		 
+		 assertEquals(transportTag, tags.get(0));
+		 assertEquals(soccerTag, tags.get(1));
+	 }
+	 
+	 
 }

@@ -28,6 +28,12 @@
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="rssUrlBuilder" />	
 	</bean>
+	
+	<bean id="TagGeotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.TagGeotaggedModelBuilder">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="rssUrlBuilder" />	
+	</bean>
 
 	<bean id="TagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.TagCombinerModelBuilder">
 		<constructor-arg ref="resourceDAO" />
@@ -42,6 +48,7 @@
 				<ref bean="publisherModelBuilder" />
 				<ref bean="publisherTagCombinerModelBuilder" />
 				<ref bean="TagCommentModelBuilder" />
+				<ref bean="TagGeotaggedModelBuilder" />
 				<ref bean="TagModelBuilder" />
 				<ref bean="TagCombinerModelBuilder" />
 			</list>

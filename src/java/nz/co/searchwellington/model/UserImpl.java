@@ -16,8 +16,7 @@ public class UserImpl implements User {
     
     public UserImpl(String username, String password) {     
         this.username = username;
-        this.password = password;
-        System.out.println("Contructed: " + this.username);
+        this.password = password;        
     }
 
 

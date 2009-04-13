@@ -24,14 +24,13 @@ public class RssView implements View {
         
         List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");        
 		res.setContentType("text/xml");
-        res.setCharacterEncoding("UTF-8");
-        
+		
         RomeRssFeed outputFeed = new RomeRssFeed(	(String) model.get("heading"), 
         		(String) model.get("link"), 
         		(String) model.get("description"), 
         		mainContent, clickThroughUrl);
         res.getOutputStream().print(outputFeed.outputAsXml());        
-		res.getOutputStream().flush();
+		res.getOutputStream().flush();		
 	}
 
  

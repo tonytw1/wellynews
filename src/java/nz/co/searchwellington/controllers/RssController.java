@@ -72,12 +72,12 @@ public class RssController extends MultiActionController {
     
        
     public ModelAndView geotaggedRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	log.info("Rendering geotagged rss feed");
     	HashMap <String, Object> model = new HashMap <String, Object>();    	
-    	model.put("title", rssUrlBuilder.getRssTitleForGeotagged());
-    	model.put("link", siteInformation.getUrl() + "/geotagged");
+    	model.put("heading", rssUrlBuilder.getRssTitleForGeotagged());
+    	model.put("link", rssUrlBuilder.getRssUrlForGeotagged());
     	model.put("description", "Newsitems with geotagging information.");
-    	model.put("main_content", resourceDAO.getAllValidGeocoded(MAX_RSS_ITEMS, false));
-    	
+    	model.put("main_content", resourceDAO.getAllValidGeocoded(MAX_RSS_ITEMS, false));    	
         RssView rssView = new RssView();
         return new ModelAndView(rssView, model);
     }

@@ -67,7 +67,7 @@ public class RequestFilter {
         }
         
         log.info("Looking for combiner urls");        
-        Pattern pattern = Pattern.compile("^/(.*)\\+(.*?)(/rss)?$");
+        Pattern pattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
         Matcher matcher = pattern.matcher(request.getPathInfo());
         if (matcher.matches()) {
         	final String left = matcher.group(1);
@@ -103,7 +103,7 @@ public class RequestFilter {
         
              
         log.info("Looking for single publisher and tag urls");
-        Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|comment|geotagged))?$");
+        Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
         Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
         if (contentMatcher.matches()) {
         	final String match = contentMatcher.group(1);

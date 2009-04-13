@@ -48,7 +48,6 @@ public class GoogleSitemapServiceTests extends TestCase {
         GoogleSitemapService service = new GoogleSitemapService(resourceDAO, dateFormatter);        
         final String xml = service.render(tags, "http://test");              
         assertNotNull(xml);
-        System.out.println(xml);
         
         Document document = parse(xml);
         Element urlset = (Element) document.selectSingleNode("//urlset");

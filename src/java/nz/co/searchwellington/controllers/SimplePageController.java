@@ -22,7 +22,6 @@ import nz.co.searchwellington.statistics.StatsTracking;
 import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -226,7 +225,7 @@ public class SimplePageController extends BaseMultiActionController {
             // TODO inject
             GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();
             mv.addObject("geocoded", cleaner.dedupe(geocoded, selected));  
-            setRss(mv, "Geocoded newsitems RSS Feed", siteInformation.getUrl() + rssUrlBuilder.getRssUrlForGeotagged());
+            setRss(mv, "Geocoded newsitems RSS Feed", rssUrlBuilder.getRssUrlForGeotagged());
         }
     }
 

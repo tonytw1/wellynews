@@ -83,5 +83,14 @@ public class RssUrlBuilder {
 	public String getRssUrlForTagComment(Tag tag) {
 		return siteInformation.getUrl() + "/" + tag.getName() + "/comment/rss";
 	}
+
+	public String getRssTitleForTagGeotagged(Tag tag) {
+		return siteInformation.getSitename() + " - " + tag.getDisplayName() + " geotagged";
+	}
+
+	public String getRssUrlForTagGeotagged(Tag tag) {
+		return siteInformation.getUrl() + "/" + tag.getName() + "/geotagged/rss";
+	}
     
+	
 }

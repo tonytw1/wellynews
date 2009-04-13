@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -78,10 +79,10 @@ public class TagCombinerModelBuilder implements ModelBuilder {
 		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  
 		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);
 		
-		mv.addObject("main_content", taggedNewsitems);
+		mv.addObject("main_content", taggedNewsitems);	
 		mv.addObject("websites", taggedWebsites);
 		     
-		if (taggedNewsitems.size() > 0) {
+		if (taggedNewsitems.size() > 0) { 
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
 		}
 			                            

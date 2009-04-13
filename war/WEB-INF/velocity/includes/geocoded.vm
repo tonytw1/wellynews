@@ -6,7 +6,7 @@
 
 
 #if($tag) 
-	<p><a href="$site_information.url/geotagged/$tag.name">More...</a></p>
+	<p><a href="$urlBuilder.getTagGeocodedUrl($tag)">More...</a></p>
 #else
 	<p><a href="$site_information.url/geotagged">More...</a></p>
 #end
