@@ -3,58 +3,49 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
 
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
 
-<div class="left">
-#parse("includes/tag_tree.vm")
-</div>
+	<div class="main">
+		<h2>$heading</h2>
 
-<div class="main">
-<h2>$heading</h2>
-
-#if ($feed.editUrl) 
-	<ul>
-		<li class="admin"><a href="${site_information.url}$feed.editUrl">Edit</a></li>
-		<li class="admin"><a href="${site_information.url}$feed.decacheUrl">Decache</a></li>
-		<li class="admin"><a href="${site_information.url}$feed.readUrl">Read</a></li>		
-		#if ($feed.lastRead)
-			<li class="admin">This feed was last read $dateFormatter.timeSince($feed.lastRead)</li>
+		#if ($editPermissionService.canEdit($feed)) 
+			<ul>
+				<li class="admin"><a href="${site_information.url}/edit/edit?resource=$feed.id">Edit</a></li>
+				<li class="admin"><a href="${site_information.url}/viewfeed/decache?feed=$feed.id">Decache</a></li>
+				<li class="admin"><a href="${site_information.url}/viewfeed/read?feed=$feed.id">Read</a></li>		
+				#if ($feed.lastRead)
+					<li class="admin">This feed was last read $dateFormatter.timeSince($feed.lastRead)</li>
+				#end
+			</ul>
 		#end
-	</ul>
-#end
 
+		<p>This feed is provided by a third party.</p>
 
-<p>This feed is provided by a third party.</p>
+		<p>To subscribe to this feed, enter the following location into your feed reader.</p>
+		<ul>
+			<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
+		</ul>
 
-<p>To subscribe to this feed, enter the following location into your feed reader.</p>
-<ul>
-	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
-</ul>
+		#if ($main_content) 
+			<p>This feed currently contains the following newsitems:</p>
+			#parse("includes/main_content.vm")
 
+		#else 
+			<p>There was a problem loading this feed. No newsitems could be displayed.</p>
+		#end
+	</div>
 
-#if ($main_content) 
-<p>This feed currently contains the following newsitems:</p>
+	<div class="right">
+		#parse("includes/login.vm")
 
-#parse("includes/main_content.vm")
-#else 
-<p>There was a problem loading this feed. No newsitems could be displayed.</p>
-#end
-
-
+		<div class="box">
+			#parse("includes/righthand_content.vm")
+		</div>
+	</div>
 </div>
-
-<div class="right">
-#parse("includes/login.vm")
-
-
-<div class="box">
-#parse("includes/righthand_content.vm")
-</div>
-
-</div>
-
-</div>
-
 
 #parse("includes/footer.vm")

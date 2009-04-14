@@ -57,7 +57,23 @@ public class RequestFilter {
             request.setAttribute("item", item);            
         }
         
+		if (request.getParameter("feed") != null) {
+			final String feedParameter = request.getParameter("feed");
+        	try {
+        		final int feedID = Integer.parseInt(feedParameter);
+        		if (feedID > 0) {
+        			Resource feed = resourceDAO.loadResourceById(feedID);
+        			if (feed != null) {                	
+        				log.debug("Loaded feed object of id: " + feed.getId() + ", type: " + feed.getType());
+        				request.setAttribute("feedAttribute", feed);                	
+        			}
+        		}
+        	} catch (NumberFormatException e) {
+        		log.debug("Invalid feed id given: " + feedParameter);
+        	}
+        }
         
+                
         log.info("Looking for publiser watchlist and feeds urls");
         final String publisherUrlWords = getPublisherUrlWordsFromPath(request.getPathInfo());
         if (publisherUrlWords != null) {
@@ -131,14 +147,7 @@ public class RequestFilter {
         }
         
                 
-        if (request.getParameter("feed") != null) {
-            final int feedID = Integer.parseInt(request.getParameter("feed"));
-            if (feedID > 0) {
-                Resource feed = resourceDAO.loadResourceById(feedID);
-                log.debug("Loaded feed object of id: " + feed.getId() + ", type: " + feed.getType());
-                request.setAttribute("feedAttribute", feed);
-            }
-        }
+       
         
         if (request.getParameter("calendarfeed") != null) {
             final int feedID = Integer.parseInt(request.getParameter("calendarfeed"));

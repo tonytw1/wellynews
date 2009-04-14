@@ -329,7 +329,8 @@
 	<bean id="viewfeedControllerTarget" class="nz.co.searchwellington.controllers.ViewfeedController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="feedDAO" />	
+		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="feedDAO" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="configDAO" />	
@@ -412,15 +413,12 @@
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />		
-		<constructor-arg ref="rssUrlBuilder" />		
 		<constructor-arg ref="contentModelBuilder" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
-					<props>											
-						<prop key="/*/geotagged">geotagged</prop>						
-						<prop key="/*/news">newsArchive</prop>
+					<props>						
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
 						<prop key="/*">normal</prop>						

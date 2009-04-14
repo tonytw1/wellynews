@@ -31,6 +31,7 @@ public class ViewfeedController extends BaseMultiActionController {
     Logger log = Logger.getLogger(ViewfeedController.class);
     
     private RequestFilter requestFilter;
+    private LoggedInUserFilter loggedInUserFilter;
     private FeedRepository feedDAO;
     private SupressionRepository supressionDAO;
     private FeedReader feedReader;
@@ -38,9 +39,10 @@ public class ViewfeedController extends BaseMultiActionController {
     private UrlBuilder urlBuilder;
     
     
-    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter, FeedRepository feedDAO, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
+    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, FeedRepository feedDAO, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
+        this.loggedInUserFilter = loggedInUserFilter;
         this.feedDAO = feedDAO;       
         this.urlStack = urlStack;
         this.supressionDAO = supressionDAO;
@@ -83,22 +85,20 @@ public class ViewfeedController extends BaseMultiActionController {
     
     @Transactional
     public ModelAndView viewfeed(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-        ModelAndView mv = new ModelAndView();
-
-        urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-                
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
-        
-        requestFilter.loadAttributesOntoRequest(request);
-
+    	requestFilter.loadAttributesOntoRequest(request);
+    	loggedInUserFilter.loadLoggedInUser(request);
+    	
         Feed feed = null;
         if (request.getAttribute("feedAttribute") != null) {
             feed = (Feed) request.getAttribute("feedAttribute");
         }
-
         if (feed != null) {                       
+        	ModelAndView mv = new ModelAndView();
+        	urlStack.setUrlStack(request);
+        	User loggedInUser = setLoginState(request, mv);
+        	StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
+        	
+        	mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         	mv.addObject("feed", feed);
         	
             List<Resource> feedNewsitems = feedDAO.getFeedNewsitems(feed);
@@ -109,15 +109,13 @@ public class ViewfeedController extends BaseMultiActionController {
             }
             
             setRss(mv, feed.getName(), feed.getUrl());
-            
-        } else {
-            throw new IllegalArgumentException("Invalid Feed identifier.");
+            populateSecondaryFeeds(mv, loggedInUser);
+            mv.setViewName("viewfeed");
+            return mv;            
         }
-      
-        populateSecondaryFeeds(mv, loggedInUser);
-
-        mv.setViewName("viewfeed");
-        return mv;
+        
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return null;
     }
 
     

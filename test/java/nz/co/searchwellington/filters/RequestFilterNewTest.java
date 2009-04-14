@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import java.util.List;
 
 import junit.framework.TestCase;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -22,16 +23,28 @@ public class RequestFilterNewTest extends TestCase {
 	private Tag transportTag = mock(Tag.class);
 	private Tag soccerTag = mock(Tag.class);
 	private Website capitalTimesPublisher = mock(Website.class);
-	
+	private Feed feed = mock(Feed.class);
 	
 	@Override
 	protected void setUp() throws Exception {		 
 		stub(resourceDAO.loadTagByName("transport")).toReturn(transportTag);
 		stub(resourceDAO.loadTagByName("soccer")).toReturn(soccerTag);
 		stub(resourceDAO.getPublisherByUrlWords("capital-times")).toReturn(capitalTimesPublisher);
+		stub(resourceDAO.loadResourceById(123)).toReturn(feed);
 		filter = new RequestFilter(resourceDAO);
 	 }
 	
+	
+	public void testShouldPopulateFeedFromRequestParameter() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/viewfeed");
+		 request.setParameter("feed", "123");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(resourceDAO).loadResourceById(123);
+		 assertNotNull(request.getAttribute("feedAttribute"));
+		 assertEquals(feed, request.getAttribute("feedAttribute"));
+	}
+		
 		
 	 public void testShouldPopulateTagForSingleTagCommentRequest() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
