@@ -38,25 +38,27 @@ public class IndexController extends BaseMultiActionController {
     private EventsDAO eventsDAO;
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
+	private LoggedInUserFilter loggedInUserFilter;
     
     
     
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.feedDAO = feedDAO;
         this.eventsDAO = eventsDAO;
         this.siteInformation = siteInformation;
-        this.rssUrlBuilder = rssUrlBuilder;        
+        this.rssUrlBuilder = rssUrlBuilder;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
     
 
         
     @SuppressWarnings("unchecked")
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException, IllegalArgumentException, FeedException {
+    	loggedInUserFilter.loadLoggedInUser(request);
         logger.info("Starting index.");
-        
         ModelAndView mv = new ModelAndView();
         
         urlStack.setUrlStack(request);

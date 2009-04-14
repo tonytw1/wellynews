@@ -18,7 +18,6 @@ import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.statistics.StatsTracking;
-import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -28,23 +27,26 @@ import com.sun.syndication.io.FeedException;
 public class TagController extends BaseMultiActionController {
 
     private RequestFilter requestFilter;
-    private FeedRepository feedDAO;  
-    private EventsDAO eventsDAO;
-    private RssUrlBuilder rssUrlBuilder;
-    private RelatedTagsService relatedTagsService;
+    private LoggedInUserFilter loggedInUserFilter;
+    private RssUrlBuilder rssUrlBuilder;    
     private ContentModelBuilderService contentModelBuilder;
 
 
 
-    public TagController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentModelBuilderService contentModelBuilder) {     
+    public TagController(ResourceRepository resourceDAO, 
+    		RequestFilter requestFilter, 
+    		LoggedInUserFilter loggedInUserFilter,
+    		UrlStack urlStack, 
+    		ConfigRepository configDAO,    		   		
+    		RssUrlBuilder rssUrlBuilder,     		
+    		ContentModelBuilderService contentModelBuilder
+    		) {
         this.resourceDAO = resourceDAO;    
-        this.requestFilter = requestFilter;  
+        this.requestFilter = requestFilter;
+        this.loggedInUserFilter = loggedInUserFilter;
         this.urlStack = urlStack;
-        this.configDAO = configDAO;
-        this.feedDAO = feedDAO;     
-        this.eventsDAO = eventsDAO;
-        this.rssUrlBuilder = rssUrlBuilder;
-        this.relatedTagsService = relatedTagsService;
+        this.configDAO = configDAO;       
+        this.rssUrlBuilder = rssUrlBuilder;        
         this.contentModelBuilder = contentModelBuilder;        
     }
     
@@ -52,6 +54,7 @@ public class TagController extends BaseMultiActionController {
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         logger.info("Starting normal content");                                  
         requestFilter.loadAttributesOntoRequest(request);
+        loggedInUserFilter.loadLoggedInUser(request);
         boolean showBroken = false;
         
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);

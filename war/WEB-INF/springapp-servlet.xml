@@ -69,6 +69,7 @@
 		<constructor-arg ref="eventsDAO" />
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="loggedInUserFilter" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -407,13 +408,11 @@
 	
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="requestFilter" />	
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="feedDAO" />		
-		<constructor-arg ref="eventsDAO" />
-		<constructor-arg ref="rssUrlBuilder" />
-		<constructor-arg ref="relatedTagsService" />
+		<constructor-arg ref="configDAO" />		
+		<constructor-arg ref="rssUrlBuilder" />		
 		<constructor-arg ref="contentModelBuilder" />
 		
 		<property name="methodNameResolver">

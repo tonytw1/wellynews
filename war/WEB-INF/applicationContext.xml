@@ -218,8 +218,12 @@
 
 	<bean id="contentDeduper" class="nz.co.searchwellington.controllers.ContentDedupingService" />
 	
-	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" />
-			
+	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" />
+	
+	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" >
+		<constructor-arg ref="loggedInUserFilter" />
+	</bean>
+	
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
   		<property name="cache" value="true"/>
   		<property name="prefix" value=""/>
@@ -236,6 +240,7 @@
 				<entry key="adminUrlBuilder" value-ref="adminUrlBuilder" />
 				<entry key="contentDeduper" value-ref="contentDeduper" />
 				<entry key="editPermissionService" value-ref="editPermissionService" />
+				<entry key="loggedInUserFilter" value-ref="loggedInUserFilter" />
 			</map>
 		</property>  		
 	</bean>
