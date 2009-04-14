@@ -1,4 +1,4 @@
-package nz.co.searchwellington.repositories;
+package nz.co.searchwellington.feeds;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,17 +23,17 @@ import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
-// TODO rename to RssNewsitemService
-public class FeedDAO implements FeedRepository {
+
+public class RssfeedNewsitemService {
            
-    public final Logger log = Logger.getLogger(FeedDAO.class);
+    public final Logger log = Logger.getLogger(RssfeedNewsitemService.class);
     private static final int MAXIMUM_BODY_LENGTH = 400;
     
     private UrlCleaner urlCleaner;
 	private RssFeedDAO rssFeedDAO;
     
 
-    public FeedDAO(UrlCleaner urlCleaner, RssFeedDAO rssFeedDAO) {
+    public RssfeedNewsitemService(UrlCleaner urlCleaner, RssFeedDAO rssFeedDAO) {
     	// TODO eratic use of this urlCleaner - this service should not make tinyurl calls - only when expecting - or on loading!
         this.urlCleaner = urlCleaner;
         this.rssFeedDAO = rssFeedDAO;

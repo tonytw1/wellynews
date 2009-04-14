@@ -18,7 +18,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.statistics.StatsTracking;
 
@@ -34,7 +33,6 @@ public class IndexController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(IndexController.class);
 
-    private FeedRepository feedDAO;
     private EventsDAO eventsDAO;
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
@@ -42,11 +40,10 @@ public class IndexController extends BaseMultiActionController {
     
     
     
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, FeedRepository feedDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
-        this.configDAO = configDAO;
-        this.feedDAO = feedDAO;
+        this.configDAO = configDAO;       
         this.eventsDAO = eventsDAO;
         this.siteInformation = siteInformation;
         this.rssUrlBuilder = rssUrlBuilder;
@@ -94,11 +91,6 @@ public class IndexController extends BaseMultiActionController {
         populateLatestGeocoded(mv, loggedInUser);
         
         mv.setViewName("index");        
-        Tag relatedFeedTag = resourceDAO.loadTagByName("emergencyservices");
-        if (relatedFeedTag != null) {
-            populateRelatedFeed(mv, relatedFeedTag, feedDAO);
-        }
-        
         logger.info("Finished index.");
         return mv;
     }

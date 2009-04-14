@@ -64,8 +64,7 @@
 	<bean id="indexController" class="nz.co.searchwellington.controllers.IndexController">		
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="configDAO" />	
-		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="configDAO" />			
 		<constructor-arg ref="eventsDAO" />
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="rssUrlBuilder" />
@@ -330,7 +329,7 @@
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="rssfeedNewsitemService" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="configDAO" />	
@@ -442,7 +441,7 @@
 	
 	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="rssfeedNewsitemService" />
 		<constructor-arg ref="requestFilter" />	
 		<constructor-arg ref="linkCheckerQueue" />		
 		<constructor-arg ref="tagWidgetFactory" />
@@ -480,7 +479,6 @@
 	
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="feedDAO" />
 		<constructor-arg ref="requestFilter" />		
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="notifier" />

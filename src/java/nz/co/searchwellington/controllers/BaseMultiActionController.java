@@ -14,19 +14,15 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.tagging.TagInformationService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-
-import com.sun.syndication.io.FeedException;
 
 
 public abstract class BaseMultiActionController extends MultiActionController {
@@ -114,20 +110,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
         return null;
     }
 
-    
-    
-    protected void populateRelatedFeed(ModelAndView mv, Tag tag, FeedRepository feedDAO) throws IllegalArgumentException, IOException, FeedException {       
-        Feed relatedFeed = tag.getRelatedFeed();        
-        if (relatedFeed != null) {
-            logger.info("Related feed for tag " + tag.getName() + " is: " + relatedFeed.getName());
-            List<Resource> relatedFeedItems = feedDAO.getFeedNewsitems(relatedFeed);
-            mv.addObject("related_feed", relatedFeed);
-            mv.addObject("related_feed_items", relatedFeedItems);
-        }
-    }
-
-    
-    
+     
     @SuppressWarnings("unchecked")
     protected void populateUntaggedNewsitem(ModelAndView mv, User loggedInUser) throws IOException {        
         List <Newsitem> untaggedNewsitems = resourceDAO.getRecentUntaggedNewsitems(); 

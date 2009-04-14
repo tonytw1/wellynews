@@ -8,15 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigDAO;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
@@ -39,16 +38,16 @@ public class TagModelBuilder implements ModelBuilder {
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	private ConfigDAO configDAO;
-	private FeedRepository feedDAO;
+	private RssfeedNewsitemService rssfeedNewsitemService;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, FeedRepository feedDAO) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService) {
 		this.resourceDAO = resourceDAO;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.configDAO = configDAO;
-		this.feedDAO = feedDAO;
+		this.rssfeedNewsitemService = rssfeedNewsitemService;
 	}
 
 	
@@ -157,7 +156,7 @@ public class TagModelBuilder implements ModelBuilder {
         Feed relatedFeed = tag.getRelatedFeed(); 
         if (relatedFeed != null) {
             log.info("Related feed is: " + relatedFeed.getName());
-            List<Resource> relatedFeedItems = feedDAO.getFeedNewsitems(relatedFeed);
+            List<Resource> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);
             mv.addObject("related_feed", relatedFeed);   
             mv.addObject("related_feed_items", relatedFeedItems);            
         } else {

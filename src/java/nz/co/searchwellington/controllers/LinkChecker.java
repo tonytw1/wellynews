@@ -18,6 +18,7 @@ import nz.co.searchwellington.commentfeeds.CommentFeedGuesserService;
 import nz.co.searchwellington.commentfeeds.guessers.EyeOfTheFishCommentFeedGuesser;
 import nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser;
 import nz.co.searchwellington.feeds.CommentFeedReader;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.htmlparsing.Extractor;
 import nz.co.searchwellington.htmlparsing.LinkExtractor;
 import nz.co.searchwellington.model.CommentFeed;
@@ -26,7 +27,6 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.TechnoratiDAO;
@@ -35,14 +35,12 @@ import nz.co.searchwellington.utils.HttpFetcher;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.sun.syndication.io.FeedException;
-
 public class LinkChecker {
     
     Logger log = Logger.getLogger(LinkChecker.class);
        
     private ResourceRepository resourceDAO;
-    private FeedRepository feedDAO;
+    private RssfeedNewsitemService rssfeedNewsitemService;
     private CommentFeedReader commentFeedReader;
 	private CommentFeedDetectorService commentFeedDetector;
 	private SnapshotDAO snapshotDAO;
@@ -54,24 +52,14 @@ public class LinkChecker {
     }
     
     
-     
-    
-
-
-
-    public LinkChecker(ResourceRepository resourceDAO, FeedRepository feedDAO, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO) {    
+    public LinkChecker(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO) {    
         this.resourceDAO = resourceDAO;
-        this.feedDAO = feedDAO;
+        this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.commentFeedReader = commentFeedReader;
         this.commentFeedDetector = commentFeedDetector;
         this.snapshotDAO = snapshotDAO;
         this.technoratiDAO = technoratiDAO;
     }
-
-
-
-
-
 
 
     @Transactional()
@@ -139,17 +127,15 @@ public class LinkChecker {
     private void updateLatestFeedItem(Feed checkResource) {
         log.debug("Resource is a feed; checking for latest item publication date.");
         try {                          
-            List <Resource> feeditems = feedDAO.getFeedNewsitems(checkResource);
+            List <Resource> feeditems = rssfeedNewsitemService.getFeedNewsitems(checkResource);
             log.debug("Feed has " + feeditems.size() + " items.");
             
-            Date latestPublicationDate = feedDAO.getLatestPublicationDate(checkResource);                              
+            Date latestPublicationDate = rssfeedNewsitemService.getLatestPublicationDate(checkResource);                              
             // TODO would be nice if the hibernate mapping preserved this field as a datetime rather than just a date.
             checkResource.setLatestItemDate(latestPublicationDate);
             log.debug("Latest item publication date for this feed was: " + checkResource.getLatestItemDate());
             
         } catch (IllegalArgumentException e) {
-            log.error(e);
-        } catch (FeedException e) {
             log.error(e);
         } catch (IOException e) {
             log.error(e);
@@ -330,11 +316,7 @@ public class LinkChecker {
         return responseBody.toString();            
      }
 
-    
-    
-   
-    
-    
+        
     private Set<String> locateAutodiscoveredFeedsFromContent(String inputHTML) {    
         Set<String> feedLinks = new HashSet<String>();
         
@@ -348,12 +330,5 @@ public class LinkChecker {
         return feedLinks;
     }
 
-
-    
-  
-  
-
-    
-    
-    
+ 
 }

@@ -7,13 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.feeds.FeedReader;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.statistics.StatsTracking;
@@ -32,18 +32,18 @@ public class ViewfeedController extends BaseMultiActionController {
     
     private RequestFilter requestFilter;
     private LoggedInUserFilter loggedInUserFilter;
-    private FeedRepository feedDAO;
+    private RssfeedNewsitemService rssfeedNewsitemService;
     private SupressionRepository supressionDAO;
     private FeedReader feedReader;
 	private RssPrefetcher rssPrefetcher;
     private UrlBuilder urlBuilder;
     
     
-    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, FeedRepository feedDAO, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
+    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, RssfeedNewsitemService rssfeedNewsitemService, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.loggedInUserFilter = loggedInUserFilter;
-        this.feedDAO = feedDAO;       
+        this.rssfeedNewsitemService = rssfeedNewsitemService;       
         this.urlStack = urlStack;
         this.supressionDAO = supressionDAO;
         this.configDAO = configDAO;        
@@ -101,7 +101,7 @@ public class ViewfeedController extends BaseMultiActionController {
         	mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         	mv.addObject("feed", feed);
         	
-            List<Resource> feedNewsitems = feedDAO.getFeedNewsitems(feed);
+            List<Resource> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
             if (feedNewsitems != null && feedNewsitems.size() > 0) {
                 mv.addObject("main_content", feedNewsitems);
             } else {

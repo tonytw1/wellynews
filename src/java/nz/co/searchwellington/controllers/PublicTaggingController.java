@@ -10,7 +10,6 @@ import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -33,7 +32,7 @@ public class PublicTaggingController extends BaseTagEditingController {
     private Notifier notifier;
 
     
-    public PublicTaggingController(ResourceRepository resourceDAO, FeedRepository feedDAO, 
+    public PublicTaggingController(ResourceRepository resourceDAO, 
                 RequestFilter requestFilter, 
                 TagWidgetFactory tagWidgetFactory, Notifier notifier) {       
         this.resourceDAO = resourceDAO;      

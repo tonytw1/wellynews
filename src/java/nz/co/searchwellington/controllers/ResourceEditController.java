@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
@@ -25,7 +26,6 @@ import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
@@ -52,7 +52,7 @@ public class ResourceEditController extends BaseTagEditingController {
     private static final String REQUEST_TITLE_NAME = "title";
     private static final String REQUEST_GEOCODE_NAME = "geocode";
        
-    private FeedRepository feedDAO;
+    private RssfeedNewsitemService rssfeedNewsitemService;
     private RequestFilter requestFilter;    
     private LinkCheckerQueue linkCheckerQueue;       
     private TagWidgetFactory tagWidgetFactory;
@@ -67,13 +67,13 @@ public class ResourceEditController extends BaseTagEditingController {
 
     
       
-    public ResourceEditController(ResourceRepository resourceDAO, FeedRepository feedDAO, RequestFilter requestFilter, 
+    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, RequestFilter requestFilter, 
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssPrefetcher rssPrefetcher) {
         this.resourceDAO = resourceDAO;
-        this.feedDAO = feedDAO;        
+        this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.requestFilter = requestFilter;       
         this.linkCheckerQueue = linkCheckerQueue;
         this.tagWidgetFactory = tagWidgetFactory;
@@ -135,7 +135,7 @@ public class ResourceEditController extends BaseTagEditingController {
         if (request.getAttribute("feedAttribute") != null) {
             Feed feed = (Feed) request.getAttribute("feedAttribute");
             
-            List <Resource> feednewsItems = feedDAO.getFeedNewsitems(feed);
+            List <Resource> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
             
             if (request.getParameter("item") != null) {
                 int item = (Integer) request.getAttribute("item");

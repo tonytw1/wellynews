@@ -10,26 +10,24 @@
 	</bean>
 
 
-	 <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
         <property name="configLocation">
             <value>classpath:application-ehcache.xml</value>
         </property>
     </bean> 
 
 
-
-
-<bean id="linkChecker" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="linkCheckerTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
-<bean name="linkCheckerJob" class="nz.co.searchwellington.jobs.LinkCheckerJob">
-	<constructor-arg ref="linkCheckerQueue" />
-	<constructor-arg ref="linkChecker" />
-</bean>
+	<bean id="linkChecker" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="linkCheckerTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	<bean name="linkCheckerJob" class="nz.co.searchwellington.jobs.LinkCheckerJob">
+		<constructor-arg ref="linkCheckerQueue" />
+		<constructor-arg ref="linkChecker" />
+	</bean>
 
 
 
@@ -128,7 +126,7 @@
 
 <bean id="feedReaderTarget" class="nz.co.searchwellington.feeds.FeedReader">
 	<constructor-arg ref="resourceDAO" />
-	<constructor-arg ref="feedDAO" />
+	<constructor-arg ref="rssfeedNewsitemService" />
 	<constructor-arg ref="linkCheckerQueue" />
 	<constructor-arg ref="autoTaggingService" />
 	<constructor-arg ref="notifier" />
@@ -315,7 +313,7 @@
 	
 	<bean id="linkCheckerTarget" class="nz.co.searchwellington.controllers.LinkChecker" >
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="rssfeedNewsitemService" />
 		<constructor-arg ref="commentFeedReader" />
 		<constructor-arg ref="commentFeedDetector" />
 		<constructor-arg ref="snapshotDAO" />	
@@ -376,32 +374,21 @@
 	
 	<import resource="database.xml" />
 	
-	<bean id="feedDAO" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="feedDAOTarget" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
-				
 	
-	<bean id="feedDAOTarget" class="nz.co.searchwellington.repositories.FeedDAO">
+	<bean id="rssfeedNewsitemService" class="nz.co.searchwellington.feeds.RssfeedNewsitemService">
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="rssFeedDAO" />
 	</bean>
-	
-	
 	
 	<bean id="supressionDAO" class="nz.co.searchwellington.repositories.SupressionDAO">
 			<constructor-arg ref="sessionFactory" />
 	</bean>		
 	
-	
 	<bean id="calendarFeedDAO" class="nz.co.searchwellington.repositories.CalendarFeedDAO" >
 		<constructor-arg ref="calendarCache" />
 	</bean>
 	
-	
+		
 	<bean id="commentDAO" class="nz.co.searchwellington.repositories.CommentDAO">
 		<constructor-arg ref="rssHttpFetcher" />
 	</bean>

@@ -2,12 +2,10 @@ package nz.co.searchwellington.feeds.rss;
 
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.syndication.feed.synd.SyndFeed;
-
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.repositories.ResourceRepository;
+
+import com.sun.syndication.feed.synd.SyndFeed;
 
 public class RssPrefetcher {
 
@@ -25,7 +23,7 @@ public class RssPrefetcher {
 		this.rssCache = rssCache;
 	}
 
-	@Transactional
+	
 	public void run() {
 		List<Feed> feedsToLoad = resourceDAO.getAllFeeds();
 		for (Feed feed : feedsToLoad) {

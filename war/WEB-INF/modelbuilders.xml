@@ -20,7 +20,7 @@
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
 		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="feedDAO" />
+		<constructor-arg ref="rssfeedNewsitemService" />
 	</bean>
 	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">

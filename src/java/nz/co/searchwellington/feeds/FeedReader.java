@@ -11,7 +11,6 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.FeedRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
@@ -31,7 +30,7 @@ public class FeedReader {
 	Logger log = Logger.getLogger(FeedReader.class);
     
     private ResourceRepository resourceDAO;
-    private FeedRepository feedDAO;
+    private RssfeedNewsitemService rssfeedNewsitemService;
     private LinkCheckerQueue linkCheckerQueue;
     private AutoTaggingService autoTagger;   
     private Notifier notifier;
@@ -46,9 +45,9 @@ public class FeedReader {
     
     
     
-    public FeedReader(ResourceRepository resourceDAO, FeedRepository feedDAO, LinkCheckerQueue linkCheckerQueue, AutoTaggingService autoTagger, Notifier notifier, String notificationReciept, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner) {
+    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, LinkCheckerQueue linkCheckerQueue, AutoTaggingService autoTagger, Notifier notifier, String notificationReciept, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner) {
         this.resourceDAO = resourceDAO;
-        this.feedDAO = feedDAO;
+        this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.linkCheckerQueue = linkCheckerQueue;
         this.autoTagger = autoTagger;
         this.notifier = notifier;
@@ -79,7 +78,7 @@ public class FeedReader {
         // TODO can this move the the enum?
         boolean canAcceptFromFeed =  feed.getAcceptancePolicy() != null && feed.getAcceptancePolicy().equals("accept") || feed.getAcceptancePolicy().equals("accept_without_dates");
         if (canAcceptFromFeed) {
-            List<Resource> feedNewsitems = feedDAO.getFeedNewsitems(feed);
+            List<Resource> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
         
             for (Resource resource : feedNewsitems) {
                 resource.setUrl(urlCleaner.cleanSubmittedItemUrl(resource.getUrl()));
@@ -91,7 +90,7 @@ public class FeedReader {
     
             // TODO what's this all about.
             // Everytime we look at a feed, we should update the latest publication field.
-            feed.setLatestItemDate(feedDAO.getLatestPublicationDate(feed));
+            feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
             
             log.info("Feed latest item publication date is: " + feed.getLatestItemDate());
         } else {
