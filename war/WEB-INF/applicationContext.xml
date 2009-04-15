@@ -243,6 +243,9 @@
 		</property>  		
 	</bean>
 	
+	
+	
+	
 	<bean id="urlBuilder" class="nz.co.searchwellington.controllers.UrlBuilder">
 		<constructor-arg ref="siteInformation" />
 	</bean>
@@ -250,6 +253,11 @@
 	<bean id="adminUrlBuilder" class="nz.co.searchwellington.controllers.admin.AdminUrlBuilder">
 		<constructor-arg ref="siteInformation" />
 	</bean>
+	
+	<bean id="rssUrlBuilder" class="nz.co.searchwellington.controllers.RssUrlBuilder">
+		<constructor-arg ref="siteInformation" />
+	</bean>
+	
 
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">
 		<property name="areaname" value="${areaname}" />

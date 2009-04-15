@@ -3,7 +3,7 @@
 
 <beans>
 
-	<bean id="SimplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
+	<bean id="simplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
@@ -36,8 +36,7 @@
 		</property>
 	</bean>
 	
-	
-	
+		
 	<bean id="profileController" class="nz.co.searchwellington.controllers.ProfileController">	
 		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="urlStack" />
@@ -56,11 +55,7 @@
 	</bean>
 	
 	
-	
-	
-	
-	
-	
+		
 	<bean id="indexController" class="nz.co.searchwellington.controllers.IndexController">		
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
@@ -78,17 +73,9 @@
 					</props>
 				</property>
 			</bean>		
-		</property>
-		
+		</property>	
 	</bean>
 
-
-
-	
-	<bean id="rssUrlBuilder" class="nz.co.searchwellington.controllers.RssUrlBuilder">
-		<constructor-arg ref="siteInformation" />
-	</bean>
-	
 
 	<bean id="browseController" class="nz.co.searchwellington.controllers.BrowseController">	
 		<constructor-arg ref="resourceDAO" />		
@@ -108,8 +95,7 @@
 					</props>
 				</property>
 			</bean>		
-		</property>
-		
+		</property>		
 	</bean>
 	
 	
@@ -228,23 +214,6 @@
 	
 	
 	
-		<bean id="flickrUpdateController" class="nz.co.searchwellington.controllers.admin.FlickrUpdateController">
-			
-			<constructor-arg ref="resourceDAO" />
-			<constructor-arg ref="flickrDAO" />
-			<constructor-arg ref="configDAO" />
-		
-			<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/admin/flickrupdate">update</prop>						
-					</props>
-				</property>
-			</bean>		
-		</property>	
-	</bean>
-	
 	<bean id="luceneIndexBuilderController" class="nz.co.searchwellington.controllers.admin.LuceneIndexBuilderController">
 		<constructor-arg ref="resourceDAO" />
 			<property name="methodNameResolver">
@@ -316,15 +285,9 @@
 	
 	
 	
-	<bean id="viewfeedController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="viewfeedControllerTarget" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
+	
 
-	<bean id="viewfeedControllerTarget" class="nz.co.searchwellington.controllers.ViewfeedController">
+	<bean id="viewfeedController" class="nz.co.searchwellington.controllers.ViewfeedController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />
@@ -592,37 +555,31 @@
         <property name="mappings">
             <props>
             	
-            	<prop key="/about">SimplePageController</prop>
-            	<prop key="/archive">SimplePageController</prop>
-            	<prop key="/calendars">SimplePageController</prop>
-            	<prop key="/comment">SimplePageController</prop>
-           		<prop key="/feeds/discovered">SimplePageController</prop>
-           		<prop key="/geotagged">SimplePageController</prop>            	
-            	<prop key="/justin">SimplePageController</prop>
-				<prop key="/lastupdated">SimplePageController</prop>
-				<prop key="/api">SimplePageController</prop>
-				<prop key="/publishers">SimplePageController</prop>
-				<prop key="/tags">SimplePageController</prop>
-				<prop key="/twitter">SimplePageController</prop>				
-				<prop key="/watchlist">SimplePageController</prop>
+            	<prop key="/about">simplePageController</prop>
+				<prop key="/api">simplePageController</prop>
+            	<prop key="/archive">simplePageController</prop>
+            	<prop key="/calendars">simplePageController</prop>
+            	<prop key="/comment">simplePageController</prop>
+           		<prop key="/feeds/discovered">simplePageController</prop>
+           		<prop key="/geotagged">simplePageController</prop>            	
+            	<prop key="/justin">simplePageController</prop>
+				<prop key="/lastupdated">simplePageController</prop>
+				<prop key="/publishers">simplePageController</prop>
+				<prop key="/tags">simplePageController</prop>
+				<prop key="/twitter">simplePageController</prop>				
+				<prop key="/watchlist">simplePageController</prop>
 				            	
-            	<prop key="/archive/**">browseController</prop>
-            	
+            	<prop key="/archive/**">browseController</prop>            	
             	<prop key="/browse">browseController</prop>
             	<prop key="/*/calendars">browseController</prop>
             	<prop key="/*/feeds">browseController</prop>            	
             	<prop key="/*/watchlist">browseController</prop>
-
-        
             	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
             	<prop key="/edit/*/ajax/publishers">publishersAjaxController</prop>
-            	
-            	
+            	            	
             	<prop key="/index">indexController</prop>				
-
-
 				
 				<prop key="/rss">rssController</prop>
 				<prop key="/geotagged/rss">rssController</prop>
@@ -678,8 +635,7 @@
 				
 				
 				<prop key="/profile">profileController</prop>
-											
-				<prop key="/admin/flickrupdate">flickrUpdateController</prop>					
+												
 				<prop key="/admin/luceneindexbuilder">luceneIndexBuilderController</prop>
 				<prop key="/admin/linkchecker/*">linkCheckerController</prop>
 				<prop key="/admin/config/edit">configEditController</prop>
