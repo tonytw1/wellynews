@@ -57,7 +57,18 @@ public class RequestFilter {
             request.setAttribute("item", item);            
         }
         
-		if (request.getParameter("feed") != null) {
+                
+        if (request.getPathInfo().matches("^/archive/.*/.*$")) {            
+            Date monthFromPath = getArchiveDateFromPath(request.getPathInfo());
+            if (monthFromPath != null) {
+            	request.setAttribute("month", monthFromPath);
+            	log.info("Setting archive month to: " + monthFromPath);
+            }
+            return;
+        }
+                
+        
+		if (request.getPathInfo().startsWith("/viewfeed") && request.getParameter("feed") != null) {
 			final String feedParameter = request.getParameter("feed");
         	try {
         		final int feedID = Integer.parseInt(feedParameter);
@@ -65,7 +76,8 @@ public class RequestFilter {
         			Resource feed = resourceDAO.loadResourceById(feedID);
         			if (feed != null) {                	
         				log.debug("Loaded feed object of id: " + feed.getId() + ", type: " + feed.getType());
-        				request.setAttribute("feedAttribute", feed);                	
+        				request.setAttribute("feedAttribute", feed);
+        				return;
         			}
         		}
         	} catch (NumberFormatException e) {
@@ -156,10 +168,6 @@ public class RequestFilter {
                 log.debug("Loaded calendar feed object of id: " + calendarFeed.getId() + ", type: " + calendarFeed.getType());
                 request.setAttribute("calendarfeed", calendarFeed);
             }
-        }
-             
-        if (request.getPathInfo().startsWith("/archive/")) {            
-            request.setAttribute("month", getArchiveDateFromPath(request.getPathInfo()));
         }
         
     }

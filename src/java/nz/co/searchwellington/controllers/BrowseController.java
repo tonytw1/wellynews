@@ -23,14 +23,12 @@ import org.springframework.web.servlet.ModelAndView;
 public class BrowseController extends BaseMultiActionController {
 
     private RequestFilter requestFilter;    
-    private RssUrlBuilder rssUrlBuilder;
-    
-	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, RssUrlBuilder rssUrlBuilder) {       
+ 
+	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO) {       
 		this.resourceDAO = resourceDAO;     
         this.requestFilter = requestFilter;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;     
-        this.rssUrlBuilder = rssUrlBuilder;
 	}
 	
 	
@@ -75,31 +73,29 @@ public class BrowseController extends BaseMultiActionController {
 	}
 
  
-	@SuppressWarnings("unchecked")
+	
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {       
-        ModelAndView mv = new ModelAndView();
-           
+        ModelAndView mv = new ModelAndView();           
         User loggedInUser = populateLocalCommon(request, mv);
-             
-        Date month = null;            
+                              
         requestFilter.loadAttributesOntoRequest(request);
         if (request.getAttribute("month") != null) {
-            month = (Date) request.getAttribute("month");
-            mv.getModel().put("archive_month", new ArchiveLink(month, 0));
+            Date month = (Date) request.getAttribute("month");
+            mv.addObject("archive_month", new ArchiveLink(month, 0));
             final List<Newsitem> newsitemsForMonth = resourceDAO.getNewsitemsForMonth(month);            
             populateMonthArchive(mv, month, loggedInUser, newsitemsForMonth);
             populateUsedTags(mv, loggedInUser, newsitemsForMonth);
             mv.addObject("used_tags_description", "Most used tags during this month.");
             
-            
             List<ArchiveLink> archiveLinks = resourceDAO.getArchiveMonths();
             populateNextAndPreviousLinks(mv, month, archiveLinks);
             
             populateSecondaryLatestNewsitems(mv, loggedInUser);
+            mv.setViewName("archivePage");
+            return mv;
         }
-        
-        mv.setViewName("archivePage");
-        return mv;
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        return null;        
     }
 
 

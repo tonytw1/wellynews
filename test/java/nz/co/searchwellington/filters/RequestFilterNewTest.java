@@ -4,6 +4,7 @@ package nz.co.searchwellington.filters;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.List;
 
@@ -35,6 +36,13 @@ public class RequestFilterNewTest extends TestCase {
 	 }
 	
 	
+	public void testShouldIgnoreTagAndPublisherLookupsForArchivePaths() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/archive/2009/feb");
+		 filter.loadAttributesOntoRequest(request);
+		 verifyNoMoreInteractions(resourceDAO);
+	}
+		
 	public void testShouldPopulateFeedFromRequestParameter() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/viewfeed");
@@ -43,6 +51,7 @@ public class RequestFilterNewTest extends TestCase {
 		 verify(resourceDAO).loadResourceById(123);
 		 assertNotNull(request.getAttribute("feedAttribute"));
 		 assertEquals(feed, request.getAttribute("feedAttribute"));
+		 verifyNoMoreInteractions(resourceDAO);		 
 	}
 		
 		
