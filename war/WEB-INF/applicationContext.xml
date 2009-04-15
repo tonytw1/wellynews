@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+
 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
@@ -13,6 +19,11 @@
 	<import resource="daos.xml" />	
 	<import resource="timertasks.xml"/>
 
+
+	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" scope="request">
+		<aop:scoped-proxy/>
+	</bean>
+	
 	
 	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
         <property name="configLocation">
@@ -121,7 +132,7 @@
 
 	<bean id="contentDeduper" class="nz.co.searchwellington.controllers.ContentDedupingService" />
 	
-	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" />
+
 	
 	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" >
 		<constructor-arg ref="loggedInUserFilter" />
