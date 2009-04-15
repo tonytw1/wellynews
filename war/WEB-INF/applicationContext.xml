@@ -2,14 +2,18 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	<!-- This bean substitutes variables from the env properties file -->
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>file:conf/springapp.properties</value>
 		</property>
 	</bean>
+	
+	
+	<import resource="database.xml" />
+	<import resource="daos.xml" />	
+	<import resource="timertasks.xml"/>
 
-
+	
 	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
         <property name="configLocation">
             <value>classpath:application-ehcache.xml</value>
@@ -17,104 +21,23 @@
     </bean> 
 
 
-	<bean id="linkChecker" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="linkCheckerTarget" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
-	<bean name="linkCheckerJob" class="nz.co.searchwellington.jobs.LinkCheckerJob">
-		<constructor-arg ref="linkCheckerQueue" />
-		<constructor-arg ref="linkChecker" />
+	<bean id="feedAcceptanceDecider" class="nz.co.searchwellington.feeds.FeedAcceptanceDecider">
+		<constructor-arg ref="resourceDAO" />	
+		<constructor-arg ref="supressionDAO" />
+		<constructor-arg ref="urlCleaner" />
 	</bean>
 
 
+	<bean id="feedBurnerRedirectResolverService" class="nz.co.searchwellington.feeds.FeedBurnerRedirectResolverService" />
 
-<bean id="flickrJobTarget" class="nz.co.searchwellington.jobs.FlickrJob">
-		<constructor-arg ref="flickrDAO" />
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="configDAO" />
-</bean>
-
-<bean id="flickrJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="flickrJobTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
-	
-
-<bean id="twitterListenerJobTarget" class="nz.co.searchwellington.jobs.TwitterListenerJob">
-		<constructor-arg ref="twitterService" />
-		<constructor-arg ref="twitterNewsitemBuilderService" />
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="linkCheckerQueue" />
-		<constructor-arg ref="publisherGuessingService" />	
-</bean>
-
-<bean id="twitterListenerJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="twitterListenerJobTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
-
-
-
-
-
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<import resource="timertasks.xml"/>
-
-
-
-
-<bean id="feedAcceptanceDecider" class="nz.co.searchwellington.feeds.FeedAcceptanceDecider">
-	<constructor-arg ref="resourceDAO" />	
-	<constructor-arg ref="supressionDAO" />
-	<constructor-arg ref="urlCleaner" />
-</bean>
-
-
-<bean id="feedBurnerRedirectResolverService" class="nz.co.searchwellington.feeds.FeedBurnerRedirectResolverService" />
-
-<bean id="urlCleaner" class="nz.co.searchwellington.utils.UrlCleaner">
-	<constructor-arg>
-		<list>
-			<ref bean="feedBurnerRedirectResolverService" />
-			<ref bean="tinyUrlResolverService" />
-		</list>
-	</constructor-arg>
-</bean>
+	<bean id="urlCleaner" class="nz.co.searchwellington.utils.UrlCleaner">
+		<constructor-arg>
+			<list>
+				<ref bean="feedBurnerRedirectResolverService" />
+				<ref bean="tinyUrlResolverService" />
+			</list>
+		</constructor-arg>
+	</bean>
 
 <bean id="feedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 	<property name="transactionManager" ref="transactionManager" />
@@ -145,7 +68,7 @@
 </bean>
 <bean id="commentFeedReaderTarget" class="nz.co.searchwellington.feeds.CommentFeedReader">
 	<constructor-arg ref="resourceDAO" />
-	<constructor-arg ref="commentDAO" />
+	<constructor-arg ref="commentFeedService" />
 </bean>
 
 
@@ -159,24 +82,6 @@
 
 
 
-
-
-
-
-
-<bean id="resourceDAO" class="nz.co.searchwellington.repositories.LuceneBackedResourceDAO">
- 	<constructor-arg ref="sessionFactory" />
- 	<constructor-arg value="${lucene.path}" />
-</bean>
-
-<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
-	<constructor-arg ref="cacheManager" />
-</bean>
-
-<bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">
-	<constructor-arg ref="resourceDAO" />
-	<constructor-arg ref="calendarFeedDAO" />
-</bean>
 
 
 
@@ -276,9 +181,7 @@
 	</bean>
 
 
-	<bean id="flickrDAO" class="nz.co.searchwellington.repositories.FlickrDAO">
-		<property name="apiKey" value="${flickr.apikey}" />	
-	</bean>
+
 	
 	<bean id="twitterService" class="nz.co.searchwellington.twitter.TwitterService">
 		<property name="username" value="${twitter.username}" />
@@ -328,20 +231,15 @@
 		<constructor-arg ref="technoratiDAO" />
 	</bean>
 		
-	
 		
-	<bean id="userDAO" class="nz.co.searchwellington.repositories.HibernateBackedUserDAO">
-	 	<constructor-arg ref="sessionFactory" />
-	</bean>
-	
 	
 	<bean id="discoveredFeedRespository" class="nz.co.searchwellington.feeds.DiscoveredFeedRepository" >
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedDetector" />
 	</bean>
 	
-	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
-	 	<constructor-arg ref="sessionFactory" />
+	<bean id="flickrDAO" class="nz.co.searchwellington.repositories.FlickrDAO">
+		<property name="apiKey" value="${flickr.apikey}" />	
 	</bean>
 	
 			
@@ -380,7 +278,6 @@
 	
 	<import resource="rssfeeds.xml" />
 	
-	<import resource="database.xml" />
 	
 	
 	<bean id="rssfeedNewsitemService" class="nz.co.searchwellington.feeds.RssfeedNewsitemService">
@@ -388,16 +285,14 @@
 		<constructor-arg ref="rssFeedDAO" />
 	</bean>
 	
-	<bean id="supressionDAO" class="nz.co.searchwellington.repositories.SupressionDAO">
-			<constructor-arg ref="sessionFactory" />
-	</bean>		
+
 	
 	<bean id="calendarFeedDAO" class="nz.co.searchwellington.repositories.CalendarFeedDAO" >
 		<constructor-arg ref="calendarCache" />
 	</bean>
 	
 		
-	<bean id="commentDAO" class="nz.co.searchwellington.repositories.CommentDAO">
+	<bean id="commentFeedService" class="nz.co.searchwellington.feeds.CommentFeedService">
 		<constructor-arg ref="rssHttpFetcher" />
 	</bean>
 	

@@ -147,6 +147,50 @@
 
 
 
+
+<bean id="flickrJobTarget" class="nz.co.searchwellington.jobs.FlickrJob">
+	<constructor-arg ref="flickrDAO" />
+	<constructor-arg ref="resourceDAO" />
+	<constructor-arg ref="configDAO" />
+</bean>
+
+<bean id="flickrJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="flickrJobTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+
+
+<bean id="twitterListenerJobTarget" class="nz.co.searchwellington.jobs.TwitterListenerJob">
+		<constructor-arg ref="twitterService" />
+		<constructor-arg ref="twitterNewsitemBuilderService" />
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="linkCheckerQueue" />
+		<constructor-arg ref="publisherGuessingService" />	
+</bean>
+
+<bean id="twitterListenerJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="twitterListenerJobTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+
+<bean id="linkChecker" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<property name="transactionManager" ref="transactionManager" />
+	<property name="target" ref="linkCheckerTarget" />
+	<property name="transactionAttributeSource">
+		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+	</property>	
+</bean>
+<bean name="linkCheckerJob" class="nz.co.searchwellington.jobs.LinkCheckerJob">
+	<constructor-arg ref="linkCheckerQueue" />
+	<constructor-arg ref="linkChecker" />
+</bean>
+
 <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 	<property name="triggers">
 		<list>

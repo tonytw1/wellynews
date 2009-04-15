@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
-import nz.co.searchwellington.repositories.CommentDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 public class CommentFeedReaderTest extends TestCase {
 	
@@ -15,7 +14,7 @@ public class CommentFeedReaderTest extends TestCase {
     // TODO can't implement with out an association between commentFeed and newsitems.    
     public void testShouldSaveNewsitemWhenItsCommentFeedIsLoadedToEnsureTheLuceneIndexIsUpdate() throws Exception {        
         ResourceRepository resourceDAO = mock(ResourceRepository.class);
-        CommentDAO commentDAO = mock(CommentDAO.class);
+        CommentFeedService commentDAO = mock(CommentFeedService.class);
         
         CommentFeed commentFeed = new CommentFeed();        
         commentFeed.setComments(new ArrayList<Comment>());

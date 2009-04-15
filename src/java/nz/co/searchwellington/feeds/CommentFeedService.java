@@ -1,4 +1,4 @@
-package nz.co.searchwellington.repositories;
+package nz.co.searchwellington.feeds;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,13 +16,13 @@ import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
-public class CommentDAO {
+public class CommentFeedService {
     
-    public final Logger log = Logger.getLogger(CommentDAO.class);
+    public final Logger log = Logger.getLogger(CommentFeedService.class);
     
     RssHttpFetcher rssHttpFetcher;
         
-    public CommentDAO(RssHttpFetcher rssHttpFetcher) {       
+    public CommentFeedService(RssHttpFetcher rssHttpFetcher) {       
         this.rssHttpFetcher = rssHttpFetcher;
     }
 

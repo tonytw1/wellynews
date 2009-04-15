@@ -15,6 +15,7 @@ import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.REST;
 import com.aetrion.flickr.photos.Photo;
 
+// TODO this is a service - not a DAO
 public class FlickrDAO {
     
     Logger log = Logger.getLogger(FlickrDAO.class);

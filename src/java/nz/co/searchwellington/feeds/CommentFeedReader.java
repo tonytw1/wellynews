@@ -7,7 +7,6 @@ import java.util.List;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
-import nz.co.searchwellington.repositories.CommentDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
@@ -18,21 +17,21 @@ import com.sun.syndication.io.FeedException;
 
 public class CommentFeedReader {
     
-    private static final int MAX_COMMENT_FEEDS_TO_LOAD = 10;
+    private static final int MAX_COMMENT_FEEDS_TO_LOAD = 30;
 
     Logger log = Logger.getLogger(CommentFeedReader.class);
     
     private ResourceRepository resourceDAO;   
-    private CommentDAO commentDAO;
+    private CommentFeedService commentFeedService;
     
     
     public CommentFeedReader() {        
     }
     
     
-    public CommentFeedReader(ResourceRepository resourceDAO, CommentDAO commentDAO) {    
+    public CommentFeedReader(ResourceRepository resourceDAO, CommentFeedService commentFeedService) {    
         this.resourceDAO = resourceDAO;        
-        this.commentDAO = commentDAO;
+        this.commentFeedService = commentFeedService;
     }
 
      
@@ -75,7 +74,7 @@ public class CommentFeedReader {
     
     private void loadCommentsForCommentFeed(CommentFeed commentFeed) {
     	log.info("Loading comments from url: " + commentFeed.getUrl());
-    	final List<Comment> loadedComments = commentDAO.loadComments(commentFeed);
+    	final List<Comment> loadedComments = commentFeedService.loadComments(commentFeed);
         commentFeed.getComments().clear();
         commentFeed.getComments().addAll(loadedComments);
         commentFeed.setLastRead(Calendar.getInstance().getTime());        
