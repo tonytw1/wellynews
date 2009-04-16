@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.LuceneBackedResourceDAO">
+ 		<constructor-arg ref="sessionFactory" />
+ 		<constructor-arg value="${lucene.path}" />
+	</bean>
+
+	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
+	 	<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
+		<constructor-arg ref="cacheManager" />
+	</bean>
+
+	<bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="calendarFeedDAO" />
+	</bean>
+		
+	<bean id="userDAO" class="nz.co.searchwellington.repositories.HibernateBackedUserDAO">
+	 	<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+	<bean id="supressionDAO" class="nz.co.searchwellington.repositories.SupressionDAO">
+			<constructor-arg ref="sessionFactory" />
+	</bean>		
+	 
+ </beans>

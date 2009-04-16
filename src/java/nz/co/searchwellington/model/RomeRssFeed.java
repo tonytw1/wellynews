@@ -8,14 +8,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.sun.syndication.feed.module.georss.GeoRSSModule;
-import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
-
 
 public class RomeRssFeed {
 
@@ -26,20 +23,15 @@ public class RomeRssFeed {
     private String description;
     private List<RssFeedable> contents;
 
-    private String clickThroughTrackingUrl;
-
     
-    
-    public RomeRssFeed(String title, String linkUrl, String description, List<RssFeedable> contents, String clickThroughTrackingUrl) {
+    public RomeRssFeed(String title, String linkUrl, String description, List<RssFeedable> contents) {
         this.title = title;
         this.contents = contents;
         this.description = description;
-        this.linkUrl = linkUrl;
-        this.clickThroughTrackingUrl = clickThroughTrackingUrl;
+        this.linkUrl = linkUrl;      
     }
 
-    
-    
+       
     public String outputAsXml() {
         SyndFeed feed = new SyndFeedImpl();
 
@@ -52,14 +44,11 @@ public class RomeRssFeed {
         List<SyndEntry> entries = new ArrayList<SyndEntry>();
 
         if (contents.size() > 0) {
-            Iterator iterator = contents.iterator();
+            Iterator<RssFeedable> iterator = contents.iterator();
             while (iterator.hasNext()) {
                 RssFeedable selectedResource = (RssFeedable) iterator.next();
 
-                SyndEntry entry = selectedResource.getRssItem();
-               
-                // TODO reimplement geo
-             //   addGeoRSSModule(selectedResource, entry);
+                SyndEntry entry = selectedResource.getRssItem();             
                 entries.add(entry);
             }
             
@@ -81,20 +70,7 @@ public class RomeRssFeed {
         } catch (FeedException e) {
             log.error(e);
         }
-
         return null;
-    }
-
-
-
-    private void addGeoRSSModule(Resource selectedResource, SyndEntry entry) {
-        final Geocode geocode = selectedResource.getGeocode();
-        if (geocode != null && geocode.isValid()) {            
-            GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();     
-            geoRSSModule.setLatitude(geocode.getLatitude());
-            geoRSSModule.setLongitude(geocode.getLongitude());
-            entry.getModules().add(geoRSSModule);            
-        }
     }
     
 }

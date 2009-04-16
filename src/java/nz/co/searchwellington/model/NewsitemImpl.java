@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import com.sun.syndication.feed.module.georss.GeoRSSModule;
+import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 
 
@@ -35,10 +37,18 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     }
     
          
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public SyndEntry getRssItem() {
         SyndEntry rssItem = super.getRssItem();
-        rssItem.setPublishedDate(this.getDate());
+        rssItem.setPublishedDate(this.getDate());        
+        final Geocode geocode = this.getGeocode();
+        if (geocode != null && geocode.isValid()) {            
+        	GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();     
+        	geoRSSModule.setLatitude(geocode.getLatitude());
+        	geoRSSModule.setLongitude(geocode.getLongitude());
+        	rssItem.getModules().add(geoRSSModule);            
+        }
         return rssItem;
     }
     

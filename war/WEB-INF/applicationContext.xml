@@ -7,7 +7,6 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 
-
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>file:conf/springapp.properties</value>
@@ -18,10 +17,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="database.xml" />
 	<import resource="daos.xml" />	
 	<import resource="timertasks.xml"/>
-
+	<import resource="rssfeeds.xml" />
+	
+	
 
 	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" scope="request">
 		<aop:scoped-proxy/>
+	</bean>	
+	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" >
+		<constructor-arg ref="loggedInUserFilter" />
 	</bean>
 	
 	
@@ -39,7 +43,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 
 
-	<bean id="feedBurnerRedirectResolverService" class="nz.co.searchwellington.feeds.FeedBurnerRedirectResolverService" />
 
 	<bean id="urlCleaner" class="nz.co.searchwellington.utils.UrlCleaner">
 		<constructor-arg>
@@ -112,30 +115,27 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
        <bean id="acceptanceWidgetFactory" class="nz.co.searchwellington.widgets.AcceptanceWidgetFactory" />    		
 
 
- <bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
-   <property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
- </bean>
 
-	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
-  		<property name="velocityProperties">
-    <props>
-      <prop key="output.encoding">UTF-8</prop>   
-        <prop key="input.encoding">UTF-8</prop>   
 
-       
-    </props>
-  </property>
-  		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
-  </bean>
+	
 		
 	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />
 
-	<bean id="contentDeduper" class="nz.co.searchwellington.controllers.ContentDedupingService" />
-	
 
 	
-	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" >
-		<constructor-arg ref="loggedInUserFilter" />
+	
+	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
+   		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
+	 </bean>
+	
+	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+  		<property name="velocityProperties">
+    		<props>
+     			<prop key="output.encoding">UTF-8</prop>   
+        		<prop key="input.encoding">UTF-8</prop>      
+	    	</props>
+	  	</property>
+  		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
 	</bean>
 	
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
@@ -162,19 +162,18 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	
 	
+	
 	<bean id="urlBuilder" class="nz.co.searchwellington.controllers.UrlBuilder">
 		<constructor-arg ref="siteInformation" />
-	</bean>
-	
+	</bean>	
 	<bean id="adminUrlBuilder" class="nz.co.searchwellington.controllers.admin.AdminUrlBuilder">
 		<constructor-arg ref="siteInformation" />
-	</bean>
-	
+	</bean>	
 	<bean id="rssUrlBuilder" class="nz.co.searchwellington.controllers.RssUrlBuilder">
 		<constructor-arg ref="siteInformation" />
 	</bean>
 	
-
+	
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">
 		<property name="areaname" value="${areaname}" />
 		<property name="url" value="${installed}" />
@@ -191,6 +190,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="apiKey" value="${googlemaps.apikey}" />
 	</bean>
 
+	<bean id="contentDeduper" class="nz.co.searchwellington.controllers.ContentDedupingService" />
+	
 
 
 	
@@ -204,6 +205,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	<bean id="tinyUrlResolverService" class="nz.co.searchwellington.twitter.TinyUrlResolverService" />
+	<bean id="feedBurnerRedirectResolverService" class="nz.co.searchwellington.feeds.FeedBurnerRedirectResolverService" />
 	
 	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
 		
@@ -271,25 +273,23 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="velocityEngine" />
 	</bean>
 	
-	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService" />
 	
+	
+	
+	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService" />	
 	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
  		<constructor-arg ref="resourceDAO" /> 		
-	</bean>
-	
+	</bean>	
 	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">   
  		<constructor-arg ref="resourceDAO" /> 		
 	</bean>
-
 	<bean id="autoTaggingService" class="nz.co.searchwellington.tagging.AutoTaggingService"> 
 		<constructor-arg ref="impliedTagService" />
  		<constructor-arg ref="placeAutoTagger" />
  		<constructor-arg ref="tagHintAutoTagger" />
 	</bean>
 	
-	<import resource="rssfeeds.xml" />
-	
-	
+
 	
 	<bean id="rssfeedNewsitemService" class="nz.co.searchwellington.feeds.RssfeedNewsitemService">
 		<constructor-arg ref="urlCleaner" />

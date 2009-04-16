@@ -73,7 +73,7 @@ public class TagCombinerModelBuilder implements ModelBuilder {
 		mv.addObject("tags", tags);
 		
 		mv.addObject("heading", firstTag.getDisplayName() +  " + " + secondTag.getDisplayName());
-		mv.addObject("description", firstTag.getDisplayName() +  " + " + secondTag.getDisplayName());
+		mv.addObject("description", "Items tagged with " + firstTag.getDisplayName() +  " and " + secondTag.getDisplayName() + ".");
 		mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
 		
 		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  

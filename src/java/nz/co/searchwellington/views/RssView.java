@@ -7,35 +7,35 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.model.RomeRssFeed;
 import nz.co.searchwellington.model.RssFeedable;
+import nz.co.searchwellington.model.SiteInformation;
 
 import org.springframework.web.servlet.View;
 
 
 public class RssView implements View {
 
-    private String clickThroughUrl;
+	private SiteInformation siteInformation;
+		
+	public RssView(SiteInformation siteInformation) {		
+		this.siteInformation = siteInformation;
+	}
 
-    // TODO really - should implement this?
 	public String getContentType() {
-        return null;
+        return "text/xml";
     }
 
-    public void render(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
-        
-        List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");        
-		res.setContentType("text/xml");
+    @SuppressWarnings("unchecked")
+	public void render(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {        
+        List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");
+		res.setContentType("text/xml");		
 		
-        RomeRssFeed outputFeed = new RomeRssFeed(	(String) model.get("heading"), 
+        String rssFeedTitle = (String) model.get("heading") + " - " + siteInformation.getSitename();
+		RomeRssFeed outputFeed = new RomeRssFeed(	rssFeedTitle, 
         		(String) model.get("link"), 
         		(String) model.get("description"), 
-        		mainContent, clickThroughUrl);
+        		mainContent);
         res.getOutputStream().print(outputFeed.outputAsXml());        
 		res.getOutputStream().flush();		
 	}
-
- 
-    public void setClickThroughUrl(String clickThroughUrl) {
-        this.clickThroughUrl = clickThroughUrl;
-    }
-
+    
 }

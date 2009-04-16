@@ -56,7 +56,7 @@ public class RssController extends MultiActionController {
         model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");
         model.put("main_content", resourceDAO.getLatestNewsitems(MAX_RSS_ITEMS, false));
         
-        RssView rssView = new RssView();        
+        RssView rssView = new RssView(siteInformation);
         return new ModelAndView(rssView, model);        
     }
     
@@ -66,7 +66,7 @@ public class RssController extends MultiActionController {
     	log.info("Building content rss");
     	 requestFilter.loadAttributesOntoRequest(request);  
          ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-         mv.setView(new RssView());
+         mv.setView(new RssView(siteInformation));
          return mv;
     }
     
@@ -78,7 +78,7 @@ public class RssController extends MultiActionController {
     	model.put("link", rssUrlBuilder.getRssUrlForGeotagged());
     	model.put("description", "Newsitems with geotagging information.");
     	model.put("main_content", resourceDAO.getAllValidGeocoded(MAX_RSS_ITEMS, false));    	
-        RssView rssView = new RssView();
+        RssView rssView = new RssView(siteInformation);
         return new ModelAndView(rssView, model);
     }
     
@@ -90,7 +90,7 @@ public class RssController extends MultiActionController {
     	model.put("description", "The most recently submitted website listings.");
     	model.put("main_content", resourceDAO.getLatestWebsites(MAX_RSS_ITEMS, false));
     	
-        RssView rssView = new RssView();        
+        RssView rssView = new RssView(siteInformation);        
         return new ModelAndView(rssView, model);        
     }
     
@@ -102,7 +102,7 @@ public class RssController extends MultiActionController {
     	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
     	model.put("main_content", resourceDAO.getRecentlyChangedWatchlistItems());
     	
-        RssView rssView = new RssView();        
+        RssView rssView = new RssView(siteInformation);        
         return new ModelAndView(rssView, model);
         
     }
@@ -115,7 +115,7 @@ public class RssController extends MultiActionController {
     	model.put("description", "Available tags");
     	model.put("main_content", resourceDAO.getAllTags());
     	
-        RssView rssView = new RssView();        
+        RssView rssView = new RssView(siteInformation);        
         return new ModelAndView(rssView, model);        
     }
     

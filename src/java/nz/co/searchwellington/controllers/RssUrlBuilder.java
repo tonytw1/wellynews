@@ -53,7 +53,7 @@ public class RssUrlBuilder {
     }
 
     public Object getRssTitleForGeotagged() {
-        return siteInformation.getSitename() + " - Geotagged newitems";
+        return "Geotagged newitems";
     }
 
     public String getRssTitleForWatchlist() {
