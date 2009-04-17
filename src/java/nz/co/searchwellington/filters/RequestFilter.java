@@ -28,22 +28,14 @@ public class RequestFilter {
         this.resourceDAO = resourceDAO;     
     }
     
-    public void loadAttributesOntoRequest(HttpServletRequest request) {
-          
-    	// TODO only used in admin - move to adminFilter?
-        loadResourceFromRequestParameter(request);
+    public void loadAttributesOntoRequest(HttpServletRequest request) {      
         // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
         if (request.getParameter("tag") != null) {
             String tagName = request.getParameter("tag");        
             Tag tag = resourceDAO.loadTagByName(tagName);             
                request.setAttribute("tag", tag);            
         }
-        // TODO admin only
-        if (request.getParameter("parent") != null) {
-            String tagName = request.getParameter("parent");
-            Tag tag = resourceDAO.loadTagByName(tagName);
-            request.setAttribute("parent_tag", tag); 
-        }       
+          
         // TODO move to a spring controller binding and depricate the publisher id on get.
         if (request.getParameter("publisher") != null) {
             final int publisherID = Integer.parseInt(request.getParameter("publisher"));
@@ -172,13 +164,7 @@ public class RequestFilter {
         
     }
 
-    private void loadResourceFromRequestParameter(HttpServletRequest request) {        
-        Integer requestResourceID = parseResourceIDFromRequestParameter(request);        
-        if (requestResourceID != null && requestResourceID > 0) {
-            Resource resource = resourceDAO.loadResourceById(requestResourceID);               
-            request.setAttribute("resource", resource);
-        }
-    }
+  
 
     protected Integer parseResourceIDFromRequestParameter(HttpServletRequest request) {
         Integer requestResourceID = null;        

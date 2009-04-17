@@ -27,7 +27,7 @@ public class TagEditController extends MultiActionController {
 
 
     private ResourceRepository resourceDAO;
-    private RequestFilter requestFilter;
+    private AdminRequestFilter requestFilter;
     private TagWidgetFactory tagWidgetFactory;
     private UrlStack urlStack;
 
@@ -36,7 +36,7 @@ public class TagEditController extends MultiActionController {
     }
 
 
-    public TagEditController(ResourceRepository resourceDAO, RequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack) {
+    public TagEditController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.tagWidgetFactory = tagWidgetFactory;

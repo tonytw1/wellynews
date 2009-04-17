@@ -404,7 +404,7 @@
 	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="rssfeedNewsitemService" />
-		<constructor-arg ref="requestFilter" />	
+		<constructor-arg ref="adminRequestFilter" />	
 		<constructor-arg ref="linkCheckerQueue" />		
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="publisherSelectFactory" />
@@ -471,7 +471,7 @@
 	
 	<bean id="tagEditControllerTarget" class="nz.co.searchwellington.controllers.admin.TagEditController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="urlStack" />
 		<property name="methodNameResolver">

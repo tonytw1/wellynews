@@ -213,6 +213,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 	</bean>
 	
+	<bean id="adminRequestFilter" class="nz.co.searchwellington.controllers.admin.AdminRequestFilter">
+		<constructor-arg ref="resourceDAO" />
+	</bean>
 	
 	
 	

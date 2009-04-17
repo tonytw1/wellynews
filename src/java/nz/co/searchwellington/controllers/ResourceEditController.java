@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
@@ -53,7 +54,7 @@ public class ResourceEditController extends BaseTagEditingController {
     private static final String REQUEST_GEOCODE_NAME = "geocode";
        
     private RssfeedNewsitemService rssfeedNewsitemService;
-    private RequestFilter requestFilter;    
+    private AdminRequestFilter requestFilter;    
     private LinkCheckerQueue linkCheckerQueue;       
     private TagWidgetFactory tagWidgetFactory;
     private PublisherSelectFactory publisherSelectFactory;
@@ -67,7 +68,7 @@ public class ResourceEditController extends BaseTagEditingController {
 
     
       
-    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, RequestFilter requestFilter, 
+    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter requestFilter, 
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
