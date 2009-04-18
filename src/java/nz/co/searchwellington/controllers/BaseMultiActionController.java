@@ -38,6 +38,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected ResourceRepository resourceDAO;   
     protected UrlStack urlStack;
     protected ConfigRepository configDAO;
+    protected LoggedInUserFilter loggedInUserFilter;
     
     final protected void setRss(ModelAndView mv, String url) {
         mv.addObject("rss_url", url);
@@ -88,29 +89,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
         } 
     }
 
-
-
-    @SuppressWarnings("unchecked")
-    final protected User setLoginState(HttpServletRequest request, ModelAndView mv) {
-
-        if (request.getSession().getAttribute("login_prompt") != null) {
-            log.info("login_prompt not null: " + request.getSession().getAttribute("login_prompt"));
-            if (request.getSession().getAttribute("login_prompt").equals("1")) {
-                log.info("login_prompt put onto model");
-                mv.getModel().put("login_prompt", "1");
-            }
-        }
-            
-        if (request.getSession().getAttribute("user") != null) {
-            User loggedInUser = (User) request.getSession().getAttribute("user");
-            mv.getModel().put("logged_in_user", loggedInUser);
-
-            return loggedInUser;           
-        }
-        return null;
-    }
-
-     
+    
     @SuppressWarnings("unchecked")
     protected void populateUntaggedNewsitem(ModelAndView mv, User loggedInUser) throws IOException {        
         List <Newsitem> untaggedNewsitems = resourceDAO.getRecentUntaggedNewsitems(); 

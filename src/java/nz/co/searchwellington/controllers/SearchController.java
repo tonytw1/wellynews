@@ -27,11 +27,12 @@ public class SearchController extends BaseMultiActionController {
     Logger log = Logger.getLogger(SearchController.class);
     RequestFilter requestFilter;
 	
-    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO) {    
+    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter) {    
 		this.resourceDAO = resourceDAO;     
         this.urlStack = urlStack;
         this.requestFilter = requestFilter;
         this.configDAO = configDAO;
+        this.loggedInUserFilter = loggedInUserFilter;
 	}
 
     @SuppressWarnings("unchecked")
@@ -40,7 +41,7 @@ public class SearchController extends BaseMultiActionController {
                         
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         boolean showBroken = loggedInUser != null;

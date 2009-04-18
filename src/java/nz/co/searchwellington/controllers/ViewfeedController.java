@@ -49,7 +49,7 @@ public class ViewfeedController extends BaseMultiActionController {
         this.configDAO = configDAO;        
         this.feedReader = feedReader;
         this.rssPrefetcher = rssPrefetcher;
-        this.urlBuilder = urlBuilder;
+        this.urlBuilder = urlBuilder;       
     }
 
     
@@ -95,7 +95,7 @@ public class ViewfeedController extends BaseMultiActionController {
         if (feed != null) {                       
         	ModelAndView mv = new ModelAndView();
         	urlStack.setUrlStack(request);
-        	User loggedInUser = setLoginState(request, mv);
+        	User loggedInUser =  loggedInUserFilter.getLoggedInUser();
         	StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         	
         	mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());

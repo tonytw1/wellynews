@@ -37,13 +37,14 @@ public class ViewCalendarController extends BaseMultiActionController {
     private EventsDAO eventsDAO;
    
     
-    public ViewCalendarController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, CalendarFeedDAO calendarFeedDAO, EventsDAO eventsDAO) {
+    public ViewCalendarController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, CalendarFeedDAO calendarFeedDAO, EventsDAO eventsDAO, LoggedInUserFilter loggedInUserFilter) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.calendarFeedDAO = calendarFeedDAO;
         this.eventsDAO = eventsDAO;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
 
     
@@ -53,7 +54,7 @@ public class ViewCalendarController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
 
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());                
         mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         

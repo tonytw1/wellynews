@@ -22,13 +22,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class BrowseController extends BaseMultiActionController {
 
-    private RequestFilter requestFilter;    
+    private RequestFilter requestFilter;
  
-	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO) {       
+	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter) {       
 		this.resourceDAO = resourceDAO;     
         this.requestFilter = requestFilter;        
         this.urlStack = urlStack;
-        this.configDAO = configDAO;     
+        this.configDAO = configDAO;
+        this.loggedInUserFilter = loggedInUserFilter;
 	}
 	
 	
@@ -160,7 +161,7 @@ public class BrowseController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")
     private User populateLocalCommon(HttpServletRequest request, ModelAndView mv) {
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         

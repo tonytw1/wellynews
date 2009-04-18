@@ -17,12 +17,6 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 
-/**
- * Allows the great unwashed to tag previously untagged items.
- * 
- * @author tony
- *
- */
 public class PublicTaggingController extends BaseTagEditingController {
         
     Logger log = Logger.getLogger(PublicTaggingController.class);
@@ -34,11 +28,12 @@ public class PublicTaggingController extends BaseTagEditingController {
     
     public PublicTaggingController(ResourceRepository resourceDAO, 
                 RequestFilter requestFilter, 
-                TagWidgetFactory tagWidgetFactory, Notifier notifier) {       
+                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter) {       
         this.resourceDAO = resourceDAO;      
         this.requestFilter = requestFilter;
         this.tagWidgetFactory = tagWidgetFactory;
         this.notifier = notifier;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
    
     
@@ -49,7 +44,7 @@ public class PublicTaggingController extends BaseTagEditingController {
         mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         mv.addObject("heading", "Tagging a Resource");
         
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
            
         Resource editResource = null;
         requestFilter.loadAttributesOntoRequest(request);
@@ -80,8 +75,7 @@ public class PublicTaggingController extends BaseTagEditingController {
         modelAndView.addObject("heading", "Resource Saved");
         modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());        
         
-        User loggedInUser = setLoginState(request, modelAndView);
-        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();        
         Resource editResource = null;
         requestFilter.loadAttributesOntoRequest(request);           
         

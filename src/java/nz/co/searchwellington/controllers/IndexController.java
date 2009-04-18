@@ -59,7 +59,7 @@ public class IndexController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
         populateAds(request, mv, showBroken);
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());

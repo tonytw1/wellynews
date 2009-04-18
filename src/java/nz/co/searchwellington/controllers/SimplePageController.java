@@ -37,8 +37,9 @@ public class SimplePageController extends BaseMultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
-    
-    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository) {
+    private LoggedInUserFilter loggedInUserFilter;
+	
+    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter) {
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
@@ -47,36 +48,32 @@ public class SimplePageController extends BaseMultiActionController {
         this.rssUrlBuilder = rssUrlBuilder;
         this.twitterService = twitterService;
         this.discoveredFeedRepository = discoveredFeedRepository;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
     
        
     public ModelAndView about(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        
+        loggedInUserFilter.loadLoggedInUser(request);  
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-        
-        populateLocalCommon(mv);
-                        
-        mv.addObject("heading", "About");
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-     
-        
-        mv.setViewName("about");
-                        
+                    
+        populateLocalCommon(mv);             
+        mv.addObject("heading", "About");        
+        populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
+             
+        mv.setViewName("about");                     
         return mv;
     }
 
     
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        populateLocalCommon(mv);
-        
+        loggedInUserFilter.loadLoggedInUser(request);  
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-                                
+
+        populateLocalCommon(mv);        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        
         mv.addObject("heading", "Archive");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
             
@@ -90,11 +87,11 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView calendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);  
         populateLocalCommon(mv);
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
      
         mv.addObject("heading", "Calendar Feeds");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
@@ -109,12 +106,12 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView commented(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         mv.addObject("heading", "Comment");           
         mv.addObject("commented_tags", resourceDAO.getCommentedTags(showBroken));                
@@ -130,13 +127,12 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        boolean showBroken = loggedInUser != null;
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        boolean showBroken = loggedInUser != null;        
         mv.addObject("heading", "Wellynews API");
 
         List<Website> publishers = getAllPublishers(showBroken);
@@ -149,29 +145,18 @@ public class SimplePageController extends BaseMultiActionController {
     }
 
 
-    // TODO extremely non preformant
-	private List<Website> getAllPublishers(boolean showBroken) throws IOException {
-		List<Website> publishers = new ArrayList<Website>();
-        List<Object[]> publisherIds = resourceDAO.getAllPublishers(showBroken, true); 
-        for (Object[] objects : publisherIds) {
-			int publisherId = (Integer) objects[0];
-			Website publisher = (Website) resourceDAO.loadResourceById(publisherId);
-			publishers.add(publisher);			
-		}
-		return publishers;
-	}
 
 
     
        
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-                                
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        
         mv.addObject("heading", "Discovered Feeds");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
         
@@ -184,11 +169,12 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView geotagged(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        
+        loggedInUserFilter.loadLoggedInUser(request);
+        requestFilter.loadAttributesOntoRequest(request);
+                
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        boolean showBroken = loggedInUser != null;
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        boolean showBroken = loggedInUser != null;    
         populateLocalCommon(mv);
                         
         mv.addObject("heading", "Geotagged");
@@ -196,7 +182,6 @@ public class SimplePageController extends BaseMultiActionController {
       
         mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(showBroken));
         
-        requestFilter.loadAttributesOntoRequest(request);
         
         Resource selected = null;
 		if (request.getAttribute("resource") != null) {
@@ -213,34 +198,19 @@ public class SimplePageController extends BaseMultiActionController {
     }
 
     
-    protected void populateGeocoded(ModelAndView mv, boolean showBroken, Resource selected) throws IOException {
-        List<Resource> geocoded = resourceDAO.getAllValidGeocoded(50, showBroken);
-        log.info("Found " + geocoded.size() + " valid geocoded resources.");        
-        if (selected != null && !geocoded.contains(selected)) {
-        	geocoded.add(selected);
-        }
-                
-        if (geocoded.size() > 0) {
-            mv.addObject("main_content", geocoded);
-            // TODO inject
-            GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();
-            mv.addObject("geocoded", cleaner.dedupe(geocoded, selected));  
-            setRss(mv, "Geocoded newsitems RSS Feed", rssUrlBuilder.getRssUrlForGeotagged());
-        }
-    }
-
+   
     
     
     
       
     public ModelAndView justin(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
 
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         mv.addObject("heading", "Latest Additions");
         mv.addObject("main_content", resourceDAO.getLatestWebsites(MAX_NEWSITEMS, showBroken));
@@ -255,12 +225,12 @@ public class SimplePageController extends BaseMultiActionController {
         
     public ModelAndView lastUpdated(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
 
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        
         mv.addObject("heading", "Latest Updates");
         // TODO this should show resources order by last live time. - the the last update query won't have to interate ethier.
         mv.addObject("main_content", resourceDAO.getLatestNewsitems(20, false));
@@ -276,12 +246,12 @@ public class SimplePageController extends BaseMultiActionController {
 
     public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-                        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        
         mv.addObject("heading", "All Tags");        
         mv.addObject("tags", resourceDAO.getAllTags());
                 
@@ -298,13 +268,13 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-                        
+        
         mv.addObject("heading", "All Publishers");    
         mv.addObject("publishers", getAllPublishers(showBroken));
         
@@ -317,10 +287,10 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        
+        loggedInUserFilter.loadLoggedInUser(request);
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
+        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         populateLocalCommon(mv);
         
         final String twitterUsername = siteInformation.getTwitterUsername();
@@ -356,7 +326,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateLocalCommon(mv);
 
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         mv.addObject("heading", "News Watchlist");
@@ -375,6 +345,40 @@ public class SimplePageController extends BaseMultiActionController {
               mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
     }
     
+
+    // TODO extremely non preformant
+	private List<Website> getAllPublishers(boolean showBroken) throws IOException {
+		List<Website> publishers = new ArrayList<Website>();
+        List<Object[]> publisherIds = resourceDAO.getAllPublishers(showBroken, true); 
+        for (Object[] objects : publisherIds) {
+			int publisherId = (Integer) objects[0];
+			Website publisher = (Website) resourceDAO.loadResourceById(publisherId);
+			publishers.add(publisher);			
+		}
+		return publishers;
+	}
+    
+	
+	
+	 protected void populateGeocoded(ModelAndView mv, boolean showBroken,
+			Resource selected) throws IOException {
+		List<Resource> geocoded = resourceDAO.getAllValidGeocoded(50,
+				showBroken);
+		log.info("Found " + geocoded.size() + " valid geocoded resources.");
+		if (selected != null && !geocoded.contains(selected)) {
+			geocoded.add(selected);
+		}
+
+		if (geocoded.size() > 0) {
+			mv.addObject("main_content", geocoded);
+			// TODO inject
+			GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();
+			mv.addObject("geocoded", cleaner.dedupe(geocoded, selected));
+			setRss(mv, "Geocoded newsitems RSS Feed", rssUrlBuilder
+					.getRssUrlForGeotagged());
+		}
+	}
+
 
 }
     

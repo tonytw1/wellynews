@@ -96,7 +96,7 @@ public class ResourceEditController extends BaseTagEditingController {
         populateCommonLocal(mv);
         mv.addObject("heading", "Editing a Resource");
         
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();;
         boolean userIsLoggedIn = loggedInUser != null;
         
         Resource editResource = null;
@@ -128,7 +128,7 @@ public class ResourceEditController extends BaseTagEditingController {
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Submitting a Resource");
         
-        User loggedInUser = setLoginState(request, modelAndView);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean userIsLoggedIn = loggedInUser != null;
         
 
@@ -165,7 +165,7 @@ public class ResourceEditController extends BaseTagEditingController {
    
  
     private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
-        User loggedInUser = setLoginState(request, modelAndView);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (loggedInUser == null) {
             modelAndView.addObject("spam_question", "The capital of New Zealand is (10 letters)");
         }
@@ -308,7 +308,7 @@ public class ResourceEditController extends BaseTagEditingController {
         populateCommonLocal(modelAndView);       
         modelAndView.addObject("heading", "Resource Saved");
         
-        User loggedInUser = setLoginState(request, modelAndView);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
         Resource editResource = null;
         requestFilter.loadAttributesOntoRequest(request);   
@@ -538,7 +538,7 @@ public class ResourceEditController extends BaseTagEditingController {
         populateCommonLocal(modelAndView);
         modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
    
-        User loggedInUser = setLoginState(request, modelAndView);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean userIsLoggedIn = loggedInUser != null;       
         modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(null, userIsLoggedIn).toString());
         

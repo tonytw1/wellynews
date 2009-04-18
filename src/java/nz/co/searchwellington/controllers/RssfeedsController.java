@@ -33,9 +33,9 @@ public class RssfeedsController extends BaseMultiActionController {
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedsRepository;
- 
+	
     
-    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository) {   
+    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, LoggedInUserFilter loggedInUserFilter) {   
         this.resourceDAO = resourceDAO;       
         this.requestFilter = requestFilter;       
         this.publisherSelectFactory = publisherSelectFactory;
@@ -45,6 +45,7 @@ public class RssfeedsController extends BaseMultiActionController {
         this.siteInformation = siteInformation;
         this.rssUrlBuilder = rssUrlBuilder;
         this.discoveredFeedsRepository = discoveredFeedsRepository;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
     
         
@@ -57,7 +58,7 @@ public class RssfeedsController extends BaseMultiActionController {
         Tag tag = null;
         
         urlStack.setUrlStack(request);
-        User loggedInUser = setLoginState(request, mv);
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         boolean showBroken = loggedInUser != null;
                 
