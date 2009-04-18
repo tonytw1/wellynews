@@ -72,7 +72,7 @@ public class ResourceEditController extends BaseTagEditingController {
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssPrefetcher rssPrefetcher) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.requestFilter = requestFilter;       
@@ -86,6 +86,7 @@ public class ResourceEditController extends BaseTagEditingController {
         this.geocodeService = geocodeService;
         this.urlCleaner = urlCleaner;
         this.rssPrefetcher = rssPrefetcher;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
    
     
@@ -93,6 +94,7 @@ public class ResourceEditController extends BaseTagEditingController {
     @Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView("editResource");
+        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(mv);
         mv.addObject("heading", "Editing a Resource");
         
@@ -125,6 +127,7 @@ public class ResourceEditController extends BaseTagEditingController {
     @Transactional
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {        
         ModelAndView modelAndView = new ModelAndView("acceptResource");
+        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Submitting a Resource");
         
@@ -257,6 +260,7 @@ public class ResourceEditController extends BaseTagEditingController {
    @Transactional
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
+        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
@@ -274,6 +278,7 @@ public class ResourceEditController extends BaseTagEditingController {
    @Transactional
     public ModelAndView deleteAndSupress(HttpServletRequest request, HttpServletResponse response) throws IOException {   
         ModelAndView modelAndView = new ModelAndView("deletedResource");
+        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
@@ -300,11 +305,11 @@ public class ResourceEditController extends BaseTagEditingController {
     
        
    @Transactional
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-        
-        request.setCharacterEncoding("UTF-8");
-                
+    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
+	   	// TODO is this needed?
+        request.setCharacterEncoding("UTF-8");                
         ModelAndView modelAndView = new ModelAndView("savedResource");
+        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(modelAndView);       
         modelAndView.addObject("heading", "Resource Saved");
         

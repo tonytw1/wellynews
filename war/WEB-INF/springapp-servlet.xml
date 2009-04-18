@@ -406,6 +406,7 @@
 		<constructor-arg ref="geocodingService" />
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="rssPrefetcher" />
+		<constructor-arg ref="loggedInUserFilter" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

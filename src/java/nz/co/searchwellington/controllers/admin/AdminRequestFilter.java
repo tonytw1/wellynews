@@ -2,7 +2,9 @@ package nz.co.searchwellington.controllers.admin;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,8 +31,7 @@ public class AdminRequestFilter {
 	}
 
 
-	public void loadAttributesOntoRequest(HttpServletRequest request) {
-		
+	public void loadAttributesOntoRequest(HttpServletRequest request) {		
 		log.info("Looking for tag parameter");
 		if (request.getParameter("tag") != null) {
 			String tagName = request.getParameter("tag");
@@ -38,6 +39,45 @@ public class AdminRequestFilter {
 			if (tag != null) {
 	           	request.setAttribute("tag", tag);
 			}
+		}
+		
+		log.info("Looking for date field");
+		if (request.getParameter("date") != null) {
+			final String dateString = (String) request.getParameter("date");
+			SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");              
+			try {            	
+				Date date = df.parse(dateString);
+				if (date != null) {
+					request.setAttribute("date", new DateTime(date).toDate());   	
+				}              
+			} catch (ParseException e) {
+				log.warn("Invalid date string supplied: " + dateString);
+			}        	
+		}
+		
+		// TODO Test coverage
+		// TODO move to a spring controller binding and depricate the publisher id on get.
+        if (request.getParameter("publisher") != null) {
+            final int publisherID = Integer.parseInt(request.getParameter("publisher"));
+            if (publisherID > 0) {
+                Resource publisher = resourceDAO.loadResourceById(publisherID);
+                request.setAttribute("publisher", publisher);
+            }
+        }
+		
+		// TODO test coverage
+		if (request.getParameter("tags") != null) {
+			String[] tagIds = request.getParameterValues("tags");
+			List <Tag> tags = new ArrayList <Tag>();
+			for (int i = 0; i < tagIds.length; i++) {             
+				String tagIdString = tagIds[i];
+				int tagID = Integer.parseInt(tagIdString);
+				if (tagID > 0) {          
+					Tag tag = resourceDAO.loadTagById(tagID);
+					tags.add(tag);
+				} // TODO catch
+			}           
+			request.setAttribute("tags", tags);
 		}
 		
 		log.info("Looking for resource parameter");
@@ -84,19 +124,6 @@ public class AdminRequestFilter {
             }
         }
                 
-        log.info("Looking for date field");
-        if (request.getParameter("date") != null) {
-        	final String dateString = (String) request.getParameter("date");
-            SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");              
-            try {            	
-                Date date = df.parse(dateString);
-                if (date != null) {
-                	request.setAttribute("date", new DateTime(date));   	
-                }              
-            } catch (ParseException e) {
-                log.warn("Invalid date string supplied: " + dateString);
-            }        	
-        }
                 
 	    log.info("Looking for edit tags");
         Pattern pattern = Pattern.compile("^/edit/tag/(.*)$");

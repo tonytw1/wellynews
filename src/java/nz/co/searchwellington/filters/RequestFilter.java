@@ -36,14 +36,7 @@ public class RequestFilter {
                request.setAttribute("tag", tag);            
         }
           
-        // TODO move to a spring controller binding and depricate the publisher id on get.
-        if (request.getParameter("publisher") != null) {
-            final int publisherID = Integer.parseInt(request.getParameter("publisher"));
-            if (publisherID > 0) {
-                Resource publisher = resourceDAO.loadResourceById(publisherID);
-                request.setAttribute("publisher", publisher);
-            }
-        }
+        
         if (request.getParameter("item") != null) {
             Integer item = Integer.parseInt(request.getParameter("item"));
             request.setAttribute("item", item);            
