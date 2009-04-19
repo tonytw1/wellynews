@@ -11,6 +11,7 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
@@ -19,6 +20,7 @@ import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.statistics.StatsTracking;
 
 import org.apache.log4j.Logger;
+import org.htmlparser.util.FeedbackManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -101,7 +103,7 @@ public class ViewfeedController extends BaseMultiActionController {
         	mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         	mv.addObject("feed", feed);
         	
-            List<Resource> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
+            List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
             if (feedNewsitems != null && feedNewsitems.size() > 0) {
                 mv.addObject("main_content", feedNewsitems);
             } else {

@@ -10,6 +10,8 @@ import java.util.List;
 import nz.co.searchwellington.feeds.rss.RssFeedDAO;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -40,17 +42,20 @@ public class RssfeedNewsitemService {
     }
 
     
-    public List<Resource> getFeedNewsitems(Feed feed) throws IllegalArgumentException, IOException {
-        List<Resource> feedNewsitems = new ArrayList<Resource>();
+    public List<FeedNewsitem> getFeedNewsitems(Feed feed) throws IllegalArgumentException, IOException {
+        List<FeedNewsitem> feedNewsitems = new ArrayList<FeedNewsitem>();
 
         SyndFeed syndfeed = rssFeedDAO.getFeedByUrl(feed.getUrl());
         if (syndfeed != null) {
             List entires = syndfeed.getEntries();
+            int itemNumber = 1;
             for (Iterator iter = entires.iterator(); iter.hasNext();) {
                 SyndEntry item = (SyndEntry) iter.next();
-                Resource feedItem = extractNewsitemFromFeedEntire(feed, item);                
+                FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);
+                feedItem.setItemNumber(itemNumber);
                 trimExcessivelyLongBodies(feedItem);
                 feedNewsitems.add(feedItem);
+                itemNumber++;
             }
         } else {
             log.error("Feed was null after loading attempt; returning empty list.");
@@ -61,7 +66,7 @@ public class RssfeedNewsitemService {
 
     public Date getLatestPublicationDate(Feed feed) throws IllegalArgumentException, IOException {
         Date latestPublicationDate = null;
-        List<Resource> feeditems = getFeedNewsitems(feed);
+        List<FeedNewsitem> feeditems = getFeedNewsitems(feed);
         for (Resource resource : feeditems) {
             if (resource.getDate() != null && (latestPublicationDate == null || resource.getDate().after(latestPublicationDate))) {
                 latestPublicationDate = resource.getDate();           
@@ -71,7 +76,7 @@ public class RssfeedNewsitemService {
     }
 
     
-    private Resource extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
+    private FeedNewsitem extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
         String description = null;
         SyndContent descriptionContent = (SyndContent) item.getDescription();
         
@@ -89,19 +94,28 @@ public class RssfeedNewsitemService {
         if (item.getPublishedDate() != null) {        
             itemDate = item.getPublishedDate();
         }
-        
-        
+                
         String url = item.getLink();
         if (url != null) {
             url = urlCleaner.cleanSubmittedItemUrl(url);
         }
         // TODO This reference should really come from the resourceDAO.
-        Resource feedItem = new NewsitemImpl(0, item.getTitle(), url, description, itemDate, feed.getPublisher(), new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
+        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle(), url, description, itemDate, feed.getPublisher(), new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
         
         log.debug("Date of loaded newsitem is: " + feedItem.getDate());
-        
+        feedItem.setFeed(feed);        
         return feedItem;
     }
+    
+    
+    
+    public Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem) {
+    	Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedNewsitem.getPublisher(), 
+    			feedNewsitem.getTags(), 
+    			new HashSet<DiscoveredFeed>());
+    	return newsitem;
+	}
+    
     
     
     private void trimExcessivelyLongBodies(Resource feedItem) {

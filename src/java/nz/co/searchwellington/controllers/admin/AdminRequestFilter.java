@@ -41,6 +41,13 @@ public class AdminRequestFilter {
 			}
 		}
 		
+		// TODO try catch Test coverage
+	    if (request.getParameter("item") != null) {
+            Integer item = Integer.parseInt(request.getParameter("item"));
+            request.setAttribute("item", item);            
+        }
+        
+		
 		log.info("Looking for date field");
 		if (request.getParameter("date") != null) {
 			final String dateString = (String) request.getParameter("date");

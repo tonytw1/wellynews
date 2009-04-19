@@ -7,7 +7,7 @@
 		
 		<h5><a href="$itemUrl">$item.name</a></h5>
 		<ul>		
-			#if ($item.date && $item.type == "N" && $dateFormatter)
+			#if ($item.date && ($item.type == "N" || $item.type == "FNI") && $dateFormatter)
 				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
 			#end
 				
@@ -125,12 +125,18 @@
 				#end
 				
 				
-				#if ($editPermissionService.canEdit($item)) 
+				#if ($editPermissionService.canEdit($item) && ($item.type != "FNI"))
 					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
 					<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>				
 					<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
 					<li>Http Status: $item.httpStatus</li>
 				#end
+				
+				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))				
+					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemAcceptUrl($item)">accept</a></li>				
+					<li>Http Status: $item.httpStatus</li>
+				#end
+				
 		</ul>				
 	</li>
 					

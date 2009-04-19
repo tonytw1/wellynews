@@ -16,11 +16,14 @@ import nz.co.searchwellington.feeds.rss.RssPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.mail.Notifier;
+import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Supression;
@@ -139,12 +142,12 @@ public class ResourceEditController extends BaseTagEditingController {
         if (request.getAttribute("feedAttribute") != null) {
             Feed feed = (Feed) request.getAttribute("feedAttribute");
             
-            List <Resource> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+            List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
             
             if (request.getParameter("item") != null) {
                 int item = (Integer) request.getAttribute("item");
                 if (item > 0 && item <= feednewsItems.size()) {
-                    final Newsitem feednewsitem = (Newsitem) feednewsItems.get(item-1);
+                    final Newsitem feednewsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsItems.get(item-1));
                     
                     feednewsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
                     
@@ -167,7 +170,11 @@ public class ResourceEditController extends BaseTagEditingController {
     
    
  
-    private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
+    
+
+
+
+	private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (loggedInUser == null) {
             modelAndView.addObject("spam_question", "The capital of New Zealand is (10 letters)");

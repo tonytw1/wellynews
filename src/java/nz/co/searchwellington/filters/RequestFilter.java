@@ -35,14 +35,7 @@ public class RequestFilter {
             Tag tag = resourceDAO.loadTagByName(tagName);             
                request.setAttribute("tag", tag);            
         }
-          
         
-        if (request.getParameter("item") != null) {
-            Integer item = Integer.parseInt(request.getParameter("item"));
-            request.setAttribute("item", item);            
-        }
-        
-                
         if (request.getPathInfo().matches("^/archive/.*/.*$")) {            
             Date monthFromPath = getArchiveDateFromPath(request.getPathInfo());
             if (monthFromPath != null) {

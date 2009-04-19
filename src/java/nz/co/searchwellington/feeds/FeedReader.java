@@ -8,6 +8,7 @@ import java.util.Set;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -78,13 +79,13 @@ public class FeedReader {
         // TODO can this move the the enum?
         boolean canAcceptFromFeed =  feed.getAcceptancePolicy() != null && feed.getAcceptancePolicy().equals("accept") || feed.getAcceptancePolicy().equals("accept_without_dates");
         if (canAcceptFromFeed) {
-            List<Resource> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
+            List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
         
-            for (Resource resource : feedNewsitems) {
-                resource.setUrl(urlCleaner.cleanSubmittedItemUrl(resource.getUrl()));
-                boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(resource, feed.getAcceptancePolicy()).size() == 0;
+            for (FeedNewsitem feednewsitem : feedNewsitems) {
+                feednewsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
+                boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
                 if (acceptThisItem) {
-                    acceptFeedItem(resource, feed.getTags());
+                    acceptFeedItem(feednewsitem, feed.getTags());
                 }
             }
     
@@ -103,8 +104,9 @@ public class FeedReader {
 
 
 
-    private void acceptFeedItem(Resource resource, Set<Tag> feedTags) {
-        log.info("Accepting: " + resource.getName());                        
+    private void acceptFeedItem(FeedNewsitem feeditem, Set<Tag> feedTags) {
+        log.info("Accepting: " + feeditem.getName());                        
+        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem);
         
         flattenLoudCapsInTitle(resource);
         

@@ -24,6 +24,7 @@ import nz.co.searchwellington.htmlparsing.LinkExtractor;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
@@ -127,7 +128,7 @@ public class LinkChecker {
     private void updateLatestFeedItem(Feed checkResource) {
         log.debug("Resource is a feed; checking for latest item publication date.");
         try {                          
-            List <Resource> feeditems = rssfeedNewsitemService.getFeedNewsitems(checkResource);
+            List <FeedNewsitem> feeditems = rssfeedNewsitemService.getFeedNewsitems(checkResource);
             log.debug("Feed has " + feeditems.size() + " items.");
             
             Date latestPublicationDate = rssfeedNewsitemService.getLatestPublicationDate(checkResource);                              
