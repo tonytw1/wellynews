@@ -17,10 +17,8 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
-import nz.co.searchwellington.statistics.StatsTracking;
 
 import org.apache.log4j.Logger;
-import org.htmlparser.util.FeedbackManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -98,7 +96,6 @@ public class ViewfeedController extends BaseMultiActionController {
         	ModelAndView mv = new ModelAndView();
         	urlStack.setUrlStack(request);
         	User loggedInUser =  loggedInUserFilter.getLoggedInUser();
-        	StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         	
         	mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         	mv.addObject("feed", feed);

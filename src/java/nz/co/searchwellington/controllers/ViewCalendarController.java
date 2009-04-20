@@ -16,14 +16,12 @@ import nz.co.searchwellington.repositories.CalendarFeedDAO;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.statistics.StatsTracking;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
-import com.sun.tools.doclets.formats.html.AllClassesFrameWriter;
 
 
 
@@ -54,8 +52,7 @@ public class ViewCalendarController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
 
         urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());                
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();                     
         mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         
         requestFilter.loadAttributesOntoRequest(request);

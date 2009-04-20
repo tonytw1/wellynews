@@ -15,7 +15,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.statistics.StatsTracking;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -162,7 +161,6 @@ public class BrowseController extends BaseMultiActionController {
     private User populateLocalCommon(HttpServletRequest request, ModelAndView mv) {
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
         populateArchiveLinks(mv, loggedInUser, resourceDAO.getArchiveMonths());      

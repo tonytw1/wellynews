@@ -12,7 +12,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.statistics.StatsTracking;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.queryParser.ParseException;
@@ -42,7 +41,6 @@ public class SearchController extends BaseMultiActionController {
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         boolean showBroken = loggedInUser != null;
         populateAds(request, mv, showBroken);

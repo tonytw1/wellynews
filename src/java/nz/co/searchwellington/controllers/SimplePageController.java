@@ -18,7 +18,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.statistics.StatsTracking;
 import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
@@ -327,7 +326,6 @@ public class SimplePageController extends BaseMultiActionController {
 
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         
         mv.addObject("heading", "News Watchlist");
         mv.addObject("main_content", resourceDAO.getAllWatchlists());

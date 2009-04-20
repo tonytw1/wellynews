@@ -19,7 +19,6 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.statistics.StatsTracking;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,9 +60,7 @@ public class IndexController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
-        populateAds(request, mv, showBroken);
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
-               
+        populateAds(request, mv, showBroken);    
         populateSecondaryJustin(mv, loggedInUser);               
      
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
