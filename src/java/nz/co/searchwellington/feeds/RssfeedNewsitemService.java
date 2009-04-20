@@ -111,7 +111,7 @@ public class RssfeedNewsitemService {
     
     public Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem) {
     	Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedNewsitem.getPublisher(), 
-    			feedNewsitem.getTags(), 
+    			new HashSet<Tag>(), 
     			new HashSet<DiscoveredFeed>());
     	return newsitem;
 	}

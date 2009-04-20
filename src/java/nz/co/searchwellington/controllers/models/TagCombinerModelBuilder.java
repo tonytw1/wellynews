@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;

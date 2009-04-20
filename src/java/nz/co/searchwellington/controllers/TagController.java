@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -25,19 +24,16 @@ public class TagController extends BaseMultiActionController {
     private ContentModelBuilderService contentModelBuilder;
 
 
-
     public TagController(ResourceRepository resourceDAO, 
     		RequestFilter requestFilter, 
     		LoggedInUserFilter loggedInUserFilter,
-    		UrlStack urlStack, 
-    		ConfigRepository configDAO,    		   		
+    		UrlStack urlStack,  		   		
     		ContentModelBuilderService contentModelBuilder
     		) {
         this.resourceDAO = resourceDAO;    
         this.requestFilter = requestFilter;
         this.loggedInUserFilter = loggedInUserFilter;
-        this.urlStack = urlStack;
-        this.configDAO = configDAO;           
+        this.urlStack = urlStack;               
         this.contentModelBuilder = contentModelBuilder;        
     }
     
@@ -50,6 +46,7 @@ public class TagController extends BaseMultiActionController {
         
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {
+			urlStack.setUrlStack(request);
 			addCommonModelElements(mv, showBroken);
 			return mv;
 		}

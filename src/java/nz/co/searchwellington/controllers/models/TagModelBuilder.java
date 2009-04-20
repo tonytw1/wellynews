@@ -90,10 +90,7 @@ public class TagModelBuilder implements ModelBuilder {
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (FeedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
+		} 	
 		populateTagFlickrPool(mv, tag);
 	}
  	
@@ -154,8 +151,8 @@ public class TagModelBuilder implements ModelBuilder {
     }
 	
     
-    private void populateRelatedFeed(ModelAndView mv, Tag tag) throws IllegalArgumentException, IOException, FeedException {       
-        Feed relatedFeed = tag.getRelatedFeed(); 
+    private void populateRelatedFeed(ModelAndView mv, Tag tag) throws IllegalArgumentException, IOException {       
+        Feed relatedFeed = tag.getRelatedFeed();
         if (relatedFeed != null) {
             log.info("Related feed is: " + relatedFeed.getName());
             List<FeedNewsitem> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);
