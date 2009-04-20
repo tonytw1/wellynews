@@ -10,11 +10,16 @@ import org.apache.log4j.Logger;
 public class PublisherNewsitemCountService {
 	
 	Logger log = Logger.getLogger(PublisherNewsitemCountService.class);
-	  
-	// TODO make count showBroken conditional based on loggedInUserFilter.
+
+	private LoggedInUserFilter loggedInFilter;
+	
+	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter) {
+		this.loggedInFilter = loggedInFilter;
+	}
+
 	public int getNewsitemCount(Website publisher) {
 		int count = publisher.getNewsitems().size();
-		boolean showBroken = false;
+		boolean showBroken = loggedInFilter.getLoggedInUser() != null;
 		if (!showBroken && count > 0) {
 			log.info("Manually counting " + count + " ok newsitems for publisher: " + publisher.getName());
 			count = 0;
@@ -22,8 +27,7 @@ public class PublisherNewsitemCountService {
 				if (newsitem.getHttpStatus() == HttpServletResponse.SC_OK) {
 					count++;
 				}
-			}
-			
+			}			
 		}
 		return count;
 	}
