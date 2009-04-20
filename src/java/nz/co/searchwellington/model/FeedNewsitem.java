@@ -7,6 +7,7 @@ public class FeedNewsitem extends NewsitemImpl {
 
 	private Feed feed;
 	private int itemNumber;
+	private Resource localCopy;
 
     public FeedNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds) {       
         this.id = id;
@@ -38,6 +39,14 @@ public class FeedNewsitem extends NewsitemImpl {
 
 	public void setItemNumber(int itemNumber) {
 		this.itemNumber = itemNumber;
+	}
+
+	public Resource getLocalCopy() {
+		return localCopy;
+	}
+
+	public void setLocalCopy(Resource localCopy) {
+		this.localCopy = localCopy;
 	}
 	
 }

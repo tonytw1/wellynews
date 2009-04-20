@@ -83,6 +83,7 @@ public class TagModelBuilder implements ModelBuilder {
 			mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
 			populateRelatedFeed(mv, tag);
 			populateGeocoded(mv, showBroken, tag);
+								
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

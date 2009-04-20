@@ -104,6 +104,16 @@ public class ViewfeedController extends BaseMultiActionController {
         	mv.addObject("feed", feed);
         	
             List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
+            for (FeedNewsitem feedNewsitem : feedNewsitems) {
+				if (feedNewsitem.getUrl() != null) {
+					Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
+					if (localCopy != null) {
+						feedNewsitem.setLocalCopy(localCopy);
+					}
+				}
+			}
+            
+            
             if (feedNewsitems != null && feedNewsitems.size() > 0) {
                 mv.addObject("main_content", feedNewsitems);
             } else {

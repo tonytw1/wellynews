@@ -51,7 +51,7 @@ public class RssfeedNewsitemService {
             int itemNumber = 1;
             for (Iterator iter = entires.iterator(); iter.hasNext();) {
                 SyndEntry item = (SyndEntry) iter.next();
-                FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);
+                FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
                 feedItem.setItemNumber(itemNumber);
                 trimExcessivelyLongBodies(feedItem);
                 feedNewsitems.add(feedItem);

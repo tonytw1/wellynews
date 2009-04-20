@@ -121,7 +121,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		
 	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />
 
-
+	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" />
 	
 	
 	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
@@ -155,8 +155,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<entry key="contentDeduper" value-ref="contentDeduper" />
 				<entry key="editPermissionService" value-ref="editPermissionService" />
 				<entry key="loggedInUserFilter" value-ref="loggedInUserFilter" />
+				<entry key="publisherNewsitemCountService"  value-ref="publisherNewsitemCountService" />
 			</map>
-		</property>  		
+		</property> 
 	</bean>
 	
 	

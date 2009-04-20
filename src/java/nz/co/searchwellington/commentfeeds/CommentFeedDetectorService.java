@@ -18,7 +18,7 @@ public class CommentFeedDetectorService {
 
 	
 	public boolean isCommentFeedUrl(String url) {
-		log.info("Checking is comment feed url: " + url);
+		log.debug("Checking is comment feed url: " + url);
         for (CommentFeedDetector detector : detectors) {
             if (detector.isValid(url)) {
                 return true;

@@ -47,9 +47,10 @@
 				
 			
 			#if ($item.type == 'W') 
-				#if ($item.newsitems && $item.newsitems.size() > 0) 
+				#set ($newsitemCount = $publisherNewsitemCountService.getNewsitemCount($item))
+				#if ($newsitemCount> 0) 
 					<li><a href="$site_information.url/$item.urlWords">
-					#showItemCount($item.newsitems.size() "newsitem")	
+					#showItemCount($newsitemCount "newsitem")	
 					</a></li>
 				#end
 				
@@ -132,7 +133,10 @@
 					<li>Http Status: $item.httpStatus</li>
 				#end
 				
-				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))				
+				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))			
+					#if ($item.localCopy) 
+						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.getLocalCopy())">edit local copy</a></li>
+					#end				
 					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemAcceptUrl($item)">accept</a></li>				
 					<li>Http Status: $item.httpStatus</li>
 				#end

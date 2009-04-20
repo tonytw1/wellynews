@@ -14,7 +14,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.statistics.StatsTracking;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -53,20 +52,18 @@ public class RssfeedsController extends BaseMultiActionController {
     public ModelAndView rssfeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("Starting rssfeeds.");
         ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
+        requestFilter.loadAttributesOntoRequest(request);
         
         Website publisher = null;
         Tag tag = null;
         
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        StatsTracking.setRecordPageImpression(mv, configDAO.getStatsTracking());
         boolean showBroken = loggedInUser != null;
-                
-        requestFilter.loadAttributesOntoRequest(request);
+        
         
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());        
-      
-        
         mv.getModel().put("description", "Local newsitems and RSS feeds from " + siteInformation.getAreaname() + " based organisations.");
 
         
@@ -120,7 +117,7 @@ public class RssfeedsController extends BaseMultiActionController {
 
 
     private void populateDiscoveredFeeds(ModelAndView mv) {
-        mv.addObject("discovered_feeds", discoveredFeedsRepository);
+        mv.addObject("discovered_feeds", discoveredFeedsRepository.getAllNonCommentDiscoveredFeeds());
         mv.addObject("discovered_feeds_moreurl", "feeds/discovered");
     }
 
