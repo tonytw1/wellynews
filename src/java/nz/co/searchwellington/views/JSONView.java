@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
+import nz.co.searchwellington.model.PublishedResourceImpl;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.RssFeedable;
 
 import org.springframework.web.servlet.View;
@@ -23,35 +25,36 @@ import com.thoughtworks.xstream.io.json.JsonWriter;
 public class JSONView  implements View{
 
 	public String getContentType() {
-		// TODO Auto-generated method stub
-		return null;
+		return "text/plain";
 	}
 
+	@SuppressWarnings("unchecked")
 	public void render(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
         List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");        
 		res.setContentType("text/plain");
 		res.setCharacterEncoding("UTF-8");
-	   
+	   		
 		XStream xstream = new XStream(new JettisonMappedXmlDriver() {
 		    public HierarchicalStreamWriter createWriter(Writer writer) {
 		        return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE);
 		    }
 		});
 		
-		xstream.setMode(XStream.NO_REFERENCES);
-		xstream.alias("newitem", NewsitemImpl.class);
+		xstream.omitField(ResourceImpl.class, "id");
+		xstream.omitField(ResourceImpl.class, "httpStatus");
+		xstream.omitField(ResourceImpl.class, "lastScanned");
+		xstream.omitField(ResourceImpl.class, "lastChanged");
+		xstream.omitField(ResourceImpl.class, "tags");		
+		xstream.omitField(ResourceImpl.class, "technoratiCount");
+		xstream.omitField(ResourceImpl.class, "discoveredFeeds");
+		xstream.omitField(ResourceImpl.class, "liveTime");
 
-		List<Resource> items = new ArrayList<Resource>();		  
-		for (RssFeedable item : mainContent) {			
-			Newsitem jsonNewsitem = new NewsitemImpl();
-			jsonNewsitem.setName(item.getRssItem().getTitle());
-			jsonNewsitem.setUrl(item.getRssItem().getLink());
-			jsonNewsitem.setDate(item.getRssItem().getPublishedDate());
-			jsonNewsitem.setDescription(item.getRssItem().getDescription().getValue());
-			items.add(jsonNewsitem);		  
-		}
-		  
-		res.getOutputStream().print(xstream.toXML(items));        
+		xstream.omitField(PublishedResourceImpl.class, "publisher");		
+		xstream.omitField(NewsitemImpl.class, "commentFeed");
+			
+		JSONBucket bucket = new JSONBucket();
+		bucket.setNewsitems(mainContent);
+		res.getOutputStream().print(xstream.toXML(bucket));        
 		res.getOutputStream().flush();		
 	}
 

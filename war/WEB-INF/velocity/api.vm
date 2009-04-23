@@ -24,14 +24,17 @@
 <center>
 <img src="/images/wordel.png" width="520">
 </center>
+<br />
+Word cloud by <a href="http://www.wordle.net/">Wordle</a>
 
-<p>Lately it seems that all of the big kids have been releasing content APIs.
+<p>A number of large news organisations have begun to provide <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
+These services allow content to be queried programmatically and easierly used in mash ups.</p>
+
 <p>The Wellynews API lets you do something simular with local newsitems.</p>
 
-<p>The API allows indexed newsitems to be extracted programatically in RSS or JSON formats.</p>
+<p>The API allows indexed newsitems to be extracted in RSS or JSON (Javascript) formats.</p>
 
 <p>Queries are specficed by manipulating the urls.</p>
-
 
 
 <h3>Supported Queries</h3>
@@ -48,7 +51,9 @@
 <p>ie. All newsitems tagged with soccer.</p>
 
 	<ul>
-	<li><code>$site_information.url/soccer/rss</code></li>
+	<li><code>
+	<a href="$site_information.url/soccer/rss">$site_information.url/soccer/rss</a>
+	</code></li>
 	</ul>
 
 
@@ -63,7 +68,9 @@
 <p>ie. newsitems published by the Capital Times:</p>
 
 	<ul>
-	<li><code>$site_information.url/capital-times/rss</code></li>
+	<li><code>
+	<a href="$site_information.url/capital-times/rss">$site_information.url/capital-times/rss</a>	
+	</code></li>
 	</ul>
 
 <p><b>Combinations</b></p>
@@ -79,8 +86,15 @@ ie. newsitems tagged with transport and consultation and Wellington City Council
 </p>
 
 	<ul>
-	<li><code>$site_information.url/transport+consultation/rss</code></li>
-	<li><code>$site_information.url/wellington-city-council+indoorsportcentre/rss</code></li>
+	<li><code>
+	<a href="$site_information.url/transport+consultation/rss">$site_information.url/transport+consultation/rss</a>
+	</code></li>
+
+	<li><code>
+		<a href="$site_information.url/wellington-city-council+indoorsportcentre/rss">
+		$site_information.url/wellington-city-council+indoorsportcentre/rss</a>
+		</code>
+	</li>
 	</ul>
 
 <p>The combination url scheme was shameless inspired by the Guardians' tag combiners.</p>
@@ -134,35 +148,6 @@ the url. A complete list of available tag and publisher url snippets is shown be
 	#end
 </table>	
 
-
-
-
-<pre>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script>
-  $(document).ready(function(){
-  $.getJSON("http://localhost:8080/springapp/transport+newtown/rss",
-     function(data) {
-        $.each(data, function(i,item) {
-            $("<li><a href=\"" + item.url + "\">" + item.name + "</a></li>").appendTo("#newsitems");
-            if ( i == 2 ) return false;
-        });
-     });
-  });
-</script>
-</head>
-<body>
-  <div id="newsitems">
-  </div>
-</body>
-</html>
-
-
-
-</pre>
 
 
 </div>
