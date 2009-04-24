@@ -52,7 +52,9 @@ public class JSONView  implements View{
 
 		xstream.omitField(PublishedResourceImpl.class, "publisher");		
 		xstream.omitField(NewsitemImpl.class, "commentFeed");
-			
+		
+		xstream.alias("date", java.sql.Date.class);
+		
 		JSONBucket bucket = new JSONBucket();
 		bucket.setNewsitems(mainContent);
 		res.getOutputStream().print(xstream.toXML(bucket));        
