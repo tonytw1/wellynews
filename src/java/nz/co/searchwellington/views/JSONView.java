@@ -1,23 +1,21 @@
 package nz.co.searchwellington.views;
 
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.PublishedResourceImpl;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.RssFeedable;
 
 import org.springframework.web.servlet.View;
 
 import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.converters.SingleValueConverter;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import com.thoughtworks.xstream.io.json.JsonWriter;
@@ -39,6 +37,9 @@ public class JSONView  implements View{
 		        return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE);
 		    }
 		});
+		
+		SingleValueConverter resourceDateConverter = new ResourceDateConvertor();
+		xstream.registerLocalConverter(ResourceImpl.class, "date", resourceDateConverter);
 		
 		xstream.omitField(ResourceImpl.class, "id");
 		xstream.omitField(ResourceImpl.class, "httpStatus");
