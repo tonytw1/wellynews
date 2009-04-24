@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -24,11 +25,13 @@ public class GoogleSitemapService {
     private static final String NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9";
     private ResourceRepository resourceDAO;
     private DateFormatter dateFormatter;
+    private UrlBuilder urlBuilder;
     
 
-    public GoogleSitemapService(ResourceRepository resourceDAO, DateFormatter dateFormatter) {        
+    public GoogleSitemapService(ResourceRepository resourceDAO, DateFormatter dateFormatter, UrlBuilder urlBuilder) {        
         this.resourceDAO = resourceDAO;
         this.dateFormatter = dateFormatter;
+        this.urlBuilder = urlBuilder;
     }
     
     
@@ -48,7 +51,7 @@ public class GoogleSitemapService {
         tagElement.addNamespace("sitemap", NAMESPACE);
         
         Element locElement = tagElement.addElement(new QName("loc", new Namespace("sitemap", NAMESPACE)));
-        locElement.setText(siteLocation + "/tag/" + tag.getName());        
+        locElement.setText(urlBuilder.getTagUrl(tag));
         try {
             Date lastUpdated = resourceDAO.getLastLiveTimeForTag(tag);
             if (lastUpdated != null) {

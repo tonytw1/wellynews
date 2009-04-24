@@ -316,7 +316,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="sitemapService" class="nz.co.searchwellington.sitemap.GoogleSitemapService">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="dateFormatter" />	
+		<constructor-arg ref="dateFormatter" />
+		<constructor-arg ref="urlBuilder" />
 	</bean>
 	
 	

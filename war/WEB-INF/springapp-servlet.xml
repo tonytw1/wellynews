@@ -524,9 +524,8 @@
 	<bean id="sitemapController" class="nz.co.searchwellington.controllers.SitemapController">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="siteInformation" />
-			<constructor-arg ref="sitemapService" />
-		
-		
+		<constructor-arg ref="sitemapService" />
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
