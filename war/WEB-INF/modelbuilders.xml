@@ -41,10 +41,17 @@
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
 	</bean>
+	
+	<bean id="viewfeedModelBuilder" class="nz.co.searchwellington.controllers.models.ViewFeedModelBuilder">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="rssfeedNewsitemService" />
+	</bean>
+	
 
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
 		<constructor-arg>
 			<list>
+				<ref bean="viewfeedModelBuilder" />
 				<ref bean="publisherModelBuilder" />
 				<ref bean="publisherTagCombinerModelBuilder" />
 				<ref bean="TagCommentModelBuilder" />

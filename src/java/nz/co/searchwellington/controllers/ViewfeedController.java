@@ -1,19 +1,15 @@
 package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.feeds.FeedReader;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssPrefetcher;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
@@ -30,7 +26,7 @@ public class ViewfeedController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ViewfeedController.class);
     
-    private RequestFilter requestFilter;
+    private AdminRequestFilter requestFilter;
     private LoggedInUserFilter loggedInUserFilter;
     private RssfeedNewsitemService rssfeedNewsitemService;
     private SupressionRepository supressionDAO;
@@ -39,7 +35,7 @@ public class ViewfeedController extends BaseMultiActionController {
     private UrlBuilder urlBuilder;
     
     
-    public ViewfeedController(ResourceRepository resourceDAO, RequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, RssfeedNewsitemService rssfeedNewsitemService, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
+    public ViewfeedController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, RssfeedNewsitemService rssfeedNewsitemService, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.loggedInUserFilter = loggedInUserFilter;
@@ -83,50 +79,7 @@ public class ViewfeedController extends BaseMultiActionController {
     }
     
     
-    @Transactional
-    public ModelAndView viewfeed(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-    	requestFilter.loadAttributesOntoRequest(request);
-    	loggedInUserFilter.loadLoggedInUser(request);
-    	
-        Feed feed = null;
-        if (request.getAttribute("feedAttribute") != null) {
-            feed = (Feed) request.getAttribute("feedAttribute");
-        }
-        if (feed != null) {                       
-        	ModelAndView mv = new ModelAndView();
-        	urlStack.setUrlStack(request);
-        	User loggedInUser =  loggedInUserFilter.getLoggedInUser();
-        	
-        	mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
-        	mv.addObject("feed", feed);
-        	
-            List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
-            for (FeedNewsitem feedNewsitem : feedNewsitems) {
-				if (feedNewsitem.getUrl() != null) {
-					Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
-					if (localCopy != null) {
-						feedNewsitem.setLocalCopy(localCopy);
-					}
-				}
-			}
-            
-            
-            if (feedNewsitems != null && feedNewsitems.size() > 0) {
-                mv.addObject("main_content", feedNewsitems);
-            } else {
-              log.warn("No newsitems were loaded from feed: " + feed.getName());
-            }
-            
-            setRss(mv, feed.getName(), feed.getUrl());
-            populateSecondaryFeeds(mv, loggedInUser);
-            mv.setViewName("viewfeed");
-            return mv;            
-        }
-        
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        return null;
-    }
-
+   
     
     private void decacheFeed(Feed feed) {
     	rssPrefetcher.decacheAndLoad(feed.getUrl());

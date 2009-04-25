@@ -278,7 +278,7 @@
 
 	<bean id="viewfeedController" class="nz.co.searchwellington.controllers.ViewfeedController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="rssfeedNewsitemService" />
 		<constructor-arg ref="urlStack" />
@@ -294,7 +294,6 @@
 					<props>
 						<prop key="/viewfeed/decache">decachefeed</prop>
 						<prop key="/viewfeed/read">readfeed</prop>						
-						<prop key="/viewfeed/*">viewfeed</prop>
 					</props>
 				</property>
 			</bean>		
@@ -369,7 +368,8 @@
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
-					<props>						
+					<props>
+						<prop key="/viewfeed/*">normal</prop>						
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
 						<prop key="/*">normal</prop>						
@@ -588,8 +588,7 @@
 				<prop key="/search">searchController</prop>
 				
 				<prop key="/viewcalendar">viewCalendarController</prop>
-				
-				<prop key="/viewfeed/*">viewfeedController</prop>
+								
 				<prop key="/viewfeed/decache">viewfeedController</prop>	
 				<prop key="/viewfeed/read">viewfeedController</prop>
 				
@@ -640,6 +639,7 @@
 				<prop key="/*/comment">tagController</prop>
 				<prop key="/*/geotagged">tagController</prop>
 				<prop key="/geotagged/*">tagController</prop>
+				<prop key="/viewfeed/*">tagController</prop>
 				<prop key="/*">tagController</prop>
 				
             </props>
