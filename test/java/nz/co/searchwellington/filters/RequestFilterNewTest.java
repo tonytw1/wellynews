@@ -31,7 +31,7 @@ public class RequestFilterNewTest extends TestCase {
 		stub(resourceDAO.loadTagByName("transport")).toReturn(transportTag);
 		stub(resourceDAO.loadTagByName("soccer")).toReturn(soccerTag);
 		stub(resourceDAO.getPublisherByUrlWords("capital-times")).toReturn(capitalTimesPublisher);
-		stub(resourceDAO.loadResourceById(123)).toReturn(feed);
+		stub(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).toReturn(feed);
 		filter = new RequestFilter(resourceDAO);
 	 }
 	
@@ -45,10 +45,10 @@ public class RequestFilterNewTest extends TestCase {
 		
 	public void testShouldPopulateFeedFromRequestParameter() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/viewfeed");
-		 request.setParameter("feed", "123");
+		 request.setPathInfo("/viewfeed/tranz-metro-delays");
+		 
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadResourceById(123);
+		 verify(resourceDAO).loadFeedByUrlWords("tranz-metro-delays");
 		 assertNotNull(request.getAttribute("feedAttribute"));
 		 assertEquals(feed, request.getAttribute("feedAttribute"));
 		 verifyNoMoreInteractions(resourceDAO);		 

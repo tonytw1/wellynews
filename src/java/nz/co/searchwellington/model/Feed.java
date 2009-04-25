@@ -17,4 +17,5 @@ public interface Feed extends PublishedResource {
 
     public void setLastRead(Date lastRead);
         
+    public String getUrlWords();
 }

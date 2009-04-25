@@ -57,7 +57,7 @@
 				#if ($item.feeds && $item.feeds.size() > 0) 
 					#if($item.feeds.size() == 1)
 						#set ($feed = $item.feeds.iterator().next())					
-						<li><a href="${site_information.url}/viewfeed?feed=$feed.id">1 feed</a></li>
+						<li><a href="$urlBuilder.getFeedUrl($feed)">1 feed</a></li>
 					#else
 						<li><a href="$site_information.url/$item.urlWords/feeds">#showItemCount($item.feeds.size() "feed")</a></li>
 					#end

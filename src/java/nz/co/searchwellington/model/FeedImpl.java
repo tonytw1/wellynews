@@ -60,8 +60,21 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
         this.lastRead = lastRead;
     }
 
+    // TODO pullup and share with WebsiteImpl
+	public String getUrlWords() {		
+		String urlWords = new String(getName());		
+		return urlWords.
+			replaceAll("\\(.*?\\)", "").
+			trim().
+			replaceAll(" ", "-").
+			replaceAll("\\s", "").
+			replaceAll("[^\\w-]","").
+			replaceAll("-+", "-").
+			toLowerCase();
+	}
+	
 
-  
     
-        
+
+      
 }

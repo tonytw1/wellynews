@@ -751,6 +751,17 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 		}		
 		return null;
 	}
+
+
+	public Feed loadFeedByUrlWords(String urlWords) {
+		List<Feed> feeds = getAllFeeds();
+		for (Feed feed : feeds) {
+			if (feed.getUrlWords().equals(urlWords)) {
+				return feed;				
+			}
+		}		
+		return null;
+	}
 	
 	
 	

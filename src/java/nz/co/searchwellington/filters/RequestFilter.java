@@ -46,20 +46,12 @@ public class RequestFilter {
         }
                 
         
-		if (request.getPathInfo().startsWith("/viewfeed") && request.getParameter("feed") != null) {
-			final String feedParameter = request.getParameter("feed");
-        	try {
-        		final int feedID = Integer.parseInt(feedParameter);
-        		if (feedID > 0) {
-        			Resource feed = resourceDAO.loadResourceById(feedID);
-        			if (feed != null) {                	
-        				log.debug("Loaded feed object of id: " + feed.getId() + ", type: " + feed.getType());
-        				request.setAttribute("feedAttribute", feed);
-        				return;
-        			}
-        		}
-        	} catch (NumberFormatException e) {
-        		log.debug("Invalid feed id given: " + feedParameter);
+		if (request.getPathInfo().matches("^/viewfeed/.*$")) {			
+			String feedUrlWords = request.getPathInfo().split("/")[2];			
+        	Resource feed = resourceDAO.loadFeedByUrlWords(feedUrlWords);
+        	if (feed != null) {
+        		request.setAttribute("feedAttribute", feed);
+        		return;
         	}
         }
         

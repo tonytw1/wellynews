@@ -129,4 +129,5 @@ public interface ResourceRepository {
 	public List<Resource> getResourcesWithTag(Tag tag);
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) throws IOException;
+	public Feed loadFeedByUrlWords(String string);
 }

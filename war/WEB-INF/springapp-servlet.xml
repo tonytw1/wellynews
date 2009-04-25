@@ -294,7 +294,7 @@
 					<props>
 						<prop key="/viewfeed/decache">decachefeed</prop>
 						<prop key="/viewfeed/read">readfeed</prop>						
-						<prop key="/viewfeed/">viewfeed</prop>
+						<prop key="/viewfeed/*">viewfeed</prop>
 					</props>
 				</property>
 			</bean>		
@@ -589,7 +589,7 @@
 				
 				<prop key="/viewcalendar">viewCalendarController</prop>
 				
-				<prop key="/viewfeed">viewfeedController</prop>
+				<prop key="/viewfeed/*">viewfeedController</prop>
 				<prop key="/viewfeed/decache">viewfeedController</prop>	
 				<prop key="/viewfeed/read">viewfeedController</prop>
 				

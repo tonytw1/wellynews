@@ -65,4 +65,9 @@ public class FeedWrapper extends ResourceWrapper implements Feed {
     public void setPublisher(Website publisher) {            
     }
 
+	public String getUrlWords() {
+		return resource.getUrlWords();
+	}
+
+    
 }
