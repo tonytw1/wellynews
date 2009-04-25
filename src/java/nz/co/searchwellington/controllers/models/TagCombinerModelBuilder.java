@@ -84,8 +84,13 @@ public class TagCombinerModelBuilder implements ModelBuilder {
 		if (taggedNewsitems.size() > 0) { 
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
 		}
-			                            
-		mv.setViewName("tag");
+
+		boolean isOneContentType = taggedNewsitems.size() == 0 || taggedWebsites.size() == 0;
+		if (isOneContentType) {
+			mv.setViewName("tagCombinedOneContentType");
+		} else {
+			mv.setViewName("tag");			
+		}
 		return mv;
 	}
 	
