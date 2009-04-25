@@ -91,8 +91,8 @@ ie. newsitems tagged with transport and consultation and Wellington City Council
 	</code></li>
 
 	<li><code>
-		<a href="$site_information.url/wellington-city-council+indoorsportcentre/rss">
-		$site_information.url/wellington-city-council+indoorsportcentre/rss</a>
+		<a href="$site_information.url/wellington-city-council+indoorsportscentre/rss">
+		$site_information.url/wellington-city-council+indoorsportscentre/rss</a>
 		</code>
 	</li>
 	</ul>

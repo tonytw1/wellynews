@@ -66,8 +66,12 @@ public class RssController extends MultiActionController {
     	log.info("Building content rss");
     	 requestFilter.loadAttributesOntoRequest(request);  
          ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-         mv.setView(new RssView(siteInformation));
-         return mv;
+         if (mv != null) {
+        	 mv.setView(new RssView(siteInformation));
+        	 return mv;
+         }
+         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+         return null;
     }
     
        
