@@ -1,11 +1,11 @@
 #if ($rss_url )
 	#if ($tags && $tags.size() == 2)  
 		<ul>
-			<li>#parse("includes/rss_icon.vm")</li>
+			<li>#rssIcon($rss_url '')</li>
 		</ul>
 	#else
 		<ul>
-			<li>#parse("includes/rss_icon.vm") <a href="$site_information.url/feeds/tag/$tag.name#custom">$tag.displayName.toLowerCase() news feed</a></li>
+			<li>#rssIcon($rss_url "$tag.displayName.toLowerCase() news feed")</li>
 		</ul>
 	#end
 #end

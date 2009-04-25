@@ -1,4 +1,5 @@
 #parse("includes/showitemcount_macro.vm")
+#parse("includes/rss_icon_macro.vm")
 <html>
 <head>
 <title>$heading - Search ${site_information.areaname}</title>

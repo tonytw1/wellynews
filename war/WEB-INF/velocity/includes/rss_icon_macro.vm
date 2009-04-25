@@ -1,0 +1,8 @@
+#macro( rssIcon $rssUrl $rssLinkText )
+	<a href="$rssUrl"><img src="/images/feed-icon-16x16.png" alt="RSS" border="0"></a>
+	#if ($rssLinkText) 
+		<a href="$rssUrl">$rssLinkText</a>
+	#end	
+#end
+
+
