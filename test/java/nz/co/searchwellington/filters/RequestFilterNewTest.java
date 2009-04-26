@@ -45,7 +45,7 @@ public class RequestFilterNewTest extends TestCase {
 		
 	public void testShouldPopulateFeedFromRequestParameter() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/viewfeed/tranz-metro-delays");
+		 request.setPathInfo("/feed/tranz-metro-delays");
 		 
 		 filter.loadAttributesOntoRequest(request);
 		 verify(resourceDAO).loadFeedByUrlWords("tranz-metro-delays");

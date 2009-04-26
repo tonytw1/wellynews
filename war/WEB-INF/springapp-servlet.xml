@@ -369,7 +369,7 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/viewfeed/*">normal</prop>						
+						<prop key="/feed/*">normal</prop>						
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
 						<prop key="/*">normal</prop>						
@@ -639,7 +639,7 @@
 				<prop key="/*/comment">tagController</prop>
 				<prop key="/*/geotagged">tagController</prop>
 				<prop key="/geotagged/*">tagController</prop>
-				<prop key="/viewfeed/*">tagController</prop>
+				<prop key="/feed/*">tagController</prop>
 				<prop key="/*">tagController</prop>
 				
             </props>

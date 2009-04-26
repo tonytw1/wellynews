@@ -134,9 +134,8 @@ public class SimplePageController extends BaseMultiActionController {
         boolean showBroken = loggedInUser != null;        
         mv.addObject("heading", "Wellynews API");
 
-        List<Website> publishers = getAllPublishers(showBroken);
-        
-        mv.addObject("publishers", publishers);
+        mv.addObject("feeds", resourceDAO.getAllFeeds());
+        mv.addObject("publishers", getAllPublishers(showBroken));
         mv.addObject("api_tags", resourceDAO.getTopLevelTags());
         populateSecondaryLatestNewsitems(mv, loggedInUser);        
         mv.setViewName("api");

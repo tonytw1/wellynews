@@ -149,6 +149,15 @@ the url. A complete list of available tag and publisher url snippets is shown be
 </table>	
 
 
+<b>Available Feeds</b>
+<table>
+	<tr><td>Feed</td><td>JSON URL</td></tr>
+	#foreach($item in $feeds)
+		<tr><td></td>
+		<td><code>Redirect $site_information.url/viewfeed?feed=$item.id $urlBuilder.getFeedUrl($item)</code></td></tr>
+	#end
+</table>
+
 
 </div>
 

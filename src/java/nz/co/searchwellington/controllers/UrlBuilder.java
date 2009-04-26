@@ -19,7 +19,7 @@ public class UrlBuilder {
 	}
 
 	public String getFeedUrl(Feed feed) {		
-		return siteInformation.getUrl() + "/viewfeed/" + feed.getUrlWords();
+		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
 
 

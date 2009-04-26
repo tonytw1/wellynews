@@ -46,7 +46,7 @@ public class RequestFilter {
         }
                 
         
-		if (request.getPathInfo().matches("^/viewfeed/.*$")) {			
+		if (request.getPathInfo().matches("^/feed/.*$")) {			
 			String feedUrlWords = request.getPathInfo().split("/")[2];			
         	Resource feed = resourceDAO.loadFeedByUrlWords(feedUrlWords);
         	if (feed != null) {
