@@ -1,5 +1,5 @@
-#if ($record_page_impression)
-$stats_tracking_code
+#if (!$loggedInUserFilter.loggedInUser)
+	$site_information.trackingCode
 #else
 <!-- Stats disabled -->
 #end

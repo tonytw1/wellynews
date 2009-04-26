@@ -148,9 +148,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
   		 <property name="toolboxConfigLocation" value="/WEB-INF/velocity/toolbox.xml"/>  		
   			<property name="attributesMap">
 			<map>
+				<entry key="site_information" value-ref="siteInformation" />				
 				<entry key="dateFormatter" value-ref="dateFormatter" />
 				<entry key="columnSplitter" value-ref="columnSplitter" />
-				<entry key="site_information" value-ref="siteInformation" />
 				<entry key="chartBuilder" value-ref="chartBuilder" />
 				<entry key="urlBuilder" value-ref="urlBuilder" />
 				<entry key="adminUrlBuilder" value-ref="adminUrlBuilder" />
@@ -178,6 +178,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">
+		<constructor-arg ref="configDAO" />
 		<property name="areaname" value="${areaname}" />
 		<property name="url" value="${installed}" />
 		<property name="adsenseAccount" value="${adsence.account}" />

@@ -1,6 +1,10 @@
 package nz.co.searchwellington.model;
+
+import nz.co.searchwellington.repositories.ConfigRepository;
+
 public class SiteInformation {
 
+	private ConfigRepository configDAO;
 	private String areaname;
 	private String url;
     private String adsenseAccount;
@@ -8,10 +12,9 @@ public class SiteInformation {
     private String googleMapsApiKey;
 
     
-    // TODO should not need setters.
-	public SiteInformation() {		
+	public SiteInformation(ConfigRepository configDAO) {	
+		this.configDAO = configDAO;
 	}
-
 
 	public String getAdsenseAccount() {
         return adsenseAccount;
@@ -65,10 +68,8 @@ public class SiteInformation {
         this.googleMapsApiKey = googleMapsApiKey;
     }
 
-
-    
-    
-    
-    
-    
+    public String getTrackingCode() {
+    	return configDAO.getConfig().getStatsTracking();
+    }
+        
 }
