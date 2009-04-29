@@ -7,19 +7,26 @@ import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
+import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.PublisherGuessingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 public class TwitterNewsitemBuilderServiceTests extends TestCase {
 
     TwitterNewsitemBuilderService newsitemBuilder;
     UrlCleaner urlCleaner;
+    PublisherGuessingService publisherGuessingService;
     Newsitem newsitem;
+    Website vuwPublisher;
     
     @Override
-    protected void setUp() throws Exception {     
+    protected void setUp() throws Exception {
+    	vuwPublisher = mock(Website.class);
         urlCleaner = mock(UrlCleaner.class);
-        stub(urlCleaner.cleanSubmittedItemUrl("http://www.vuw.ac.nz/news")).toReturn("http://www.vuw.ac.nz/news");    
-        newsitemBuilder = new TwitterNewsitemBuilderService(urlCleaner);
+        publisherGuessingService = mock(PublisherGuessingService.class);
+        stub(urlCleaner.cleanSubmittedItemUrl("http://www.vuw.ac.nz/news")).toReturn("http://www.vuw.ac.nz/news");
+        stub(publisherGuessingService.guessPublisherBasedOnUrl("http://www.vuw.ac.nz/news")).toReturn(vuwPublisher);
+        newsitemBuilder = new TwitterNewsitemBuilderService(urlCleaner, publisherGuessingService);
         newsitem = new NewsitemImpl();
     }
     
@@ -33,6 +40,7 @@ public class TwitterNewsitemBuilderServiceTests extends TestCase {
 		assertEquals("http://www.vuw.ac.nz/news", newsitem.getUrl());
 		assertNotNull(newsitem.getDate());
         assertEquals("@someone", newsitem.getTwitterSubmitter());
+        assertEquals(vuwPublisher, newsitem.getPublisher());
 	}
 	
 }

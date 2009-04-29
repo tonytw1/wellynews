@@ -206,6 +206,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="twitterNewsitemBuilderService" class="nz.co.searchwellington.twitter.TwitterNewsitemBuilderService">
 		<constructor-arg ref="urlCleaner" />
+		<constructor-arg ref="publisherGuessingService" />
 	</bean>
 	
 	<bean id="tinyUrlResolverService" class="nz.co.searchwellington.twitter.TinyUrlResolverService" />

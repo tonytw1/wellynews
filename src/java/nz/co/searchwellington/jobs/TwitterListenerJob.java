@@ -3,7 +3,6 @@ package nz.co.searchwellington.jobs;
 import net.unto.twitter.Status;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
@@ -20,18 +19,16 @@ public class TwitterListenerJob {
     private TwitterNewsitemBuilderService newsitemBuilder;
     private ResourceRepository resourceDAO;
     private LinkCheckerQueue linkCheckerQueue;    
-    private PublisherGuessingService publisherGuessingService;
-
-    
+  
+   
     public TwitterListenerJob() {
     }
 
-    public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, ResourceRepository resourceDAO, LinkCheckerQueue linkCheckerQueue, PublisherGuessingService publisherGuessingService) {
+    public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, ResourceRepository resourceDAO, LinkCheckerQueue linkCheckerQueue) {
         this.twitterService = twitterService;
         this.newsitemBuilder = newsitemBuilder;
         this.resourceDAO = resourceDAO;
-        this.linkCheckerQueue = linkCheckerQueue;
-        this.publisherGuessingService = publisherGuessingService;        
+        this.linkCheckerQueue = linkCheckerQueue;             
     }
 
     
@@ -53,29 +50,27 @@ public class TwitterListenerJob {
 					newsitemBuilder.createNewsitemFromTwitterReply(status
 							.getText(), newsitem, status.getUser()
 							.getScreenName());
+					
+				
+					if (newsitem != null && newsitem.getUrl() != null && !newsitem.getUrl().equals("")) {
+						log.info("Twitted newsitem has title " + newsitem.getName());
+						log.info("Twittered newsitem has url: " + newsitem.getUrl());
 
-					if (newsitem != null && newsitem.getUrl() != null
-							&& !newsitem.getUrl().equals("")) {
-						log.info("Created newsitem with url: "
-								+ newsitem.getUrl());
+						boolean isRT = newsitem.getName() != null & newsitem.getName().startsWith("RT");
+						if (!isRT) {
+							if (!resourceDAO.isResourceWithUrl(newsitem.getUrl())) {
+								log.info("Saving new newsitem: " + newsitem.getName());
 
-						if (!resourceDAO.isResourceWithUrl(newsitem.getUrl())) {
-							log.info("Saving new newsitem: "
-									+ newsitem.getName());
+								resourceDAO.saveResource(newsitem);
+								linkCheckerQueue.add(newsitem.getId());
 
-							Website publisher = publisherGuessingService
-									.guessPublisherBasedOnUrl(newsitem.getUrl());
-							newsitem.setPublisher(publisher);
-
-							resourceDAO.saveResource(newsitem);
-							linkCheckerQueue.add(newsitem.getId());
-
-							// TODO record datetime that we last recieved a twitter.
-							// TODO need to compare / logout the datetime on the twitter vs system time.
-
+								// TODO record datetime that we last recieved a twitter.
+								// TODO need to compare / logout the datetime on the twitter vs system time.
+							} else {
+								log.info("Existing resource on this url; not accepting.");
+							}
 						} else {
-							log
-									.info("Existing resource on this url; not accepting.");
+							log.info("Looks like a RT; not accepting");
 						}
 					}
 				}
