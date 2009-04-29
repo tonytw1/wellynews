@@ -31,7 +31,9 @@
 		<p><label for="clickthrough">Use clickthrough tracking: </label>
 		$clickthrough_tracking_select</p>
 		
-
+		<p><label for="clickthrough">Twitter listener enabled: </label>
+		$twitter_listener_is_enabled_select</p>
+		
 		<input type="submit" value="Save" />		
 	</fieldset>
 </form>

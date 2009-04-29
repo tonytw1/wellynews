@@ -17,9 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
 
-public class TagGeotaggedModelBuilder implements ModelBuilder {
-	
-	private static final int MAX_NUMBER_OF_GEOTAGGED_TO_SHOW = 30;
+public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	Logger log = Logger.getLogger(TagGeotaggedModelBuilder.class);
     	
@@ -74,11 +72,5 @@ public class TagGeotaggedModelBuilder implements ModelBuilder {
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
 	}
-	
-	private void setRss(ModelAndView mv, String title, String url) {
-		mv.addObject("rss_title", title);
-		mv.addObject("rss_url", url);	
-	}  
-	
-	
+		
 }

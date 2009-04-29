@@ -25,12 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
 
-public class TagModelBuilder implements ModelBuilder {
-
-	private static final int MAX_WEBSITES = 500;
-	private static final int MAX_NEWSITEMS = 30;
-	private static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 2;
-	private static final int MAX_GEOCODED_TO_SHOW = 30;
+public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	
@@ -143,7 +138,7 @@ public class TagModelBuilder implements ModelBuilder {
 	
     
     private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) throws IOException {
-        List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, MAX_GEOCODED_TO_SHOW, showBroken);
+        List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);
@@ -163,10 +158,4 @@ public class TagModelBuilder implements ModelBuilder {
         }
     }
     
-	private void setRss(ModelAndView mv, String title, String url) {
-		mv.addObject("rss_title", title);
-		mv.addObject("rss_url", url);
-	}  
-	
-
 }

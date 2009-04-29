@@ -30,8 +30,9 @@ public class ConfigEditController extends MultiActionController {
         
         modelAndView.getModel().put("heading", "Editing Configuration");      
         modelAndView.getModel().put("stats_tracking_code", StringEscapeUtils.escapeHtml(configDAO.getStatsTracking()));
-        modelAndView.getModel().put("flickr_pool_group_id", StringEscapeUtils.escapeHtml(configDAO.getFlickrPoolGroupId()));                
+        modelAndView.getModel().put("flickr_pool_group_id", StringEscapeUtils.escapeHtml(configDAO.getFlickrPoolGroupId()));
         modelAndView.getModel().put("clickthrough_tracking_select", makeClickThroughSelect(configDAO.getUseClickThroughCounter()).toString());
+        modelAndView.addObject("twitter_listener_is_enabled_select", makeTwitterEnabledSelect(configDAO.isTwitterListenerEnabled()).toString());
         return modelAndView;
     }
     
@@ -42,7 +43,32 @@ public class ConfigEditController extends MultiActionController {
     
     
     
-    private Select makeClickThroughSelect(boolean selected) {
+    private Select makeTwitterEnabledSelect(boolean selected) {
+    	  Select select = new Select("twitter_listener_is_enabled");
+
+          Option noOption = new Option("0");
+          noOption.setFilterState(true);        
+          noOption.addElement("No");
+          
+          Option yesOption = new Option("1");
+          yesOption.setFilterState(true);
+          yesOption.addElement("Yes");
+          
+          if (selected) {
+              yesOption.setSelected(true);
+          } else {
+              noOption.setSelected(true);
+          }
+          
+          select.addElement(noOption);
+          select.addElement(yesOption);
+          return select;
+	}
+
+
+
+
+	private Select makeClickThroughSelect(boolean selected) {
         Select select = new Select("use_clickthrough_tracking");
 
         Option noOption = new Option("0");
@@ -78,6 +104,14 @@ public class ConfigEditController extends MultiActionController {
         config.setFlickrPoolGroupId(request.getParameter("flickr_pool_group_id"));
         
         config.setUseClickthroughCounter(request.getParameter("use_clickthrough_tracking"));
+        
+        boolean twitterIsEnabled = false;
+        final String twitter = request.getParameter("twitter_listener_is_enabled");
+        if (twitter != null && twitter.equals("1")) {
+        	twitterIsEnabled = true;
+        }
+        config.setTwitterListenerEnabled(twitterIsEnabled);
+        
         configDAO.saveConfig(config);
         return modelAndView;
     }

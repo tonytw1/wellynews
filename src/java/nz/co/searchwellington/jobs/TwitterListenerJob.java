@@ -3,7 +3,7 @@ package nz.co.searchwellington.jobs;
 import net.unto.twitter.Status;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.repositories.PublisherGuessingService;
+import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.twitter.TwitterService;
@@ -18,24 +18,30 @@ public class TwitterListenerJob {
     private TwitterService twitterService;
     private TwitterNewsitemBuilderService newsitemBuilder;
     private ResourceRepository resourceDAO;
-    private LinkCheckerQueue linkCheckerQueue;    
+    private LinkCheckerQueue linkCheckerQueue;
+    private ConfigRepository configDAO;
   
    
     public TwitterListenerJob() {
     }
 
-    public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, ResourceRepository resourceDAO, LinkCheckerQueue linkCheckerQueue) {
+    public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, ResourceRepository resourceDAO, LinkCheckerQueue linkCheckerQueue, ConfigRepository configDAO) {
         this.twitterService = twitterService;
         this.newsitemBuilder = newsitemBuilder;
         this.resourceDAO = resourceDAO;
-        this.linkCheckerQueue = linkCheckerQueue;             
+        this.linkCheckerQueue = linkCheckerQueue;
+        this.configDAO= configDAO;
     }
 
     
     @Transactional
     public void run() {
-        log.info("Running Twitter listener");
 
+        if (!configDAO.isTwitterListenerEnabled()) {
+        	log.info("Twitter listener is not enabled");
+        	return;
+        }
+        log.info("Running Twitter listener");
         if (twitterService.isConfigured()) {
 			Status[] replies = twitterService.getReplies();
 			if (replies != null) {

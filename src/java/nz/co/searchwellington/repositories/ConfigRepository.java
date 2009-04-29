@@ -10,5 +10,6 @@ public interface ConfigRepository {
     public void saveConfig(Config config);
     public String getFlickrPoolGroupId();
     public boolean getUseClickThroughCounter();
+	public boolean isTwitterListenerEnabled();
 
 }

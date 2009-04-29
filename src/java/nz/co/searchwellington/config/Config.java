@@ -11,5 +11,7 @@ public interface Config {
     public void setFlickrPoolGroupId(String flickrPoolGroupId);
     public String getUseClickthroughCounter();
     public void setUseClickthroughCounter(String useClickthroughCounter);
+    public boolean isTwitterListenerEnabled();
+	public void setTwitterListenerEnabled(boolean twitterListenerEnabled);
   
 }

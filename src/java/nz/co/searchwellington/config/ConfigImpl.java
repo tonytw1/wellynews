@@ -6,7 +6,7 @@ public class ConfigImpl implements Config {
     String statsTracking;
     String flickrPoolGroupId;
     String useClickthroughCounter;
-    
+    private boolean twitterListenerEnabled;
     
     public ConfigImpl() {
     }
@@ -48,5 +48,15 @@ public class ConfigImpl implements Config {
     public void setUseClickthroughCounter(String useClickthroughCounter) {
         this.useClickthroughCounter = useClickthroughCounter;
     }
+
+
+	public void setTwitterListenerEnabled(boolean twitterListenerEnabled) {
+		this.twitterListenerEnabled = twitterListenerEnabled;
+	}
+
+
+	public boolean isTwitterListenerEnabled() {
+		return twitterListenerEnabled;
+	}
 
 }

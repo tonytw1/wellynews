@@ -27,7 +27,12 @@
 
 		<property name="UseClickthroughCounter" type="text">
 			<column name="use_clickthrough_tracking" />
+		</property>
+		
+		<property name="TwitterListenerEnabled" type="boolean">
+			<column name="twitter_listener_enabled" />
 		</property>				
+							
 				
 	</class>
 

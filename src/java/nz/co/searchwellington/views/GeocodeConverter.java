@@ -11,7 +11,6 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 public class GeocodeConverter implements Converter {
 
-	@Override
 	public void marshal(Object value, HierarchicalStreamWriter writer, MarshallingContext context) {
 		Geocode geocode = (Geocode) value;
 		//writer.startNode("geotag");		
@@ -20,12 +19,10 @@ public class GeocodeConverter implements Converter {
 		//writer.endNode();
 	}
 
-	@Override
 	public Object unmarshal(HierarchicalStreamReader value, UnmarshallingContext context) {
 		return null;
 	}
-
-	@Override
+	
 	public boolean canConvert(Class clazz) {
 		boolean canConvert = GeocodeImpl.class == clazz;		
 		return canConvert;

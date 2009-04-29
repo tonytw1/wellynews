@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
 
-public class PublisherModelBuilder implements ModelBuilder {
+public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	Logger logger = Logger.getLogger(PublisherModelBuilder.class);
 	
@@ -72,11 +72,4 @@ public class PublisherModelBuilder implements ModelBuilder {
 		return mv;
 	}
 	
-	
-	private void setRss(ModelAndView mv, String title, String url) {
-		mv.addObject("rss_title", title);
-		mv.addObject("rss_url", url);
-	}  
-	
-
 }

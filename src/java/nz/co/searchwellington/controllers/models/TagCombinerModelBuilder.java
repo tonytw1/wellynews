@@ -19,9 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
 
-public class TagCombinerModelBuilder implements ModelBuilder {
-
-	private static final int MAX_WEBSITES = 500;
+public class TagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private ResourceRepository resourceDAO;
 	private RssUrlBuilder rssUrlBuilder;
@@ -93,12 +91,5 @@ public class TagCombinerModelBuilder implements ModelBuilder {
 		}
 		return mv;
 	}
-	
-	
-	private void setRss(ModelAndView mv, String title, String url) {
-		mv.addObject("rss_title", title);
-		mv.addObject("rss_url", url);
-	}  
-
 	
 }

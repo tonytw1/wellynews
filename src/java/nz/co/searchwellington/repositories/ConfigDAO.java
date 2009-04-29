@@ -75,6 +75,14 @@ public class ConfigDAO implements ConfigRepository {
     }
     
     
+    public boolean isTwitterListenerEnabled() {
+    	 Config config  = loadConfigObject();  
+         if (config != null) {
+        	 return config.isTwitterListenerEnabled();
+         }
+         return false;
+    }
+    
     
     
     private Config loadConfigObject() {

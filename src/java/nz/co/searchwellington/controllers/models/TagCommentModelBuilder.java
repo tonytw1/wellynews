@@ -17,10 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
 
-public class TagCommentModelBuilder implements ModelBuilder {
-	
-	private static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 500;
-	
+public class TagCommentModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+		
 	Logger log = Logger.getLogger(TagCommentModelBuilder.class);
     	
 	private ResourceRepository resourceDAO;
@@ -76,11 +74,5 @@ public class TagCommentModelBuilder implements ModelBuilder {
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
 	}
-	
-	private void setRss(ModelAndView mv, String title, String url) {
-		mv.addObject("rss_title", title);
-		mv.addObject("rss_url", url);
-	}  
-	
 	
 }
