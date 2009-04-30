@@ -21,7 +21,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.sun.syndication.io.FeedException;
 
-
+// TODO move to admin.
 public class ViewfeedController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ViewfeedController.class);

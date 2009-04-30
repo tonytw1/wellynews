@@ -5,17 +5,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 
 public class ImpliedTagService {
-
-    private PlaceAutoTagger placeAutoTagger;
-
-    @Deprecated
-	public void applyTag(Resource resource, Tag tag) {                
-        boolean resourceAlreadyHasTag = alreadyHasTag(resource, tag);
-        if (!resourceAlreadyHasTag) {
-            resource.addTag(tag);
-        }
-    }
-
+	    
     public boolean alreadyHasTag(Resource resource, Tag tag) {
         boolean isNewsitemWithPublisherTag = resource.getType().equals("N") && ((Newsitem) resource).getPublisher() != null && ((Newsitem) resource).getPublisher().getTags().contains(tag);
         boolean resourceAlreadyHasTag = resource.getTags().contains(tag) || isNewsitemWithPublisherTag;

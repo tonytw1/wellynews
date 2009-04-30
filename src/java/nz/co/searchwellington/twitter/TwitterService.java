@@ -8,9 +8,6 @@ import net.unto.twitter.TwitterException;
 
 public class TwitterService {
 	
-    private static final int MAXIMUM_TWITTER_MESSAGE_LENGTH = 140;
-    private static final String SEPERATOR = " - ";
-
     Logger log = Logger.getLogger(TwitterService.class);
 
     String username;
@@ -29,19 +26,7 @@ public class TwitterService {
 			log.error("Twitter exception:", e);
 		}
 	}
-
-
 	
-    public String buildMessage(String heading, String url) {        
-        if (heading.length() + url.length() + SEPERATOR.length() > MAXIMUM_TWITTER_MESSAGE_LENGTH) {
-            heading = trimHeadingToLength(heading, MAXIMUM_TWITTER_MESSAGE_LENGTH - (url.length() + SEPERATOR.length()));
-        }
-        return heading + SEPERATOR + url;      
-    }
-
-
-
-
 	public Status[] getReplies() {
 		Api api = new Api(username, password);
 		log.debug("Getting twitter replies for " + username);
@@ -78,16 +63,5 @@ public class TwitterService {
 	public boolean isConfigured() {
 		return this.username != null && !this.username.equals("") && this.password != null && !this.password.equals("");
 	}
- 
-    
-    
-	private String trimHeadingToLength(String heading, int length) {       
-		if (heading.length() > length) {
-			heading = heading.substring(0, length-1);
-		}   
-		return heading;
-	}
-    
-    
-    
+	
 }

@@ -40,9 +40,6 @@ public class LinkCheckerController extends BaseMultiActionController {
     }
 
     
-    
-    
-    @SuppressWarnings("unchecked")
     public ModelAndView addToQueue(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
                 

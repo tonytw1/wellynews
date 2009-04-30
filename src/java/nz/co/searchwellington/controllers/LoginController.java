@@ -41,11 +41,8 @@ public class LoginController extends MultiActionController {
     }
    
 
-    
-    @SuppressWarnings("unchecked")
-    public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {
-        
-        ModelAndView modelAndView = new ModelAndView();           
+    public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
+        ModelAndView modelAndView = new ModelAndView();
         request.getSession().setAttribute("login_prompt", "1");
         log.debug("login_prompt set on session");
         setRedirect(modelAndView, request);

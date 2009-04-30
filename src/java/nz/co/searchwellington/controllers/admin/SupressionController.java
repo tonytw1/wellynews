@@ -30,9 +30,6 @@ public class SupressionController extends MultiActionController {
         this.urlStack = urlStack;
     }
 
-   
-   
-    @SuppressWarnings("unchecked")
     public ModelAndView supress(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
                 
@@ -48,8 +45,6 @@ public class SupressionController extends MultiActionController {
     }
     
     
-    
-    @SuppressWarnings("unchecked")
     public ModelAndView unsupress(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
                 

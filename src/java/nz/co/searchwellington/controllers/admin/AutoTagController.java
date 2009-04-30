@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.admin;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +19,13 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.queryParser.ParseException;
 import org.springframework.web.servlet.ModelAndView;
 
-
 public class AutoTagController extends BaseMultiActionController {
 
     Logger log = Logger.getLogger(AutoTagController.class);
     
     private RequestFilter requestFilter;
     private ImpliedTagService autoTagService;
-
-
-          
-  
+    
 	public AutoTagController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
@@ -63,11 +58,6 @@ public class AutoTagController extends BaseMultiActionController {
     }
 
 
-
-	
-
-    
-    
     public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException {        
         ModelAndView mv = new ModelAndView();
         mv.setViewName("autoTagApply");
@@ -85,9 +75,11 @@ public class AutoTagController extends BaseMultiActionController {
             for (String resourceIdString : autotaggedResourceIds) {
                 int resourceId = Integer.parseInt(resourceIdString);
                 Resource resource = resourceDAO.loadResourceById(resourceId);
-                
+
                 log.info("Applying tag " + editTag.getName() + " to:" + resource.getName());
-                autoTagService.applyTag(resource, editTag);
+                if (!autoTagService.alreadyHasTag(resource, editTag)) {
+                	resource.addTag(editTag);
+                }
                 resourceDAO.saveResource(resource);
                 resourcesAutoTagged.add(resource);
             }        
@@ -97,7 +89,6 @@ public class AutoTagController extends BaseMultiActionController {
     }
     
     
-
     private List<Resource> getPossibleAutotagResources(Tag editTag) throws IOException, ParseException {
 		List<Resource> resources = resourceDAO.getWebsitesMatchingKeywords(editTag.getDisplayName(), true);
 		resources.addAll(resourceDAO.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true));

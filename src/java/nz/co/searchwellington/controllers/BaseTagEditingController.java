@@ -14,9 +14,7 @@ import nz.co.searchwellington.model.User;
 import org.apache.commons.lang.StringUtils;
 
 public class BaseTagEditingController extends BaseMultiActionController {
-    
-    
-    
+        
     protected void processAdditionalTags(HttpServletRequest request, Resource editResource) {
         String additionalTagString = request.getParameter("additional_tags").trim();        
         log.debug("Found additional tag string: " + additionalTagString);
@@ -62,8 +60,8 @@ public class BaseTagEditingController extends BaseMultiActionController {
         if (editResource.getTags().size() > maxTags) {
             Set <Tag> tagsToKeep = new HashSet<Tag>();
             int counter = 0;
-            for (Iterator iter = editResource.getTags().iterator(); iter.hasNext();) {
-                Tag toKeep= (Tag) iter.next();
+            for (Iterator<Tag> iter = editResource.getTags().iterator(); iter.hasNext();) {
+                Tag toKeep= iter.next();
                 counter++;
                 if (counter <= 4) {
                     tagsToKeep.add(toKeep);
@@ -77,7 +75,8 @@ public class BaseTagEditingController extends BaseMultiActionController {
         return field != null && field.length() > 0 && field.matches("[a-zA-Z0-9]*");
     }
 
-    protected void processTags(HttpServletRequest request, Resource editResource, User loggedInUser) {
+    @SuppressWarnings("unchecked")
+	protected void processTags(HttpServletRequest request, Resource editResource, User loggedInUser) {
         if (request.getAttribute("tags") != null) {
             List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
             Set<Tag> tags = new HashSet<Tag>(requestTagsList);
@@ -96,8 +95,7 @@ public class BaseTagEditingController extends BaseMultiActionController {
         if (containsFeaturedTag && loggedInUser == null) {
             //log.info("Removing featured tag from public submission.");
             editResource.getTags().remove(featuredTag);            
-        }
-                
+        }                
         trimTags(editResource, 4);               
     }
 
