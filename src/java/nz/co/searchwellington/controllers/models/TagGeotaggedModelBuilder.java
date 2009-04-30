@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,10 +11,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.sun.syndication.io.FeedException;
 
 public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
@@ -43,7 +39,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 
 
 	@SuppressWarnings("unchecked")
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) throws IOException, CorruptIndexException, FeedException {
+	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building tag geotagged page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -54,7 +50,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 	}
 	
 	
-	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken) throws IOException, CorruptIndexException, FeedException {		
+	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken) {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName() + " geotagged");        		

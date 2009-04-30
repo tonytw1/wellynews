@@ -127,20 +127,13 @@ public class LinkChecker {
 
     private void updateLatestFeedItem(Feed checkResource) {
         log.debug("Resource is a feed; checking for latest item publication date.");
-        try {                          
-            List <FeedNewsitem> feeditems = rssfeedNewsitemService.getFeedNewsitems(checkResource);
-            log.debug("Feed has " + feeditems.size() + " items.");
+        List <FeedNewsitem> feeditems = rssfeedNewsitemService.getFeedNewsitems(checkResource);
+        log.debug("Feed has " + feeditems.size() + " items.");
             
-            Date latestPublicationDate = rssfeedNewsitemService.getLatestPublicationDate(checkResource);                              
-            // TODO would be nice if the hibernate mapping preserved this field as a datetime rather than just a date.
-            checkResource.setLatestItemDate(latestPublicationDate);
-            log.debug("Latest item publication date for this feed was: " + checkResource.getLatestItemDate());
-            
-        } catch (IllegalArgumentException e) {
-            log.error(e);
-        } catch (IOException e) {
-            log.error(e);
-        }
+        Date latestPublicationDate = rssfeedNewsitemService.getLatestPublicationDate(checkResource);                              
+        // TODO would be nice if the hibernate mapping preserved this field as a datetime rather than just a date.
+        checkResource.setLatestItemDate(latestPublicationDate);
+        log.debug("Latest item publication date for this feed was: " + checkResource.getLatestItemDate());      
     }
 
 

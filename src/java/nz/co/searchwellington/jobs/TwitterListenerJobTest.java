@@ -26,7 +26,7 @@ public class TwitterListenerJobTest extends TestCase {
 	    }
 	
 	public void testShouldIgnoreRTs() throws Exception {		
-		TwitterListenerJob twitterListener = new TwitterListenerJob(twitterService, twitterNewsitemBuilder, resourceDAO, linkCheckerQueue);
+//		TwitterListenerJob twitterListener = new TwitterListenerJob(twitterService, twitterNewsitemBuilder, resourceDAO, linkCheckerQueue);
 		
 	//	Status rtReply = mock(Status.class);
 	//	Status[] replies = new Status[1];

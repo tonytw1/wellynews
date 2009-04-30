@@ -1,16 +1,11 @@
 package nz.co.searchwellington.controllers.models;
 
-import java.io.IOException;
-
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.sun.syndication.io.FeedException;
 
 public class ContentModelBuilderService {
 
@@ -24,7 +19,7 @@ public class ContentModelBuilderService {
 		this.modelBuilders = modelBuilders;
 	}
 
-	public ModelAndView populateContentModel(HttpServletRequest request) throws IOException, CorruptIndexException, FeedException {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		logger.info("Building content model");
 		boolean showBroken = false;	
 		if (loggedInUserFilter.getLoggedInUser() != null) {

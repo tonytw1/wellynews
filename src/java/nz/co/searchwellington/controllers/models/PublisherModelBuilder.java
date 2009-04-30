@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,10 +12,7 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.sun.syndication.io.FeedException;
 
 public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
@@ -42,7 +38,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 	
 	
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) throws IOException, CorruptIndexException, FeedException {				
+	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {				
 		if (isValid(request)) {
 			logger.info("Building publisher page model");
 			Website publisher = (Website) request.getAttribute("publisher"); 
@@ -56,7 +52,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 
 		
-	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken) throws IOException {
+	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
 		mv.addObject("description", publisher.getName());

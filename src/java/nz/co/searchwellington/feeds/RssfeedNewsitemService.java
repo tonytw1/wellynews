@@ -42,7 +42,7 @@ public class RssfeedNewsitemService {
     }
 
     
-    public List<FeedNewsitem> getFeedNewsitems(Feed feed) throws IllegalArgumentException, IOException {
+    public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
         List<FeedNewsitem> feedNewsitems = new ArrayList<FeedNewsitem>();
 
         SyndFeed syndfeed = rssFeedDAO.getFeedByUrl(feed.getUrl());
@@ -64,7 +64,7 @@ public class RssfeedNewsitemService {
     }
 
 
-    public Date getLatestPublicationDate(Feed feed) throws IllegalArgumentException, IOException {
+    public Date getLatestPublicationDate(Feed feed) {
         Date latestPublicationDate = null;
         List<FeedNewsitem> feeditems = getFeedNewsitems(feed);
         for (Resource resource : feeditems) {

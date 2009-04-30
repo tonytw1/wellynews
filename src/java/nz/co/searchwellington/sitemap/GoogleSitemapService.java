@@ -1,6 +1,5 @@
 package nz.co.searchwellington.sitemap;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +9,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -52,20 +50,14 @@ public class GoogleSitemapService {
         
         Element locElement = tagElement.addElement(new QName("loc", new Namespace("sitemap", NAMESPACE)));
         locElement.setText(urlBuilder.getTagUrl(tag));
-        try {
-            Date lastUpdated = resourceDAO.getLastLiveTimeForTag(tag);
-            if (lastUpdated != null) {
-                final String dateString = dateFormatter.formatW3CDate(lastUpdated);
-                Element lastmod = tagElement.addElement(new QName("lastmod", new Namespace("sitemap", NAMESPACE)));
-                lastmod.setText(dateString);
-            }            
-        } catch (NumberFormatException e) {
-            log.error("NumberFormatException", e);
-        } catch (CorruptIndexException e) {
-            log.error("CorruptIndexException", e);
-        } catch (IOException e) {
-            log.error("IOException", e);
-        }
+        
+        Date lastUpdated = resourceDAO.getLastLiveTimeForTag(tag);
+        if (lastUpdated != null) {
+        	final String dateString = dateFormatter.formatW3CDate(lastUpdated);
+        	Element lastmod = tagElement.addElement(new QName("lastmod", new Namespace("sitemap", NAMESPACE)));
+        	lastmod.setText(dateString);
+        }            
+        
     }
 
 }

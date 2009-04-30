@@ -56,8 +56,7 @@ public class TwitterListenerJob {
 					newsitemBuilder.createNewsitemFromTwitterReply(status
 							.getText(), newsitem, status.getUser()
 							.getScreenName());
-					
-				
+									
 					if (newsitem != null && newsitem.getUrl() != null && !newsitem.getUrl().equals("")) {
 						log.info("Twitted newsitem has title " + newsitem.getName());
 						log.info("Twittered newsitem has url: " + newsitem.getUrl());

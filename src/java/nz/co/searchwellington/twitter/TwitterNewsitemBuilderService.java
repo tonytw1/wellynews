@@ -22,25 +22,34 @@ public class TwitterNewsitemBuilderService {
     }
     
     public Newsitem createNewsitemFromTwitterReply(String message, Newsitem newsitem, String submitter) {							
-		newsitem.setTwitterSubmitter(submitter);
-		newsitem.setTwitterMessage(message);
-        
-		message = message.replaceFirst("@.*? ", "");
-		String titleText = message.replaceFirst("http.*", "").trim();
-		newsitem.setName(titleText);
+		if (isValidMessage(message)) {
+    	
+	    	newsitem.setTwitterSubmitter(submitter);
+			newsitem.setTwitterMessage(message);
+	        
+			message = message.replaceFirst("@.*? ", "");
+			String titleText = message.replaceFirst("http.*", "").trim();
+			newsitem.setName(titleText);
+	
+			String url = message.replace(titleText, "").trim();	
+	        if (url != "") {
+	            newsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
+	            newsitem.setDate(Calendar.getInstance().getTime());            
+	            Website publisher = publisherGuessingService.guessPublisherBasedOnUrl(newsitem.getUrl());
+	            newsitem.setPublisher(publisher);            
+	            return newsitem;
+	            
+	        } else {
+	            log.warn("Could not resolve url from twit");
+	            return null;
+	        }
+		}
+		log.info("Not a valid message: " + message);
+		return null;
+	}
 
-		String url = message.replace(titleText, "").trim();	
-        if (url != "") {
-            newsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
-            newsitem.setDate(Calendar.getInstance().getTime());            
-            Website publisher = publisherGuessingService.guessPublisherBasedOnUrl(newsitem.getUrl());
-            newsitem.setPublisher(publisher);            
-            return newsitem;
-            
-        } else {
-            log.warn("Could not resolve url from twit");
-            return null;
-        }
+	private boolean isValidMessage(String message) {
+		return message.startsWith("@wellynews ");
 	}
     
 }

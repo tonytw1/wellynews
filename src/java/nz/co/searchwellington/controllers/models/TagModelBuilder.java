@@ -1,6 +1,5 @@
  package nz.co.searchwellington.controllers.models;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,10 +19,7 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.sun.syndication.io.FeedException;
 
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
@@ -55,7 +51,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	}
 
 	@SuppressWarnings("unchecked")
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) throws IOException, CorruptIndexException, FeedException {
+	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building tag page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -73,19 +69,11 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}
-		try {
-			populateCommentedTaggedNewsitems(mv, tag, showBroken);
-			mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
-			populateRelatedFeed(mv, tag);
-			populateGeocoded(mv, showBroken, tag);
-								
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 	
+		
+		populateCommentedTaggedNewsitems(mv, tag, showBroken);
+		mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
+		populateRelatedFeed(mv, tag);
+		populateGeocoded(mv, showBroken, tag);		
 		populateTagFlickrPool(mv, tag);
 	}
  	
@@ -98,7 +86,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         }
     }
 	
-	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken) throws IOException, CorruptIndexException, FeedException {		
+	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken) {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName());        		
@@ -121,13 +109,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	
 
-    private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) throws IOException {
+    private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
         List<Resource> allCommentedNewsitems = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, MAX_NUMBER_OF_COMMENTED_TO_SHOW + 1);        
         List<Resource>commentedToShow;
         if (allCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW) {
             commentedToShow = allCommentedNewsitems;            
         } else {
-            commentedToShow = allCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW);
+            commentedToShow = allCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);
             final String moreCommentsUrl = urlBuilder.getTagCommentUrl(tag);
             mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
             // TODO count
@@ -137,7 +125,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     }
 	
     
-    private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) throws IOException {
+    private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
         List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
@@ -146,7 +134,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     }
 	
     
-    private void populateRelatedFeed(ModelAndView mv, Tag tag) throws IllegalArgumentException, IOException {       
+    private void populateRelatedFeed(ModelAndView mv, Tag tag) {       
         Feed relatedFeed = tag.getRelatedFeed();
         if (relatedFeed != null) {
             log.info("Related feed is: " + relatedFeed.getName());

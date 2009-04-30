@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,10 +12,7 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.sun.syndication.io.FeedException;
 
 public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
@@ -41,7 +37,7 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 	}
 	
 	
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) throws IOException, CorruptIndexException, FeedException {
+	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			logger.info("Building publisher tag combiner page model");
 			Tag tag = (Tag) request.getAttribute("tag");
@@ -63,7 +59,7 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 
 
 	
-	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) throws IOException {		
+	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) {		
 		final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken);
 		mv.addObject("main_content", publisherNewsitems);
 	        

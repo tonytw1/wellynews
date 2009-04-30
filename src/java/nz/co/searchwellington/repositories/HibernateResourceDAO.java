@@ -154,7 +154,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
     
     @SuppressWarnings("unchecked")
-    public List<Object[]> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems) throws IOException {                 
+    public List<Object[]> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems) {                 
         // TODO implement show broken option.
         if (mustHaveNewsitems) {
         return sessionFactory.getCurrentSession().createSQLQuery(
@@ -209,11 +209,11 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) throws IOException, ParseException {
+    public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
         throw(new UnsupportedOperationException());
     }
 
-    public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) throws IOException, ParseException {
+    public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) {
         throw(new UnsupportedOperationException());
     }
 
@@ -257,7 +257,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     @Deprecated
     // Doesn't recurse.
-    public List<Tag> getCommentedTags(boolean showBroken) throws IOException {
+    public List<Tag> getCommentedTags(boolean showBroken) {
         // TODO performance! Don't iterate!
         List<Tag> commentedTags = new ArrayList<Tag>();
         for(Tag tag : getAllTags()) {
@@ -272,7 +272,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
-    public List<Tag> getGeotaggedTags(boolean showBroken) throws IOException {
+    public List<Tag> getGeotaggedTags(boolean showBroken) {
         // TODO performance! Don't iterate!
         List<Tag> geotaggedTags = new ArrayList<Tag>();
         for(Tag tag : getAllTags()) {
@@ -321,7 +321,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     @SuppressWarnings("unchecked")
-    public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) throws IOException {
+    public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
         Criteria criteria =  sessionFactory.getCurrentSession().createCriteria(Watchlist.class).
             addOrder(Order.asc("name"));            
         if (!showBroken) {
@@ -489,12 +489,12 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
     
     @SuppressWarnings("unchecked")
-    public List<Newsitem> getLatestNewsitems(int number, boolean showBroken) throws IOException {        
+    public List<Newsitem> getLatestNewsitems(int number, boolean showBroken) {        
         return criteriaForLatestNewsitems(number, showBroken).setCacheable(true).list();      
     }
 
     @SuppressWarnings("unchecked")
-    public List<Newsitem> getLatestTwitteredNewsitems(int number, boolean showBroken) throws IOException {        
+    public List<Newsitem> getLatestTwitteredNewsitems(int number, boolean showBroken) {        
         return criteriaForLatestNewsitems(number, showBroken).
         add(Expression.isNotNull("twitterSubmitter")).
         setCacheable(true).list();      
@@ -513,7 +513,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     @SuppressWarnings("unchecked")
-    public List<Website> getLatestWebsites(int maxNumberOfItems, boolean showBroken) throws IOException {
+    public List<Website> getLatestWebsites(int maxNumberOfItems, boolean showBroken) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Website.class).addOrder( Order.desc("date"));
         if (!showBroken) {
             criteria.add(Expression.eq("httpStatus", 200));
@@ -565,7 +565,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
    
         
     @SuppressWarnings("unchecked")
-    public List<Website> getTaggedWebsites(Tag tag, boolean showBroken, int max_newsitems) throws IOException {
+    public List<Website> getTaggedWebsites(Tag tag, boolean showBroken, int max_newsitems) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Website.class);        
         if (!showBroken) {
         criteria.add(Expression.eq("httpStatus", 200)); 
@@ -573,13 +573,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         return criteria.addOrder( Order.asc("name")).
             createCriteria("tags").add(Restrictions.eq("id", tag.getId())). 
             setCacheable(true).
-            list();        
+            list();
     }
     
     
      
     @SuppressWarnings("unchecked")  
-    public List<Website> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites) throws IOException {
+    public List<Website> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites) {
         if (tags.size() == 2) {            
             Iterator<Tag> i = tags.iterator();
             Tag tag1 = i.next();
@@ -630,7 +630,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
         
-    public void deleteResource(Resource resource) throws IOException {
+    public void deleteResource(Resource resource) {
         sessionFactory.getCurrentSession().delete(resource);       
         // flush collection caches.  
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.newsitems");
@@ -640,13 +640,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    public void deleteTag(Tag tag) throws IOException {
+    public void deleteTag(Tag tag) {
         sessionFactory.getCurrentSession().delete(tag);
         sessionFactory.getCurrentSession().flush();
     }
 
 
-    public List<Tag> getTagsMatchingKeywords(String keywords) throws IOException, ParseException {
+    public List<Tag> getTagsMatchingKeywords(String keywords) {
         throw(new UnsupportedOperationException());
     }
 
@@ -687,7 +687,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     
-    public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) throws IOException {
+    public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {
         throw(new UnsupportedOperationException());  
     }
     

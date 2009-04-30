@@ -49,8 +49,9 @@
 	
 
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
+		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg>
-			<list>
+			<list>			
 				<ref bean="viewfeedModelBuilder" />
 				<ref bean="publisherModelBuilder" />
 				<ref bean="publisherTagCombinerModelBuilder" />

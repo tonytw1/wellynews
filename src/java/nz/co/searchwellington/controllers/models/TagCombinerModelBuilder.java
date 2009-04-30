@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -14,10 +13,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
-import org.apache.lucene.index.CorruptIndexException;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.sun.syndication.io.FeedException;
 
 public class TagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
@@ -44,7 +40,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 
 	
 	@SuppressWarnings("unchecked")
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) throws IOException, CorruptIndexException, FeedException {
+	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			return populateTagCombinerModelAndView(tags, showBroken);
@@ -61,7 +57,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	}
 
 
-	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, boolean showBroken) throws IOException {
+	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, boolean showBroken) {
 		ModelAndView mv = new ModelAndView();		
 		final Tag firstTag = tags.get(0);
 		final Tag secondTag = tags.get(1);
