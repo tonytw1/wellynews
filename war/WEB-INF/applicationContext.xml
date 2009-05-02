@@ -229,6 +229,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	<bean id ="blogspotCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.BlogspotCommentFeedDetector" />	
+	<bean id ="tepapaBlogCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TepapaBlogCommentFeedDetector" />	
 	<bean id ="textureCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TextureCommentFeedDetector" />
 	<bean id ="wellingtonistaCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.WellingtonistaCommentFeedDetector" />
 		  	
@@ -236,6 +237,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg>
 			<list>
 				<ref bean="blogspotCommentFeedDetector" />
+				<ref bean="tepapaBlogCommentFeedDetector" />
 				<ref bean="textureCommentFeedDetector" />
 				<ref bean="wellingtonistaCommentFeedDetector" />
 			</list>
