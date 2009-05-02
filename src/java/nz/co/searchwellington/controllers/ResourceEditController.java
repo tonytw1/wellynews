@@ -506,13 +506,12 @@ public class ResourceEditController extends BaseTagEditingController {
         // Process url creating a new page if required.
         if (req.getParameter("url") != null) {
             final String previousUrl = editResource.getUrl();
-            String url = req.getParameter("url");
-                                    
-            url = UrlFilters.addHttpPrefixIfMissing(url);                
-            editResource.setUrl(url);
-            
-            editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(editResource.getUrl()));
-                       
+            String url = req.getParameter("url");                                   
+            if (url != null) {
+            	url = url.trim();
+            	url = UrlFilters.addHttpPrefixIfMissing(url);            	
+            	editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
+            }
             boolean urlHasNotChanged = (previousUrl == null && editResource.getUrl() == null) || (previousUrl.equals(editResource.getUrl()));           
             return !urlHasNotChanged;
         }
