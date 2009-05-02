@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -97,6 +96,7 @@ public class RssfeedNewsitemService {
                 
         String url = item.getLink();
         if (url != null) {
+        	// TODO this action is expensive - it should cached
             url = urlCleaner.cleanSubmittedItemUrl(url);
         }
         // TODO This reference should really come from the resourceDAO.
