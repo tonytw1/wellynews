@@ -22,11 +22,11 @@ public class RssPrefetcherTest extends TestCase {
 	RssHttpFetcher rssHttpFetcher = mock(RssHttpFetcher.class);
 	RssCache rssCache = mock(RssCache.class);
 	
-	RssPrefetcher prefetcher;
+	RssNewsitemPrefetcher prefetcher;
 	
 	@Override
 	protected void setUp() throws Exception {
-		 prefetcher = new RssPrefetcher(resourceDAO, rssHttpFetcher, rssCache);
+		 prefetcher = new RssNewsitemPrefetcher(resourceDAO, rssHttpFetcher, rssCache);
 		 Feed firstFeed = new FeedImpl();
 		 firstFeed.setUrl("http://testdata/rss/1");		
 		 Feed secondFeed = new FeedImpl();

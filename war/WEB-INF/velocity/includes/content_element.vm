@@ -10,8 +10,7 @@
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI") && $dateFormatter)
 				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
 			#end
-				
-			
+							
 			#if ($item.publisher)
 				<li class="publisher">$item.publisher.name</li>
 			#end

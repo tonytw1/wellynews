@@ -1,14 +1,17 @@
-package nz.co.searchwellington.controllers;
+package nz.co.searchwellington.controllers.admin;
 
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
+import nz.co.searchwellington.controllers.BaseMultiActionController;
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.controllers.UrlBuilder;
+import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.feeds.FeedReader;
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.feeds.rss.RssPrefetcher;
+import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
+import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -22,25 +25,22 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.sun.syndication.io.FeedException;
 
 // TODO move to admin.
-public class ViewfeedController extends BaseMultiActionController {
+public class AdminFeedController extends BaseMultiActionController {
     
-    Logger log = Logger.getLogger(ViewfeedController.class);
+    Logger log = Logger.getLogger(AdminFeedController.class);
     
     private AdminRequestFilter requestFilter;
     private LoggedInUserFilter loggedInUserFilter;
-    private RssfeedNewsitemService rssfeedNewsitemService;
     private SupressionRepository supressionDAO;
-    private FeedReader feedReader;
-	private RssPrefetcher rssPrefetcher;
+    private FeedReader feedReader;    
+	private RssNewsitemPrefetcher rssPrefetcher;
     private UrlBuilder urlBuilder;
     
     
-    public ViewfeedController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, RssfeedNewsitemService rssfeedNewsitemService, UrlStack urlStack, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
+    public AdminFeedController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssNewsitemPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
-        this.loggedInUserFilter = loggedInUserFilter;
-        this.rssfeedNewsitemService = rssfeedNewsitemService;       
-        this.urlStack = urlStack;
+        this.loggedInUserFilter = loggedInUserFilter;       
         this.supressionDAO = supressionDAO;
         this.configDAO = configDAO;        
         this.feedReader = feedReader;
@@ -82,7 +82,7 @@ public class ViewfeedController extends BaseMultiActionController {
    
     
     private void decacheFeed(Feed feed) {
-    	rssPrefetcher.decacheAndLoad(feed.getUrl());
+    	rssPrefetcher.decacheAndLoad(feed);
     }
     
 }

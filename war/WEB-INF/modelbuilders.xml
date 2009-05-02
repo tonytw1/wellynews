@@ -20,7 +20,7 @@
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
 		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="rssfeedNewsitemService" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
 	</bean>
 	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
@@ -44,7 +44,7 @@
 	
 	<bean id="viewfeedModelBuilder" class="nz.co.searchwellington.controllers.models.ViewFeedModelBuilder">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="rssfeedNewsitemService" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
 	</bean>
 	
 

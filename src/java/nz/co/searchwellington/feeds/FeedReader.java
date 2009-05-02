@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
@@ -85,7 +86,7 @@ public class FeedReader {
                 feednewsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
                 boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
                 if (acceptThisItem) {
-                    acceptFeedItem(feednewsitem, feed.getTags());
+                    acceptFeedItem(feednewsitem, feed.getTags(), feed.getPublisher());
                 }
             }
     
@@ -104,9 +105,9 @@ public class FeedReader {
 
 
 
-    private void acceptFeedItem(FeedNewsitem feeditem, Set<Tag> feedTags) {
-        log.info("Accepting: " + feeditem.getName());                        
-        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem);
+    private void acceptFeedItem(FeedNewsitem feeditem, Set<Tag> feedTags, Website feedPublisher) {
+        log.info("Accepting: " + feeditem.getName());
+        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feedPublisher);
         
         flattenLoudCapsInTitle(resource);
         

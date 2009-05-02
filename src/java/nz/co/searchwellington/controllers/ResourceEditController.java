@@ -12,18 +12,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.feeds.rss.RssPrefetcher;
-import nz.co.searchwellington.filters.RequestFilter;
+import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.mail.Notifier;
-import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Supression;
@@ -67,7 +64,7 @@ public class ResourceEditController extends BaseTagEditingController {
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
     private GoogleGeoCodeService geocodeService;
     private UrlCleaner urlCleaner;
-    private RssPrefetcher rssPrefetcher;
+    private RssNewsitemPrefetcher rssPrefetcher;
 
     
       
@@ -75,7 +72,7 @@ public class ResourceEditController extends BaseTagEditingController {
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.requestFilter = requestFilter;       
@@ -147,9 +144,7 @@ public class ResourceEditController extends BaseTagEditingController {
             if (request.getParameter("item") != null) {
                 int item = (Integer) request.getAttribute("item");
                 if (item > 0 && item <= feednewsItems.size()) {
-                    final Newsitem feednewsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsItems.get(item-1));
-                    
-                    feednewsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
+                    final Newsitem feednewsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsItems.get(item-1), feed.getPublisher());                   
                     
                     boolean newsitemHasNoDate = (feednewsitem.getDate() == null);
                     if (newsitemHasNoDate) {
@@ -372,7 +367,7 @@ public class ResourceEditController extends BaseTagEditingController {
             if (editResource.getType().equals("F")) {              
                 ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
                 log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
-                rssPrefetcher.decacheAndLoad(editResource.getUrl());
+                rssPrefetcher.decacheAndLoad((Feed) editResource);
             }
                         
             // Apply the auto tagger if this submission is by a logged in user.

@@ -63,7 +63,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 <bean id="feedReaderTarget" class="nz.co.searchwellington.feeds.FeedReader">
 	<constructor-arg ref="resourceDAO" />
-	<constructor-arg ref="rssfeedNewsitemService" />
+	<constructor-arg ref="cachingRssfeedNewsitemService" />
 	<constructor-arg ref="linkCheckerQueue" />
 	<constructor-arg ref="autoTaggingService" />
 	<constructor-arg ref="notifier" />
@@ -247,7 +247,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="linkCheckerTarget" class="nz.co.searchwellington.controllers.LinkChecker" >
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="rssfeedNewsitemService" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="commentFeedReader" />
 		<constructor-arg ref="commentFeedDetector" />
 		<constructor-arg ref="snapshotDAO" />	
@@ -298,16 +298,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
  		<constructor-arg ref="placeAutoTagger" />
  		<constructor-arg ref="tagHintAutoTagger" />
 	</bean>
-	
-
-	
-	<bean id="rssfeedNewsitemService" class="nz.co.searchwellington.feeds.RssfeedNewsitemService">
-		<constructor-arg ref="urlCleaner" />
-		<constructor-arg ref="rssFeedDAO" />
-	</bean>
-	
-
-	
+		
 	<bean id="calendarFeedDAO" class="nz.co.searchwellington.repositories.CalendarFeedDAO" >
 		<constructor-arg ref="calendarCache" />
 	</bean>

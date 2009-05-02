@@ -3,10 +3,6 @@
 <beans>
 
 	<bean id="rssHttpFetcher" class="nz.co.searchwellington.feeds.rss.RssHttpFetcher" />
-		
-	<bean id="rssCache" class="nz.co.searchwellington.feeds.rss.RssCache" >
-		<constructor-arg ref="cacheManager" />
-	</bean>
 	
 	<bean id="rssPrefetcher" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager" />
@@ -16,14 +12,24 @@
 		</property>	
 	</bean>
 	
-	<bean id="rssPrefetcherTarget" class="nz.co.searchwellington.feeds.rss.RssPrefetcher" >
+	<bean id="rssPrefetcherTarget" class="nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher" >
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="rssHttpFetcher" />
-		<constructor-arg ref="rssCache" />
+		<constructor-arg ref="liveRssfeedNewsitemService" />
+		<constructor-arg ref="feedNewsitemCache" />
 	</bean>
 		
-	<bean id="rssFeedDAO" class="nz.co.searchwellington.feeds.rss.RssFeedDAO">
-		<constructor-arg ref="rssCache" />
+	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >
+		<constructor-arg ref="cacheManager" />
+	</bean>
+	
+	<bean id="liveRssfeedNewsitemService" class="nz.co.searchwellington.feeds.LiveRssfeedNewsitemService">
+		<constructor-arg ref="urlCleaner" />
+		<constructor-arg ref="rssHttpFetcher" />		
+	</bean>
+	
+	
+	<bean id="cachingRssfeedNewsitemService" class="nz.co.searchwellington.feeds.CachingRssfeedNewsitemService">	
+		<constructor-arg ref="feedNewsitemCache" />
 	</bean>
 	
 </beans>
