@@ -39,6 +39,17 @@ These services allow content to be queried programmatically and easierly used in
 
 <h3>Supported Queries</h3>
 
+<ul>
+<li>Tag and publisher newsitems</li>
+<li>Newsitem search</li>
+<li>RSS feed to JSON mirroring</li>
+</ul>
+
+
+<h1>Tag and publisher newsitems</h1>
+
+<p>Returns newsitems by tag and publisher.</p>
+
 
 <p><b>Tag newitems</b></p>
 
@@ -149,12 +160,29 @@ the url. A complete list of available tag and publisher url snippets is shown be
 </table>	
 
 
+
+<h1>RSS to JSON feed mirroring</h1>
+
+<p>Provides JSON copies of local RSS feeds.</p>
+
+	<ul>
+		<li><code>$site_information.url/feed/[feed url snippet]/json</code>
+		<li>Where the feed url snippet matches one of the feeds listed below.</li>
+	</ul>
+
+<p>ie. Wellington Police alerts as a JSON list:</p>
+
+	<ul>
+	<li><code>$site_information.url/feed/wellington-police-updates/json</code></li>
+	</ul>
+	
+
 <b>Available Feeds</b>
 <table>
 	<tr><td>Feed</td><td>JSON URL</td></tr>
 	#foreach($item in $feeds)
-		<tr><td></td>
-		<td><code>Redirect $site_information.url/viewfeed?feed=$item.id $urlBuilder.getFeedUrl($item)</code></td></tr>
+		<tr><td>$item.name</td>
+		<td><code>$item.urlWords</code></td></tr>
 	#end
 </table>
 
