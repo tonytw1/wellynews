@@ -116,6 +116,9 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 				
 		mv.setViewName("tag");
+		if (page > 0) {
+			mv.setViewName("tagNewsArchive");
+		}
 		return mv;
 	}
 	

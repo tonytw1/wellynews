@@ -18,7 +18,7 @@
 #parse("includes/rss_widget_for_tag.vm")
 </div>
 
-<h2><a href="$site_information.url/tag/$tag.name">$tag.displayName</a> / news</h2> 
+<h2><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2> 
 
 	#parse("includes/tag_admin_links.vm")
 
