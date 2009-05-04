@@ -107,7 +107,10 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		
 		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
 		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewitems(tag, showBroken, startIndex, MAX_NEWSITEMS);         
-				
+		
+		int totalNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, showBroken);
+		mv.addObject("main_content_total", totalNewsitemCount);
+		
 		mv.addObject("main_content", taggedNewsitems);
 		mv.addObject("websites", taggedWebsites);
 	

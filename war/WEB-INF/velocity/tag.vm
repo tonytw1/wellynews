@@ -56,7 +56,9 @@
 				#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
 			#end
 	
-			#parse("includes/main_content.vm")	
+			#parse("includes/main_content.vm")
+						
+			#parse("includes/tag_page_links.vm")
 		</div>
 
 

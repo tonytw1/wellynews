@@ -134,6 +134,20 @@ margin-bottom: 16px;
 }
 
 
+.pagelinks ul {
+	margin-left: 0;
+	padding-left: 0;	
+} 
+
+.pagelinks li {
+	margin-left: 0;
+	margin-right: 10;
+   	margin-top: 12px;
+	display: inline;
+}
+
+
+
 .rss {
 float: right;
 margin-top: 16px;
