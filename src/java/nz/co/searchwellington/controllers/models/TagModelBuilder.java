@@ -56,7 +56,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			log.info("Building tag page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
-			return populateTagPageModelAndView(tag, showBroken);
+			int page = 0;
+			
+			if (request.getAttribute("page") != null) {
+				page = (Integer) request.getAttribute("page");
+				log.info("Setting page to: " + page);
+			}
+			return populateTagPageModelAndView(tag, showBroken, page);
 		}
 		return null;
 	}
@@ -86,16 +92,22 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         }
     }
 	
-	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken) {		
+	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page) {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName());        		
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
-		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
-		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewitems(tag, showBroken, MAX_NEWSITEMS);         
+		int startIndex = 0;
+		if (page > 1) {
+			startIndex = (page -1 ) * MAX_NEWSITEMS;
+			log.info("Setting start index to: " + startIndex);
+		}
 		
+		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
+		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewitems(tag, showBroken, startIndex, MAX_NEWSITEMS);         
+				
 		mv.addObject("main_content", taggedNewsitems);
 		mv.addObject("websites", taggedWebsites);
 	

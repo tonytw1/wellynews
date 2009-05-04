@@ -74,7 +74,7 @@ public interface ResourceRepository {
     public List<Website> getTaggedWebsites(Tag tag, boolean showBroken, int max_newsitems);
     public List<Website> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites);
         
-    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int max_newsitems);
+    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int startIndex, int maxItems);
     public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int max_secondary_items);
     
     public List<Resource> getTagWatchlist(Tag tag, boolean showBroken);

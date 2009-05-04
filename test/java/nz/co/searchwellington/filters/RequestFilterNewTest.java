@@ -27,13 +27,23 @@ public class RequestFilterNewTest extends TestCase {
 	private Feed feed = mock(Feed.class);
 	
 	@Override
-	protected void setUp() throws Exception {		 
+	protected void setUp() throws Exception {
 		stub(resourceDAO.loadTagByName("transport")).toReturn(transportTag);
 		stub(resourceDAO.loadTagByName("soccer")).toReturn(soccerTag);
 		stub(resourceDAO.getPublisherByUrlWords("capital-times")).toReturn(capitalTimesPublisher);
 		stub(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).toReturn(feed);
 		filter = new RequestFilter(resourceDAO);
-	 }
+	}
+	
+	
+	public void testShouldParsePageAttribute() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/transport");
+		 request.setParameter("page", "3");
+		 filter.loadAttributesOntoRequest(request);
+		 Integer page = (Integer) request.getAttribute("page");
+		 assertEquals(3, page.intValue());
+	}
 	
 	
 	public void testShouldIgnoreTagAndPublisherLookupsForArchivePaths() throws Exception {

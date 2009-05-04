@@ -233,22 +233,19 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
     }
 
     
-    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int max_items) {        
+    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int startIndex, int maxItems) {        
         log.debug("Searching for newsitems tagged: " + tag.getName());
                    
-        BooleanQuery query = makeTagNewsitemsQuery(tag, showBroken);
- 
-        Searcher searcher;
+        BooleanQuery query = makeTagNewsitemsQuery(tag, showBroken);        
 		try {
-			searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
+			Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
 			Sort sort = dateDescendingSort();
 			Hits hits = searcher.search(query, sort);
-			log.debug("Found " + hits.length() + " matching.");
-                
-			return loadResourcesFromHits(max_items, hits);                
+			log.info("Found " + hits.length() + " matching.");                
+			return loadResourcesFromHits(maxItems, startIndex, hits);
+			
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("IOException while getting tagged newsitems; return empty list", e);
 		}
 		return new ArrayList<Resource>();
     }
@@ -373,8 +370,14 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
     
     
     private List <Resource> loadResourcesFromHits(int number, Hits hits) throws IOException {
-        List<Resource> matchingNewsitems = new ArrayList<Resource>();
-        for (int i = 0; i < hits.length() && i < number; i++) {
+    	return loadResourcesFromHits(number, 0, hits);
+    }
+    
+    
+    private List <Resource> loadResourcesFromHits(int numberOfItems, int startIndex, Hits hits) throws IOException {
+        List<Resource> matchingNewsitems = new ArrayList<Resource>();        
+        int endIndex = numberOfItems + startIndex;
+		for (int i = startIndex; i < hits.length() && i < endIndex; i++) {
             int loadID = new Integer(hits.doc(i).get("id")).intValue();
             Resource loadedResource = this.loadResourceById(loadID);
             if (loadedResource != null) {

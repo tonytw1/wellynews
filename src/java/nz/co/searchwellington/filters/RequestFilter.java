@@ -28,7 +28,18 @@ public class RequestFilter {
         this.resourceDAO = resourceDAO;     
     }
     
-    public void loadAttributesOntoRequest(HttpServletRequest request) {      
+    public void loadAttributesOntoRequest(HttpServletRequest request) {
+    	
+    	if (request.getParameter("page") != null) {
+    		String pageString = request.getParameter("page");
+    		try {
+    			Integer page = Integer.parseInt(pageString);
+    			request.setAttribute("page", page);
+    		} catch (NumberFormatException e) {
+    		}    		
+    	}
+    	
+    	
         // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
         if (request.getParameter("tag") != null) {
             String tagName = request.getParameter("tag");        
