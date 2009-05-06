@@ -56,16 +56,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			log.info("Building tag page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
-			int page = 0;
-			
-			if (request.getAttribute("page") != null) {
-				page = (Integer) request.getAttribute("page");
-				log.info("Setting page to: " + page);
-			}
+			int page = getPage(request);
 			return populateTagPageModelAndView(tag, showBroken, page);
 		}
 		return null;
 	}
+
 	
 	@SuppressWarnings("unchecked")
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
@@ -81,6 +77,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateRelatedFeed(mv, tag);
 		populateGeocoded(mv, showBroken, tag);		
 		populateTagFlickrPool(mv, tag);
+		
+		mv.addObject("tag_feeds", resourceDAO.getTaggedFeeds(tag, showBroken));
 	}
  	
 	
@@ -99,11 +97,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
-		int startIndex = 0;
-		if (page > 1) {
-			startIndex = (page -1 ) * MAX_NEWSITEMS;
-			log.info("Setting start index to: " + startIndex);
-		}
+		int startIndex = getStartIndex(page);
 		
 		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
 		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewitems(tag, showBroken, startIndex, MAX_NEWSITEMS);         
@@ -120,13 +114,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 				
 		mv.setViewName("tag");
 		if (page > 0) {
+			mv.addObject("page", page);
 			mv.setViewName("tagNewsArchive");
 		}
 		return mv;
 	}
-	
-	
 
+	
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
         List<Resource> allCommentedNewsitems = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);        
         List<Resource>commentedToShow;

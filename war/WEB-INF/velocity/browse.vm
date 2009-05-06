@@ -24,18 +24,10 @@
 #parse("includes/search_widget.vm")
 
 
-#if ($previous_page || $next_page)
-	#if ($previous_page) 
-		<a href="$site_information.url$previous_page.href">$previous_page.label</a> 
-	#end
-	|
-	#if ($next_page) 
-		<a href="$site_information.url$next_page.href">$next_page.label</a>
-	#end
-#end
-
-
+#parse("includes/publisher_page_links.vm")	
 #parse("includes/main_content.vm")
+#parse("includes/publisher_page_links.vm")
+	
 </div>
 
 <div class="right">

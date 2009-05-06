@@ -489,6 +489,33 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
 		}        
         return matchingWebsites;        
     }
+    
+    
+    public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken) {
+    	  List <Resource> matchingFeeds = new ArrayList<Resource>();
+          
+    	   BooleanQuery query = new BooleanQuery();                
+           if (!showBroken) {
+               addHttpStatusRestriction(query);            
+           }           
+           addTagRestriction(query, tag);
+           addTypeRestriction(query, "F");
+
+   		try {
+   			Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
+   			Sort sort = dateDescendingSort();
+           
+   			log.debug("Query: " + query.toString());
+   			Hits hits = searcher.search(query, sort);
+   			log.debug("Found " + hits.length() + " matching.");
+   			matchingFeeds = loadResourcesFromHits(30, hits);
+   			
+   		} catch (IOException e) {
+   			// TODO Auto-generated catch block
+   			e.printStackTrace();
+   		} 
+   		return matchingFeeds;    	
+    }
 
 
     public List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int max_websites) {
@@ -730,13 +757,13 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
         }
         
         
-        final boolean shouldAppearOnPublisherAndParentTagtPages = 
+        final boolean shouldAppearOnPublisherAndParentTagPages = 
             resource.getType().equals("L") || resource.getType().equals("N")
-            || resource.getType().equals("C");
+            || resource.getType().equals("C") || resource.getType().equals("F");
         
         // TODO is the watchlist one uses; ie. is that method still implemented in hibernate?
         
-        if (shouldAppearOnPublisherAndParentTagtPages) {            
+        if (shouldAppearOnPublisherAndParentTagPages) {            
             Set <Tag> existingTags = new HashSet<Tag>(resourceTags);
             for (Tag tag : existingTags) {                
                 resourceTags.addAll(tag.getAncestors());

@@ -6,8 +6,17 @@ import nz.co.searchwellington.model.RssFeedable;
 
 public class JSONBucket {
 
+	//private int totalItems;
 	private List<RssFeedable> newsitems;
+
+//	public int getTotalItems() {
+//		return totalItems;
+//	}
 	
+//	public void setTotalItems(int totalItems) {
+//		this.totalItems = totalItems;
+//	}
+
 	public List<RssFeedable> getNewsitems() {
 		return newsitems;
 	}

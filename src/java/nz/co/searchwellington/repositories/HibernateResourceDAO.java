@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import java.io.IOException;
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
 
-import org.apache.lucene.queryParser.ParseException;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -523,18 +521,29 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         list();
     }
 
-   
     
+    public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken) {        
+    	return getPublisherNewsitems(publisher, MaxNumberOfItems, showBroken, 0);
+    }
     
     
     @SuppressWarnings("unchecked")
-    public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken) {        
-        Criteria criteria = makePublisherNewsitemsCriteria(publisher, showBroken);
+    public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex) {  
+        Criteria criteria = makePublisherNewsitemsCriteria(publisher, showBroken);       
         return criteria.setMaxResults(MaxNumberOfItems).
+        setFirstResult(startIndex).
         setCacheable(true).
         list();
     }
     
+    // TODO count for better performance;
+    public int getPublisherNewsitemsCount(Website publisher, boolean showBroken) {
+    	Criteria criteria = makePublisherNewsitemsCriteria(publisher, showBroken);       
+    	return criteria.setCacheable(true).
+    	list().size();
+    }
+    
+        
     @SuppressWarnings("unchecked")
     public List<Newsitem> getAllPublisherNewsitems(Website publisher, boolean showBroken) {
         return makePublisherNewsitemsCriteria(publisher, showBroken).

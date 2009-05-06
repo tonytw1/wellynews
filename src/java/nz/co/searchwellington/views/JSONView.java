@@ -55,7 +55,8 @@ public class JSONView  implements View{
 		
 		xstream.alias("date", java.sql.Date.class);
 		
-		JSONBucket bucket = new JSONBucket();
+		JSONBucket bucket = new JSONBucket();		
+		//bucket.setTotalItems((Integer) model.get("main_content_total"));
 		bucket.setNewsitems(mainContent);
 		res.getOutputStream().print(xstream.toXML(bucket));        
 		res.getOutputStream().flush();		

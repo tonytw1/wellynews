@@ -15,9 +15,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.queryParser.ParseException;
-
 
 public interface ResourceRepository {
 
@@ -32,8 +29,11 @@ public interface ResourceRepository {
 
     public List <Newsitem> getLatestNewsitems(int number, boolean showBroken);
 
-    public List <Newsitem> getAllPublisherNewsitems(Website publisher, boolean showBroken);    
-    public List <Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken);
+    public List <Newsitem> getAllPublisherNewsitems(Website publisher, boolean showBroken);
+    public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken); 
+    public List <Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex);
+    public List <Website> getPublisherFeeds(Website publisher);
+    public List <Website> getPublisherWatchlist(Website publisher);
 
     public List <Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken);
     public List <Resource> getNewsitemsMatchingKeywords(String keywords,  boolean showBroken);
@@ -41,8 +41,6 @@ public interface ResourceRepository {
     public List <Newsitem> getNewsitemsForMonth(Date month);
 
 
-    public List <Website> getPublisherFeeds(Website publisher);
-    public List <Website> getPublisherWatchlist(Website publisher);
 
     public List <Website> getLatestWebsites(int maxNumberOfItems, boolean showBroken);
 
@@ -125,4 +123,6 @@ public interface ResourceRepository {
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken);
 	public Feed loadFeedByUrlWords(String string);
+	public int getPublisherNewsitemsCount(Website publisher, boolean showBroken);
+	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken);
 }

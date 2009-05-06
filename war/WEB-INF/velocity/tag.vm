@@ -97,11 +97,14 @@
 		</div>
 	
 		#parse("includes/geocoded.vm")
+		
+		#parse("includes/tag_feeds.vm")	
 	
 		<div class="box">
 			#parse("includes/latest_newsitems.vm")
 			<br clear="all"/>
 		</div>
+		
 	
 		#parse("includes/tag_calendars.vm")	
 		#parse("includes/tagless.vm")	

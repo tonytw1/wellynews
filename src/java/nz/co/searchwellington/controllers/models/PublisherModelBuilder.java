@@ -41,8 +41,9 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {				
 		if (isValid(request)) {
 			logger.info("Building publisher page model");
-			Website publisher = (Website) request.getAttribute("publisher"); 
-			return populatePublisherPageModelAndView(publisher, showBroken);
+			Website publisher = (Website) request.getAttribute("publisher");
+			int page = getPage(request);
+			return populatePublisherPageModelAndView(publisher, showBroken, page);
 		}
 		return null;
 	}
@@ -52,15 +53,18 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 
 		
-	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken) {
+	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken, int page) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
 		mv.addObject("description", publisher.getName());
 		mv.addObject("link", urlBuilder.getPublisherUrl(publisher));
 		
-		final List<Newsitem> publisherNewsitems = resourceDAO.getAllPublisherNewsitems(publisher, showBroken);
-		mv.addObject("main_content", publisherNewsitems);
-		if (publisherNewsitems.size() > 0) {
+		int startIndex = getStartIndex(page);
+		final int mainContentTotal = resourceDAO.getPublisherNewsitemsCount(publisher, showBroken);
+		if (mainContentTotal > 0) {
+			mv.addObject("main_content_total", mainContentTotal);
+			final List<Newsitem> publisherNewsitems = resourceDAO.getPublisherNewsitems(publisher, MAX_NEWSITEMS, showBroken, startIndex);		
+			mv.addObject("main_content", publisherNewsitems);
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
 			mv.addObject("publisher", publisher);
 		}		

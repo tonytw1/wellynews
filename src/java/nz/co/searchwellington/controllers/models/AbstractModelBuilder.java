@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.servlet.ModelAndView;
 
 public abstract class AbstractModelBuilder {
@@ -13,6 +15,22 @@ public abstract class AbstractModelBuilder {
 	protected static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS = 2;
 	
 	
+	protected int getPage(HttpServletRequest request) {
+		int page = 0;
+		if (request.getAttribute("page") != null) {
+			page = (Integer) request.getAttribute("page");		
+		}
+		return page;
+	}
+	
+	
+	protected int getStartIndex(int page) {
+		int startIndex = 0;
+		if (page > 1) {
+			startIndex = (page -1 ) * MAX_NEWSITEMS;			
+		}
+		return startIndex;
+	}
 	
 	
 	protected void setRss(ModelAndView mv, String title, String url) {

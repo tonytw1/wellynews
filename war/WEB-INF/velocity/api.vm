@@ -136,9 +136,7 @@ to the end of the query url.</p>
 the url. A complete list of available tag and publisher url snippets is shown below.
 </p>
 
-
-
-
+<!--
 
 <b>Available Tags</b>	
 <table>
@@ -158,6 +156,18 @@ the url. A complete list of available tag and publisher url snippets is shown be
 		<td><code>$item.urlWords</code></td></tr>
 	#end
 </table>	
+
+-->
+
+
+<h4>Pagination</h4>
+
+<p>Each JSON call returns a maximum of 30 results. Additional results can be obtained using
+the page argument.</p>
+
+ie. http://localhost:8080/springapp/victoria-university-of-wellington/json?page=6
+
+<p>"totalItems": 353</p>
 
 
 
@@ -185,6 +195,8 @@ the url. A complete list of available tag and publisher url snippets is shown be
 		<td><code>$item.urlWords</code></td></tr>
 	#end
 </table>
+
+
 
 
 </div>
