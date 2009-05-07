@@ -92,10 +92,8 @@
 	
 		#parse("includes/tag_related_feed.vm")
 	
-		<div class="box">
-			#parse("includes/twitterBadge.vm")
-		</div>
-	
+		#parse("includes/twitterBadge.vm")
+			
 		#parse("includes/geocoded.vm")
 		
 		#parse("includes/tag_feeds.vm")	

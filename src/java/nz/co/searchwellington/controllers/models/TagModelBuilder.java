@@ -78,6 +78,11 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateGeocoded(mv, showBroken, tag);		
 		populateTagFlickrPool(mv, tag);
 		
+		if (tag.getRelatedTwitter() != null && !tag.getRelatedTwitter().equals("")) {
+			log.info("Setting related twitter to: " + tag.getRelatedTwitter());
+			mv.addObject("twitterUsername", tag.getRelatedTwitter());
+		}
+		
 		mv.addObject("tag_feeds", resourceDAO.getTaggedFeeds(tag, showBroken));
 	}
  	
@@ -112,12 +117,22 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			 setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
 		}
 				
+		selectView(page, mv, taggedWebsites, taggedNewsitems);
+		return mv;
+	}
+
+
+	private void selectView(int page, ModelAndView mv,
+			final List<Website> taggedWebsites,
+			final List<Resource> taggedNewsitems) {
+		boolean isOneContentType = taggedNewsitems.isEmpty() || taggedWebsites.isEmpty();		
 		mv.setViewName("tag");
 		if (page > 0) {
 			mv.addObject("page", page);
 			mv.setViewName("tagNewsArchive");
+		} else if (isOneContentType) {
+			mv.setViewName("tagOneContentType");
 		}
-		return mv;
 	}
 
 	
