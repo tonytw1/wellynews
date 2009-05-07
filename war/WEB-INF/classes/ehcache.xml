@@ -38,6 +38,17 @@
         timeToLiveSeconds="7200"
         overflowToDisk="false"
         />
+        
+        
+   	<!-- cache external RSS feed news items -->
+	<cache name="feeds"
+		maxElementsInMemory="250"
+		eternal="false"
+		timeToIdleSeconds="7200"
+		timeToLiveSeconds="7200"
+		overflowToDisk="false"
+		/>     
+        
 
 		
 	<cache name="nz.co.searchwellington.model.ResourceImpl.tags"
