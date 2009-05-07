@@ -70,14 +70,15 @@ public class PublisherSelectFactory {
     }
 
 
-    
+    // TODO Preformance; needs the urlwords field in the db.
     private List<Option> createOptions(boolean showBroken, boolean showCounts, boolean publishedOnly, Select publisherSelect) throws IOException {
         log.info("Creating publisher options; showBroken: " + showBroken + "; publishedOnly: " + publishedOnly);
         List<Option> options = new ArrayList<Option>();
 
         for (Object[] publisher : resourceDAO.getAllPublishers(showBroken, publishedOnly)) {
             Integer publisherId = (Integer) publisher[0];
-            Option nextOption = new Option(publisherId.toString());
+            String publisherUrlWords = ((Website) resourceDAO.loadResourceById(publisherId)).getUrlWords();
+            Option nextOption = new Option(publisherUrlWords);
 
             // Trim the titles to prevent the dropdown distorting the HTML.            
             String optionTitle = (String) publisher[1];
