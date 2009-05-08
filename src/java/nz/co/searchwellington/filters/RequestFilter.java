@@ -47,6 +47,14 @@ public class RequestFilter {
                request.setAttribute("tag", tag);            
         }
         
+        
+        if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {
+            String publisherUrlWords = request.getParameter("publisher");
+            Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);          
+            request.setAttribute("publisher", publisher);
+        }
+        
+        
         if (request.getPathInfo().matches("^/archive/.*/.*$")) {            
             Date monthFromPath = getArchiveDateFromPath(request.getPathInfo());
             if (monthFromPath != null) {

@@ -43,12 +43,11 @@ public class PublisherSelectFactory {
 
 
     
-    private Select build(String myName, Website selected, boolean showBroken, boolean showCounts) throws IOException {
+    private Select build(String selectName, Website selectedPublisher, boolean showBroken, boolean showCounts) throws IOException {
+        Select publisherSelect = new Select(selectName);
+        publisherSelect.setID(selectName);
 
-        Select publisherSelect = new Select(myName);
-        publisherSelect.setID(myName);
-
-        Option noOption = new Option("0");
+        Option noOption = new Option("");
         noOption.setFilterState(true);
         noOption.addElement("No Publisher");
         publisherSelect.addElement(noOption);
@@ -57,7 +56,8 @@ public class PublisherSelectFactory {
         List<Option> options = createOptions(showBroken, showCounts, mustHaveNewsitems, publisherSelect);
         
         for (Option option : options) {
-            if (selected != null && option.getValue().equals(new Integer(selected.getId()).toString())) {
+            boolean isSelectedPublisher = selectedPublisher != null && option.getValue().equals(selectedPublisher.getUrlWords());
+			if (isSelectedPublisher) {
                 Option locallySelectedOption = (Option) option.clone();
                 locallySelectedOption.setSelected(true);
                 publisherSelect.addElement(locallySelectedOption);
