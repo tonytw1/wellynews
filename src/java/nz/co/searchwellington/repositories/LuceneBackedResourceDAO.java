@@ -7,10 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.searchwellington.dates.DateFormatter;
-import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -18,12 +15,8 @@ import nz.co.searchwellington.model.decoraters.highlighting.KeywordHighlightingN
 import nz.co.searchwellington.model.decoraters.highlighting.KeywordHighlightingWebsiteDecorator;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -50,18 +43,18 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
     
     protected String indexPath;
     private IndexReader reader;
-    LuceneAnalyzer analyzer;
-    DateFormatter dateFormatter;
+    LuceneAnalyzer analyzer;   
+	private LuceneIndexUpdateService luceneIndexUpdateService;
     
-    public LuceneBackedResourceDAO(SessionFactory sessionFactory, String indexPath) throws CorruptIndexException, LockObtainFailedException, IOException {
+    public LuceneBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService) throws CorruptIndexException, LockObtainFailedException, IOException {
         super(sessionFactory);
         this.indexPath = indexPath;       
-        analyzer = new LuceneAnalyzer();
-        dateFormatter = new DateFormatter();
+        analyzer = new LuceneAnalyzer();        
+        this.luceneIndexUpdateService = luceneIndexUpdateService;
     }
-
-
-    public String getIndexPath() {
+    
+    
+	public String getIndexPath() {
         return indexPath;
     }
 
@@ -174,50 +167,26 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
     
     @Override
     public void saveResource(Resource resource) {
-        super.saveResource(resource);        
-        // Then update the lucene index with a partial update.
-        try {
-            updateResource(resource);
-        } catch (IOException e) {
-           log.error(e);
-        }
+        super.saveResource(resource);     
+        luceneIndexUpdateService.updateResource(resource);       
     }
     
-    
-    
+        
     public void saveTag(Tag tag) {
         super.saveTag(tag);
-        // Then try to update the lucene index.
-        try {
-            updateTag(tag);            
-        } catch (IOException e) {
-            log.error(e);
-        }
+        luceneIndexUpdateService.updateTag(tag);     
     }
+       
     
-
-
-    
-
     @Override
     public void deleteResource(Resource resource) {        
         super.deleteResource(resource);
-        try {
-			deleteLuceneResource(resource);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}      
+        luceneIndexUpdateService.deleteLuceneResource(resource);		  
     }
 
     
-    public void deleteTag(Tag tag) {        
-        try {
-			deleteLuceneTag(tag);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    public void deleteTag(Tag tag) {     
+        luceneIndexUpdateService.deleteTag(tag);	
         super.deleteTag(tag);         
     }
     
@@ -596,203 +565,34 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
     
     
   
-    public void buildIndex() throws IOException {
-        // Use our our Analyzer so that we can make use of stemming.
-        Analyzer analyzer = new LuceneAnalyzer();
-
-        // A new index is created by opening an IndexWriter with the create argument set to true.
-        IndexWriter createWriter = new IndexWriter(indexPath, analyzer, true);
-
- 
-        Set <Integer> newsitemIdsToIndex = getAllResourceIds();                
-        log.info("Number of newsitems to update in lucene index: " + newsitemIdsToIndex.size());
-        for (Integer id : newsitemIdsToIndex) {
-            Resource resource = loadResourceById(id);
-            log.info("Adding lucene record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());
-            writeResourceToIndex(resource, createWriter);
-        }
-    
-        
-                 
-        for (Tag tag : this.getAllTags()) {
-            log.debug("Adding lucene tag record: " + tag.getId() + " - " + tag.getName());
-            writeTagToIndex(tag, createWriter);            
-        }
-        
-        log.debug("Added " + createWriter.docCount() + " items to the lucene index.");
-        createWriter.close();
-    }
-
-    
-    
-    private void writeResourceToIndex(Resource resource, IndexWriter writer) throws IOException {
-        Document doc = indexResource(resource);      
-        writer.addDocument(doc);
-    }
-    
-    private void writeTagToIndex(Tag tag, IndexWriter writer) throws IOException {
-        Document doc = indexTag(tag);      
-        writer.addDocument(doc);
-    }
-
-
-    
-    
-    private void deleteLuceneResource(Resource resource) throws IOException {
-        // Use an IndexReader to delete the current records (so we can update them).      
-        Term deleteTerm = new Term("id", Integer.toString(resource.getId()));
-        IndexWriter updater = new IndexWriter(indexPath, analyzer, false);
-        updater.deleteDocuments(deleteTerm);
-        updater.flush();
-        updater.close();
-    }
-    
-    
-    
-    private void deleteLuceneTag(Tag tag) throws IOException {
-        // Use an IndexReader to delete the current records (so we can update them).      
-        Term deleteTerm = new Term("id", "TAG:" + Integer.toString(tag.getId()));                
-        IndexWriter updater = new IndexWriter(indexPath, analyzer, false);
-        updater.deleteDocuments(deleteTerm);
-        updater.flush();
-        updater.close();
-    }
-
-    
-    private void updateResource(Resource resource) throws IOException {
-        // Update an existing resource in the lucene index by deleting and reinserting it.
-        log.debug("updateResource, updating lucene record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());
-
-        deleteLuceneResource(resource);
-
-        IndexWriter updater = new IndexWriter(indexPath, analyzer, false);
-        writeResourceToIndex(resource, updater);
-        updater.flush();
-        updater.close();
-    }
-    
-    
-    private void updateTag(Tag tag) throws IOException {
-        log.debug("updateTag, updating lucene record: " + tag.getId() + " - " + tag.getDisplayName());
-        deleteLuceneTag(tag);
-     
-        
-        IndexWriter updater = new IndexWriter(indexPath, analyzer, false);
-        writeTagToIndex(tag, updater);
-        updater.flush();
-        updater.close();
-    }
-
-    
-
-    
-    
-
-    private Document indexTag(Tag tag) {
-        Document doc = new Document();
-        doc.add(new Field("id", "TAG:" + Integer.toString(tag.getId()), Field.Store.YES, Field.Index.UN_TOKENIZED));   
-        doc.add(new Field("type", "T", Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("name", tag.getDisplayName(), Field.Store.YES, Field.Index.TOKENIZED));
-        return doc;
-    }
-    
-
-    private Document indexResource(Resource resource) {
-    
-        Document doc = new Document();
-        doc.add(new Field("id", Integer.toString(resource.getId()), Field.Store.YES, Field.Index.UN_TOKENIZED));   
-        doc.add(new Field("type", resource.getType(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("http_status", Integer.toString(resource.getHttpStatus()), Field.Store.YES, Field.Index.UN_TOKENIZED));
-        
-        doc.add(new Field("name_sort", resource.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-        doc.add(new Field("name", resource.getName(), Field.Store.YES, Field.Index.TOKENIZED));
-        doc.add(new Field("description", resource.getDescription(), Field.Store.YES, Field.Index.TOKENIZED));            
-                    
-        if (resource.getDate() != null) {           
-            doc.add(new Field("date", dateFormatter.formatDate(resource.getDate(), "yyyy-MM-dd"), Field.Store.YES, Field.Index.UN_TOKENIZED));
-        }
-        
-        if (resource.getLiveTime() != null) {
-            doc.add(new Field("last_live", Long.toString(resource.getLiveTime().getTime()), Field.Store.YES, Field.Index.UN_TOKENIZED));
-        }
-        
-        addResourceTags(resource, doc);
-        
-        if (resource.getType().equals("N")) {
-            Newsitem newsitem = (Newsitem) resource;
-            int commentCount = 0;
-            if (newsitem.getCommentFeed() != null) {
-                commentCount = newsitem.getCommentFeed().getComments().size();
-            }
-            
-            if (newsitem.getPublisher() != null) {
-            	doc.add(new Field("publisher", Integer.toString(newsitem.getPublisher().getId()), Field.Store.YES, Field.Index.UN_TOKENIZED));
-            }
-            
-            doc.add(new Field("comment_count", Integer.toString(commentCount), Field.Store.YES, Field.Index.UN_TOKENIZED));            
-            if (newsitem.getCommentFeed() != null) {
-                for (Comment comment : newsitem.getCommentFeed().getComments()) {
-                    doc.add(new Field("comment", comment.getTitle(), Field.Store.YES, Field.Index.TOKENIZED));                
-                }
-            }
-        }
-        
-        if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
-            doc.add(new Field("geotagged", "1", Field.Store.YES, Field.Index.UN_TOKENIZED));
-        }        
-        return doc;
-    }
-
-
-    private void addResourceTags(Resource resource, Document doc) {
-        Set <Tag> resourceTags = new HashSet<Tag>();
-        
-        
-        // TODO this null check should not be needed; check logs then remove.
-        Set <Tag> tags = resource.getTags();
-        if (tags != null) {
-            resourceTags.addAll(tags);
-        } else {
-            log.warn("Resource has null tag set: " + resource.getName());
-        }
-        
-        
-        final boolean shouldAppearOnPublisherAndParentTagPages = 
-            resource.getType().equals("L") || resource.getType().equals("N")
-            || resource.getType().equals("C") || resource.getType().equals("F");
-        
-        // TODO is the watchlist one uses; ie. is that method still implemented in hibernate?
-        
-        if (shouldAppearOnPublisherAndParentTagPages) {            
-            Set <Tag> existingTags = new HashSet<Tag>(resourceTags);
-            for (Tag tag : existingTags) {                
-                resourceTags.addAll(tag.getAncestors());
-            }
-            
-            if (((PublishedResource) resource).getPublisher() != null) {              
-                for (Tag publisherTag : ((PublishedResource) resource).getPublisher().getTags()) {                
-                    log.debug("Adding publisher tag " + publisherTag.getName() + " to record.");
-                    resourceTags.add(publisherTag);
-                    resourceTags.addAll(publisherTag.getAncestors());
-                }
-            }
-        }
-        
-        for (Tag tag : resourceTags) {
-            log.debug("Adding tag " + tag.getName() + " to record.");
-            doc.add(new Field("tag_id", Integer.toString(tag.getId()), Field.Store.YES, Field.Index.UN_TOKENIZED));            
-        }
-    }
+	
 
     
     
    
     
+   
+
+
+    
+    
+    
+    
+    
+    
   
+    
+    
     
     
 
     
+
+    
+    
+
+    
+
     
     @Override
     public List<Tag> getTagsMatchingKeywords(String keywords) {

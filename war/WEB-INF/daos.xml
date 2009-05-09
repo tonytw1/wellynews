@@ -5,8 +5,20 @@
 	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.LuceneBackedResourceDAO">
  		<constructor-arg ref="sessionFactory" />
  		<constructor-arg value="${lucene.path}" />
+ 		<constructor-arg ref="luceneIndexUpdateService" />
 	</bean>
-
+	
+	<bean id="luceneIndexUpdateService" class="nz.co.searchwellington.repositories.LuceneIndexUpdateService" >
+		<constructor-arg ref="dateFormatter" />
+		<constructor-arg value="${lucene.path}" />
+	</bean>
+	
+	<bean id="luceneIndexRebuildService" class="nz.co.searchwellington.repositories.LuceneIndexRebuildService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="luceneIndexUpdateService" />
+		<constructor-arg value="${lucene.path}" />
+	</bean>
+	
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
 	 	<constructor-arg ref="sessionFactory" />
 	</bean>
