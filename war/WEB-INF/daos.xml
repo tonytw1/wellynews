@@ -19,6 +19,10 @@
 		<constructor-arg value="${lucene.path}" />
 	</bean>
 	
+	<bean id="solrIndexRebuildService" class="nz.co.searchwellington.repositories.SolrIndexRebuildService">
+		<constructor-arg ref="resourceDAO" />
+	</bean>
+	
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
 	 	<constructor-arg ref="sessionFactory" />
 	</bean>

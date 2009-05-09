@@ -26,11 +26,13 @@ public class LuceneIndexUpdateService {
 	
 	private DateFormatter dateFormatter;	
 	private String indexPath;
+	private Analyzer analyzer;
 	
 				
 	public LuceneIndexUpdateService(DateFormatter dateFormatter, String indexPath) {	
 		this.dateFormatter = dateFormatter;
 		this.indexPath = indexPath;
+		analyzer = new LuceneAnalyzer();
 	}
 
 	public void updateResource(Resource resource) {
@@ -38,7 +40,6 @@ public class LuceneIndexUpdateService {
         log.debug("updateResource, updating lucene record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());        
         deleteLuceneResource(resource);
         
-        Analyzer analyzer = new LuceneAnalyzer();
 		try {
 			IndexWriter updater = new IndexWriter(indexPath, analyzer, false);
 			writeResourceToIndex(resource, updater);
@@ -60,10 +61,8 @@ public class LuceneIndexUpdateService {
         log.debug("updateTag, updating lucene record: " + tag.getId() + " - " + tag.getDisplayName());
         deleteTag(tag);
         
-        Analyzer analyzer = new LuceneAnalyzer();
-        IndexWriter updater;
-		try {
-			updater = new IndexWriter(indexPath, analyzer, false);
+        try {
+        	IndexWriter updater = new IndexWriter(indexPath, analyzer, false);
 			writeTagToIndex(tag, updater);
 			updater.flush();
 			updater.close();
@@ -81,29 +80,26 @@ public class LuceneIndexUpdateService {
 	
 		
 	public void deleteTag(Tag tag) {
-		  Analyzer analyzer = new LuceneAnalyzer();
-	        // Use an IndexReader to delete the current records (so we can update them).      
-	        Term deleteTerm = new Term("id", "TAG:" + Integer.toString(tag.getId()));                
-	        IndexWriter updater;
-			try {
-				updater = new IndexWriter(indexPath, analyzer, false);
-				updater.deleteDocuments(deleteTerm);
-				updater.flush();
-				updater.close();
-			} catch (CorruptIndexException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (LockObtainFailedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	    }
+		// Use an IndexReader to delete the current records (so we can update them).      
+		Term deleteTerm = new Term("id", "TAG:" + Integer.toString(tag.getId()));                
+		IndexWriter updater;
+		try {
+			updater = new IndexWriter(indexPath, analyzer, false);
+			updater.deleteDocuments(deleteTerm);
+			updater.flush();
+			updater.close();
+		} catch (CorruptIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (LockObtainFailedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
-	    
-	
 	
 	public void deleteLuceneResource(Resource resource) {
         // Use an IndexReader to delete the current records (so we can update them).      
@@ -197,43 +193,38 @@ public class LuceneIndexUpdateService {
 	 
 	 
 	 private void addResourceTags(Resource resource, Document doc) {
-	        Set <Tag> resourceTags = new HashSet<Tag>();
-	        
-	        
-	        // TODO this null check should not be needed; check logs then remove.
-	        Set <Tag> tags = resource.getTags();
-	        if (tags != null) {
-	            resourceTags.addAll(tags);
-	        } else {
-	            log.warn("Resource has null tag set: " + resource.getName());
-	        }
-	        
-	        
-	        final boolean shouldAppearOnPublisherAndParentTagPages = 
-	            resource.getType().equals("L") || resource.getType().equals("N")
-	            || resource.getType().equals("C") || resource.getType().equals("F");
-	        
-	        // TODO is the watchlist one uses; ie. is that method still implemented in hibernate?
-	        
-	        if (shouldAppearOnPublisherAndParentTagPages) {            
-	            Set <Tag> existingTags = new HashSet<Tag>(resourceTags);
-	            for (Tag tag : existingTags) {                
-	                resourceTags.addAll(tag.getAncestors());
-	            }
-	            
-	            if (((PublishedResource) resource).getPublisher() != null) {              
-	                for (Tag publisherTag : ((PublishedResource) resource).getPublisher().getTags()) {                
-	                    log.debug("Adding publisher tag " + publisherTag.getName() + " to record.");
-	                    resourceTags.add(publisherTag);
-	                    resourceTags.addAll(publisherTag.getAncestors());
-	                }
-	            }
-	        }
-	        
-	        for (Tag tag : resourceTags) {
+	        Set <Tag> indexTags = getIndexTagsForResource(resource);	        
+	        for (Tag tag : indexTags) {
 	            log.debug("Adding tag " + tag.getName() + " to record.");
 	            doc.add(new Field("tag_id", Integer.toString(tag.getId()), Field.Store.YES, Field.Index.UN_TOKENIZED));            
 	        }
 	    }
+
+	 
+	private Set<Tag> getIndexTagsForResource(Resource resource) {	
+		Set <Tag> indexTags = new HashSet<Tag>();
+		indexTags.addAll(resource.getTags());
+		
+		final boolean shouldAppearOnPublisherAndParentTagPages = 
+		    resource.getType().equals("L") || resource.getType().equals("N")
+		    || resource.getType().equals("C") || resource.getType().equals("F");
+				
+		if (shouldAppearOnPublisherAndParentTagPages) {            
+		    Set <Tag> existingTags = new HashSet<Tag>(indexTags);
+		    for (Tag tag : existingTags) {
+		        indexTags.addAll(tag.getAncestors());
+		    }
+		    
+		    if (((PublishedResource) resource).getPublisher() != null) {              
+		        for (Tag publisherTag : ((PublishedResource) resource).getPublisher().getTags()) {                
+		            log.debug("Adding publisher tag " + publisherTag.getName() + " to record.");
+		            indexTags.add(publisherTag);
+		            indexTags.addAll(publisherTag.getAncestors());
+		        }
+		    }
+		}
+		
+		return indexTags;
+	}
 	 	 
 }

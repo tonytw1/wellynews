@@ -157,7 +157,8 @@ public abstract class BaseMultiActionController extends MultiActionController {
         
         Map<String, Integer> chartData = new TreeMap<String, Integer>();                        
         for (TagContentCount link : usedTags) {
-            chartData.put(link.getTag().getDisplayName(), link.getCount());
+        	// TODO broken
+         //   chartData.put(link.getTag().getDisplayName(), new Long(link.getCount()));
         }
         
         mv.addObject("used_tags_chart", chartData);

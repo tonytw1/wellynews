@@ -18,7 +18,7 @@ public class TagInformationService {
     
     Logger log = Logger.getLogger(TagInformationService.class);
     
-    
+    // TODO migrate to a slor facet.
     public List<TagContentCount> getNewsitemsMostUsedTags(List<Newsitem> newsitems, int maxtags) {                
         Map<Tag, Integer> usedTags = new HashMap<Tag, Integer>();        
         for (Newsitem newsitem : newsitems) { 
@@ -75,8 +75,7 @@ public class TagInformationService {
         for (Tag tag : usedTags.keySet()) {
             links.add(new TagContentCount(tag, usedTags.get(tag)));
         }
-        
-        Collections.sort(links);               
+                            
         if (links.size() <= maxtags) {
             return links;
         } else {

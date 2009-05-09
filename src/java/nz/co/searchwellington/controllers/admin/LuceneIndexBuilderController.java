@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
-import nz.co.searchwellington.repositories.LuceneBackedResourceDAO;
 import nz.co.searchwellington.repositories.LuceneIndexRebuildService;
+import nz.co.searchwellington.repositories.SolrIndexRebuildService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,11 +17,13 @@ public class LuceneIndexBuilderController extends BaseMultiActionController {
 	Logger log = Logger.getLogger(LuceneIndexBuilderController.class);
     
     private LuceneIndexRebuildService luceneIndexRebuildService;
+    private SolrIndexRebuildService solrIndexRebuildService;
     private boolean indexingLock;
         
-    public LuceneIndexBuilderController(LuceneIndexRebuildService luceneIndexRebuildService) {
+    public LuceneIndexBuilderController(LuceneIndexRebuildService luceneIndexRebuildService, SolrIndexRebuildService solrIndexRebuildService) {
         super();
         this.luceneIndexRebuildService = luceneIndexRebuildService;
+        this.solrIndexRebuildService = solrIndexRebuildService;
         this.indexingLock = false;
     }
 
@@ -36,7 +38,8 @@ public class LuceneIndexBuilderController extends BaseMultiActionController {
         
         if (!indexingLock) {
             indexingLock = true;            
-            luceneIndexRebuildService.buildIndex();            
+            //luceneIndexRebuildService.buildIndex();
+            solrIndexRebuildService.buildIndex();
             mv.getModel().put("message", "Created new index.");
             indexingLock = false;
             

@@ -189,7 +189,9 @@
 	
 	<bean id="luceneIndexBuilderController" class="nz.co.searchwellington.controllers.admin.LuceneIndexBuilderController">
 		<constructor-arg ref="luceneIndexRebuildService" />
-			<property name="methodNameResolver">
+		<constructor-arg ref="solrIndexRebuildService" />
+		
+		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														

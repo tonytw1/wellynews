@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,6 +12,15 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.SolrDocumentList;
 
 public class RelatedTagsService {
 		
@@ -28,22 +38,39 @@ public class RelatedTagsService {
 	}
 
 
-    public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken) {
-        List<Tag> relatedTags = resourceDAO.getRelatedLinksForTag(tag, showBroken);
-        List<TagContentCount> relatedTagLinks = new ArrayList<TagContentCount>();
-        for (Tag relatedTag : relatedTags) {                        
-            boolean relatedTagIsNotAncestor = !tag.getAncestors().contains(relatedTag);
-			if (relatedTagIsNotAncestor) {
-				// TODO needs a count only method				
-				int relatedItemCount = resourceDAO.getTaggedWebsites(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
-				// TODO merge these calls to get a speed up.
-				relatedItemCount = relatedItemCount + resourceDAO.getTaggedNewsitems(new HashSet<Tag>(Arrays.asList(tag, relatedTag)), showBroken, MAX_WEBSITES).size();
-				relatedTagLinks.add(new TagContentCount(relatedTag, relatedItemCount));				 
-            }
-        }
-        Collections.sort(relatedTagLinks);
-        return relatedTagLinks;
+    public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken) {    	
+    	return getRelatedTags(tag, true);     
     }
 
+
+	private List<TagContentCount> getRelatedTags(Tag tag, boolean b) {
+		List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
+		try {
+			SolrServer solr = new CommonsHttpSolrServer("http://localhost:8080/apache-solr-1.3.0");
+		
+			SolrQuery query = new SolrQuery("tags:" + tag.getId());
+			query.addFacetField("tags");			
+			query.setFacetLimit(20);
+			
+			QueryResponse response = solr.query(query);		
+					
+			FacetField facetField = response.getFacetField("tags");
+			log.info("Found facet field: " + facetField);
+			List<Count> values = facetField.getValues();
+			for (Count count : values) {
+				final int relatedTagId = Integer.parseInt(count.getName());
+				Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
+				final long relatedItemCount = count.getCount();
+				relatedTags.add(new TagContentCount(relatedTag, relatedItemCount));
+			}		
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return relatedTags;
+	}
 	
 }

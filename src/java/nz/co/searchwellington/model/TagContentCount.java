@@ -1,21 +1,20 @@
 package nz.co.searchwellington.model;
 
-public class TagContentCount implements Comparable<TagContentCount> {
+public class TagContentCount {
     
     private Tag tag;
-    private int count;
+    private long count;
     
         
-    public TagContentCount(Tag tag, int count) {
+    public TagContentCount(Tag tag, long count) {
         this.tag = tag;
         this.count = count;
     }
     
-    
-    public int getCount() {
+    public long getCount() {
         return count;
     }
-    public void setCount(int count) {
+    public void setCount(long count) {
         this.count = count;
     }
     public Tag getTag() {
@@ -25,9 +24,4 @@ public class TagContentCount implements Comparable<TagContentCount> {
         this.tag = tag;
     }
     
-    
-    public int compareTo(TagContentCount link) {
-        return (new Integer(this.count).compareTo(link.count)) * -1;
-    }
-
 }

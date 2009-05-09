@@ -19,23 +19,21 @@ public class LuceneIndexRebuildService {
 	private ResourceRepository resourceDAO;
 	private LuceneIndexUpdateService luceneIndexUpdateService;
 	private String indexPath;
+	Analyzer analyzer;
 	
 
 	public LuceneIndexRebuildService(ResourceRepository resourceDAO, LuceneIndexUpdateService luceneIndexUpdateService, String indexPath) {		
 		this.resourceDAO = resourceDAO;
 		this.luceneIndexUpdateService = luceneIndexUpdateService;
 		this.indexPath = indexPath;
+		analyzer = new LuceneAnalyzer();		
 	}
 
 
-	
-	public void buildIndex() {
-		Analyzer analyzer = new LuceneAnalyzer();
-		
+	public void buildIndex() {		
 		// A new index is created by opening an IndexWriter with the create argument set to true.
-		IndexWriter createWriter;
 		try {
-			createWriter = new IndexWriter(indexPath, analyzer, true);
+		IndexWriter createWriter = new IndexWriter(indexPath, analyzer, true);
 			Set<Integer> newsitemIdsToIndex = resourceDAO.getAllResourceIds();
 			log.info("Number of newsitems to update in lucene index: " + newsitemIdsToIndex.size());
 			for (Integer id : newsitemIdsToIndex) {
@@ -50,7 +48,8 @@ public class LuceneIndexRebuildService {
 			}
 		
 			log.debug("Added " + createWriter.docCount() + " items to the lucene index.");
-				createWriter.close();
+			createWriter.close();
+				
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
