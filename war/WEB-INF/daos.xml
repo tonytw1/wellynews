@@ -8,6 +8,10 @@
  		<constructor-arg ref="luceneIndexUpdateService" />
 	</bean>
 	
+	<bean id="solrResourceDAO" class="nz.co.searchwellington.repositories.SolrBackedResourceDAO">
+ 		<constructor-arg ref="sessionFactory" /> 	
+	</bean>
+	
 	<bean id="luceneIndexUpdateService" class="nz.co.searchwellington.repositories.LuceneIndexUpdateService" >
 		<constructor-arg ref="dateFormatter" />
 		<constructor-arg value="${lucene.path}" />

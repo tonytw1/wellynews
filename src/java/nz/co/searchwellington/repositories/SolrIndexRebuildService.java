@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 
+import org.apache.ecs.xhtml.input;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -36,7 +37,7 @@ public class SolrIndexRebuildService {
 		try {
 			SolrServer solr = new CommonsHttpSolrServer("http://localhost:8080/apache-solr-1.3.0");
 			UpdateRequest updateRequest = new UpdateRequest();
-			
+					
 			for (Integer id : newsitemIdsToIndex) {
 				Resource resource = resourceDAO.loadResourceById(id);
 				log.info("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());
@@ -44,8 +45,10 @@ public class SolrIndexRebuildService {
 				SolrInputDocument inputDocument = new SolrInputDocument();
 				inputDocument.addField("id", resource.getId());
 				inputDocument.addField("name", resource.getName());
+				inputDocument.addField("type", resource.getType());
 				inputDocument.addField("httpStatus", resource.getHttpStatus());
 				inputDocument.addField("description", resource.getDescription());
+				inputDocument.addField("date", resource.getDate());
 				
 				for(Tag tag: getIndexTagsForResource(resource)) {
 					inputDocument.addField("tags", tag.getId());
