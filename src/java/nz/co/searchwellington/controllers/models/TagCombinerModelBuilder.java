@@ -17,17 +17,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	private ResourceRepository resourceDAO;
+	private ResourceRepository resourceDAO;	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	
 	
 	public TagCombinerModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {		
-		this.resourceDAO = resourceDAO;
+		this.resourceDAO = resourceDAO;		
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
-		this.relatedTagsService = relatedTagsService;
+		this.relatedTagsService = relatedTagsService;		
 	}
 	
 	
@@ -69,7 +69,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("description", "Items tagged with " + firstTag.getDisplayName() +  " and " + secondTag.getDisplayName() + ".");
 		mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
 		
-		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  
+		final List<Resource> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  
 		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);
 		
 		mv.addObject("main_content", taggedNewsitems);	

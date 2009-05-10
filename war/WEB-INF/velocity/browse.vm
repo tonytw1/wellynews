@@ -6,6 +6,8 @@
 
 <div class="left">
 
+#parse("includes/related_publisher_tags.vm")
+
 #parse("includes/tag_tree.vm")
 
 

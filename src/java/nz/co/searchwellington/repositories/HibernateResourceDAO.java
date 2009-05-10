@@ -572,49 +572,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
    
-        
-    @SuppressWarnings("unchecked")
-    public List<Website> getTaggedWebsites(Tag tag, boolean showBroken, int max_newsitems) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Website.class);        
-        if (!showBroken) {
-        criteria.add(Expression.eq("httpStatus", 200)); 
-        }
-        return criteria.addOrder( Order.asc("name")).
-            createCriteria("tags").add(Restrictions.eq("id", tag.getId())). 
-            setCacheable(true).
-            list();
-    }
-    
-    
-     
-    @SuppressWarnings("unchecked")  
-    public List<Website> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites) {
-        if (tags.size() == 2) {            
-            Iterator<Tag> i = tags.iterator();
-            Tag tag1 = i.next();
-            Tag tag2 = i.next();
-         
-            String showBrokenClause = "";
-            if (!showBroken) {
-                showBrokenClause = " and http_status = 200 ";
-            }
-            
-            List<Website> rows = sessionFactory.getCurrentSession().createSQLQuery(
-                    "  select {resource.*} from resource {resource}, " + 
-                    "           resource_tags as first_tag, resource_tags as second_tag where first_tag.tag_id = ? " +
-                    "           and first_tag.resource_id = resource.id and second_tag.tag_id = ? " +
-                    "           and second_tag.resource_id = resource.id" +
-                    "           and type='W' " + showBrokenClause, "resource", WebsiteImpl.class).
-                    setInteger(0, tag1.getId()).
-                    setInteger(1, tag2.getId()).
-                    setCacheable(true).                    
-                    list();                 
-            return rows;    
-        }        
-        throw new UnsupportedOperationException();
-    }
-
-
     
     @SuppressWarnings("unchecked")
     public List<Newsitem> getNewsitemsForMonth(Date date) {

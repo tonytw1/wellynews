@@ -6,6 +6,7 @@
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="relatedTagsService" />		
 	</bean>
 
 	<bean id="publisherTagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherTagCombinerModelBuilder">
@@ -16,8 +17,7 @@
 	</bean>
 	
 	<bean id="TagModelBuilder" class="nz.co.searchwellington.controllers.models.TagModelBuilder">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="solrResourceDAO" />
+		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
@@ -38,7 +38,7 @@
 	</bean>
 
 	<bean id="TagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.TagCombinerModelBuilder">
-		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />

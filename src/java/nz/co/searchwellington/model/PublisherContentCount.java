@@ -3,9 +3,9 @@ package nz.co.searchwellington.model;
 public class PublisherContentCount {
 
 	private Website publisher;
-	private long count;
+	private int count;
 	
-	public PublisherContentCount(Website publisher, long count) {		
+	public PublisherContentCount(Website publisher, int count) {		
 		this.publisher = publisher;
 		this.count = count;
 	}
@@ -22,7 +22,7 @@ public class PublisherContentCount {
 		return count;
 	}
 	
-	public void setCount(long count) {
+	public void setCount(int count) {
 		this.count = count;
 	}
 	

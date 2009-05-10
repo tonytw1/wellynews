@@ -37,7 +37,7 @@ import org.joda.time.DateTime;
 
 
 
-public class LuceneBackedResourceDAO extends HibernateResourceDAO implements ResourceRepository {
+public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO implements ResourceRepository {
 
     Logger log = Logger.getLogger(LuceneBackedResourceDAO.class);
     
@@ -49,8 +49,8 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
     public LuceneBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService) throws CorruptIndexException, LockObtainFailedException, IOException {
         super(sessionFactory);
         this.indexPath = indexPath;       
-        analyzer = new LuceneAnalyzer();        
         this.luceneIndexUpdateService = luceneIndexUpdateService;
+        analyzer = new LuceneAnalyzer();        
     }
     
     
@@ -202,26 +202,7 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
     }
 
     
-    public List<Resource> getTaggedNewitems(Tag tag, boolean showBroken, int startIndex, int maxItems) {        
-        log.debug("Searching for newsitems tagged: " + tag.getName());
-                   
-        BooleanQuery query = makeTagNewsitemsQuery(tag, showBroken);        
-		try {
-			Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-			Sort sort = dateDescendingSort();
-			Hits hits = searcher.search(query, sort);
-			log.info("Found " + hits.length() + " matching.");                
-			return loadResourcesFromHits(maxItems, startIndex, hits);
-			
-		} catch (IOException e) {
-			log.error("IOException while getting tagged newsitems; return empty list", e);
-		}
-		return new ArrayList<Resource>();
-    }
-    
-    
-    
-    
+   
     public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) {         
     	BooleanQuery query = makeTagNewsitemsQuery(tag, showBroken);
         addPublisherRestriction(query, publisher);
@@ -308,36 +289,7 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
         return null;        
     }
     
-    
-    public int getTaggedNewitemsCount(Tag tag, boolean showBroken) {        
-        log.debug("Searching for Newsitems tagged: " + tag.getName());
-        
-        // Compose a lucene query.        
-        BooleanQuery query = new BooleanQuery();
-        
-        if (!showBroken) {
-            addHttpStatusRestriction(query);            
-        }                
-        addTagRestriction(query, tag);        
-        addTypeRestriction(query, "N");
-        
-        Sort sort = dateDescendingSort();
-        Searcher searcher;
-		try {
-			searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-			log.debug("Query: " + query.toString());
-			Hits hits = searcher.search(query, sort);
-			log.debug("Found " + hits.length() + " matching.");
-			return hits.length();
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return 0;
-    }
-    
-    
+     
     private List <Resource> loadResourcesFromHits(int number, Hits hits) throws IOException {
     	return loadResourcesFromHits(number, 0, hits);
     }
@@ -486,35 +438,7 @@ public class LuceneBackedResourceDAO extends HibernateResourceDAO implements Res
    		return matchingFeeds;    	
     }
 
-
-    public List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int max_websites) {
-        List <Resource> matchingNewsitems = new ArrayList<Resource>();
-        
-        // Compose a lucene query.        
-        BooleanQuery query = new BooleanQuery();                
-        if (!showBroken) {
-            addHttpStatusRestriction(query);            
-        }
-        addTagsRestriction(query, tags);               
-        addTypeRestriction(query, "N");
-
-		try {
-			Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-			Sort sort = dateDescendingSort();
-        
-			log.debug("Query: " + query.toString());
-			Hits hits = searcher.search(query, sort);
-			log.debug("Found " + hits.length() + " matching.");
-			matchingNewsitems = loadResourcesFromHits(max_websites, hits);
-                     
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}    
-        return matchingNewsitems;
-    }
     
-     
 	public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxItems, boolean showBroken) {
     	  List <Resource> matchingNewsitems = new ArrayList<Resource>();
     	  

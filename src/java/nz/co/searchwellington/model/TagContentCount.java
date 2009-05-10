@@ -3,10 +3,10 @@ package nz.co.searchwellington.model;
 public class TagContentCount {
     
     private Tag tag;
-    private long count;
+    private int count;
     
         
-    public TagContentCount(Tag tag, long count) {
+    public TagContentCount(Tag tag, int count) {
         this.tag = tag;
         this.count = count;
     }
@@ -14,7 +14,7 @@ public class TagContentCount {
     public long getCount() {
         return count;
     }
-    public void setCount(long count) {
+    public void setCount(int count) {
         this.count = count;
     }
     public Tag getTag() {

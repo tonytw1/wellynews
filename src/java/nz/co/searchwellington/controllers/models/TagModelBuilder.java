@@ -26,8 +26,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	
-	private ResourceRepository resourceDAO;
-	private ResourceRepository solrResourceDAO;
+	private ResourceRepository resourceDAO;	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
@@ -35,9 +34,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, ResourceRepository solrResourceDAO) {
-		this.resourceDAO = resourceDAO;
-		this.solrResourceDAO = solrResourceDAO;
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService) {
+		this.resourceDAO = resourceDAO;	
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -113,8 +111,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		
 		int startIndex = getStartIndex(page);
 		
-		final List<Website> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
-		final List<Resource> taggedNewsitems = solrResourceDAO.getTaggedNewitems(tag, showBroken, startIndex, MAX_NEWSITEMS);         
+		final List<Resource> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
+		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(tag, showBroken, startIndex, MAX_NEWSITEMS);         
 		
 		int totalNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, showBroken);
 		mv.addObject("main_content_total", totalNewsitemCount);
@@ -131,9 +129,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	}
 
 
-	private void selectView(int page, ModelAndView mv,
-			final List<Website> taggedWebsites,
-			final List<Resource> taggedNewsitems) {
+	private void selectView(int page, ModelAndView mv, final List<Resource> taggedWebsites, final List<Resource> taggedNewsitems) {
 		boolean isOneContentType = taggedNewsitems.isEmpty() || taggedWebsites.isEmpty();		
 		mv.setViewName("tag");
 		if (page > 0) {

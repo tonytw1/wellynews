@@ -4,10 +4,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
@@ -21,12 +23,14 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private ResourceRepository resourceDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
+	private RelatedTagsService relatedTagsService;
 
 	
-	public PublisherModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {		
+	public PublisherModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {		
 		this.resourceDAO = resourceDAO;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
+		this.relatedTagsService = relatedTagsService;
 	}
 
 
@@ -49,7 +53,12 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 	
 	
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		Website publisher = (Website) request.getAttribute("publisher"); 
+		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagLinks(publisher, showBroken);
+		if (relatedTagLinks.size() > 0) {
+			mv.addObject("related_tags", relatedTagLinks);
+		}
 	}
 
 		

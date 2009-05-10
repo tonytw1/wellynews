@@ -1,6 +1,6 @@
 #if ($related_tags)
 	<h2>Related Tags</h2>
-	<p>$publisher.name have been posting items tagged with:</p>
+	<p>$publisher.name has posted items tagged with:</p>
 
 	<ul>
 	#set ($first =1)

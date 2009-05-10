@@ -112,8 +112,7 @@ public class IndexController extends BaseMultiActionController {
     private void populateFeatured(ModelAndView mv, User loggedInUser) throws IOException {
         final Tag featuredTag = resourceDAO.loadTagByName("featured");
         if (featuredTag != null) {         
-            List<Website> featuredSites = resourceDAO.getTaggedWebsites(featuredTag, false, 10);                                    
-            mv.getModel().put("featured", featuredSites);     
+            mv.getModel().put("featured", resourceDAO.getTaggedWebsites(featuredTag, false, 10));
         }
     }
 

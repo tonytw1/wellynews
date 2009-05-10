@@ -85,7 +85,7 @@ public class RssfeedsController extends BaseMultiActionController {
         } else if (tag != null) {
             mv.getModel().put("heading", tag.getDisplayName() + " RSS Feed");
             mv.getModel().put("custom", new Boolean(true));            
-            mv.getModel().put("main_content", resourceDAO.getTaggedNewitems(tag, showBroken, 0, MAX_NEWSITEMS));
+            mv.getModel().put("main_content", resourceDAO.getTaggedNewsitems(tag, showBroken, 0, MAX_NEWSITEMS));
             setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));        
   
         } else {
