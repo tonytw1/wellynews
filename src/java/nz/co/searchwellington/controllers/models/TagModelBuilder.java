@@ -10,6 +10,7 @@ import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
@@ -67,11 +68,17 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
+		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagLinks(tag, showBroken);
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}
 		
+		List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublisherLinks(tag, showBroken);
+		if (relatedPublisherLinks.size() > 0) {
+			mv.addObject("related_publishers", relatedPublisherLinks);
+		}
+				
 		populateCommentedTaggedNewsitems(mv, tag, showBroken);
 		mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
 		populateRelatedFeed(mv, tag);

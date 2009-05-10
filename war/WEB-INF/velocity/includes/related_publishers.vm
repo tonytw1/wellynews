@@ -1,0 +1,18 @@
+#if ($related_publishers)
+	<h2>Related Publishers</h2>
+	<p>These publisers have been posting newsitems tagged with $tag.displayName.toLowerCase().</p>
+	
+	<ul>
+	#set ($first =1)
+	#foreach ($related_publisher in $related_publishers)
+        <li><a href="$urlBuilder.getPublisherCombinerUrl($related_publisher.publisher, $tag)">$related_publisher.publisher.name.toLowerCase()</a>
+        #if ($first == 1)
+          	($related_publisher.count #showPluralWord($related_publisher.count "item"))
+           	#set ($first =0)
+        #else
+           	($related_publisher.count)
+        #end
+        </li>
+	#end
+	</ul>
+#end
