@@ -38,8 +38,8 @@ public class RelatedTagsService {
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = getTagSolrQuery(tag);
-			query.addFacetField("tags");			
+			SolrQuery query = getTaggedContentSolrQuery(tag, showBroken);
+			query.addFacetField("tags");
 			query.setFacetLimit(10);
 			query.setFacetMinCount(1);
 			
@@ -69,8 +69,8 @@ public class RelatedTagsService {
     public List<TagContentCount> getRelatedTagLinks(Website publisher, boolean showBroken) {    	
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
 		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = new SolrQuery("publisher:" + publisher.getId());
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			SolrQuery query = getPublisherContentSolrQuery(publisher, showBroken);
 			query.addFacetField("tags");
 			query.setFacetLimit(10);
 			query.setFacetMinCount(1);
@@ -96,17 +96,33 @@ public class RelatedTagsService {
     
     
 
-	private SolrQuery getTagSolrQuery(Tag tag) {
-		SolrQuery query = new SolrQuery("tags:" + tag.getId());
+	private SolrQuery getTaggedContentSolrQuery(Tag tag, boolean showBroken) {
+		StringBuilder sb= new StringBuilder();
+		sb.append("+tags:" + tag.getId());
+		if (showBroken != true) {
+			sb.append(" +httpStatus:200");
+		}		
+		SolrQuery query = new SolrQuery(sb.toString());
 		return query;
 	}
 
+	private SolrQuery getPublisherContentSolrQuery(Website publisher, boolean showBroken) {
+		StringBuilder sb= new StringBuilder();
+		sb.append("+publisher:" + publisher.getId());
+		if (showBroken != true) {
+			sb.append(" +httpStatus:200");
+		}		
+		SolrQuery query = new SolrQuery(sb.toString());
+		return query;
+	}
+	
+	
 	
     public List<PublisherContentCount> getRelatedPublisherLinks(Tag tag, boolean showBroken) {
     	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = getTagSolrQuery(tag);
+			SolrQuery query = getTaggedContentSolrQuery(tag, showBroken);
 			query.addFacetField("publisher");	
 			query.setFacetLimit(10);
 			query.setFacetMinCount(1);

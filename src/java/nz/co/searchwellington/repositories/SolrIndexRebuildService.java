@@ -44,6 +44,7 @@ public class SolrIndexRebuildService {
 				SolrInputDocument inputDocument = new SolrInputDocument();
 				inputDocument.addField("id", resource.getId());
 				inputDocument.addField("name", resource.getName());
+				inputDocument.addField("httpStatus", resource.getHttpStatus());
 				inputDocument.addField("description", resource.getDescription());
 				
 				for(Tag tag: getIndexTagsForResource(resource)) {
