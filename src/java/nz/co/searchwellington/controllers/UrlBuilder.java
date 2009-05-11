@@ -47,5 +47,9 @@ public class UrlBuilder {
 	public String getTagGeocodedUrl(Tag tag) {
 		return siteInformation.getUrl() + "/" + tag.getName() + "/geotagged";
 	}
+
+	public String getCommentUrl() {
+		return siteInformation.getUrl() + "/comment";
+	}
 	
 }

@@ -14,7 +14,6 @@ import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.utils.UrlFilters;

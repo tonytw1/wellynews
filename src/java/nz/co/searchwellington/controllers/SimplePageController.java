@@ -101,29 +101,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
-    
-    
-    public ModelAndView commented(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
-        populateLocalCommon(mv);
-        
-        urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean showBroken = loggedInUser != null;
-        
-        mv.addObject("heading", "Comment");           
-        mv.addObject("commented_tags", resourceDAO.getCommentedTags(showBroken));                
-        mv.addObject("main_content", resourceDAO.getAllCommentedNewsitems(500, true));
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-        
-        mv.setViewName("commented");
-        return mv;      
-    }
-
-    
-    
-    
+     
     public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);

@@ -22,7 +22,6 @@
 						<prop key="/about">about</prop>
 						<prop key="/archive">archive</prop>
 						<prop key="/calendars">calendars</prop>
-						<prop key="/comment">commented</prop>
 						<prop key="/feeds/discovered">discovered</prop>						
 						<prop key="/geotagged">geotagged</prop>
 						<prop key="/justin">justin</prop>
@@ -547,7 +546,7 @@
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>
             	<prop key="/calendars">simplePageController</prop>
-            	<prop key="/comment">simplePageController</prop>
+            	
            		<prop key="/feeds/discovered">simplePageController</prop>
            		<prop key="/geotagged">simplePageController</prop>            	
             	<prop key="/justin">simplePageController</prop>
@@ -639,6 +638,7 @@
 				<prop key="/feed/*">tagController</prop>
 				<prop key="/feed/*/json">jsonController</prop>
 				<prop key="/*">tagController</prop>
+				<prop key="/comment">tagController</prop>
 				
             </props>
         </property>

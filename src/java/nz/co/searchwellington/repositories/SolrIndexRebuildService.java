@@ -55,6 +55,12 @@ public class SolrIndexRebuildService {
 				inputDocument.addField("description", resource.getDescription());
 				inputDocument.addField("date", resource.getDate());
 				
+				if (resource.getType().equals("N") && ((Newsitem) resource).getComments().size() > 0) {
+					inputDocument.addField("commented", true);
+				} else {
+					inputDocument.addField("commented", false);
+				}
+				
 				for(Tag tag: getIndexTagsForResource(resource)) {
 					inputDocument.addField("tags", tag.getId());
 				}
