@@ -67,6 +67,41 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return 0;
 	}
 	
+	
+	public int getCommentedNewsitemsCount(boolean showBroken) {
+		log.info("Getting commented newsitem count");
+		try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			SolrQuery query = getCommentedNewsitemsQuery(showBroken);
+			QueryResponse response = solr.query(query);	
+			Long count =  response.getResults().getNumFound();
+			return count.intValue();			
+		} catch (MalformedURLException e) {
+			log.error(e);
+		} catch (SolrServerException e) {
+			log.error(e);
+		}
+		return 0;
+	}
+
+	
+	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken) {
+		log.info("Getting commented newsitem count for tag: " + tag);
+		try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);
+			QueryResponse response = solr.query(query);	
+			Long count =  response.getResults().getNumFound();
+			return count.intValue();			
+		} catch (MalformedURLException e) {
+			log.error(e);
+		} catch (SolrServerException e) {
+			log.error(e);
+		}
+		return 0;
+	}
+	
+	
 	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
 		log.info("Getting websites for tags: " + tags );
 		return getTaggedContent(tags, showBroken, "W", 0, maxItems, "name", ORDER.asc);
@@ -96,12 +131,34 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	}
 	
 	
-	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments) {		
+	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex) {		
 		List<Resource> results = new ArrayList<Resource>();
     	try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
 			SolrQuery query = getCommentedNewsitemsQuery(showBroken);			
 			query.setSortField("date", ORDER.desc);
+			query.setRows(maxItems);
+			query.setStart(startIndex);
+			
+			QueryResponse response = solr.query(query);
+			loadResourcesFromSolrResults(results, response);
+			
+		} catch (MalformedURLException e) {
+			log.error(e);
+		} catch (SolrServerException e) {
+			log.error(e);
+		}    	
+		return results;
+	}
+
+	
+	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {
+		List<Resource> results = new ArrayList<Resource>();
+    	try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);			
+			query.setSortField("date", ORDER.desc);
+			query.setStart(startIndex);
 			query.setRows(maxItems);
 			
 			QueryResponse response = solr.query(query);
@@ -116,7 +173,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	}
 
 	
-	
+
 	public List<Tag> getCommentedTags(boolean showBroken) {
 		List<Integer> tagIds = new ArrayList<Integer>();
 		try {
@@ -144,6 +201,8 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		}
 		return loadTagsById(tagIds);
 	}
+	
+	
 		
 	private List<Resource> getTaggedContent(Set<Tag> tags, boolean showBroken, String type, Integer startIndex, Integer maxItems, String orderField, ORDER order) {
 		List<Resource> results = new ArrayList<Resource>();
@@ -193,6 +252,17 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return query;
 	}
 	
+	
+	private SolrQuery getCommentedNewsitemsForTagQuery(Tag tag, boolean showBroken) {
+		StringBuilder sb= new StringBuilder();
+		sb.append("+commented:1");
+		sb.append(" +tags:" + tag.getId());
+		if (showBroken != true) {
+			sb.append(" +httpStatus:200");
+		}
+		SolrQuery query = new SolrQuery(sb.toString().trim());
+		return query;
+	}
 	
 	
 

@@ -226,39 +226,7 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     
     
     
-    @Override
-    public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {          
-        // TODO massive duplication with the above method.
-        log.debug("Searching for Newsitems tagged: " + tag.getName());
-        
-        // Compose a lucene query.        
-        BooleanQuery query = new BooleanQuery();
-        
-        if (!showBroken) {
-            addHttpStatusRestriction(query);            
-        }                
-        addTagRestriction(query, tag);        
-        addTypeRestriction(query, "N");
-        
-        addCommentRestriction(query);
-        
-        
-        Sort sort = dateDescendingSort();
-		try {
-			Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-        
-			log.debug("Query: " + query.toString());
-			Hits hits = searcher.search(query, sort);
-			log.debug("Found " + hits.length() + " matching.");
-        
-			return loadResourcesFromHits(maxItems, hits);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		// TODO Empty Collections instead?
-		return new ArrayList<Resource>();
-    }
+   
     
     
     public Date getLastLiveTimeForTag(Tag tag) {

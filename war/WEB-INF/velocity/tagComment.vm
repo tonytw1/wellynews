@@ -30,6 +30,8 @@
 
 #parse("includes/main_content.vm")
 
+#parse("includes/tag_comment_page_links.vm")
+
 </div>
 
 <div class="right">

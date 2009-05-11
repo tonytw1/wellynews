@@ -44,21 +44,27 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 			log.info("Building tag comment page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
-			return populateTagCommentPageModelAndView(tag, showBroken);
+
+			int page = getPage(request);
+			int startIndex = getStartIndex(page);
+			return populateTagCommentPageModelAndView(tag, showBroken, startIndex);
 		}
 		return null;
 	}
 	
 	
-	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken) {		
+	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken, int startIndex) {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName() + " comment");        		
 		mv.addObject("description", tag.getDisplayName() + " comment");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));
-		
-	    final List<Resource> allCommentedForTag = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, MAX_NUMBER_OF_COMMENTED_TO_SHOW);		
+				
+	    final List<Resource> allCommentedForTag = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, MAX_NEWSITEMS, startIndex);	   
 		mv.addObject("main_content", allCommentedForTag);
+		
+		int count = resourceDAO.getCommentedNewsitemsForTagCount(tag, showBroken);
+		mv.addObject("main_content_total", count);
 		
 		if (allCommentedForTag.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagComment(tag), rssUrlBuilder.getRssUrlForTagComment(tag));

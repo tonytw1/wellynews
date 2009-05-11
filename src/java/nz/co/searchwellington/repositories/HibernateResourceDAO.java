@@ -622,14 +622,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     
-    public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {
-        throw(new UnsupportedOperationException());  
-    }
     
-    
-    
-    
-     
+  
     @SuppressWarnings("unchecked")
 	public List<Resource> getResourcesWithTag(Tag tag) {
     	log.info(tag.getName());

@@ -36,8 +36,13 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 			mv.addObject("description", "Commented newsitems");
 			mv.addObject("link", urlBuilder.getCommentUrl());	
 						
-			final List<Resource> commentedNewsitms = resourceDAO.getCommentedNewsitems(MAX_NEWSITEMS, showBroken, true);
+			int page = getPage(request);
+			int startIndex = getStartIndex(page);
+			final List<Resource> commentedNewsitms = resourceDAO.getCommentedNewsitems(MAX_NEWSITEMS, showBroken, true, startIndex);
 			mv.addObject("main_content", commentedNewsitms);
+			
+			int commentedCounted = resourceDAO.getCommentedNewsitemsCount(showBroken);
+			mv.addObject("main_content_total", commentedCounted);
 			
 			mv.setViewName("commented");
 			return mv;

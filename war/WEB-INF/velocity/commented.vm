@@ -22,6 +22,8 @@
 <p>These newsitems have comments.</p>
 
 #parse("includes/main_content.vm")
+
+#parse("includes/comment_page_links.vm")
 </div>
 
 

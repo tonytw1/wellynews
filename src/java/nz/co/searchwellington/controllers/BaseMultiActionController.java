@@ -74,7 +74,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     private void populateContentCounts(ModelAndView mv, boolean showBroken) {      
         mv.addObject("site_count",  resourceDAO.getWebsiteCount(showBroken));
         mv.addObject("newsitem_count",  resourceDAO.getNewsitemCount(showBroken));
-        mv.addObject("comment_count",  resourceDAO.getCommentCount());
+        mv.addObject("comment_count",  resourceDAO.getCommentedNewsitemsCount(showBroken));
     }
     
 

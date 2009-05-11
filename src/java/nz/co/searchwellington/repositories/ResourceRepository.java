@@ -95,11 +95,9 @@ public interface ResourceRepository {
     public DiscoveredFeed loadDiscoveredFeedByUrl(String discoveredUrl);
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed);
     public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl);
-    public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments);
     public CommentFeed loadCommentFeedByUrl(String feedLink);
     public CommentFeed createNewCommentFeed(String discoveredUrl);
 	public void saveCommentFeed(CommentFeed commentFeed);
-    public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems);
     public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken);
     public int getTaggedNewitemsCount(Tag tag, boolean showBroken);;    
     public List<Newsitem> getRecentUntaggedNewsitems();   
@@ -110,7 +108,6 @@ public interface ResourceRepository {
     public List<Tag> getCommentedTags(boolean showBroken); 
     public List<Tag> getGeotaggedTags(boolean showBroken);	
     
-    public int getCommentCount();
     public List<ArchiveLink> getArchiveMonths();
     public Set<Integer> getAllResourceIds();
     public CalendarFeed createNewCalendarFeed(String url);
@@ -125,4 +122,11 @@ public interface ResourceRepository {
 	public Feed loadFeedByUrlWords(String string);
 	public int getPublisherNewsitemsCount(Website publisher, boolean showBroken);
 	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken);
+
+	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex);
+	public int getCommentedNewsitemsCount(boolean showBroken);
+	
+	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex);
+	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken);
+	
 }

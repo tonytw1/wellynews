@@ -118,7 +118,7 @@ public class IndexController extends BaseMultiActionController {
 
 
     private void populateCommentedNewsitems(ModelAndView mv, boolean showBroken) { 
-        final List<Resource> recentCommentedNewsitems = resourceDAO.getCommentedNewsitems(2, showBroken, true);                
+        final List<Resource> recentCommentedNewsitems = resourceDAO.getCommentedNewsitems(2, showBroken, true, 0);                
         if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
         	mv.addObject("commented_newsitems", recentCommentedNewsitems);
         } else {
