@@ -68,7 +68,7 @@ public class SolrIndexRebuildService {
 			
 			updateRequest.process(solr);
 			solr.commit();
-			solr.optimize();
+			solr.optimize();			
 			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block

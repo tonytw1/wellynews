@@ -318,23 +318,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    @SuppressWarnings("unchecked")
-    public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
-        Criteria criteria =  sessionFactory.getCurrentSession().createCriteria(Watchlist.class).
-            addOrder(Order.asc("name"));            
-        if (!showBroken) {
-            criteria.add(Expression.eq("httpStatus", 200));
-        }            
-        return criteria.createCriteria("tags").add(Restrictions.eq("id", tag.getId())).
-        setCacheable(true).
-        list();  
-    }
     
-    
-    
-   
-    
-
 	@SuppressWarnings("unchecked")
 	public List<ArchiveLink> getArchiveMonths() {
         // TODO migrate this to map onto an object; then you might be able to cache it.

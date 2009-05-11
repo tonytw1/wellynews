@@ -412,33 +412,6 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
     
     
-    public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken) {
-    	  List <Resource> matchingFeeds = new ArrayList<Resource>();
-          
-    	   BooleanQuery query = new BooleanQuery();                
-           if (!showBroken) {
-               addHttpStatusRestriction(query);            
-           }           
-           addTagRestriction(query, tag);
-           addTypeRestriction(query, "F");
-
-   		try {
-   			Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-   			Sort sort = dateDescendingSort();
-           
-   			log.debug("Query: " + query.toString());
-   			Hits hits = searcher.search(query, sort);
-   			log.debug("Found " + hits.length() + " matching.");
-   			matchingFeeds = loadResourcesFromHits(30, hits);
-   			
-   		} catch (IOException e) {
-   			// TODO Auto-generated catch block
-   			e.printStackTrace();
-   		} 
-   		return matchingFeeds;    	
-    }
-
-    
 	public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxItems, boolean showBroken) {
     	  List <Resource> matchingNewsitems = new ArrayList<Resource>();
     	  

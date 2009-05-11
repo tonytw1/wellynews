@@ -20,6 +20,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 
 public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements ResourceRepository {
 
@@ -65,16 +66,52 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return 0;
 	}
 	
-	
-	
 	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
 		log.info("Getting websites for tags: " + tags );
-		List<Resource> results = new ArrayList<Resource>();    	
+		return getTaggedContent(tags, showBroken, "W", 0, maxItems, "name", ORDER.asc);
+	}
+	
+	
+	public List<Resource> getTaggedWebsites(Tag tag, boolean showBroken, int maxItems) {		
+		Set<Tag> tags = new HashSet<Tag>();
+		tags.add(tag);
+		return getTaggedWebsites(tags, showBroken, maxItems);
+	}
+	
+	
+	public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
+		log.info("Getting watchlist for tag: " + tag);
+		Set<Tag> tags = new HashSet<Tag>();
+		tags.add(tag);
+		return getTaggedContent(tags, showBroken, "L", 0, null, "name", ORDER.asc);
+	}
+	
+	
+	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken) {
+		log.info("Getting feeds for tag: " + tag);
+		Set<Tag> tags = new HashSet<Tag>();
+		tags.add(tag);
+		return getTaggedContent(tags, showBroken, "F", 0, null, "name", ORDER.asc);
+	}
+
+	private List<Resource> getTaggedContent(Set<Tag> tags, boolean showBroken, String type, Integer startIndex, Integer maxItems, String orderField, ORDER order) {
+		List<Resource> results = new ArrayList<Resource>();
     	try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getTaggedContentSolrQuery(tags, showBroken, "W");		
-			query.setRows(maxItems);
+			SolrQuery query = getTaggedContentSolrQuery(tags, showBroken, type);		
+
+			if (startIndex != null) {
+				query.setStart(startIndex);
+			}
+			
+			if (maxItems != null) {
+				query.setRows(maxItems);
+			}
+			
 			query.setSortField("name", ORDER.asc);
+			if (orderField != null && order != null) {
+				query.setSortField(orderField, order);
+			}
 			
 			QueryResponse response = solr.query(query);
 			loadResourcesFromSolrResults(results, response);
@@ -85,42 +122,13 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 			log.error(e);
 		}    	
 		return results;		
+		
 	}
-	
-	
-	public List<Resource> getTaggedWebsites(Tag tag, boolean showBroken, int maxItems) {		
-		Set<Tag> tags = new HashSet<Tag>();
-    	tags.add(tag);
-		return getTaggedWebsites(tags, showBroken, maxItems);
-	}
-
-	
-
-	
-	
 	
 	
 	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
 		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);
-    	List<Resource> results = new ArrayList<Resource>();
-    	
-    	try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getTaggedContentSolrQuery(tags, showBroken, "N");
-			query.setStart(startIndex);
-			query.setRows(maxItems);
-			query.setSortField("date", ORDER.desc);
-			
-			QueryResponse response = solr.query(query);
-			loadResourcesFromSolrResults(results, response);
-			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}		
-    	
-		return results;
+    	return getTaggedContent(tags, showBroken, "N", startIndex, maxItems, "date", ORDER.desc);
     }
     
    
