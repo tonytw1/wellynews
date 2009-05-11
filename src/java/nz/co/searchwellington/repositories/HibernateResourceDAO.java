@@ -252,23 +252,20 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         list();        
     }
     
-    
-    @Deprecated
-    // Doesn't recurse.
-    public List<Tag> getCommentedTags(boolean showBroken) {
-        // TODO performance! Don't iterate!
-        List<Tag> commentedTags = new ArrayList<Tag>();
-        for(Tag tag : getAllTags()) {
-            final int commentedCount = getCommentedNewsitemsForTag(tag, showBroken, 500).size();
-            log.debug("Tag " + tag.getDisplayName() + " has " + commentedCount + " commented newsitems.");
-            if (commentedCount > 0) {
-                commentedTags.add(tag);
-            }
-        }
-        return commentedTags;
-        
-    }
-    
+   
+    // TODO can hiberate do a batch load?
+    public List<Tag> loadTagsById(List<Integer> tagIds) {
+		List<Tag> tags = new ArrayList<Tag>();
+		for (Integer tagId : tagIds) {
+			Tag tag = this.loadTagById(tagId);
+			if (tag != null) {
+				tags.add(tag);
+			}
+		}
+		return tags;		
+	}
+
+   
     
     public List<Tag> getGeotaggedTags(boolean showBroken) {
         // TODO performance! Don't iterate!
@@ -601,19 +598,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    @SuppressWarnings("unchecked")
-    public List<Newsitem> getAllCommentedNewsitems(int maxItems, boolean hasComments) {        
-        Criteria commentedNewsitems = sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
-                add(Restrictions.isNotNull("commentFeed")).
-                addOrder( Order.desc("date")).              
-                setMaxResults(maxItems).
-                setCacheable(true);
-       
-        if (hasComments) {
-            commentedNewsitems.createCriteria("commentFeed").add(Restrictions.isNotEmpty("comments"));
-        }        
-        return commentedNewsitems.list();              
-    }
+    
 
     
        

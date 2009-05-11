@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.UrlBuilder;
-import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
@@ -32,13 +32,13 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 			log.info("Building comment page model");
 			
 			ModelAndView mv = new ModelAndView();							
-			mv.addObject("heading", "Commented");        		
+			mv.addObject("heading", "Commented newsitems");        		
 			mv.addObject("description", "Commented newsitems");
 			mv.addObject("link", urlBuilder.getCommentUrl());	
 						
-			final List<Newsitem> commentedNewsitms = resourceDAO.getAllCommentedNewsitems(500, showBroken);						
+			final List<Resource> commentedNewsitms = resourceDAO.getCommentedNewsitems(MAX_NEWSITEMS, showBroken, true);
 			mv.addObject("main_content", commentedNewsitms);
-								
+			
 			mv.setViewName("commented");
 			return mv;
 		}

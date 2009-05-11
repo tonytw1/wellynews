@@ -67,7 +67,7 @@ public class IndexController extends BaseMultiActionController {
         
         final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, showBroken);                
         mv.addObject("main_content", latestNewsitems);
-        populateCommentedNewsitems(mv);
+        populateCommentedNewsitems(mv, showBroken);
         
         List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths();
 		populateArchiveLinks(mv, loggedInUser, archiveMonths);
@@ -117,8 +117,8 @@ public class IndexController extends BaseMultiActionController {
     }
 
 
-    private void populateCommentedNewsitems(ModelAndView mv) {       
-        final List<Newsitem> recentCommentedNewsitems = resourceDAO.getAllCommentedNewsitems(2, true);                
+    private void populateCommentedNewsitems(ModelAndView mv, boolean showBroken) { 
+        final List<Resource> recentCommentedNewsitems = resourceDAO.getCommentedNewsitems(2, showBroken, true);                
         if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
         	mv.addObject("commented_newsitems", recentCommentedNewsitems);
         } else {

@@ -95,7 +95,7 @@ public interface ResourceRepository {
     public DiscoveredFeed loadDiscoveredFeedByUrl(String discoveredUrl);
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed);
     public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl);
-    public List<Newsitem> getAllCommentedNewsitems(int maxItems, boolean hasComments);
+    public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments);
     public CommentFeed loadCommentFeedByUrl(String feedLink);
     public CommentFeed createNewCommentFeed(String discoveredUrl);
 	public void saveCommentFeed(CommentFeed commentFeed);
