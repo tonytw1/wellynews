@@ -62,12 +62,11 @@ public class AdminRequestFilter {
 			}        	
 		}
 		
-		// TODO Test coverage
-		// TODO move to a spring controller binding and depricate the publisher id on get.
-        if (request.getParameter("publisher") != null) {
-            final int publisherID = Integer.parseInt(request.getParameter("publisher"));
-            if (publisherID > 0) {
-                Resource publisher = resourceDAO.loadResourceById(publisherID);
+		// TODO Test coverage		
+        if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {
+            final String publisherUrlWords = request.getParameter("publisher");
+            Resource publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
+            if (publisher != null) {            
                 request.setAttribute("publisher", publisher);
             }
         }
