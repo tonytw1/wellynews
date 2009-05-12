@@ -202,32 +202,6 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
 
     
-   
-    public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) {         
-    	BooleanQuery query = makeTagNewsitemsQuery(tag, showBroken);
-        addPublisherRestriction(query, publisher);
-    	    	
-        Sort sort = dateDescendingSort();
-        Searcher searcher;
-		try {
-			searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-        
-			log.debug("Query: " + query.toString());
-			Hits hits = searcher.search(query, sort);
-			log.debug("Found " + hits.length() + " matching.");
-                
-			return loadResourcesFromHits(500, hits);      	
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new ArrayList<Resource>();
-    }
-    
-    
-    
-   
-    
     
     public Date getLastLiveTimeForTag(Tag tag) {
         BooleanQuery query = new BooleanQuery();

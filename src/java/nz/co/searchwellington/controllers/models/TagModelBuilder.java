@@ -146,10 +146,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         if (allCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
             commentedToShow = allCommentedNewsitems;            
         } else {
-            commentedToShow = allCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);
+            commentedToShow = allCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);            
             final String moreCommentsUrl = urlBuilder.getTagCommentUrl(tag);
             mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
-            // TODO count
+            
+            final int commentsCount = resourceDAO.getCommentedNewsitemsForTagCount(tag, showBroken);
+            final int moreCommentCount = commentsCount - MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS;
+            mv.addObject("commented_newsitems_morecount", moreCommentCount);           
         }        
         mv.addObject("commented_newsitems", commentedToShow);        
         mv.addObject("tag_watchlist", resourceDAO.getTagWatchlist(tag, showBroken));        

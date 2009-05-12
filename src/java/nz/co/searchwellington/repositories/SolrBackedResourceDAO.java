@@ -9,6 +9,7 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -150,8 +151,28 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		}    	
 		return results;
 	}
-
 	
+	
+	
+	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) {
+	
+		List<Resource> results = new ArrayList<Resource>();
+    	try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).publisher(publisher).toQuery();			
+			query.setSortField("date", ORDER.desc);
+			QueryResponse response = solr.query(query);
+			loadResourcesFromSolrResults(results, response);
+			
+		} catch (MalformedURLException e) {
+			log.error(e);
+		} catch (SolrServerException e) {
+			log.error(e);
+		}    	
+		return results;
+		
+	}
+
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {
 		List<Resource> results = new ArrayList<Resource>();
     	try {
@@ -202,8 +223,6 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return loadTagsById(tagIds);
 	}
 	
-	
-		
 	private List<Resource> getTaggedContent(Set<Tag> tags, boolean showBroken, String type, Integer startIndex, Integer maxItems, String orderField, ORDER order) {
 		List<Resource> results = new ArrayList<Resource>();
     	try {
@@ -243,42 +262,16 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
     
 	
 	private SolrQuery getCommentedNewsitemsQuery(boolean showBroken) {
-		StringBuilder sb= new StringBuilder();
-		sb.append("+commented:1");
-		if (showBroken != true) {
-			sb.append(" +httpStatus:200");
-		}			
-		SolrQuery query = new SolrQuery(sb.toString().trim());
-		return query;
+		return new SolrQueryBuilder().showBroken(showBroken).type("N").commented(true).toQuery();			
 	}
 	
 	
 	private SolrQuery getCommentedNewsitemsForTagQuery(Tag tag, boolean showBroken) {
-		StringBuilder sb= new StringBuilder();
-		sb.append("+commented:1");
-		sb.append(" +tags:" + tag.getId());
-		if (showBroken != true) {
-			sb.append(" +httpStatus:200");
-		}
-		SolrQuery query = new SolrQuery(sb.toString().trim());
-		return query;
+		return new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).commented(true).toQuery();
 	}
 	
-	
-
-	private SolrQuery getTaggedContentSolrQuery(Set<Tag> tags, boolean showBroken, String type) {
-		StringBuilder sb= new StringBuilder();
-		for (Tag tag : tags) {
-			sb.append(" +tags:" + tag.getId());			
-		}
-		if (showBroken != true) {
-			sb.append(" +httpStatus:200");
-		}
-		if (type != null) {
-			sb.append(" +type:" + type);
-		}		
-		SolrQuery query = new SolrQuery(sb.toString().trim());
-		return query;
+	private SolrQuery getTaggedContentSolrQuery(Set<Tag> tags, boolean showBroken, String type) {			
+		return new SolrQueryBuilder().tags(tags).showBroken(showBroken).type(type).toQuery();		
 	}
     
 	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {

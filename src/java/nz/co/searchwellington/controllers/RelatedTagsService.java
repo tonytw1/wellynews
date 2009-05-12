@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SolrQueryBuilder;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -38,8 +39,8 @@ public class RelatedTagsService {
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = getTaggedContentSolrQuery(tag, showBroken);
-			query.addFacetField("tags");			
+			SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
+			query.addFacetField("tags");
 			query.setFacetMinCount(1);
 			
 			QueryResponse response = solr.query(query);		
@@ -72,7 +73,7 @@ public class RelatedTagsService {
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getPublisherContentSolrQuery(publisher, showBroken);
+			SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).toQuery();
 			query.addFacetField("tags");			
 			query.setFacetMinCount(1);
 			
@@ -99,34 +100,11 @@ public class RelatedTagsService {
     }
     
     
-
-	private SolrQuery getTaggedContentSolrQuery(Tag tag, boolean showBroken) {
-		StringBuilder sb= new StringBuilder();
-		sb.append("+tags:" + tag.getId());
-		if (showBroken != true) {
-			sb.append(" +httpStatus:200");
-		}		
-		SolrQuery query = new SolrQuery(sb.toString());
-		return query;
-	}
-
-	private SolrQuery getPublisherContentSolrQuery(Website publisher, boolean showBroken) {
-		StringBuilder sb= new StringBuilder();
-		sb.append("+publisher:" + publisher.getId());
-		if (showBroken != true) {
-			sb.append(" +httpStatus:200");
-		}		
-		SolrQuery query = new SolrQuery(sb.toString());
-		return query;
-	}
-	
-	
-	
     public List<PublisherContentCount> getRelatedPublisherLinks(Tag tag, boolean showBroken) {
     	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = getTaggedContentSolrQuery(tag, showBroken);
+			SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
 			query.addFacetField("publisher");			
 			query.setFacetMinCount(1);
 			
