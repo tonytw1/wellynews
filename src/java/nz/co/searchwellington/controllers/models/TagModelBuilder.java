@@ -112,12 +112,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		
 		final List<Resource> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
 		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(tag, showBroken, startIndex, MAX_NEWSITEMS);         
-		
-		int totalNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, showBroken);
-		mv.addObject("main_content_total", totalNewsitemCount);
-		
+				
 		mv.addObject("main_content", taggedNewsitems);
 		mv.addObject("websites", taggedWebsites);
+		
+		int totalNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, showBroken);
+		populatePagination(mv, startIndex, totalNewsitemCount);
 	
 		if (taggedNewsitems.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
@@ -126,6 +126,9 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		selectView(page, mv, taggedWebsites, taggedNewsitems);
 		return mv;
 	}
+
+
+	
 
 
 	private void selectView(int page, ModelAndView mv, final List<Resource> taggedWebsites, final List<Resource> taggedNewsitems) {

@@ -21,7 +21,7 @@ public class SolrQueryBuilder {
 	}
 
 	public SolrQueryBuilder showBroken(boolean showBroken) {
-		if (showBroken) {
+		if (!showBroken) {
 			sb.append(" +httpStatus:200");			
 		}
 		return this;
