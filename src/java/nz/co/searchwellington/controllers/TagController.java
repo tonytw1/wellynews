@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -57,7 +58,7 @@ public class TagController extends BaseMultiActionController {
 	
     private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
 		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());		
-        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(5, showBroken);
+        final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(5, showBroken);
         mv.addObject("latest_newsitems", latestNewsitems);
 	}
     

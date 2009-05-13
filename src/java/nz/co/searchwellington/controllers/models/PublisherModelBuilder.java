@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
-import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
@@ -70,12 +70,14 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		
 		int startIndex = getStartIndex(page);
 		final int mainContentTotal = resourceDAO.getPublisherNewsitemsCount(publisher, showBroken);
-		if (mainContentTotal > 0) {
-			mv.addObject("main_content_total", mainContentTotal);
-			final List<Newsitem> publisherNewsitems = resourceDAO.getPublisherNewsitems(publisher, MAX_NEWSITEMS, showBroken, startIndex);		
+		if (mainContentTotal > 0) {			
+			final List<Resource> publisherNewsitems = resourceDAO.getPublisherNewsitems(publisher, MAX_NEWSITEMS, showBroken, startIndex);		
 			mv.addObject("main_content", publisherNewsitems);
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
 			mv.addObject("publisher", publisher);
+			
+			populatePagination(mv, startIndex, mainContentTotal);
+			
 		}		
 		mv.setViewName("browse");
 		return mv;

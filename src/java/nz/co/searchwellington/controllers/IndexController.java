@@ -65,11 +65,11 @@ public class IndexController extends BaseMultiActionController {
      
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
-        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, showBroken);                
+        final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, showBroken);                
         mv.addObject("main_content", latestNewsitems);
         populateCommentedNewsitems(mv, showBroken);
         
-        List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths();
+        List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(showBroken);
 		populateArchiveLinks(mv, loggedInUser, archiveMonths);
         if (monthOfLastItem(latestNewsitems) != null) {
             mv.getModel().put("main_content_moreurl", makeArchiveUrl(monthOfLastItem(latestNewsitems), archiveMonths ));
@@ -145,7 +145,7 @@ public class IndexController extends BaseMultiActionController {
 
     
     
-    private Date monthOfLastItem(List<Newsitem> latestNewsitems) {
+    private Date monthOfLastItem(List<Resource> latestNewsitems) {
         if (latestNewsitems.size() > 0) {
             Resource lastNewsitem = latestNewsitems.get(latestNewsitems.size()-1);          
             if (lastNewsitem.getDate() != null) {

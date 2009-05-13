@@ -82,12 +82,12 @@ public class BrowseController extends BaseMultiActionController {
         if (request.getAttribute("month") != null) {
             Date month = (Date) request.getAttribute("month");
             mv.addObject("archive_month", new ArchiveLink(month, 0));
-            final List<Newsitem> newsitemsForMonth = resourceDAO.getNewsitemsForMonth(month);            
+            final List<Resource> newsitemsForMonth = resourceDAO.getNewsitemsForMonth(month);            
             populateMonthArchive(mv, month, loggedInUser, newsitemsForMonth);
             populateUsedTags(mv, loggedInUser, newsitemsForMonth);
             mv.addObject("used_tags_description", "Most used tags during this month.");
             
-            List<ArchiveLink> archiveLinks = resourceDAO.getArchiveMonths();
+            List<ArchiveLink> archiveLinks = resourceDAO.getArchiveMonths(loggedInUser != null);
             populateNextAndPreviousLinks(mv, month, archiveLinks);
             
             populateSecondaryLatestNewsitems(mv, loggedInUser);
@@ -163,7 +163,7 @@ public class BrowseController extends BaseMultiActionController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
-        populateArchiveLinks(mv, loggedInUser, resourceDAO.getArchiveMonths());      
+        populateArchiveLinks(mv, loggedInUser, resourceDAO.getArchiveMonths(loggedInUser != null));      
         return loggedInUser;
     }
 	

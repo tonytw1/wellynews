@@ -5,6 +5,7 @@ import java.net.MalformedURLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -53,7 +54,13 @@ public class SolrIndexRebuildService {
 				inputDocument.addField("type", resource.getType());
 				inputDocument.addField("httpStatus", resource.getHttpStatus());
 				inputDocument.addField("description", resource.getDescription());
+				
 				inputDocument.addField("date", resource.getDate());
+				inputDocument.addField("month", new DateFormatter().formatDate(resource.getDate(), DateFormatter.MONTH_FACET));
+				
+				if (resource.getLastChanged() != null) {
+					inputDocument.addField("lastChanged", resource.getLastChanged());
+				}
 				
 				if (resource.getType().equals("N") && ((Newsitem) resource).getComments().size() > 0) {
 					inputDocument.addField("commented", 1);

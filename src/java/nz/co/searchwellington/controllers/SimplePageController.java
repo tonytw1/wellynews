@@ -76,7 +76,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "Archive");
         populateSecondaryLatestNewsitems(mv, loggedInUser);
             
-        List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths();
+        List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(loggedInUser != null);
         mv.addObject("archiveLinks", archiveMonths);
                 
         mv.setViewName("archiveIndex");
@@ -232,7 +232,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("tags", resourceDAO.getAllTags());
                 
         populateSecondaryLatestNewsitems(mv, loggedInUser);
-        List<Newsitem> recentNewsitems = resourceDAO.getLatestNewsitems(300, loggedInUser != null);     
+        List<Resource> recentNewsitems = resourceDAO.getLatestNewsitems(300, loggedInUser != null);     
         populateUsedTags(mv, loggedInUser, recentNewsitems);
         
         mv.setViewName("tags");

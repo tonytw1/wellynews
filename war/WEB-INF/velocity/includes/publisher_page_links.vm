@@ -11,5 +11,7 @@
 				#end
 			#end
 		</ul>
+	
+	<p>$start_index - $end_index of $main_content_total $publisher.name newsitems</p>	
 	<hr>
 #end

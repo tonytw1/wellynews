@@ -27,18 +27,16 @@ public interface ResourceRepository {
     public boolean isResourceWithUrl(String url);
     public Resource loadResourceByUrl(String url);
 
-    public List <Newsitem> getLatestNewsitems(int number, boolean showBroken);
-
-    public List<Resource> getAllPublisherNewsitems(Website publisher, boolean showBroken);
-    public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken); 
-    public List <Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex);
+    public List<Resource> getLatestNewsitems(int maxItems, boolean showBroken);
+    public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken); 
+    public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex);
     public List <Website> getPublisherFeeds(Website publisher);
     public List <Website> getPublisherWatchlist(Website publisher);
 
     public List <Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken);
     public List <Resource> getNewsitemsMatchingKeywords(String keywords,  boolean showBroken);
     
-    public List <Newsitem> getNewsitemsForMonth(Date month);
+    public List <Resource> getNewsitemsForMonth(Date month);
 
 
 
@@ -108,7 +106,7 @@ public interface ResourceRepository {
     public List<Tag> getCommentedTags(boolean showBroken); 
     public List<Tag> getGeotaggedTags(boolean showBroken);	
     
-    public List<ArchiveLink> getArchiveMonths();
+    public List<ArchiveLink> getArchiveMonths(boolean showBroken);
     public Set<Integer> getAllResourceIds();
     public CalendarFeed createNewCalendarFeed(String url);
     public List<Newsitem> getLatestTwitteredNewsitems(int numberOfItems, boolean showBroken);

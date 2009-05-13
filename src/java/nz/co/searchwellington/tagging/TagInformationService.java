@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Tag;
 
@@ -19,24 +20,25 @@ public class TagInformationService {
     Logger log = Logger.getLogger(TagInformationService.class);
     
     // TODO migrate to a slor facet.
-    public List<TagContentCount> getNewsitemsMostUsedTags(List<Newsitem> newsitems, int maxtags) {                
+    public List<TagContentCount> getNewsitemsMostUsedTags(List<Resource> newsitems, int maxtags) {                
         Map<Tag, Integer> usedTags = new HashMap<Tag, Integer>();        
-        for (Newsitem newsitem : newsitems) { 
+        for (Resource newsitem : newsitems) { 
             Set<Tag> itemTags = newsitem.getTags();   
-            registerTags(usedTags, itemTags);                  
-            if (newsitem.getPublisher() != null) {
-            	registerTags(usedTags, newsitem.getPublisher().getTags());
-            }
+            registerTags(usedTags, itemTags);                 
+            // TODO publisher tags
+//            if (newsitem.getPublisher() != null) {
+ //           	registerTags(usedTags, newsitem.getPublisher().getTags());
+  //          }
         }        
         log.debug("Found " + usedTags.size() + " unique tags in newsitems.");       
         return sortAndLimitResults(maxtags, usedTags);        
     }
 
     
-    public int getPercentageUntagged(List<Newsitem> recentNewsitems) {
+    public int getPercentageUntagged(List<Resource> recentNewsitems) {
     	int untagged = 0;
 		if (recentNewsitems.size() > 0) {
-			for (Newsitem newsitem : recentNewsitems) {
+			for (Resource newsitem : recentNewsitems) {
 				if (newsitem.getTags().size() == 0) {
 					untagged = untagged + 1;
 				}            

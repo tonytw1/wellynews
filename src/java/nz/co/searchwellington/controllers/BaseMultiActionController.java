@@ -32,7 +32,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     
 
     final protected int MAX_SECONDARY_ITEMS = 4;
-    final protected int MAX_NEWSITEMS = 20;
+    final protected int MAX_NEWSITEMS = 30;
     final protected int MAX_EVENTS_TO_SHOW_ON_FRONT = 10;
     
     protected ResourceRepository resourceDAO;   
@@ -53,7 +53,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     final protected void populateSecondaryLatestNewsitems(ModelAndView mv, User loggedInUser) throws IOException {
         boolean showBroken = loggedInUser != null;      
         final int numberOfItems = 5;
-        final List<Newsitem> latestNewsitems = resourceDAO.getLatestNewsitems(numberOfItems, showBroken);        
+        final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(numberOfItems, showBroken);        
         mv.addObject("latest_newsitems", latestNewsitems);
         mv.addObject("latest_newsitems_moreurl", "index#newslog");
     }
@@ -104,7 +104,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
         }
         
         // TODO seperate method
-        List<Newsitem> recentNewsitems = resourceDAO.getLatestNewsitems(100, loggedInUser != null);
+        List<Resource> recentNewsitems = resourceDAO.getLatestNewsitems(100, loggedInUser != null);
         if (recentNewsitems.size() > 0) {
         	// TODO inject
         	TagInformationService tagInformationService = new TagInformationService();
@@ -149,7 +149,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
 
 
 
-    protected void populateUsedTags(ModelAndView mv, User loggedInUser, List<Newsitem> recentNewsitems) throws IOException {	
+    protected void populateUsedTags(ModelAndView mv, User loggedInUser, List<Resource> recentNewsitems) throws IOException {	
         log.debug("Calculating tag usage.");    
         // TODO inject
         TagInformationService tagInformationService = new TagInformationService();

@@ -304,33 +304,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     
-	@SuppressWarnings("unchecked")
-	public List<ArchiveLink> getArchiveMonths() {
-        // TODO migrate this to map onto an object; then you might be able to cache it.
-        List<ArchiveLink> archiveMonths = new ArrayList<ArchiveLink>();        
-        // TODO implement show broken option.
-        List<Object[]> rows = sessionFactory.getCurrentSession().createSQLQuery(
-                "select date_format(resource.date, '%Y-%m') as month, count(id) " +
-                "       from resource where http_status = 200 and type='N' " +
-                " 		and resource.date is not NULL and resource.date !=\"\"" + 
-                "       group by month " +
-                "       order by month desc"
-                ).             
-                list();
-        
-        for (Object[] objects : rows) {
-            final BigInteger count = (BigInteger) objects[1];           
-            SimpleDateFormat sdfInput = new SimpleDateFormat("yyyy-MM");
-            try {
-                Date month = sdfInput.parse((String) objects[0]);
-                archiveMonths.add(new ArchiveLink(month, count.intValue()));                
-            } catch (java.text.ParseException e) {
-                // TODO can hibernate do this date casting for us?
-            }                
-        }
-        return archiveMonths;
-    }
-
 
     
     @SuppressWarnings("deprecation")
@@ -456,11 +429,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
     
     @SuppressWarnings("unchecked")
-    public List<Newsitem> getLatestNewsitems(int number, boolean showBroken) {        
-        return criteriaForLatestNewsitems(number, showBroken).setCacheable(true).list();      
-    }
-
-    @SuppressWarnings("unchecked")
     public List<Newsitem> getLatestTwitteredNewsitems(int number, boolean showBroken) {        
         return criteriaForLatestNewsitems(number, showBroken).
         add(Expression.isNotNull("twitterSubmitter")).
@@ -491,25 +459,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
     
-    public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken) {        
-    	return getPublisherNewsitems(publisher, MaxNumberOfItems, showBroken, 0);
-    }
-    
-    // TODO deprecate
-    @SuppressWarnings("unchecked")
-    public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex) {  
-        Criteria criteria = makePublisherNewsitemsCriteria(publisher, showBroken);       
-        return criteria.setMaxResults(MaxNumberOfItems).
-        setFirstResult(startIndex).
-        setCacheable(true).
-        list();
-    }
-    
    
-    
-        
-  
-    
+     
     private Criteria makePublisherNewsitemsCriteria(Website publisher, boolean showBroken) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
             add(Expression.eq("publisher", publisher)).        
@@ -532,7 +483,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
    
     
     @SuppressWarnings("unchecked")
-    public List<Newsitem> getNewsitemsForMonth(Date date) {
+    public List<Resource> getNewsitemsForMonth(Date date) {
         // TODO deprication
         int year = date.getYear() + 1900;
         int month = date.getMonth();

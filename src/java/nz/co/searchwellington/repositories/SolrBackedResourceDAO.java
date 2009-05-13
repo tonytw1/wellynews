@@ -3,12 +3,15 @@ package nz.co.searchwellington.repositories;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 
 import org.apache.log4j.Logger;
@@ -23,6 +26,9 @@ import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.hibernate.SessionFactory;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements ResourceRepository {
 
@@ -84,9 +90,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return getQueryResults(query);
 	}
 	
-	
-	
-	
+		
 	public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
 		log.info("Getting watchlist for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();
@@ -127,11 +131,41 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return getQueryResults(query);
 	}
 	
-	
-	public List<Resource> getAllPublisherNewsitems(Website publisher, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").publisher(publisher).toQuery();			
-		query.setSortField("date", ORDER.desc);
-		return getQueryResults(query);
+
+	public List<ArchiveLink> getArchiveMonths(boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();
+		query.addFacetField("month");
+		query.setFacetMinCount(1);
+		query.setFacetSort(false);
+		query.setFacetLimit(1000);
+			
+		List<ArchiveLink> archiveLinks = new ArrayList<ArchiveLink>();
+		try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			
+			QueryResponse response = solr.query(query);		
+			FacetField facetField = response.getFacetField("month");
+			if (facetField != null && facetField.getValues() != null) {
+				log.info("Found facet field: " + facetField);
+				List<Count> values = facetField.getValues();
+				Collections.reverse(values);
+				for (Count count : values) {
+					final String monthString = count.getName();					
+					
+				    DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMM");
+				    DateTime month = fmt.parseDateTime(monthString);
+					final Long relatedItemCount = count.getCount();					
+					archiveLinks.add(new ArchiveLink(month.toDate(), relatedItemCount.intValue()));									
+				}
+			}
+			
+		} catch (MalformedURLException e) {
+			log.error(e);
+		} catch (SolrServerException e) {
+			log.error(e);
+		}
+		
+		return archiveLinks;
 	}
 	
 
@@ -141,11 +175,19 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return getQueryCount(query);
 	}
 	
-	
-	
+		
 	public List<Resource> getAllWatchlists(boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("L").showBroken(showBroken).toQuery();
-		// TODO order by lastChanged.
+		query.setSortField("lastChanged", ORDER.desc);
+		return getQueryResults(query);
+	}
+	
+	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken) {
+		return getPublisherNewsitems(publisher, maxItems, showBroken, 0);
+	}
+		
+	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken, int startIndex) {
+		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).maxItems(maxItems).startIndex(startIndex).toQuery();
 		return getQueryResults(query);
 	}
 	
@@ -159,9 +201,10 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	
 	private List<Resource> getQueryResults(SolrQuery query) {
 		List<Resource> results = new ArrayList<Resource>();
+		log.info(query);
 		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);			
-			QueryResponse response = solr.query(query);
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			QueryResponse response = solr.query(query);			
 			loadResourcesFromSolrResults(results, response);			
 		} catch (MalformedURLException e) {
 			log.error(e);
@@ -184,6 +227,13 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 			log.error(e);
 		}
 		return 0;		
+	}
+
+	
+	public List<Resource> getLatestNewsitems(int maxItems, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).maxItems(maxItems).toQuery();
+		query.setSortField("date", ORDER.desc);
+		return getQueryResults(query);
 	}
 
 	
@@ -238,5 +288,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	private SolrQuery getTaggedContentSolrQuery(Set<Tag> tags, boolean showBroken, String type) {			
 		return new SolrQueryBuilder().tags(tags).showBroken(showBroken).type(type).toQuery();		
 	}
+
+	
 		    
 }

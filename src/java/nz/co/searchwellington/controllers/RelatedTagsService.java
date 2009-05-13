@@ -78,7 +78,6 @@ public class RelatedTagsService {
 			query.setFacetMinCount(1);
 			
 			QueryResponse response = solr.query(query);		
-					
 			FacetField facetField = response.getFacetField("tags");
 			if (facetField != null && facetField.getValues() != null) {
 				log.info("Found facet field: " + facetField);

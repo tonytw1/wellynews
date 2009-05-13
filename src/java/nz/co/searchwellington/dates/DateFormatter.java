@@ -16,7 +16,7 @@ public class DateFormatter {
     public static final String TIME_DAY_MONTH_YEAR_FORMAT = "h:mm a d MMM yyyy";
     public static final String MONTH_YEAR_FORMAT = "MMMM yyyy";
     public static final String W3C_DATETIME_FORMAT = "yyyy-MM-dd'T'hh:mm:ssZZ";
-   
+    public static final String MONTH_FACET = "yyyyMM";
     
     public String formatDate (Date date, String format) {        
         if (date != null) {
