@@ -10,9 +10,13 @@ import org.apache.solr.client.solrj.SolrQuery;
 public class SolrQueryBuilder {
 		
 	private StringBuilder sb;
+	private Integer startIndex;
+	private Integer maxItems;
 	
 	public SolrQueryBuilder() {	
 		this.sb = new StringBuilder();
+		this.startIndex = null;
+		this.maxItems = null;
 	}
 
 	public SolrQueryBuilder tag(Tag tag) {
@@ -32,13 +36,6 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
-
-	public SolrQuery toQuery() {
-		SolrQuery query = new SolrQuery(sb.toString().trim());
-		return query;
-		
-	}
-
 	public SolrQueryBuilder tags(Set<Tag> tags) {
 		for (Tag tag : tags) {
 			this.tag(tag);
@@ -58,6 +55,28 @@ public class SolrQueryBuilder {
 			sb.append(" +publisher:" + publisher.getId());			
 		}
 		return this;
+	}
+
+	public SolrQueryBuilder startIndex(int startIndex) {
+		this.startIndex = startIndex;
+		return this;
+	}
+	
+
+	public SolrQueryBuilder maxItems(int maxItems) {
+		this.maxItems = maxItems;
+		return this;
+	}
+	
+	public SolrQuery toQuery() {
+		SolrQuery query = new SolrQuery(sb.toString().trim());
+		if (startIndex != null) {
+			query.setStart(startIndex);
+		}
+		if (maxItems != null) {
+			query.setRows(maxItems);
+		}
+		return query;		
 	}
 	
 }

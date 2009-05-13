@@ -47,7 +47,7 @@ public class LinkCheckerScheduler {
     @Transactional()
     public void queueWatchlistItems() {    
         log.info("Queuing watchlist items for checking.");
-        for (Resource resource : resourceDAO.getAllWatchlists()) {
+        for (Resource resource : resourceDAO.getAllWatchlists(true)) {
             log.info("Queuing watchlist item for checking: " + resource.getName());
             linkCheckerQueue.add(resource.getId());
         }

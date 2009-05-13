@@ -292,18 +292,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    @SuppressWarnings("unchecked")
-    public List<Resource> getAllWatchlists() {        
-        return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).
-        addOrder(Order.desc("lastChanged")).
-        setCacheable(true).
-        list();  
-    }
-    
-    
-   
-    
-    
     
     @SuppressWarnings("unchecked")
     public List<Resource> getRecentlyChangedWatchlistItems() {       
@@ -507,7 +495,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     	return getPublisherNewsitems(publisher, MaxNumberOfItems, showBroken, 0);
     }
     
-    
+    // TODO deprecate
     @SuppressWarnings("unchecked")
     public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex) {  
         Criteria criteria = makePublisherNewsitemsCriteria(publisher, showBroken);       
@@ -517,21 +505,10 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         list();
     }
     
-    // TODO count for better performance;
-    public int getPublisherNewsitemsCount(Website publisher, boolean showBroken) {
-    	Criteria criteria = makePublisherNewsitemsCriteria(publisher, showBroken);       
-    	return criteria.setCacheable(true).
-    	list().size();
-    }
+   
     
         
-    @SuppressWarnings("unchecked")
-    public List<Newsitem> getAllPublisherNewsitems(Website publisher, boolean showBroken) {
-        return makePublisherNewsitemsCriteria(publisher, showBroken).
-        setCacheable(true).
-        list();
-    }
-
+  
     
     private Criteria makePublisherNewsitemsCriteria(Website publisher, boolean showBroken) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Newsitem.class).

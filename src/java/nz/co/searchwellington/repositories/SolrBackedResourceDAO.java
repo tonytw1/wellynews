@@ -29,8 +29,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
     Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
 	final String solrUrl = "http://localhost:8080/apache-solr-1.3.0";
     
-    
-  
+	
 	public SolrBackedResourceDAO() {
 	}
 		
@@ -54,60 +53,23 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		log.info("Getting newsitem count for tag: " + tag);		
 		Set<Tag> tags = new HashSet<Tag>();
     	tags.add(tag);
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getTaggedContentSolrQuery(tags, showBroken, "N");
-			QueryResponse response = solr.query(query);			
-			Long count =  response.getResults().getNumFound();
-			return count.intValue();			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
-		return 0;
+    	SolrQuery query = getTaggedContentSolrQuery(tags, showBroken, "N");
+    	return getQueryCount(query);
 	}
 	
 	
 	public int getCommentedNewsitemsCount(boolean showBroken) {
 		log.info("Getting commented newsitem count");
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getCommentedNewsitemsQuery(showBroken);
-			QueryResponse response = solr.query(query);	
-			Long count =  response.getResults().getNumFound();
-			return count.intValue();			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
-		return 0;
+		SolrQuery query = getCommentedNewsitemsQuery(showBroken);
+		return getQueryCount(query);
 	}
 
 	
 	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken) {
 		log.info("Getting commented newsitem count for tag: " + tag);
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);
-			QueryResponse response = solr.query(query);	
-			Long count =  response.getResults().getNumFound();
-			return count.intValue();			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
-		return 0;
+		SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);
+		return getQueryCount(query);	
 	}
-	
-	
-	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
-		log.info("Getting websites for tags: " + tags );
-		return getTaggedContent(tags, showBroken, "W", 0, maxItems, "name", ORDER.asc);
-	}
-	
 	
 	public List<Resource> getTaggedWebsites(Tag tag, boolean showBroken, int maxItems) {		
 		Set<Tag> tags = new HashSet<Tag>();
@@ -115,86 +77,116 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return getTaggedWebsites(tags, showBroken, maxItems);
 	}
 	
+	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
+		log.info("Getting websites for tags: " + tags );
+		SolrQuery query = new SolrQueryBuilder().tags(tags).type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
+		query.setSortField("name", ORDER.asc);		
+		return getQueryResults(query);
+	}
+	
+	
+	
 	
 	public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
 		log.info("Getting watchlist for tag: " + tag);
-		Set<Tag> tags = new HashSet<Tag>();
-		tags.add(tag);
-		return getTaggedContent(tags, showBroken, "L", 0, null, "name", ORDER.asc);
+		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();
+		query.setSortField("name", ORDER.asc);
+		return getQueryResults(query);
 	}
 	
 	
 	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken) {
 		log.info("Getting feeds for tag: " + tag);
-		Set<Tag> tags = new HashSet<Tag>();
-		tags.add(tag);
-		return getTaggedContent(tags, showBroken, "F", 0, null, "name", ORDER.asc);
+		SolrQuery query = new SolrQueryBuilder().tag(tag).type("F").showBroken(showBroken).toQuery();
+		query.setSortField("name", ORDER.asc);
+		return getQueryResults(query);
 	}
 	
 	
-	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex) {		
-		List<Resource> results = new ArrayList<Resource>();
-    	try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getCommentedNewsitemsQuery(showBroken);			
-			query.setSortField("date", ORDER.desc);
-			query.setRows(maxItems);
-			query.setStart(startIndex);
-			
-			QueryResponse response = solr.query(query);
-			loadResourcesFromSolrResults(results, response);
-			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}    	
-		return results;
+	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex) {	
+		SolrQuery query = getCommentedNewsitemsQuery(showBroken);
+		query.setSortField("date", ORDER.desc);
+		query.setRows(maxItems);
+		query.setStart(startIndex);		
+		return getQueryResults(query);		    	
 	}
-	
 	
 	
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).publisher(publisher).toQuery();			
+		query.setSortField("date", ORDER.desc);
+		return getQueryResults(query);
+	}
 	
+
+	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {	
+		SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);			
+    	query.setSortField("date", ORDER.desc);
+		query.setStart(startIndex);
+		query.setRows(maxItems);
+		return getQueryResults(query);
+	}
+	
+	
+	public List<Resource> getAllPublisherNewsitems(Website publisher, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").publisher(publisher).toQuery();			
+		query.setSortField("date", ORDER.desc);
+		return getQueryResults(query);
+	}
+	
+
+	public int getPublisherNewsitemsCount(Website publisher, boolean showBroken) {
+		log.info("Getting publisher newsitem count for publisher: " + publisher);
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").publisher(publisher).toQuery();
+		return getQueryCount(query);
+	}
+	
+	
+	
+	public List<Resource> getAllWatchlists(boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("L").showBroken(showBroken).toQuery();
+		// TODO order by lastChanged.
+		return getQueryResults(query);
+	}
+	
+
+	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
+		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);
+		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();		
+    	return getQueryResults(query);
+    }
+	
+	
+	private List<Resource> getQueryResults(SolrQuery query) {
 		List<Resource> results = new ArrayList<Resource>();
-    	try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).publisher(publisher).toQuery();			
-			query.setSortField("date", ORDER.desc);
+		try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);			
 			QueryResponse response = solr.query(query);
-			loadResourcesFromSolrResults(results, response);
-			
+			loadResourcesFromSolrResults(results, response);			
 		} catch (MalformedURLException e) {
 			log.error(e);
 		} catch (SolrServerException e) {
 			log.error(e);
-		}    	
+		} 
 		return results;
-		
 	}
-
-	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {
-		List<Resource> results = new ArrayList<Resource>();
-    	try {
+	
+	
+	private int getQueryCount(SolrQuery query) {
+		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);			
-			query.setSortField("date", ORDER.desc);
-			query.setStart(startIndex);
-			query.setRows(maxItems);
-			
-			QueryResponse response = solr.query(query);
-			loadResourcesFromSolrResults(results, response);
-			
+			QueryResponse response = solr.query(query);	
+			Long count =  response.getResults().getNumFound();
+			return count.intValue();			
 		} catch (MalformedURLException e) {
 			log.error(e);
 		} catch (SolrServerException e) {
 			log.error(e);
-		}    	
-		return results;
+		}
+		return 0;		
 	}
 
 	
-
 	public List<Tag> getCommentedTags(boolean showBroken) {
 		List<Integer> tagIds = new ArrayList<Integer>();
 		try {
@@ -223,43 +215,16 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return loadTagsById(tagIds);
 	}
 	
-	private List<Resource> getTaggedContent(Set<Tag> tags, boolean showBroken, String type, Integer startIndex, Integer maxItems, String orderField, ORDER order) {
-		List<Resource> results = new ArrayList<Resource>();
-    	try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = getTaggedContentSolrQuery(tags, showBroken, type);		
 
-			if (startIndex != null) {
-				query.setStart(startIndex);
-			}
-			
-			if (maxItems != null) {
-				query.setRows(maxItems);
-			}
-			
-			query.setSortField("name", ORDER.asc);
-			if (orderField != null && order != null) {
-				query.setSortField(orderField, order);
-			}
-			
-			QueryResponse response = solr.query(query);
-			loadResourcesFromSolrResults(results, response);
-			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}    	
-		return results;		
+	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
+		SolrDocumentList solrResults = response.getResults();
+		for (SolrDocument result : solrResults) {
+			final int resourceId = (Integer) result.getFieldValue("id");
+			Resource resource = this.loadResourceById(resourceId);			
+			results.add(resource);
+		}
 	}
 	
-	
-	
-	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
-		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);
-    	return getTaggedContent(tags, showBroken, "N", startIndex, maxItems, "date", ORDER.desc);
-    }
-    
 	
 	private SolrQuery getCommentedNewsitemsQuery(boolean showBroken) {
 		return new SolrQueryBuilder().showBroken(showBroken).type("N").commented(true).toQuery();			
@@ -273,15 +238,5 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	private SolrQuery getTaggedContentSolrQuery(Set<Tag> tags, boolean showBroken, String type) {			
 		return new SolrQueryBuilder().tags(tags).showBroken(showBroken).type(type).toQuery();		
 	}
-    
-	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
-		SolrDocumentList solrResults = response.getResults();
-		for (SolrDocument result : solrResults) {
-			final int resourceId = (Integer) result.getFieldValue("id");
-			Resource resource = this.loadResourceById(resourceId);			
-			results.add(resource);
-		}
-	}
-    	    
-	    
+		    
 }

@@ -29,7 +29,7 @@ public interface ResourceRepository {
 
     public List <Newsitem> getLatestNewsitems(int number, boolean showBroken);
 
-    public List <Newsitem> getAllPublisherNewsitems(Website publisher, boolean showBroken);
+    public List<Resource> getAllPublisherNewsitems(Website publisher, boolean showBroken);
     public List<Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken); 
     public List <Newsitem> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex);
     public List <Website> getPublisherFeeds(Website publisher);
@@ -58,7 +58,7 @@ public interface ResourceRepository {
     public List<Resource> getAllCalendarFeeds();
     public List<Resource> getCalendarFeedsForTag(Tag tag);
 
-    public List<Resource> getAllWatchlists();
+    public List<Resource> getAllWatchlists(boolean showBroken);
     
     
     public Tag loadTagById(int tagID);

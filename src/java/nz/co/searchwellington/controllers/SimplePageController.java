@@ -305,7 +305,7 @@ public class SimplePageController extends BaseMultiActionController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
         mv.addObject("heading", "News Watchlist");
-        mv.addObject("main_content", resourceDAO.getAllWatchlists());
+        mv.addObject("main_content", resourceDAO.getAllWatchlists(false));
 
         populateSecondaryLatestNewsitems(mv, loggedInUser);
 
