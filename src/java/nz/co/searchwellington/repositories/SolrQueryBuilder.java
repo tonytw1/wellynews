@@ -68,6 +68,13 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
+	public SolrQueryBuilder month(String monthString) {
+		if (monthString != null) {
+			sb.append(" +month:" + monthString);
+		}
+		return this;
+	}
+	
 	public SolrQuery toQuery() {
 		SolrQuery query = new SolrQuery(sb.toString().trim());
 		if (startIndex != null) {
@@ -75,8 +82,9 @@ public class SolrQueryBuilder {
 		}
 		if (maxItems != null) {
 			query.setRows(maxItems);
-		}
+		}		
 		return query;		
 	}
+
 	
 }

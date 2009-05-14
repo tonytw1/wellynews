@@ -36,7 +36,7 @@ public interface ResourceRepository {
     public List <Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken);
     public List <Resource> getNewsitemsMatchingKeywords(String keywords,  boolean showBroken);
     
-    public List <Resource> getNewsitemsForMonth(Date month);
+    public List <Resource> getNewsitemsForMonth(Date month, boolean showBroken);
 
 
 

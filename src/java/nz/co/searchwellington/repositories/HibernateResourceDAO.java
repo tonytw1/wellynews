@@ -1,16 +1,12 @@
 package nz.co.searchwellington.repositories;
 
-import java.math.BigInteger;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
@@ -21,7 +17,6 @@ import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.WebsiteImpl;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -303,37 +298,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    
-
-    
-    @SuppressWarnings("deprecation")
-	public int getWebsiteCount(boolean showBroken) {       
-        if (showBroken) {
-            return ((Long) sessionFactory.getCurrentSession().
-                iterate("select count(*) from WebsiteImpl as website").
-                next()).intValue();
-        } else {
-            return ((Long) sessionFactory.getCurrentSession().
-                    iterate("select count(*) from WebsiteImpl as website where website.httpStatus = 200").
-                    next()).intValue();
-        }
-    }
-
-    // TODO map onto a cachable object.
-    @SuppressWarnings("deprecation")
-	public int getNewsitemCount(boolean showBroken) {
-        if (showBroken) {
-            return ((Long) sessionFactory.getCurrentSession().
-                iterate("select count(*) from NewsitemImpl as newsitem").
-                next()).intValue();
-        } else {
-            return ((Long) sessionFactory.getCurrentSession().
-                    iterate("select count(*) from NewsitemImpl as newsitem where newsitem.httpStatus = 200").
-                    next()).intValue();
-        }
-    }
-       
-    
     @SuppressWarnings("deprecation")
 	public int getCommentCount() {
         // TODO implement show broken logic.
@@ -461,18 +425,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
    
      
-    private Criteria makePublisherNewsitemsCriteria(Website publisher, boolean showBroken) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
-            add(Expression.eq("publisher", publisher)).        
-            addOrder(Order.desc("date")).
-            setCacheable(true);
-        
-        if (!showBroken) {
-            criteria.add(Expression.eq("httpStatus", 200));               
-        }
-        return criteria;
-    }
-
+  
     
     
     @SuppressWarnings("unchecked")
@@ -481,30 +434,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
    
-    
-    @SuppressWarnings("unchecked")
-    public List<Resource> getNewsitemsForMonth(Date date) {
-        // TODO deprication
-        int year = date.getYear() + 1900;
-        int month = date.getMonth();
-
-        Calendar startDate = Calendar.getInstance();
-        startDate.set(year, month, 1, 0, 0, 0);
-
-        Calendar endDate = Calendar.getInstance();
-        endDate.set(year, month + 1, 1, 0, 0, 0);
-
-        return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
-            add(Restrictions.ge("date", startDate.getTime())).
-            add(Restrictions.lt("date", endDate.getTime())).
-            addOrder(Order.desc("date")).
-            addOrder(Order.desc("id")).
-            setCacheable(true).
-            list();
-    }
-
-
-        
+            
     public void deleteResource(Resource resource) {
         sessionFactory.getCurrentSession().delete(resource);       
         // flush collection caches.  

@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 
 import org.apache.log4j.Logger;
@@ -29,6 +30,8 @@ import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+
+import com.sun.org.apache.xerces.internal.impl.dv.xs.DateDV;
 
 public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements ResourceRepository {
 
@@ -149,12 +152,11 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 				log.info("Found facet field: " + facetField);
 				List<Count> values = facetField.getValues();
 				Collections.reverse(values);
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMM");
 				for (Count count : values) {
 					final String monthString = count.getName();					
-					
-				    DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMM");
 				    DateTime month = fmt.parseDateTime(monthString);
-					final Long relatedItemCount = count.getCount();					
+					final Long relatedItemCount = count.getCount();
 					archiveLinks.add(new ArchiveLink(month.toDate(), relatedItemCount.intValue()));									
 				}
 			}
@@ -168,6 +170,13 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return archiveLinks;
 	}
 	
+	
+	public List<Resource> getNewsitemsForMonth(Date month, boolean showBroken) {	
+		final String monthString = new DateFormatter().formatDate(month, DateFormatter.MONTH_FACET);
+		SolrQuery query = new SolrQueryBuilder().month(monthString).showBroken(showBroken).toQuery();
+		query.setRows(1000);
+		return getQueryResults(query);
+	}
 
 	public int getPublisherNewsitemsCount(Website publisher, boolean showBroken) {
 		log.info("Getting publisher newsitem count for publisher: " + publisher);
@@ -227,6 +236,19 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 			log.error(e);
 		}
 		return 0;		
+	}
+
+	
+	
+	
+	
+	public int getNewsitemCount(boolean showBroken) {
+		return getQueryCount(new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery());
+	}
+
+	
+	public int getWebsiteCount(boolean showBroken) {
+		return getQueryCount(new SolrQueryBuilder().type("W").showBroken(showBroken).toQuery());
 	}
 
 	

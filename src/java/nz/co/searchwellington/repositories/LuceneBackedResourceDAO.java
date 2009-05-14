@@ -24,7 +24,6 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.RangeQuery;
 import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
@@ -191,17 +190,7 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
     
     
-    private BooleanQuery makeTagNewsitemsQuery(Tag tag, boolean showBroken) {
-    	BooleanQuery query = new BooleanQuery();        
-        if (!showBroken) {
-            addHttpStatusRestriction(query);            
-        }                
-        addTagRestriction(query, tag);        
-        addTypeRestriction(query, "N");        
-        return query;
-    }
-
-    
+   
     
     public Date getLastLiveTimeForTag(Tag tag) {
         BooleanQuery query = new BooleanQuery();
@@ -264,11 +253,7 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
 
     
-    private void addCommentRestriction(BooleanQuery query) {   
-        // TODO is this really how you do an int range?
-        RangeQuery queryBroken = new RangeQuery(new Term("comment_count", "1"), new Term("comment_count", "999"), true);
-        query.add(queryBroken, Occur.MUST);
-    }
+   
     
     
 
@@ -315,14 +300,9 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
         }
     }
     
-    private void addPublisherRestriction(BooleanQuery query, Website publisher) {
-    	  query.add(new TermQuery(new Term("publisher", new Integer(publisher.getId()).toString())), Occur.MUST);      
-    }
+ 
     
-    
-    
-    
-  
+     
     public List<Resource> getCalendarFeedsForTag(Tag tag) {
     	List <Resource> matchingWebsites = new ArrayList<Resource>();        
         log.info("Searching for calendars for tag: " + tag.getName());
