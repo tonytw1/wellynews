@@ -33,7 +33,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		boolean isSingleTagPage = tags != null && tags.size() == 1;
-		boolean hasCommentPath = request.getPathInfo().matches("^(.*?)/comment(/rss)?$");		
+		boolean hasCommentPath = request.getPathInfo().matches("^(.*?)/comment(/(rss|json))?$");		
 		return isSingleTagPage && hasCommentPath;
 	}
 

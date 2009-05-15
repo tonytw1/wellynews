@@ -96,7 +96,7 @@ public interface ResourceRepository {
     public CommentFeed loadCommentFeedByUrl(String feedLink);
     public CommentFeed createNewCommentFeed(String discoveredUrl);
 	public void saveCommentFeed(CommentFeed commentFeed);
-    public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken);
+	
     public int getTaggedNewitemsCount(Tag tag, boolean showBroken);;    
     public List<Newsitem> getRecentUntaggedNewsitems();   
     public Date getNewslogLastChanged();

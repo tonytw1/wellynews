@@ -1,15 +1,14 @@
 package nz.co.searchwellington.controllers.models;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import static org.mockito.Mockito.mock;
-
 import nz.co.searchwellington.model.Tag;
 
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.servlet.ModelAndView;
 
 
 public class TagCommentModelBuilderTest extends TestCase {
@@ -40,9 +39,11 @@ public class TagCommentModelBuilderTest extends TestCase {
 		assertTrue(modelBuilder.isValid(request));
 	}
 	
-	private void setRss(ModelAndView mv, String title, String url) {
-		mv.addObject("rss_title", title);
-		mv.addObject("rss_url", url);
-	}  
 	
+	public void testShouldBeValidForTagCommentJSONPath() throws Exception {
+		ModelBuilder modelBuilder = new TagCommentModelBuilder(null, null, null);		
+		request.setPathInfo("/transport/comment/json");
+		assertTrue(modelBuilder.isValid(request));
+	}
+		
 }

@@ -480,8 +480,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
     
-    
-  
     @SuppressWarnings("unchecked")
 	public List<Resource> getResourcesWithTag(Tag tag) {
     	log.info(tag.getName());
@@ -494,39 +492,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     	return taggedResources.list();
 	}
 
-
-	@SuppressWarnings("unchecked")
-    public List<Tag> getRelatedLinksForTag(Tag tag, boolean showBroken) {
-		// TODO doesn't recurse; can this be done in lucene?
-		// TODO 3 operator
-		String showBrokenClause = "";
-        if (!showBroken) {
-            showBrokenClause = " and http_status = 200 ";
-        }
-		
-		List<Tag> relatedTags = sessionFactory.getCurrentSession().createSQLQuery(
-                  "  select {tag.*} from tag {tag} where id IN (" +
-                  "			select distinct(trts.tag_id) from resource_tags AS rt, resource_tags AS trts, resource " +
-                  "					where rt.tag_id = ? " +
-                  "					AND trts.resource_id = rt.resource_id " +
-                  "					AND resource.id = trts.resource_id " +
-                  "					and trts.tag_id != ? " + showBrokenClause + " )",
-                  "tag", Tag.class).
-                  setInteger(0, tag.getId()).
-                  setInteger(1, tag.getId()).
-                  setCacheable(true).                    
-                  list();
-          return relatedTags;
-    }
-
-	
-	public List<Tag> getRelatedTagsForPublisher(Website publisher, boolean showBroken) {
-		// TODO would be nice to have
-		return null;		
-	}
-	
-	
-
+    
 	// TODO Performance! Put Urlwords into the model.
 	public Website getPublisherByUrlWords(String publisherUrlWords) {
 		List<Resource> publishers = getAllWebsites();
@@ -549,11 +515,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 		}		
 		return null;
 	}
-	
-	
-	
-	
-	
 	
 	
 }

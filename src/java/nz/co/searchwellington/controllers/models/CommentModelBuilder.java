@@ -24,7 +24,7 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 	}
 
 	public boolean isValid(HttpServletRequest request) {
-		return request.getPathInfo().equals("/comment");
+		return request.getPathInfo().matches("^/comment(/(rss|json))?$");
 	}
 
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
