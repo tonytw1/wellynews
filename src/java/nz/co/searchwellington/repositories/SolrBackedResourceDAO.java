@@ -7,13 +7,16 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -30,8 +33,6 @@ import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-
-import com.sun.org.apache.xerces.internal.impl.dv.xs.DateDV;
 
 public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements ResourceRepository {
 
@@ -213,7 +214,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		log.info(query);
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			QueryResponse response = solr.query(query);			
+			QueryResponse response = solr.query(query);
 			loadResourcesFromSolrResults(results, response);			
 		} catch (MalformedURLException e) {
 			log.error(e);
@@ -257,8 +258,22 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		query.setSortField("date", ORDER.desc);
 		return getQueryResults(query);
 	}
-
 	
+	
+	
+	
+	@Override
+	public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).keywords(keywords).toQuery();		
+		query.setRows(100);
+		query.setHighlight(true);
+		query.setHighlightSnippets(5);		
+		return getQueryResults(query);		
+	}
+	
+	
+	
+
 	public List<Tag> getCommentedTags(boolean showBroken) {
 		List<Integer> tagIds = new ArrayList<Integer>();
 		try {
@@ -291,9 +306,21 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
 		SolrDocumentList solrResults = response.getResults();
 		for (SolrDocument result : solrResults) {
-			final int resourceId = (Integer) result.getFieldValue("id");
-			Resource resource = this.loadResourceById(resourceId);			
-			results.add(resource);
+			final Integer resourceId = (Integer) result.getFieldValue("id");
+			Resource resource = this.loadResourceById(resourceId);
+						
+			if (response.getHighlighting() != null) {
+				Map<String, List<String>> map = response.getHighlighting().get(resourceId.toString());
+				if (resource.getType().equals("N") && !map.isEmpty()) {
+					log.info("Highlighting: " + map);
+					results.add(new SolrHighlightingNewsitemDecorator((Newsitem) resource, map));
+				} else {				
+					results.add(resource);
+				}
+			} else {
+				results.add(resource);
+			}
+			
 		}
 	}
 	
