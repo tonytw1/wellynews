@@ -78,5 +78,9 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
         return discoveredFeed;
     }
 
+	public Resource loadResourceByUniqueUrl(String url) {
+		return null;
+	}
+
     
 }

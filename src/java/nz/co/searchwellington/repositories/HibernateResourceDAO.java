@@ -320,6 +320,11 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
+    final public Resource loadResourceByUniqueUrl(String url) {
+        return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).uniqueResult();        
+    }
+    
+    
     
     public CommentFeed loadCommentFeedByUrl(String url) {
         return (CommentFeed) sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();  

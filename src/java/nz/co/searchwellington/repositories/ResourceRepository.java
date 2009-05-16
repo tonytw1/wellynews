@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.criterion.Expression;
+
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
@@ -126,5 +128,6 @@ public interface ResourceRepository {
 	
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex);
 	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken);
+	public Resource loadResourceByUniqueUrl(String url);
 	
 }

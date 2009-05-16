@@ -345,8 +345,6 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	
 	private SolrQuery getTaggedContentSolrQuery(Set<Tag> tags, boolean showBroken, String type) {			
 		return new SolrQueryBuilder().tags(tags).showBroken(showBroken).type(type).toQuery();		
-	}
-
-	
+	}	
 		    
 }

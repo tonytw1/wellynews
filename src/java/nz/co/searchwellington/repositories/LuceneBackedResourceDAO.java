@@ -7,12 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.decoraters.highlighting.KeywordHighlightingNewsitemDecorator;
-import nz.co.searchwellington.model.decoraters.highlighting.KeywordHighlightingWebsiteDecorator;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.CorruptIndexException;
@@ -394,6 +390,7 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
               
         return matchingTags;   
     }
-   
+
+
     
 }

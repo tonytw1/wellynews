@@ -202,6 +202,22 @@
 	</bean>
 	
 		
+		
+
+	<bean id="apiTagUrlController" class="nz.co.searchwellington.controllers.api.TagUrlController">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="adminRequestFilter" />			
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/api/tag">tag</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>	
+	</bean>		
+		
 
 
 	<bean id="linkCheckerController" class="nz.co.searchwellington.controllers.admin.LinkCheckerController">
@@ -541,6 +557,7 @@
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
+            	<prop key="/api/tag">apiTagUrlController</prop>
             	
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
@@ -639,6 +656,8 @@
 				<prop key="/feed/*/json">jsonController</prop>
 				<prop key="/*">tagController</prop>
 				<prop key="/comment">tagController</prop>
+				
+				
 				
             </props>
         </property>
