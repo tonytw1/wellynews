@@ -13,6 +13,7 @@ import java.util.Set;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -20,16 +21,21 @@ import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNews
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.SolrInputDocument;
 import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -39,16 +45,54 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 
     Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
 	final String solrUrl = "http://localhost:8080/apache-solr-1.3.0";
-    
+    private SolrInputDocumentBuilder solrInputDocumentBuilder;
 	
-	public SolrBackedResourceDAO() {
-	}
+    
 		
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService) throws IOException {
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService, SolrInputDocumentBuilder solrInputDocumentBuilder) throws CorruptIndexException, LockObtainFailedException, IOException {
+		super(sessionFactory, indexPath, luceneIndexUpdateService);
+		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
+	}
+
+
+	public SolrBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService) throws IOException {
         super(sessionFactory, indexPath, luceneIndexUpdateService);     
     }
     
-    public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems) {    	
+    
+    @Override
+	public void saveResource(Resource resource) {
+		// TODO Auto-generated method stub
+		super.saveResource(resource);
+		updateIndexForResource(resource);
+		
+	}
+
+	private void updateIndexForResource(Resource resource) {
+		log.info("Updating solr index entire for: " + resource);
+		try {
+			SolrServer solr = new CommonsHttpSolrServer("http://localhost:8080/apache-solr-1.3.0");				
+			UpdateRequest updateRequest = new UpdateRequest();					
+			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
+			updateRequest.add(inputDocument);					
+			updateRequest.process(solr);
+			solr.commit();
+			solr.optimize();
+			
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems) {    	
     	Set<Tag> tags = new HashSet<Tag>();
     	tags.add(tag);
     	return getTaggedNewsitems(tags, showBroken, startIndex, maxItems);
@@ -176,6 +220,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	public List<Resource> getNewsitemsForMonth(Date month, boolean showBroken) {	
 		final String monthString = new DateFormatter().formatDate(month, DateFormatter.MONTH_FACET);
 		SolrQuery query = new SolrQueryBuilder().month(monthString).showBroken(showBroken).toQuery();
+		query.setSortField("date", ORDER.desc);
 		query.setRows(1000);
 		return getQueryResults(query);
 	}
@@ -199,6 +244,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken, int startIndex) {
 		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).maxItems(maxItems).startIndex(startIndex).toQuery();
+		query.setSortField("date", ORDER.desc);
 		return getQueryResults(query);
 	}
 	
@@ -206,6 +252,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
 		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);		
 		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();		
+		query.setSortField("date", ORDER.desc);
     	return getQueryResults(query);
     }
 	

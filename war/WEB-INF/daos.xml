@@ -2,10 +2,13 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+	<bean id="solrInputDocumentBuilder" class="nz.co.searchwellington.repositories.SolrInputDocumentBuilder" />
+	
 	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.SolrBackedResourceDAO">
  		<constructor-arg ref="sessionFactory" />
  		<constructor-arg value="${lucene.path}" />
  		<constructor-arg ref="luceneIndexUpdateService" />
+ 		<constructor-arg ref="solrInputDocumentBuilder" /> 		
 	</bean>
 		
 	<bean id="luceneIndexUpdateService" class="nz.co.searchwellington.repositories.LuceneIndexUpdateService" >
@@ -21,6 +24,7 @@
 	
 	<bean id="solrIndexRebuildService" class="nz.co.searchwellington.repositories.SolrIndexRebuildService">
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="solrInputDocumentBuilder" />
 	</bean>
 	
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">

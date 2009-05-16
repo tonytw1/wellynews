@@ -242,7 +242,24 @@ You can see the total number of available results in the <code>totalItems</code>
 </table>
 
 
+<h1>Restricted calls</h1>
 
+<p>These url calls are used for fiddling with the contents of the index; an api key is required.</p>
+
+<h5>Tag a url</h5>
+
+	<ul>
+	<li><code>
+	$site_information.url/api/tag?url=urlOfResourceToTag&tag=tagUrlSnippet</a>
+	</code></li>
+	</ul>
+
+<p>ie. Apply the athletics tag to the Scottish Athletics Club listing.</p>
+
+	<ul>
+	<li><code>
+	$site_information.url/url=http://www.scottishathletics.org.nz/&tag=athletics</a>
+	</code></li>
 
 </div>
 
