@@ -17,6 +17,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
+import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -203,7 +204,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	
 
 	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
-		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);
+		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);		
 		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();		
     	return getQueryResults(query);
     }
@@ -262,15 +263,20 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	
 	
 	
-	@Override
 	public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).keywords(keywords).toQuery();		
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").keywords(keywords).toQuery();		
 		query.setRows(100);
-		query.setHighlight(true);
-		query.setHighlightSnippets(5);		
+		query.setHighlight(true);		
 		return getQueryResults(query);		
 	}
 	
+	
+	public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("W").keywords(keywords).toQuery();		
+		query.setRows(100);
+		query.setHighlight(true);		
+		return getQueryResults(query);		
+	}
 	
 	
 
@@ -314,7 +320,10 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 				if (resource.getType().equals("N") && !map.isEmpty()) {
 					log.info("Highlighting: " + map);
 					results.add(new SolrHighlightingNewsitemDecorator((Newsitem) resource, map));
-				} else {				
+				} else if (resource.getType().equals("W") && !map.isEmpty()) {
+					log.info("Highlighting: " + map);
+					results.add(new SolrHighlightingWebsiteDecorator((Website) resource, map));
+				} else {
 					results.add(resource);
 				}
 			} else {

@@ -63,65 +63,8 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     
     
     
-    
-    public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
-        log.debug("Searching for Newsitems matching: " + keywords);
-        return getTypedItemsMatchingKeywords(keywords, showBroken, "N");        
-    }
 
-    
-    
-    public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) {
-        log.debug("Searching for Wesites matching: " + keywords);
-        return getTypedItemsMatchingKeywords(keywords, showBroken, "W");    
-    }
 
-    
-    
-    private List<Resource> getTypedItemsMatchingKeywords(String keywords, boolean showBroken, final String type) {
-        List <Resource> matchingItems = new ArrayList<Resource>();
-        
-        // Compose a lucene query.        
-        BooleanQuery query = new BooleanQuery();
-        
-        if (!showBroken) {
-            addHttpStatusRestriction(query);            
-        }
-        
-        // Keyword restriction
-        if (keywords != null) {
-            try {
-				addKeywordRestriction(query, keywords, analyzer);
-				addTypeRestriction(query, type);
-
-				Searcher searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-				Sort sort = dateDescendingSort();
-            
-				log.info("Lucene keyword query is: " + query.toString());
-				Hits hits = searcher.search(query, sort);
-				matchingItems = loadResourcesFromHits(100, hits);            
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();			
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}            
-        }
-        
-        List<Resource> decoratedMatchingItems = new ArrayList<Resource>();
-        for (Resource resource : matchingItems) {
-            if (resource.getType().equals("W")) {
-                decoratedMatchingItems.add(new KeywordHighlightingWebsiteDecorator( (Website) resource, query, analyzer));
-            } else if (resource.getType().equals("N")) {
-                decoratedMatchingItems.add(new KeywordHighlightingNewsitemDecorator( (Newsitem) resource, query, analyzer));                
-            } else {
-                decoratedMatchingItems.add(resource);
-            }
-        }
-        return decoratedMatchingItems;
-    
-    }
     
     
 

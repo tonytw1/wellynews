@@ -88,7 +88,7 @@ public class SolrQueryBuilder {
 
 	public SolrQueryBuilder keywords(String keywords) {
 		if (keywords != null) {
-			sb.append(" name:" + keywords);			
+			sb.append(" +name:" + keywords);			
 		}
 		return this;		
 	}

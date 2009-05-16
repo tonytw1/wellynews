@@ -202,13 +202,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
-        throw(new UnsupportedOperationException());
-    }
-
-    public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) {
-        throw(new UnsupportedOperationException());
-    }
+    
 
     
     @SuppressWarnings("unchecked")
