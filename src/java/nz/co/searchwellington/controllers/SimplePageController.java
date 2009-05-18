@@ -146,8 +146,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView geotagged(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);
-        requestFilter.loadAttributesOntoRequest(request);
-                
+        
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;    

@@ -13,7 +13,6 @@ import java.util.Set;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -31,7 +30,6 @@ import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
-import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -44,23 +42,23 @@ import org.joda.time.format.DateTimeFormatter;
 public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements ResourceRepository {
 
     Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
-	final String solrUrl = "http://localhost:8080/apache-solr-1.3.0";
-    private SolrInputDocumentBuilder solrInputDocumentBuilder;
-	
     
-		
+    private SolrInputDocumentBuilder solrInputDocumentBuilder;
+    private String solrUrl;
+	
     public SolrBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService, SolrInputDocumentBuilder solrInputDocumentBuilder) throws CorruptIndexException, LockObtainFailedException, IOException {
 		super(sessionFactory, indexPath, luceneIndexUpdateService);
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
 	}
 
+	public void setSolrUrl(String solrUrl) {
+		this.solrUrl = solrUrl;
+	}
 
-	public SolrBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService) throws IOException {
-        super(sessionFactory, indexPath, luceneIndexUpdateService);     
-    }
-    
-    
-    @Override
+
+
+
+	@Override
 	public void saveResource(Resource resource) {
 		// TODO Auto-generated method stub
 		super.saveResource(resource);
@@ -71,7 +69,7 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 	private void updateIndexForResource(Resource resource) {
 		log.info("Updating solr index entire for: " + resource);
 		try {
-			SolrServer solr = new CommonsHttpSolrServer("http://localhost:8080/apache-solr-1.3.0");				
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);				
 			UpdateRequest updateRequest = new UpdateRequest();					
 			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
 			updateRequest.add(inputDocument);					
@@ -139,7 +137,14 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return getQueryResults(query);
 	}
 	
-		
+	// TODO rename
+	public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxItems, boolean showBroken) {
+		log.info("Getting geotagged newsitems for tag: " + tag );
+		SolrQuery query = new SolrQueryBuilder().tag(tag).type("N").geotagged().showBroken(showBroken).maxItems(maxItems).toQuery();
+		query.setSortField("date", ORDER.desc);
+		return getQueryResults(query);
+	}
+
 	public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
 		log.info("Getting watchlist for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();
@@ -237,7 +242,14 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		query.setSortField("lastChanged", ORDER.desc);
 		return getQueryResults(query);
 	}
-	
+		
+	public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("C").showBroken(showBroken).toQuery();
+		query.setSortField("name", ORDER.asc);
+		return getQueryResults(query);
+	}
+
+
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken) {
 		return getPublisherNewsitems(publisher, maxItems, showBroken, 0);
 	}
@@ -355,6 +367,41 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return loadTagsById(tagIds);
 	}
 	
+	
+	public List<Resource> getAllValidGeocoded(int maxItems, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().maxItems(maxItems).toQuery();
+		query.setSortField("date", ORDER.desc);
+		return getQueryResults(query);
+	}
+	
+
+	public List<Tag> getGeotaggedTags(boolean showBroken) {
+		List<Integer> tagIds = new ArrayList<Integer>();
+		try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).geotagged().toQuery();		
+			query.addFacetField("tags");
+			query.setFacetMinCount(1);
+			query.setFacetSort(true);
+			
+			QueryResponse response = solr.query(query);
+			FacetField facetField = response.getFacetField("tags");
+			if (facetField != null && facetField.getValues() != null) {
+				log.info("Found facet field: " + facetField);
+				List<Count> values = facetField.getValues();
+				for (Count count : values) {
+					final int tagId = Integer.parseInt(count.getName());
+					tagIds.add(tagId);
+				}				
+			}
+			
+		} catch (MalformedURLException e) {
+			log.error(e);
+		} catch (SolrServerException e) {
+			log.error(e);
+		}
+		return loadTagsById(tagIds);
+	}
 
 	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
 		SolrDocumentList solrResults = response.getResults();
@@ -379,7 +426,6 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 			
 		}
 	}
-	
 	
 	private SolrQuery getCommentedNewsitemsQuery(boolean showBroken) {
 		return new SolrQueryBuilder().showBroken(showBroken).type("N").commented(true).toQuery();			

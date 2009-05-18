@@ -58,25 +58,6 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
     
     
-    
-
-
-    
-    
-
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-
-
     private BooleanQuery makeKeywordQuery(String keywords, LuceneAnalyzer analyzer) throws ParseException {
         BooleanQuery keywordQuery = new BooleanQuery();
         
@@ -96,32 +77,11 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
     
     
-    
-    
-  
-   
-    
-    
-    
-    @Override
-    public void saveResource(Resource resource) {
-        super.saveResource(resource);     
-        luceneIndexUpdateService.updateResource(resource);       
-    }
-    
-        
     public void saveTag(Tag tag) {
         super.saveTag(tag);
         luceneIndexUpdateService.updateTag(tag);     
     }
        
-    
-    @Override
-    public void deleteResource(Resource resource) {        
-        super.deleteResource(resource);
-        luceneIndexUpdateService.deleteLuceneResource(resource);		  
-    }
-
     
     public void deleteTag(Tag tag) {     
         luceneIndexUpdateService.deleteTag(tag);	
@@ -240,68 +200,8 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
     
  
-    
-     
-    public List<Resource> getCalendarFeedsForTag(Tag tag) {
-    	List <Resource> matchingWebsites = new ArrayList<Resource>();        
-        log.info("Searching for calendars for tag: " + tag.getName());
         
-        boolean showBroken = false;     // TODO pull up onto method.
-        
-        // Compose a lucene query.        
-        BooleanQuery query = new BooleanQuery();                
-        if (!showBroken) {
-            addHttpStatusRestriction(query);            
-        }
-        addTagRestriction(query, tag);               
-        addTypeRestriction(query, "C");
-
-        Searcher searcher;
-		try {
-			searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-			Sort sort = dateDescendingSort();
-        
-			log.debug("Query: " + query.toString());
-			Hits hits = searcher.search(query, sort);
-			log.debug("Found " + hits.length() + " matching.");
-			matchingWebsites = loadResourcesFromHits(10, hits);                     
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}        
-        return matchingWebsites;        
-    }
-    
-    
-	public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxItems, boolean showBroken) {
-    	  List <Resource> matchingNewsitems = new ArrayList<Resource>();
-    	  
-          BooleanQuery query = new BooleanQuery();                
-          if (!showBroken) {
-              addHttpStatusRestriction(query);            
-          }
-          
-          Set<Tag> tags = new HashSet<Tag>();
-          tags.add(tag);
-          addTagsRestriction(query, tags);               
-          addTypeRestriction(query, "N");
-          query.add(new TermQuery(new Term("geotagged", "1")), Occur.MUST);
-
-          try {
-        	  Searcher searcher;
-        	  searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-        	  Sort sort = dateDescendingSort();
-          
-        	  log.debug("Query: " + query.toString());
-        	  Hits hits = searcher.search(query, sort);
-        	  log.debug("Found " + hits.length() + " matching.");
-        	  matchingNewsitems = loadResourcesFromHits(maxItems, hits);
-          } catch (IOException e) {
-        	  log.error("IO exception; returning empty list:", e);        	 
-          }                       
-          return matchingNewsitems;
-	}
-
+	
 
 	private IndexReader loadIndexReader(String indexPath, boolean createNew) throws IOException {
         IndexReader localReader = null;

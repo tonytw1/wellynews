@@ -56,7 +56,7 @@ public interface ResourceRepository {
     public List<Feed> getFeedsToRead();
     
     public List<Resource> getAllCalendarFeeds();
-    public List<Resource> getCalendarFeedsForTag(Tag tag);
+    public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken);
 
     public List<Resource> getAllWatchlists(boolean showBroken);
     

@@ -21,7 +21,8 @@ public class SolrIndexRebuildService {
 
 	private ResourceRepository resourceDAO;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
-		
+	private String solrUrl;
+
 	
 	public SolrIndexRebuildService(ResourceRepository resourceDAO, SolrInputDocumentBuilder solrInputDocumentBuilder) {		
 		this.resourceDAO = resourceDAO;
@@ -29,11 +30,16 @@ public class SolrIndexRebuildService {
 	}
 
 	
+	public void setSolrUrl(String solrUrl) {
+		this.solrUrl = solrUrl;
+	}
+
+
 	public void buildIndex() {		
 		Set<Integer> newsitemIdsToIndex = resourceDAO.getAllResourceIds();
 		log.info("Number of resources to update in lucene index: " + newsitemIdsToIndex.size());
 		try {
-			SolrServer solr = new CommonsHttpSolrServer("http://localhost:8080/apache-solr-1.3.0");
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
 			final String deleteAll = "*:*";
 			UpdateResponse deleteAllQuery = solr.deleteByQuery(deleteAll);
 			log.info(deleteAllQuery.toString());

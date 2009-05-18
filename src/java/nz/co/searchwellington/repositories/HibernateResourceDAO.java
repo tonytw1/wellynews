@@ -211,23 +211,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).list();        
     }
     
-    @SuppressWarnings("unchecked")
-    public List<Resource> getAllValidGeocoded(int maxItems, boolean showBroken) {      
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Resource.class).
-        createAlias("geocode", "geocode").
-        add(Restrictions.isNotNull("geocode")).
-        add(Restrictions.ne("geocode.latitude", new Double(0))).
-        add(Restrictions.ne("geocode.longitude", new Double(0))).
-        addOrder(Order.desc("date")).
-        addOrder(Order.desc("id")).
-        setMaxResults(maxItems);     
-        if (!showBroken) {
-            criteria.add(Expression.eq("httpStatus", 200));
-        }
-        return criteria.list();
-    }
     
-  
     @SuppressWarnings("unchecked")
     public List<Resource> getAllResources() {
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).list();   
@@ -256,18 +240,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
    
     
-    public List<Tag> getGeotaggedTags(boolean showBroken) {
-        // TODO performance! Don't iterate!
-        List<Tag> geotaggedTags = new ArrayList<Tag>();
-        for(Tag tag : getAllTags()) {
-            final int geotaggedCount = getAllValidGeocodedForTag(tag, 5, showBroken).size();
-            log.debug("Tag " + tag.getDisplayName() + " has " + geotaggedCount + " geotagged newsitems.");
-            if (geotaggedCount > 0) {
-                geotaggedTags.add(tag);
-            }
-        }
-        return geotaggedTags;        
-    }
+ 
     
     
     

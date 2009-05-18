@@ -12,11 +12,11 @@ public class SolrQueryBuilder {
 	private StringBuilder sb;
 	private Integer startIndex;
 	private Integer maxItems;
-	
+		
 	public SolrQueryBuilder() {	
 		this.sb = new StringBuilder();
 		this.startIndex = null;
-		this.maxItems = null;
+		this.maxItems = null;	
 	}
 
 	public SolrQueryBuilder tag(Tag tag) {
@@ -75,6 +75,19 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
+
+	public SolrQueryBuilder keywords(String keywords) {
+		if (keywords != null) {
+			sb.append(" +name:" + keywords);			
+		}
+		return this;		
+	}
+
+	public SolrQueryBuilder geotagged() {
+		sb.append(" +geotagged:true");
+		return this;
+	}
+	
 	public SolrQuery toQuery() {
 		SolrQuery query = new SolrQuery(sb.toString().trim());
 		if (startIndex != null) {
@@ -85,13 +98,5 @@ public class SolrQueryBuilder {
 		}		
 		return query;		
 	}
-
-	public SolrQueryBuilder keywords(String keywords) {
-		if (keywords != null) {
-			sb.append(" +name:" + keywords);			
-		}
-		return this;		
-	}
-
 	
 }
