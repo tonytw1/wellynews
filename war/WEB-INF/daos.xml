@@ -16,6 +16,11 @@
 		<property name="solrUrl" value="${solr.url}" />
 	</bean>
 	
+	<bean id="relatedTagsService" class="nz.co.searchwellington.controllers.RelatedTagsService">
+		<constructor-arg ref="resourceDAO" />
+		<property name="solrUrl" value="${solr.url}" />
+	</bean>
+	
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
 	 	<constructor-arg ref="sessionFactory" />
 	</bean>

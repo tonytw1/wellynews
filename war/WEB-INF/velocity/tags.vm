@@ -16,16 +16,16 @@
 <ul>
 #set($letter = "")
 #foreach ($tag in $tags) 
-	#set($current = $tag.name.substring(0, 1).toUpperCase())
-	#if ($current != $letter)
-		#set($letter = $current)		
-		</ul>
-		<h4>$current.toUpperCase()</h4>
-		<ul>
+	#if (!$tag.hidden)
+		#set($current = $tag.name.substring(0, 1).toUpperCase())
+		#if ($current != $letter)
+			#set($letter = $current)		
+			</ul>
+			<h4>$current.toUpperCase()</h4>
+			<ul>
+		#end
+		<li><a href="$site_information.url/$tag.name">$tag.displayName</a></li>
 	#end
-	
-	<li><a href="$site_information.url/$tag.name">$tag.displayName</a></li>
-	
 #end
 </ul>
 

@@ -1,5 +1,7 @@
 <h2>Tags</h2>
 
+
+
 #macro( showNode $tagToRender )
 	#set ($class = "selected")
 	#if ($tag) 
@@ -7,7 +9,6 @@
 			#set ($class="visable")
 		#end
 	#end
-
 	
 	<li>
 	#if ($tag) 
@@ -32,8 +33,10 @@
 #end
 
 <ul class="tagtree">
-#foreach($tree_tag in $top_level_tags) 
-	#showNode($tree_tag)
+#foreach($tree_tag in $top_level_tags)
+	#if (!$tree_tag.hidden)
+		#showNode($tree_tag)
+	#end
 #end
 
 <li><a href="${site_information.url}/tags">All Tags...</a></li>

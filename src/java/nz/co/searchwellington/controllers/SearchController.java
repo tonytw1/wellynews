@@ -14,7 +14,6 @@ import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.queryParser.ParseException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -35,7 +34,7 @@ public class SearchController extends BaseMultiActionController {
 	}
 
     @SuppressWarnings("unchecked")
-	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException {
+	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView();
                         
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());

@@ -20,8 +20,6 @@ import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNews
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.store.LockObtainFailedException;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -46,7 +44,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
     private SolrInputDocumentBuilder solrInputDocumentBuilder;
     private String solrUrl;
 	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, SolrInputDocumentBuilder solrInputDocumentBuilder) throws CorruptIndexException, LockObtainFailedException, IOException {
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, SolrInputDocumentBuilder solrInputDocumentBuilder) {
 		super(sessionFactory);
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
 	}
@@ -58,7 +56,6 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 
 	@Override
 	public void saveResource(Resource resource) {
-		// TODO Auto-generated method stub
 		super.saveResource(resource);
 		updateIndexForResource(resource);
 		

@@ -78,8 +78,10 @@
 								
 				#if ($item.tags && $item.tags.size() > 0)
 					<li class="tagged">Tagged as:</li>
-					#foreach ($tag in $item.tags)				
-						<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
+					#foreach ($tag in $item.tags)
+						#if (!$tag.hidden)
+							<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
+						#end
 					#end
 				#end
 				
@@ -114,13 +116,19 @@
 				#end
 			
 			
-				#if ($item.geocode && $item.geocode.address) 
-					<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >						
+				#if ($item.geocode && $item.geocode.address)
+					#if ($editPermissionService.canEdit($item)) 
+						<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >
+					#else 
+						</li>
+					#end
+					
 					#if ($item.geocode.isValid())
 						<a href="$site_information.url/geotagged?resource=$item.id">#parse("includes/geotag_icon.vm")</a>
 					#else
 						#parse("includes/geotag_icon.vm") 
 					#end
+					
 					$item.geocode.address</li>
 				#end
 				

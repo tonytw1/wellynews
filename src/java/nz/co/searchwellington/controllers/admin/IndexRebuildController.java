@@ -11,14 +11,14 @@ import nz.co.searchwellington.repositories.SolrIndexRebuildService;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
-public class LuceneIndexBuilderController extends BaseMultiActionController {
+public class IndexRebuildController extends BaseMultiActionController {
 
-	Logger log = Logger.getLogger(LuceneIndexBuilderController.class);
+	Logger log = Logger.getLogger(IndexRebuildController.class);
     
 	private SolrIndexRebuildService solrIndexRebuildService;
     private boolean indexingLock;
         
-    public LuceneIndexBuilderController(SolrIndexRebuildService solrIndexRebuildService) {
+    public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService) {
         super();
         this.solrIndexRebuildService = solrIndexRebuildService;
         this.indexingLock = false;

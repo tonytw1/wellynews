@@ -50,7 +50,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     }
     
    
-    final protected void populateSecondaryLatestNewsitems(ModelAndView mv, User loggedInUser) throws IOException {
+    final protected void populateSecondaryLatestNewsitems(ModelAndView mv, User loggedInUser) {
         boolean showBroken = loggedInUser != null;      
         final int numberOfItems = 5;
         final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(numberOfItems, showBroken);        

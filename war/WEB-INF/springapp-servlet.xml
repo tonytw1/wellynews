@@ -185,14 +185,14 @@
 	
 	
 	
-	<bean id="luceneIndexBuilderController" class="nz.co.searchwellington.controllers.admin.LuceneIndexBuilderController">
+	<bean id="indexRebuildController" class="nz.co.searchwellington.controllers.admin.IndexRebuildController">
 		<constructor-arg ref="solrIndexRebuildService" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
-						<prop key="/admin/luceneindexbuilder">build</prop>						
+						<prop key="/admin/indexbuilder">build</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -343,9 +343,6 @@
 		<constructor-arg ref="publisherGuessingService" />	
 	</bean>
 	
-	<bean id="relatedTagsService" class="nz.co.searchwellington.controllers.RelatedTagsService">
-		<constructor-arg ref="resourceDAO" />
-	</bean>
 	
 	
 	
@@ -635,7 +632,7 @@
 				<prop key="/openid/verify">loginController</prop>
 				
 									
-				<prop key="/admin/luceneindexbuilder">luceneIndexBuilderController</prop>
+				<prop key="/admin/indexbuilder">indexRebuildController</prop>
 				<prop key="/admin/linkchecker/*">linkCheckerController</prop>
 				<prop key="/admin/config/edit">configEditController</prop>
 				<prop key="/admin/config/save">configEditController</prop>

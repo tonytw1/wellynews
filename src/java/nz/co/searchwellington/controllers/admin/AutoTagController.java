@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.admin;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,6 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
 import org.apache.log4j.Logger;
-import org.apache.lucene.queryParser.ParseException;
 import org.springframework.web.servlet.ModelAndView;
 
 public class AutoTagController extends BaseMultiActionController {
@@ -35,7 +33,7 @@ public class AutoTagController extends BaseMultiActionController {
 
 
 	@SuppressWarnings("unchecked")
-    public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException {        
+    public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();        
         mv.setViewName("autoTagPrompt");
         
@@ -58,7 +56,7 @@ public class AutoTagController extends BaseMultiActionController {
     }
 
 
-    public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) throws IOException, ParseException {        
+    public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         mv.setViewName("autoTagApply");
         
@@ -89,7 +87,7 @@ public class AutoTagController extends BaseMultiActionController {
     }
     
     
-    private List<Resource> getPossibleAutotagResources(Tag editTag) throws IOException, ParseException {
+    private List<Resource> getPossibleAutotagResources(Tag editTag) {
 		List<Resource> resources = resourceDAO.getWebsitesMatchingKeywords(editTag.getDisplayName(), true);
 		resources.addAll(resourceDAO.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true));
 		return resources;

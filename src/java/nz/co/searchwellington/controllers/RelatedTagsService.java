@@ -26,16 +26,20 @@ public class RelatedTagsService {
 
 	
 	private ResourceRepository resourceDAO;
-	// TODO Spring prop
-	String solrUrl = "http://localhost:8080/apache-solr-1.3.0";
+	private String solrUrl;
 
 	
 	public RelatedTagsService(ResourceRepository resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}
+	
+	
+    public void setSolrUrl(String solrUrl) {
+		this.solrUrl = solrUrl;
+	}
 
-
-    public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken) {    	
+    
+	public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken) {    	
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
@@ -130,7 +134,7 @@ public class RelatedTagsService {
      
 	
 	private boolean isTagSuitable(Tag relatedTag, Tag tag) {
-		return !(tag.equals(relatedTag)) && !(relatedTag.isParentOf(tag) || relatedTag.getAncestors().contains(tag));
+		return !(tag.equals(relatedTag)) && !(relatedTag.isParentOf(tag) || relatedTag.getAncestors().contains(tag) || relatedTag.isHidden());
 	}
 	
 }

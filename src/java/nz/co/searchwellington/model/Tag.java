@@ -15,8 +15,9 @@ public class Tag implements RssFeedable {
     String displayName;
     Tag parent;
     Set <Tag> children;
-    int flickrCount;
+    boolean hidden;
     
+    int flickrCount;    
     String mainImage;
     String secondaryImage;
    
@@ -35,6 +36,7 @@ public class Tag implements RssFeedable {
         this.parent = parent;
         this.children = children;
         this.relatedFeed = null;
+        this.hidden = false;
     }
     
     
@@ -148,9 +150,19 @@ public class Tag implements RssFeedable {
 	public String getAutotagHints() {
 		return autotagHints;
 	}
-	
-	
-	 public SyndEntry getRssItem() {
+
+	 public boolean isHidden() {
+		// TODO return hidden;
+		 return name.equals("wcnhosted") || name.equals("featured");
+	}
+
+
+	public void setHidden(boolean hidden) {
+		this.hidden = hidden;
+	}
+
+
+	public SyndEntry getRssItem() {
 	        SyndEntry entry = new SyndEntryImpl();      
 	        entry.setTitle(displayName);
 	        entry.setLink(name);
