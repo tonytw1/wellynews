@@ -64,6 +64,20 @@ public class RequestFilterNewTest extends TestCase {
 		 verifyNoMoreInteractions(resourceDAO);		 
 	}
 		
+	
+	public void testShouldNotAttemptToResolveTagForReservedUrlWordComment() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/comment");		 
+		 filter.loadAttributesOntoRequest(request);
+		 verifyNoMoreInteractions(resourceDAO);		
+	}
+	
+	public void testShouldNotAttemptToResolveTagForReservedUrlWordGeotagged() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/geotagged/rss");		 
+		 filter.loadAttributesOntoRequest(request);
+		 verifyNoMoreInteractions(resourceDAO);		
+	}
 		
 	 public void testShouldPopulateTagForSingleTagCommentRequest() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();

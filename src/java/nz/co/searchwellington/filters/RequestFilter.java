@@ -4,7 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,7 +44,7 @@ public class RequestFilter {
     	
         // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
         if (request.getParameter("tag") != null) {
-            String tagName = request.getParameter("tag");        
+            String tagName = request.getParameter("tag");            
             Tag tag = resourceDAO.loadTagByName(tagName);             
                request.setAttribute("tag", tag);            
         }
@@ -124,26 +126,29 @@ public class RequestFilter {
         Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
         if (contentMatcher.matches()) {
         	final String match = contentMatcher.group(1);
-        	log.debug("'" + match + "' matches content");
-	        	
-        	log.info("Looking for tag '" + match + "'");
-        	Tag tag = resourceDAO.loadTagByName(match);
-	        if (tag != null) {
-	        	log.info("Setting tag: " + tag.getName());
-	        	request.setAttribute("tag", tag);
-	        	List<Tag> tags = new ArrayList<Tag>();
-	        	tags.add(tag);
-	        	request.setAttribute("tags", tags);
-	        	return;
-	        } else {
-	        	log.info("Looking for publisher '" + match + "'");
-	        	Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
-	        	if (publisher != null) {
-	        		log.info("Setting publisher: " + publisher.getName());
-	        		request.setAttribute("publisher", publisher);
-	        		return;
-	       		}
-	       	}
+        	
+        	if (!isReservedUrlWord(match)) {
+	        	log.debug("'" + match + "' matches content");
+		        	
+	        	log.info("Looking for tag '" + match + "'");
+	        	Tag tag = resourceDAO.loadTagByName(match);
+		        if (tag != null) {
+		        	log.info("Setting tag: " + tag.getName());
+		        	request.setAttribute("tag", tag);
+		        	List<Tag> tags = new ArrayList<Tag>();
+		        	tags.add(tag);
+		        	request.setAttribute("tags", tags);
+		        	return;
+		        } else {
+		        	log.info("Looking for publisher '" + match + "'");
+		        	Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
+		        	if (publisher != null) {
+		        		log.info("Setting publisher: " + publisher.getName());
+		        		request.setAttribute("publisher", publisher);
+		        		return;
+		       		}
+		       	}
+        	}
 	        return;
         }
         
@@ -163,7 +168,14 @@ public class RequestFilter {
 
   
 
-    protected Integer parseResourceIDFromRequestParameter(HttpServletRequest request) {
+    private boolean isReservedUrlWord(String urlWord) {
+    	Set<String> reservedUrlWords = new HashSet<String>();
+    	reservedUrlWords.add("comment");
+    	reservedUrlWords.add("geotagged");
+    	return reservedUrlWords.contains(urlWord);
+	}
+
+	protected Integer parseResourceIDFromRequestParameter(HttpServletRequest request) {
         Integer requestResourceID = null;        
         if (request.getParameter("resource") != null) {        
             // TODO does not fail gracefully of an invalid int is given.
