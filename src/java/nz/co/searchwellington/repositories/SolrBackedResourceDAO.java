@@ -39,23 +39,21 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements ResourceRepository {
+public class SolrBackedResourceDAO extends HibernateResourceDAO implements ResourceRepository {
 
     Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
     
     private SolrInputDocumentBuilder solrInputDocumentBuilder;
     private String solrUrl;
 	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, String indexPath, LuceneIndexUpdateService luceneIndexUpdateService, SolrInputDocumentBuilder solrInputDocumentBuilder) throws CorruptIndexException, LockObtainFailedException, IOException {
-		super(sessionFactory, indexPath, luceneIndexUpdateService);
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, SolrInputDocumentBuilder solrInputDocumentBuilder) throws CorruptIndexException, LockObtainFailedException, IOException {
+		super(sessionFactory);
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
 	}
 
 	public void setSolrUrl(String solrUrl) {
 		this.solrUrl = solrUrl;
 	}
-
-
 
 
 	@Override

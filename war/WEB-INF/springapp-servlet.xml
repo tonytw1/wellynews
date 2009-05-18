@@ -186,7 +186,6 @@
 	
 	
 	<bean id="luceneIndexBuilderController" class="nz.co.searchwellington.controllers.admin.LuceneIndexBuilderController">
-		<constructor-arg ref="luceneIndexRebuildService" />
 		<constructor-arg ref="solrIndexRebuildService" />
 		
 		<property name="methodNameResolver">

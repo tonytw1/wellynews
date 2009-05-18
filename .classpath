@@ -37,8 +37,6 @@
 	<classpathentry kind="lib" path="lib/buildtime/easymock.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/joda-time-1.5.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ical4j-1.0-beta4.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/lucene-core-2.3.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/lucene-highlighter-2.3.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/twitter-0.0.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/json-lib-2.2.1-jdk15.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ezmorph-1.0.4.jar"/>
