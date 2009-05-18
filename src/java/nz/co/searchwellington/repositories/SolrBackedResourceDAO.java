@@ -137,6 +137,18 @@ public class SolrBackedResourceDAO extends LuceneBackedResourceDAO implements Re
 		return getQueryResults(query);
 	}
 	
+	
+	public Date getLastLiveTimeForTag(Tag tag) {
+		SolrQuery latestItemForTagQuery = new SolrQueryBuilder().tag(tag).showBroken(false).maxItems(1).toQuery();
+		latestItemForTagQuery.setSortField("lastLive", ORDER.desc);
+		List<Resource> resources = getQueryResults(latestItemForTagQuery);
+		if (resources.size() == 1) {
+			return resources.get(0).getLiveTime();
+		}				
+		return null;
+	}
+	
+
 	// TODO rename
 	public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxItems, boolean showBroken) {
 		log.info("Getting geotagged newsitems for tag: " + tag );

@@ -2,12 +2,8 @@ package nz.co.searchwellington.repositories;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 
 import org.apache.log4j.Logger;
@@ -27,9 +23,6 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.store.LockObtainFailedException;
 import org.hibernate.SessionFactory;
-import org.joda.time.DateTime;
-
-
 
 
 public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO implements ResourceRepository {
@@ -89,73 +82,6 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
     
     
-   
-    
-    public Date getLastLiveTimeForTag(Tag tag) {
-        BooleanQuery query = new BooleanQuery();
-        addTagRestriction(query, tag);      
-        
-        Sort sort = lastLiveDescendingSort();
-        Searcher searcher;
-		try {
-			searcher = new IndexSearcher(loadIndexReader(this.indexPath, false));
-        
-	        log.debug("Query: " + query.toString());
-	        Hits hits = searcher.search(query, sort);
-	        log.debug("Found " + hits.length() + " matching.");
-	        
-	        if (hits.length() > 0) {
-	            final String lastlive = hits.doc(0).get("last_live");
-	            if (lastlive != null) {                       	
-	                DateTime latestLiveTime = new DateTime(new Long(lastlive).longValue());        
-					log.info("Latest live time for tag " + tag.getName() + " was: " + latestLiveTime.toString());                
-	                return latestLiveTime.toDate();
-	            }
-	        }
-        } catch (IOException e) {
-        	// TODO Auto-generated catch block
-        	e.printStackTrace();
-        }                        
-        return null;        
-    }
-    
-     
-    private List <Resource> loadResourcesFromHits(int number, Hits hits) throws IOException {
-    	return loadResourcesFromHits(number, 0, hits);
-    }
-    
-    
-    private List <Resource> loadResourcesFromHits(int numberOfItems, int startIndex, Hits hits) throws IOException {
-        List<Resource> matchingNewsitems = new ArrayList<Resource>();        
-        int endIndex = numberOfItems + startIndex;
-		for (int i = startIndex; i < hits.length() && i < endIndex; i++) {
-            int loadID = new Integer(hits.doc(i).get("id")).intValue();
-            Resource loadedResource = this.loadResourceById(loadID);
-            if (loadedResource != null) {
-                matchingNewsitems.add(loadedResource);
-            } else {
-                log.warn("Loaded a null resource; lucene index could lag behind the database.");
-            }
-        }
-        return matchingNewsitems;
-    }
-    
-    
-   
-    
-
-
-    private void addHttpStatusRestriction(BooleanQuery query) {
-        BooleanQuery queryBroken = new BooleanQuery();
-        queryBroken.add(new TermQuery(new Term("http_status", "200")), Occur.SHOULD);
-        query.add(queryBroken, Occur.MUST);
-    }
-
-    
-   
-    
-    
-
     private Sort dateDescendingSort() {
         SortField date = new SortField("date", true);
         SortField id = new SortField("id", true);
@@ -165,14 +91,6 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
     }
     
     
-    private Sort lastLiveDescendingSort() {
-        SortField date = new SortField("last_live", true);        
-        SortField[] sortFields = { date };
-        Sort sort = new Sort(sortFields);
-        return sort;
-    }
-    
-   
     private void addKeywordRestriction(BooleanQuery query, String keywords, LuceneAnalyzer analyzer) throws ParseException {
         if (keywords != null) {          
             BooleanQuery keywordQuery = makeKeywordQuery(keywords, analyzer);
@@ -180,29 +98,12 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
         }
     }
 
+    
     private void addTypeRestriction(BooleanQuery query, String type) { 
         query.add(new TermQuery(new Term("type", type)), Occur.MUST);
     }
 
     
-    private void addTagRestriction(BooleanQuery query, Tag tag) {    
-        if (tag != null) {               
-            query.add(new TermQuery(new Term("tag_id", new Integer(tag.getId()).toString())), Occur.MUST);            
-        }
-    }
-    
-    
-    private void addTagsRestriction(BooleanQuery query, Set<Tag> tags) {
-        for (Tag tag : tags) {
-            log.debug("Adding tag restriction for tag: " + tag.getName());
-            addTagRestriction(query, tag);
-        }
-    }
-    
- 
-        
-	
-
 	private IndexReader loadIndexReader(String indexPath, boolean createNew) throws IOException {
         IndexReader localReader = null;
         if (reader == null || !reader.isCurrent() ) {
@@ -219,38 +120,6 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
         return localReader;
     }
     
-    
-    
-    
-  
-	
-
-    
-    
-   
-    
-   
-
-
-    
-    
-    
-    
-    
-    
-  
-    
-    
-    
-    
-
-    
-
-    
-    
-
-    
-
     
     @Override
     public List<Tag> getTagsMatchingKeywords(String keywords) {
@@ -290,7 +159,5 @@ public abstract class LuceneBackedResourceDAO extends HibernateResourceDAO imple
               
         return matchingTags;   
     }
-
-
     
 }
