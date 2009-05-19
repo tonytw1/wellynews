@@ -384,7 +384,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     @SuppressWarnings("unchecked")
-    public List<Website> getLatestWebsites(int maxNumberOfItems, boolean showBroken) {
+    public List<Resource> getLatestWebsites(int maxNumberOfItems, boolean showBroken) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Website.class).addOrder( Order.desc("date"));
         if (!showBroken) {
             criteria.add(Expression.eq("httpStatus", 200));

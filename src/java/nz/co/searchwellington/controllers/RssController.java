@@ -86,19 +86,7 @@ public class RssController extends MultiActionController {
         return new ModelAndView(rssView, model);
     }
     
-    
-    public ModelAndView justinRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	HashMap <String, Object> model = new HashMap <String, Object>();     
-    	model.put("heading", rssUrlBuilder.getRssTitleForJustin());
-    	model.put("link", siteInformation.getUrl());
-    	model.put("description", "The most recently submitted website listings.");
-    	model.put("main_content", resourceDAO.getLatestWebsites(MAX_RSS_ITEMS, false));
-    	
-        RssView rssView = new RssView(siteInformation);        
-        return new ModelAndView(rssView, model);        
-    }
-    
-    
+     
     public ModelAndView watchlistRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	HashMap <String, Object> model = new HashMap <String, Object>();     
     	model.put("heading", rssUrlBuilder.getTitleForWatchlist());

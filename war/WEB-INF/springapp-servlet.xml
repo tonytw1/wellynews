@@ -8,7 +8,6 @@
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="twitterService" />
 		<constructor-arg ref="discoveredFeedRespository" />
@@ -23,7 +22,6 @@
 						<prop key="/calendars">calendars</prop>
 						<prop key="/feeds/discovered">discovered</prop>						
 						<prop key="/geotagged">geotagged</prop>
-						<prop key="/justin">justin</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
 						<prop key="/api">api</prop>
 						<prop key="/publishers">publishers</prop>
@@ -142,7 +140,6 @@
 					<props>		
 						<prop key="/rss">mainRss</prop>
 						<prop key="/geotagged/rss">geotaggedRss</prop>
-						<prop key="/justin/rss">justinRss</prop>
 						<prop key="/watchlist/rss">watchlistRss</prop>						
 						
 						<prop key="/*/rss">contentRss</prop>
@@ -198,13 +195,13 @@
 			</bean>		
 		</property>	
 	</bean>
-	
-		
-		
+			
+	<bean id="apiKeyAuthenticator" class="nz.co.searchwellington.controllers.api.ApiKeyAuthenticator" />
 
 	<bean id="apiTagUrlController" class="nz.co.searchwellington.controllers.api.TagUrlController">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="adminRequestFilter" />			
+		<constructor-arg ref="adminRequestFilter" />
+		<constructor-arg ref="apiKeyAuthenticator" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -561,7 +558,7 @@
             	
            		<prop key="/feeds/discovered">simplePageController</prop>
            		<prop key="/geotagged">simplePageController</prop>            	
-            	<prop key="/justin">simplePageController</prop>
+            	<prop key="/justin">tagController</prop>
 				<prop key="/lastupdated">simplePageController</prop>
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/tags">simplePageController</prop>

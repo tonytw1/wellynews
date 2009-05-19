@@ -51,5 +51,9 @@ public class UrlBuilder {
 	public String getCommentUrl() {
 		return siteInformation.getUrl() + "/comment";
 	}
+
+	public String getJustinUrl() {
+		return siteInformation.getUrl() + "/justin";
+	}
 	
 }

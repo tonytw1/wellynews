@@ -83,8 +83,8 @@ public class BrowseController extends BaseMultiActionController {
             Date month = (Date) request.getAttribute("month");
             mv.addObject("archive_month", new ArchiveLink(month, 0));
             final List<Resource> newsitemsForMonth = resourceDAO.getNewsitemsForMonth(month, loggedInUser != null);            
-            populateMonthArchive(mv, month, loggedInUser, newsitemsForMonth);
-            populateUsedTags(mv, loggedInUser, newsitemsForMonth);
+            mv.addObject("main_content", newsitemsForMonth);
+			populateSecondaryLatestNewsitems(mv, loggedInUser);
             mv.addObject("used_tags_description", "Most used tags during this month.");
             
             List<ArchiveLink> archiveLinks = resourceDAO.getArchiveMonths(loggedInUser != null);
@@ -128,12 +128,6 @@ public class BrowseController extends BaseMultiActionController {
    
     
     
-    @SuppressWarnings("unchecked")
-    private void populateMonthArchive(ModelAndView mv, Date month, User loggedInUser, List<? extends Resource> newsitemsForMonth) throws IOException {             
-        mv.getModel().put("main_content", newsitemsForMonth);
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-    }
- 
     @SuppressWarnings("unchecked")
     private void populatePublisherCalendars(ModelAndView mv, Website publisher, User loggedInUser) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Calendars");       

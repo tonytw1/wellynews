@@ -68,11 +68,10 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 	}
 
 
-	
+	// TODO needs pagination
 	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) {		
-		final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken);
-		mv.addObject("main_content", publisherNewsitems);
-	        
+		final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken, MAX_NEWSITEMS);
+		mv.addObject("main_content", publisherNewsitems);		
 		if (publisherNewsitems.size() > 0) {            
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));
 		}

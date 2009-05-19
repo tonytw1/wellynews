@@ -149,19 +149,5 @@ public abstract class BaseMultiActionController extends MultiActionController {
 
 
 
-    protected void populateUsedTags(ModelAndView mv, User loggedInUser, List<Resource> recentNewsitems) throws IOException {	
-        log.debug("Calculating tag usage.");    
-        // TODO inject
-        TagInformationService tagInformationService = new TagInformationService();
-        List<TagContentCount >usedTags = tagInformationService.getNewsitemsMostUsedTags(recentNewsitems, 8);
-        
-        Map<String, Integer> chartData = new TreeMap<String, Integer>();                        
-        for (TagContentCount link : usedTags) {
-        	// TODO broken
-         //   chartData.put(link.getTag().getDisplayName(), new Long(link.getCount()));
-        }
-        
-        mv.addObject("used_tags_chart", chartData);
-    }
         
 }

@@ -32,18 +32,16 @@ public class SimplePageController extends BaseMultiActionController {
     final int MAX_TWITTERS_TO_SHOW = 12;
     
     private SiteInformation siteInformation;
-    private RequestFilter requestFilter;
     private RssUrlBuilder rssUrlBuilder;
 	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private LoggedInUserFilter loggedInUserFilter;
 	
-    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RequestFilter requestFilter, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter) {
+    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter) {
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
-        this.siteInformation = siteInformation;
-        this.requestFilter = requestFilter;
+        this.siteInformation = siteInformation;        
         this.rssUrlBuilder = rssUrlBuilder;
         this.twitterService = twitterService;
         this.discoveredFeedRepository = discoveredFeedRepository;
@@ -172,32 +170,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
 
-    
-   
-    
-    
-    
-      
-    public ModelAndView justin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
-        populateLocalCommon(mv);
-
-        urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean showBroken = loggedInUser != null;
-        
-        mv.addObject("heading", "Latest Additions");
-        mv.addObject("main_content", resourceDAO.getLatestWebsites(MAX_NEWSITEMS, showBroken));
-        
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-
-        setRss(mv, rssUrlBuilder.getRssTitleForJustin(), rssUrlBuilder.getRssUrlForJustin());
-        mv.setViewName("justin");
-        return mv;
-    }
-    
-        
+            
     public ModelAndView lastUpdated(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);
@@ -230,9 +203,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "All Tags");        
         mv.addObject("tags", resourceDAO.getAllTags());
                 
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-        List<Resource> recentNewsitems = resourceDAO.getLatestNewsitems(300, loggedInUser != null);     
-        populateUsedTags(mv, loggedInUser, recentNewsitems);
+        populateSecondaryLatestNewsitems(mv, loggedInUser);       
         
         mv.setViewName("tags");
         return mv;

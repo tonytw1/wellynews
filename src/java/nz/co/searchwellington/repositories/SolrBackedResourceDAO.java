@@ -39,7 +39,9 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class SolrBackedResourceDAO extends HibernateResourceDAO implements ResourceRepository {
 
-    Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
+    private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
+
+	Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
     
     private SolrInputDocumentBuilder solrInputDocumentBuilder;
     private String solrUrl;
@@ -177,8 +179,8 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 	
 	
-	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).publisher(publisher).toQuery();			
+	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).maxItems(maxItems).publisher(publisher).toQuery();			
 		query.setSortField("date", ORDER.desc);
 		return getQueryResults(query);
 	}
@@ -231,9 +233,9 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	public List<Resource> getNewsitemsForMonth(Date month, boolean showBroken) {	
 		final String monthString = new DateFormatter().formatDate(month, DateFormatter.MONTH_FACET);
-		SolrQuery query = new SolrQueryBuilder().month(monthString).showBroken(showBroken).toQuery();
+		SolrQuery query = new SolrQueryBuilder().month(monthString).type("N").showBroken(showBroken).toQuery();
 		query.setSortField("date", ORDER.desc);
-		query.setRows(1000);
+		query.setRows(MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE);
 		return getQueryResults(query);
 	}
 

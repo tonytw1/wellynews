@@ -27,8 +27,8 @@
 <br />
 Word cloud by <a href="http://www.wordle.net/">Wordle</a>
 
-<p>A number of large news organisations have begun to provide <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
-These services allow content to be queried programmatically and easierly used in mash ups.</p>
+<p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
+These services allow content to be queried programmatically for easy integration and use in mash ups.</p>
 
 <p>The Wellynews API lets you do something simular with the local newsitems indexed by Search Wellington.</p>
 
@@ -39,7 +39,7 @@ These services allow content to be queried programmatically and easierly used in
 <h5>Supported Formats</h5>
 
 <p>The API allows newsitems to be extracted in RSS or JSON (Javascript) formats. RSS is widely supported by feed readers, 
-web browsers and server side libraries. JSON is typically useful for passing data into a browser based Javascript applications and mashups.</p>
+web browsers and server side libraries. JSON is typically used for passing data into browser based Javascript applications and mashups.</p>
 
 <p>The desired format is specified by appending ethier <code>rss</code> or <code>json</code>
 to the end of the query url.</p>
@@ -59,33 +59,16 @@ to the end of the query url.</p>
 
 <h5>Specifying tags and publishers</h5>
 
-<p>When querying for newsitems (below) you have to option of fitlering by tag or publisher. Tags and publishers are specified by substituting the appropriate url snippet into the url.</p>
+<p>When querying for newsitems (below) you have the option of filtering by tag or publisher. 
+Tags and publishers are specified by substituting the appropriate url snippet into your request.</p>
 
 <p>ie. The url snippet for Wellington City Council is <code>wellington-city-council</code>.</p>
 
-A complete list of available tag and publisher url snippets is shown below.
+A complete list of available tag and publisher url snippets is provided <a href="#urlsnippets">below</a>.
 </p>
 
-<!--
-<b>Available Tags</b>	
-<table>
-	<tr><td>Tag</td><td>URL snippet</td></tr>
-	#foreach($item in $api_tags)
-		<tr><td>$item.displayName</td>
-		<td><code>$item.name</code></td></tr>
-	#end
-</table>
 
 
-<b>Available Publishers</b>
-<table>
-	<tr><td>Publisher</td><td>URL snippet</td></tr>
-	#foreach($item in $publishers)
-		<tr><td>$item.name</td>
-		<td><code>$item.urlWords</code></td></tr>
-	#end
-</table>	
--->
 
 
 
@@ -199,7 +182,7 @@ ie. newsitems tagged with transport and consultation and Wellington City Council
 
 <h5><b>Pagination</b></h5>
 
-<p>Each RSS and JSON call returns a maximum of 30 results. 
+<p>Each RSS or JSON call returns a maximum of 30 results. 
 For JSON calls, additional results can be obtained from using the <code>page</code> parameter to paginate through the results. 
 
 <p>ie. page 6 of the Victoria University newsitems:</p>
@@ -210,15 +193,25 @@ For JSON calls, additional results can be obtained from using the <code>page</co
 	</code></li>
 	</ul>
 
-You can see the total number of available results in the <code>totalItems</code> field of the JSON results.</p>
-<ul>
-<li><code>"totalItems": 353</code></p>
-</ul>
+You can see the total number of available results in the <code>totalItems</code> field of the JSON results. The <code>showingFrom</code>
+ and <code>showingTo</cod> fields tell you which resuls you are currently viewing:</p>
+
+<pre>
+<code>
+{
+  "totalItems": 377,
+  "showingFrom": 151,
+  "showingTo": 180,
+  "newsitems": [ ... ]
+}
+</code>
+</pre>
+
 
 
 <h1>RSS to JSON feed mirroring</h1>
 
-<p>Provides JSON copies of local RSS feeds.</p>
+<p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using Javascript.</p>
 
 	<ul>
 		<li><code>$site_information.url/feed/[feed url snippet]/json</code>
@@ -231,8 +224,63 @@ You can see the total number of available results in the <code>totalItems</code>
 	<li><code>$site_information.url/feed/wellington-police-updates/json</code></li>
 	</ul>
 	
+<p>A complete list of feed url snippets is provided below.</p>
 
-<b>Available Feeds</b>
+
+
+
+
+<h1>Content update calls</h1>
+
+<p>These url calls are used for fiddling with the contents of the index; an api key is required.</p>
+
+<h5>Tag a url</h5>
+
+	<ul>
+	<li><code>
+	$site_information.url/api/tag?url=urlOfResourceToTag&tag=tagUrlSnippet?key=[api key]</a>
+	</code></li>
+	</ul>
+
+<p>ie. Apply the athletics tag to the Scottish Athletics Club listing.</p>
+
+	<ul>
+	<li><code>
+	$site_information.url/url=http://www.scottishathletics.org.nz&tag=athletics</a>
+	</code></li>
+
+
+<p>
+<br>
+
+<a name="urlsnippets">
+<h1>URL snippets</h1>
+
+
+
+<h5>Available Tags</h5>	
+<table>
+	<tr><td>Tag</td><td>URL snippet</td></tr>
+	#foreach($item in $api_tags)
+		<tr><td>$item.displayName</td>
+		<td><code>$item.name</code></td></tr>
+	#end
+</table>
+
+
+<h5>Available Publishers</h5>
+<table>
+	<tr><td>Publisher</td><td>URL snippet</td></tr>
+	#foreach($item in $publishers)
+		<tr><td>$item.name</td>
+		<td><code>$item.urlWords</code></td></tr>
+	#end
+</table>	
+
+
+
+
+<h5>Available Feeds</h5>
 <table>
 	<tr><td>Feed</td><td>JSON URL</td></tr>
 	#foreach($item in $feeds)
@@ -241,25 +289,6 @@ You can see the total number of available results in the <code>totalItems</code>
 	#end
 </table>
 
-
-<h1>Restricted calls</h1>
-
-<p>These url calls are used for fiddling with the contents of the index; an api key is required.</p>
-
-<h5>Tag a url</h5>
-
-	<ul>
-	<li><code>
-	$site_information.url/api/tag?url=urlOfResourceToTag&tag=tagUrlSnippet</a>
-	</code></li>
-	</ul>
-
-<p>ie. Apply the athletics tag to the Scottish Athletics Club listing.</p>
-
-	<ul>
-	<li><code>
-	$site_information.url/url=http://www.scottishathletics.org.nz/&tag=athletics</a>
-	</code></li>
 
 </div>
 

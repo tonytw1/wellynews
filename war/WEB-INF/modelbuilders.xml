@@ -30,6 +30,12 @@
 		<constructor-arg ref="urlBuilder" />	
 	</bean>
 	
+	<bean id="justinModelBuilder" class="nz.co.searchwellington.controllers.models.JustinModelBuilder">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="urlBuilder" />		
+	</bean>
+	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="urlBuilder" />
@@ -58,7 +64,8 @@
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg>
-			<list>			
+			<list>
+				<ref bean="justinModelBuilder" />		
 				<ref bean="commentModelBuilder" />
 				<ref bean="viewfeedModelBuilder" />
 				<ref bean="publisherModelBuilder" />

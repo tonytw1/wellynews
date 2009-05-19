@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.criterion.Expression;
-
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
@@ -42,7 +40,7 @@ public interface ResourceRepository {
 
 
 
-    public List <Website> getLatestWebsites(int maxNumberOfItems, boolean showBroken);
+    public List <Resource> getLatestWebsites(int maxNumberOfItems, boolean showBroken);
 
     
     public void saveResource(Resource resource);
@@ -118,7 +116,7 @@ public interface ResourceRepository {
     public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxNumber, boolean showBroken);
 	public List<Resource> getResourcesWithTag(Tag tag);
 	public Website getPublisherByUrlWords(String publisherUrlWords);
-	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken);
+	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems);
 	public Feed loadFeedByUrlWords(String string);
 	public int getPublisherNewsitemsCount(Website publisher, boolean showBroken);
 	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken);

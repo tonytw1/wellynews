@@ -19,33 +19,38 @@ public class TagUrlController extends MultiActionController {
 	Logger log = Logger.getLogger(TagUrlController.class);
 	private ResourceRepository resourceDAO;
 	private AdminRequestFilter requestFilter;
+	private ApiKeyAuthenticator keyAuthenticator;
         
 
-    public TagUrlController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter) {		
+    public TagUrlController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, ApiKeyAuthenticator keyAuthenticator) {		
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
+		this.keyAuthenticator = keyAuthenticator;
 	}
 
     
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        requestFilter.loadAttributesOntoRequest(request);
-        
-        final String resourceUrl = request.getParameter("url");
-        final Tag tag = (Tag) request.getAttribute("tag");        
-        if (resourceUrl != null && tag != null) {
-        	Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
-        	if (resource != null) {
-        		resource.addTag(tag);
-        		log.info("Applied tag: " + tag.getDisplayName() + " to resource: " + resource.getName());
-        		resourceDAO.saveResource(resource);
-        		mv.setViewName("apiResponseOK");
-        		return mv;
+        if (request.getParameter("key") != null && keyAuthenticator.isAuthentic(request.getParameter("key"))) {        
+        	requestFilter.loadAttributesOntoRequest(request);        
+        	final String resourceUrl = request.getParameter("url");
+        	final Tag tag = (Tag) request.getAttribute("tag");        
+        	if (resourceUrl != null && tag != null) {
+        		Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
+        		if (resource != null) {
+        			resource.addTag(tag);
+        			log.info("Applied tag: " + tag.getDisplayName() + " to resource: " + resource.getName());
+        			resourceDAO.saveResource(resource);
+        			mv.setViewName("apiResponseOK");
+        			return mv;
+        		} else {
+        			log.info("No unique resource found for url: " + resourceUrl);
+        		}
         	} else {
-        		log.info("No unique resource found for url: " + resourceUrl);
+        		log.info("No resource url or valid tag found");
         	}
         } else {
-        	log.info("No resource url or valid tag found");
+        	log.info("no valid key");
         }
 		mv.setViewName("apiResponseERROR");
         return mv; 		
