@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="nz.co.searchwellington.model.Tag"
+		proxy="nz.co.searchwellington.model.Tag" table="tag">
+
+	
+		<cache usage="read-write" />
+
+
+		<id name="id" type="integer" unsaved-value="0">
+			<column name="id" sql-type="integer" not-null="true" />
+			<generator class="native" />
+		</id>
+
+		<property name="name">
+			<column name="name" length="255" not-null="true" />
+		</property>
+		
+		<property name="displayName">
+			<column name="display_name" length="255" not-null="false" />
+		</property>
+		
+		<property name="relatedTwitter">
+			<column name="related_twitter" length="255" not-null="false" />
+		</property>
+		
+		<many-to-one name="relatedFeed" 
+			class="nz.co.searchwellington.model.FeedImpl" column="related_feed" 
+			/>
+			
+
+		<property name="mainImage">
+			<column name="main_image" length="255" not-null="false" />
+		</property>
+		
+		<property name="secondaryImage">
+			<column name="secondary_image" length="255" not-null="false" />
+		</property>
+		
+		<many-to-one name="parent"
+			class="nz.co.searchwellington.model.Tag" column="parent"
+			cascade="" />
+
+
+		<set name="children" inverse="true"
+			cascade="all,all-delete-orphan" 
+			order-by="name">
+			<cache usage="read-write" />
+			<key column="parent" />
+			<one-to-many class="nz.co.searchwellington.model.Tag" />
+		</set>
+
+        <property name="flickrCount" type="integer">
+            <column name="flickr_count" not-null="true"/>
+        </property>
+        
+        <property name="autotagHints">
+			<column name="autotag_hints" length="255" not-null="false" />
+		</property>
+                
+	</class>
+
+</hibernate-mapping>

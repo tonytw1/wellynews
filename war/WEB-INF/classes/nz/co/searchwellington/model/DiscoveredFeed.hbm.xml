@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="nz.co.searchwellington.model.DiscoveredFeed" table="discovered_feeds" >
+		
+		
+		<cache usage="read-write" />
+		
+		<id name="id" type="integer" unsaved-value="0">
+			<column name="id" sql-type="integer" not-null="true" />
+			<generator class="native" />
+		</id>
+
+		<property name="url" type="text">
+			<column name="url" length="255" not-null="true" />
+		</property>
+		
+		
+		<set name="references" table="discovered_urls_references">
+			<cache usage="read-write" />
+			<key column="discovered_url_id"/>
+			<many-to-many column="resource_id" class="nz.co.searchwellington.model.ResourceImpl"/>
+		</set> 
+		
+			
+
+	</class>
+
+</hibernate-mapping>
