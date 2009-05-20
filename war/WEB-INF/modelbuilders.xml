@@ -25,6 +25,11 @@
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 	</bean>
 	
+	<bean id="geotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.GeotaggedModelBuilder">
+		<constructor-arg ref="resourceDAO" />	
+		<constructor-arg ref="urlBuilder" />	
+	</bean>
+	
 	<bean id="commentModelBuilder" class="nz.co.searchwellington.controllers.models.CommentModelBuilder">
 		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="urlBuilder" />	
@@ -67,6 +72,7 @@
 			<list>
 				<ref bean="justinModelBuilder" />		
 				<ref bean="commentModelBuilder" />
+				<ref bean="geotaggedModelBuilder" />
 				<ref bean="viewfeedModelBuilder" />
 				<ref bean="publisherModelBuilder" />
 				<ref bean="publisherTagCombinerModelBuilder" />

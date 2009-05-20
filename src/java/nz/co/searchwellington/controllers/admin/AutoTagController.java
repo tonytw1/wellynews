@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.UrlStack;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -21,10 +20,10 @@ public class AutoTagController extends BaseMultiActionController {
 
     Logger log = Logger.getLogger(AutoTagController.class);
     
-    private RequestFilter requestFilter;
+    private AdminRequestFilter requestFilter;
     private ImpliedTagService autoTagService;
     
-	public AutoTagController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService) {      
+	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
         this.urlStack = urlStack;

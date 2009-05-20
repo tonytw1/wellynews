@@ -55,5 +55,9 @@ public class UrlBuilder {
 	public String getJustinUrl() {
 		return siteInformation.getUrl() + "/justin";
 	}
+
+	public String getGeotaggedUrl() {
+		return siteInformation.getUrl() + "/geotagged";
+	}
 	
 }

@@ -11,7 +11,7 @@
 <link rel="alternate" type="application/rss+xml" title="$rss_title" href="$rss_url">	
 #end
 #if ($publisher_select)
-	<script src="/publishers.js"></script>
+	<script src="$urlBuilder.getImageUrl('publishers.js')"></script>
 #end
 
 

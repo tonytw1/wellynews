@@ -166,12 +166,15 @@ public class RequestFilter {
         
     }
 
-  
-
+    
     private boolean isReservedUrlWord(String urlWord) {
     	Set<String> reservedUrlWords = new HashSet<String>();
+    	reservedUrlWords.add("about");
+    	reservedUrlWords.add("api");
+    	reservedUrlWords.add("feeds");
     	reservedUrlWords.add("comment");
     	reservedUrlWords.add("geotagged");
+    	reservedUrlWords.add("tags");
     	return reservedUrlWords.contains(urlWord);
 	}
 

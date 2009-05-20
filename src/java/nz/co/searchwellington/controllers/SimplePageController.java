@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
@@ -140,37 +139,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
 
-    
-    public ModelAndView geotagged(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
-        
-        urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean showBroken = loggedInUser != null;    
-        populateLocalCommon(mv);
-                        
-        mv.addObject("heading", "Geotagged");
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-      
-        mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(showBroken));
-        
-        
-        Resource selected = null;
-		if (request.getAttribute("resource") != null) {
-			selected = (Resource) request.getAttribute("resource");
-            log.info("Added selected resource onto model: " + selected.getName());
-        	mv.addObject("selected", selected);
-        } else {
-            log.info("No selected resource seen on request.");
-        }
-        
-        populateGeocoded(mv, showBroken, selected);
-        mv.setViewName("geocoded");
-        return mv;
-    }
-
-            
+                
     public ModelAndView lastUpdated(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);

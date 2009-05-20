@@ -20,8 +20,7 @@
 						<prop key="/about">about</prop>
 						<prop key="/archive">archive</prop>
 						<prop key="/calendars">calendars</prop>
-						<prop key="/feeds/discovered">discovered</prop>						
-						<prop key="/geotagged">geotagged</prop>
+						<prop key="/feeds/discovered">discovered</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
 						<prop key="/api">api</prop>
 						<prop key="/publishers">publishers</prop>
@@ -488,7 +487,7 @@
 	
 	<bean id="autoTagController" class="nz.co.searchwellington.controllers.admin.AutoTagController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />	
+		<constructor-arg ref="adminRequestFilter" />	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="impliedTagService" />
 		
@@ -496,7 +495,7 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>																
-						<prop key="/autotag/tag/*">prompt</prop>
+						<prop key="/autotag">prompt</prop>
 						<prop key="/autotag/apply">apply</prop>
 					</props>
 				</property>
@@ -554,11 +553,8 @@
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>
-            	<prop key="/calendars">simplePageController</prop>
-            	
-           		<prop key="/feeds/discovered">simplePageController</prop>
-           		<prop key="/geotagged">simplePageController</prop>            	
-            	<prop key="/justin">tagController</prop>
+            	<prop key="/calendars">simplePageController</prop>            	
+           		<prop key="/feeds/discovered">simplePageController</prop>           	
 				<prop key="/lastupdated">simplePageController</prop>
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/tags">simplePageController</prop>
@@ -617,7 +613,7 @@
 				<prop key="/edit/tag/*">tagEditController</prop>
 				<prop key="/delete/tag/*">tagEditController</prop>
 							
-				<prop key="/autotag/tag/*">autoTagController</prop>
+				<prop key="/autotag">autoTagController</prop>
 				<prop key="/autotag/apply">autoTagController</prop>		
 							
 				<prop key="/cancel">cancelController</prop>
@@ -637,8 +633,7 @@
 				<prop key="/sitemap.xml">sitemapController</prop>
 				
 				<prop key="/supress/*">supressionController</prop>
-				
-				
+								
 				<prop key="/*+*">tagController</prop>
           		<prop key="/*%2B*">tagController</prop>				
 				<prop key="/*/comment">tagController</prop>
@@ -648,8 +643,8 @@
 				<prop key="/feed/*/json">jsonController</prop>
 				<prop key="/*">tagController</prop>
 				<prop key="/comment">tagController</prop>
-				
-				
+				<prop key="/geotagged">tagController</prop>            	
+            	<prop key="/justin">tagController</prop>				
 				
             </props>
         </property>
