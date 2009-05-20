@@ -84,7 +84,7 @@ public class TagEditController extends MultiActionController {
         ModelAndView mv = new ModelAndView("deleteTag"); 
         mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         mv.addObject("heading", "Editing a Tag");
-
+        
         Tag tag = null;
         requestFilter.loadAttributesOntoRequest(request);
            

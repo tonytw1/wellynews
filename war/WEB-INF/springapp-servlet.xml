@@ -138,7 +138,6 @@
 				<property name="mappings">
 					<props>		
 						<prop key="/rss">mainRss</prop>
-						<prop key="/geotagged/rss">geotaggedRss</prop>
 						<prop key="/watchlist/rss">watchlistRss</prop>						
 						
 						<prop key="/*/rss">contentRss</prop>
@@ -476,7 +475,7 @@
 						<prop key="/edit/tag/submit">submit</prop>
 						<prop key="/edit/tag/save">save</prop>												
 						<prop key="/edit/tag/*">edit</prop>
-						<prop key="/delete/tag/*">delete</prop>
+						<prop key="/edit/tag/delete">delete</prop>
 					</props>
 				</property>
 			</bean>
@@ -611,7 +610,7 @@
 				<prop key="/edit/tag/submit">tagEditController</prop>
 				<prop key="/edit/tag/save">tagEditController</prop>
 				<prop key="/edit/tag/*">tagEditController</prop>
-				<prop key="/delete/tag/*">tagEditController</prop>
+				<prop key="/edit/tag/delete">tagEditController</prop>
 							
 				<prop key="/autotag">autoTagController</prop>
 				<prop key="/autotag/apply">autoTagController</prop>		
