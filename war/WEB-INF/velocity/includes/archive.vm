@@ -10,9 +10,9 @@
 #foreach($link in $archive_links)
                 <li class="archive_link">
                 #if ($archive_month && $link == $archive_month)
-                <b>$dateFormatter.formatDate($link.month, 'MMMM yyyy')</b>
+	                <b>$dateFormatter.formatDate($link.month, 'MMMM yyyy')</b>
                 #else
-                <a href="$site_information.url$link.href">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a>
+	                <a href="$urlBuilder.getArchiveLinkUrl($link)">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a>
                 #end
                 #if ($first == 1)
                         ($link.count #showPluralWord($link.count "newsitem"))

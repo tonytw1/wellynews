@@ -1,6 +1,5 @@
 package nz.co.searchwellington.model;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class ArchiveLink {
@@ -31,6 +30,10 @@ public class ArchiveLink {
     }
 
 
+    public int getYear() {       
+        return month.getYear()+ 1900;
+    }
+    
 
     public void setCount(int count) {
         this.count = count;
@@ -42,27 +45,14 @@ public class ArchiveLink {
         return month;
     }
     
-    
-    
-    public int getYear() {       
-        return month.getYear()+ 1900;
-    }
-
-
-
     public void setMonth(Date month) {
         this.month = month;
     }
+
+
+	
     
+   
     
-    public String getHref() {
-        SimpleDateFormat df = new SimpleDateFormat();
-        df.applyPattern("yyyy");
-        String year = df.format(getMonth().getTime());
-        df.applyPattern("MMM");
-        String month = df.format(getMonth().getTime());
-        return "/archive/" + year + "/" + month.toLowerCase();
-    }
-    
-        
+           
 }

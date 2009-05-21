@@ -180,6 +180,28 @@ ie. newsitems tagged with transport and consultation and Wellington City Council
 
 
 
+
+
+<h5><b>Geotagged newsitems</b></h5>
+
+<p>Returns newsitems which have been geotagged.</p>
+	<ul>
+	<li><code>$site_information.url/geotagged/[rss|json]</code></li>
+	</ul>
+
+<p>ie.</p>
+
+	<ul>
+	<li><code>
+	<a href="$site_information.url/geotagged/rss">$site_information.url/geotagged/rss</a>
+	</code></li>
+	</ul>
+
+
+
+
+
+
 <h5><b>Pagination</b></h5>
 
 <p>Each RSS or JSON call returns a maximum of 30 results. 
@@ -258,7 +280,7 @@ You can see the total number of available results in the <code>totalItems</code>
 
 
 
-<h5>Available Tags</h5>	
+<h5><b>Available Tags</b></h5>
 <table>
 	<tr><td>Tag</td><td>URL snippet</td></tr>
 	#foreach($item in $api_tags)
@@ -268,7 +290,7 @@ You can see the total number of available results in the <code>totalItems</code>
 </table>
 
 
-<h5>Available Publishers</h5>
+<h5><b>Available Publishers</b></h5>
 <table>
 	<tr><td>Publisher</td><td>URL snippet</td></tr>
 	#foreach($item in $publishers)
@@ -280,7 +302,7 @@ You can see the total number of available results in the <code>totalItems</code>
 
 
 
-<h5>Available Feeds</h5>
+<h5><b>Available Feeds</b></h5>
 <table>
 	<tr><td>Feed</td><td>JSON URL</td></tr>
 	#foreach($item in $feeds)

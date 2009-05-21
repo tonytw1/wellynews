@@ -33,7 +33,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		boolean isSingleTagPage = tags != null && tags.size() == 1;
-		boolean hasCommentPath = request.getPathInfo().matches("^(.*?)/geotagged(/rss)?$");		
+		boolean hasCommentPath = request.getPathInfo().matches("^(.*?)/geotagged(/(rss|json))?$");		
 		return isSingleTagPage && hasCommentPath;
 	}
 
@@ -54,7 +54,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName() + " geotagged");        		
-		mv.addObject("description", tag.getDisplayName() + " geotagged");
+		mv.addObject("description", "Geotagged " + tag.getDisplayName() + " newsitems");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));		
 	    final List<Resource> allGeotaggedForTag = resourceDAO.getAllValidGeocodedForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
 		mv.addObject("main_content", allGeotaggedForTag);

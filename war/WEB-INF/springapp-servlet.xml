@@ -45,6 +45,7 @@
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="urlBuilder" />		
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -64,6 +65,7 @@
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />		
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="urlBuilder" />
 			
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -352,7 +354,8 @@
 					<props>
 						<prop key="/*/json">contentJSON</prop>
 						<prop key="/feed/*/json">contentJSON</prop>
-						<prop key="/*/comment/json">contentJSON</prop>												
+						<prop key="/*/comment/json">contentJSON</prop>
+						<prop key="/*/geotagged/json">contentJSON</prop>													
 					</props>
 				</property>
 			</bean>		
@@ -581,7 +584,9 @@
 				<prop key="/*/geotagged/rss">rssController</prop>
 				
 				<prop key="*/json">jsonController</prop>
-				<prop key="/*/comment/json">jsonController</prop>
+				<prop key="/*/comment/json">jsonController</prop>				
+				<prop key="/geotagged/json">jsonController</prop>
+				<prop key="/*/geotagged/json">jsonController</prop>
 				
 				
 				<prop key="/feeds/**">rssfeedsController</prop>

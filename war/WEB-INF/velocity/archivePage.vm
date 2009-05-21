@@ -28,11 +28,11 @@
 
 #if ($previous_page || $next_page)
 	#if ($previous_page) 
-		<a href="$site_information.url$previous_page.href">$dateFormatter.formatDate($previous_page.month, 'MMMM yyyy')</a> 
+		<a href="$urlBuilder.getArchiveLinkUrl($previous_page)">$dateFormatter.formatDate($previous_page.month, 'MMMM yyyy')</a> 
 	#end
 	|
 	#if ($next_page) 
-		<a href="$site_information.url$next_page.href">$dateFormatter.formatDate($next_page.month, 'MMMM yyyy')</a>
+		<a href="$urlBuilder.getArchiveLinkUrl($next_page)">$dateFormatter.formatDate($next_page.month, 'MMMM yyyy')</a>
 	#end
 #end
 
@@ -48,8 +48,6 @@
 <div class="box">
 #parse("includes/archive.vm")
 </div>
-
-#parse("includes/used_tags.vm")
 
 <div class="box">
 #parse("includes/latest_newsitems.vm")

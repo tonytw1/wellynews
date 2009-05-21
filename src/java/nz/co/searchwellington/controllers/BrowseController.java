@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
@@ -22,13 +21,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class BrowseController extends BaseMultiActionController {
 
     private RequestFilter requestFilter;
+    private UrlBuilder urlBuilder;
  
-	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter) {       
+	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder) {       
 		this.resourceDAO = resourceDAO;     
         this.requestFilter = requestFilter;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.loggedInUserFilter = loggedInUserFilter;
+        this.urlBuilder = urlBuilder;
 	}
 	
 	
@@ -115,7 +116,7 @@ public class BrowseController extends BaseMultiActionController {
             if (indexOf < archiveLinks.size()-1) {
                 ArchiveLink previous = archiveLinks.get(indexOf+1);
                 mv.getModel().put("next_page", previous);
-                mv.getModel().put("main_content_moreurl", previous.getHref());
+                mv.getModel().put("main_content_moreurl", urlBuilder.getArchiveLinkUrl(previous));
             }
             if (indexOf > 0) {
                 ArchiveLink next = archiveLinks.get(indexOf-1);

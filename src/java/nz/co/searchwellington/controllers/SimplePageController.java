@@ -107,7 +107,7 @@ public class SimplePageController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;        
-        mv.addObject("heading", "Wellynews API");
+        mv.addObject("heading", "The Wellynews API");
 
         mv.addObject("feeds", resourceDAO.getAllFeeds());
         mv.addObject("publishers", getAllPublishers(showBroken));

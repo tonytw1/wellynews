@@ -17,10 +17,6 @@
 
 <h2>$heading</h2>
 
-
-
-
-
 <ul>
 #set($year = 0)
 #foreach ($link in $archiveLinks) 
@@ -31,7 +27,7 @@
 		<h4>$year</h4>
 		<ul>
 	#end
-	<li><a href="$site_information.url/$link.href">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a> ($link.count)</li>	
+	<li><a href="$urlBuilder.getArchiveLinkUrl($link)">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a> ($link.count)</li>	
 #end
 </ul>
 

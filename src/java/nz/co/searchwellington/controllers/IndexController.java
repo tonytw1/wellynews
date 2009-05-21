@@ -36,10 +36,11 @@ public class IndexController extends BaseMultiActionController {
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
 	private LoggedInUserFilter loggedInUserFilter;
+	private UrlBuilder urlBuilder;
     
     
     
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;       
@@ -47,6 +48,7 @@ public class IndexController extends BaseMultiActionController {
         this.siteInformation = siteInformation;
         this.rssUrlBuilder = rssUrlBuilder;
         this.loggedInUserFilter = loggedInUserFilter;
+        this.urlBuilder = urlBuilder;
     }
     
 
@@ -171,7 +173,18 @@ public class IndexController extends BaseMultiActionController {
     
 
     public String makeArchiveUrl(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {    	
-    	ArchiveLink archiveLink = null;
+    	ArchiveLink archiveLink = getArchiveLinkForDate(dateOfLastNewsitem, archiveMonths);
+    	if (archiveLink != null) {
+    		return urlBuilder.getArchiveLinkUrl(archiveLink);
+    	}
+    	return null;
+    }
+
+
+
+	private ArchiveLink getArchiveLinkForDate(Date dateOfLastNewsitem,
+			List<ArchiveLink> archiveMonths) {
+		ArchiveLink archiveLink = null;
 		for (ArchiveLink monthLink : archiveMonths) {
     		boolean monthMatches = monthLink.getMonth().getMonth() == dateOfLastNewsitem.getMonth() && monthLink.getMonth().getYear() == dateOfLastNewsitem.getYear();
     		// TODO Want an early break out.
@@ -179,11 +192,8 @@ public class IndexController extends BaseMultiActionController {
     			archiveLink = monthLink;
     		}
 		}
-    	if (archiveLink != null) {
-    		return archiveLink.getHref();
-    	}
-    	return null;
-    }
+		return archiveLink;
+	}
    
 
     

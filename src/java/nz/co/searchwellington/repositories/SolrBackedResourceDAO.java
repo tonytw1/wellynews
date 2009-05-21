@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
@@ -46,7 +47,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
     private SolrInputDocumentBuilder solrInputDocumentBuilder;
     private String solrUrl;
 	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, SolrInputDocumentBuilder solrInputDocumentBuilder) {
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, SolrInputDocumentBuilder solrInputDocumentBuilder, UrlBuilder urlBuilder) {
 		super(sessionFactory);
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
 	}

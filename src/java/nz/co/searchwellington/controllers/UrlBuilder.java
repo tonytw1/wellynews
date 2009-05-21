@@ -1,5 +1,9 @@
 package nz.co.searchwellington.controllers;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
@@ -59,5 +63,17 @@ public class UrlBuilder {
 	public String getGeotaggedUrl() {
 		return siteInformation.getUrl() + "/geotagged";
 	}
+	
+	public String getArchiveLinkUrl(ArchiveLink archiveLink) {
+		// TODO if this dateformatter thread safe? Replace with DateFormatter
+		Date month = archiveLink.getMonth();
+		SimpleDateFormat df = new SimpleDateFormat();
+	    df.applyPattern("yyyy");
+	    String yearString = df.format(month.getTime());
+	    df.applyPattern("MMM");
+	    String monthString = df.format(month.getTime());
+	    return siteInformation.getUrl() + "/archive/" + yearString + "/" + monthString.toLowerCase();		
+	}
+	
 	
 }
