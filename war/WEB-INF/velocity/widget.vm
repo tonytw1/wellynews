@@ -1,19 +1,19 @@
-<script src="/jquery-1.3.2.js"></script>
+<script src="http://wellington.gen.nz/static/jquery-1.3.2.js"></script>
 
 <script>
-   	var tag = "transport+consultation";
-	$(document).ready(function() {
-  	$.getJSON("http://localhost:8080/springapp/consultation/json",
-     	function(data) {
-        	$.each(data.newsitems, function(i,item) {
-       		$("<li><a href=\"" + item.url + "\">" + item.name + "</a><br/>" + item.date + '<br/>' + item.description + "</li>").appendTo("#newsitems");
-       			if ( i == 2 ) return false;
-	      	});
-  		});
-	});
+ 	$(document).ready(function() {
+ 		$.getJSON("http://wellington.gen.nz/transport/json?callback=?", function(data) {renderNewsitems(data)});
+ 	});
+
+
+	function renderNewsitems(data) {
+		$.each(data.newsitems, function(i,item) {
+			$("<li><a href=\"" + item.url + "\">" + item.name + "</a><br/>" + item.date + '<br/>' + item.description + "</li>").appendTo("#newsitems");
+			if ( i == 3 ) return false;
+		});
+		
+	};
 </script>
- 
- 
- <h5>Consulation</h2>
- 
-<div id="newsitems">
+
+<h5>Transport</h5>
+ <div id="newsitems" />

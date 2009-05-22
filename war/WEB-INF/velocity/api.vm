@@ -338,7 +338,7 @@ parameter. This is approch is required when making cross domain JSON calls from 
 <div class="box">
 <h2>Usage Example</h2>
 
-<p>Using JSON and javascript to pull consultation newsitems into 
+<p>Using JSON and javascript to pull transport newsitems into 
 a page.</p>
 
 #include("widget.vm")
