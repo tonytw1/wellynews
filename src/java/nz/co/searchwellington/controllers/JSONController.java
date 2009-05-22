@@ -13,6 +13,9 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class JSONController extends MultiActionController {
 
+	private static final String VALID_CALLBACK_NAME_REGEX = "[a-z|A-Z|0-9|_]+";
+
+
 	Logger log = Logger.getLogger(JSONController.class);
     
     
@@ -24,13 +27,27 @@ public class JSONController extends MultiActionController {
         this.requestFilter = requestFilter;       
         this.contentModelBuilderService = contentModelBuilderService;
     }
-       
+   
+    // TODO needs to 404 on no content!
 	public ModelAndView contentJSON(HttpServletRequest request, HttpServletResponse response) throws Exception {    
     	log.info("Building content json");
     	 requestFilter.loadAttributesOntoRequest(request);  
          ModelAndView mv = contentModelBuilderService.populateContentModel(request);
+         
+         if(request.getParameter("callback") != null) {
+        	 final String callback = request.getParameter("callback");
+        	 if (isValidCallbackName(callback)) {
+        		 log.info("Adding callback to model:" + callback);
+        		 mv.addObject("callback", callback);
+        	 }        	 
+         }
+         
          mv.setView(new JSONView());
          return mv;
     }
+
+	protected boolean isValidCallbackName(String callback) {
+		return callback.matches(VALID_CALLBACK_NAME_REGEX);
+	}
     
 }

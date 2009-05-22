@@ -25,7 +25,7 @@
 <img src="/images/wordel.png" width="520">
 </center>
 <br />
-Word cloud by <a href="http://www.wordle.net/">Wordle</a>
+<span align="right">Word cloud by <a href="http://www.wordle.net/">Wordle</a></span>
 
 <p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
 These services allow content to be queried programmatically for easy integration and use in mash ups.</p>
@@ -231,6 +231,21 @@ You can see the total number of available results in the <code>totalItems</code>
 
 
 
+<h5><b>JSONP callbacks</b></h5>
+
+<p>You can specify that JSON results should be wrapped in a JSONP style callback, using the optional <code>callback</code>
+parameter. This is approch is required when making cross domain JSON calls from a web brower.</p>
+
+<p>ie.</p>
+
+	<ul>
+	<li><code>
+	<a href="$site_information.url/zebras/json?callback=mycallbackfunction">$site_information.url/zebras/json?callback=mycallbackfunction</a>	
+	</code></li>
+	</ul>
+
+<p>Your callback function name may contain letters, numbers and underscores only.</p>
+	
 <h1>RSS to JSON feed mirroring</h1>
 
 <p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using Javascript.</p>
@@ -319,12 +334,15 @@ You can see the total number of available results in the <code>totalItems</code>
 
 
 
-<div class="box">
-#parse("includes/archive.vm")
-</div>
 
 <div class="box">
-#parse("includes/latest_newsitems.vm")
+<h2>Usage Example</h2>
+
+<p>Using JSON and javascript to pull consultation newsitems into 
+a page.</p>
+
+#include("widget.vm")
+
 </div>
 
 </div>

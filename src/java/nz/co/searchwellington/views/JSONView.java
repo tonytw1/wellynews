@@ -20,18 +20,39 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
-public class JSONView  implements View{
-
+public class JSONView  implements View {
+	
 	public String getContentType() {
 		return "text/plain";
 	}
 
 	@SuppressWarnings("unchecked")
 	public void render(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {
-        List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");        
 		res.setContentType("text/plain");
 		res.setCharacterEncoding("UTF-8");
-	   		
+
+		StringBuilder output = new StringBuilder();
+	
+		String jsonString = createJSONString(model);
+		String callbackName = (String) model.get("callback");		
+		if (callbackName != null) {
+			final String callback = (String) callbackName;
+			output.append(callback + "(");
+			output.append(jsonString);
+			output.append(");");
+		} else {
+			output.append(jsonString);
+		}
+		
+		res.getOutputStream().print(output.toString());        
+		res.getOutputStream().flush();		
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	private String createJSONString(Map model) {
+		List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");
+		
 		XStream xstream = new XStream(new JettisonMappedXmlDriver() {
 		    public HierarchicalStreamWriter createWriter(Writer writer) {
 		        return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE);
@@ -67,8 +88,8 @@ public class JSONView  implements View{
 		}
 		
 		bucket.setNewsitems(mainContent);
-		res.getOutputStream().print(xstream.toXML(bucket));        
-		res.getOutputStream().flush();		
+		String jsonString = xstream.toXML(bucket);
+		return jsonString;
 	}
 
 }
