@@ -32,7 +32,12 @@
 		<property name="url">
 			<column name="page" length="255" not-null="true" />
 		</property>
+
+		<property name="urlWords">
+			<column name="url_words" length="255" not-null="true" />
+		</property>
 		         
+		         		         
         <property name="httpStatus" type="integer">
         	<column name="http_status"/>
         </property>
