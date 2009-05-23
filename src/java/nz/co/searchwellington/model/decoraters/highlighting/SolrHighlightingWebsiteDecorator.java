@@ -172,8 +172,9 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 	public void setUrl(String url) {
 		website.setUrl(url);
 	}
-	
-	
 
-
+	public void setUrlWords(String urlWords) {
+		website.setUrlWords(urlWords);
+	}
+	
 }

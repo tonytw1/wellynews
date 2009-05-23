@@ -89,17 +89,5 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     public void setCalendars(Set<CalendarFeed> calendars) {
         this.calendars = calendars;
     }
-    
-    public String getUrlWords() {
-		String urlWords = new String(getName());		
-		return urlWords.
-			replaceAll("\\(.*?\\)", "").
-			trim().
-			replaceAll(" ", "-").
-			replaceAll("\\s", "").
-			replaceAll("[^\\w-]","").
-			replaceAll("-+", "-").
-			toLowerCase();
-	}
-    
+        
 }

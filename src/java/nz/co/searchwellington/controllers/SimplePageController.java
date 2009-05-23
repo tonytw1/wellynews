@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +14,7 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
@@ -21,6 +23,10 @@ import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.client.solrj.SolrServer;
+import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
+import org.apache.solr.client.solrj.request.UpdateRequest;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -56,7 +62,33 @@ public class SimplePageController extends BaseMultiActionController {
         populateLocalCommon(mv);             
         mv.addObject("heading", "About");        
         populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
-             
+        
+        mv.setViewName("about");                     
+        return mv;
+    }
+    
+    
+    
+    public ModelAndView urlwords(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);  
+        urlStack.setUrlStack(request);
+                    
+        populateLocalCommon(mv);             
+        mv.addObject("heading", "URLWORDS");        
+        populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
+
+        
+    	Set<Integer> newsitemIdsToIndex = resourceDAO.getAllResourceIds();
+    	for (Integer id : newsitemIdsToIndex) {
+    		Resource resource = resourceDAO.loadResourceById(id);
+			if (resource.getType().equals("F") || resource.getType().equals("W")) {
+				resource.setUrlWords(UrlWordsGenerator.makeUrlWordsFromName(resource.getName()));
+				log.info("Set urlwords to: " + resource.getUrlWords());
+				resourceDAO.saveResourceDB(resource);
+			}
+    	}
+        
         mv.setViewName("about");                     
         return mv;
     }

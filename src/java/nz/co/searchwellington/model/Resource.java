@@ -51,6 +51,8 @@ public interface Resource {
 	public Geocode getGeocode();
 	public void setGeocode(Geocode geocode);
 	public void getRemoveTag(Tag tag);
+	public String getUrlWords();
+	public void setUrlWords(String urlWords);
     
     
   

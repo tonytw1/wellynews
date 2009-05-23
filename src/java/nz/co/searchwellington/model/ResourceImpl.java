@@ -17,7 +17,7 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
     protected String name;
     protected String url;
     protected int httpStatus;
-
+    
     protected Date date;
     protected String description;
   
@@ -27,6 +27,8 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
     
     protected Set<Tag> tags;
     protected Snapshot snapshot;
+
+    protected String urlWords;
     
     protected Set<DiscoveredFeed> discoveredFeeds;
     
@@ -158,6 +160,13 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
 	}
 	public void setGeocode(Geocode geocode) {
 		this.geocode = geocode;
+	}
+		
+	public String getUrlWords() {
+		return urlWords;
+	}
+	public void setUrlWords(String urlWords) {
+		this.urlWords = urlWords;
 	}
 	
 }

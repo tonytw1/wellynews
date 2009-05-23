@@ -12,7 +12,7 @@
 		<constructor-arg ref="twitterService" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="loggedInUserFilter" />
-						
+								
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -27,6 +27,7 @@
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
 						<prop key="/watchlist">watchlist</prop>
+						<prop key="/urlwords">urlwords</prop>
 					</props>
 				</property>
 			</bean>		
@@ -552,6 +553,7 @@
             <props>
             	<prop key="/api/tag">apiTagUrlController</prop>
             	
+            	<prop key="/urlwords">simplePageController</prop>
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>

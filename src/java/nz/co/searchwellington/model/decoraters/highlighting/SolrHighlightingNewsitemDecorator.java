@@ -224,6 +224,16 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	}
 
 
+	public String getUrlWords() {
+		return newsitem.getUrlWords();
+	}
+
+
+	public void setUrlWords(String urlWords) {
+		newsitem.setUrlWords(urlWords);
+	}
+
+	
 	
     
     

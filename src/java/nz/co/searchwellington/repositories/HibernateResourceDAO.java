@@ -293,6 +293,15 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
+    
+	public Website getPublisherByUrlWords(String urlWords) {
+		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();    		
+	}
+
+	public Feed loadFeedByUrlWords(String urlWords) {
+		return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();
+	}
+        
     final public Resource loadResourceByUniqueUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).uniqueResult();        
     }
@@ -465,28 +474,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 	}
 
     
-	// TODO Performance! Put Urlwords into the model.
-	public Website getPublisherByUrlWords(String publisherUrlWords) {
-		List<Resource> publishers = getAllWebsites();
-		for (Resource publisher : publishers) {
-			String urlWords = ((Website) publisher).getUrlWords();
-			if (publisherUrlWords.equals(urlWords)) {
-				return (Website) publisher;				
-			}
-		}		
-		return null;
-	}
-
-
-	public Feed loadFeedByUrlWords(String urlWords) {
-		List<Feed> feeds = getAllFeeds();
-		for (Feed feed : feeds) {
-			if (feed.getUrlWords().equals(urlWords)) {
-				return feed;				
-			}
-		}		
-		return null;
-	}
+	
 	
 	
 }

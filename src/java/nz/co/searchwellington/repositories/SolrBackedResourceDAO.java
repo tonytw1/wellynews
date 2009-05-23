@@ -60,8 +60,11 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	@Override
 	public void saveResource(Resource resource) {
 		super.saveResource(resource);
-		updateIndexForResource(resource);
-		
+		updateIndexForResource(resource);		
+	}
+	
+	public void saveResourceDB(Resource resource) {
+		super.saveResource(resource);		
 	}
 
 	private void updateIndexForResource(Resource resource) {
@@ -131,7 +134,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
 		log.info("Getting websites for tags: " + tags );
 		SolrQuery query = new SolrQueryBuilder().tags(tags).type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
-		query.setSortField("name", ORDER.asc);		
+		query.setSortField("name", ORDER.asc);
 		return getQueryResults(query);
 	}
 	
