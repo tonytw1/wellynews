@@ -14,11 +14,6 @@
 
 <div class="main">
 
-<div class="rss">
-#parse("includes/rss_widget_for_publisher.vm")
-</div>
-
-
 <h2>$heading</h2>
 
 <center>
@@ -290,7 +285,14 @@ parameter. This is approch is required when making cross domain JSON calls from 
 <p>
 <br>
 
-<a name="urlsnippets">
+
+
+
+
+
+
+
+<a name="urlsnippets"></a>
 <h1>URL snippets</h1>
 
 
@@ -327,25 +329,27 @@ parameter. This is approch is required when making cross domain JSON calls from 
 </table>
 
 
-</div>
-
-<div class="right">
-#parse("includes/login.vm")
 
 
 
 
-<div class="box">
-<h2>Usage Example</h2>
 
-<p>Using JSON and javascript to pull transport newsitems into 
-a page.</p>
-
-#include("widget.vm")
 
 </div>
 
-</div>
+	<div class="right">
+		#parse("includes/login.vm")
+		
+		<div class="box">
+			<h2>Usage Example</h2>
+			<p>Using JSON and Javascript to pull the latest transport newsitems into a page.</p>
+			<p>Because this example uses cross domain javascript, it can be used to pull this content into pages on other sites.</p>
+			#include("widget.vm")
+		</div>
+
+
+
+	</div>
 
 </div>
 
