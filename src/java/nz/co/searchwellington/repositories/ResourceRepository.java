@@ -113,7 +113,7 @@ public interface ResourceRepository {
     
     public Date getLastLiveTimeForTag(Tag tag);
 	public List<Resource> getAllValidGeocoded(int max_events_to_show_on_front, boolean showBroken);
-    public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxNumber, boolean showBroken);
+    public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxNumber, boolean showBroken);
 	public List<Resource> getResourcesWithTag(Tag tag);
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems);

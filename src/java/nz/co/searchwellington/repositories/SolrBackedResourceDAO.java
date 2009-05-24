@@ -131,6 +131,17 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		return getTaggedWebsites(tags, showBroken, maxItems);
 	}
 	
+		
+	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems, boolean showBroken) {
+		log.info("Getting geotagged newsitems for tag: " + tag );
+		SolrQuery query = new SolrQueryBuilder().tag(tag).type("N").geotagged().showBroken(showBroken).maxItems(maxItems).toQuery();
+		setDateDescendingOrder(query);;
+		return getQueryResults(query);
+	}
+
+	
+	
+	
 	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
 		log.info("Getting websites for tags: " + tags );
 		SolrQuery query = new SolrQueryBuilder().tags(tags).type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
@@ -150,14 +161,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 	
 
-	// TODO rename
-	public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxItems, boolean showBroken) {
-		log.info("Getting geotagged newsitems for tag: " + tag );
-		SolrQuery query = new SolrQueryBuilder().tag(tag).type("N").geotagged().showBroken(showBroken).maxItems(maxItems).toQuery();
-		setDateDescendingOrder(query);;
-		return getQueryResults(query);
-	}
-
+	
 	public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
 		log.info("Getting watchlist for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();

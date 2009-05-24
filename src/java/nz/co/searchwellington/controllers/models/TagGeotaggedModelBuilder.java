@@ -56,7 +56,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		mv.addObject("heading", tag.getDisplayName() + " geotagged");        		
 		mv.addObject("description", "Geotagged " + tag.getDisplayName() + " newsitems");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));		
-	    final List<Resource> allGeotaggedForTag = resourceDAO.getAllValidGeocodedForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
+	    final List<Resource> allGeotaggedForTag = resourceDAO.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
 		mv.addObject("main_content", allGeotaggedForTag);
 		if (allGeotaggedForTag.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag));

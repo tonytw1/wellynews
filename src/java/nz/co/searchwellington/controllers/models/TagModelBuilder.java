@@ -166,7 +166,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
     
     private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
-        List<Resource> geocoded = resourceDAO.getAllValidGeocodedForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
+        List<Resource> geocoded = resourceDAO.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);
