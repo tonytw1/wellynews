@@ -1,217 +1,185 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
+
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
 
 
-<div class="left">
+	<div class="main">
+		<h2>$heading</h2>
 
-#parse("includes/tag_tree.vm")
+		
+		<ul>
+			<li class="tagged"><a href="#gettingstarted">Getting started</a> | </li>
+			<li class="tagged"><a href="#newsitemqueries">Newsitem queries</a> | </li>
+			<li class="tagged"><a href="#rsstojson">RSS to JSON mirroring</a></li>
+		</ul>	
 
+		<center>
+			<img src="/images/wordel.png" width="520" border="0" vspace="0">
+		</center>
+		<br />
+		
+		<span class="wordlecredit">Word cloud by <a href="http://www.wordle.net/">Wordle</a></span>
+		<br/>
+		<p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
+		These services allow content to be queried programmatically for easy integration and use in mash ups.</p>
 
-</div>
-
-
-<div class="main">
-
-<h2>$heading</h2>
-
-<center>
-<img src="/images/wordel.png" width="520">
-</center>
-<br />
-<span align="right">Word cloud by <a href="http://www.wordle.net/">Wordle</a></span>
-
-<p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
-These services allow content to be queried programmatically for easy integration and use in mash ups.</p>
-
-<p>The Wellynews API lets you do something simular with the local newsitems indexed by Search Wellington.</p>
-
-
-<h1>Getting started</h1>
+		<p>The Wellynews API lets you do something simular with the local newsitems indexed by Search Wellington.</p>
 
 
-<h5>Supported Formats</h5>
-
-<p>The API allows newsitems to be extracted in RSS or JSON (Javascript) formats. RSS is widely supported by feed readers, 
-web browsers and server side libraries. JSON is typically used for passing data into browser based Javascript applications and mashups.</p>
-
-<p>The desired format is specified by appending ethier <code>rss</code> or <code>json</code>
-to the end of the query url.</p>
-
-<p>ie. Transport newsitems in RSS format:</p>
-
-	<ul>
-	<li><code><a href="$site_information.url/transport/rss">$site_information.url/transport/rss</a></code></li>
-	</ul>
-
-<p>or the same newsitems in JSON format:</p>
-
-	<ul>
-	<li><code><a href="$site_information.url/transport/json">$site_information.url/transport/json</a></code></li>
-	</ul>
-
-
-<h5>Specifying tags and publishers</h5>
-
-<p>When querying for newsitems (below) you have the option of filtering by tag or publisher. 
-Tags and publishers are specified by substituting the appropriate url snippet into your request.</p>
-
-<p>ie. The url snippet for Wellington City Council is <code>wellington-city-council</code>.</p>
-
-A complete list of available tag and publisher url snippets is provided <a href="#urlsnippets">below</a>.
-</p>
-
-
-
-
-
-
-
-
-
-
-
-<h1>Newsitem queries</h1>
-
-<p>The following types of newsitem query are supported.</p>
-
-
-<h5><b>Tag newitems</b></h5>
-
-<p>Returns newsitems tagged with a given tag.</p>
+		<a name="gettingstarted"></a>
+		<h1>Getting started</h1>
 	
-	<ul>
-	<li><code>$site_information.url/[tag url snippet]/[rss|json]</code>
-	</ul>
+		<h5>Supported Formats</h5>
 
-<p>ie. All newsitems tagged with soccer, in RSS format.</p>
+		<p>The API allows newsitems to be extracted in RSS or JSON (Javascript) formats. RSS is widely supported by feed readers, 
+		web browsers and server side libraries. JSON is typically used for passing data into browser based Javascript applications and mashups.</p>
 
-	<ul>
-	<li><code>
-	<a href="$site_information.url/soccer/rss">$site_information.url/soccer/rss</a>
-	</code></li>
-	</ul>
+		<p>The desired format is specified by appending ethier <code>rss</code> or <code>json</code>
+		to the end of the query url.</p>
 
+		<p>ie. Transport newsitems in RSS format:</p>
 
-<h5><b>Publisher newsitems</b></h5>
+		<ul>
+			<li><code><a href="$site_information.url/transport/rss">$site_information.url/transport/rss</a></code></li>
+		</ul>
 
-<p>Returns newsitems published by a specific publisher.</p>
-
-	<ul>
-	<li><code>$site_information.url/[publisher url snippet]/[rss|json]</code>
-	</ul>
-
-<p>ie. newsitems published by the Capital Times, in JSON format.</p>
-
-	<ul>
-	<li><code>
-	<a href="$site_information.url/capital-times/json">$site_information.url/capital-times/json</a>	
-	</code></li>
-	</ul>
-
-<h5><b>Combinations</b></h5>
-
-<p>Returns newsitems tagged with a combination of two tags, or a publisher and a tag.</p>
-<p> The tags are seperated with a plus character. For combinations involving a publisher, the publisher must always appear on the left hand side of the plus.</p> 
-
-	<ul>
-	<li><code>$site_information.url/[tag|publisher]+[tag]/[rss|json]</code>
-	</ul>
-
-ie. newsitems tagged with transport and consultation and Wellington City Council media releases tagged with indoor sports centre</a>.
-</p>
-
-	<ul>
-	<li><code>
-	<a href="$site_information.url/transport+consultation/rss">$site_information.url/transport+consultation/rss</a>
-	</code></li>
-
-	<li><code>
-		<a href="$site_information.url/wellington-city-council+indoorsportscentre/rss">
-		$site_information.url/wellington-city-council+indoorsportscentre/rss</a>
-		</code>
-	</li>
-	</ul>
-
-<p>Credit: The combination url scheme was inspired by the Guardian newspaper's tag combiners.</p>
+		<p>or the same newsitems in JSON format:</p>
+		
+		<ul>
+			<li><code><a href="$site_information.url/transport/json">$site_information.url/transport/json</a></code></li>
+		</ul>
 
 
+		<h5>Specifying tags and publishers</h5>
 
-<h5><b>Commented newsitems</b></h5>
+		<p>When querying for newsitems (below) you have the option of filtering by tag or publisher. 
+		Tags and publishers are specified by substituting the appropriate url snippet into your request.</p>
 
-<p>Returns newsitems which have been commented on.</p>
-	<ul>
-	<li><code>$site_information.url/comment/[rss/json]</code></li>
-	</ul>
+		<p>ie. The url snippet for Wellington City Council is <code>wellington-city-council</code>.</p>
 
-<p>ie.</p>
+		<p>A complete list of available tag and publisher url snippets is provided <a href="#urlsnippets">below</a>.</p>
 
-	<ul>
-	<li><code>
-	<a href="$site_information.url/comment/json">$site_information.url/waterfront/comment/json</a>
-	</code></li>
-	</ul>
 
-<p>Commented newsitems also specifiy the newitems'comment feed url on the <code>commentFeed</code> field on the JSON results.</p>
+		<a name="newsitemqueries"></a>
+		<h1>Newsitem queries</h1>
+
+		<p>The following types of newsitem query are supported.</p>
+
+		<h5><b>Tag newitems</b></h5>
+
+		<p>Returns newsitems tagged with a given tag.</p>
+	
+		<ul>
+			<li><code>$site_information.url/[tag url snippet]/[rss|json]</code>
+		</ul>
+
+		<p>ie. All newsitems tagged with soccer, in RSS format.</p>
+
+		<ul>
+			<li><code><a href="$site_information.url/soccer/rss">$site_information.url/soccer/rss</a></code></li>
+		</ul>
+
+
+		<h5><b>Publisher newsitems</b></h5>
+
+		<p>Returns newsitems published by a specific publisher.</p>
+
+		<ul>
+			<li><code>$site_information.url/[publisher url snippet]/[rss|json]</code>
+		</ul>
+
+		<p>ie. newsitems published by the Capital Times, in JSON format.</p>
+
+		<ul>
+			<li><code><a href="$site_information.url/capital-times/json">$site_information.url/capital-times/json</a></code></li>
+		</ul>
 
 
 
+		<h5><b>Combinations</b></h5>
 
-<h5><b>Commented newsitems for a tag</b></h5>
+		<p>Returns newsitems tagged with a combination of two tags, or a publisher and a tag.</p>
+		<p> The tags are seperated with a plus character. For combinations involving a publisher, the publisher must always appear on the left hand side of the plus.</p> 
 
-<p>Returns commented newsitems for a given tag.</p>	
-	<ul>
-	<li><code>$site_information.url/[tag url snippet]/comment/[rss|json]</code>
-	</ul>
+		<ul>
+			<li><code>$site_information.url/[tag|publisher]+[tag]/[rss|json]</code>
+		</ul>
 
-<p>ie. Commented newsitems tagged with waterfront in JSON format.</p>
+		<p>ie. newsitems tagged with transport and consultation and Wellington City Council media releases tagged with indoor sports centre</a>.</p>
 
-	<ul>
-	<li><code>
-	<a href="$site_information.url/waterfront/comment/json">$site_information.url/waterfront/comment/json</a>
-	</code></li>
-	</ul>
+		<ul>
+			<li><code><a href="$site_information.url/transport+consultation/rss">$site_information.url/transport+consultation/rss</a></code></li>
+			<li><code><a href="$site_information.url/wellington-city-council+indoorsportscentre/rss">$site_information.url/wellington-city-council+indoorsportscentre/rss</a></code></li>
+		</ul>
 
-
-
+		<p>Credit: The combination url scheme was inspired by the Guardian newspapers' tag combiners.</p>
 
 
-<h5><b>Geotagged newsitems</b></h5>
 
-<p>Returns newsitems which have been geotagged.</p>
-	<ul>
-	<li><code>$site_information.url/geotagged/[rss|json]</code></li>
-	</ul>
+		<h5><b>Commented newsitems</b></h5>
+		
+		<p>Returns newsitems which have been commented on.</p>
+		<ul>
+			<li><code>$site_information.url/comment/[rss/json]</code></li>
+		</ul>
 
-<p>ie.</p>
+		<p>ie. Commented newsitesm in JSON format.</p>
 
-	<ul>
-	<li><code>
-	<a href="$site_information.url/geotagged/rss">$site_information.url/geotagged/rss</a>
-	</code></li>
-	</ul>
+		<ul>
+			<li><code><a href="$site_information.url/comment/json">$site_information.url/waterfront/comment/json</a></code></li>
+		</ul>
+
+		<p>Commented newsitems also specifiy the newitems'comment feed url on the <code>commentFeed</code> field on the JSON results.</p>
 
 
 
 
+		<h5><b>Commented newsitems for a tag</b></h5>
+
+		<p>Returns commented newsitems for a given tag.</p>	
+		<ul>
+			<li><code>$site_information.url/[tag url snippet]/comment/[rss|json]</code>
+		</ul>
+
+		<p>ie. Commented newsitems tagged with waterfront in JSON format.</p>
+		<ul>
+			<li><code><a href="$site_information.url/waterfront/comment/json">$site_information.url/waterfront/comment/json</a></code></li>
+		</ul>
 
 
-<h5><b>Pagination</b></h5>
 
-<p>Each RSS or JSON call returns a maximum of 30 results. 
-For JSON calls, additional results can be obtained from using the <code>page</code> parameter to paginate through the results. 
+		<h5><b>Geotagged newsitems</b></h5>
+		
+		<p>Returns newsitems which have been geotagged.</p>
+		<ul>
+			<li><code>$site_information.url/geotagged/[rss|json]</code></li>
+		</ul>
 
-<p>ie. page 6 of the Victoria University newsitems:</p>
+		<p>ie. Geotagged newsitems in RSS format.</p>
+		<ul>
+			<li><code><a href="$site_information.url/geotagged/rss">$site_information.url/geotagged/rss</a></code></li>
+		</ul>
 
-	<ul>
-	<li><code>
-	<a href="$site_information.url/victoria-university-of-wellington/json?page=6">$site_information.url/victoria-university-of-wellington/json?page=6</a>	
-	</code></li>
-	</ul>
 
-You can see the total number of available results in the <code>totalItems</code> field of the JSON results. The <code>showingFrom</code>
- and <code>showingTo</cod> fields tell you which resuls you are currently viewing:</p>
+
+		<h5><b>Pagination</b></h5>
+
+		<p>Each RSS or JSON call returns a maximum of 30 results. 
+		For JSON calls, additional results can be obtained from using the <code>page</code> parameter to paginate through the results.</p>
+
+		<p>ie. page 6 of the Victoria University newsitems:</p>
+
+		<ul>
+			<li><code><a href="$site_information.url/victoria-university-of-wellington/json?page=6">$site_information.url/victoria-university-of-wellington/json?page=6</a></code></li>
+		</ul>
+
+		<p>You can see the total number of available results in the <code>totalItems</code> field of the JSON results. The <code>showingFrom</code>
+		 and <code>showingTo</code> fields tell you which resuls you are currently viewing:</p>
 
 <pre>
 <code>
@@ -226,116 +194,76 @@ You can see the total number of available results in the <code>totalItems</code>
 
 
 
-<h5><b>JSONP callbacks</b></h5>
+		<h5><b>JSONP callbacks</b></h5>
 
-<p>You can specify that JSON results should be wrapped in a JSONP style callback, using the optional <code>callback</code>
-parameter. This is approch is required when making cross domain JSON calls from a web brower.</p>
+		<p>You can specify that JSON results should be wrapped in a JSONP style callback, using the optional <code>callback</code>
+		parameter. This is approch is required when making cross domain JSON calls from a web brower.</p>
 
-<p>ie.</p>
+		<p>ie.</p>
+		<ul>
+			<li><code><a href="$site_information.url/zebras/json?callback=mycallbackfunction">$site_information.url/zebras/json?callback=mycallbackfunction</a></code></li>
+		</ul>
 
-	<ul>
-	<li><code>
-	<a href="$site_information.url/zebras/json?callback=mycallbackfunction">$site_information.url/zebras/json?callback=mycallbackfunction</a>	
-	</code></li>
-	</ul>
+		<p>Your callback function name may contain letters, numbers and underscores only.</p>
 
-<p>Your callback function name may contain letters, numbers and underscores only.</p>
+
+		<a name="rsstojson"></a>	
+		<h1>RSS to JSON feed mirroring</h1>
+
+		<p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using Javascript.</p>
+
+		<ul>
+			<li><code>$site_information.url/feed/[feed url snippet]/json</code><br/>
+			Where the feed url snippet matches one of the feeds listed below.</li>
+		</ul>
+
+		<p>ie. Wellington Police alerts as a JSON list:</p>
+
+		<ul>
+			<li><code><a href="$site_information.url/feed/wellington-police-updates/json">$site_information.url/feed/wellington-police-updates/json</a></code></li>
+		</ul>
 	
-<h1>RSS to JSON feed mirroring</h1>
-
-<p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using Javascript.</p>
-
-	<ul>
-		<li><code>$site_information.url/feed/[feed url snippet]/json</code>
-		<li>Where the feed url snippet matches one of the feeds listed below.</li>
-	</ul>
-
-<p>ie. Wellington Police alerts as a JSON list:</p>
-
-	<ul>
-	<li><code>$site_information.url/feed/wellington-police-updates/json</code></li>
-	</ul>
-	
-<p>A complete list of feed url snippets is provided below.</p>
+		<p>A complete list of feed url snippets is provided <a href="#feedurlsnippets">below</a>.</p>
 
 
 
 
+		<a name="urlsnippets"></a>
+		<h1>URL snippets</h1>
 
-<h1>Content update calls</h1>
-
-<p>These url calls are used for fiddling with the contents of the index; an api key is required.</p>
-
-<h5>Tag a url</h5>
-
-	<ul>
-	<li><code>
-	$site_information.url/api/tag?url=urlOfResourceToTag&tag=tagUrlSnippet?key=[api key]</a>
-	</code></li>
-	</ul>
-
-<p>ie. Apply the athletics tag to the Scottish Athletics Club listing.</p>
-
-	<ul>
-	<li><code>
-	$site_information.url/url=http://www.scottishathletics.org.nz&tag=athletics</a>
-	</code></li>
+		<h5><b>Available Tags</b></h5>
+		<table>
+			<tr><td>Tag</td><td>URL snippet</td></tr>
+			#foreach($item in $api_tags)
+				<tr><td>$item.displayName</td>
+				<td><code>$item.name</code></td></tr>
+			#end
+		</table>
 
 
-<p>
-<br>
+		<h5><b>Available Publishers</b></h5>
+		<table>
+			<tr><td>Publisher</td><td>URL snippet</td></tr>
+			#foreach($item in $publishers)
+				<tr><td>$item.name</td>
+				<td><code>$item.urlWords</code></td></tr>
+			#end
+		</table>	
 
 
 
+		<a name="feedurlsnippets"></a>
+		<h5><b>Available Feeds</b></h5>
+		<table>
+			<tr><td>Feed</td><td>JSON URL</td></tr>
+			#foreach($item in $feeds)
+				<tr><td>$item.name</td>
+				<td><code>$item.urlWords</code></td></tr>
+			#end
+		</table>
 
 
-
-
-
-<a name="urlsnippets"></a>
-<h1>URL snippets</h1>
-
-
-
-<h5><b>Available Tags</b></h5>
-<table>
-	<tr><td>Tag</td><td>URL snippet</td></tr>
-	#foreach($item in $api_tags)
-		<tr><td>$item.displayName</td>
-		<td><code>$item.name</code></td></tr>
-	#end
-</table>
-
-
-<h5><b>Available Publishers</b></h5>
-<table>
-	<tr><td>Publisher</td><td>URL snippet</td></tr>
-	#foreach($item in $publishers)
-		<tr><td>$item.name</td>
-		<td><code>$item.urlWords</code></td></tr>
-	#end
-</table>	
-
-
-
-
-<h5><b>Available Feeds</b></h5>
-<table>
-	<tr><td>Feed</td><td>JSON URL</td></tr>
-	#foreach($item in $feeds)
-		<tr><td>$item.name</td>
-		<td><code>$item.urlWords</code></td></tr>
-	#end
-</table>
-
-
-
-
-
-
-
-
-</div>
+	</div>
 
 	<div class="right">
 		#parse("includes/login.vm")
@@ -343,12 +271,10 @@ parameter. This is approch is required when making cross domain JSON calls from 
 		<div class="box">
 			<h2>Usage Example</h2>
 			<p>Using JSON and Javascript to pull the latest transport newsitems into a page.</p>
-			<p>Because this example uses cross domain javascript, it can be used to pull this content into pages on other sites.</p>
+			<p>Because this example uses cross domain javascript, it can be used on pages on other sites.</p>
 			#include("widget.vm")
 		</div>
-
-
-
+		
 	</div>
 
 </div>

@@ -429,3 +429,11 @@ color: #f00;
 }
 
 
+.wordlecredit { 
+	margin-top: 0px;
+	margin-bottom: 6px;
+  	float: right;
+  	font-size: 0.8em;
+	font-style: italic;
+}
+

@@ -16,4 +16,5 @@
 </script>
 
 <h5>Transport</h5>
- <div id="newsitems" />
+ <div id="newsitems">
+ </div>
