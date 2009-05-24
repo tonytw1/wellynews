@@ -25,6 +25,7 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -376,6 +377,11 @@ public class ResourceEditController extends BaseTagEditingController {
                 autoTagger.autotag(editResource);
             }
             
+            
+            // Update urlwords.
+            if (editResource.getType().equals("W") || editResource.getType().equals("F")) {
+            	editResource.setUrlWords(UrlWordsGenerator.makeUrlWordsFromName(editResource.getName()));            	
+            }
                         
             // New submissions from the public are spam filtered.
             boolean spamQuestionAnswered = false;
