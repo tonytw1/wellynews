@@ -154,7 +154,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	public List<Resource> getAllValidGeocodedForTag(Tag tag, int maxItems, boolean showBroken) {
 		log.info("Getting geotagged newsitems for tag: " + tag );
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("N").geotagged().showBroken(showBroken).maxItems(maxItems).toQuery();
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
 
@@ -176,7 +176,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex) {	
 		SolrQuery query = getCommentedNewsitemsQuery(showBroken);
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
 		query.setRows(maxItems);
 		query.setStart(startIndex);		
 		return getQueryResults(query);		    	
@@ -185,14 +185,14 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).maxItems(maxItems).publisher(publisher).toQuery();			
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
 	
 
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {	
 		SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);			
-    	query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
 		query.setStart(startIndex);
 		query.setRows(maxItems);
 		return getQueryResults(query);
@@ -238,7 +238,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	public List<Resource> getNewsitemsForMonth(Date month, boolean showBroken) {	
 		final String monthString = new DateFormatter().formatDate(month, DateFormatter.MONTH_FACET);
 		SolrQuery query = new SolrQueryBuilder().month(monthString).type("N").showBroken(showBroken).toQuery();
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
 		query.setRows(MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE);
 		return getQueryResults(query);
 	}
@@ -269,7 +269,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken, int startIndex) {
 		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).maxItems(maxItems).startIndex(startIndex).toQuery();
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
 	
@@ -277,7 +277,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
 		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);		
 		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();		
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
     	return getQueryResults(query);
     }
 	
@@ -328,9 +328,10 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	public List<Resource> getLatestNewsitems(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).maxItems(maxItems).toQuery();
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
+
 	
 	
 	
@@ -383,7 +384,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	public List<Resource> getAllValidGeocoded(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().maxItems(maxItems).toQuery();
-		query.setSortField("date", ORDER.desc);
+		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
 	
@@ -451,6 +452,14 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	private SolrQuery getTaggedContentSolrQuery(Set<Tag> tags, boolean showBroken, String type) {			
 		return new SolrQueryBuilder().tags(tags).showBroken(showBroken).type(type).toQuery();		
-	}	
+	}
+	
+
+	private void setDateDescendingOrder(SolrQuery query) {
+		query.setSortField("date", ORDER.desc);
+		query.addSortField("id", ORDER.desc);
+	}
+	
+	
 		    
 }
