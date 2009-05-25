@@ -17,8 +17,7 @@ public class JSONController extends MultiActionController {
 
 
 	Logger log = Logger.getLogger(JSONController.class);
-    
-    
+        
     private RequestFilter requestFilter;
 	private ContentModelBuilderService contentModelBuilderService;
 
@@ -28,24 +27,28 @@ public class JSONController extends MultiActionController {
         this.contentModelBuilderService = contentModelBuilderService;
     }
    
-    // TODO needs to 404 on no content!
-	public ModelAndView contentJSON(HttpServletRequest request, HttpServletResponse response) throws Exception {    
-    	log.info("Building content json");
-    	 requestFilter.loadAttributesOntoRequest(request);  
-         ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-         
-         if(request.getParameter("callback") != null) {
-        	 final String callback = request.getParameter("callback");
-        	 if (isValidCallbackName(callback)) {
-        		 log.info("Adding callback to model:" + callback);
-        		 mv.addObject("callback", callback);
-        	 }        	 
-         }
-         
-         mv.setView(new JSONView());
-         return mv;
+
+    public ModelAndView contentJSON(HttpServletRequest request, HttpServletResponse response) throws Exception {    
+		log.info("Building content json");
+		requestFilter.loadAttributesOntoRequest(request);  
+		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
+        		
+		if (mv != null) {			
+			if(request.getParameter("callback") != null) {
+				final String callback = request.getParameter("callback");
+				if (isValidCallbackName(callback)) {
+					log.info("Adding callback to model:" + callback);
+					mv.addObject("callback", callback);
+				}	 
+			}
+			mv.setView(new JSONView());
+			return mv;
+		}     
+		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return null;         
     }
 
+    
 	protected boolean isValidCallbackName(String callback) {
 		return callback.matches(VALID_CALLBACK_NAME_REGEX);
 	}

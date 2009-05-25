@@ -53,13 +53,6 @@ public class SearchController extends BaseMultiActionController {
         if (!nokeywordsGiven) {
                 urlStack.setUrlStack(request);
                 mv.getModel().put("heading", "Search Results");
-                                
-                //final List<Tag> matchingTags = resourceDAO.getTagsMatchingKeywords(keywords);
-                //log.info("Found " + matchingTags.size() + " matching tags for keywords '" + keywords + "'");                
-                //for (Tag tag : matchingTags) {
-                //    log.info("Found tag: " + tag.getDisplayName());
-                //}                
-                //mv.getModel().put("matching_tags", matchingTags);
                 
                 final List<Resource> matchingSites = resourceDAO.getWebsitesMatchingKeywords(keywords, showBroken);
                 final List<Resource> matchingNewsitems = resourceDAO.getNewsitemsMatchingKeywords(keywords, showBroken);

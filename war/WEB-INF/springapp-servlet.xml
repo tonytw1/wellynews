@@ -129,28 +129,6 @@
 	</bean>
 
 	
-	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
-		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="rssUrlBuilder" />		
-		<constructor-arg ref="contentModelBuilder" />
-		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>		
-						<prop key="/rss">mainRss</prop>
-						<prop key="/watchlist/rss">watchlistRss</prop>						
-						
-						<prop key="/*/rss">contentRss</prop>
-						<prop key="/*/comment/rss">contentRss</prop>
-						<prop key="/*/geotagged/rss">contentRss</prop>																
-					</props>
-				</property>
-			</bean>		
-		</property>		
-	</bean>
 	
 	
 	
@@ -354,15 +332,34 @@
 				<property name="mappings">
 					<props>
 						<prop key="/*/json">contentJSON</prop>
-						<prop key="/feed/*/json">contentJSON</prop>
-						<prop key="/*/comment/json">contentJSON</prop>
-						<prop key="/*/geotagged/json">contentJSON</prop>													
+						<prop key="/*/*/json">contentJSON</prop>																	
+					</props>
+				</property>
+			</bean>
+		</property>		
+	</bean>
+		
+	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
+		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="rssUrlBuilder" />		
+		<constructor-arg ref="contentModelBuilder" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>
+						<prop key="/rss">mainRss</prop>
+						<prop key="/watchlist/rss">watchlistRss</prop>						
+						<prop key="/*/rss">contentRss</prop>						
+						<prop key="/*/*/rss">contentRss</prop>																
 					</props>
 				</property>
 			</bean>		
-		</property>
-		
+		</property>		
 	</bean>
+	
 	
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
 		<constructor-arg ref="resourceDAO" />
@@ -375,10 +372,10 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/feed/*">normal</prop>											
+						<prop key="/*">normal</prop>						
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
-						<prop key="/*">normal</prop>						
+						<prop key="/feed/*">normal</prop>											
 					</props>
 				</property>
 			</bean>		
@@ -578,18 +575,12 @@
             	<prop key="/index">indexController</prop>				
 				
 				<prop key="/rss">rssController</prop>
-				<prop key="/geotagged/rss">rssController</prop>
-				<prop key="/justin/rss">rssController</prop>
-				<prop key="/watchlist/rss">rssController</prop>
 				<prop key="/*/rss">rssController</prop>
-				<prop key="/*/comment/rss">rssController</prop>
-				<prop key="/*/geotagged/rss">rssController</prop>
-				
+				<prop key="/*/*/rss">rssController</prop>
+												
 				<prop key="*/json">jsonController</prop>
-				<prop key="/*/comment/json">jsonController</prop>				
-				<prop key="/geotagged/json">jsonController</prop>
-				<prop key="/*/geotagged/json">jsonController</prop>
-				
+				<prop key="/*/*/json">jsonController</prop>				
+								
 				
 				<prop key="/feeds/**">rssfeedsController</prop>
 				<prop key="/search">searchController</prop>
@@ -643,10 +634,9 @@
 				<prop key="/*+*">tagController</prop>
           		<prop key="/*%2B*">tagController</prop>				
 				<prop key="/*/comment">tagController</prop>
-				<prop key="/*/geotagged">tagController</prop>
-				<prop key="/geotagged/*">tagController</prop>
+				<prop key="/*/geotagged">tagController</prop>				
 				<prop key="/feed/*">tagController</prop>
-				<prop key="/feed/*/json">jsonController</prop>
+			
 				<prop key="/*">tagController</prop>
 				<prop key="/comment">tagController</prop>
 				<prop key="/geotagged">tagController</prop>            	

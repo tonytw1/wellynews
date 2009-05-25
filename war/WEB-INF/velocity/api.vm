@@ -217,10 +217,10 @@
 			Where the feed url snippet matches one of the feeds listed below.</li>
 		</ul>
 
-		<p>ie. Wellington Police alerts as a JSON list:</p>
+		<p>ie. Wellington City Councils' latest news feed as a JSON list:</p>
 
 		<ul>
-			<li><code><a href="$site_information.url/feed/wellington-police-updates/json">$site_information.url/feed/wellington-police-updates/json</a></code></li>
+			<li><code><a href="$site_information.url/feed/wellington-city-council-latest-news/json">$site_information.url/feed/wellington-city-council-latest-news/json</a></code></li>
 		</ul>
 	
 		<p>A complete list of feed url snippets is provided <a href="#feedurlsnippets">below</a>.</p>

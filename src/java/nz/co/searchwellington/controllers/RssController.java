@@ -41,6 +41,19 @@ public class RssController extends MultiActionController {
         this.contentModelBuilderService = contentModelBuilderService;
     }
     
+    
+	public ModelAndView contentRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    
+    	log.info("Building content rss");
+    	 requestFilter.loadAttributesOntoRequest(request);  
+         ModelAndView mv = contentModelBuilderService.populateContentModel(request);
+         if (mv != null) {
+        	 mv.setView(new RssView(siteInformation));
+        	 return mv;
+         }
+         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+         return null;
+    }
+        
        
     public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception { 
     	final String userAgent = request.getHeader("User-Agent");
@@ -60,43 +73,13 @@ public class RssController extends MultiActionController {
         return new ModelAndView(rssView, model);        
     }
     
-       
     
-	public ModelAndView contentRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    
-    	log.info("Building content rss");
-    	 requestFilter.loadAttributesOntoRequest(request);  
-         ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-         if (mv != null) {
-        	 mv.setView(new RssView(siteInformation));
-        	 return mv;
-         }
-         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-         return null;
-    }
-    
-       
-  
-    
-     
     public ModelAndView watchlistRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	HashMap <String, Object> model = new HashMap <String, Object>();     
     	model.put("heading", rssUrlBuilder.getTitleForWatchlist());
     	model.put("link", siteInformation.getUrl());
     	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
     	model.put("main_content", resourceDAO.getRecentlyChangedWatchlistItems());
-    	
-        RssView rssView = new RssView(siteInformation);        
-        return new ModelAndView(rssView, model);
-        
-    }
-    
-    // TODO not yet implemented.
-    public ModelAndView tagsRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	HashMap <String, Object> model = new HashMap <String, Object>();     
-    	model.put("heading", rssUrlBuilder.getRssTitleForJustin());
-    	model.put("link", siteInformation.getUrl());
-    	model.put("description", "Available tags");
-    	model.put("main_content", resourceDAO.getAllTags());
     	
         RssView rssView = new RssView(siteInformation);        
         return new ModelAndView(rssView, model);        
