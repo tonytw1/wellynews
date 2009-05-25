@@ -69,15 +69,6 @@ public class RequestFilterTest extends TestCase {
     }
     
     
-    public void testShouldExtractRssTypeFromRssUrl() throws Exception {
-        RequestFilter filter = new RequestFilter(null);         
-        assertEquals("L", filter.getRssTypeFromRequest("/rss/watchlist"));
-        assertEquals("W", filter.getRssTypeFromRequest("/rss/justin"));
-    }
-    
-    
-    
-    
     public void testShouldExtractNewsitemsPublisherUrlWordsFromPathInfo() {
         RequestFilter filter = new RequestFilter(null);               
         String pathInfo = "/wellingtoncitycouncil/newsitems";

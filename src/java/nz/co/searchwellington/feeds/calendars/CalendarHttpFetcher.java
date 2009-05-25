@@ -3,6 +3,7 @@ package nz.co.searchwellington.feeds.calendars;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
@@ -25,8 +26,8 @@ public class CalendarHttpFetcher {
     
     public Calendar httpFetch(String url) {
         log.info("Fetching calendar from url: " + url);
-        InputStream input = httpFetcher.httpFetch(url);     
-        if (input != null)  {
+        InputStream input = null;       
+        if (httpFetcher.httpFetch(url, input) == HttpStatus.SC_OK && input != null)  {
             CalendarBuilder builder = new CalendarBuilder();
             try {
                 CompatibilityHints.setHintEnabled( CompatibilityHints.KEY_RELAXED_PARSING, true );              

@@ -18,16 +18,34 @@ public class SnapshotDAO {
 	public SnapshotDAO(CacheManager manager) {		
 		this.manager = manager;
 	}
-
-	public Snapshot loadSnapshot(String url) {		
+	
+	public String loadContentForUrl(String url) {
+		Snapshot snapshot = this.loadSnapshot(url);
+        if (snapshot != null) {
+        	return snapshot.getBody();
+        }
+        return null;
+	}
+	
+	public void setSnapshotContentForUrl(String url, String content) {
+		Snapshot snapshot = this.loadSnapshot(url);
+		if (snapshot == null) {
+			snapshot = new Snapshot(url);
+		}
+		snapshot.setBody(content);
+		this.saveSnapshot(url, snapshot);
+	}
+	
+	private Snapshot loadSnapshot(String url) {		
 		return getSnapshotFromCache(url);        
 	}
 	
-	public void saveSnapshot(String url, Snapshot snapshot) {
+	private void saveSnapshot(String url, Snapshot snapshot) {
 	    putSyndFeedIntoCache(url, snapshot);
 	}
         
-    private void putSyndFeedIntoCache(String url, Snapshot snapshot) {
+    
+	private void putSyndFeedIntoCache(String url, Snapshot snapshot) {
 		Cache cache = manager.getCache(SNAPSHOTS_CACHE_NAME);
 		if (cache != null && snapshot != null) {
 			Element cachedFeedElement = new Element(url, snapshot.getBody());
@@ -38,8 +56,7 @@ public class SnapshotDAO {
 		cache.flush();
 
 	}
-
-    
+	
     private Snapshot getSnapshotFromCache(String url) {
 		Cache cache = manager.getCache(SNAPSHOTS_CACHE_NAME);
 		if (cache != null) {

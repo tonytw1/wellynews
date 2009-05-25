@@ -3,6 +3,9 @@ package nz.co.searchwellington.controllers.admin;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.verify;
+
+import java.util.Date;
+
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
@@ -43,7 +46,7 @@ public class AdminRequestFilterTest extends TestCase {
 		 request.setParameter("date", "23 Apr 2009");
 		 filter.loadAttributesOntoRequest(request);
 		 assertNotNull(request.getAttribute("date"));
-		 DateTime date = (DateTime) request.getAttribute("date");
+		 DateTime date = new DateTime((Date) request.getAttribute("date"));
 		 assertEquals(new DateTime(2009, 4, 23, 0, 0, 0, 0), date);		
 	}
 	

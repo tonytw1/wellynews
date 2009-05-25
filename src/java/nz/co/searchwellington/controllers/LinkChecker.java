@@ -8,10 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.commentfeeds.CommentFeedGuesserService;
@@ -19,20 +16,18 @@ import nz.co.searchwellington.commentfeeds.guessers.EyeOfTheFishCommentFeedGuess
 import nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser;
 import nz.co.searchwellington.feeds.CommentFeedReader;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.htmlparsing.Extractor;
 import nz.co.searchwellington.htmlparsing.LinkExtractor;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Snapshot;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.TechnoratiDAO;
 import nz.co.searchwellington.utils.HttpFetcher;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,38 +41,35 @@ public class LinkChecker {
 	private CommentFeedDetectorService commentFeedDetector;
 	private SnapshotDAO snapshotDAO;
     private TechnoratiDAO technoratiDAO;
+	private HttpFetcher httpFetcher;
+	private LinkExtractor linkExtractor;
 
     
-    // Used by Spring transactional proxy.
     public LinkChecker() {
     }
     
     
-    public LinkChecker(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO) {    
+    public LinkChecker(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO, HttpFetcher httpFetcher, LinkExtractor linkExtractor) {    
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.commentFeedReader = commentFeedReader;
         this.commentFeedDetector = commentFeedDetector;
         this.snapshotDAO = snapshotDAO;
         this.technoratiDAO = technoratiDAO;
+        this.httpFetcher = httpFetcher;
+        this.linkExtractor = linkExtractor;
     }
 
 
-    @Transactional()
+    @Transactional
     public void scanResource(int checkResourceId) {
-
         Resource checkResource = resourceDAO.loadResourceById(checkResourceId);
          
         log.info("Checking: " + checkResource.getName() + "(" + checkResource.getUrl() + ")");        
         log.debug("Before status: " + checkResource.getHttpStatus());      
         
-        String before = null;
-        Snapshot snapshot = snapshotDAO.loadSnapshot(checkResource.getUrl());
-        if (snapshot != null) {
-        	before = snapshot.getBody();
-        } else {
-        	snapshot = new Snapshot(checkResource.getUrl());
-        }
+        final String beforePageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
+									       
         
         Calendar currentTime = Calendar.getInstance();
         
@@ -85,15 +77,16 @@ public class LinkChecker {
         // Cricket Wellington's site does something weird when spidered.
         boolean excludeFromCheck = checkResource.getUrl() != null && checkResource.getUrl().contains("www.cricketwellington.co.nz");
         if (!excludeFromCheck) {
-            httpCheck(checkResource, snapshot);
+            httpCheck(checkResource);
+
+            final String pageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
                        
-            checkForChangeUsingSnapshots(checkResource, before, currentTime, snapshot.getBody());
-            
+            checkForChangeUsingSnapshots(checkResource, beforePageContent, currentTime, pageContent);            
             if (checkResource.getType().equals("F")) {
                 updateLatestFeedItem((Feed) checkResource);
             } else {
                 // For non feeds, parse for rss auto discovery links.                      
-                discoverFeeds(checkResource);
+                discoverFeeds(checkResource, pageContent);
             }
             
         } else {
@@ -133,9 +126,8 @@ public class LinkChecker {
 
 
 
-    protected void discoverFeeds(Resource checkResource) {
-        Snapshot snapshot = snapshotDAO.loadSnapshot(checkResource.getUrl());
-        for (Iterator iter = getAutoDiscoveredUrlsFromResource(snapshot).iterator(); iter.hasNext();) {
+    protected void discoverFeeds(Resource checkResource, String pageContent) {
+        for (Iterator iter = linkExtractor.extractLinks(pageContent).iterator(); iter.hasNext();) {
             String discoveredUrl = (String) iter.next();
             
             if (!discoveredUrl.startsWith("http://")) {
@@ -180,17 +172,6 @@ public class LinkChecker {
     }
 
     
-    
-    protected Set<String> getAutoDiscoveredUrlsFromResource(Snapshot snapshot) {
-        Set<String> feedUrls = new HashSet<String>();       
-        if (snapshot != null) {
-            feedUrls.addAll(locateAutodiscoveredFeedsFromContent(snapshot.getBody()));
-        } 
-        return feedUrls;
-    }
-
-
-
     // TODO merge this with the discoveredFeedUrl method.
     private void recordCommentFeed(Resource checkResource, String discoveredUrl) {
         // TODO can hibernate take care of this?
@@ -246,50 +227,26 @@ public class LinkChecker {
         return contentChanged;
     }
    
-   
-    private boolean crawlAllowed(String url) {
-        // TODO implement robots.txt. Needs to check robots.txt file on host.
-        return true;
-    }
     
- 
-    
-    private int httpCheck(Resource checkResource, Snapshot snapshot) {
+    private void httpCheck(Resource checkResource) {
         String url = checkResource.getUrl();
-        // Check for a robots.txt exclution
-        if (crawlAllowed(url)) {
-
-            try {               
-                int httpResult = -1;
+        try {
+            	String pageContent = null;
+                InputStream inputStream = null;
+                int httpResult = httpFetcher.httpFetch(checkResource.getUrl(), inputStream);                                            
+                if (httpResult == HttpStatus.SC_OK) {
+                    pageContent = readEncodedResponse(inputStream, "UTF-8");
+                } 
                 
-                HttpFetcher client = new HttpFetcher();             
-                InputStream inputStream = client.httpFetch(checkResource.getUrl());                              
-              
-                if (inputStream != null) {
-                    httpResult = 200;
-                    snapshot.setBody(readEncodedResponse(inputStream, "UTF-8"));
-                } else {
-                   snapshot.setBody(null);
-                }                
                 checkResource.setHttpStatus(httpResult);                
-                snapshotDAO.saveSnapshot(url, snapshot);
-                                
-            } catch (IllegalArgumentException e) {
-                log.error("Error while checking url: ", e);
-                checkResource.setHttpStatus(-1);
-            } catch (IOException e) {
-                log.error("Error while checking url: ", e);
-                checkResource.setHttpStatus(-1);
-            }
-
-        } else {
-            // TODO does this actually have an effect from here?
-            // The return code for not allowed to crawl is -2.
-            //log.info("Crawling is disallowed for this resource.");
-            return -2;
+                snapshotDAO.setSnapshotContentForUrl(url, pageContent);
+                
+        } catch (IllegalArgumentException e) {
+        	log.error("Error while checking url: ", e);        
+        } catch (IOException e) {
+        	log.error("Error while checking url: ", e);
         }
-
-        return -1;
+        checkResource.setHttpStatus(-1);            
     }
 
 
@@ -306,18 +263,6 @@ public class LinkChecker {
      }
 
         
-    private Set<String> locateAutodiscoveredFeedsFromContent(String inputHTML) {    
-        Set<String> feedLinks = new HashSet<String>();
-        
-        if (inputHTML != null) {            
-            log.info("Parsing html for auto discovered links.");
-            // TODO inject this.
-            Extractor linkExtractor = new LinkExtractor();
-            List<String> extractedLinks = linkExtractor.extractLinks(inputHTML);
-            feedLinks.addAll(extractedLinks);                              
-        }
-        return feedLinks;
-    }
-
+   
  
 }

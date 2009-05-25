@@ -18,8 +18,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="daos.xml" />	
 	<import resource="timertasks.xml"/>
 	<import resource="rssfeeds.xml" />
-	
-	
+	<import resource="linkextractors.xml" />
 
 	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" scope="request">
 		<aop:scoped-proxy/>
@@ -252,6 +251,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="commentFeedDetector" />
 		<constructor-arg ref="snapshotDAO" />	
 		<constructor-arg ref="technoratiDAO" />
+		<constructor-arg ref="httpFetcher" />
+		<constructor-arg ref="compositeLinkExtractor" />
 	</bean>
 		
 		

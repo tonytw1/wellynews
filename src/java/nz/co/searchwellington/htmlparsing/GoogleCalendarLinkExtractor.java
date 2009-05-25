@@ -1,7 +1,7 @@
 package nz.co.searchwellington.htmlparsing;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.NodeFilter;
@@ -11,9 +11,9 @@ import org.htmlparser.filters.LinkRegexFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
-public class GoogleCalandarLinkExtractor implements Extractor {
+public class GoogleCalendarLinkExtractor implements LinkExtractor {
 
-    Logger log = Logger.getLogger(GoogleCalandarLinkExtractor.class);
+    Logger log = Logger.getLogger(GoogleCalendarLinkExtractor.class);
     
     
     protected boolean isValid(String url) {
@@ -24,8 +24,8 @@ public class GoogleCalandarLinkExtractor implements Extractor {
     }
 	
     
-	public List<String> extractLinks(String inputHTML) {
-		List<String> links = new ArrayList<String>();
+	public Set<String> extractLinks(String inputHTML) {
+		Set<String> links = new HashSet<String>();
 
 		Parser parser = new Parser();
 		try {

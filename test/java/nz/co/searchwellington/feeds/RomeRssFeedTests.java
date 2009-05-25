@@ -15,6 +15,7 @@ import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.RomeRssFeed;
+import nz.co.searchwellington.model.RssFeedable;
 
 public class RomeRssFeedTests extends TestCase {
 
@@ -51,8 +52,10 @@ public class RomeRssFeedTests extends TestCase {
 
 	
 	private Document createOutputAndParseBackDocument(Newsitem newsitem, List<Newsitem> content) throws DocumentException {
-		RomeRssFeed feed = new RomeRssFeed("a", "b", "c", content, "e");
-		String output = feed.outputAsXml();        
+		List<RssFeedable> rssContent = new ArrayList<RssFeedable>();
+		rssContent.addAll(content);
+		RomeRssFeed feed = new RomeRssFeed("a", "b", "c", rssContent);
+		String output = feed.outputAsXml();
         Document document = parse(output);
 		return document;
 	}

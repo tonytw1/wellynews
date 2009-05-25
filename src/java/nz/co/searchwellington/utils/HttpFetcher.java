@@ -16,9 +16,8 @@ public class HttpFetcher {
 
 	private static final int HTTP_TIMEOUT = 10000;
 
-    public InputStream httpFetch(String url) {
-		HttpClient client = new HttpClient();
-        
+    public int httpFetch(String url, InputStream stream) {
+		HttpClient client = new HttpClient();        
         client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));
         client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
         
@@ -26,14 +25,12 @@ public class HttpFetcher {
 		try {
 		    HttpMethod method = new GetMethod(url);
 			client.executeMethod(method);
-
-			// Record the snapshot.
             log.info("http status was: " + method.getStatusCode());
 			if (method.getStatusCode() == HttpStatus.SC_OK) {
-				return method.getResponseBodyAsStream();               
+				stream = method.getResponseBodyAsStream();
 			}
-            return null;
-
+			return method.getStatusCode();
+			
 		} catch (HttpException e) {
 		    log.warn("An exception was thrown will trying to http fetch; see debug log level");
             log.debug(e);
@@ -44,7 +41,7 @@ public class HttpFetcher {
             log.warn("An exception was thrown will trying to http fetch; see debug log level");
             log.debug(e);		        
         }
-		return null;
+		return -1;
 	}
 
 }

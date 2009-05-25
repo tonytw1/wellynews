@@ -9,7 +9,7 @@ public class GoogleCalandarLinkExtractorTest extends ExtractorTestCase {
 
     
     public void testShouldDetectValidGoogleCalenderUrls() throws Exception {
-        GoogleCalandarLinkExtractor extractor = new GoogleCalandarLinkExtractor();        
+        GoogleCalendarLinkExtractor extractor = new GoogleCalendarLinkExtractor();        
         assertTrue(extractor.isValid(DOWNSTAGE_CALENDAR_LINK));
         assertFalse(extractor.isValid("http://www.google.com/calendar/render"));
         assertFalse(extractor.isValid(null));
@@ -22,7 +22,7 @@ public class GoogleCalandarLinkExtractorTest extends ExtractorTestCase {
 		File contentFile = new File("./test/java/nz/co/searchwellington/htmlparsing/downstage_news.htm"); 
 		StringBuffer content = loadContent(contentFile);
 		
-		Extractor extractor = new GoogleCalandarLinkExtractor();
+		LinkExtractor extractor = new GoogleCalendarLinkExtractor();
 		List<String> extractedLinks = extractor.extractLinks(content.toString());
 		assertEquals(1, extractedLinks.size());
 		assertEquals("http://www.google.com/calendar/render?cid=u33l192jom2msi7sppbsu5ehgc%40group.calendar.google.com", extractedLinks.get(0));

@@ -1,7 +1,7 @@
 package nz.co.searchwellington.htmlparsing;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.NodeFilter;
@@ -14,12 +14,12 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
-public class RssLinkExtractor implements Extractor {
+public class RssLinkExtractor implements LinkExtractor {
 
     Logger log = Logger.getLogger(RssLinkExtractor.class);
         
-    public List<String> extractLinks(String inputHTML) {
-        List<String> links = new ArrayList<String>();
+    public Set<String> extractLinks(String inputHTML) {
+        Set<String> links = new HashSet<String>();
 
         Parser parser = new Parser();
         try {
