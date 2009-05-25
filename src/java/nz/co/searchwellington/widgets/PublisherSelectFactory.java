@@ -70,7 +70,7 @@ public class PublisherSelectFactory {
     }
 
 
-    // TODO Preformance; needs the urlwords field in the db.
+    // TODO Preformance; move to a solr factet query.
     private List<Option> createOptions(boolean showBroken, boolean showCounts, boolean publishedOnly, Select publisherSelect) throws IOException {
         log.info("Creating publisher options; showBroken: " + showBroken + "; publishedOnly: " + publishedOnly);
         List<Option> options = new ArrayList<Option>();
@@ -78,23 +78,24 @@ public class PublisherSelectFactory {
         for (Object[] publisher : resourceDAO.getAllPublishers(showBroken, publishedOnly)) {
             Integer publisherId = (Integer) publisher[0];
             String publisherUrlWords = ((Website) resourceDAO.loadResourceById(publisherId)).getUrlWords();
-            Option nextOption = new Option(publisherUrlWords);
+            if (publisherUrlWords != null) {
+            	Option nextOption = new Option(publisherUrlWords);
+            	// Trim the titles to prevent the dropdown distorting the HTML.            
+            	String optionTitle = (String) publisher[1];
+            	if (optionTitle.length() > MAXIMUM_TITLE_LENGTH) {
+            		optionTitle = optionTitle.substring(0, MAXIMUM_TITLE_LENGTH) + "...";
+            	}
+            	optionTitle = StringEscapeUtils.escapeHtml(optionTitle);
 
-            // Trim the titles to prevent the dropdown distorting the HTML.            
-            String optionTitle = (String) publisher[1];
-            if (optionTitle.length() > MAXIMUM_TITLE_LENGTH) {
-                optionTitle = optionTitle.substring(0, MAXIMUM_TITLE_LENGTH) + "...";
-            }
-            optionTitle = StringEscapeUtils.escapeHtml(optionTitle);
-
-            if (showCounts) {
-                BigInteger articleCount = (BigInteger) publisher[2];
-                if (articleCount.intValue() > 0) {
+            	if (showCounts) {
+            		BigInteger articleCount = (BigInteger) publisher[2];
+            		if (articleCount.intValue() > 0) {
                     optionTitle = optionTitle + " (" + articleCount + ")";
-                }
+            		}
+            	}
+            	nextOption.addElement(optionTitle);
+            	options.add(nextOption);
             }
-            nextOption.addElement(optionTitle);
-            options.add(nextOption);
         }
 
         return options;
