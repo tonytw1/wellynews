@@ -321,9 +321,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg value="${technorati.apikey}" />
 	</bean>
 	
-		
-	<bean id="httpFetcher" class="nz.co.searchwellington.utils.HttpFetcher" />
-	
+	<bean id="robotExclusionService" class="nz.co.searchwellington.utils.RobotExclusionService" />
+	<bean id="standardHttpFetcher" class="nz.co.searchwellington.utils.HttpFetcher" />
+	<bean id="httpFetcher" class="nz.co.searchwellington.utils.RobotsAwareHttpFetcher">
+		<constructor-arg ref="robotExclusionService" />
+		<constructor-arg ref="standardHttpFetcher" />
+	</bean>	
 		
 	<import resource="calendarfeeds.xml" />
 	

@@ -25,10 +25,12 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.TechnoratiDAO;
+import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
 
 public class LinkChecker {
@@ -63,60 +65,60 @@ public class LinkChecker {
 
     @Transactional
     public void scanResource(int checkResourceId) {
-        Resource checkResource = resourceDAO.loadResourceById(checkResourceId);
-         
-        log.info("Checking: " + checkResource.getName() + "(" + checkResource.getUrl() + ")");        
-        log.debug("Before status: " + checkResource.getHttpStatus());      
-        
-        final String beforePageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
-									       
-        
-        Calendar currentTime = Calendar.getInstance();
-        
-        // TODO move exludes to a field on Publisher.
-        // Cricket Wellington's site does something weird when spidered.
-        boolean excludeFromCheck = checkResource.getUrl() != null && checkResource.getUrl().contains("www.cricketwellington.co.nz");
-        if (!excludeFromCheck) {
-            httpCheck(checkResource);
-
-            final String pageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
-                       
-            checkForChangeUsingSnapshots(checkResource, beforePageContent, currentTime, pageContent);            
-            if (checkResource.getType().equals("F")) {
-                updateLatestFeedItem((Feed) checkResource);
-            } else {
-                // For non feeds, parse for rss auto discovery links.                      
-                discoverFeeds(checkResource, pageContent);
-            }
-            
-        } else {
-            // Assume resources excluded from check are ok.
-            checkResource.setHttpStatus(200);
-        }
-               
-        checkResource.setLastScanned(currentTime.getTime());
-        
-        
-        // Check if the resource if now viewable but not previously launched.
-        boolean goneLive = checkResource.getHttpStatus() == 200 && checkResource.getLiveTime() == null;
-        if (goneLive) {
-            checkResource.setLiveTime(currentTime.getTime());                                 
-        }
-        
-        // TODO get exclude url from config.
-        int technoratiCount = technoratiDAO.getTechnoratiLinkCount(checkResource.getUrl(), "http://www.wellington.gen.nz");
-        log.info("Technorati count is: " + technoratiCount);
-        checkResource.setTechnoratiCount(technoratiCount);
-        
-        log.debug("Saving resource.");
-        resourceDAO.saveResource(checkResource);
-        
-        // If the item is a newsitem, then load it's comments.
-        if (checkResource.getType().equals("N") && ((Newsitem) checkResource).getCommentFeed() != null) {            
-            commentFeedReader.loadCommentsFromCommentFeed(((Newsitem) checkResource).getCommentFeed());           
-        }
-        
+        Resource checkResource = resourceDAO.loadResourceById(checkResourceId);         
+        if (checkResource != null) {
+	        scanLoadedResource(checkResource);
+        }        
     }
+
+
+	private void scanLoadedResource(Resource checkResource) {
+		log.info("Checking: " + checkResource.getName() + "(" + checkResource.getUrl() + ")");        
+		log.debug("Before status: " + checkResource.getHttpStatus());      
+		
+		final String beforePageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
+									       
+		
+		DateTime currentTime = new DateTime();
+		httpCheck(checkResource);
+		
+		final String pageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
+		checkForChangeUsingSnapshots(checkResource, beforePageContent, currentTime, pageContent);            
+		if (checkResource.getType().equals("F")) {
+			updateLatestFeedItem((Feed) checkResource);
+		} else {
+			// For non feeds, parse for rss auto discovery links.                      
+			discoverFeeds(checkResource, pageContent);
+		}
+		   
+		       
+		checkResource.setLastScanned(currentTime.toDate());	
+		boolean goneLive = checkResource.getHttpStatus() == 200 && checkResource.getLiveTime() == null;
+		if (goneLive) {
+		    checkResource.setLiveTime(currentTime.toDate());                                 
+		}
+		
+		updateTechnoratiCount(checkResource);           
+		readNewsitemsComments(checkResource);
+		
+		log.debug("Saving resource.");
+		resourceDAO.saveResource(checkResource);
+	}
+
+
+	private void readNewsitemsComments(Resource checkResource) {
+		if (checkResource.getType().equals("N") && ((Newsitem) checkResource).getCommentFeed() != null) {            
+			commentFeedReader.loadCommentsFromCommentFeed(((Newsitem) checkResource).getCommentFeed());           
+		}
+	}
+
+
+	private void updateTechnoratiCount(Resource checkResource) {
+		// TODO get exclude url from config.
+		int technoratiCount = technoratiDAO.getTechnoratiLinkCount(checkResource.getUrl(), "http://www.wellington.gen.nz");
+		log.info("Technorati count is: " + technoratiCount);
+		checkResource.setTechnoratiCount(technoratiCount);
+	}
 
     private void updateLatestFeedItem(Feed checkResource) {            
         Date latestPublicationDate = rssfeedNewsitemService.getLatestPublicationDate(checkResource);     
@@ -197,13 +199,13 @@ public class LinkChecker {
     }
     
     
-    private void checkForChangeUsingSnapshots(Resource checkResource, String before, Calendar currentTime, String after) {             
+    private void checkForChangeUsingSnapshots(Resource checkResource, String before, DateTime currentTime, String after) {             
         log.info("Comparing content before and after snapshots from content change.");
         boolean contentChanged = contentChanged(before, after);                       
                    
         if (contentChanged) {
             log.info("Change in content checksum detected. Setting last changed.");
-            checkResource.setLastChanged(currentTime.getTime());
+            checkResource.setLastChanged(currentTime.toDate());
             
         } else {
             log.info("No change in content detected.");
@@ -232,14 +234,13 @@ public class LinkChecker {
         String url = checkResource.getUrl();
         try {
             	String pageContent = null;
-                InputStream inputStream = null;
-                int httpResult = httpFetcher.httpFetch(checkResource.getUrl(), inputStream);                                            
-                if (httpResult == HttpStatus.SC_OK) {
-                    pageContent = readEncodedResponse(inputStream, "UTF-8");
-                } 
-                
-                checkResource.setHttpStatus(httpResult);                
+                HttpFetchResult httpResult = httpFetcher.httpFetch(checkResource.getUrl());
+                if (httpResult.getStatus() == HttpStatus.SC_OK) {
+                    pageContent = readEncodedResponse(httpResult.getInputStream(), "UTF-8");
+                }
+                checkResource.setHttpStatus(httpResult.getStatus());                
                 snapshotDAO.setSnapshotContentForUrl(url, pageContent);
+                return;
                 
         } catch (IllegalArgumentException e) {
         	log.error("Error while checking url: ", e);        

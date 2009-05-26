@@ -13,10 +13,11 @@ import org.apache.log4j.Logger;
 public class HttpFetcher {
 
     Logger log = Logger.getLogger(HttpFetcher.class);
-
+    
+    static final String USER_AGENT = "Search wellington link checker";
 	private static final int HTTP_TIMEOUT = 10000;
 
-    public int httpFetch(String url, InputStream stream) {
+    public HttpFetchResult httpFetch(String url) {
 		HttpClient client = new HttpClient();        
         client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));
         client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
@@ -27,9 +28,10 @@ public class HttpFetcher {
 			client.executeMethod(method);
             log.info("http status was: " + method.getStatusCode());
 			if (method.getStatusCode() == HttpStatus.SC_OK) {
-				stream = method.getResponseBodyAsStream();
+				InputStream stream = method.getResponseBodyAsStream();
+				return new HttpFetchResult(method.getStatusCode(), stream);
 			}
-			return method.getStatusCode();
+			return new HttpFetchResult(method.getStatusCode(), null);
 			
 		} catch (HttpException e) {
 		    log.warn("An exception was thrown will trying to http fetch; see debug log level");
@@ -41,7 +43,7 @@ public class HttpFetcher {
             log.warn("An exception was thrown will trying to http fetch; see debug log level");
             log.debug(e);		        
         }
-		return -1;
+		return new HttpFetchResult(-1, null);
 	}
 
 }

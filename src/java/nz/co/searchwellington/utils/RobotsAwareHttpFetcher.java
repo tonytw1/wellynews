@@ -13,11 +13,11 @@ public class RobotsAwareHttpFetcher extends HttpFetcher {
 		this.httpFetcher = httpFetcher;
 	}
 
-	public int httpFetch(String url, InputStream stream) {
+	public HttpFetchResult httpFetch(String url, InputStream stream) {
 		if (robotExclusionService.isUrlCrawlable(url)) {
-			return httpFetcher.httpFetch(url, stream);
+			return httpFetcher.httpFetch(url);
 		}
-		return -2;
+		return new HttpFetchResult(-2, null);
 	}
 	
 }

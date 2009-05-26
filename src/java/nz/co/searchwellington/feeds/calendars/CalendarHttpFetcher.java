@@ -10,6 +10,7 @@ import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.util.CompatibilityHints;
+import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 
 public class CalendarHttpFetcher {
@@ -26,14 +27,15 @@ public class CalendarHttpFetcher {
     
     public Calendar httpFetch(String url) {
         log.info("Fetching calendar from url: " + url);
-        InputStream input = null;       
-        if (httpFetcher.httpFetch(url, input) == HttpStatus.SC_OK && input != null)  {
+        HttpFetchResult result = httpFetcher.httpFetch(url);
+        if (result.getStatus() == HttpStatus.SC_OK && result.getInputStream() != null)  {
             CalendarBuilder builder = new CalendarBuilder();
             try {
-                CompatibilityHints.setHintEnabled( CompatibilityHints.KEY_RELAXED_PARSING, true );              
-                Calendar calendar = builder.build(input);             
+                CompatibilityHints.setHintEnabled( CompatibilityHints.KEY_RELAXED_PARSING, true );
+                InputStream input = result.getInputStream();
+                Calendar calendar = builder.build(input);
                 input.close();
-                return calendar;                          
+                return calendar; 
             } catch (IOException e) {
                 log.error("Error loading calendar feed url: " + url, e);              
             } catch (ParserException e) {
