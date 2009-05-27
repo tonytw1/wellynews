@@ -26,8 +26,7 @@
 						<prop key="/publishers">publishers</prop>
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
-						<prop key="/watchlist">watchlist</prop>
-						<prop key="/urlwords">urlwords</prop>
+						<prop key="/watchlist">watchlist</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -549,8 +548,7 @@
         <property name="mappings">
             <props>
             	<prop key="/api/tag">apiTagUrlController</prop>
-            	
-            	<prop key="/urlwords">simplePageController</prop>
+            	            	
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>

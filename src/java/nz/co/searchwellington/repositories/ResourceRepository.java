@@ -127,6 +127,5 @@ public interface ResourceRepository {
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex);
 	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken);
 	public Resource loadResourceByUniqueUrl(String url);
-	public void saveResourceDB(Resource resource);
-	
+		
 }

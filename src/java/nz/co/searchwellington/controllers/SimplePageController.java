@@ -67,33 +67,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
-    
-    
-    public ModelAndView urlwords(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);  
-        urlStack.setUrlStack(request);
-                    
-        populateLocalCommon(mv);             
-        mv.addObject("heading", "URLWORDS");        
-        populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
-
-        
-    	Set<Integer> newsitemIdsToIndex = resourceDAO.getAllResourceIds();
-    	for (Integer id : newsitemIdsToIndex) {
-    		Resource resource = resourceDAO.loadResourceById(id);
-			if (resource.getType().equals("F") || resource.getType().equals("W")) {
-				resource.setUrlWords(UrlWordsGenerator.makeUrlWordsFromName(resource.getName()));
-				log.info("Set urlwords to: " + resource.getUrlWords());
-				resourceDAO.saveResourceDB(resource);
-			}
-    	}
-        
-        mv.setViewName("about");                     
-        return mv;
-    }
-
-    
+      
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);  

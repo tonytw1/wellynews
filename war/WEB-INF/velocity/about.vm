@@ -38,6 +38,25 @@ as an <a href="feeds">RSS feed</a>. It is also possible to generate
 <a href="feeds#custom">custom RSS feeds</a> of content from specific organisations listed in the archive.</p>
 
 
+
+
+
+
+<h3>I do not want my content indexed</h3>
+
+<p>Search Wellington honours the <a href="http://en.wikipedia.org/wiki/Robots_Exclusion_Standard">robots exclusion standard</a>.
+Organisations can remove their content by using their robots.txt
+file to indiciate that we should not index their content.</p>
+
+<p>The following line in your robots.txt file will result in your content been removed from the index:</p>
+
+
+
+You can also <a href="#contact">contact us directly</a> to request exclusion.
+
+
+
+
 <a name="contact"></a>
 <h3>Contact</h3>
 
