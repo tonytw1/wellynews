@@ -1,7 +1,8 @@
 #if ($tag && $tag.getParent())
 	#set($parent_tag = $tag.getParent())
 	#set($sibling_tags = $parent_tag.getChildren())
-	#if ($parent_tag && $sibling_tags && $sibling_tags.size() >= 1)
+	
+	#if ($parent_tag && $sibling_tags && $sibling_tags.size() > 1)
 		<h2>Other tags in $parent_tag.displayName</h2>
 		<ul>
 		#foreach ($sibling_tag in $sibling_tags)
