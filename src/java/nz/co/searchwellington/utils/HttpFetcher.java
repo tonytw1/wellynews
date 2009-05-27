@@ -1,49 +1,7 @@
 package nz.co.searchwellington.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
+public interface HttpFetcher {
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.HttpMethod;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.log4j.Logger;
-
-public class HttpFetcher {
-
-    Logger log = Logger.getLogger(HttpFetcher.class);
-    
-    static final String USER_AGENT = "Search wellington link checker";
-	private static final int HTTP_TIMEOUT = 10000;
-
-    public HttpFetchResult httpFetch(String url) {
-		HttpClient client = new HttpClient();        
-        client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));
-        client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
-        
-		log.info("Attempting fetch of url: " + url);
-		try {
-		    HttpMethod method = new GetMethod(url);
-			client.executeMethod(method);
-            log.info("http status was: " + method.getStatusCode());
-			if (method.getStatusCode() == HttpStatus.SC_OK) {
-				InputStream stream = method.getResponseBodyAsStream();
-				return new HttpFetchResult(method.getStatusCode(), stream);
-			}
-			return new HttpFetchResult(method.getStatusCode(), null);
-			
-		} catch (HttpException e) {
-		    log.warn("An exception was thrown will trying to http fetch; see debug log level");
-            log.debug(e);
-		} catch (IOException e) {
-            log.warn("An exception was thrown will trying to http fetch; see debug log level");
-            log.debug(e);		
-		} catch (IllegalStateException e) {
-            log.warn("An exception was thrown will trying to http fetch; see debug log level");
-            log.debug(e);		        
-        }
-		return new HttpFetchResult(-1, null);
-	}
+	public abstract HttpFetchResult httpFetch(String url);
 
 }

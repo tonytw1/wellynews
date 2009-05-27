@@ -322,7 +322,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	<bean id="robotExclusionService" class="nz.co.searchwellington.utils.RobotExclusionService" />
-	<bean id="standardHttpFetcher" class="nz.co.searchwellington.utils.HttpFetcher" />
+	<bean id="standardHttpFetcher" class="nz.co.searchwellington.utils.StandardHttpFetcher" >
+		<property name="userAgent">
+			<value>${http.useragent}</value>
+		</property>
+	</bean>
 	<bean id="httpFetcher" class="nz.co.searchwellington.utils.RobotsAwareHttpFetcher">
 		<constructor-arg ref="robotExclusionService" />
 		<constructor-arg ref="standardHttpFetcher" />

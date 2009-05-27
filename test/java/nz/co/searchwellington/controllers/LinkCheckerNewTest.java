@@ -1,22 +1,22 @@
 package nz.co.searchwellington.controllers;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.stub;
+import junit.framework.TestCase;
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.feeds.CommentFeedReader;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor;
 import nz.co.searchwellington.htmlparsing.LinkExtractor;
-import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.WebsiteImpl;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.TechnoratiDAO;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 import nz.co.searchwellington.utils.RobotsAwareHttpFetcher;
-import junit.framework.TestCase;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
 
 public class LinkCheckerNewTest extends TestCase {
 
@@ -36,14 +36,17 @@ public class LinkCheckerNewTest extends TestCase {
 	public void testShouldRecordCorrectStatusForCrawlingDenied() throws Exception {		
 		LinkChecker linkChecker = new LinkChecker(resourceDAO, rssfeedNewsitemService, commentFeedReader, commentFeedDetector, snapshotDAO, technoratiDAO, httpFetcher, linkExtractor);
 		
-		Resource resource = new NewsitemImpl();
+		Resource resource = new WebsiteImpl();
 		resource.setUrl(RESOURCE_URL);
-		stub(resourceDAO.loadResourceById(RESOURCE_ID)).toReturn(resource);
 		HttpFetchResult robotsDeniedHttpResult = new HttpFetchResult(-2, null);
+		stub(resourceDAO.loadResourceById(RESOURCE_ID)).toReturn(resource);
 		stub(httpFetcher.httpFetch(RESOURCE_URL)).toReturn(robotsDeniedHttpResult);
 		
 		linkChecker.scanResource(RESOURCE_ID);
 		assertEquals(-2, resource.getHttpStatus());
 	}
+	
+	
+	
 	
 }

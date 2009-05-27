@@ -1,20 +1,17 @@
 package nz.co.searchwellington.utils;
 
-import java.io.InputStream;
-
-// TODO want delegate, not extends
-public class RobotsAwareHttpFetcher extends HttpFetcher {
+public class RobotsAwareHttpFetcher implements HttpFetcher {
 	
 	private RobotExclusionService robotExclusionService;
-	private HttpFetcher httpFetcher;
+	private StandardHttpFetcher httpFetcher;
 		
-	public RobotsAwareHttpFetcher(RobotExclusionService robotExclusionService, HttpFetcher httpFetcher) {		
+	public RobotsAwareHttpFetcher(RobotExclusionService robotExclusionService, StandardHttpFetcher httpFetcher) {		
 		this.robotExclusionService = robotExclusionService;
 		this.httpFetcher = httpFetcher;
 	}
 
-	public HttpFetchResult httpFetch(String url, InputStream stream) {
-		if (robotExclusionService.isUrlCrawlable(url)) {
+	public HttpFetchResult httpFetch(String url) {
+		if (robotExclusionService.isUrlCrawlable(url, httpFetcher.getUserAgent())) {
 			return httpFetcher.httpFetch(url);
 		}
 		return new HttpFetchResult(-2, null);

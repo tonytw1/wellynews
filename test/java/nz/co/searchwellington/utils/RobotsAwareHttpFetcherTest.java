@@ -14,7 +14,7 @@ public class RobotsAwareHttpFetcherTest extends TestCase {
 	private static final String TEST_URL = "http://test.wellington.gen.nz/blah";
 	
 	private RobotExclusionService robotExclusionService = mock(RobotExclusionService.class);
-	private HttpFetcher httpFetcher = mock(HttpFetcher.class);
+	private StandardHttpFetcher httpFetcher = mock(StandardHttpFetcher.class);
 	private HttpFetcher robotsAwareFetcher;
 	private InputStream inputStream;
 	

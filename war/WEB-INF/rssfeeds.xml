@@ -2,7 +2,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	<bean id="rssHttpFetcher" class="nz.co.searchwellington.feeds.rss.RssHttpFetcher" />
+	<bean id="rssHttpFetcher" class="nz.co.searchwellington.feeds.rss.RssHttpFetcher" >
+		<property name="userAgent"><value>${http.useragent}</value></property>
+	</bean>
 	
 	<bean id="rssPrefetcher" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager" />
