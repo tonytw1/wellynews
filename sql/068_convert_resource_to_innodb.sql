@@ -1,0 +1,1 @@
+ALTER TABLE resource ENGINE = InnoDB;

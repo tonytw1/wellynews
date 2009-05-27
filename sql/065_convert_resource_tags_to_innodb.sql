@@ -1,0 +1,1 @@
+ALTER TABLE resource_tags ENGINE = InnoDB;

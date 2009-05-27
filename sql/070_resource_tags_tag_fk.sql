@@ -1,0 +1,1 @@
+alter table resource_tags add foreign key (tag_id) REFERENCES tag(id);
