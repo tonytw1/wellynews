@@ -18,7 +18,7 @@ public class PublisherContentCount {
 		this.publisher = publisher;
 	}
 	
-	public long getCount() {
+	public int getCount() {
 		return count;
 	}
 	

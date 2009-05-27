@@ -11,7 +11,7 @@ public class TagContentCount {
         this.count = count;
     }
     
-    public long getCount() {
+    public int getCount() {
         return count;
     }
     public void setCount(int count) {
