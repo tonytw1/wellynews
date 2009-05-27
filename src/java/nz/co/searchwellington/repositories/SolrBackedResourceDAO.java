@@ -63,10 +63,39 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		updateIndexForResource(resource);		
 	}
 	
-	public void saveResourceDB(Resource resource) {
-		super.saveResource(resource);		
+	
+	
+	@Override
+	public void deleteResource(Resource resource) {		
+		deleteResourceFromIndex(resource);
+		super.deleteResource(resource);
 	}
 
+	// TODO move to update service
+	private void deleteResourceFromIndex(Resource resource) {
+		log.info("Deleting from solr index entire for: " + resource);
+		try {
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);				
+			UpdateRequest updateRequest = new UpdateRequest();
+			updateRequest.deleteById(Integer.toString(resource.getId()));							
+			updateRequest.process(solr);
+			solr.commit();
+			solr.optimize();
+			
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+	}
+	
+		
+	// TODO move to update service
 	private void updateIndexForResource(Resource resource) {
 		log.info("Updating solr index entire for: " + resource);
 		try {
