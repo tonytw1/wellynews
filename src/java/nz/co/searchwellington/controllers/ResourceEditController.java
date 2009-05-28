@@ -27,6 +27,7 @@ import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
@@ -269,13 +270,35 @@ public class ResourceEditController extends BaseTagEditingController {
         
         requestFilter.loadAttributesOntoRequest(request);    
         Resource editResource = (Resource) request.getAttribute("resource");       
-        if (editResource != null) {             
+        if (editResource != null) {
             modelAndView.addObject("resource", editResource);
             editResource = (Resource) request.getAttribute("resource");
+            
+            if (editResource.getType().equals("W")) {
+            	removePublisherFromPublishersContent(editResource);            	
+            }
             resourceDAO.deleteResource(editResource);
         }
         return modelAndView;
     }
+
+
+
+private void removePublisherFromPublishersContent(Resource editResource) {
+	Website publisher = (Website) editResource;
+	for (Newsitem newsitem : publisher.getNewsitems()) {
+		newsitem.setPublisher(null);
+		resourceDAO.saveResource(newsitem);					
+	}
+	for (Feed feed : publisher.getFeeds()) {
+		feed.setPublisher(null);
+		resourceDAO.saveResource(feed);					
+	}
+	for (Watchlist watchlist : publisher.getWatchlist()) {
+		watchlist.setPublisher(null);
+		resourceDAO.saveResource(watchlist);					
+	}
+}
     
     
    @Transactional

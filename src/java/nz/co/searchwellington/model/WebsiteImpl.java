@@ -10,7 +10,7 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     
 
    
-    Set <Resource> newsitems;
+    Set <Newsitem> newsitems;
     Set <Feed> feeds;
     Set <Watchlist> watchlist;
     Set <CalendarFeed> calendars;
@@ -20,7 +20,7 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     public WebsiteImpl() {        
     }
     
-	public WebsiteImpl(int id, String name, String url, Date date, String description, Set <Resource> newsitems, Set<Feed> feed, Set<Watchlist> watchlist, Set<Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Set<CalendarFeed> calendars) {
+	public WebsiteImpl(int id, String name, String url, Date date, String description, Set <Newsitem> newsitems, Set<Feed> feed, Set<Watchlist> watchlist, Set<Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Set<CalendarFeed> calendars) {
         this.id = id;
 		this.name = name;
         this.url = url;
@@ -40,11 +40,11 @@ public class WebsiteImpl extends ResourceImpl implements Website {
    
 	
 
-    public Set <Resource> getNewsitems() {
+    public Set <Newsitem> getNewsitems() {
         return newsitems;
     }
     
-    public void setNewsitems(Set<Resource> newsitems) {
+    public void setNewsitems(Set<Newsitem> newsitems) {
         this.newsitems = newsitems;
     }
 

@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
@@ -81,7 +82,7 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 		return website.getName();	
 	}
 
-	public Set<Resource> getNewsitems() {
+	public Set<Newsitem> getNewsitems() {
 		return website.getNewsitems();
 	}
 

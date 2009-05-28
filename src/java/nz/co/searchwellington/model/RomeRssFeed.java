@@ -48,7 +48,7 @@ public class RomeRssFeed {
             while (iterator.hasNext()) {
                 RssFeedable selectedResource = (RssFeedable) iterator.next();
 
-                SyndEntry entry = selectedResource.getRssItem();             
+                SyndEntry entry = selectedResource.getRssItem();
                 entries.add(entry);
             }
             

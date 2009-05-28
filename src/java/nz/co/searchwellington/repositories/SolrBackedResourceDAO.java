@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,13 +25,11 @@ import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.apache.solr.common.SolrInputDocument;
 import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -44,12 +41,12 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 
 	Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
     
-    private SolrInputDocumentBuilder solrInputDocumentBuilder;
+    private SolrQueryService solrQueryService;
     private String solrUrl;
 	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, SolrInputDocumentBuilder solrInputDocumentBuilder, UrlBuilder urlBuilder) {
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService) {
 		super(sessionFactory);
-		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
+		this.solrQueryService = solrQueryService;
 	}
 
 	public void setSolrUrl(String solrUrl) {
@@ -59,66 +56,19 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 
 	@Override
 	public void saveResource(Resource resource) {
+		log.info("Updating solr index entire for: " + resource);
 		super.saveResource(resource);
-		updateIndexForResource(resource);		
+		solrQueryService.updateIndexForResource(resource);		
 	}
-	
 	
 	
 	@Override
 	public void deleteResource(Resource resource) {		
-		deleteResourceFromIndex(resource);
+		log.info("Deleting from solr index entire for: " + resource);
+		solrQueryService.deleteResourceFromIndex(resource.getId());
 		super.deleteResource(resource);
 	}
 
-	// TODO move to update service
-	private void deleteResourceFromIndex(Resource resource) {
-		log.info("Deleting from solr index entire for: " + resource);
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);				
-			UpdateRequest updateRequest = new UpdateRequest();
-			updateRequest.deleteById(Integer.toString(resource.getId()));							
-			updateRequest.process(solr);
-			solr.commit();
-			solr.optimize();
-			
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-	}
-	
-		
-	// TODO move to update service
-	private void updateIndexForResource(Resource resource) {
-		log.info("Updating solr index entire for: " + resource);
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);				
-			UpdateRequest updateRequest = new UpdateRequest();					
-			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
-			updateRequest.add(inputDocument);					
-			updateRequest.process(solr);
-			solr.commit();
-			solr.optimize();
-			
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 	
 	public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems) {    	
     	Set<Tag> tags = new HashSet<Tag>();
@@ -240,10 +190,8 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		query.setFacetLimit(1000);
 			
 		List<ArchiveLink> archiveLinks = new ArrayList<ArchiveLink>();
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			
-			QueryResponse response = solr.query(query);		
+		QueryResponse response = solrQueryService.querySolr(query);
+		if (response != null) {
 			FacetField facetField = response.getFacetField("month");
 			if (facetField != null && facetField.getValues() != null) {
 				log.info("Found facet field: " + facetField);
@@ -252,18 +200,12 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMM");
 				for (Count count : values) {
 					final String monthString = count.getName();					
-				    DateTime month = fmt.parseDateTime(monthString);
+					DateTime month = fmt.parseDateTime(monthString);
 					final Long relatedItemCount = count.getCount();
 					archiveLinks.add(new ArchiveLink(month.toDate(), relatedItemCount.intValue()));									
 				}
 			}
-			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
-		
+		}			
 		return archiveLinks;
 	}
 	
@@ -318,36 +260,23 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	private List<Resource> getQueryResults(SolrQuery query) {
 		List<Resource> results = new ArrayList<Resource>();
 		log.info(query);
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			QueryResponse response = solr.query(query);
-			loadResourcesFromSolrResults(results, response);			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		} 
+			QueryResponse response = solrQueryService.querySolr(query);
+			if (response != null) {
+				loadResourcesFromSolrResults(results, response);			
+			}
 		return results;
-	}
-	
-	
-	private int getQueryCount(SolrQuery query) {
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			QueryResponse response = solr.query(query);	
-			Long count =  response.getResults().getNumFound();
-			return count.intValue();			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
-		return 0;		
 	}
 
 	
-	
-	
+	private int getQueryCount(SolrQuery query) {
+		QueryResponse response = solrQueryService.querySolr(query);	
+		if (response !=null) {
+			Long count =  response.getResults().getNumFound();
+			return count.intValue();			
+		} 
+		return 0;		
+	}
+
 	
 	public int getNewsitemCount(boolean showBroken) {
 		return getQueryCount(new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery());

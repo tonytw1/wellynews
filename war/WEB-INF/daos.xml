@@ -3,20 +3,25 @@
 <beans>
 
 	<bean id="solrInputDocumentBuilder" class="nz.co.searchwellington.repositories.SolrInputDocumentBuilder" />
-	
-	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.SolrBackedResourceDAO">
- 		<constructor-arg ref="sessionFactory" />
- 		<constructor-arg ref="solrInputDocumentBuilder" />
- 		<constructor-arg ref="urlBuilder" /> 		
- 		<property name="solrUrl" value="${solr.url}" />
+	<bean id="solrQueryService" class="nz.co.searchwellington.repositories.SolrQueryService">
+		<constructor-arg ref="solrInputDocumentBuilder" />
+		<property name="solrUrl" value="${solr.url}" />
 	</bean>
 	
+		
 	<bean id="solrIndexRebuildService" class="nz.co.searchwellington.repositories.SolrIndexRebuildService">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="solrInputDocumentBuilder" />
 		<property name="solrUrl" value="${solr.url}" />
 	</bean>
 	
+	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.SolrBackedResourceDAO">
+ 		<constructor-arg ref="sessionFactory" />
+ 		<constructor-arg ref="solrQueryService" />
+ 		<constructor-arg ref="urlBuilder" />
+ 		<property name="solrUrl" value="${solr.url}" />
+	</bean>
+		
 	<bean id="relatedTagsService" class="nz.co.searchwellington.controllers.RelatedTagsService">
 		<constructor-arg ref="resourceDAO" />
 		<property name="solrUrl" value="${solr.url}" />
