@@ -1,4 +1,5 @@
 package nz.co.searchwellington.views;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,7 +11,6 @@ import nz.co.searchwellington.model.RssFeedable;
 import nz.co.searchwellington.model.SiteInformation;
 
 import org.springframework.web.servlet.View;
-
 
 public class RssView implements View {
 
@@ -27,7 +27,7 @@ public class RssView implements View {
     @SuppressWarnings("unchecked")
 	public void render(Map model, HttpServletRequest req, HttpServletResponse res) throws Exception {        
         List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");
-		res.setContentType("text/xml");		
+		res.setContentType("text/xml;charset=UTF-8");		
 		
         String rssFeedTitle = (String) model.get("heading") + " - " + siteInformation.getSitename();
 		RomeRssFeed outputFeed = new RomeRssFeed(	rssFeedTitle, 
