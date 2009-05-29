@@ -108,6 +108,7 @@ public class FeedReader {
     private void acceptFeedItem(FeedNewsitem feeditem, Set<Tag> feedTags, Website feedPublisher) {
         log.info("Accepting: " + feeditem.getName());
         Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feedPublisher);
+        log.info("Item body after makeNewsitemFromFeedItem: " + resource.getDescription());
         
         flattenLoudCapsInTitle(resource);
         
@@ -116,7 +117,8 @@ public class FeedReader {
             resource.setDate(new DateTime().toDate());
         }
       
-        tagAcceptedFeedItem(resource, feedTags);        
+        tagAcceptedFeedItem(resource, feedTags);
+        log.info("Item body before save: " + resource.getDescription());
         resourceDAO.saveResource(resource);
         linkCheckerQueue.add(resource.getId());
         notifier.sendAcceptanceNotification(notificationReciept, "Accepted newsitem from feed", resource);

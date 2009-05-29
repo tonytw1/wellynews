@@ -13,6 +13,7 @@ import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -208,8 +209,35 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		}			
 		return archiveLinks;
 	}
+
 	
+	public List<PublisherContentCount> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems) {		
+			SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();
+			query.addFacetField("publisher");
+			query.setFacetMinCount(1);
+			query.setFacetSort(false);
+			query.setFacetLimit(2000);
+			
+			List<PublisherContentCount> publishers = new ArrayList<PublisherContentCount>();
+			QueryResponse response = solrQueryService.querySolr(query);
+			if (response != null) {
+				FacetField facetField = response.getFacetField("publisher");
+				if (facetField != null && facetField.getValues() != null) {
+					log.info("Found facet field: " + facetField);
+					List<Count> values = facetField.getValues();			
+					for (Count count : values) {
+						final int relatedPublisherId = Integer.parseInt(count.getName());
+						Website relatedPublisher = (Website) this.loadResourceById(relatedPublisherId);				
+						final Long relatedItemCount = count.getCount();
+						publishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));
+					}
+				}
+			}
+			Collections.sort(publishers);
+			return publishers;
+	}
 	
+
 	public List<Resource> getNewsitemsForMonth(Date month, boolean showBroken) {	
 		final String monthString = new DateFormatter().formatDate(month, DateFormatter.MONTH_FACET);
 		SolrQuery query = new SolrQueryBuilder().month(monthString).type("N").showBroken(showBroken).toQuery();
@@ -421,7 +449,5 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		query.setSortField("date", ORDER.desc);
 		query.addSortField("id", ORDER.desc);
 	}
-	
-	
-		    
+	  
 }

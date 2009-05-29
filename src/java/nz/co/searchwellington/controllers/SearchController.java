@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -36,7 +34,8 @@ public class SearchController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")
 	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView();
-                        
+        loggedInUserFilter.loadLoggedInUser(request);
+        
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();

@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model;
 
-public class PublisherContentCount {
+public class PublisherContentCount implements Comparable {
 
 	private Website publisher;
 	private int count;
@@ -25,5 +25,15 @@ public class PublisherContentCount {
 	public void setCount(int count) {
 		this.count = count;
 	}
+	
+	public int compareTo(Object event) {       
+        if (event instanceof PublisherContentCount) {
+            if (this.publisher == null) {                
+                return -1;
+            }
+            return this.publisher.getName().compareTo(((PublisherContentCount) event).getPublisher().getName());
+        }        
+        return 0;
+    }
 	
 }

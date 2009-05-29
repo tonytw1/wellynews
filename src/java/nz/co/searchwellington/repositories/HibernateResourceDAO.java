@@ -144,25 +144,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
                 setCacheable(true).list();        
     }
 
-
     
-    @SuppressWarnings("unchecked")
-    public List<Object[]> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems) {                 
-        // TODO implement show broken option.
-        if (mustHaveNewsitems) {
-        return sessionFactory.getCurrentSession().createSQLQuery(
-                "select resource.id as id, resource.title as title, count(newsitems.id) as number " + 
-                "from resource, resource newsitems where newsitems.publisher = resource.id and newsitems.http_status =200 " + 
-                "group by newsitems.publisher order by resource.title").list();
-        } else {
-            return sessionFactory.getCurrentSession().createSQLQuery(
-                    // TODO implement count for 0's then can probably merge with above.
-                    "select resource.id as id, resource.title as title, 0 as number " +
-                    "from resource where type='W' and http_status = 200 order by resource.title").list();
-        }
-    }
-    
- 
     @SuppressWarnings("unchecked")
     public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken) {
         List<Resource> allPublishers = new ArrayList<Resource>();

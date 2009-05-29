@@ -2,10 +2,10 @@ package nz.co.searchwellington.widgets;
 
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
@@ -70,36 +70,36 @@ public class PublisherSelectFactory {
     }
 
 
-    // TODO Preformance; move to a solr factet query.
     private List<Option> createOptions(boolean showBroken, boolean showCounts, boolean publishedOnly, Select publisherSelect) throws IOException {
         log.info("Creating publisher options; showBroken: " + showBroken + "; publishedOnly: " + publishedOnly);
         List<Option> options = new ArrayList<Option>();
-
-        for (Object[] publisher : resourceDAO.getAllPublishers(showBroken, publishedOnly)) {
-            Integer publisherId = (Integer) publisher[0];
-            String publisherUrlWords = ((Website) resourceDAO.loadResourceById(publisherId)).getUrlWords();
-            if (publisherUrlWords != null) {
-            	Option nextOption = new Option(publisherUrlWords);
-            	// Trim the titles to prevent the dropdown distorting the HTML.            
-            	String optionTitle = (String) publisher[1];
-            	if (optionTitle.length() > MAXIMUM_TITLE_LENGTH) {
-            		optionTitle = optionTitle.substring(0, MAXIMUM_TITLE_LENGTH) + "...";
-            	}
-            	optionTitle = StringEscapeUtils.escapeHtml(optionTitle);
-
+        
+        for (PublisherContentCount publisherSummary : resourceDAO.getAllPublishers(showBroken, publishedOnly)) {
+        	Website publisher = publisherSummary.getPublisher();
+            if (publisher.getUrlWords() != null) {
+            	Option nextOption = new Option(publisher.getUrlWords());            	         
+            	String optionTitle = trimAndEscapeTitle(publisher.getName());
             	if (showCounts) {
-            		BigInteger articleCount = (BigInteger) publisher[2];
-            		if (articleCount.intValue() > 0) {
-                    optionTitle = optionTitle + " (" + articleCount + ")";
+            		int articleCount = publisherSummary.getCount();
+            		if (articleCount > 0) {
+            			optionTitle = optionTitle + " (" + articleCount + ")";
             		}
             	}
             	nextOption.addElement(optionTitle);
             	options.add(nextOption);
             }
         }
-
         return options;
     }
+
+
+	private String trimAndEscapeTitle(String title) {
+		if (title.length() > MAXIMUM_TITLE_LENGTH) {
+			title = title.substring(0, MAXIMUM_TITLE_LENGTH) + "...";
+		}
+		title = StringEscapeUtils.escapeHtml(title);
+		return title;
+	}
     
     
 }

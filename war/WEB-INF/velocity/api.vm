@@ -245,8 +245,8 @@
 		<table>
 			<tr><td>Publisher</td><td>URL snippet</td></tr>
 			#foreach($item in $publishers)
-				<tr><td>$item.name</td>
-				<td><code>$item.urlWords</code></td></tr>
+				<tr><td>$item.publisher.name</td>
+				<td><code>$item.publisher.urlWords</code></td></tr>
 			#end
 		</table>	
 

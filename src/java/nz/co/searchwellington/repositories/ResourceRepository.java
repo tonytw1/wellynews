@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
@@ -84,8 +85,8 @@ public interface ResourceRepository {
 
     public List<CommentFeed> getCurrentCommentFeeds(int maxItems);
     public List<CommentFeed> getCommentFeedsToCheck(int maxItems);
-               
-    public List<Object[]> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems);
+    
+    public List<PublisherContentCount> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems);
     public List<Tag> getTagsMatchingKeywords(String keywords);
     public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken);
     public List<Resource> getRecentlyChangedWatchlistItems();

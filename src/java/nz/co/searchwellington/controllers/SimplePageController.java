@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +13,6 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
@@ -23,10 +21,6 @@ import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.request.UpdateRequest;
-import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 
@@ -67,6 +61,10 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
+    
+    
+    
+    
       
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
@@ -87,12 +85,32 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
     
+    public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
+        urlStack.setUrlStack(request);
+        populateLocalCommon(mv);
+        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        boolean showBroken = loggedInUser != null;        
+        mv.addObject("heading", "The Wellynews API");
+
+        mv.addObject("feeds", resourceDAO.getAllFeeds());
+        mv.addObject("publishers", resourceDAO.getAllPublishers(showBroken, true));
+        mv.addObject("api_tags", resourceDAO.getTopLevelTags());
+        populateSecondaryLatestNewsitems(mv, loggedInUser);        
+        mv.setViewName("api");
+        return mv;      
+    }
+
+    
+        
     public ModelAndView calendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);  
+        urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         
-        urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
      
         mv.addObject("heading", "Calendar Feeds");
@@ -105,28 +123,6 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
      
-    public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
-        populateLocalCommon(mv);
-        
-        urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean showBroken = loggedInUser != null;        
-        mv.addObject("heading", "The Wellynews API");
-
-        mv.addObject("feeds", resourceDAO.getAllFeeds());
-        mv.addObject("publishers", getAllPublishers(showBroken));
-        mv.addObject("api_tags", resourceDAO.getTopLevelTags());
-        populateSecondaryLatestNewsitems(mv, loggedInUser);        
-        mv.setViewName("api");
-        return mv;      
-    }
-
-
-
-
-    
        
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
@@ -170,9 +166,9 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);
+        urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         
-        urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
         mv.addObject("heading", "All Tags");        
@@ -190,14 +186,14 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
         loggedInUserFilter.loadLoggedInUser(request);
+        urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         
-        urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
         
         mv.addObject("heading", "All Publishers");    
-        mv.addObject("publishers", getAllPublishers(showBroken));
+        mv.addObject("publishers", resourceDAO.getAllPublishers(showBroken, true));
         
         populateSecondaryLatestNewsitems(mv, loggedInUser);       
         mv.setViewName("publishers");
@@ -230,6 +226,24 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
+  
+     
+    public ModelAndView watchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mv = new ModelAndView();
+        loggedInUserFilter.loadLoggedInUser(request);
+        urlStack.setUrlStack(request);
+        populateLocalCommon(mv);
+        
+        mv.addObject("heading", "News Watchlist");
+        mv.addObject("main_content", resourceDAO.getAllWatchlists(false));
+
+        populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
+
+        setRss(mv, rssUrlBuilder.getRssTitleForWatchlist(), rssUrlBuilder.getRssUrlForWatchlist());
+        mv.setViewName("watchlist");
+        return mv;
+    }
+    
     
     @SuppressWarnings("unchecked")
     private void populateLatestTwitters(ModelAndView mv, User loggedInUser) throws IOException {
@@ -238,49 +252,12 @@ public class SimplePageController extends BaseMultiActionController {
         mv.getModel().put("latest_twitters", latestNewsitems);  
     }
     
-    
-    
-    
-   
-    public ModelAndView watchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        populateLocalCommon(mv);
-
-        urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        
-        mv.addObject("heading", "News Watchlist");
-        mv.addObject("main_content", resourceDAO.getAllWatchlists(false));
-
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-
-        setRss(mv, rssUrlBuilder.getRssTitleForWatchlist(), rssUrlBuilder.getRssUrlForWatchlist());
-        mv.setViewName("watchlist");
-        return mv;
-    }
-    
-    
-    
     private void populateLocalCommon(ModelAndView mv) {
               mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
     }
     
-
-    // TODO extremely non preformant
-	private List<Website> getAllPublishers(boolean showBroken) throws IOException {
-		List<Website> publishers = new ArrayList<Website>();
-        List<Object[]> publisherIds = resourceDAO.getAllPublishers(showBroken, true); 
-        for (Object[] objects : publisherIds) {
-			int publisherId = (Integer) objects[0];
-			Website publisher = (Website) resourceDAO.loadResourceById(publisherId);
-			publishers.add(publisher);			
-		}
-		return publishers;
-	}
     
-	
-	
-	 protected void populateGeocoded(ModelAndView mv, boolean showBroken,
+	protected void populateGeocoded(ModelAndView mv, boolean showBroken,
 			Resource selected) throws IOException {
 		List<Resource> geocoded = resourceDAO.getAllValidGeocoded(50,
 				showBroken);
