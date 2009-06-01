@@ -23,9 +23,7 @@
                         <font size="-2">* Search Wellington is not affiliated with WCN</font>
                         </p>                                
                 </div>
-
-
-		#parse("includes/160x600ad.vm")				
+                			
 		#parse("includes/related_tags.vm")
 		#parse("includes/related_publishers.vm")
 		#parse("includes/tag_tree.vm")
