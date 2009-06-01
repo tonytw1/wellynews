@@ -2,15 +2,13 @@ package nz.co.searchwellington.views;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.RssFeedable;
-
 public class JSONBucket {
 
 	private Integer totalItems;
 	private Integer showingFrom;
 	private Integer showingTo;
 
-	private List<RssFeedable> newsitems;
+	private List<JSONFeedItem> newsitems;
 
 	public Integer getTotalItems() {
 		return totalItems;
@@ -36,11 +34,11 @@ public class JSONBucket {
 		this.showingTo = showingTo;
 	}
 
-	public List<RssFeedable> getNewsitems() {
+	public List<JSONFeedItem> getNewsitems() {
 		return newsitems;
 	}
 
-	public void setNewsitems(List<RssFeedable> newsitems) {
+	public void setNewsitems(List<JSONFeedItem> newsitems) {
 		this.newsitems = newsitems;
 	}
 

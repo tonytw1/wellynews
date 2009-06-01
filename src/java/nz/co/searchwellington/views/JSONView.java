@@ -1,16 +1,15 @@
 package nz.co.searchwellington.views;
 
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.model.NewsitemImpl;
-import nz.co.searchwellington.model.PublishedResourceImpl;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.ResourceImpl;
-import nz.co.searchwellington.model.RssFeedable;
 
 import org.springframework.web.servlet.View;
 
@@ -51,8 +50,27 @@ public class JSONView  implements View {
 	
 	@SuppressWarnings("unchecked")
 	private String createJSONString(Map model) {
-		List <RssFeedable> mainContent =  (List <RssFeedable>) model.get("main_content");
-		
+		List <Resource> mainContent =  (List <Resource>) model.get("main_content");
+		List<JSONFeedItem> jsonItems = new ArrayList<JSONFeedItem>();
+		for (Resource rssFeedable : mainContent) {
+			JSONFeedItem jsonFeeditem;			
+			if (rssFeedable.getGeocode() != null && rssFeedable.getGeocode().isValid()) {
+				jsonFeeditem = new JSONFeedItem(
+						rssFeedable.getName(), 
+						rssFeedable.getUrl(), 
+						rssFeedable.getDate(), 
+						rssFeedable.getDescription(), rssFeedable.getGeocode().getLatitude(), rssFeedable.getGeocode().getLongitude());				
+			} else {				
+				jsonFeeditem = new JSONFeedItem(
+						rssFeedable.getName(), 
+						rssFeedable.getUrl(), 
+						rssFeedable.getDate(), 
+						rssFeedable.getDescription(), null, null);				
+			}
+			
+			jsonItems.add(jsonFeeditem);
+		}
+					
 		XStream xstream = new XStream(new JettisonMappedXmlDriver() {
 		    public HierarchicalStreamWriter createWriter(Writer writer) {
 		        return new JsonWriter(writer, JsonWriter.DROP_ROOT_MODE);
@@ -60,20 +78,7 @@ public class JSONView  implements View {
 		});
 		
 		SingleValueConverter resourceDateConverter = new ResourceDateConvertor();
-		xstream.registerLocalConverter(ResourceImpl.class, "date", resourceDateConverter);
-		
-		xstream.omitField(ResourceImpl.class, "id");
-		xstream.omitField(ResourceImpl.class, "httpStatus");
-		xstream.omitField(ResourceImpl.class, "lastScanned");
-		xstream.omitField(ResourceImpl.class, "lastChanged");
-		xstream.omitField(ResourceImpl.class, "tags");		
-		xstream.omitField(ResourceImpl.class, "technoratiCount");
-		xstream.omitField(ResourceImpl.class, "discoveredFeeds");
-		xstream.omitField(ResourceImpl.class, "liveTime");
-
-		xstream.omitField(PublishedResourceImpl.class, "publisher");		
-		xstream.omitField(NewsitemImpl.class, "commentFeed");
-		
+		xstream.registerLocalConverter(JSONFeedItem.class, "date", resourceDateConverter);	
 		xstream.alias("date", java.sql.Date.class);
 		
 		JSONBucket bucket = new JSONBucket();
@@ -87,9 +92,9 @@ public class JSONView  implements View {
 			bucket.setShowingTo((Integer) model.get("end_index"));
 		}
 		
-		bucket.setNewsitems(mainContent);
+		bucket.setNewsitems(jsonItems);
 		String jsonString = xstream.toXML(bucket);
 		return jsonString;
 	}
-
+	
 }
