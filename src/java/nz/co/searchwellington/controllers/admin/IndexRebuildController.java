@@ -16,12 +16,9 @@ public class IndexRebuildController extends BaseMultiActionController {
 	Logger log = Logger.getLogger(IndexRebuildController.class);
     
 	private SolrIndexRebuildService solrIndexRebuildService;
-    private boolean indexingLock;
-        
-    public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService) {
-        super();
-        this.solrIndexRebuildService = solrIndexRebuildService;
-        this.indexingLock = false;
+         
+    public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService) {       
+        this.solrIndexRebuildService = solrIndexRebuildService;    
     }
 
     
@@ -30,15 +27,9 @@ public class IndexRebuildController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
                 
         mv.setViewName("luceneIndexBuilder");
-        if (!indexingLock) {
-            indexingLock = true;            
-            solrIndexRebuildService.buildIndex();
-            mv.getModel().put("message", "Created new index.");
-            indexingLock = false;
-            
-        } else {
-            mv.getModel().put("message", "Index is locked; index is already been rebuild.");
-        }
+        solrIndexRebuildService.buildIndex();
+        mv.getModel().put("message", "Created new index.");
+         
         return mv;
     }
 

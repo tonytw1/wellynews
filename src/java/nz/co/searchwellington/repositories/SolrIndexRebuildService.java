@@ -36,27 +36,15 @@ public class SolrIndexRebuildService {
 
 
 	public void buildIndex() {		
-		Set<Integer> newsitemIdsToIndex = resourceDAO.getAllResourceIds();
-		log.info("Number of resources to update in lucene index: " + newsitemIdsToIndex.size());
+		Set<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
+		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			final String deleteAll = "*:*";
-			UpdateResponse deleteAllQuery = solr.deleteByQuery(deleteAll);
-			log.info(deleteAllQuery.toString());
-			solr.commit(true, true);			
-			solr.optimize();
+			deleteAllFromIndex(solr);
 	
-			UpdateRequest updateRequest = new UpdateRequest();					
-			for (Integer id : newsitemIdsToIndex) {
-				Resource resource = resourceDAO.loadResourceById(id);
-				log.info("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
-				SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
-				updateRequest.add(inputDocument);
+			if (resourceIdsToIndex.size() > 0) {
+				reindexResources(resourceIdsToIndex, solr);			
 			}
-			
-			updateRequest.process(solr);
-			solr.commit();
-			solr.optimize();			
 			
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
@@ -69,6 +57,30 @@ public class SolrIndexRebuildService {
 			e.printStackTrace();
 		}
 		
+	}
+
+	
+	private void deleteAllFromIndex(SolrServer solr) throws SolrServerException, IOException {
+		final String deleteAll = "*:*";
+		UpdateResponse deleteAllQuery = solr.deleteByQuery(deleteAll);
+		log.info(deleteAllQuery.toString());
+		solr.commit(true, true);			
+		solr.optimize();
+	}
+
+	
+	private void reindexResources(Set<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {
+		UpdateRequest updateRequest = new UpdateRequest();
+		for (Integer id : resourceIdsToIndex) {
+			Resource resource = resourceDAO.loadResourceById(id);
+			log.info("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
+			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
+		updateRequest.add(inputDocument);
+		}
+		
+		updateRequest.process(solr);
+		solr.commit();
+		solr.optimize();
 	}
 	
 }

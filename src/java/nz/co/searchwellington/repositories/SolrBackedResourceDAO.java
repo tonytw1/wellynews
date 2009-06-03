@@ -411,23 +411,25 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		SolrDocumentList solrResults = response.getResults();
 		for (SolrDocument result : solrResults) {
 			final Integer resourceId = (Integer) result.getFieldValue("id");
-			Resource resource = this.loadResourceById(resourceId);
-						
-			if (response.getHighlighting() != null) {
-				Map<String, List<String>> map = response.getHighlighting().get(resourceId.toString());
-				if (resource.getType().equals("N") && !map.isEmpty()) {
-					log.info("Highlighting: " + map);
-					results.add(new SolrHighlightingNewsitemDecorator((Newsitem) resource, map));
-				} else if (resource.getType().equals("W") && !map.isEmpty()) {
-					log.info("Highlighting: " + map);
-					results.add(new SolrHighlightingWebsiteDecorator((Website) resource, map));
+			Resource resource = this.loadResourceById(resourceId);			
+			if (resource != null) {
+				if (response.getHighlighting() != null) {
+					Map<String, List<String>> map = response.getHighlighting().get(resourceId.toString());
+					if (resource.getType().equals("N") && !map.isEmpty()) {
+						log.info("Highlighting: " + map);
+						results.add(new SolrHighlightingNewsitemDecorator((Newsitem) resource, map));
+					} else if (resource.getType().equals("W") && !map.isEmpty()) {
+						log.info("Highlighting: " + map);
+						results.add(new SolrHighlightingWebsiteDecorator((Website) resource, map));
+					} else {
+						results.add(resource);
+					}
 				} else {
 					results.add(resource);
 				}
 			} else {
-				results.add(resource);
+				log.warn("Resource #" + resourceId + " was null onload from database");
 			}
-			
 		}
 	}
 	
