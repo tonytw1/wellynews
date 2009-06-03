@@ -125,10 +125,9 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
 		log.info("Getting websites for tags: " + tags );
 		SolrQuery query = new SolrQueryBuilder().tags(tags).type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
-		query.setSortField("name", ORDER.asc);
+		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
-	
 	
 	public Date getLastLiveTimeForTag(Tag tag) {
 		SolrQuery latestItemForTagQuery = new SolrQueryBuilder().tag(tag).showBroken(false).maxItems(1).toQuery();
@@ -145,7 +144,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
 		log.info("Getting watchlist for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();
-		query.setSortField("name", ORDER.asc);
+		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 	
@@ -153,7 +152,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken) {
 		log.info("Getting feeds for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("F").showBroken(showBroken).toQuery();
-		query.setSortField("name", ORDER.asc);
+		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 	
@@ -261,7 +260,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		
 	public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("C").showBroken(showBroken).toQuery();
-		query.setSortField("name", ORDER.asc);
+		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 
@@ -451,5 +450,10 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		query.setSortField("date", ORDER.desc);
 		query.addSortField("id", ORDER.desc);
 	}
-	  
+	
+
+	private void setTitleSortOrder(SolrQuery query) {
+		query.setSortField("titleSort", ORDER.asc);
+	}
+		  
 }
