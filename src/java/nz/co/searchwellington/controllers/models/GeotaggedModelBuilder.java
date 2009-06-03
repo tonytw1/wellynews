@@ -39,6 +39,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			// TODO pagination
 			final List<Resource> geotaggedNewsitems = resourceDAO.getAllValidGeocoded(MAX_NEWSITEMS, showBroken);
 			mv.addObject("main_content", geotaggedNewsitems);
+			mv.addObject("geocoded", geotaggedNewsitems);
 			
 			// TODO rename
 			mv.setViewName("geocoded");
