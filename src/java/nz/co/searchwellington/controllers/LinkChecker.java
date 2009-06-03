@@ -21,6 +21,8 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.PublisherGuessingService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.TechnoratiDAO;
@@ -44,13 +46,14 @@ public class LinkChecker {
     private TechnoratiDAO technoratiDAO;
 	private HttpFetcher httpFetcher;
 	private LinkExtractor linkExtractor;
+	private PublisherGuessingService publisherGuessingService;
 
     
     public LinkChecker() {
     }
     
     
-    public LinkChecker(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO, HttpFetcher httpFetcher, LinkExtractor linkExtractor) {    
+    public LinkChecker(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO, HttpFetcher httpFetcher, LinkExtractor linkExtractor, PublisherGuessingService publisherGuessingService) {    
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.commentFeedReader = commentFeedReader;
@@ -59,6 +62,7 @@ public class LinkChecker {
         this.technoratiDAO = technoratiDAO;
         this.httpFetcher = httpFetcher;
         this.linkExtractor = linkExtractor;
+        this.publisherGuessingService = publisherGuessingService;
     }
 
 
@@ -75,9 +79,16 @@ public class LinkChecker {
 		log.info("Checking: " + checkResource.getName() + "(" + checkResource.getUrl() + ")");        
 		log.debug("Before status: " + checkResource.getHttpStatus());      
 		
-		final String beforePageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
-									       
+		boolean isFromTrustedSource = checkIsFromTrustedSource(checkResource.getUrl());
+		if (!isFromTrustedSource) {
+			checkResource.setHttpStatus(-3);
+			log.debug("Saving resource.");
+			resourceDAO.saveResource(checkResource);
+			return;
+		}
 		
+				
+		final String beforePageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());									     		
 		DateTime currentTime = new DateTime();
 		httpCheck(checkResource);
 		
@@ -102,6 +113,19 @@ public class LinkChecker {
 		
 		log.debug("Saving resource.");
 		resourceDAO.saveResource(checkResource);
+	}
+
+
+	private boolean checkIsFromTrustedSource(String url) {
+		if (url != null) {
+			int possiblePublishersCount = publisherGuessingService.guessPossiblePublishersForUrl(url).size();
+			if (possiblePublishersCount == 1) {
+				log.info("Url '" + url + "' has 1 possible publisher; trusting");
+				return true;
+			}
+			log.info("Url '" + url + "' has " + possiblePublishersCount + " possible publishers; not trusting.");
+		}
+		return false;
 	}
 
 
