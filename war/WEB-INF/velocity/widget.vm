@@ -8,7 +8,7 @@
 
 	function renderNewsitems(data) {
 		$.each(data.newsitems, function(i,item) {
-			$("<li><a href=\"" + item.url + "\">" + item.name + "</a><br/>" + item.date + '<br/>' + item.description + "</li>").appendTo("#newsitems");
+			$("<li><a href=\"" + item.url + "\">" + item.title + "</a><br/>" + item.date + '<br/>' + item.description + "</li>").appendTo("#newsitems");
 			if ( i == 3 ) return false;
 		});
 		
