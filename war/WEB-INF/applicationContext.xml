@@ -183,6 +183,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="adsenseAccount" value="${adsence.account}" />
 		<property name="twitterUsername" value="${twitter.username}" />
 		<property name="googleMapsApiKey" value="${googlemaps.apikey}" />
+		<property name="staticRoot" value="${staticroot}" />
 	</bean>
 	
 	<bean id="dateFormatter" class="nz.co.searchwellington.dates.DateFormatter" />	

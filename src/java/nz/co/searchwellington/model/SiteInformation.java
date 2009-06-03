@@ -10,6 +10,7 @@ public class SiteInformation {
     private String adsenseAccount;
     private String twitterUsername;
     private String googleMapsApiKey;
+    private String staticRoot;
 
     
 	public SiteInformation(ConfigRepository configDAO) {	
@@ -23,11 +24,7 @@ public class SiteInformation {
     public void setAdsenseAccount(String adsenseAccount) {
         this.adsenseAccount = adsenseAccount;
     }
-
-
-
-
-
+    
     public String getAreaname() {
 		return areaname;
 	}
@@ -71,5 +68,13 @@ public class SiteInformation {
     public String getTrackingCode() {
     	return configDAO.getConfig().getStatsTracking();
     }
-        
+
+	public String getStaticRoot() {
+		return staticRoot;
+	}
+
+	public void setStaticRoot(String staticRoot) {
+		this.staticRoot = staticRoot;
+	}
+	
 }

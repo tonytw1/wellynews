@@ -21,7 +21,11 @@ public class UrlBuilder {
 	public String getImageUrl(String filename) {
 		return siteInformation.getUrl() + "/images/" + filename;
 	}
-
+	
+	public String getStaticUrl(String filename) {
+		return siteInformation.getStaticRoot() + filename;
+	}
+	
 	public String getFeedUrl(Feed feed) {		
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}

@@ -60,7 +60,7 @@ public class PublisherAjaxController implements Controller {
             log.info("Looking up possible publishers for url: " + url);            
             for (Resource resource : publisherGuessingService.guessPossiblePublishersForUrl(url)) {                
                 String name = new String(resource.getName());
-                String id = new String(new Integer(resource.getId()).toString());
+                String id = new String(resource.getUrlWords());
     
                 Element publisher = root.addElement("publisher");
                 Element idElement = publisher.addElement("id");
