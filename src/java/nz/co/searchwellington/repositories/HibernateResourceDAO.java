@@ -428,17 +428,18 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         Criteria latestNewsitemsCriteria = criteriaForLatestNewsitems(20, false);
         latestNewsitemsCriteria.addOrder( Order.desc("liveTime"));
         List<Resource> currentNewsitems = latestNewsitemsCriteria.setCacheable(true).list();        
-        DateTime latestChange = null;
         for (Resource resource : currentNewsitems) {           
+        	DateTime latestChange = null;
             if (latestChange == null) {
                 latestChange = new DateTime(resource.getLastChanged());
                 log.debug("Setting last changed to: " + latestChange);
             }
             if (resource.getLastChanged() != null && new DateTime(resource.getLastChanged()).isAfter(latestChange)) {
                 latestChange = new DateTime(resource.getLastChanged());                
+                return latestChange.toDate();
             }
         }
-        return latestChange.toDate();
+        return null;
     }
 
 
