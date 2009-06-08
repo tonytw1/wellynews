@@ -21,6 +21,7 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
@@ -117,20 +118,11 @@ public class LinkChecker {
 
 	private boolean checkIsFromTrustedSource(String url) {
 		if (url != null) {
-			int possiblePublishersCount = publisherGuessingService.guessPossiblePublishersForUrl(url).size();
-			if (possiblePublishersCount == 1) {
-				log.info("Url '" + url + "' has 1 possible publisher; trusting");
+			Website possiblePublisher = publisherGuessingService.guessPublisherBasedOnUrl(url);
+			if (possiblePublisher != null) {
+				log.info("Url '" + url + "' has possible publisher; trusting");
 				return true;
 			}
-			if (url.startsWith("http://www.wellington.govt.nz/")) {
-				log.info("Trusting WCC content");
-				return true;
-			}
-			if (url.startsWith("http://www.huttcity.govt.nz/")) {
-				log.info("Trusting WCC content");
-				return true;
-			}
-			log.info("Url '" + url + "' has " + possiblePublishersCount + " possible publishers; not trusting.");
 		}
 		return false;
 	}

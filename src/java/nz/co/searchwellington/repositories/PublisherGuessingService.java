@@ -22,18 +22,25 @@ public class PublisherGuessingService {
 
 
     public List<Resource> guessPossiblePublishersForUrl(String url) {
-        String urlStem = calculateUrlStem(url);    
+        String urlStem = calculateUrlStem(url);      
         final List<Resource> possiblePublishers = resourceDAO.getAllPublishersMatchingStem(urlStem, true);
         return possiblePublishers;
     }
     
     
     public Website guessPublisherBasedOnUrl(String url) {    
-        List<Resource> possiblePublishers = guessPossiblePublishersForUrl(url);
+        List<Resource> possiblePublishers = guessPossiblePublishersForUrl(url);      
         if (possiblePublishers.size() == 1) {
             Website publisher = (Website) possiblePublishers.get(0);
             log.info("Guessing publisher for " + url + " is: " + publisher.getName());
             return publisher;           
+        } else if (possiblePublishers.size() > 1) {
+        	for (Resource possible : possiblePublishers) {        		
+				if (url.startsWith(possible.getUrl())) {
+					Website publisher = (Website) possible;
+					return publisher;
+				}
+			}        	        	
         }
         return null;
     }
