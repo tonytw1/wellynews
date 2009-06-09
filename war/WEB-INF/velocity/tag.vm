@@ -5,25 +5,7 @@
 
 
 	<div class="left">
-
-    <div class="yellow" >   
-                        <h5>Wellington Community Net Funding E-Petition</h5>                                        
-                        <p>
-                        <a href="http://www.wcn.net.nz">
-                        <img src="http://wcn.net.nz/templates/wcn3/images/wcn-logo-030403_120x84.gif" width="80" height="50" align="left" hspace="10" border="0" ></a>
-                        
-                        <a href="http://www.wcn.net.nz">Wellington Community Net</a>, a free website hosting and support service for community groups
-                        <a href="http://wellington.scoop.co.nz/?p=6073">is under threat.</a>
-                        </p>
-                        
-                        <p>
-                        You can help WCN by signing the <strong><a href="http://www.wellington.govt.nz/haveyoursay/e-petitions/ep/details/77" 
-                        title="Include Wellington Community Net and Community ICT Funding In The Draft LTCCP for 2009-2019">e-petition</a></strong> 
-                        <br /> 
-                        <font size="-2">* Search Wellington is not affiliated with WCN</font>
-                        </p>                                
-                </div>
-                			
+	                			
 		#parse("includes/related_tags.vm")
 		#parse("includes/related_publishers.vm")
 		#parse("includes/tag_tree.vm")
