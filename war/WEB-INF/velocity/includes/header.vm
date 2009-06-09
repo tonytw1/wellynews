@@ -14,13 +14,11 @@
 	<script type="text/javascript" src="$urlBuilder.getStaticUrl('jquery-1.3.2.js')"></script>
 	<script type="text/javascript" src="$urlBuilder.getStaticUrl('jquery.autocomplete.js')"></script>
 	
-	<link rel="stylesheet" href="http://dev.jquery.com/view/trunk/plugins/autocomplete/demo/main.css" type="text/css" />
-  	<link rel="stylesheet" href="http://dev.jquery.com/view/trunk/plugins/autocomplete/jquery.autocomplete.css" type="text/css" />
+  	<link rel="stylesheet" href="$urlBuilder.getStaticUrl('jquery.autocomplete.css')" type="text/css" />
   	
   	<script>
-		$(document).ready(function(){
-    		var data = "Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");    			
-			$("#publisherName").autocomplete("http://localhost:8080/springapp/ajax/publishers");			
+		$(document).ready(function(){    		    			
+			$("#publisherName").autocomplete("$urlBuilder.publishersAutoCompleteUrl");			
 		 });
 	</script>		
 		  		  

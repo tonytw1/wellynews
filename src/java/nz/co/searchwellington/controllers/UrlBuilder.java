@@ -22,6 +22,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/images/" + filename;
 	}
 	
+	public String getPublishersAutoCompleteUrl() {
+		return siteInformation.getUrl() + "/ajax/publishers";
+	}
+	
 	public String getStaticUrl(String filename) {
 		return siteInformation.getStaticRoot() + filename;
 	}
