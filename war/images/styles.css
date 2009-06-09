@@ -21,6 +21,10 @@ text-align: center;
  text-align: left;
 }
 
+#publisherName {
+	width: 250px;
+}
+
 .left {
  width: 210px;
  position: relative;
