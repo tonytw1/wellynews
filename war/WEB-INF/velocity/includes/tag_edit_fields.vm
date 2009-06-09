@@ -1,13 +1,12 @@
 	#if ($tag_select) 
-			<p><label for="tags">Tags: </label>
-	    	$tag_select	
-			</p>
-		#end
-		
-		#if ($show_additional_tags) 
-			<p><label for"addtional_tags">
-			Additional tags: </label>
-			<input name="additional_tags">
-			</p>
-			<p>Add any additional tags here (seperated by commas).</p>
-		#end
+		<label for="tags">Tags: </label>
+	   	$tag_select	
+	#end
+	<br />	
+
+	#if ($show_additional_tags) 
+		<label for"addtional_tags">Additional tags: <br />
+		Add any additional tags here (seperated by commas)</label>
+		<input name="additional_tags">
+	#end	
+	<br />

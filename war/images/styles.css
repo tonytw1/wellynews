@@ -449,3 +449,23 @@ color: #f00;
 	font-style: italic;
 }
 
+
+
+label {
+	vertical-align: top;
+	margin-right: 6px;
+}
+input {
+	margin-bottom: 12px
+}
+textarea {
+	margin-bottom: 12px
+}
+select {
+	margin-bottom: 12px
+}
+
+
+
+
+

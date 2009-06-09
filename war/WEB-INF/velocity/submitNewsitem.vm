@@ -1,58 +1,51 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
 
-<div class="left">
-#parse("includes/tag_tree.vm")
-</div>
-
-
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
 
 
-<div class="main">
-<h2>Submitting a Newsitem</h2>
-
-
-<form action="$site_information.url/edit/save" method="POST">
-		<fieldset>
-					
-		#parse("includes/form_resource_title_and_url.vm")				
+	<div class="main">
+		<h2>Submitting a Newsitem</h2>
 		
+		<form action="$site_information.url/edit/save" method="POST">
+			<fieldset>
+									
+				#parse("includes/form_resource_title_and_url.vm")				
 		
-		<p><label for="date">Date: </label>	
-		<input name="date" value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" /></p>
+				<label for="date">Date: </label>	
+				<input name="date" value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" />
+				<br />
 		
-		#if ($publisher_select) 
-			<p><label for="publisher">Publisher: </label>
-	    	$publisher_select	
-			</p>
-		#end
+				#if ($publisher_select) 
+					<label for="publisher">Publisher: </label>
+			    	$publisher_select	
+					</br>
+				#end
 				
-		<p><label for="description">Description: </label>
-		<textarea name="description" rows="6" cols="40">#if ($resource.description)$resource.description#end</textarea>
-		</p>
+				<label for="description">Description: </label>
+				<textarea name="description" rows="6" cols="40">#if ($resource.description)$resource.description#end</textarea>
+				<br />
 		
+				#parse("includes/tag_edit_fields.vm")
 		
-		#parse("includes/tag_edit_fields.vm")
-		
-		
-		#if ($spam_question)
-			#parse("includes/spam_question.vm")
-		#end
+				#if ($spam_question)
+					#parse("includes/spam_question.vm")
+				#end
 		
 				
-		<input type="hidden" name="type" value="N" />
-		<input type="submit" value="Save" />
-	</fieldset>
-</form>
-
-<form action="$site_information.url/cancel" method="POST">
-	<input type="submit" value="cancel" />
-</form>
-
+				<input type="hidden" name="type" value="N" />
+				<input type="submit" value="Save" />
+		</fieldset>
+	</form>
+	
+	<form action="$site_information.url/cancel" method="POST">
+		<input type="submit" value="cancel" />
+	</form>
 
 </div>
-
 
 #parse("includes/footer.vm")
