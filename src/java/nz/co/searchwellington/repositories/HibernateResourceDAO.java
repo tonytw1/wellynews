@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.Tag;
@@ -53,8 +54,19 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     
+    
+    
+    
+    
 
-    @SuppressWarnings("unchecked")
+    public List<String> getPublisherNamesByStartingLetters(String q) {
+         Session session = sessionFactory.getCurrentSession();
+         List<String> rows = session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
+         return rows;
+	}
+
+
+	@SuppressWarnings("unchecked")
     final public List<Feed> getAllFeeds() {
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).
         addOrder(Order.desc("latestItemDate")).
@@ -278,6 +290,10 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
 	public Website getPublisherByUrlWords(String urlWords) {
 		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();    		
+	}
+	
+	public Website getPublisherByName(String name) {
+		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("name", name)).setMaxResults(1).uniqueResult();    		
 	}
 
 	public Feed loadFeedByUrlWords(String urlWords) {

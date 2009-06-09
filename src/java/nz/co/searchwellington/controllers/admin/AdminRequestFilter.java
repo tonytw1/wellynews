@@ -70,6 +70,18 @@ public class AdminRequestFilter {
                 request.setAttribute("publisher", publisher);
             }
         }
+        
+        
+     // TODO Test coverage		
+        if (request.getParameter("publisherName") != null && !request.getParameter("publisherName").equals("")) {
+            final String publisherName = request.getParameter("publisherName");
+            Resource publisher = resourceDAO.getPublisherByName(publisherName);
+            if (publisher != null) {            
+                request.setAttribute("publisher", publisher);
+            }
+        }
+        
+        
 		
 		// TODO test coverage
 		if (request.getParameter("tags") != null) {

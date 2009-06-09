@@ -34,9 +34,8 @@
 		#end
 		
 		#if ($publisher_select) 
-			<p><label for="publisher">Publisher: </label>
-	    	$publisher_select	
-			</p>
+			<label for="publisherName">Publisher: </label>
+			<input id="publisherName" name="publisherName" #if($resource.publisher) value="$resource.publisher.name" #end />		  
 		#end
 		
 		#if ($acceptance_select) 	

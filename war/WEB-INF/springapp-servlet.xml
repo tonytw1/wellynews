@@ -315,7 +315,7 @@
 			
 		
 	<bean id="publishersAjaxController" class="nz.co.searchwellington.controllers.ajax.PublisherAjaxController">
-		<constructor-arg ref="publisherGuessingService" />	
+		<constructor-arg ref="resourceDAO" />	
 	</bean>
 	
 	
@@ -568,7 +568,7 @@
             	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
-            	<prop key="/edit/*/ajax/publishers">publishersAjaxController</prop>
+            	<prop key="/ajax/publishers">publishersAjaxController</prop>
             	            	
             	<prop key="/index">indexController</prop>				
 				

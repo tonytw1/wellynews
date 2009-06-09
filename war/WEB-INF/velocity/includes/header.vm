@@ -10,8 +10,20 @@
 #if ($rss_url) 
 <link rel="alternate" type="application/rss+xml" title="$rss_title" href="$rss_url">	
 #end
-#if ($publisher_select)
-	<script src="$urlBuilder.getStaticUrl('publishers.js')"></script>
+#if ($publisher_select)	
+	<script type="text/javascript" src="$urlBuilder.getStaticUrl('jquery-1.3.2.js')"></script>
+	<script type="text/javascript" src="$urlBuilder.getStaticUrl('jquery.autocomplete.js')"></script>
+	
+	<link rel="stylesheet" href="http://dev.jquery.com/view/trunk/plugins/autocomplete/demo/main.css" type="text/css" />
+  	<link rel="stylesheet" href="http://dev.jquery.com/view/trunk/plugins/autocomplete/jquery.autocomplete.css" type="text/css" />
+  	
+  	<script>
+		$(document).ready(function(){
+    		var data = "Core Selectors Attributes Traversing Manipulation CSS Events Effects Ajax Utilities".split(" ");    			
+			$("#publisherName").autocomplete("http://localhost:8080/springapp/ajax/publishers");			
+		 });
+	</script>		
+		  		  
 #end
 
 
