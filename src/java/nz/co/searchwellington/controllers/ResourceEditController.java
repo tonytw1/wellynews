@@ -172,6 +172,7 @@ public class ResourceEditController extends BaseTagEditingController {
 
 
 	private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
+		loggedInUserFilter.loadLoggedInUser(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (loggedInUser == null) {
             modelAndView.addObject("spam_question", "The capital of New Zealand is (10 letters)");
