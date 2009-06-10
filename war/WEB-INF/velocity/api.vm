@@ -31,7 +31,7 @@
 		<p>The Wellynews API lets you do something simular with the local newsitems indexed by Search Wellington.</p>
 
 		<p>For example, the API can provide a feed of local newsitems related to <a href="$site_information.url/consultation/rss">consultation</a>; 
-		or maybe <a href=""$site_information.url/zebras/rss">zebras</a>. It can also handle potentially interesting combinations,
+		or maybe <a href="$site_information.url/zebras/rss">zebras</a>. It can also handle potentially interesting combinations,
 		such as <a href="$site_information.url/wellington-city-council+indoorsportscentre/rss">what Wellington City Council has said about the Indoor Sports Centre</a> or
 		<a href="$site_information.url/sculpture+waterfront/rss">sculpture on the waterfront</a>.
 		</p>
