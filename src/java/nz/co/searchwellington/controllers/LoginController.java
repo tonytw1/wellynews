@@ -175,7 +175,7 @@ public class LoginController extends MultiActionController {
         
         ModelAndView modelAndView = new ModelAndView();
         request.getSession().setAttribute("user", null); 
-        request.getSession().setAttribute("login_prompt", 0);                        
+        request.getSession().setAttribute("login_prompt", null);                        
         setRedirect(modelAndView, request);                
         return modelAndView;
     }

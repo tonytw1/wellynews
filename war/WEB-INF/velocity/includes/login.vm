@@ -1,24 +1,22 @@
-	#if ($login_prompt)
-		<div class="box">
+#if ($login_prompt)
+	<div class="box">
 		<h2>Sign in</h2>
-	
-	
+		
 		<form action="$site_information.url/login/login" method="POST">
 			<input type="hidden" name="action" value="login">
  
- 		<fieldset>
- 
-  			<label for="username">Username:</label>
-			<input name="username" class="body">
-			
-			<label for="password">Password:</label>
- 			<input name="password" class="body" type="password">
-
-  		</fieldset>
+ 			<fieldset>
+	  			<label for="username">Username:</label>
+				<input name="username" class="body">
+				<br />
+				
+				<label for="password">Password:</label>
+	 			<input name="password" class="body" type="password">
+	 			<br />
+	  		</fieldset>
     
-     	<input type="submit" class="password" value="login">
-                        	  	
+	     	<input type="submit" class="password" value="login">                        	  	
 		</form>
-		</div>     		
-	#end
+	</div>     		
+#end
 	
