@@ -284,7 +284,10 @@
 					
 			<h5>Source code</h5>
 			
-			<p>The Javascript source code for the above example is available here.</p>
+			<p>The Javascript source code for the above example is available below.</p>
+			
+			<iframe src="http://im.wellington.gen.nz/static/example.txt" width="250" height="280" frameborder="0"></iframe>
+						
 			
 			<p>This example was implemented using the <a href="http://jquery.com/">JQuery Javascript library</a>. Any other JSON library could be used. 
 			
