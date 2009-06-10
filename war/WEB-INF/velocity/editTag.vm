@@ -1,80 +1,66 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
+
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
 
 
-<div class="left">
-#parse("includes/tag_tree.vm")
-</div>
+	<div class="main">
+		<h2>Editing a Tag</h2>
 
-
-
-
-<div class="main">
-<h2>Editing a Tag</h2>
-
-#if ($tag)
-
-
-
-	
-
-
-<form action="save" method="POST"> 
-		<input name="tag" type="hidden" value="$tag.name" />
-		<fieldset>
+		#if ($tag)
+			<form action="save" method="POST"> 
+				<input name="tag" type="hidden" value="$tag.name" />
+				<fieldset>
 					
-		<p><label for="name">Name: </label>
-		<input name="name" value="$tag.name" /></p>
+					<label for="name">Name: </label>
+					<input name="name" value="$tag.name" />
+					<br />
 		
-		<p><label for="name">Display Name: </label>
-		<input name="displayName" value="$tag.displayName" /></p>
-		
-		#if ($tag_select) 
-			<p><label for="parent">Parent Tag: </label>
-	    	$tag_select	
-			</p>
-		#end
+					<label for="name">Display Name: </label>
+					<input name="displayName" value="$tag.displayName" />
+					<br />
+						
+					#if ($tag_select) 
+						<label for="parent">Parent Tag: </label>
+				    	$tag_select	
+						<br />
+					#end
+					
+					<label for="feed">Related Feed: </label>
+					$related_feed_select
+					<br />
 			
-		<p><label for="feed">Related Feed: </label>
-	    $related_feed_select
-		</p>
-	
-		<p><label for="twitter">Related Twitter: </label>
-		<input name="twitter" value="$!tag.relatedTwitter" /></p>
-		
-			<p><label for="autotag_hints">Autotag hints: </label>
-		<input name="autotag_hints" value="$!tag.autotagHints" /></p>
-		
-			
-		<p><label for="main_image">Main Image: </label>
-		<input name="main_image" 
-			#if ($tag.mainImage)
-			value="$tag.mainImage" 
-			#end
-			/></p>
-		
-		<p><label for="secondary_image">Secondary Image: </label>
-		<input name="secondary_image" 
-			#if ($tag.secondaryImage)
-			value="$tag.secondaryImage" 
-			#end
-			/></p>
+					<label for="twitter">Related Twitter: </label>
+					<input name="twitter" value="$!tag.relatedTwitter" />
+					<br />
 				
-		<input type="submit" value="Save" />		
-	</fieldset>
-</form>
-#else
-<p>No tag was found on the request. Could not edit.</p>
-#end
+					<label for="autotag_hints">Autotag hints: </label>
+					<input name="autotag_hints" value="$!tag.autotagHints" />
+					<br />
+							
+					<label for="main_image">Main Image: </label>
+					<input name="main_image" #if ($tag.mainImage) value="$tag.mainImage" #end />
+					<br />
+				
+					<label for="secondary_image">Secondary Image: </label>
+					<input name="secondary_image" #if ($tag.secondaryImage) value="$tag.secondaryImage" #end />
+					<br />
+						
+					<input type="submit" value="Save" />		
+				</fieldset>
+			</form>
+		#else
+			<p>No tag was found on the request. Could not edit.</p>
+		#end
 
-<form action="../../cancel" method="POST">
-	<input type="submit" value="cancel" />
-</form>
-
-
-</div>
+		<form action="../../cancel" method="POST">
+			<input type="submit" value="cancel" />
+		</form>
+	</div>
 
 </div>
 
