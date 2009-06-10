@@ -1,10 +1,11 @@
 #if ($featured && $featured.size() > 0)
-<h2>$site_information.areaname Links</h2>
+	<div class="box">
+		<h2>$site_information.areaname Links</h2>
 
-<p>We use and recommend the following.</p>
+		<p>We use and recommend the following.</p>
 
-#set ($righthand_content_one = $columnSplitter.left($featured))
-#set ($righthand_content_two = $columnSplitter.right($featured))
-#parse("includes/righthand_two_columns.vm")
-
+		#set ($righthand_content_one = $columnSplitter.left($featured))
+		#set ($righthand_content_two = $columnSplitter.right($featured))
+		#parse("includes/righthand_two_columns.vm")
+	</div>
 #end

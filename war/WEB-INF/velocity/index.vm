@@ -42,24 +42,25 @@
 	</div>
 
 	<div class="right">
+		
 		<div class="box">
-			<a href="$site_information.url/about#nikau"><img src="/images/palm.jpg" width="250" border="0" hspace="0"></a>
+			<a href="$site_information.url/about#nikau"><img src="http://im.wellington.gen.nz/images/palm.jpg" width="255" border="0"></a>
 		</div>
-
+			
 		#parse("includes/login.vm")
-		$dateFormatter.formatDateToTimeZone($current_time)
-
+		
 		#parse("includes/your_listing.vm")
 
-		<div class="box">
-			#parse("includes/archive.vm")
-		</div>
+	
 
 		#parse("includes/geocoded.vm")
+		
 		#parse("includes/events.vm")
 
+		#parse("includes/featured.vm")
+		
 		<div class="box">
-			#parse("includes/featured.vm")
+			#parse("includes/archive.vm")
 		</div>
 
 		<div class="box">
@@ -70,25 +71,26 @@
 			<ul>
 				<li><a href="edit/submit/website">Submit Website</a></li>
 				<li><a href="edit/submit/newsitem">Submit Newsitem</a></li>
+				<li><a href="edit/submit/feed">Submit Feed</a></li>
 				<li><a href="edit/submit/calendar">Submit Calendar</a></li>
 			</ul>
 
-		#if ($loggedInUserFilter.getLoggedInUser()) 
-			<ul>
-				<li><a href="edit/submit/feed">Submit Feed</a></li>
-				<li><a href="edit/submit/watchlist">Submit Watchlist item</a></li>
-				<li><a href="edit/tag/submit">Submit Tag</a></li>
-			</ul>
-		#end
+			#if ($loggedInUserFilter.getLoggedInUser()) 
+				<ul>
+					<li><a href="edit/submit/watchlist">Submit Watchlist item</a></li>
+					<li><a href="edit/tag/submit">Submit Tag</a></li>
+				</ul>
+			#end
 		</div>
 
-		<div class="box">
-			#parse("includes/tag_related_feed.vm")
-		</div>
+		
+		#parse("includes/tag_related_feed.vm")
+	
 
 		<div class="box">
 			#parse("includes/tagless.vm")
 		</div>
+		
 	</div>
 
 </div>

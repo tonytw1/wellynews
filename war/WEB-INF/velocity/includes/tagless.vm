@@ -1,22 +1,12 @@
 #if ($tagless && $tagless.size() > 0)
-<div class="box">
-<h2>Tagless</h2>
+	<div class="box">
+		<h2>Tagless</h2>
 
-<p>These newsitems are tagless and unloved.</p>
+		<p>These newsitems are tagless and unloved.</p>
 
-#set ($righthand_content_one = $columnSplitter.left($tagless))
-#set ($righthand_content_two = $columnSplitter.right($tagless))
+		#set ($righthand_content_one = $columnSplitter.left($tagless))
+		#set ($righthand_content_two = $columnSplitter.right($tagless))
 
-#parse("includes/righthand_two_columns.vm")
-
-
-<p>This week's tagging success rate.</p>
-
-#if ($tagging_success_chart)
-<img src="$chartBuilder.makeGoogleMeterChart($tagging_success_chart)" />
-
-</div>
-#end
-
-</div>
+		#parse("includes/righthand_two_columns.vm")
+	</div>
 #end

@@ -49,7 +49,7 @@
 
 		<div class="tag_main_content">
 			#if ($tag.getMainImage()) 
-				<img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320" hspace="0" vspace="0">
+				<img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320" class="mainimage" >
 			#end
 	
 			#set($main_heading = "$tag.getDisplayName() related newsitems")
@@ -65,7 +65,7 @@
 
 		<div class="tag_secondary_content">
 			#if ($tag.getSecondaryImage())
-				<img src="$urlBuilder.getImageUrl($tag.getSecondaryImage())" width="190" hspace="0" vspace="0">
+				<img src="$urlBuilder.getImageUrl($tag.getSecondaryImage())" width="190" class="mainimage">
 			#end
 
 			#if ($commented_newsitems)

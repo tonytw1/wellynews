@@ -1,17 +1,15 @@
 #if ($related_feed && $related_feed_items && $related_feed_items.size() > 0)
-<div class="box">
-
-<div class="rss">
-	<ul>
-		<li>#rssIcon($related_feed.url '')</li>
-	</ul>
-</div>
-
-<h2>$related_feed.name</h2>
-
-#set ($righthand_content_one = $columnSplitter.left($related_feed_items))
-#set ($righthand_content_two = $columnSplitter.right($related_feed_items))
-
-#parse("includes/righthand_two_columns.vm")
-</div>
+	<div class="box">
+		<div class="rss">
+			<ul>
+				<li>#rssIcon($related_feed.url '')</li>
+			</ul>
+		</div>
+	
+		<h2>$related_feed.name</h2>
+	
+		#set ($righthand_content_one = $columnSplitter.left($related_feed_items))
+		#set ($righthand_content_two = $columnSplitter.right($related_feed_items))
+		#parse("includes/righthand_two_columns.vm")
+	</div>
 #end
