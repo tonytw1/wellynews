@@ -15,7 +15,8 @@
 		<ul>
 			<li class="tagged"><a href="#gettingstarted">Getting started</a> | </li>
 			<li class="tagged"><a href="#newsitemqueries">Newsitem queries</a> | </li>
-			<li class="tagged"><a href="#rsstojson">RSS to JSON mirroring</a></li>
+			<li class="tagged"><a href="#rsstojson">RSS to JSON mirroring</a> | </li>
+			<li class="tagged"><a href="#contact">Contact</a></li>
 		</ul>	
 
 		<center>
@@ -298,6 +299,15 @@
 			<p>Lines 6-8: JQuery. Once the page has finished loading and is ready, fetch JSON data from the API and pass it to the function renderNewsitems.</p>
 			<p>Lines 10-16: JQuery. The renderNewsitems function is using JQuery to write out the first 4 items from the JSON data as HTML into the empty newsitems div.</p>
 		</div>
+		
+		
+		<a name="contact"></a>
+		<div class="box">
+			<h2>Contact</h2>
+			<p>Doing something interesting with this?</p><p>Contact <code>enquires (at) wellington.gen.nz</code> and let us know.</p>
+			
+		</div>
+		
 		
 	</div>
 
