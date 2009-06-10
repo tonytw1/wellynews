@@ -15,13 +15,8 @@
 				<fieldset>
 							
 				#parse("includes/form_resource_title_and_url.vm")				
-				
-				
-				#if ($publisher_select) 
-					<label for="publisher">Publisher: </label>
-			    	$publisher_select	
-					<br />
-				#end
+								
+				#parse("includes/publisher_form_field.vm")
 				
 				#if ($acceptance_select) 	
 					<label for="acceptance">Acceptance Policy: </label>

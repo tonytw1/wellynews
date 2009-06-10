@@ -20,11 +20,7 @@
 				<input name="date" value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" />
 				<br />
 		
-				#if ($publisher_select) 
-					<label for="publisher">Publisher: </label>
-			    	$publisher_select	
-					</br>
-				#end
+				#parse("includes/publisher_form_field.vm")
 				
 				<label for="description">Description: </label>
 				<textarea name="description" rows="6" cols="40">#if ($resource.description)$resource.description#end</textarea>

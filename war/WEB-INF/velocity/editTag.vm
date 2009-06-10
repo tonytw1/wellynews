@@ -23,7 +23,7 @@
 					<label for="name">Display Name: </label>
 					<input name="displayName" value="$tag.displayName" />
 					<br />
-						
+					
 					#if ($tag_select) 
 						<label for="parent">Parent Tag: </label>
 				    	$tag_select	

@@ -26,11 +26,7 @@
 					#end
 					<br />
 				
-					#if ($publisher_select) 
-						<label for="publisherName">Publisher: </label>
-						<input id="publisherName" name="publisherName" #if($resource.publisher) value="$resource.publisher.name" #end />		  
-						<br />
-					#end
+					#parse("includes/publisher_form_field.vm")
 				
 					#if ($acceptance_select) 	
 						<label for="acceptance">Acceptance Policy: </label>
