@@ -8,10 +8,29 @@ text-align: center;
 }
 
 
-.yellow {
+.apiexample {
  background-color: #ffc;
- margin-top: 0px;
- padding-top: 0px;
+ margin-top: 20px;
+ padding-bottom: 10px;
+
+ margin-left: 10px;
+ margin-right: 10px;
+ margin-bottom: 20px;
+}
+
+.apiexample li {
+ margin-left: 10px;
+ margin-right: 10px;
+ margin-bottom: 10px;
+list-style: none;
+}
+
+.apiexample h1 {
+ margin-left: 10px;
+ margin-right: 10px;
+ margin-bottom: 10px;
+ border-top: 0px;
+ font-size: 12pt;
 }
 
 .page {

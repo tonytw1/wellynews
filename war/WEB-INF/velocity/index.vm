@@ -24,7 +24,7 @@
 
 			<h2>Meanwhile...</h2>
 			<p>The $site_information.areaname Newslog is an informal roundup of the $site_information.areaname webspace.
-			The Newslog is also available as an <a href="feeds">RSS feed</a> or via <a href="twitter">Twitter</a>.</p>
+			The Newslog is also available as an <a href="feeds">RSS feed</a> or via <a href="http://twitter.com/wellynews">Twitter</a>.</p>
 	
 			#if ($commented_newsitems)	
 				#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))

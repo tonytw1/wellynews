@@ -26,13 +26,13 @@
 		<span class="wordlecredit">Word cloud by <a href="http://www.wordle.net/">Wordle</a></span>
 		<br/>
 		<p>A number of large news organisations have begun providing <a href="http://www.guardian.co.uk/open-platform">APIs to their content</a>. 
-		These services allow content to be queried programmatically for easy integration and use in mash ups.</p>
+		These services allow content to be queried programmatically for use in mash ups and the like.</p>
 
 		<p>The Wellynews API lets you do something simular with the local newsitems indexed by Search Wellington.</p>
 
 
 		<a name="gettingstarted"></a>
-		<h1>Getting started</h1>
+		<h2>Getting started</h2>
 	
 		<h5>Supported Formats</h5>
 
@@ -66,7 +66,7 @@
 
 
 		<a name="newsitemqueries"></a>
-		<h1>Newsitem queries</h1>
+		<h2>Newsitem queries</h2>
 
 		<p>The following types of newsitem query are supported.</p>
 
@@ -208,7 +208,7 @@
 
 
 		<a name="rsstojson"></a>	
-		<h1>RSS to JSON feed mirroring</h1>
+		<h2>RSS to JSON feed mirroring</h2>
 
 		<p>Provides JSON copies of local RSS feeds. This makes it easier to integrate feeds into sites using Javascript.</p>
 
@@ -229,7 +229,7 @@
 
 
 		<a name="urlsnippets"></a>
-		<h1>URL snippets</h1>
+		<h2>URL snippets</h2>
 
 		<h5><b>Available Tags</b></h5>
 		<table>
@@ -253,9 +253,9 @@
 
 
 		<a name="feedurlsnippets"></a>
-		<h5><b>Available Feeds</b></h5>
+		<h5><b>Available RSS to JSON Feeds</b></h5>
 		<table>
-			<tr><td>Feed</td><td>JSON URL</td></tr>
+			<tr><td>Feed</td><td>URL snippet</td></tr>
 			#foreach($item in $feeds)
 				<tr><td>$item.name</td>
 				<td><code>$item.urlWords</code></td></tr>
@@ -270,9 +270,15 @@
 		
 		<div class="box">
 			<h2>Usage Example</h2>
-			<p>Using JSON and Javascript to pull the latest transport newsitems into a page.</p>
-			<p>Because this example uses cross domain javascript, it can be used on pages on other sites.</p>
-			#include("widget.vm")
+			<p>Example: Using JSON and Javascript to pull the latest transport newsitems into a page.</p>			
+		
+			<div class="apiexample">
+				#include("widget.vm")
+			</div>
+					
+			<h5>Source code</h5>
+			<p>The example was implemented using the <a href="http://jquery.com/">JQuery Javascript library</a>.</p>
+			<p>Because it uses cross domain javascript, it can be used from pages on other sites.</p>
 		</div>
 		
 	</div>
