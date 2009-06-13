@@ -20,14 +20,14 @@ public class ContentModelBuilderService {
 	}
 
 	public ModelAndView populateContentModel(HttpServletRequest request) {
-		logger.info("Building content model");
+		logger.debug("Building content model");
 		boolean showBroken = false;	
 		if (loggedInUserFilter.getLoggedInUser() != null) {
 			showBroken = true;
 		}
 		for (int i = 0; i < modelBuilders.length; i++) {
 			ModelBuilder modelBuilder = modelBuilders[i];
-			logger.info("Checking " + modelBuilder);
+			logger.debug("Checking " + modelBuilder);
 			if (modelBuilder.isValid(request)) {
 				logger.info("Using " + modelBuilder);
 				ModelAndView mv = modelBuilder.populateContentModel(request, showBroken);
