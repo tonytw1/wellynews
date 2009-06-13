@@ -6,7 +6,7 @@
 		<h2>Other tags in $parent_tag.displayName</h2>
 		<ul>
 		#foreach ($sibling_tag in $sibling_tags)
-			#if (!($tag == $sibling_tag ))
+			#if (!($tag.id == $sibling_tag.id ))
 				<li><a href="$urlBuilder.getTagUrl($sibling_tag)">$sibling_tag.displayName.toLowerCase()</a>
 			#end
 		#end
