@@ -2,18 +2,24 @@ package nz.co.searchwellington.repositories;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
 
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.request.UpdateRequest;
+import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrInputDocument;
 
 public class SolrQueryService {
+	
+	Logger log = Logger.getLogger(SolrQueryService.class);
 
 	private String solrUrl;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
@@ -30,16 +36,28 @@ public class SolrQueryService {
 			QueryResponse response = solr.query(query);
 			return response;
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
+			log.error(e);	
 		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);	
 		}
 		return null;
 	}
 	
+	
+	
+	public List<Count> getFacetQueryResults(SolrQuery query, String facetFieldName) {
+		QueryResponse response = querySolr(query);
+		if (response != null) {
+			FacetField facetField = response.getFacetField(facetFieldName);
+			if (facetField != null && facetField.getValues() != null) {
+				log.info("Found facet field: " + facetField);				
+				return facetField.getValues();				
+			}
+		}
+		return null;
+	}
 
+	
 	public void deleteResourceFromIndex(int id) {		
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);				
@@ -50,14 +68,11 @@ public class SolrQueryService {
 			solr.optimize();
 			
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);	
 		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);	
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);	
 		}		
 	}
 	
@@ -73,14 +88,11 @@ public class SolrQueryService {
 			solr.optimize();
 			
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);	
 		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);	
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		}
 	}
 

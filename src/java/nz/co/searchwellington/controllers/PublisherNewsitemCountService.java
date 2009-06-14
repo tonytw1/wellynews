@@ -1,20 +1,15 @@
 package nz.co.searchwellington.controllers;
 
-import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.SolrQueryBuilder;
+import nz.co.searchwellington.repositories.SolrQueryService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrServer;
-import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
-import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 
 public class PublisherNewsitemCountService {
@@ -22,7 +17,7 @@ public class PublisherNewsitemCountService {
 	Logger log = Logger.getLogger(PublisherNewsitemCountService.class);
 
 	private LoggedInUserFilter loggedInFilter;
-	private String solrUrl;
+	private SolrQueryService solrQueryService;
 	
 	Map<Integer, Integer> publisherNewsitemCounts;
 	
@@ -31,18 +26,17 @@ public class PublisherNewsitemCountService {
 	public PublisherNewsitemCountService() {	
 	}
 
-
-	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter) {
+	
+	
+	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter,
+			SolrQueryService solrQueryService) {
+		super();
 		this.loggedInFilter = loggedInFilter;
-	}
-	
-	
-	public void setSolrUrl(String solrUrl) {
-		this.solrUrl = solrUrl;
+		this.solrQueryService = solrQueryService;
 	}
 
 
-	
+
 	public int getNewsitemCount(Website publisher) {
 		int count = publisher.getNewsitems().size();
 		boolean showBroken = loggedInFilter.getLoggedInUser() != null;
@@ -62,27 +56,19 @@ public class PublisherNewsitemCountService {
 	public void getPublisherNewsitemCounts(boolean showBroken) {
 		log.info("Looking up publisher newsitem counts");		
 		publisherNewsitemCounts = new HashMap<Integer, Integer>();    	
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
-			query.addFacetField("publisher");
-			query.setFacetMinCount(1);
-			
-			QueryResponse response = solr.query(query);							
-			FacetField facetField = response.getFacetField("publisher");
-			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);
-				List<Count> values = facetField.getValues();
-				for (Count count : values) {
-					final int publisherId = Integer.parseInt(count.getName());						
-					final Long relatedItemCount = count.getCount();
-					publisherNewsitemCounts.put(publisherId, relatedItemCount.intValue());
-				}		
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
+		query.addFacetField("publisher");
+		query.setFacetMinCount(1);
+		query.setFacetLimit(5000);
+		
+		List<Count> facetQueryResults = solrQueryService.getFacetQueryResults(query, "publisher");
+		if (facetQueryResults != null) {
+			for (Count count : facetQueryResults) {
+				final int publisherId = Integer.parseInt(count.getName());						
+				final Long relatedItemCount = count.getCount();
+				publisherNewsitemCounts.put(publisherId, relatedItemCount.intValue());
 			}
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}					
+		}
     }
+
 }

@@ -24,7 +24,7 @@
 		
 	<bean id="relatedTagsService" class="nz.co.searchwellington.controllers.RelatedTagsService">
 		<constructor-arg ref="resourceDAO" />
-		<property name="solrUrl" value="${solr.url}" />
+		<constructor-arg ref="solrQueryService" />
 	</bean>
 	
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">

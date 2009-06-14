@@ -125,7 +125,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" scope="request">
 		<aop:scoped-proxy/>
 		<constructor-arg ref="loggedInUserFilter" />
-		<property name="solrUrl" value="${solr.url}" />
+		<constructor-arg ref="solrQueryService" />
 	</bean>
 		
 	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">

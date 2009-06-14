@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SolrQueryBuilder;
+import nz.co.searchwellington.repositories.SolrQueryService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -26,48 +27,35 @@ public class RelatedTagsService {
 
 	
 	private ResourceRepository resourceDAO;
-	private String solrUrl;
+	private SolrQueryService solrQueryService;
 
 	
-	public RelatedTagsService(ResourceRepository resourceDAO) {
-		this.resourceDAO = resourceDAO;
-	}
-	
-	
-    public void setSolrUrl(String solrUrl) {
-		this.solrUrl = solrUrl;
-	}
-
     
+	public RelatedTagsService(ResourceRepository resourceDAO, SolrQueryService solrQueryService) {		
+		this.resourceDAO = resourceDAO;
+		this.solrQueryService = solrQueryService;
+	}
+
+
+
 	public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken) {    	
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
-			query.addFacetField("tags");
-			query.setFacetMinCount(1);
+	
+    	SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
+		query.addFacetField("tags");
+		query.setFacetMinCount(1);
 			
-			QueryResponse response = solr.query(query);		
-					
-			FacetField facetField = response.getFacetField("tags");
-			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);
-				List<Count> values = facetField.getValues();
-				for (Count count : values) {
-					final int relatedTagId = Integer.parseInt(count.getName());
-					Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
-					if (isTagSuitable(relatedTag, tag)) {
-						final Long relatedItemCount = count.getCount();
-						relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));
-					}
+		List<Count> values = solrQueryService.getFacetQueryResults(query, "tags");
+		if (values != null) {			
+			for (Count count : values) {
+				final int relatedTagId = Integer.parseInt(count.getName());
+				Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
+				if (isTagSuitable(relatedTag, tag)) {
+					final Long relatedItemCount = count.getCount();
+					relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));
 				}
 			}
-			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
+		}		
 		return relatedTags;     
     }
     
@@ -75,60 +63,40 @@ public class RelatedTagsService {
     
     public List<TagContentCount> getRelatedTagLinks(Website publisher, boolean showBroken) {    	
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).toQuery();
-			query.addFacetField("tags");			
-			query.setFacetMinCount(1);
+		
+    	SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).toQuery();
+		query.addFacetField("tags");			
+		query.setFacetMinCount(1);
 			
-			QueryResponse response = solr.query(query);		
-			FacetField facetField = response.getFacetField("tags");
-			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);
-				List<Count> values = facetField.getValues();
-				for (Count count : values) {
-					final int relatedTagId = Integer.parseInt(count.getName());
-					Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
-					final Long relatedItemCount = count.getCount();
-					relatedTags.add(new TagContentCount(relatedTag, relatedItemCount.intValue()));				
-				}
+		List<Count> values = solrQueryService.getFacetQueryResults(query, "tags");
+		if (values != null) {
+			for (Count count : values) {
+				final int relatedTagId = Integer.parseInt(count.getName());
+				Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
+				final Long relatedItemCount = count.getCount();
+				relatedTags.add(new TagContentCount(relatedTag, relatedItemCount.intValue()));				
 			}
-			
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
+		}			
 		return relatedTags;     
     }
     
     
     public List<PublisherContentCount> getRelatedPublisherLinks(Tag tag, boolean showBroken) {
     	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();
-		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
-			SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
-			query.addFacetField("publisher");			
-			query.setFacetMinCount(1);
+		
+		SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
+		query.addFacetField("publisher");			
+		query.setFacetMinCount(1);
 			
-			QueryResponse response = solr.query(query);		
-					
-			FacetField facetField = response.getFacetField("publisher");
-			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);
-				List<Count> values = facetField.getValues();
-				for (Count count : values) {
-					final int relatedPublisherId = Integer.parseInt(count.getName());
-					Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);				
-					final Long relatedItemCount = count.getCount();
-					relatedPublishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));					
-				}		
-			}
-		} catch (MalformedURLException e) {
-			log.error(e);
-		} catch (SolrServerException e) {
-			log.error(e);
-		}
+		List<Count> values = solrQueryService.getFacetQueryResults(query, "publisher");
+		if (values != null) {			
+			for (Count count : values) {
+				final int relatedPublisherId = Integer.parseInt(count.getName());
+				Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);				
+				final Long relatedItemCount = count.getCount();
+				relatedPublishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));					
+			}		
+		}		
 		return relatedPublishers;     
     }
      
