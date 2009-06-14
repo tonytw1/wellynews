@@ -2,7 +2,7 @@
 <ul>
 <li><a href="$site_information.url/index">Home</a></li>
 <li><a href="$site_information.url/about">About</a></li>
-<li><a href="$site_information.url/archive">Archive</a></li>
+<li><a href="$site_information.url/api">API</a></li>
 <li><a href="$site_information.url/about#contact">Contact</a></li>
 <li><a href="$site_information.url/comment">Comment</a></li>
 <li><a href="$site_information.url/feeds">Feeds</a></li>

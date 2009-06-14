@@ -120,11 +120,14 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		
 	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />
 
-	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" >
+
+
+	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" scope="request">
+		<aop:scoped-proxy/>
 		<constructor-arg ref="loggedInUserFilter" />
+		<property name="solrUrl" value="${solr.url}" />
 	</bean>
-	
-	
+		
 	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
    		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
 	 </bean>
