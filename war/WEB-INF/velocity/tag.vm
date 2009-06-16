@@ -86,11 +86,11 @@
 	<div class="right">	
 		#parse("includes/login.vm")
 		#parse("includes/flickr_group_tag.vm")
-	
-		#if($last_changed)
-			<p>Last updated $dateFormatter.timeSince($last_changed)</p>
+		
+		#if($tag.name == 'animals' || $tag.name == 'dogs') 
+			#parse("includes/spca_widget.vm")
 		#end
-	
+		
 		#parse("includes/tag_related_feed.vm")
 	
 		#parse("includes/twitterBadge.vm")

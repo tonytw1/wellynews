@@ -1,0 +1,19 @@
+<div class="box">
+<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="255" height="250" >
+	<param name="movie" value="http://www.wellingtonspca.org.nz/flash/wellingtonspca_widget.swf" />
+	<param name="wmode" value="transparent"></param>
+	<param name="bgcolor" value="#ffffff"></param>
+	<param name="menu" value="false"></param>
+	<param name="scale" value="showall"></param>
+	<param name="salign" value=""></param>
+	<param name="allowscriptaccess" value="always"></param>
+<!--[if !IE]>-->
+	<object type="application/x-shockwave-flash" data="http://www.wellingtonspca.org.nz/flash/wellingtonspca_widget.swf" width="255" height="250" wmode="transparent" bgcolor="#ffffff" menu="false" scale="showall" salign="" allowscriptaccess="always" >
+	<param name="allowscriptaccess" value="always"></param>
+<!--<![endif]-->
+<a href="http://www.adobe.com/go/getflashplayer"><img src="http://www.wellingtonspca.org.nz/flash/wellingtonspca_widget.jpg" width="255" height="250" alt="Download Adobe Flash Player" border="0" /></a>
+<!--[if !IE]>-->
+	</object>
+<!--<![endif]-->
+</object>
+</div>
