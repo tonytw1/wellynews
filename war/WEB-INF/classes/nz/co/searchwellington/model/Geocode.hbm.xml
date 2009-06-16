@@ -8,7 +8,9 @@
     <class  name="nz.co.searchwellington.model.GeocodeImpl" 
     		proxy="nz.co.searchwellington.model.Geocode"
     		table="geocode">
-
+    		
+    	<cache usage="read-write" region="nz.co.searchwellington.model.GeocodeImpl" />
+    		
         <id name="id" type="integer">
             <column name="id" sql-type="integer" not-null="true"/>
             <generator class="native" />                
