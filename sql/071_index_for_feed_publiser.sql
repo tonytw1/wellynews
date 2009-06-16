@@ -1,0 +1,1 @@
+alter table resource add index feed_publisher_index (feed_publisher);
