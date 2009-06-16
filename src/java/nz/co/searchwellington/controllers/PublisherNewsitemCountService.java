@@ -20,7 +20,8 @@ public class PublisherNewsitemCountService {
 	private SolrQueryService solrQueryService;
 	
 	Map<Integer, Integer> publisherNewsitemCounts;
-	
+	Map<Integer, Integer> showBrokenPublisherNewsitemCounts;
+
 	
 	
 	public PublisherNewsitemCountService() {	
@@ -37,25 +38,59 @@ public class PublisherNewsitemCountService {
 
 
 
-	public int getNewsitemCount(Website publisher) {
-		int count = publisher.getNewsitems().size();
+	public int getNewsitemCount(Website publisher) {	
 		boolean showBroken = loggedInFilter.getLoggedInUser() != null;
-		if (!showBroken && count > 0) {
+		
+		Map<Integer, Integer>  newsitemCounts = null;
+		if (showBroken) {
+			if (showBrokenPublisherNewsitemCounts == null) {
+				showBrokenPublisherNewsitemCounts = new HashMap<Integer, Integer>();		
+				getPublisherNewsitemCounts(true, showBrokenPublisherNewsitemCounts);				
+			}
+			newsitemCounts = showBrokenPublisherNewsitemCounts;
+		
+		} else {
 			if (publisherNewsitemCounts == null) {
-				getPublisherNewsitemCounts(showBroken);
-			}
-			if (publisherNewsitemCounts.containsKey(publisher.getId())) {
-				return publisherNewsitemCounts.get(publisher.getId());
-			}
-			return 0;
+				publisherNewsitemCounts = new HashMap<Integer, Integer>();		
+				getPublisherNewsitemCounts(false, publisherNewsitemCounts);				
+			}			
+			newsitemCounts = publisherNewsitemCounts;
 		}
-		return count;
+		
+		final int publisherId = publisher.getId();
+		if (newsitemCounts.containsKey(publisherId)) {
+			return newsitemCounts.get(publisherId);
+		}
+		return 0;	
 	}
 	
 		
-	public void getPublisherNewsitemCounts(boolean showBroken) {
-		log.info("Looking up publisher newsitem counts");		
-		publisherNewsitemCounts = new HashMap<Integer, Integer>();    	
+	private int getNewsitemCount(int publisherId, boolean showBroken) {
+		Map<Integer, Integer>  newsitemCounts = null;
+		if (showBroken) {
+			if (showBrokenPublisherNewsitemCounts == null) {
+				showBrokenPublisherNewsitemCounts = new HashMap<Integer, Integer>();		
+				getPublisherNewsitemCounts(true, showBrokenPublisherNewsitemCounts);				
+			}
+			newsitemCounts = showBrokenPublisherNewsitemCounts;
+
+		} else {
+			if (publisherNewsitemCounts == null) {
+				publisherNewsitemCounts = new HashMap<Integer, Integer>();		
+				getPublisherNewsitemCounts(false, publisherNewsitemCounts);				
+			}			
+			newsitemCounts = publisherNewsitemCounts;
+		}
+		
+		if (newsitemCounts.containsKey(publisherId)) {
+			return newsitemCounts.get(publisherId);
+		}
+		return 0;
+	}
+
+
+	
+	public void getPublisherNewsitemCounts(boolean showBroken, Map<Integer, Integer> newsitemCounts) {		
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
 		query.addFacetField("publisher");
 		query.setFacetMinCount(1);
@@ -66,7 +101,7 @@ public class PublisherNewsitemCountService {
 			for (Count count : facetQueryResults) {
 				final int publisherId = Integer.parseInt(count.getName());						
 				final Long relatedItemCount = count.getCount();
-				publisherNewsitemCounts.put(publisherId, relatedItemCount.intValue());
+				newsitemCounts.put(publisherId, relatedItemCount.intValue());				
 			}
 		}
     }
