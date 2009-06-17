@@ -87,18 +87,15 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 	private String getBodyFromSyndItem(SyndEntry item, String description) {
 		// TODO; what's going on here? - why two settings?
 		SyndContent descriptionContent = (SyndContent) item.getDescription();
-        if (descriptionContent != null) {        
-        	log.info("Description from item.getDescription: " + descriptionContent.getValue());
+        if (descriptionContent != null) {                	
             description = UrlFilters.stripHtml(descriptionContent.getValue());
         }
         
         if (item.getContents().size() > 0) {
-            SyndContent content = (SyndContent) item.getContents().get(0);
-            log.info("Description from item.getContents().get(0).getValue(): " + content.getValue());
+            SyndContent content = (SyndContent) item.getContents().get(0);           
             description = UrlFilters.stripHtml(content.getValue());            
         }
         
-        log.info("Returning: " + description);
 		return description;
 	}
     
