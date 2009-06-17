@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SupressionRepository;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,11 +20,13 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
     	
 	private ResourceRepository resourceDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
+	private SupressionRepository suppressionDAO;
 	
 	 
-	public ViewFeedModelBuilder(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService) {
+	public ViewFeedModelBuilder(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, SupressionRepository suppressionDAO) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
+		this.suppressionDAO = suppressionDAO;
 	}
 
 	public boolean isValid(HttpServletRequest request) {
@@ -45,6 +48,9 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 						if (localCopy != null) {
 							feedNewsitem.setLocalCopy(localCopy);
 						}
+						
+						boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
+						feedNewsitem.setSuppressed(isSuppressed);						
 					}
 				}
 		            

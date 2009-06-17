@@ -63,6 +63,7 @@
 	<bean id="viewfeedModelBuilder" class="nz.co.searchwellington.controllers.models.ViewFeedModelBuilder">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="supressionDAO" />
 	</bean>
 	
 

@@ -8,6 +8,7 @@ public class FeedNewsitem extends NewsitemImpl {
 	private Feed feed;
 	private int itemNumber;
 	private Resource localCopy;
+	private boolean isSuppressed;
 
     public FeedNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds) {       
         this.id = id;
@@ -17,7 +18,8 @@ public class FeedNewsitem extends NewsitemImpl {
         this.date = date;
         this.publisher = publisher;
         this.tags = tags;
-        this.discoveredFeeds = discoveredFeeds;      
+        this.discoveredFeeds = discoveredFeeds;
+        this.isSuppressed = false;
     }
 	
 	@Override
@@ -48,5 +50,13 @@ public class FeedNewsitem extends NewsitemImpl {
 	public void setLocalCopy(Resource localCopy) {
 		this.localCopy = localCopy;
 	}
-	
+
+	public boolean isSuppressed() {
+		return isSuppressed;
+	}
+
+	public void setSuppressed(boolean isSuppressed) {
+		this.isSuppressed = isSuppressed;
+	}
+		
 }
