@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.UrlStack;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 
@@ -20,10 +19,10 @@ public class LinkCheckerController extends BaseMultiActionController {
     Logger log = Logger.getLogger(LinkCheckerQueue.class);
     
     private LinkCheckerQueue queue;
-    private RequestFilter requestFilter;
+    private AdminRequestFilter requestFilter;
 
      
-    public LinkCheckerController(RequestFilter requestFilter, LinkCheckerQueue queue, UrlStack urlStack) {
+    public LinkCheckerController(AdminRequestFilter requestFilter, LinkCheckerQueue queue, UrlStack urlStack) {
         this.requestFilter = requestFilter;
         this.queue = queue;
         this.urlStack = urlStack;        
@@ -41,15 +40,15 @@ public class LinkCheckerController extends BaseMultiActionController {
 
     
     public ModelAndView addToQueue(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-                
-        setRedirect(mv, request);        
+        ModelAndView mv = new ModelAndView();                
+        setRedirect(mv, request);
         requestFilter.loadAttributesOntoRequest(request);         
         if (request.getAttribute("resource") != null) {
             Resource resource = (Resource) request.getAttribute("resource");
             log.info("Adding resource to queue: " + resource.getUrl() + "(" + resource.getId() + ")");
             queue.add(resource.getId()); 
-        }       
+        }
+        log.warn("No resource found on request; not adding to queue");
         return mv;
     }
     

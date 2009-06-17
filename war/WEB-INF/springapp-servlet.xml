@@ -194,7 +194,7 @@
 
 
 	<bean id="linkCheckerController" class="nz.co.searchwellington.controllers.admin.LinkCheckerController">
-		<constructor-arg ref="requestFilter" />		
+		<constructor-arg ref="adminRequestFilter" />		
 		<constructor-arg ref="linkCheckerQueue" />
 		<constructor-arg ref="urlStack" />
 	
