@@ -52,6 +52,7 @@ public interface ResourceRepository {
     public Watchlist createNewWatchlist();
 
     public List<Feed> getAllFeeds();
+	public List<Feed> getAllFeedsByName();
     public List<Feed> getFeedsToRead();
     
     public List<Resource> getAllCalendarFeeds();

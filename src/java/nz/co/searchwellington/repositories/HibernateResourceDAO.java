@@ -76,8 +76,16 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
-    
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
+    final public List<Feed> getAllFeedsByName() {
+    	  return sessionFactory.getCurrentSession().createCriteria(Feed.class).      
+          addOrder(Order.asc("name")).
+          setCacheable(true).
+          list();
+	}
+
+
+	@SuppressWarnings("unchecked")
     final public List<Feed> getFeedsToRead() {
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).
         add(Restrictions.ne("acceptancePolicy", "ignore")).
