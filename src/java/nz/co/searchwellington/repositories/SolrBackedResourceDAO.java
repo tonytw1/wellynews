@@ -253,7 +253,8 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 		
 	public List<Resource> getAllWatchlists(boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().type("L").showBroken(showBroken).toQuery();
+		// TODO make this limit to things which changed in the last week.
+		SolrQuery query = new SolrQueryBuilder().type("L").maxItems(30).showBroken(showBroken).toQuery();
 		query.setSortField("lastChanged", ORDER.desc);
 		return getQueryResults(query);
 	}
