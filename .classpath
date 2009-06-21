@@ -41,7 +41,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/json-lib-2.2.1-jdk15.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ezmorph-1.0.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-beanutils.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/java-openid-sxip-0.9.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/geoGoogle-1.5.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jaxb1-impl.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jaxb-xjc.jar"/>

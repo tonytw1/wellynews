@@ -100,10 +100,7 @@
 					<props>
 						<prop key="/login/login">login</prop>
 						<prop key="/login/logout">logout</prop>
-						<prop key="/login/prompt">prompt</prop>
-						
-						<prop key="/openid/auth">auth</prop>	
-						<prop key="/openid/verify">verify</prop>						
+						<prop key="/login/prompt">prompt</prop>									
 					</props>
 				</property>
 			</bean>		
