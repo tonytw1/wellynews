@@ -18,10 +18,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class RssController extends MultiActionController {
-
-	// TODO push to config
-    private static final String FEEDBURNER_RSS_URL = "http://feeds2.feedburner.com/wellynews";
-
+	
 	Logger log = Logger.getLogger(RssController.class);
     
     private static final int MAX_RSS_ITEMS = 30;
@@ -56,12 +53,15 @@ public class RssController extends MultiActionController {
         
        
     public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception { 
-    	final String userAgent = request.getHeader("User-Agent");
-		boolean clientIsFeedburner = userAgent != null && userAgent.startsWith("FeedBurner");
-		if (!clientIsFeedburner) {
-        	return redirectToFeedburnerMainFeed();
-        }
-		
+    	
+    	if (siteInformation.getFeedburnerUrl() != null && !siteInformation.getFeedburnerUrl().trim().equals("")) {    		
+    		final String userAgent = request.getHeader("User-Agent");
+    		boolean clientIsFeedburner = userAgent != null && userAgent.startsWith("FeedBurner");
+    		if (!clientIsFeedburner) {
+    			return redirectToFeedburnerMainFeed();
+    		}
+    	}
+    	
 		HashMap <String, Object> model = new HashMap <String, Object>();
 		log.info("Building full site rss feed");
 		model.put("heading", siteInformation.getAreaname() + " Newslog");
@@ -87,7 +87,7 @@ public class RssController extends MultiActionController {
     
     
 	private ModelAndView redirectToFeedburnerMainFeed() {
-		View redirectView = new RedirectView(FEEDBURNER_RSS_URL);
+		View redirectView = new RedirectView(siteInformation.getFeedburnerUrl());
 		return new ModelAndView(redirectView);		
 	}
 

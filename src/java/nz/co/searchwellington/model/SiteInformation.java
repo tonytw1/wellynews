@@ -11,7 +11,7 @@ public class SiteInformation {
     private String twitterUsername;
     private String googleMapsApiKey;
     private String staticRoot;
-
+    private String feedburnerUrl;
     
 	public SiteInformation(ConfigRepository configDAO) {	
 		this.configDAO = configDAO;
@@ -75,6 +75,14 @@ public class SiteInformation {
 
 	public void setStaticRoot(String staticRoot) {
 		this.staticRoot = staticRoot;
+	}
+
+	public String getFeedburnerUrl() {
+		return feedburnerUrl;
+	}
+
+	public void setFeedburnerUrl(String feedburnerUrl) {
+		this.feedburnerUrl = feedburnerUrl;
 	}
 	
 }
