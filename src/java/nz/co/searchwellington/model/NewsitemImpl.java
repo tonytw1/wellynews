@@ -41,7 +41,10 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 	@Override
     public SyndEntry getRssItem() {
         SyndEntry rssItem = super.getRssItem();
-        rssItem.setPublishedDate(this.getDate());        
+        rssItem.setPublishedDate(this.getDate());
+        if (this.getPublisher() != null) {
+        	rssItem.setAuthor(this.getPublisher().getName());
+        }
         final Geocode geocode = this.getGeocode();
         if (geocode != null && geocode.isValid()) {            
         	GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();     
