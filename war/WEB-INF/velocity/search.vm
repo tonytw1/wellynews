@@ -5,6 +5,8 @@
 
 <div class="left">
 
+#parse("includes/160x600ad.vm")
+
 #parse("includes/tag_tree.vm")
 </div>
 
@@ -14,8 +16,6 @@
 #parse("includes/search_widget.vm")
 
 #parse("includes/search_matching_tags.vm")
-
-#parse("includes/468x60ad.vm")
 
 <div class="tag_main_content">
 #parse("includes/main_content.vm")

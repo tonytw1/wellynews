@@ -4,10 +4,7 @@
 #parse("includes/topbar.vm")
 
 <div class="left">
-#if($use_big_ads) 
 #parse("includes/160x600ad.vm")
-#end
-
 
 #parse("includes/related_tags.vm")
 
@@ -50,9 +47,6 @@
 
 #parse("includes/search_widget.vm")
 
-
-
-#parse("includes/468x60ad.vm")
 
 <div class="main_content">
 	#if ($main_content.empty) 

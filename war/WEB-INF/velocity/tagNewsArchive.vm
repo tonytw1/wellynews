@@ -4,6 +4,7 @@
 	#parse("includes/topbar.vm")
 
 	<div class="left">
+		#parse("includes/160x600ad.vm")	
 		#parse("includes/related_tags.vm")
 		#parse("includes/tag_tree.vm")
 		#parse("includes/sibling_tags.vm")
@@ -18,8 +19,7 @@
 	
 		#parse("includes/tag_admin_links.vm")
 		#parse("includes/search_widget.vm")
-		#parse("includes/468x60ad.vm")
-	
+			
 		#parse("includes/tag_page_links.vm")
 		#parse("includes/main_content.vm")
 		#parse("includes/tag_page_links.vm")
