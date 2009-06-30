@@ -1,13 +1,17 @@
 package nz.co.searchwellington.utils;
 
+import org.apache.commons.lang.StringUtils;
+
 public class TextTrimmer {
     
-    // TODO needs todo something with sentences or paragraphs.
-    public static String trimToCharacterCount(String description, int count) {
+    public String trimToCharacterCount(String description, int count) {
         if (description.length() > count) {
-            return description.substring(0, count);
+        	String trimmed = description.substring(0, count);
+        	if (trimmed.contains(".")) {
+        		return StringUtils.substringBefore(trimmed, ".") + ".";
+        	}
         }
         return description;
      }
-     
+	     
 }

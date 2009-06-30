@@ -30,11 +30,12 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
     
     private UrlCleaner urlCleaner;
 	private RssHttpFetcher rssFetcher;
-    
+    private TextTrimmer textTrimmer;
 	
-    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher) {		
+    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer) {		
 		this.urlCleaner = urlCleaner;
 		this.rssFetcher = rssFetcher;
+		this.textTrimmer = textTrimmer;
 	}
 
 
@@ -107,7 +108,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
     private void trimExcessivelyLongBodies(Resource feedItem) {
         boolean bodyIsToLong = feedItem.getDescription() != null && feedItem.getDescription().length() > MAXIMUM_BODY_LENGTH;
         if (bodyIsToLong) {
-            feedItem.setDescription(TextTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
+            feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
         }
     }
     

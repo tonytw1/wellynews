@@ -26,12 +26,15 @@
 	
 	<bean id="liveRssfeedNewsitemService" class="nz.co.searchwellington.feeds.LiveRssfeedNewsitemService">
 		<constructor-arg ref="urlCleaner" />
-		<constructor-arg ref="rssHttpFetcher" />		
+		<constructor-arg ref="rssHttpFetcher" />
+		<constructor-arg ref="textTrimmer" />
 	</bean>
 	
 	
 	<bean id="cachingRssfeedNewsitemService" class="nz.co.searchwellington.feeds.CachingRssfeedNewsitemService">	
 		<constructor-arg ref="feedNewsitemCache" />
 	</bean>
+	
+	<bean id="textTrimmer" class="nz.co.searchwellington.utils.TextTrimmer" />
 	
 </beans>
