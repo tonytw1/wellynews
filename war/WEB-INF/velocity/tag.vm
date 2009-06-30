@@ -5,6 +5,8 @@
 
 
 	<div class="left">
+	
+		#parse("includes/160x600ad.vm")
 	                			
 		#parse("includes/related_tags.vm")
 		#parse("includes/related_publishers.vm")
@@ -44,9 +46,7 @@
 		#end
 
 		#parse("includes/search_widget.vm")
-
-		#parse("includes/468x60ad.vm")
-
+		
 		<div class="tag_main_content">
 			#if ($tag.getMainImage()) 
 				<img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320" class="mainimage" >
