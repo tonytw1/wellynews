@@ -187,6 +187,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="twitterUsername" value="${twitter.username}" />
 		<property name="googleMapsApiKey" value="${googlemaps.apikey}" />
 		<property name="staticRoot" value="${staticroot}" />
+		<property name="imageRoot" value="${imageroot}" />
 		<property name="feedburnerUrl" value="${feedburner.url}" />
 	</bean>
 	

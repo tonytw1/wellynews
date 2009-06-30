@@ -19,16 +19,17 @@ public class UrlBuilder {
 	}
 
 	public String getImageUrl(String filename) {
-		return siteInformation.getUrl() + "/images/" + filename;
+		return siteInformation.getImageRoot() + filename;
+	}
+	
+	public String getStaticUrl(String filename) {
+		return siteInformation.getStaticRoot() + filename;
 	}
 	
 	public String getPublishersAutoCompleteUrl() {
 		return siteInformation.getUrl() + "/ajax/publishers";
 	}
 	
-	public String getStaticUrl(String filename) {
-		return siteInformation.getStaticRoot() + filename;
-	}
 	
 	public String getFeedUrl(Feed feed) {		
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();

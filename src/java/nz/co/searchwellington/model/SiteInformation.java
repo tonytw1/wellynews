@@ -10,6 +10,7 @@ public class SiteInformation {
     private String adsenseAccount;
     private String twitterUsername;
     private String googleMapsApiKey;
+    private String imageRoot;
     private String staticRoot;
     private String feedburnerUrl;
     
@@ -84,5 +85,13 @@ public class SiteInformation {
 	public void setFeedburnerUrl(String feedburnerUrl) {
 		this.feedburnerUrl = feedburnerUrl;
 	}
-	
+
+	public String getImageRoot() {
+		return imageRoot;
+	}
+
+	public void setImageRoot(String imageRoot) {
+		this.imageRoot = imageRoot;
+	}
+		
 }

@@ -1,1 +1,1 @@
-<img src="/images/geotag_16.png" alt="Geotagged" border="0">
+<img src="$urlBuilder.getImageUrl('geotag_16.png')" alt="Geotagged" border="0">
