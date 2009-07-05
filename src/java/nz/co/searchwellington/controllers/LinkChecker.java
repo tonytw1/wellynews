@@ -11,8 +11,10 @@ import java.util.Iterator;
 
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.commentfeeds.CommentFeedGuesserService;
+import nz.co.searchwellington.commentfeeds.guessers.CommentFeedGuesser;
 import nz.co.searchwellington.commentfeeds.guessers.EyeOfTheFishCommentFeedGuesser;
 import nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser;
+import nz.co.searchwellington.commentfeeds.guessers.WordpressDotComCommentFeedGuesser;
 import nz.co.searchwellington.feeds.CommentFeedReader;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.htmlparsing.LinkExtractor;
@@ -159,11 +161,12 @@ public class LinkChecker {
 
     private void addGuessedCommentFeeds(Resource checkResource) {
         // TODO Inject with spring.       
-        EyeOfTheFishCommentFeedGuesser eyeOfTheFishCommentFeedGuesser = new EyeOfTheFishCommentFeedGuesser();       
-        WordpressCommentFeedGuesser wordpressCommentFeedGuesser = new WordpressCommentFeedGuesser();
-    	
-        CommentFeedGuesserService commentFeedGuesser = new CommentFeedGuesserService(eyeOfTheFishCommentFeedGuesser, wordpressCommentFeedGuesser); 
-        String commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(checkResource.getUrl());             
+        CommentFeedGuesser eyeOfTheFishCommentFeedGuesser = new EyeOfTheFishCommentFeedGuesser();       
+        CommentFeedGuesser wordpressCommentFeedGuesser = new WordpressCommentFeedGuesser();
+        CommentFeedGuesser wordpressDotComCommentFeedGuesser = new WordpressDotComCommentFeedGuesser();
+        
+        CommentFeedGuesserService commentFeedGuesser = new CommentFeedGuesserService(eyeOfTheFishCommentFeedGuesser, wordpressCommentFeedGuesser, wordpressDotComCommentFeedGuesser); 
+        String commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(checkResource.getUrl());
         if (commentFeedUrl != null) {
             recordCommentFeed(checkResource, commentFeedUrl);         
         }
