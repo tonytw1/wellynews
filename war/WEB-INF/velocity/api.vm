@@ -20,7 +20,7 @@
 		</ul>	
 
 		<center>
-			<img src="/images/wordel.png" width="520" border="0" vspace="0">
+			<img src="$urlBuilder.getImageUrl('wordel.png')" width="520" border="0" vspace="0">
 		</center>
 		<br />
 		
