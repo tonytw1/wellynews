@@ -3,57 +3,51 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
 
 
-<div class="left">
-
-#parse("includes/tag_tree.vm")
-
-
-</div>
+	<div class="left">
+		#parse("includes/160x600ad.vm")
+		#parse("includes/tag_tree.vm")
+	</div>
 
 
-<div class="main">
+	<div class="main">
+	
+		<div class="rss">
+			#parse("includes/rss_widget_for_publisher.vm")
+		</div>
 
-<div class="rss">
-#parse("includes/rss_widget_for_publisher.vm")
-</div>
-
-
-<h2><a href="$site_information.url/archive">Archive</a> / $heading</h2>
-
-#parse("includes/search_widget.vm")
-
-
-#if ($previous_page || $next_page)
-	#if ($previous_page) 
-		<a href="$urlBuilder.getArchiveLinkUrl($previous_page)">$dateFormatter.formatDate($previous_page.month, 'MMMM yyyy')</a> 
-	#end
-	|
-	#if ($next_page) 
-		<a href="$urlBuilder.getArchiveLinkUrl($next_page)">$dateFormatter.formatDate($next_page.month, 'MMMM yyyy')</a>
-	#end
-#end
+	
+		<h2><a href="$site_information.url/archive">Archive</a> / $heading</h2>
+		#parse("includes/search_widget.vm")
 
 
-#parse("includes/main_content.vm")
-</div>
+		#if ($previous_page || $next_page)
+			#if ($previous_page) 
+				<a href="$urlBuilder.getArchiveLinkUrl($previous_page)">$dateFormatter.formatDate($previous_page.month, 'MMMM yyyy')</a> 
+			#end
+			|
+			#if ($next_page) 
+				<a href="$urlBuilder.getArchiveLinkUrl($next_page)">$dateFormatter.formatDate($next_page.month, 'MMMM yyyy')</a>
+			#end
+		#end
 
-<div class="right">
-#parse("includes/login.vm")
 
+		#parse("includes/main_content.vm")
+	</div>
 
+	<div class="right">
+		#parse("includes/login.vm")
 
-<div class="box">
-#parse("includes/archive.vm")
-</div>
+		<div class="box">
+			#parse("includes/archive.vm")
+		</div>
 
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-</div>
-
-</div>
+		<div class="box">
+			#parse("includes/latest_newsitems.vm")
+		</div>
+	</div>
 
 </div>
 
