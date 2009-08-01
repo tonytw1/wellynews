@@ -178,12 +178,31 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         Feed relatedFeed = tag.getRelatedFeed();
         if (relatedFeed != null) {
             log.info("Related feed is: " + relatedFeed.getName());
+            mv.addObject("related_feed", relatedFeed);
+            
             List<FeedNewsitem> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);
-            mv.addObject("related_feed", relatedFeed);   
+            addSupressionAndLocalCopyInformation(relatedFeedItems);
             mv.addObject("related_feed_items", relatedFeedItems);            
         } else {
             log.debug("No related feed.");
         }
     }
+    
+    
+    
+    // TODO duplication this needs to be shared with the tag related feed on tag pages.
+	private void addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+		for (FeedNewsitem feedNewsitem : feedNewsitems) {
+			if (feedNewsitem.getUrl() != null) {
+				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
+				if (localCopy != null) {
+					feedNewsitem.setLocalCopy(localCopy);
+				}				
+				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
+				feedNewsitem.setSuppressed(isSuppressed);						
+			}
+		}
+	}
+    
     
 }

@@ -42,17 +42,7 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 				mv.addObject("feed", feed);        
 				
 				List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
-				for (FeedNewsitem feedNewsitem : feedNewsitems) {
-					if (feedNewsitem.getUrl() != null) {
-						Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
-						if (localCopy != null) {
-							feedNewsitem.setLocalCopy(localCopy);
-						}
-						
-						boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
-						feedNewsitem.setSuppressed(isSuppressed);						
-					}
-				}
+				addSupressionAndLocalCopyInformation(feedNewsitems);
 		            
 		       if (feedNewsitems != null && feedNewsitems.size() > 0) {
 		    	   mv.addObject("main_content", feedNewsitems);
@@ -67,6 +57,21 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 			}
 		}
 		return null;
+	}
+
+	
+	// TODO this needs to be shared with the tag related feed on tag pages.
+	private void addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+		for (FeedNewsitem feedNewsitem : feedNewsitems) {
+			if (feedNewsitem.getUrl() != null) {
+				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
+				if (localCopy != null) {
+					feedNewsitem.setLocalCopy(localCopy);
+				}				
+				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
+				feedNewsitem.setSuppressed(isSuppressed);						
+			}
+		}
 	}
 	
 	
