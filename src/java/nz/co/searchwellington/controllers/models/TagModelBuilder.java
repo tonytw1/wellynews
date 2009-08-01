@@ -16,6 +16,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SupressionDAO;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
@@ -31,15 +32,17 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RelatedTagsService relatedTagsService;
 	private ConfigDAO configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
+	private SupressionDAO supressionDAO;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, SupressionDAO supressionDAO) {
 		this.resourceDAO = resourceDAO;	
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.configDAO = configDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
+		this.supressionDAO = supressionDAO;
 	}
 
 	
@@ -198,7 +201,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 				if (localCopy != null) {
 					feedNewsitem.setLocalCopy(localCopy);
 				}				
-				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
+				boolean isSuppressed = supressionDAO.isSupressed(feedNewsitem.getUrl());					
 				feedNewsitem.setSuppressed(isSuppressed);						
 			}
 		}

@@ -34,8 +34,22 @@
 	</bean>
 	
 		
-
+	<bean id="sampleConsumer" class="nz.co.searchwellington.openid.SampleConsumer">
 	
+	
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/openid/login">login</prop>
+						<prop key="/openid/return">callback</prop>						
+					</props>
+				</property>
+			</bean>		
+		</property>	
+		
+		
+	</bean>
 		
 	<bean id="indexController" class="nz.co.searchwellington.controllers.IndexController">		
 		<constructor-arg ref="resourceDAO" />		
@@ -636,7 +650,10 @@
 				<prop key="/comment">tagController</prop>
 				<prop key="/geotagged">tagController</prop>            	
             	<prop key="/justin">tagController</prop>				
-				
+					
+				<prop key="/openid/login">sampleConsumer</prop>	
+				<prop key="/openid/return">sampleConsumer</prop>
+									
             </props>
         </property>
     </bean>
