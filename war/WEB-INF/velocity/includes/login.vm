@@ -1,4 +1,4 @@
-#if ($login_prompt)
+#if ($login_prompt && !$loggedInUserFilter.getLoggedInUser())
 	<div class="box">
 		<h2>Sign in</h2>
 		
