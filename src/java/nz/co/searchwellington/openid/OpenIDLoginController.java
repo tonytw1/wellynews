@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.UserImpl;
 import nz.co.searchwellington.repositories.UserRepository;
 
 import org.apache.log4j.Logger;
@@ -103,21 +104,35 @@ public class OpenIDLoginController extends MultiActionController {
 
 		// examine the verification result and extract the verified identifier
 		Identifier verified = verification.getVerifiedId();
-		log.info("Verfied identifer: " + verified.getIdentifier());
 		
 		if (verified != null) {			
+			final String username = verified.getIdentifier();
+			log.info("Verfied identifer: " + username);
+			
 			mv.addObject("id", verified);			
-			User user = userDAO.getUser(verified.getIdentifier());
-			if (user != null) {
-				request.getSession().setAttribute("user", user);
-				log.info("Logged in user: " + user.getUsername());
+			User user = userDAO.getUser(username);
+			
+			if (user == null) {				
+				// Create new user
+				User newUser = new UserImpl(username);
+				userDAO.saveUser(newUser);
+				setUser(request, newUser);
+				return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
 			}
+			
+			setUser(request, user);			
 						
 		} else {
 			mv.addObject("error", "Could not verify id");			
 		}
 		
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
+	}
+
+	private void setUser(HttpServletRequest request, User user) {
+		request.getSession().setAttribute("user", user);
+		log.info("Logged in user: " + user.getUsername());
+		request.getSession().setAttribute("login_prompt", null);
 	}
 	
 }

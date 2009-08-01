@@ -75,7 +75,7 @@
 				<li><a href="edit/submit/calendar">Submit Calendar</a></li>
 			</ul>
 
-			#if ($loggedInUserFilter.getLoggedInUser()) 
+			#if ($editPermissionService.canAddWatchlistAndTag() ) 
 				<ul>
 					<li><a href="edit/submit/watchlist">Submit Watchlist item</a></li>
 					<li><a href="edit/tag/submit">Submit Tag</a></li>

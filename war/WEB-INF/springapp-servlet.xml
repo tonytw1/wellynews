@@ -105,14 +105,12 @@
 	
 	
 		
-	<bean id="loginController" class="nz.co.searchwellington.controllers.LoginController">
-		<constructor-arg ref="userDAO" />
+	<bean id="loginController" class="nz.co.searchwellington.controllers.LoginController">	
 		<constructor-arg ref="urlStack" />	
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
-					<props>
-						<prop key="/login/login">login</prop>
+					<props>					
 						<prop key="/login/logout">logout</prop>
 						<prop key="/login/prompt">prompt</prop>									
 					</props>
@@ -625,8 +623,7 @@
 				<prop key="/cancel">cancelController</prop>
 				<prop key="/login/logout">loginController</prop>	
 				<prop key="/login/prompt">loginController</prop>
-				<prop key="/login/login">loginController</prop>
-				
+								
 				<prop key="/openid/auth">loginController</prop>
 				<prop key="/openid/verify">loginController</prop>
 				

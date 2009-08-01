@@ -14,18 +14,15 @@ public class HibernateBackedUserDAO implements UserRepository {
         super();
         this.sessionFactory = sessionFactory;
     }
-    
-    
-    public User getUser(String username, String password) {
-        User user = (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("username", username)).uniqueResult();
-        if (user != null && user.getPassword() != null && user.getPassword().equals(password)) {
-            return user;
-        }        
-        return null;
-    }
-        
+          
     public User getUser(String username) {
     	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("username", username)).uniqueResult();     
+    }
+    
+    
+    public void saveUser(User user) {     
+        sessionFactory.getCurrentSession().saveOrUpdate(user);
+        sessionFactory.getCurrentSession().flush();       
     }
 
 }

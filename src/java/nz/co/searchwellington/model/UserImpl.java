@@ -7,24 +7,18 @@ public class UserImpl implements User {
 
     int id;
     String username;
-    String password;
-   
+    boolean admin;
+    
   
     public UserImpl() {
     }
-
     
-    public UserImpl(String username, String password) {     
-        this.username = username;
-        this.password = password;        
-    }
+    public UserImpl(String username) {
+    	this.username = username;
+	}
 
 
-    
-    
-
-
-    public int getId() {
+	public int getId() {
         return id;
     }
 
@@ -33,28 +27,23 @@ public class UserImpl implements User {
         this.id = id;
     }
 
-
-    public String getPassword() {
-        return password;
-    }
-
-
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-
-
     public String getUsername() {
         return username;
     }
 
-
-
     public void setUsername(String username) {
         this.username = username;
     }
+
+
+	public boolean isAdmin() {
+		return admin;
+	}
+
+
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
+	}
  
     
     

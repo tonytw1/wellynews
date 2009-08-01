@@ -22,12 +22,18 @@ public class EditPermissionService {
 	
 	public boolean canEdit(Resource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
-		return loggedInUser != null;
+		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 	
 	public boolean canEdit(Tag tag) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
-		return loggedInUser != null;
+		return loggedInUser != null && loggedInUser.isAdmin();
+	}
+	
+	
+	public boolean canAddWatchlistAndTag() {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
+		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 		
 }
