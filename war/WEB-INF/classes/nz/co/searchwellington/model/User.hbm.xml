@@ -8,10 +8,7 @@
     <class 	name="nz.co.searchwellington.model.UserImpl" 
 			proxy="nz.co.searchwellington.model.User"
 			table="user" >
-			
- 
- 	
- 	
+		 	
         <id name="id" type="integer" unsaved-value="0" >
             <column name="id" sql-type="integer" not-null="true"/>
                     <generator class="native"/>
@@ -20,14 +17,11 @@
         <property name="username">
             <column name="username" length="255" not-null="true"/>
         </property>
-        
-         <property name="password">
-            <column name="password" length="255" not-null="true"/>
-        </property>
-        
-        
-      
-               
+                
+        <property name="admin" type="boolean">
+			<column name="admin" />
+		</property>	
+                       
     </class>
 
 </hibernate-mapping>
