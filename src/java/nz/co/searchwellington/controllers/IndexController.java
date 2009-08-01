@@ -10,12 +10,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Event;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;

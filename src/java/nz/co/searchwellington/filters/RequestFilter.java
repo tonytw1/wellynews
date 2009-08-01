@@ -43,6 +43,7 @@ public class RequestFilter {
     	
     	
         // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
+    	// Used by the rssfeeds index page?
         if (request.getParameter("tag") != null) {
             String tagName = request.getParameter("tag");            
             Tag tag = resourceDAO.loadTagByName(tagName);             
@@ -180,10 +181,12 @@ public class RequestFilter {
 
 	protected Integer parseResourceIDFromRequestParameter(HttpServletRequest request) {
         Integer requestResourceID = null;        
-        if (request.getParameter("resource") != null) {        
-            // TODO does not fail gracefully of an invalid int is given.
-            // Should just give a null resource and keep going in this case.
-            requestResourceID= Integer.parseInt(request.getParameter("resource"));           
+        if (request.getParameter("resource") != null) {       
+        	try {
+        		requestResourceID = Integer.parseInt(request.getParameter("resource"));
+        	} catch (Exception e) {
+        		return null;
+			}
         }
         return requestResourceID;
     }
