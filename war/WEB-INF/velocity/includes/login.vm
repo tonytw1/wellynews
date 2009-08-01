@@ -2,21 +2,18 @@
 	<div class="box">
 		<h2>Sign in</h2>
 		
-		<form action="$site_information.url/login/login" method="POST">
-			<input type="hidden" name="action" value="login">
- 
+		<p>Registered users only.</p>
+		
+		<form action="$site_information.url/openid/login" method="POST"> 
  			<fieldset>
-	  			<label for="username">Username:</label>
-				<input name="username" class="body">
-				<br />
-				
-				<label for="password">Password:</label>
-	 			<input name="password" class="body" type="password">
-	 			<br />
+	  			<label for="openid_claimed_identity">OpenID:</label>
+				<input name="openid_claimed_identity" class="body">				
+		     	<input type="submit" class="password" value="login">                        	  	
 	  		</fieldset>
-    
-	     	<input type="submit" class="password" value="login">                        	  	
 		</form>
+		
+		Or sign in using your 
+		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">
+		Google account</a>.
 	</div>     		
 #end
-	

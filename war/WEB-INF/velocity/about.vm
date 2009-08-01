@@ -116,23 +116,6 @@ settlers.
 #parse("includes/login.vm")
 
 
-#if ($login_prompt)
-	<div class="box">
-		<h2>OpenID sign in</h2>		
-		<p>Experimental - currently only available to previously registered users.</p>
-		
-		<form action="$site_information.url/openid/login" method="POST"> 
- 			<fieldset>
-	  			<label for="openid_claimed_identity">OpenID:</label>
-				<input name="openid_claimed_identity" class="body">
-				<br />				
-	  		</fieldset>
-    
-	     	<input type="submit" class="password" value="login">                        	  	
-		</form>
-	</div>     		
-#end
-	
 
 <div class="box">
 #parse("includes/latest_newsitems.vm")
