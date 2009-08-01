@@ -23,6 +23,10 @@ public class HibernateBackedUserDAO implements UserRepository {
         }        
         return null;
     }
+        
+    public User getUser(String username) {
+    	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("username", username)).uniqueResult();     
+    }
 
 }
 

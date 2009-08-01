@@ -34,21 +34,21 @@
 	</bean>
 	
 		
-	<bean id="sampleConsumer" class="nz.co.searchwellington.openid.SampleConsumer">
-	
-	
+	<bean id="openIDLoginController" class="nz.co.searchwellington.openid.OpenIDLoginController">
+		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="userDAO" />
+		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
 						<prop key="/openid/login">login</prop>
-						<prop key="/openid/return">callback</prop>						
+						<prop key="/openid/callback">callback</prop>						
 					</props>
 				</property>
 			</bean>		
-		</property>	
-		
-		
+		</property>					
 	</bean>
 		
 	<bean id="indexController" class="nz.co.searchwellington.controllers.IndexController">		
@@ -651,8 +651,8 @@
 				<prop key="/geotagged">tagController</prop>            	
             	<prop key="/justin">tagController</prop>				
 					
-				<prop key="/openid/login">sampleConsumer</prop>	
-				<prop key="/openid/return">sampleConsumer</prop>
+				<prop key="/openid/login">openIDLoginController</prop>	
+				<prop key="/openid/callback">openIDLoginController</prop>
 									
             </props>
         </property>

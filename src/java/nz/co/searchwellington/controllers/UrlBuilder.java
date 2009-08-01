@@ -83,6 +83,9 @@ public class UrlBuilder {
 	    String monthString = df.format(month.getTime());
 	    return siteInformation.getUrl() + "/archive/" + yearString + "/" + monthString.toLowerCase();		
 	}
-	
-	
+
+	public String getOpenIDCallbackUrl() {
+		return siteInformation.getUrl() + "/openid/callback";
+	}
+		
 }
