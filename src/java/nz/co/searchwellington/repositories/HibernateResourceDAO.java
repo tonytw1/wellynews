@@ -16,6 +16,7 @@ import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
@@ -148,6 +149,14 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
+    @SuppressWarnings("unchecked")  
+    final public List<Resource> getOwnedBy(User owner) {    
+        return sessionFactory.getCurrentSession().createCriteria(Resource.class).
+                add(Restrictions.eq("owner", owner)).
+                addOrder(Order.desc("date")).
+                addOrder(Order.desc("id")).
+                list();
+    }
     
     
     

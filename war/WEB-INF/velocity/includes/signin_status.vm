@@ -1,7 +1,8 @@
 <div class="signinstatus">
 	<ul>
 	#if ($loggedInUserFilter.getLoggedInUser())
-		<li>Logged in as $loggedInUserFilter.getLoggedInUser().getUsername()</li> <li><a href="$site_information.url/login/logout">logout</a></li>
+		<li>Logged in as <a href="$site_information.url/profile">$loggedInUserFilter.getLoggedInUser().getUsername()</a></li>
+		<li><a href="$site_information.url/login/logout">logout</a></li>
 	#else
 		<li><a href="$site_information.url/login/prompt">Sign in</a></li>        		
 	#end

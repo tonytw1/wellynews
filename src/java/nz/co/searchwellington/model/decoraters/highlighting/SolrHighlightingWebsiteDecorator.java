@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
@@ -177,5 +178,14 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 	public void setUrlWords(String urlWords) {
 		website.setUrlWords(urlWords);
 	}
+
+	public User getOwner() {
+		return website.getOwner();
+	}
+
+	public void setOwner(User owner) {
+		website.setOwner(owner);
+	}
+	
 	
 }

@@ -53,7 +53,8 @@ public interface Resource {
 	public void getRemoveTag(Tag tag);
 	public String getUrlWords();
 	public void setUrlWords(String urlWords);
-    
-    
-  
+	
+	public User getOwner();
+	public void setOwner(User owner);
+	
 }

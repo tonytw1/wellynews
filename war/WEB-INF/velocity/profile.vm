@@ -25,11 +25,28 @@
 
 <h2>$heading</h2>
 
-<ul>
-<li>Username:</li>
-<li>openID</li>
-</ul>
-
+#if ($user) 
+	<ul>
+	<li>openID: $user.username</li>
+	</ul>
+	
+	
+	<h3>Your submissions</h3>
+	
+	#if ($submitted.size() > 0) 
+		<ul class="flat_list">
+			#foreach($item in $submitted)
+				<li class="content_item">
+					<ul class="main_content_item">
+						#parse("includes/content_element.vm")
+					</ul>
+				</li>
+			#end
+		</ul>
+	#else
+		<p>You have not made any submissions.</p>
+	#end
+#end
 
 </div>
 

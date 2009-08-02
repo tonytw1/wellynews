@@ -368,6 +368,12 @@ private void removePublisherFromPublishersContent(Resource editResource) {
                     editResource = resourceDAO.createNewWebsite();
                 }
             }
+            
+            if (loggedInUser != null) {
+            	log.info("New resource assigned to owner: " + loggedInUser.getUsername());
+            	editResource.setOwner(loggedInUser);
+            }
+            
         }
        
         log.info("In save");

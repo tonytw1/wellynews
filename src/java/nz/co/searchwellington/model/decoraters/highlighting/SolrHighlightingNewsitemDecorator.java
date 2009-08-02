@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -233,12 +234,14 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		newsitem.setUrlWords(urlWords);
 	}
 
+
+	public User getOwner() {
+		return newsitem.getOwner();
+	}
+
+
+	public void setOwner(User owner) {
+		newsitem.setOwner(owner);		
+	}
 	
-	
-    
-    
-    
-    
-   
-    
 }

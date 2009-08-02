@@ -23,6 +23,7 @@
 						<prop key="/feeds/discovered">discovered</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
 						<prop key="/api">api</prop>
+						<prop key="/profile">profile</prop>
 						<prop key="/publishers">publishers</prop>
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
@@ -564,6 +565,7 @@
             	<prop key="/calendars">simplePageController</prop>            	
            		<prop key="/feeds/discovered">simplePageController</prop>           	
 				<prop key="/lastupdated">simplePageController</prop>
+				<prop key="/profile">simplePageController</prop>
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/tags">simplePageController</prop>
 				<prop key="/twitter">simplePageController</prop>				

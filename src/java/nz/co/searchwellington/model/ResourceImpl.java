@@ -35,6 +35,8 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
     protected int technoratiCount;
     protected Geocode geocode;
 
+    protected User owner;
+    
     
     public Date getDate() {
         return date;
@@ -169,4 +171,11 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
 		this.urlWords = urlWords;
 	}
 	
+	public User getOwner() {
+		return owner;
+	}
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+		
 }

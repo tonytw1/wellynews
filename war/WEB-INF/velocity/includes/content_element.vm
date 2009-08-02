@@ -152,7 +152,10 @@
 					#end
 					<li>Http Status: $item.httpStatus</li>
 				#end
-				
+							
+				#if ($item.owner) 	
+					<li>Submitted by: $item.owner.username</li>
+				#end			
 		</ul>				
 	</li>
 					
