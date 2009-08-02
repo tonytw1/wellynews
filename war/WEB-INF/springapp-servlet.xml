@@ -418,6 +418,8 @@
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="rssPrefetcher" />
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="editPermissionService" />
+		<constructor-arg ref="urlStack" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

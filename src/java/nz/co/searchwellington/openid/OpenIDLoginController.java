@@ -121,7 +121,12 @@ public class OpenIDLoginController extends MultiActionController {
 			}
 			
 			setUser(request, user);			
-						
+			
+			// TODO Apply ownership to anything on the session.
+			
+			
+			
+			
 		} else {
 			mv.addObject("error", "Could not verify id");			
 		}

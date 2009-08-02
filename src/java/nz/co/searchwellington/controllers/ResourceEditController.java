@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
+import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
@@ -42,6 +43,7 @@ import nz.co.searchwellington.widgets.TagWidgetFactory;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.sun.syndication.io.FeedException;
 
@@ -67,6 +69,7 @@ public class ResourceEditController extends BaseTagEditingController {
     private GoogleGeoCodeService geocodeService;
     private UrlCleaner urlCleaner;
     private RssNewsitemPrefetcher rssPrefetcher;
+    private EditPermissionService editPermissionService;
 
     
       
@@ -74,7 +77,7 @@ public class ResourceEditController extends BaseTagEditingController {
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.requestFilter = requestFilter;       
@@ -89,40 +92,38 @@ public class ResourceEditController extends BaseTagEditingController {
         this.urlCleaner = urlCleaner;
         this.rssPrefetcher = rssPrefetcher;
         this.loggedInUserFilter = loggedInUserFilter;
+        this.editPermissionService = editPermissionService;
+        this.urlStack = urlStack;
     }
    
     
        
     @Transactional
-    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView("editResource");
-        loggedInUserFilter.loadLoggedInUser(request);
-        populateCommonLocal(mv);
-        mv.addObject("heading", "Editing a Resource");
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();;
-        boolean userIsLoggedIn = loggedInUser != null;
-        
-        Resource editResource = null;
-        requestFilter.loadAttributesOntoRequest(request);
-           
-        if (request.getAttribute("resource") != null) {
-            editResource = (Resource) request.getAttribute("resource");
-        
-            if (userIsAllowedToEdit(editResource, request, loggedInUser)) {
-                mv.addObject("resource", editResource);
-                mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
-                mv.addObject("show_additional_tags", 1);                
-                populatePublisherField(mv, userIsLoggedIn, editResource);
+    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
+    	requestFilter.loadAttributesOntoRequest(request);
+    	loggedInUserFilter.loadLoggedInUser(request);
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();;
+    	
+    	Resource editResource = (Resource) request.getAttribute("resource");    	
+    	if (request.getAttribute("resource") != null && userIsAllowedToEdit(editResource, request, loggedInUser)) {    		
+    		ModelAndView mv = new ModelAndView("editResource");
+    		populateCommonLocal(mv);
+    		mv.addObject("heading", "Editing a Resource");
+    		
+            mv.addObject("resource", editResource);
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
+            mv.addObject("show_additional_tags", 1);
+            
+            boolean userIsLoggedIn = loggedInUser != null;
+            populatePublisherField(mv, userIsLoggedIn, editResource);
                 
-                if (editResource.getType().equals("F")) {            
-                    mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect (((Feed)editResource).getAcceptancePolicy()));                   
-                }                
-            }
+            if (editResource.getType().equals("F")) {            
+            	mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect (((Feed)editResource).getAcceptancePolicy()));                   
+            }                
+            return mv;
         }
-        
-        // TODO view should know what todo if no editresource is put onto the model.        
-        return mv;
+       
+    	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   	
     }
 
 
@@ -553,13 +554,9 @@ private void removePublisherFromPublishersContent(Resource editResource) {
     
 
     private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {
-        if (loggedInUser != null) {
-            return true;
-        }
-        if (resourceIsInUsersSessions(request, editResource.getId())) {
-            return true;
-        }        
-        return false;
+    	System.out.println(editPermissionService);
+    	System.out.println(editResource);
+    	return editPermissionService.canEdit(editResource) || resourceIsInUsersSessions(request, editResource.getId());       
     }
 
 
