@@ -103,7 +103,6 @@ public class ResourceEditController extends BaseTagEditingController {
     @Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
     	adminRequestFilter.loadAttributesOntoRequest(request);    	
-    	loggedInUserFilter.loadLoggedInUser(request);
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();;
     	
     	Resource editResource = (Resource) request.getAttribute("resource");    	
@@ -131,8 +130,7 @@ public class ResourceEditController extends BaseTagEditingController {
 
     @Transactional
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {        
-        ModelAndView modelAndView = new ModelAndView("acceptResource");
-        loggedInUserFilter.loadLoggedInUser(request);
+        ModelAndView modelAndView = new ModelAndView("acceptResource");       
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Submitting a Resource");
         
@@ -175,7 +173,6 @@ public class ResourceEditController extends BaseTagEditingController {
 
 
 	private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
-		loggedInUserFilter.loadLoggedInUser(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (loggedInUser == null) {
             modelAndView.addObject("spam_question", "The capital of New Zealand is (10 letters)");
@@ -270,7 +267,6 @@ public class ResourceEditController extends BaseTagEditingController {
    @Transactional
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
-        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
@@ -310,7 +306,6 @@ private void removePublisherFromPublishersContent(Resource editResource) {
    @Transactional
     public ModelAndView deleteAndSupress(HttpServletRequest request, HttpServletResponse response) throws IOException {   
         ModelAndView modelAndView = new ModelAndView("deletedResource");
-        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
@@ -341,7 +336,6 @@ private void removePublisherFromPublishersContent(Resource editResource) {
 	   	// TODO is this needed?
         request.setCharacterEncoding("UTF-8");                
         ModelAndView modelAndView = new ModelAndView("savedResource");
-        loggedInUserFilter.loadLoggedInUser(request);
         populateCommonLocal(modelAndView);       
         modelAndView.addObject("heading", "Resource Saved");
         

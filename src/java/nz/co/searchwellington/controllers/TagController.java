@@ -37,7 +37,6 @@ public class TagController extends BaseMultiActionController {
     
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         logger.info("Starting normal content");                                  
-        loggedInUserFilter.loadLoggedInUser(request);
         boolean showBroken = false;
         
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);

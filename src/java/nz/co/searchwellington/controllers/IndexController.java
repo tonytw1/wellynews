@@ -55,8 +55,7 @@ public class IndexController extends BaseMultiActionController {
         
     @SuppressWarnings("unchecked")
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException, IllegalArgumentException, FeedException {
-    	logger.info("Starting index.");
-    	loggedInUserFilter.loadLoggedInUser(request);    	
+    	logger.info("Starting index.");    	  	
         ModelAndView mv = new ModelAndView();
         
         urlStack.setUrlStack(request);

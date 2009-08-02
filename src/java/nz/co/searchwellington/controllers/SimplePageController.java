@@ -50,7 +50,6 @@ public class SimplePageController extends BaseMultiActionController {
        
     public ModelAndView about(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);  
         urlStack.setUrlStack(request);
                     
         populateLocalCommon(mv);             
@@ -68,7 +67,6 @@ public class SimplePageController extends BaseMultiActionController {
       
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);  
         urlStack.setUrlStack(request);
 
         populateLocalCommon(mv);        
@@ -87,7 +85,6 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         
@@ -107,7 +104,6 @@ public class SimplePageController extends BaseMultiActionController {
         
     public ModelAndView calendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);  
         urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         
@@ -126,7 +122,6 @@ public class SimplePageController extends BaseMultiActionController {
        
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
         
         urlStack.setUrlStack(request);
@@ -144,7 +139,6 @@ public class SimplePageController extends BaseMultiActionController {
                 
     public ModelAndView lastUpdated(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         populateLocalCommon(mv);
 
         urlStack.setUrlStack(request);
@@ -165,7 +159,6 @@ public class SimplePageController extends BaseMultiActionController {
 
     public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         
@@ -185,7 +178,6 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         urlStack.setUrlStack(request);
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -208,7 +200,6 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         
@@ -227,7 +218,6 @@ public class SimplePageController extends BaseMultiActionController {
     
     public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         urlStack.setUrlStack(request);
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -253,7 +243,6 @@ public class SimplePageController extends BaseMultiActionController {
      
     public ModelAndView watchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         urlStack.setUrlStack(request);
         populateLocalCommon(mv);
         

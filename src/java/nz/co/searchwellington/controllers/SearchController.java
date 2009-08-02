@@ -34,7 +34,6 @@ public class SearchController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")
 	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
         
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         

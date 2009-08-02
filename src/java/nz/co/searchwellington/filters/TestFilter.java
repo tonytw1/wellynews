@@ -10,17 +10,22 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
+
 public class TestFilter implements Filter{
 
 	private RequestFilter requestFilter;
+	private LoggedInUserFilter loggedInUserFilter;
 	
 	
-	public TestFilter(RequestFilter requestFilter) {	
+	public TestFilter(RequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter) {	
 		this.requestFilter = requestFilter;
+		this.loggedInUserFilter = loggedInUserFilter;
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		requestFilter.loadAttributesOntoRequest((HttpServletRequest) request);
+		loggedInUserFilter.loadLoggedInUser((HttpServletRequest) request);
 		chain.doFilter (request, response);
 	}
 	
