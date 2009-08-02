@@ -438,15 +438,17 @@ private void removePublisherFromPublishersContent(Resource editResource) {
             boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
             // TODO validate. - what exactly?
             if (okToSave) {              
-                resourceDAO.saveResource(editResource);
                 
          
                 if (resourceUrlHasChanged) {
                     linkCheckerQueue.add(editResource.getId());
+                    editResource.setHttpStatus(0);
                     log.info("Resource url has changed; will link check.");
                 } else {
                     log.info("Resource url has not changed; not adding to link check queue.");
                 }
+                
+                resourceDAO.saveResource(editResource);
                 modelAndView.addObject("item", editResource);
 
                 final boolean newPublicSubmission = loggedInUser == null && newSubmission;
