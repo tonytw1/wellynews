@@ -51,8 +51,8 @@
 		<property name="technoratiCount" type="integer">
         	<column name="technorati_count"/>
         </property>
-
-
+			
+		<many-to-one name="owner" class="nz.co.searchwellington.model.UserImpl" column="owner" cascade="" />
 
 		<set name="tags" table="resource_tags" access="field">
 			<cache usage="read-write" />		

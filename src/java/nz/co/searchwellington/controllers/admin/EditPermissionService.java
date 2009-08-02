@@ -21,9 +21,22 @@ public class EditPermissionService {
 
 	
 	public boolean canEdit(Resource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return isAdminOrOwner(resource, loggedInUser);
+	}
+	
+	
+	public boolean canDelete(Resource resource) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return isAdminOrOwner(resource, loggedInUser);
+	}
+
+	
+	public boolean canCheck(Resource resource) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
+
 	
 	public boolean canEdit(Tag tag) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
@@ -34,6 +47,22 @@ public class EditPermissionService {
 	public boolean canAddWatchlistAndTag() {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
 		return loggedInUser != null && loggedInUser.isAdmin();
+	}
+	
+	
+	private boolean isAdminOrOwner(Resource resource, User loggedInUser) {
+		if (loggedInUser == null) {
+			return false;
+		}
+		
+		if (loggedInUser.isAdmin()) {
+			return true;
+		}
+				
+		if (resource.getOwner() != null && loggedInUser.getId() == resource.getOwner().getId()) {
+			return true;
+		}
+		return false;
 	}
 		
 }

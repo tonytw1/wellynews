@@ -12,8 +12,9 @@
 	  		</fieldset>
 		</form>
 		
-		Or sign in using your 
-		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">
-		Google account</a>.
-	</div>     		
+		Sign in using your 
+		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a> 
+		or
+		<a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> account.
+	</div>
 #end
