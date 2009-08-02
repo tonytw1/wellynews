@@ -25,13 +25,32 @@ public class RequestFilter {
     Logger log = Logger.getLogger(RequestFilter.class);
     
     protected ResourceRepository resourceDAO;
+	private Resource anonResource;
 
-    public RequestFilter(ResourceRepository resourceDAO) {
-        this.resourceDAO = resourceDAO;     
+    public RequestFilter() {         
     }
     
-    public void loadAttributesOntoRequest(HttpServletRequest request) {
-    	
+    public RequestFilter(ResourceRepository resourceDAO) {
+        this.resourceDAO = resourceDAO;
+        this.anonResource = null;
+    }
+    
+    
+    private void loadAnonResource(HttpServletRequest request) {
+    	 Integer owned = (Integer) request.getSession().getAttribute("owned");
+         if (owned != null) {
+        	 this.anonResource = resourceDAO.loadResourceById(owned);
+         }
+    }
+    
+    
+    public Resource getAnonResource() {
+		return anonResource;
+	}
+
+    
+	public void loadAttributesOntoRequest(HttpServletRequest request) {
+    	loadAnonResource(request);
     	if (request.getParameter("page") != null) {
     		String pageString = request.getParameter("page");
     		try {
@@ -131,7 +150,7 @@ public class RequestFilter {
         	if (!isReservedUrlWord(match)) {
 	        	log.debug("'" + match + "' matches content");
 		        	
-	        	log.info("Looking for tag '" + match + "'");
+	        	log.info("Looking for tag '" + match + "'");	        	
 	        	Tag tag = resourceDAO.loadTagByName(match);
 		        if (tag != null) {
 		        	log.info("Setting tag: " + tag.getName());
@@ -172,6 +191,7 @@ public class RequestFilter {
     	Set<String> reservedUrlWords = new HashSet<String>();
     	reservedUrlWords.add("about");
     	reservedUrlWords.add("api");
+       	reservedUrlWords.add("index");
     	reservedUrlWords.add("feeds");
     	reservedUrlWords.add("comment");
     	reservedUrlWords.add("geotagged");

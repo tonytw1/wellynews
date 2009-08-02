@@ -8,6 +8,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Event;
 import nz.co.searchwellington.model.Resource;
@@ -35,10 +36,10 @@ public class IndexController extends BaseMultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private LoggedInUserFilter loggedInUserFilter;
 	private UrlBuilder urlBuilder;
+	private RequestFilter requestFilter;    
     
     
-    
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;       
@@ -47,14 +48,16 @@ public class IndexController extends BaseMultiActionController {
         this.rssUrlBuilder = rssUrlBuilder;
         this.loggedInUserFilter = loggedInUserFilter;
         this.urlBuilder = urlBuilder;
+        this.requestFilter = requestFilter;
     }
     
 
         
     @SuppressWarnings("unchecked")
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException, IllegalArgumentException, FeedException {
+    	logger.info("Starting index.");
     	loggedInUserFilter.loadLoggedInUser(request);
-        logger.info("Starting index.");
+    	requestFilter.loadAttributesOntoRequest(request);
         ModelAndView mv = new ModelAndView();
         
         urlStack.setUrlStack(request);
@@ -127,23 +130,15 @@ public class IndexController extends BaseMultiActionController {
         mv.addObject("commented_newsitems_moreurl", "comment");        
     }
 
-    
-    // TODO move to requestfilter and make available on all pages.
-    private void populateUserOwnedResource(HttpServletRequest request, ModelAndView mv, User loggedInUser) {
-        Integer ownedItemId = (Integer) request.getSession().getAttribute("owned");
-        if (ownedItemId != null) {
-            Resource ownedItem = resourceDAO.loadResourceById(ownedItemId);
-            if (ownedItem != null) {
-                log.info("Owned item put onto model: " + ownedItem.getName());
-                mv.addObject("owneditem", ownedItem);
-            } else {
-                log.warn("Could not load owned item with id: " + ownedItemId);
-            }
-        }
+        
+    private void populateUserOwnedResource(HttpServletRequest request, ModelAndView mv, User loggedInUser) {        
+    	Resource ownedItem = requestFilter.getAnonResource();
+    	if (ownedItem != null) {
+    		log.info("Owned item put onto model: " + ownedItem.getName());
+    		mv.addObject("owneditem", ownedItem);
+    	}        
     }
 
-
-    
     
     private Date monthOfLastItem(List<Resource> latestNewsitems) {
         if (latestNewsitems.size() > 0) {

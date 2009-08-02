@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
@@ -13,22 +14,26 @@ public class EditPermissionService {
 	   
 	
 	private LoggedInUserFilter loggedInUserFilter;
+	private RequestFilter requestFilter;
 	
 
-	public EditPermissionService(LoggedInUserFilter loggedInUserFilter) {	
+	public EditPermissionService(LoggedInUserFilter loggedInUserFilter, RequestFilter requestFilter) {	
 		this.loggedInUserFilter = loggedInUserFilter;
+		this.requestFilter = requestFilter;
 	}
 
 	
 	public boolean canEdit(Resource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return isAdminOrOwner(resource, loggedInUser);
+		boolean isOnRequest = requestFilter.getAnonResource() != null && requestFilter.getAnonResource().getId() == resource.getId();
+		return isAdminOrOwner(resource, loggedInUser) || isOnRequest;
 	}
 	
 	
 	public boolean canDelete(Resource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return isAdminOrOwner(resource, loggedInUser);
+		boolean isOnRequest = requestFilter.getAnonResource() != null && requestFilter.getAnonResource().getId() == resource.getId();
+		return isAdminOrOwner(resource, loggedInUser) || isOnRequest;
 	}
 
 	

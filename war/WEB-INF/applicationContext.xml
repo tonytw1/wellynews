@@ -22,9 +22,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" scope="request">
 		<aop:scoped-proxy/>
-	</bean>	
+	</bean>
+	
+			
 	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" >
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="requestFilter" />
 	</bean>
 	
 	
@@ -219,10 +222,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
 		
-	<bean id="requestFilter" class="nz.co.searchwellington.filters.RequestFilter">
+	<bean id="requestFilter" class="nz.co.searchwellington.filters.RequestFilter" scope="request">
 		<constructor-arg ref="resourceDAO" />
+		<aop:scoped-proxy/>
 	</bean>
-	
+		
 	<bean id="adminRequestFilter" class="nz.co.searchwellington.controllers.admin.AdminRequestFilter">
 		<constructor-arg ref="resourceDAO" />
 	</bean>

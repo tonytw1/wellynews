@@ -14,6 +14,7 @@ import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
+import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Feed;
@@ -58,7 +59,7 @@ public class ResourceEditController extends BaseTagEditingController {
     private static final String REQUEST_GEOCODE_NAME = "geocode";
        
     private RssfeedNewsitemService rssfeedNewsitemService;
-    private AdminRequestFilter requestFilter;    
+    private AdminRequestFilter adminRequestFilter;    
     private LinkCheckerQueue linkCheckerQueue;       
     private TagWidgetFactory tagWidgetFactory;
     private PublisherSelectFactory publisherSelectFactory;
@@ -70,17 +71,17 @@ public class ResourceEditController extends BaseTagEditingController {
     private UrlCleaner urlCleaner;
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
-
+    private RequestFilter requestFilter;
     
       
-    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter requestFilter, 
+    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter, 
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack, RequestFilter requestFilter) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
-        this.requestFilter = requestFilter;       
+        this.adminRequestFilter = adminRequestFilter;       
         this.linkCheckerQueue = linkCheckerQueue;
         this.tagWidgetFactory = tagWidgetFactory;
         this.publisherSelectFactory = publisherSelectFactory;
@@ -94,12 +95,14 @@ public class ResourceEditController extends BaseTagEditingController {
         this.loggedInUserFilter = loggedInUserFilter;
         this.editPermissionService = editPermissionService;
         this.urlStack = urlStack;
+        this.requestFilter = requestFilter;
     }
    
     
        
     @Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
+    	adminRequestFilter.loadAttributesOntoRequest(request);
     	requestFilter.loadAttributesOntoRequest(request);
     	loggedInUserFilter.loadLoggedInUser(request);
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();;
@@ -138,7 +141,7 @@ public class ResourceEditController extends BaseTagEditingController {
         boolean userIsLoggedIn = loggedInUser != null;
         
 
-        requestFilter.loadAttributesOntoRequest(request);
+        adminRequestFilter.loadAttributesOntoRequest(request);
         if (request.getAttribute("feedAttribute") != null) {
             Feed feed = (Feed) request.getAttribute("feedAttribute");
             
@@ -272,7 +275,7 @@ public class ResourceEditController extends BaseTagEditingController {
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
-        requestFilter.loadAttributesOntoRequest(request);    
+        adminRequestFilter.loadAttributesOntoRequest(request);    
         Resource editResource = (Resource) request.getAttribute("resource");       
         if (editResource != null) {
             modelAndView.addObject("resource", editResource);
@@ -312,7 +315,7 @@ private void removePublisherFromPublishersContent(Resource editResource) {
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
-        requestFilter.loadAttributesOntoRequest(request);    
+        adminRequestFilter.loadAttributesOntoRequest(request);    
         Resource editResource = (Resource) request.getAttribute("resource");       
         if (editResource != null) {             
             modelAndView.addObject("resource", editResource);
@@ -346,7 +349,7 @@ private void removePublisherFromPublishersContent(Resource editResource) {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
         Resource editResource = null;
-        requestFilter.loadAttributesOntoRequest(request);   
+        adminRequestFilter.loadAttributesOntoRequest(request);   
         
         
         if (request.getAttribute("resource") != null) {
@@ -553,21 +556,10 @@ private void removePublisherFromPublishersContent(Resource editResource) {
     }
     
 
-    private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {
-    	System.out.println(editPermissionService);
-    	System.out.println(editResource);
-    	return editPermissionService.canEdit(editResource) || resourceIsInUsersSessions(request, editResource.getId());       
+    private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {    
+    	return editPermissionService.canEdit(editResource);
     }
 
-
-
-    private boolean resourceIsInUsersSessions(HttpServletRequest request, int id) {
-        Integer owned = (Integer) request.getSession().getAttribute("owned");
-        if (owned != null) {
-            return owned == id;
-        }
-        return false;
-    }
 
 
     private void populateCommonLocal(ModelAndView mv) {      
