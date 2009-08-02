@@ -18,20 +18,17 @@ import com.sun.syndication.io.FeedException;
 
 
 public class TagController extends BaseMultiActionController {
-
-    private RequestFilter requestFilter;
+   
     private LoggedInUserFilter loggedInUserFilter;   
     private ContentModelBuilderService contentModelBuilder;
 
 
-    public TagController(ResourceRepository resourceDAO, 
-    		RequestFilter requestFilter, 
+    public TagController(ResourceRepository resourceDAO,    	
     		LoggedInUserFilter loggedInUserFilter,
     		UrlStack urlStack,  		   		
     		ContentModelBuilderService contentModelBuilder
     		) {
-        this.resourceDAO = resourceDAO;    
-        this.requestFilter = requestFilter;
+        this.resourceDAO = resourceDAO;      
         this.loggedInUserFilter = loggedInUserFilter;
         this.urlStack = urlStack;               
         this.contentModelBuilder = contentModelBuilder;        
@@ -40,7 +37,6 @@ public class TagController extends BaseMultiActionController {
     
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         logger.info("Starting normal content");                                  
-        requestFilter.loadAttributesOntoRequest(request);
         loggedInUserFilter.loadLoggedInUser(request);
         boolean showBroken = false;
         

@@ -373,7 +373,6 @@
 	
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="urlStack" />		
 		<constructor-arg ref="contentModelBuilder" />

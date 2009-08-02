@@ -35,8 +35,7 @@ public class BrowseController extends BaseMultiActionController {
 	
 	public ModelAndView publisherCalendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		 ModelAndView mv = new ModelAndView();		 
-		 User loggedInUser = populateLocalCommon(request, mv);           		   
-		 requestFilter.loadAttributesOntoRequest(request);
+		 User loggedInUser = populateLocalCommon(request, mv);		
 		 if (request.getAttribute("publisher") != null) {
 			 Website publisher = (Website) request.getAttribute("publisher");
 			 log.info("Calendar publisher is: " + publisher.getName());
@@ -49,8 +48,7 @@ public class BrowseController extends BaseMultiActionController {
 	
 	public ModelAndView publisherFeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		 ModelAndView mv = new ModelAndView();		 
-		 User loggedInUser = populateLocalCommon(request, mv);           		   
-		 requestFilter.loadAttributesOntoRequest(request);
+		 User loggedInUser = populateLocalCommon(request, mv);		 
 		 if (request.getAttribute("publisher") != null) {
 			 Website publisher = (Website) request.getAttribute("publisher");
 			 populatePublisherFeeds(mv, publisher, loggedInUser);             
@@ -63,8 +61,7 @@ public class BrowseController extends BaseMultiActionController {
 	
 	public ModelAndView publisherWatchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		 ModelAndView mv = new ModelAndView();		 
-		 User loggedInUser = populateLocalCommon(request, mv);           		   
-		 requestFilter.loadAttributesOntoRequest(request);
+		 User loggedInUser = populateLocalCommon(request, mv);		 
 		 if (request.getAttribute("publisher") != null) {
 			 Website publisher = (Website) request.getAttribute("publisher");
 			 populatePublisherWatchlist(mv, publisher, loggedInUser);             
@@ -78,8 +75,7 @@ public class BrowseController extends BaseMultiActionController {
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {       
         ModelAndView mv = new ModelAndView();           
         User loggedInUser = populateLocalCommon(request, mv);
-                              
-        requestFilter.loadAttributesOntoRequest(request);
+        
         if (request.getAttribute("month") != null) {
             Date month = (Date) request.getAttribute("month");
             mv.addObject("archive_month", new ArchiveLink(month, 0));

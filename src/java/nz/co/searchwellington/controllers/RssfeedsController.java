@@ -52,8 +52,7 @@ public class RssfeedsController extends BaseMultiActionController {
     public ModelAndView rssfeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("Starting rssfeeds.");
         ModelAndView mv = new ModelAndView();
-        loggedInUserFilter.loadLoggedInUser(request);
-        requestFilter.loadAttributesOntoRequest(request);
+        loggedInUserFilter.loadLoggedInUser(request);       
         
         Website publisher = null;
         Tag tag = null;

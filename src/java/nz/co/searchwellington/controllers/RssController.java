@@ -40,8 +40,7 @@ public class RssController extends MultiActionController {
     
     
 	public ModelAndView contentRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    
-    	log.info("Building content rss");
-    	 requestFilter.loadAttributesOntoRequest(request);  
+    	log.info("Building content rss");    	  
          ModelAndView mv = contentModelBuilderService.populateContentModel(request);
          if (mv != null) {
         	 mv.setView(new RssView(siteInformation));

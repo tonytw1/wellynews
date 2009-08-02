@@ -55,7 +55,7 @@ public class ViewCalendarController extends BaseMultiActionController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();                     
         mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         
-        requestFilter.loadAttributesOntoRequest(request);
+       
 
         CalendarFeed calendarFeed = null;
         if (request.getAttribute("calendarfeed") != null) {

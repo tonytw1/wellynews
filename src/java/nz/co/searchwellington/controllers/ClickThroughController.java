@@ -32,10 +32,7 @@ public class ClickThroughController implements Controller {
     
     @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        
-        requestFilter.loadAttributesOntoRequest(request);
-        
+        ModelAndView mv = new ModelAndView();        
         String redirectUrl = null;
         Resource resource = (Resource) request.getAttribute("resource");
         if (resource != null) {

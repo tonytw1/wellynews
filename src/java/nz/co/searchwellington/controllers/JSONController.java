@@ -30,7 +30,6 @@ public class JSONController extends MultiActionController {
 
     public ModelAndView contentJSON(HttpServletRequest request, HttpServletResponse response) throws Exception {    
 		log.info("Building content json");
-		requestFilter.loadAttributesOntoRequest(request);  
 		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
         		
 		if (mv != null) {			

@@ -7,7 +7,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 	
-	<bean id="testFilter" class="nz.co.searchwellington.filters.TestFilter" />
+	<bean id="testFilter" class="nz.co.searchwellington.filters.TestFilter" >	
+		<constructor-arg ref="requestFilter" />	
+	</bean>
 
 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">

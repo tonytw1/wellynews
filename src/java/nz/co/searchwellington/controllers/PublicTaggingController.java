@@ -47,8 +47,7 @@ public class PublicTaggingController extends BaseTagEditingController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
            
         Resource editResource = null;
-        requestFilter.loadAttributesOntoRequest(request);
-           
+        
         if (request.getAttribute("resource") != null) {
             editResource = (Resource) request.getAttribute("resource");        
             log.info("Loaded resource #" + editResource.getId() + " for tagging.");
@@ -77,7 +76,6 @@ public class PublicTaggingController extends BaseTagEditingController {
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();        
         Resource editResource = null;
-        requestFilter.loadAttributesOntoRequest(request);           
         
         if (request.getAttribute("resource") != null) {         
             editResource = (Resource) request.getAttribute("resource");

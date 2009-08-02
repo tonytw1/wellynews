@@ -50,6 +50,7 @@ public class RequestFilter {
 
     
 	public void loadAttributesOntoRequest(HttpServletRequest request) {
+		log.info("Loading attributes onto requesst");
     	loadAnonResource(request);
     	if (request.getParameter("page") != null) {
     		String pageString = request.getParameter("page");
