@@ -33,13 +33,18 @@
 			</bean>		
 		</property>
 	</bean>
-	
+			
+	<bean id="loginResourceOwnershipService" class="nz.co.searchwellington.openid.LoginResourceOwnershipService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="requestFilter" />
+	</bean>
 		
 	<bean id="openIDLoginController" class="nz.co.searchwellington.openid.OpenIDLoginController">
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="userDAO" />
-		
+		<constructor-arg ref="loginResourceOwnershipService" />
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

@@ -36,14 +36,15 @@ public class OpenIDLoginController extends MultiActionController {
 	private UrlBuilder urlBuilder;
 	private UrlStack urlStack;
 	private UserRepository userDAO;
+	private LoginResourceOwnershipService loginResourceOwnershipService;
 
-    public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack, UserRepository userDAO) throws ConsumerException {
+    public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack, UserRepository userDAO, LoginResourceOwnershipService loginResourceOwnershipService) throws ConsumerException {
         // instantiate a ConsumerManager object
     	manager = new ConsumerManager();
     	this.urlBuilder = urlBuilder;
     	this.urlStack = urlStack;
     	this.userDAO = userDAO;
-    
+    	this.loginResourceOwnershipService = loginResourceOwnershipService;
     }
 
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -123,10 +124,9 @@ public class OpenIDLoginController extends MultiActionController {
 			setUser(request, user);			
 			
 			// TODO Apply ownership to anything on the session.
-			
-			
-			
-			
+			loginResourceOwnershipService.assignOwnership(user);
+		    request.getSession().setAttribute("owned", null);
+						
 		} else {
 			mv.addObject("error", "Could not verify id");			
 		}
