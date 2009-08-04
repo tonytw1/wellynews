@@ -7,6 +7,8 @@ public class UserImpl implements User {
 
     int id;
     String username;
+    String profilename;
+    String url;
     boolean admin;
     
   
@@ -35,6 +37,16 @@ public class UserImpl implements User {
         this.username = username;
     }
 
+    
+    
+
+	public String getProfilename() {
+		return profilename;
+	}
+
+	public void setProfilename(String profilename) {
+		this.profilename = profilename;
+	}
 
 	public boolean isAdmin() {
 		return admin;
@@ -44,8 +56,13 @@ public class UserImpl implements User {
 	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}
- 
-    
-    
-   
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	
 }

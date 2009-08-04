@@ -17,5 +17,9 @@ public interface User {
     public void setUsername(String username);
 	public boolean isAdmin();
 	public void setAdmin(boolean admin);
+	public String getUrl();
+	public void setUrl(String url);
+	public String getProfilename();
+	public void setProfilename(String profilename);
        
 }

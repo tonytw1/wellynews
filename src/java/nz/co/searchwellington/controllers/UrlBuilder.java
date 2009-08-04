@@ -87,5 +87,10 @@ public class UrlBuilder {
 	public String getOpenIDCallbackUrl() {
 		return siteInformation.getUrl() + "/openid/callback";
 	}
+	
+	
+	public String getProfileUrl() {
+		return siteInformation.getUrl() + "/profile";
+	}
 		
 }

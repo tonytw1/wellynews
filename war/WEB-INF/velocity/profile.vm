@@ -25,9 +25,16 @@
 
 <h2>$heading</h2>
 
+<ul>
+	<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
+</ul>
+		
+
+
 #if ($user) 
 	<ul>
 	<li>openID: $user.username</li>
+	<li>Blog or website: $user.url</li>
 	</ul>
 	
 	

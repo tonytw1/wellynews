@@ -1,0 +1,71 @@
+#parse("includes/header.vm")
+
+<div class="page">
+#parse("includes/topbar.vm")
+
+
+
+<div class="left">
+#parse("includes/tag_tree.vm")
+</div>
+
+
+
+
+
+<div class="main">
+
+
+
+
+
+
+
+
+
+<h2>$heading</h2>
+
+#if ($user) 
+	<ul>
+	<li>openID: $user.username</li>
+	</ul>
+	
+	
+	<form action="save" method="POST"> 
+		<fieldset>
+			<label for="profilename">Profile name: </label>
+			<input name="profilename" value="$user.profilename" />
+			<br />
+			
+			<label for="url">Blog or website URL: </label>
+			<input name="url" value="$user.url" />
+			<br />
+						
+			<input type="submit" value="Update profile" />		
+						
+		</fieldset>
+	</form>
+#end
+
+</div>
+
+
+
+
+<div class="right">
+
+#parse("includes/login.vm")
+
+<div class="box">
+#parse("includes/latest_newsitems.vm")
+
+<br clear="all"/>
+
+</div>
+
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")

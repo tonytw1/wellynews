@@ -158,8 +158,14 @@
 				#end
 							
 				#if ($item.owner) 	
-					<li>Submitted by: $item.owner.username</li>
-				#end			
+					<li>Submitted by:
+						#if ($item.owner.url)
+							<a href="$item.owner.url">$item.owner.profilename</a>
+						#else
+							$item.owner.username
+						#end
+					</li>
+				#end	
 		</ul>				
 	</li>
 					
