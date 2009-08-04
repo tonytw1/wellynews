@@ -10,10 +10,11 @@ public class RobotsAwareHttpFetcher implements HttpFetcher {
 		this.httpFetcher = httpFetcher;
 	}
 
-	public HttpFetchResult httpFetch(String url) {
-		if (robotExclusionService.isUrlCrawlable(url, httpFetcher.getUserAgent())) {
+	public HttpFetchResult httpFetch(String url) {		
+		boolean overrideRobotDotTxt = url.startsWith("www.wellingtonphoenix.com/");		
+		if (overrideRobotDotTxt || robotExclusionService.isUrlCrawlable(url, httpFetcher.getUserAgent())) {
 			return httpFetcher.httpFetch(url);
-		}
+		}		
 		return new HttpFetchResult(-2, null);
 	}
 	
