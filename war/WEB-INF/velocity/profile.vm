@@ -29,12 +29,13 @@
 
 			<form action="profile/save" method="POST"> 			
 				<fieldset>						
-					<label for="profilename">Choose a profilename:<br />
-						ie. johnsmith	
-					</label>
+					<label for="profilename">Choose a profilename:</label>
 					<input name="profilename" value="" />											
 					<input type="submit" value="Set profile name" />					
 				</fieldset>
+				
+				<p>Profile names may contain letters and numbers only. ie. johnsmith</p>
+								
 			</form>		
 		#else		
 			<ul>

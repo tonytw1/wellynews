@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.profiles;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.User;
@@ -30,7 +31,7 @@ public class ProfileEditController extends MultiActionController {
 	public ProfileEditController(UserRepository userDAO,
 			LoggedInUserFilter loggerInUserFilter,
 			ResourceRepository resourceDAO, UrlBuilder urlBuilder) {
-		super();
+	
 		this.userDAO = userDAO;
 		this.loggerInUserFilter = loggerInUserFilter;
 		this.resourceDAO = resourceDAO;
@@ -59,7 +60,7 @@ public class ProfileEditController extends MultiActionController {
 	  public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {	      
 		  User loggedInUser = loggerInUserFilter.getLoggedInUser();		  
 		  if (loggedInUser != null) {
-			  if (request.getParameter("profilename") != null) {
+			  if (request.getParameter("profilename") != null && isProfilenameValid(request.getParameter("profilename"))) {
 				  loggedInUser.setProfilename(request.getParameter("profilename"));
 			  }
 			  log.info("User profile name set to: " + loggedInUser.getProfilename());
@@ -67,18 +68,25 @@ public class ProfileEditController extends MultiActionController {
 			  log.info("User url set to: " + loggedInUser.getUrl());
 			  userDAO.saveUser(loggedInUser);
 		  }	      
-		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl(loggedInUser)));
+		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl()));
 	  }
 
 	
-	  @Transactional
+	  
+
+
+
+
+	@Transactional
 	  public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) {
 		  User loggedInUser = loggerInUserFilter.getLoggedInUser();
 		  log.info("Logged in user is: " + loggedInUser);
 		  if (loggedInUser != null)	{
 			  if (loggedInUser.getProfilename() == null) {
 				  ModelAndView mv = new ModelAndView();
-				  mv.addObject("heading", "User profile");                
+				  mv.addObject("heading", "User profile");
+				  mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+				  
 				  mv.addObject("user", loggedInUser);
 				  mv.addObject("submitted", resourceDAO.getOwnedBy(loggedInUser));
 				  mv.setViewName("profile");
@@ -106,8 +114,9 @@ public class ProfileEditController extends MultiActionController {
 	        			mv = new ModelAndView("profile");
 	        		}
 				
-	        		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
 	        		mv.addObject("heading", "User profile");
+	        		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+	        		
 	        		mv.addObject("user", user);
 	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user));
 	        		return mv;
@@ -117,5 +126,15 @@ public class ProfileEditController extends MultiActionController {
 	        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 			return null;
 	  }
+	  
+	  
+	  private boolean isProfilenameValid(String profilename) {
+		  if (profilename.matches("[a-z|A-Z|0-9]+")) {
+			  if (userDAO.getUserByProfileName(profilename) == null) {
+				  return true;
+			  }
+		  }		  
+		  return false;
+	  }	
 	    
 }
