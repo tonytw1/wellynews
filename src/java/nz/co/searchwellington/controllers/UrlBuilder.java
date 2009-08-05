@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
 public class UrlBuilder {
@@ -92,5 +93,9 @@ public class UrlBuilder {
 	public String getProfileUrl() {
 		return siteInformation.getUrl() + "/profile";
 	}
-		
+	
+	public String getProfileUrl(User user) {
+		return siteInformation.getUrl() + "/profile/" + user.getProfilename();
+	}
+	
 }

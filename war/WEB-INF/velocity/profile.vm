@@ -16,44 +16,61 @@
 <div class="main">
 
 
+	<h2>$heading #if ($user.profilename) - $user.profilename #end</h2>
 
-
-
-
-
-
-
-<h2>$heading</h2>
-
-<ul>
-	<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
-</ul>
+	
 		
+	
+	#if ($user)
+	
+	
+		#if (!$user.profilename) 
+			<p>You are signed in but have not set a profile name. Your profile name is used to identifiy you and credit your submissions.</p>
+
+			<form action="profile/save" method="POST"> 			
+				<fieldset>						
+					<label for="profilename">Choose a profilename:<br />
+						ie. johnsmith	
+					</label>
+					<input name="profilename" value="" />											
+					<input type="submit" value="Set profile name" />					
+				</fieldset>
+			</form>		
+		#else		
+			<ul>
+				<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
+			</ul>
+				
+			<p>Your blog or website: 
+			#if ($user.url)
+				<a href="$user.url">$user.url</a>
+			#else 
+				not set
+			#end	
+			</p>			
+		#end
+		
+		
+		<p>Your profile is linked to the OpenID: $user.username</p>
 
 
-#if ($user) 
-	<ul>
-	<li>openID: $user.username</li>
-	<li>Blog or website: $user.url</li>
-	</ul>
-	
-	
-	<h3>Your submissions</h3>
-	
-	#if ($submitted.size() > 0) 
-		<ul class="flat_list">
-			#foreach($item in $submitted)
-				<li class="content_item">
-					<ul class="main_content_item">
-						#parse("includes/content_element.vm")
-					</ul>
-				</li>
-			#end
-		</ul>
-	#else
-		<p>You have not made any submissions.</p>
+				
+		<h3>Your submissions</h3>
+		
+		#if ($submitted.size() > 0) 
+			<ul class="flat_list">
+				#foreach($item in $submitted)
+					<li class="content_item">
+						<ul class="main_content_item">
+							#parse("includes/content_element.vm")
+						</ul>
+					</li>
+				#end
+			</ul>
+		#else
+			<p>You have not made any submissions.</p>
+		#end
 	#end
-#end
 
 </div>
 

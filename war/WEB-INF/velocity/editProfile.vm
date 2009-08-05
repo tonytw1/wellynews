@@ -26,17 +26,10 @@
 <h2>$heading</h2>
 
 #if ($user) 
-	<ul>
-	<li>openID: $user.username</li>
-	</ul>
-	
-	
+		
 	<form action="save" method="POST"> 
 		<fieldset>
-			<label for="profilename">Profile name: </label>
-			<input name="profilename" value="$user.profilename" />
-			<br />
-			
+						
 			<label for="url">Blog or website URL: </label>
 			<input name="url" value="$user.url" />
 			<br />

@@ -2,7 +2,13 @@
 	<div class="box">
 		<h2>Sign in</h2>
 		
-		<p>Registered users only.</p>
+		<p>Sign in to have your submissions assigned to you. This will allow you to edit them in the future.</p>
+						
+		<p>Sign in using an OpenID or use your 
+		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a> 
+		or
+		<a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> 
+		account to sign via OpenID:</p>
 		
 		<form action="$site_information.url/openid/login" method="POST"> 
  			<fieldset>
@@ -11,10 +17,10 @@
 		     	<input type="submit" class="password" value="login">                        	  	
 	  		</fieldset>
 		</form>
-		
-		Sign in using your 
-		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a> 
-		or
-		<a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> account.
+							
+		<p>Search Wellington uses <a href="http://openid.net/">OpenID</a> for signin. We think OpenID is a good thing; 
+		<a href="http://www.openid.co.uk/node/6">this video gives an overview of the system</a>. 
+		</p>
+				
 	</div>
 #end

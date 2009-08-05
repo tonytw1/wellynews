@@ -176,23 +176,6 @@ public class SimplePageController extends BaseMultiActionController {
     
     
     
-    public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) {        
-        ModelAndView mv = new ModelAndView();
-        urlStack.setUrlStack(request);
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        populateLocalCommon(mv);
-        
-        mv.addObject("heading", "User profile");                
-        mv.addObject("user", loggedInUser);
-        if (loggedInUser != null) {
-        	mv.addObject("submitted", resourceDAO.getOwnedBy(loggedInUser));
-        }
-        
-        populateSecondaryLatestNewsitems(mv, loggedInUser);        
-        mv.setViewName("profile");
-        return mv;
-    }
     
     
     

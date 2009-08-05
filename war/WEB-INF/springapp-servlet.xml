@@ -22,8 +22,7 @@
 						<prop key="/calendars">calendars</prop>
 						<prop key="/feeds/discovered">discovered</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
-						<prop key="/api">api</prop>
-						<prop key="/profile">profile</prop>
+						<prop key="/api">api</prop>						
 						<prop key="/publishers">publishers</prop>
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
@@ -523,8 +522,10 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
+						<prop key="/profile">profile</prop>							
 						<prop key="/profile/edit">edit</prop>
-						<prop key="/profile/save">save</prop>						
+						<prop key="/profile/save">save</prop>
+						<prop key="/profile/*">view</prop>
 					</props>
 				</property>
 			</bean>
@@ -607,11 +608,12 @@
             	<prop key="/calendars">simplePageController</prop>            	
            		<prop key="/feeds/discovered">simplePageController</prop>           	
 				<prop key="/lastupdated">simplePageController</prop>
-				
-				<prop key="/profile">simplePageController</prop>				
+									
 				<prop key="/profile/edit">profileEditController</prop>
 				<prop key="/profile/save">profileEditController</prop>
-								
+				<prop key="/profile/*">profileEditController</prop>
+				<prop key="/profile">profileEditController</prop>
+																
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/tags">simplePageController</prop>
 				<prop key="/twitter">simplePageController</prop>				

@@ -5,14 +5,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlBuilder;
-import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.UserRepository;
 
 import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -58,33 +55,67 @@ public class ProfileEditController extends MultiActionController {
 	
 	
 	
-	  @Transactional(propagation=Propagation.REQUIRED)
-	  public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
-	      
+	  @Transactional
+	  public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {	      
 		  User loggedInUser = loggerInUserFilter.getLoggedInUser();		  
 		  if (loggedInUser != null) {
-			  loggedInUser.setProfilename(request.getParameter("profilename"));
+			  if (request.getParameter("profilename") != null) {
+				  loggedInUser.setProfilename(request.getParameter("profilename"));
+			  }
 			  log.info("User profile name set to: " + loggedInUser.getProfilename());
 			  loggedInUser.setUrl(request.getParameter("url"));
 			  log.info("User url set to: " + loggedInUser.getUrl());
 			  userDAO.saveUser(loggedInUser);
-		  }
-	      
-		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl()));
+		  }	      
+		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl(loggedInUser)));
 	  }
 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-        
+	  @Transactional
+	  public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) {
+		  User loggedInUser = loggerInUserFilter.getLoggedInUser();
+		  log.info("Logged in user is: " + loggedInUser);
+		  if (loggedInUser != null)	{
+			  if (loggedInUser.getProfilename() == null) {
+				  ModelAndView mv = new ModelAndView();
+				  mv.addObject("heading", "User profile");                
+				  mv.addObject("user", loggedInUser);
+				  mv.addObject("submitted", resourceDAO.getOwnedBy(loggedInUser));
+				  mv.setViewName("profile");
+				  return mv;
+			  } else {
+	        	 return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl(loggedInUser)));
+			  }      
+		  }
+		  response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		  return null;
+	  }
+	    
+	  	  
+	  @Transactional
+	  public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {	        
+	        String path = request.getPathInfo();	       
+	        if (path.matches("^/profile/.*$")) {            
+	        	final String profilename = path.split("/")[2];	        	
+	        
+	        	User user = userDAO.getUserByProfileName(profilename);
+	        	if (user != null) {
+	        		ModelAndView mv = new ModelAndView("viewProfile");
+	        		User loggedInUser = loggerInUserFilter.getLoggedInUser();
+	        		if (loggedInUser != null && loggedInUser.getId() == user.getId()) {
+	        			mv = new ModelAndView("profile");
+	        		}
+				
+	        		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+	        		mv.addObject("heading", "User profile");
+	        		mv.addObject("user", user);
+	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user));
+	        		return mv;
+	        	}
+	        }
+	        	
+	        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			return null;
+	  }
+	    
 }

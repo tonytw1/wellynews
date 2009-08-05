@@ -17,6 +17,15 @@
         <property name="username">
             <column name="username" length="255" not-null="true"/>
         </property>
+        
+        
+        <property name="profilename">
+            <column name="profilename" length="255" not-null="true"/>
+        </property>
+ 
+	 	 <property name="url">
+            <column name="url" length="255" not-null="false"/>
+        </property>
                 
         <property name="admin" type="boolean">
 			<column name="admin" />
