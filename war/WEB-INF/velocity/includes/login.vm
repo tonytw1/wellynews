@@ -8,7 +8,7 @@
 		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a> 
 		or
 		<a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> 
-		account to sign via OpenID:</p>
+		account to sign in via OpenID:</p>
 		
 		<form action="$site_information.url/openid/login" method="POST"> 
  			<fieldset>

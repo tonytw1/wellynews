@@ -142,8 +142,10 @@
 					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI"))				
 						<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
 					#end
-					<li>Http Status: $item.httpStatus</li>
-				
+					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI"))					
+						<li>Http Status: $item.httpStatus</li>
+					#end
+								
 				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))			
 					#if ($item.localCopy) 
 						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.getLocalCopy())">edit local copy</a></li>
