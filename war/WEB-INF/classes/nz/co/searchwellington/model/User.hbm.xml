@@ -29,7 +29,16 @@
                 
         <property name="admin" type="boolean">
 			<column name="admin" />
-		</property>	
+		</property>
+		
+		
+		 <property name="name">
+            <column name="name" length="255" not-null="false"/>
+        </property>
+        
+        <property name="bio">
+            <column name="bio" not-null="false"/>
+        </property>		
                        
     </class>
 
