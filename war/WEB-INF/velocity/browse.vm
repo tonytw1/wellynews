@@ -19,7 +19,15 @@
 </div>
 
 
-<h2>$heading</h2>
+#if ($publisher) 
+	<h2><a href="$publisher.url">$heading</a></h2>
+	#if ($publisher.description)
+		<p>$publisher.description</p>
+	#end
+#else
+	<h2>$heading</h2>
+#end
+
 
 #parse("includes/search_widget.vm")
 
