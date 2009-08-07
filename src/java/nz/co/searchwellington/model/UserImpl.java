@@ -9,6 +9,9 @@ public class UserImpl implements User {
     String username;
     String profilename;
     String url;
+    String name;
+    String bio;
+    
     boolean admin;
     
   
@@ -64,5 +67,23 @@ public class UserImpl implements User {
 	public void setUrl(String url) {
 		this.url = url;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getBio() {
+		return bio;
+	}
+
+	public void setBio(String bio) {
+		this.bio = bio;
+	}
+	
+	
 	
 }

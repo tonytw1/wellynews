@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.profiles;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.User;
@@ -63,9 +62,11 @@ public class ProfileEditController extends MultiActionController {
 			  if (request.getParameter("profilename") != null && isProfilenameValid(request.getParameter("profilename"))) {
 				  loggedInUser.setProfilename(request.getParameter("profilename"));
 			  }
-			  log.info("User profile name set to: " + loggedInUser.getProfilename());
+			  
+			  loggedInUser.setName(request.getParameter("name"));			
+			  loggedInUser.setBio(request.getParameter("bio"));			  			  
 			  loggedInUser.setUrl(request.getParameter("url"));
-			  log.info("User url set to: " + loggedInUser.getUrl());
+			  			
 			  userDAO.saveUser(loggedInUser);
 		  }	      
 		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl()));

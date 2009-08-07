@@ -16,23 +16,25 @@
 <div class="main">
 
 
-
-
-
-
-
-
-
 <h2>$heading</h2>
 
-#if ($user) 
-		
+#if ($user)
+			
 	<form action="save" method="POST"> 
 		<fieldset>
-						
-			<label for="url">Blog or website URL: </label>
-			<input name="url" value="$user.url" />
+		
+			<label for="name">Your name (optional): </label>
+			<input name="name" value="$!user.name" size="40" />
 			<br />
+			
+			<label for="url">Blog or website URL (optional): </label>
+			<input name="url" value="$!user.url" size="40" />
+			<br />
+			
+			<label for="bio">About yourself in fewer than 30 words (optional): </label>
+			<textarea name="bio" cols="50" rows="4"/>$!user.bio</textarea>
+			<br />
+						
 						
 			<input type="submit" value="Update profile" />		
 						

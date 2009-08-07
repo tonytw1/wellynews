@@ -18,11 +18,18 @@
 	<h2>$heading #if ($user.profilename) - $user.profilename #end</h2>
 	
 	#if ($user)
+	
+		#if ($user.name)
+			<p>Name: $user.name</p>
+		#end		
+		
 		#if ($user.url)
 			<p>Blog or website: <a href="$user.url">$user.url</a></p>
 		#end		
 		
-		
+		#if ($user.bio)
+			<p>Bio: $user.bio</p>
+		#end	
 		
 				
 		<h3>Submissions</h3>

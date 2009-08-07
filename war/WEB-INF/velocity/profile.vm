@@ -42,13 +42,31 @@
 				<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
 			</ul>
 				
+			<p>Your name: 
+			#if ($user.name)
+				$user.name
+			#else
+				not set
+			#end	
+			</p>
+						
 			<p>Your blog or website: 
 			#if ($user.url)
 				<a href="$user.url">$user.url</a>
 			#else 
 				not set
 			#end	
-			</p>			
+			</p>
+			
+			<p>Your bio: 
+			#if ($user.bio)
+				$user.bio
+			#else
+				not set
+			#end
+			</p>
+			
+						
 		#end
 		
 		

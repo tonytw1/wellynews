@@ -21,5 +21,9 @@ public interface User {
 	public void setUrl(String url);
 	public String getProfilename();
 	public void setProfilename(String profilename);
+	public String getName();
+	public void setName(String name);
+	public String getBio();
+	public void setBio(String bio);
        
 }
