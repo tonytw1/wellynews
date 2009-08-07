@@ -15,20 +15,20 @@
 
 <div class="main">
 
-	<h2>$heading #if ($user.profilename) - $user.profilename #end</h2>
+	<h2>$heading #if ($profileuser.profilename) - $profileuser.profilename #end</h2>
 	
-	#if ($user)
+	#if ($profileuser)
 	
-		#if ($user.name)
-			<p>Name: $user.name</p>
+		#if ($profileuser.name)
+			<p>Name: $profileuser.name</p>
 		#end		
 		
-		#if ($user.url)
-			<p>Blog or website: <a href="$user.url">$user.url</a></p>
+		#if ($profileuser.url)
+			<p>Blog or website: <a href="$profileuser.url">$profileuser.url</a></p>
 		#end		
 		
-		#if ($user.bio)
-			<p>Bio: $user.bio</p>
+		#if ($profileuser.bio)
+			<p>Bio: $profileuser.bio</p>
 		#end	
 		
 				

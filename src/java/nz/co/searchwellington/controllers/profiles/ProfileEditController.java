@@ -66,9 +66,9 @@ public class ProfileEditController extends MultiActionController {
 			  loggedInUser.setName(request.getParameter("name"));			
 			  loggedInUser.setBio(request.getParameter("bio"));			  			  
 			  loggedInUser.setUrl(request.getParameter("url"));
-			  			
+			  
 			  userDAO.saveUser(loggedInUser);
-		  }	      
+		  }
 		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl()));
 	  }
 
@@ -104,10 +104,10 @@ public class ProfileEditController extends MultiActionController {
 	  @Transactional
 	  public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {	        
 	        String path = request.getPathInfo();	       
-	        if (path.matches("^/profile/.*$")) {            
+	        if (path.matches("^/profile/.*$")) {
 	        	final String profilename = path.split("/")[2];	        	
-	        
-	        	User user = userDAO.getUserByProfileName(profilename);
+		        
+		        User user = userDAO.getUserByProfileName(profilename);
 	        	if (user != null) {
 	        		ModelAndView mv = new ModelAndView("viewProfile");
 	        		User loggedInUser = loggerInUserFilter.getLoggedInUser();
@@ -118,7 +118,8 @@ public class ProfileEditController extends MultiActionController {
 	        		mv.addObject("heading", "User profile");
 	        		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
 	        		
-	        		mv.addObject("user", user);
+	        		log.info("Put user onto model: " + user.getUsername());
+	        		mv.addObject("profileuser", user);
 	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user));
 	        		return mv;
 	        	}
