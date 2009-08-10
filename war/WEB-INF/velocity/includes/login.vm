@@ -4,17 +4,17 @@
 		
 		<p>Sign in to have your submissions assigned to you. This will allow you to edit them in the future.</p>
 						
-		<p>Sign in using an OpenID or use your 
-		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a> 
-		or
-		<a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> 
+		<p>Sign in using your OpenID or use your 
+		<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a>, 
+		<a href="$site_information.url/openid/login?openid_claimed_identity=flickr.com">Flickr</a>		
+		or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> 
 		account to sign in via OpenID:</p>
 		
 		<form action="$site_information.url/openid/login" method="POST"> 
- 			<fieldset>
-	  			<label for="openid_claimed_identity">OpenID:</label>
-				<input name="openid_claimed_identity" class="body">				
-		     	<input type="submit" class="password" value="login">                        	  	
+ 			<fieldset>	  			
+				<input 	name="openid_claimed_identity" 
+						style="background: #fff url('$urlBuilder.getImageUrl('openid_logo.png')') no-repeat left; padding-left: 18px">				
+		     	<input type="submit" class="password" value="Sign in">                        	  	
 	  		</fieldset>
 		</form>
 							
