@@ -212,12 +212,13 @@
 		<constructor-arg ref="adminRequestFilter" />		
 		<constructor-arg ref="linkCheckerQueue" />
 		<constructor-arg ref="urlStack" />
-	
+		<constructor-arg ref="resourceDAO" />
+		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="">showStatus</prop>
+						<prop key="/admin/linkchecker/status">showStatus</prop>
 						<prop key="/admin/linkchecker/add">addToQueue</prop>								
 					</props>
 				</property>

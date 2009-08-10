@@ -1,5 +1,8 @@
 package nz.co.searchwellington.model;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
 
@@ -26,6 +29,15 @@ public class LinkCheckerQueue {
         } else {
             return null;
         }
+    }
+    
+    public List<Integer> getContents() {
+    	List<Integer> contents = new ArrayList<Integer>();
+    	Iterator<Integer> contentIds = queue.iterator();
+    	while(contentIds.hasNext()) {
+    		contents.add(contentIds.next());
+    	}    	
+    	return contents;    	
     }
 
     public void add(int id) {

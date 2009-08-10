@@ -1,6 +1,8 @@
 package nz.co.searchwellington.controllers.admin;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,6 +11,7 @@ import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,19 +25,23 @@ public class LinkCheckerController extends BaseMultiActionController {
     private AdminRequestFilter requestFilter;
 
      
-    public LinkCheckerController(AdminRequestFilter requestFilter, LinkCheckerQueue queue, UrlStack urlStack) {
+    public LinkCheckerController(AdminRequestFilter requestFilter, LinkCheckerQueue queue, UrlStack urlStack, ResourceRepository resourceDAO) {
         this.requestFilter = requestFilter;
         this.queue = queue;
-        this.urlStack = urlStack;        
+        this.urlStack = urlStack;
+        this.resourceDAO = resourceDAO;
     }
 
    
-    @SuppressWarnings("unchecked")
     public ModelAndView showStatus(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-                
-        mv.setViewName("linkCheckerShowStatus");          
-        mv.getModel().put("queue_length", queue.getSize());     
+        ModelAndView mv = new ModelAndView();                
+        mv.setViewName("linkCheckerShowStatus");
+        
+        List<Resource> contents = new ArrayList<Resource>();
+        for (Integer resourceId : queue.getContents()) {
+        	contents.add(resourceDAO.loadResourceById(resourceId));
+		}                
+        mv.addObject("queue_contents", contents);        
         return mv;
     }
 
