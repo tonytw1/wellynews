@@ -149,6 +149,9 @@
        		<property name="twitterMessage" type="string">
         		<column name="twitter_message"/>
         	</property>
+        	<property name="twitterId" type="long">
+        		<column name="twitter_id"/>
+        	</property>
         		
 		</subclass>
 

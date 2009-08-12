@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class TwitteredNewsitem extends NewsitemImpl {
 	
-	private long twitterId;
+	private Long twitterId;
 
     public TwitteredNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, long twitterId) {       
         this.id = id;
@@ -24,11 +24,11 @@ public class TwitteredNewsitem extends NewsitemImpl {
 		return "TNI";
 	}
 
-	public long getTwitterId() {
+	public Long getTwitterId() {
 		return twitterId;
 	}
 
-	public void setTwitterId(long twitterId) {
+	public void setTwitterId(Long twitterId) {
 		this.twitterId = twitterId;
 	}
 	

@@ -16,6 +16,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     CommentFeed commentFeed;
     private String twitterSubmitter;
     private String twitterMessage;
+    Long twitterId;
     
     public NewsitemImpl() {}
     
@@ -89,8 +90,13 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.twitterMessage = twitterMessage;
     }
 
+	public Long getTwitterId() {
+		return twitterId;
+	}
 
-    
-    
-    
+	public void setTwitterId(Long twitterId) {
+		this.twitterId = twitterId;
+	}
+
+  
 }

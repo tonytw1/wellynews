@@ -36,16 +36,14 @@ public class TwitterNewsitemBuilderService {
     
     public List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(Status[] replies) {
     	List<TwitteredNewsitem> potentialTwitterSubmissions = new ArrayList<TwitteredNewsitem>();
-    	for (Status status : replies) {
-    		log.info("reply: " + status.getText());
-    		
+    	for (Status status : replies) {   		
     		TwitteredNewsitem newsitem = this.createNewsitemFromTwitterReply(status
     				.getText(), status.getUser()
     				.getScreenName(), status.getId());
     		
     		if (newsitem != null && newsitem.getUrl() != null && !newsitem.getUrl().equals("")) {
     			boolean isRT = newsitem.getName() != null & newsitem.getName().startsWith("RT");
-				if (!isRT) {
+				if (!isRT) {					
 					potentialTwitterSubmissions.add(newsitem);
 				}
     		}
@@ -53,14 +51,29 @@ public class TwitterNewsitemBuilderService {
     	return potentialTwitterSubmissions;
     }
     
+    
+    
+	public TwitteredNewsitem getTwitteredNewsitemByTwitterId(Long twitterId,
+			List<TwitteredNewsitem> twitteredNewsitems) {
+		TwitteredNewsitem newsitemToAccept = null;
+		for (TwitteredNewsitem twitteredNewsitem : twitteredNewsitems) {
+			log.info(twitteredNewsitem.getTwitterMessage() + ": " + twitteredNewsitem.getTwitterId());
+			if (twitteredNewsitem.getTwitterId().longValue() == twitterId.longValue()) {
+				newsitemToAccept = twitteredNewsitem;
+			}
+		}
+		return newsitemToAccept;
+	}
+    
+	
+	
       
-    private TwitteredNewsitem createNewsitemFromTwitterReply(String message, String submitter, Long twitterId) {
-		if (isValidMessage(message)) {
-			TwitteredNewsitem newsitem = resourceDAO.createNewTwitteredNewsitem(twitterId);
+    private TwitteredNewsitem createNewsitemFromTwitterReply(String message, String submitter, long twitterId) {
+		if (isValidMessage(message)) {			
+			TwitteredNewsitem newsitem = resourceDAO.createNewTwitteredNewsitem(new Long(twitterId));
 			
 	    	newsitem.setTwitterSubmitter(submitter);
-			newsitem.setTwitterMessage(message);
-			
+			newsitem.setTwitterMessage(message);			
 			message = message.replaceFirst("@.*? ", "");
 			String titleText = message.replaceFirst("http.*", "").trim();
 			newsitem.setName(titleText);
@@ -93,9 +106,10 @@ public class TwitterNewsitemBuilderService {
 		// TODO constructor calls should be in the resourceDAO?
     	Newsitem newsitem = new NewsitemImpl(0, twitteredNewsitem.getName(), twitteredNewsitem.getUrl(), twitteredNewsitem.getDescription(), twitteredNewsitem.getDate(), null, 
     			new HashSet<Tag>(),
-    			new HashSet<DiscoveredFeed>());    	
+    			new HashSet<DiscoveredFeed>());   	
     	newsitem.setTwitterSubmitter(twitteredNewsitem.getTwitterSubmitter());
     	newsitem.setTwitterMessage(twitteredNewsitem.getTwitterMessage());
+    	newsitem.setTwitterId(twitteredNewsitem.getTwitterId());
     	return newsitem;
 	}
     

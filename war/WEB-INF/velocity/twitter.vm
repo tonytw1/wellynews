@@ -68,13 +68,15 @@ Twitter badge code provided by <a href="http://chrisjf.blogspot.com/2007/03/chri
 </div>
 #end
 
-
+<div class="box">
 #if ($submissions && $submissions.size() > 0)
 	<h2>Potential Submissions</h2>
 	#set ($righthand_content_one = $columnSplitter.left($submissions))
 	#set ($righthand_content_two = $columnSplitter.right($submissions))
 	#parse("includes/righthand_two_columns.vm")
 #end
+</div>
+
 
 
 

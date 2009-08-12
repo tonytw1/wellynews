@@ -209,6 +209,15 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		newsitem.setTechnoratiCount(technoratiCount);
 	}
 
+	public Long getTwitterId() {
+		return newsitem.getTwitterId();
+	}
+
+
+	public void setTwitterId(Long twitterId) {
+		newsitem.setTwitterId(twitterId);
+	}
+
 
 	public void setTwitterMessage(String twitterMessage) {
 		newsitem.setTwitterMessage(twitterMessage);

@@ -177,37 +177,38 @@ public class ResourceEditController extends BaseTagEditingController {
     
     
     @Transactional
-    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {     
-       
-        
+    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {               
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean userIsLoggedIn = loggedInUser != null;
-   
+        
         adminRequestFilter.loadAttributesOntoRequest(request);
         if (request.getAttribute("twitterId") != null) {        
             Long twitterId = (Long) request.getAttribute("twitterId");
             log.info("Accepting newsitem from twitter id: " + twitterId);
             
         	Status[] replies = twitterService.getReplies(); // TODO this injection's not right.
-            List <TwitteredNewsitem> twitteredNewsitems = twitterNewsitemBuilderService.extractPossibleSubmissionsFromTwitterReplies(replies);
-            TwitteredNewsitem newsitemToAccept = null;
-            for (TwitteredNewsitem twitteredNewsitem : twitteredNewsitems) {
-            	if (twitteredNewsitem.getTwitterId() == twitterId) {
-            		newsitemToAccept = twitteredNewsitem;
-            	}
-			}
+        	
+        	List <TwitteredNewsitem> twitteredNewsitems = twitterNewsitemBuilderService.extractPossibleSubmissionsFromTwitterReplies(replies);
+            TwitteredNewsitem newsitemToAccept = twitterNewsitemBuilderService.getTwitteredNewsitemByTwitterId(twitterId, twitteredNewsitems);
             
             if (newsitemToAccept != null) {
             	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(newsitemToAccept);                  
             	saveResource(request, loggedInUser, newsitem, true, true);
+            	log.info("Saving resource: " + newsitem.getId());
+            } else {
+            	log.warn("Could not find twitter with id: " + twitterId);
+            	
             }
+            
         } else {
         	log.warn("No twitted id found on request");
         }
         
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   
     }
-    
+
+
+
+
     
 	private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
