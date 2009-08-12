@@ -1,6 +1,8 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +15,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
@@ -133,5 +136,6 @@ public interface ResourceRepository {
 	public List<String> getPublisherNamesByStartingLetters(String q);
 	public Resource getPublisherByName(String publisherName);
 	public List<Resource> getOwnedBy(User loggedInUser);
+	public TwitteredNewsitem createNewTwitteredNewsitem(long twitterId);
 		
 }

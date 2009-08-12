@@ -133,16 +133,16 @@
 				#end
 				
 				
-					#if ($editPermissionService.canEdit($item) && ($item.type != "FNI"))
+					#if ($editPermissionService.canEdit($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
 					#end
-					#if ($editPermissionService.canDelete($item) && ($item.type != "FNI"))
+					#if ($editPermissionService.canDelete($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 						<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>
 					#end
-					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI"))				
+					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
 						<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
 					#end
-					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI"))					
+					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))					
 						<li>Http Status: $item.httpStatus</li>
 					#end
 								
@@ -158,7 +158,12 @@
 					#end
 					<li>Http Status: $item.httpStatus</li>
 				#end
-							
+								
+				#if ($editPermissionService.canEdit($item) && ($item.type == "TNI"))
+					<li>Twitter id: $item.twitterId</li>
+					<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
+				#end
+															
 				#if ($item.owner && $item.owner.profilename) 	
 					<li>Submitted by:					
 						<a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a>					

@@ -7,16 +7,19 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.unto.twitter.Status;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
@@ -35,8 +38,9 @@ public class SimplePageController extends BaseMultiActionController {
 	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private LoggedInUserFilter loggedInUserFilter;
+    private TwitterNewsitemBuilderService newsitemBuilder;
 	
-    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter) {
+    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter, TwitterNewsitemBuilderService newsitemBuilder) {
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
@@ -45,6 +49,7 @@ public class SimplePageController extends BaseMultiActionController {
         this.twitterService = twitterService;
         this.discoveredFeedRepository = discoveredFeedRepository;
         this.loggedInUserFilter = loggedInUserFilter;
+        this.newsitemBuilder = newsitemBuilder;
     }
     
        
@@ -212,15 +217,21 @@ public class SimplePageController extends BaseMultiActionController {
         populateLatestTwitters(mv, loggedInUser);
         
         populateSecondaryLatestNewsitems(mv, loggedInUser);
-        
+
+        // TODO permissions
         if(loggedInUser != null) {        	       	        	
-        	mv.addObject("twitterReplies", twitterService.getReplies());        	
+        	Status[] replies = twitterService.getReplies();
+			mv.addObject("twitterReplies", replies);        	
+			List<TwitteredNewsitem> potentialTwitterSubmissions = newsitemBuilder.extractPossibleSubmissionsFromTwitterReplies(replies);
+			mv.addObject("submissions", potentialTwitterSubmissions);			
         }
-        	
         
         mv.setViewName("twitter");
         return mv;
     }
+
+
+	
     
   
      

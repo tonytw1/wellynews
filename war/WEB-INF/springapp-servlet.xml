@@ -12,6 +12,7 @@
 		<constructor-arg ref="twitterService" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="twitterNewsitemBuilderService" />
 								
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -426,6 +427,8 @@
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="twitterNewsitemBuilderService" />
+		<constructor-arg ref="twitterService" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -442,7 +445,8 @@
 						<prop key="/edit/submit/watchlist">submitWatchlist</prop>
 						<prop key="/edit/submit/website">submitWebsite</prop>
 						
-						<prop key="/edit/accept">accept</prop>	
+						<prop key="/edit/accept">accept</prop>
+						<prop key="/edit/twitteraccept">twitteraccept</prop>	
 					</props>
 				</property>
 			</bean>		
@@ -659,6 +663,7 @@
 				<prop key="/edit/submit/watchlist">editController</prop>
 				<prop key="/edit/submit/website">editController</prop>
 				<prop key="/edit/accept">editController</prop>
+				<prop key="/edit/twitteraccept">editController</prop>
 				
 				<prop key="/tagging/tag">publicTaggingController</prop>
 				<prop key="/tagging/save">publicTaggingController</prop>

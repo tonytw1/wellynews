@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.TwitteredNewsitem;
 
 public class AdminUrlBuilder {
 
@@ -39,4 +40,9 @@ public class AdminUrlBuilder {
 	public String getFeedNewsitemUnsuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/supress/unsupress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
 	}
+		
+	public String getTwitteredNewsitemAcceptUrl(TwitteredNewsitem twitteredNewsitem) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/edit/twitteraccept?twitterid=" + URLEncoder.encode(Long.toString(twitteredNewsitem.getTwitterId()), "UTF-8");
+	}
+	
 }

@@ -29,6 +29,7 @@ public abstract class RssfeedNewsitemService {
 	}
 	
 	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem, Website feedPublisher) {
+	// TODO constructor calls should be in the resourceDAO?
 	    	Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedPublisher, 
 	    			new HashSet<Tag>(),
 	    			new HashSet<DiscoveredFeed>());    	

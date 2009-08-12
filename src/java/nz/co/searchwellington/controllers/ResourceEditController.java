@@ -10,6 +10,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.unto.twitter.Status;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
@@ -27,6 +28,7 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
@@ -35,6 +37,8 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
+import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
+import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
@@ -72,13 +76,15 @@ public class ResourceEditController extends BaseTagEditingController {
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
     private RequestFilter requestFilter;
+    private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
+    private TwitterService twitterService;
     
       
     public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter, 
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack, RequestFilter requestFilter) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack, RequestFilter requestFilter, TwitterNewsitemBuilderService twitterNewsitemBuilderService, TwitterService twitterService) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
@@ -96,6 +102,8 @@ public class ResourceEditController extends BaseTagEditingController {
         this.editPermissionService = editPermissionService;
         this.urlStack = urlStack;
         this.requestFilter = requestFilter;
+        this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
+        this.twitterService = twitterService;
     }
    
     
@@ -132,7 +140,7 @@ public class ResourceEditController extends BaseTagEditingController {
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {        
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
         populateCommonLocal(modelAndView);
-        modelAndView.addObject("heading", "Submitting a Resource");
+        modelAndView.addObject("heading", "Accepting a submission");
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean userIsLoggedIn = loggedInUser != null;
@@ -166,12 +174,41 @@ public class ResourceEditController extends BaseTagEditingController {
         return modelAndView;
     }
     
-   
- 
     
-
-
-
+    
+    @Transactional
+    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {     
+       
+        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        boolean userIsLoggedIn = loggedInUser != null;
+   
+        adminRequestFilter.loadAttributesOntoRequest(request);
+        if (request.getAttribute("twitterId") != null) {        
+            Long twitterId = (Long) request.getAttribute("twitterId");
+            log.info("Accepting newsitem from twitter id: " + twitterId);
+            
+        	Status[] replies = twitterService.getReplies(); // TODO this injection's not right.
+            List <TwitteredNewsitem> twitteredNewsitems = twitterNewsitemBuilderService.extractPossibleSubmissionsFromTwitterReplies(replies);
+            TwitteredNewsitem newsitemToAccept = null;
+            for (TwitteredNewsitem twitteredNewsitem : twitteredNewsitems) {
+            	if (twitteredNewsitem.getTwitterId() == twitterId) {
+            		newsitemToAccept = twitteredNewsitem;
+            	}
+			}
+            
+            if (newsitemToAccept != null) {
+            	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(newsitemToAccept);                  
+            	saveResource(request, loggedInUser, newsitem, true, true);
+            }
+        } else {
+        	log.warn("No twitted id found on request");
+        }
+        
+		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   
+    }
+    
+    
 	private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (loggedInUser == null) {
@@ -379,6 +416,7 @@ private void removePublisherFromPublishersContent(Resource editResource) {
         if (editResource != null) {                      
             boolean newSubmission = editResource.getId() == 0;
                    
+            boolean resourceUrlHasChanged = processUrl(request, editResource);
             processTitle(request, editResource);
             log.info("Calling geocode");
             processGeocode(request, editResource);
@@ -386,7 +424,6 @@ private void removePublisherFromPublishersContent(Resource editResource) {
             processDescription(request, loggedInUser, editResource);
             processTags(request, editResource, loggedInUser);
                         
-            boolean resourceUrlHasChanged = processUrl(request, editResource);
                 
             // Set publisher field.
             boolean isPublishedResource = editResource instanceof PublishedResource;
@@ -430,33 +467,14 @@ private void removePublisherFromPublishersContent(Resource editResource) {
          
             boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
             // TODO validate. - what exactly?
-            if (okToSave) {              
+            if (okToSave) {         
+                saveResource(request, loggedInUser, editResource, newSubmission, resourceUrlHasChanged);
                 
-         
-                if (resourceUrlHasChanged) {
-                    linkCheckerQueue.add(editResource.getId());
-                    editResource.setHttpStatus(0);
-                    log.info("Resource url has changed; will link check.");
-                } else {
-                    log.info("Resource url has not changed; not adding to link check queue.");
-                }
-                
-                resourceDAO.saveResource(editResource);
-                modelAndView.addObject("item", editResource);
-
-                final boolean newPublicSubmission = loggedInUser == null && newSubmission;
-                if (newPublicSubmission) {
-                    // Record the user's right to reedit this resource.
-                    request.getSession().setAttribute("owned", new Integer(editResource.getId()));
-                    log.info("Owned put onto session.");
-
-                    // Send a notification of a public submission.
-                    notifier.sendSubmissionNotification("tony@ditonics.com", "New submission", editResource);                                        
-                }
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
             }
            
+            modelAndView.addObject("item", editResource);
           
             
         } else {
@@ -465,6 +483,32 @@ private void removePublisherFromPublishersContent(Resource editResource) {
        
         return modelAndView;
     }
+
+
+
+private void saveResource(HttpServletRequest request, User loggedInUser,
+		Resource editResource, boolean newSubmission,
+		boolean resourceUrlHasChanged) {
+	if (resourceUrlHasChanged) {
+	    linkCheckerQueue.add(editResource.getId());
+	    editResource.setHttpStatus(0);
+	    log.info("Resource url has changed; will link check.");
+	} else {
+	    log.info("Resource url has not changed; not adding to link check queue.");
+	}
+	
+	resourceDAO.saveResource(editResource);
+
+	final boolean newPublicSubmission = loggedInUser == null && newSubmission;
+	if (newPublicSubmission) {
+	    // Record the user's right to reedit this resource.
+	    request.getSession().setAttribute("owned", new Integer(editResource.getId()));
+	    log.info("Owned put onto session.");
+
+	    // Send a notification of a public submission.
+	    notifier.sendSubmissionNotification("tony@ditonics.com", "New submission", editResource);                                        
+	}
+}
 
 
 

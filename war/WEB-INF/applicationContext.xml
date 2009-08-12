@@ -57,6 +57,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			<list>
 				<ref bean="feedBurnerRedirectResolverService" />
 				<ref bean="tinyUrlResolverService" />
+				<ref bean="bitlyUrlResolverService" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -221,8 +222,10 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="twitterNewsitemBuilderService" class="nz.co.searchwellington.twitter.TwitterNewsitemBuilderService">
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="publisherGuessingService" />
+		<constructor-arg ref="resourceDAO" />
 	</bean>
 	
+	<bean id="bitlyUrlResolverService" class="nz.co.searchwellington.twitter.BitlyUrlResolverService" />
 	<bean id="tinyUrlResolverService" class="nz.co.searchwellington.twitter.TinyUrlResolverService" />
 	<bean id="feedBurnerRedirectResolverService" class="nz.co.searchwellington.feeds.FeedBurnerRedirectResolverService" />
 	

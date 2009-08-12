@@ -46,6 +46,11 @@ public class AdminRequestFilter {
             Integer item = Integer.parseInt(request.getParameter("item"));
             request.setAttribute("item", item);            
         }
+	    
+	    Long twitterId = parseTwitterIdfromRequest(request);
+    	if (twitterId != null) {
+    		request.setAttribute("twitterId", twitterId);
+    	}
         
 		
 		log.info("Looking for date field");
@@ -153,6 +158,22 @@ public class AdminRequestFilter {
 	        	request.setAttribute("tag", tag);
 	        }	        
         }
+	}
+	
+	
+	private Long parseTwitterIdfromRequest(HttpServletRequest request) {
+		String twitterIdParam = request.getParameter("twitterid");
+		log.info("Twitted id parameter: " + twitterIdParam);
+		if (twitterIdParam != null) {    
+			try {
+				Long twitterId = Long.parseLong(twitterIdParam);
+				log.info("Twitted id parsed to: " + twitterId);
+				return twitterId;
+			} catch (Exception e) {
+        		return null;
+			}
+		}
+		return null;
 	}
 	
 }
