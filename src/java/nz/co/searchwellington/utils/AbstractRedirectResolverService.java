@@ -23,11 +23,10 @@ public abstract class AbstractRedirectResolverService implements RedirectingUrlR
             log.info("Resolving url: " + url);
            
             HttpClient client = new HttpClient();
-            client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));
-    
-            HttpMethod method = new GetMethod(url);
-            method.setFollowRedirects(false);
+            client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));    
             try {
+            	HttpMethod method = new GetMethod(url);
+            	method.setFollowRedirects(false);
                 client.executeMethod(method);                   
                 final boolean httpResponseWasRedirect = method.getStatusCode() == HttpStatus.SC_MOVED_PERMANENTLY || method.getStatusCode() == HttpStatus.SC_MOVED_TEMPORARILY;
                 if (httpResponseWasRedirect) {
@@ -43,6 +42,8 @@ public abstract class AbstractRedirectResolverService implements RedirectingUrlR
                 log.error(e);
             } catch (IOException e) {
                 log.error(e);
+            } catch (IllegalArgumentException e) {
+            	log.error(e);
             }
           
         } else {
