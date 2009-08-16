@@ -28,7 +28,8 @@
 	
 	<bean id="geotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.GeotaggedModelBuilder">
 		<constructor-arg ref="resourceDAO" />	
-		<constructor-arg ref="urlBuilder" />	
+		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="rssUrlBuilder" />		
 	</bean>
 	
 	<bean id="commentModelBuilder" class="nz.co.searchwellington.controllers.models.CommentModelBuilder">

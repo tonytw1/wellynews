@@ -52,7 +52,7 @@ public class RssUrlBuilder {
         return siteInformation.getSitename() + " - News Watchlist";
     }
 
-    public Object getRssTitleForGeotagged() {
+    public String getRssTitleForGeotagged() {
         return "Geotagged newitems";
     }
 

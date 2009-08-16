@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -17,10 +18,12 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	
 	private ResourceRepository resourceDAO;
 	private UrlBuilder urlBuilder;
-		
-	public GeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder) {
+	private RssUrlBuilder rssUrlBuilder;
+	
+	public GeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
 		this.resourceDAO = resourceDAO;
 		this.urlBuilder = urlBuilder;
+		this.rssUrlBuilder = rssUrlBuilder;
 	}
 
 	public boolean isValid(HttpServletRequest request) {
@@ -40,6 +43,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			final List<Resource> geotaggedNewsitems = resourceDAO.getAllValidGeocoded(MAX_NEWSITEMS, showBroken);
 			mv.addObject("main_content", geotaggedNewsitems);
 			mv.addObject("geocoded", geotaggedNewsitems);
+			
+			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
+
 			
 			// TODO rename
 			mv.setViewName("geocoded");

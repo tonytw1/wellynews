@@ -13,7 +13,7 @@ public class GeotaggedModelBuilderTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		request = new MockHttpServletRequest();		
-		modelBuilder = new GeotaggedModelBuilder(null, null);		
+		modelBuilder = new GeotaggedModelBuilder(null, null, null);		
 	}
 		
 	public void testShouldBeValidForTagCommentPath() throws Exception {
