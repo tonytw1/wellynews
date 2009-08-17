@@ -1,0 +1,127 @@
+package nz.co.searchwellington.controllers.admin;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import nz.co.searchwellington.controllers.BaseMultiActionController;
+import nz.co.searchwellington.controllers.UrlStack;
+import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.tagging.ImpliedTagService;
+
+import org.apache.log4j.Logger;
+import org.springframework.web.servlet.ModelAndView;
+
+public class PublisherAutoGatherController extends BaseMultiActionController {
+
+    Logger log = Logger.getLogger(PublisherAutoGatherController.class);
+    
+    private AdminRequestFilter requestFilter;
+    private ImpliedTagService autoTagService;
+    
+	public PublisherAutoGatherController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService) {      
+		this.resourceDAO = resourceDAO;        
+        this.requestFilter = requestFilter;       
+        this.urlStack = urlStack;
+        this.autoTagService = autoTagService;
+	}
+
+
+	
+    public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
+        ModelAndView mv = new ModelAndView();
+        
+        mv.setViewName("autoGatherPrompt");       
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("heading", "Auto Gathering");
+        
+        requestFilter.loadAttributesOntoRequest(request);
+        Website publisher = (Website) request.getAttribute("publisher");
+        mv.addObject("publisher", publisher);
+        
+        if (publisher != null) {    
+        	List<Resource> resourcesToAutoTag = new ArrayList<Resource>();      
+        	for (Resource resource : getPossibleAutotagResources(publisher)) {
+        		if (needsPublisher((Newsitem) resource, publisher)) {
+        			resourcesToAutoTag.add(resource);
+        		}
+        	}
+            mv.addObject("resources_to_tag", resourcesToAutoTag);
+        }
+        return mv;
+    }
+
+
+
+
+	public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {        
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("autoGatherApply");      
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("heading", "Auto Gathering");
+        
+        requestFilter.loadAttributesOntoRequest(request);
+        Website publisher = (Website) request.getAttribute("publisher");
+        mv.addObject("publisher", publisher);
+        
+        
+        
+        if (publisher != null) {                       
+            List<Resource> resourcesAutoTagged = new ArrayList<Resource>();            
+            String[] autotaggedResourceIds = request.getParameterValues("autotag");            
+            for (String resourceIdString : autotaggedResourceIds) {
+                int resourceId = Integer.parseInt(resourceIdString);
+                Resource resource = resourceDAO.loadResourceById(resourceId);
+
+                if (resource.getType().equals("N")) {
+                	log.info("Applying publisher " + publisher.getName() + " to:" + resource.getName());
+                	((Newsitem) resource).setPublisher(publisher);
+                	resourceDAO.saveResource(resource);
+                	resourcesAutoTagged.add(resource);
+                }
+            }
+            mv.addObject("resources_to_tag", resourcesAutoTagged);
+        }     
+        return mv;
+    }
+	
+	    
+    private List<Resource> getPossibleAutotagResources(Resource publisher) {
+		final String publishersUrlStem = calculateUrlStem(publisher.getUrl());
+		return resourceDAO.getNewsitemsMatchingStem(publishersUrlStem);
+	}
+    
+	
+    private boolean needsPublisher(Newsitem resource, Website proposedPublisher) {
+    	if (resource.getPublisher() == null) {
+    		return true;
+    	}
+    	if (resource.getPublisher() != proposedPublisher) {
+    		return true;    		
+    	}
+		return false;
+	}
+
+        
+    // TODO duplication with Publisher guessing service.
+    private String calculateUrlStem(String fullURL) {
+        String urlStem = null;        
+        try {
+            URL url = new URL(fullURL);
+            String stem = new String(url.getHost());
+            urlStem = stem;        
+        } catch (MalformedURLException e) {
+            urlStem = null;
+        }        
+        return urlStem;
+    }
+    
+}

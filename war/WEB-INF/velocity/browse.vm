@@ -24,6 +24,12 @@
 	#if ($publisher.description)
 		<p>$publisher.description</p>
 	#end
+	
+	#if ($editPermissionService.canEdit($publisher))
+		<ul>
+			<li class="admin"><a href="$adminUrlBuilder.getPublisherAutoGatherUrl($publisher)">gather</li>
+		</ul>
+	#end
 #else
 	<h2>$heading</h2>
 #end

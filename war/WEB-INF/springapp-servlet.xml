@@ -539,6 +539,23 @@
 	
 	
 	
+	<bean id="autoGatherController" class="nz.co.searchwellington.controllers.admin.PublisherAutoGatherController">
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="adminRequestFilter" />	
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="impliedTagService" />
+		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>																
+						<prop key="/admin/gather">prompt</prop>
+						<prop key="/admin/gather/apply">apply</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
 	
 
 	
@@ -674,8 +691,11 @@
 				<prop key="/edit/tag/delete">tagEditController</prop>
 							
 				<prop key="/autotag">autoTagController</prop>
-				<prop key="/autotag/apply">autoTagController</prop>		
-							
+				<prop key="/autotag/apply">autoTagController</prop>
+				
+				<prop key="/admin/gather">autoGatherController</prop>
+				<prop key="/admin/gather/apply">autoGatherController</prop>		
+				
 				<prop key="/cancel">cancelController</prop>
 				<prop key="/login/logout">loginController</prop>	
 				<prop key="/login/prompt">loginController</prop>

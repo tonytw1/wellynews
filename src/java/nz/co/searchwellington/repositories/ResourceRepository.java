@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
@@ -134,6 +137,7 @@ public interface ResourceRepository {
 	public List<String> getPublisherNamesByStartingLetters(String q);
 	public Resource getPublisherByName(String publisherName);
 	public List<Resource> getOwnedBy(User loggedInUser);
-	public TwitteredNewsitem createNewTwitteredNewsitem(long twitterId);
+	public TwitteredNewsitem createNewTwitteredNewsitem(long twitterId);	
+	public List<Resource> getNewsitemsMatchingStem(String stem);
 		
 }

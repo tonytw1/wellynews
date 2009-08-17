@@ -186,6 +186,17 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
+    
+    
+    
+    @SuppressWarnings("unchecked")
+    public List<Resource> getNewsitemsMatchingStem(String stem) {    
+        return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list();        
+    }
+    
+    
+    
+    
    
     @SuppressWarnings("unchecked")
     public List<Resource> getNotCheckedSince(Date oneMonthAgo, int maxItems) {     
