@@ -250,7 +250,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id ="tepapaBlogCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TepapaBlogCommentFeedDetector" />	
 	<bean id ="textureCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TextureCommentFeedDetector" />
 	<bean id ="wellingtonistaCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.WellingtonistaCommentFeedDetector" />
-		  	
+	<bean id ="newswiresCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.NewswireCommentFeedDetector" />
+		  		  	
 	<bean id="commentFeedDetector" class="nz.co.searchwellington.commentfeeds.CommentFeedDetectorService">
 		<constructor-arg>
 			<list>
@@ -258,6 +259,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<ref bean="tepapaBlogCommentFeedDetector" />
 				<ref bean="textureCommentFeedDetector" />
 				<ref bean="wellingtonistaCommentFeedDetector" />
+				<ref bean="newswiresCommentFeedDetector" />
 			</list>
 		</constructor-arg>
 	</bean>
@@ -274,8 +276,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="compositeLinkExtractor" />
 	</bean>
 		
-		
-	
 	<bean id="discoveredFeedRespository" class="nz.co.searchwellington.feeds.DiscoveredFeedRepository" >
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedDetector" />
