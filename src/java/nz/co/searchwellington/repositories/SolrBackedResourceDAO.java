@@ -194,7 +194,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		if (response != null) {
 			FacetField facetField = response.getFacetField("month");
 			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);
+				log.debug("Found facet field: " + facetField);
 				List<Count> values = facetField.getValues();
 				Collections.reverse(values);
 				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMM");
