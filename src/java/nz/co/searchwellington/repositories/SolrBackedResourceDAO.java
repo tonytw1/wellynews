@@ -258,7 +258,17 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		query.setSortField("lastChanged", ORDER.desc);
 		return getQueryResults(query);
 	}
+	
+	
+	
 		
+	public List<Resource> getBrokenSites() {
+		SolrQuery query = new SolrQueryBuilder().type("W").maxItems(255).isBroken().toQuery();
+		query.setSortField("name", ORDER.asc);
+		return getQueryResults(query);
+	}
+	
+
 	public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("C").showBroken(showBroken).toQuery();
 		setTitleSortOrder(query);

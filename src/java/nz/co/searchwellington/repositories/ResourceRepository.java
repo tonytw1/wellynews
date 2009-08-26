@@ -139,5 +139,6 @@ public interface ResourceRepository {
 	public List<Resource> getOwnedBy(User loggedInUser);
 	public TwitteredNewsitem createNewTwitteredNewsitem(long twitterId);	
 	public List<Resource> getNewsitemsMatchingStem(String stem);
+	public List<Resource> getBrokenSites();
 		
 }

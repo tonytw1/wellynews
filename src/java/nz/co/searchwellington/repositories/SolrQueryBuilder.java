@@ -31,6 +31,13 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
+	
+	public SolrQueryBuilder isBroken() {
+		sb.append(" -httpStatus:200");
+		return this;
+	}
+	
+	
 	public SolrQueryBuilder type(String type) {
 		sb.append(" +type:" + type);		
 		return this;

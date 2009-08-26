@@ -19,11 +19,12 @@
 				<property name="mappings">
 					<props>														
 						<prop key="/about">about</prop>
+						<prop key="/api">api</prop>
+						<prop key="/broken">broken</prop>						
 						<prop key="/archive">archive</prop>
 						<prop key="/calendars">calendars</prop>
 						<prop key="/feeds/discovered">discovered</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
-						<prop key="/api">api</prop>						
 						<prop key="/publishers">publishers</prop>
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
@@ -627,6 +628,7 @@
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>
+            	<prop key="/broken">simplePageController</prop>
             	<prop key="/calendars">simplePageController</prop>            	
            		<prop key="/feeds/discovered">simplePageController</prop>           	
 				<prop key="/lastupdated">simplePageController</prop>

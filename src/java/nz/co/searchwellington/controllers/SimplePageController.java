@@ -106,6 +106,26 @@ public class SimplePageController extends BaseMultiActionController {
     }
 
     
+    
+    
+    public ModelAndView broken(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mv = new ModelAndView();
+        urlStack.setUrlStack(request);
+        populateLocalCommon(mv);
+        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+     
+        mv.addObject("heading", "Broken sites");
+        populateSecondaryLatestNewsitems(mv, loggedInUser);
+             
+        List<Resource> wrappedCalendars = resourceDAO.getBrokenSites();        
+        mv.addObject("main_content", wrappedCalendars);
+        mv.setViewName("browse");
+        return mv;
+    }
+
+    
+    
         
     public ModelAndView calendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
