@@ -27,7 +27,7 @@
 	
 	#if ($editPermissionService.canEdit($publisher))
 		<ul>
-			<li class="admin"><a href="$adminUrlBuilder.getPublisherAutoGatherUrl($publisher)">gather</li>
+			<li class="admin"><a href="$adminUrlBuilder.getPublisherAutoGatherUrl($publisher)">gather</a></li>
 		</ul>
 	#end
 #else
