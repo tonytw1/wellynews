@@ -25,13 +25,8 @@
 		<p><label for="date">Date: </label>	
 		<input name="date" value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" /></p>
 		
-		#if ($publisher_select) 
-			<p><label for="publisher">Publisher: </label>
-	    	$publisher_select	
-			</p>
-		#end
-		
-		
+		#parse("includes/publisher_form_field.vm")
+				
 		#if ($tag_select) 
 			<p><label for="tags">Tags: </label>
 	    	$tag_select	
