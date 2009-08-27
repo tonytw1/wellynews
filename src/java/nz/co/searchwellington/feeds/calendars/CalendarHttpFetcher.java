@@ -3,15 +3,15 @@ package nz.co.searchwellington.feeds.calendars;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.log4j.Logger;
+
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.util.CompatibilityHints;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
-
-import org.apache.http.HttpStatus;
-import org.apache.log4j.Logger;
 
 public class CalendarHttpFetcher {
     

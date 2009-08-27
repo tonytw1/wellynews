@@ -3,12 +3,12 @@ package nz.co.searchwellington.utils;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.CoreProtocolPNames;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
 
 public class StandardHttpFetcher implements HttpFetcher {
@@ -21,24 +21,27 @@ public class StandardHttpFetcher implements HttpFetcher {
     
     public HttpFetchResult httpFetch(String url) {
     	log.info("Attempting fetch of url: " + url);
-		DefaultHttpClient client = setupClient();        
-		
+		HttpClient client = setupClient();        
 		try {
-		    HttpGet method = new HttpGet(url);
-		    HttpResponse response = client.execute(method);
-            
-		    log.info("http status was: " + response.getStatusLine().getStatusCode());
-			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				InputStream stream = response.getEntity().getContent();
-				return new HttpFetchResult(response.getStatusLine().getStatusCode(), stream);
-			}			
-			return new HttpFetchResult(response.getStatusLine().getStatusCode(), null);
-		
-		} catch (ClientProtocolException e) {
-			log.error(e);
+		    HttpMethod method = new GetMethod(url);
+			client.executeMethod(method);
+            log.info("http status was: " + method.getStatusCode());
+			if (method.getStatusCode() == HttpStatus.SC_OK) {
+				InputStream stream = method.getResponseBodyAsStream();
+				return new HttpFetchResult(method.getStatusCode(), stream);
+			}
+			return new HttpFetchResult(method.getStatusCode(), null);
+			
+		} catch (HttpException e) {
+		    log.warn("An exception was thrown will trying to http fetch; see debug log level");
+            log.debug(e);
 		} catch (IOException e) {
-			log.error(e);
-		}
+            log.warn("An exception was thrown will trying to http fetch; see debug log level");
+            log.debug(e);		
+		} catch (IllegalStateException e) {
+            log.warn("An exception was thrown will trying to http fetch; see debug log level");
+            log.debug(e);		        
+        }
 		return new HttpFetchResult(-1, null);
 	}
 
@@ -52,10 +55,10 @@ public class StandardHttpFetcher implements HttpFetcher {
 		this.userAgent = userAgent;
 	}
 	
-	private DefaultHttpClient setupClient() {
-		DefaultHttpClient client = new DefaultHttpClient();
+	private HttpClient setupClient() {
+		HttpClient client = new HttpClient();
 		if (userAgent != null) {
-			client.getParams().setParameter(CoreProtocolPNames.USER_AGENT, userAgent);		
+			client.getParams().setParameter(HttpClientParams.USER_AGENT, userAgent);
 		}
 		client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));
 		client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
