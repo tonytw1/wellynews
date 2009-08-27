@@ -395,7 +395,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     public void saveTag(Tag editTag) {
         sessionFactory.getCurrentSession().saveOrUpdate(editTag);
         sessionFactory.getCurrentSession().flush();
-        //sessionFactory.evictCollection("nz.co.searchwellington.model.TagImpl.children");
+        sessionFactory.evictCollection("nz.co.searchwellington.model.Tag.children");
+        // TODO solr index needs updating if a tag moves to a new parent.
     }
 
     
