@@ -29,7 +29,7 @@ import nz.co.searchwellington.repositories.TechnoratiDAO;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 
-import org.apache.commons.httpclient.HttpStatus;
+import org.apache.http.HttpStatus;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;

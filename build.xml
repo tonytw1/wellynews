@@ -56,7 +56,7 @@
      	
 		<!-- We need the servlet API classes:        -->
         <fileset dir="lib/buildtime">
-            <include name="servlet*.jar"/>           
+            <include name="*.jar"/>           
         </fileset>
         <pathelement path="${build.dir}"/>
     </path>
