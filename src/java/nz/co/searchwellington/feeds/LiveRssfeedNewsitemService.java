@@ -18,6 +18,10 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 
+import com.sun.syndication.feed.module.mediarss.MediaEntryModuleImpl;
+import com.sun.syndication.feed.module.mediarss.MediaModule;
+import com.sun.syndication.feed.module.mediarss.types.MediaContent;
+import com.sun.syndication.feed.module.mediarss.types.Thumbnail;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -65,8 +69,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
     private FeedNewsitem extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
         String description = null;
         description = getBodyFromSyndItem(item, description); 
-        
-        
+                
         Date itemDate = null;
         if (item.getPublishedDate() != null) {        
             itemDate = item.getPublishedDate();
@@ -76,13 +79,52 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         if (url != null) {        	
             url = urlCleaner.cleanSubmittedItemUrl(url);
         }
+                
+        String imageUrl = extractThumbnail(feed, item);
+        
         // TODO This reference should really come from the resourceDAO.
         FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle(), url, description, itemDate, null, new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
-        
+        feedItem.setImageUrl(imageUrl);
         log.debug("Date of loaded newsitem is: " + feedItem.getDate());
-        feedItem.setFeed(feed);        
+        feedItem.setFeed(feed);
         return feedItem;
     }
+
+
+	private String extractThumbnail(Feed feed, SyndEntry item) {
+		String imageUrl = null;
+        MediaEntryModuleImpl mediaModule = (MediaEntryModuleImpl) item.getModule(MediaModule.URI);
+        if (mediaModule != null) {
+        	
+        	log.debug("Found media module for feed: " + feed.getName());
+        	
+        	Thumbnail thumbnail = null;
+        	MediaContent[] mediaContents = mediaModule.getMediaContents();
+			if (mediaContents.length > 0) {
+				MediaContent mediaContent = mediaContents[0];				
+				Thumbnail[] thumbnails = mediaContent.getMetadata().getThumbnail();
+				if (thumbnails.length > 0) {
+					thumbnail = thumbnails[0];
+					log.info("Found thumbnail on first media content: " + thumbnail);
+				}
+				log.info(thumbnails.length);							                                                   			                                                
+			}
+			
+			if (thumbnail == null) {
+				Thumbnail[] thumbnails = mediaModule.getMetadata().getThumbnail();
+				if (thumbnails.length > 0) {					
+					thumbnail = thumbnails[0];
+					log.info("Found first thumbnail on module metadata: " + thumbnail);
+				}
+			}
+			
+			if (thumbnail != null) {
+				imageUrl = thumbnail.getUrl().toExternalForm();
+			}			
+        }
+		return imageUrl;
+	}
+	
 
 
 	private String getBodyFromSyndItem(SyndEntry item, String description) {

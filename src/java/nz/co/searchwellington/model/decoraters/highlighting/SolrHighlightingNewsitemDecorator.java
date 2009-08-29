@@ -252,5 +252,14 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public void setOwner(User owner) {
 		newsitem.setOwner(owner);		
 	}
+
+
+	public void setImageUrl(String imageUrl) {
+	}
+
+
+	public String getImageUrl() {
+		return null;
+	}
 	
 }

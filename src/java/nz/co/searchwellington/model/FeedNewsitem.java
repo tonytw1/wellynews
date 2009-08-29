@@ -9,7 +9,7 @@ public class FeedNewsitem extends NewsitemImpl {
 	private int itemNumber;
 	private Resource localCopy;
 	private boolean isSuppressed;
-
+	
     public FeedNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds) {       
         this.id = id;
         this.name = name;

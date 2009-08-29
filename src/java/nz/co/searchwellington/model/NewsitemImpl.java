@@ -17,6 +17,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     private String twitterSubmitter;
     private String twitterMessage;
     Long twitterId;
+    String imageUrl;
     
     public NewsitemImpl() {}
     
@@ -97,6 +98,16 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 	public void setTwitterId(Long twitterId) {
 		this.twitterId = twitterId;
 	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+	
+	
 
   
 }

@@ -3,9 +3,14 @@
 	#set($itemUrl = $urlBuilder.getFeedUrl($item))
 #end
 	
-	<li>
-		
+	<li>		
+	
+		#if ($item.imageUrl) 
+			<img src="$item.imageUrl" align="right" vspace="10">
+		#end	
+	
 		<h5><a href="$itemUrl">$item.name</a></h5>
+				
 		<ul>		
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI") && $dateFormatter)
 				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
@@ -20,6 +25,8 @@
 			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItem)
 				<li>Last Changed: $dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')</li>
 			#end
+			
+		
 			
 			#if ($item.description) 
 				<li>$item.description</li>
@@ -171,7 +178,7 @@
 				#end	
 		</ul>				
 	</li>
-					
+	<br clear="all">				
 			
 				
 				

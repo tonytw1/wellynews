@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;

@@ -60,5 +60,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/apache-solr-solrj-1.3.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jrobotx-0.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/openid4java-0.9.5.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/mediarss-0.2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
