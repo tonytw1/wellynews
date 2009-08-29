@@ -27,14 +27,18 @@
 		
 		#parse("includes/publisher_form_field.vm")
 				
+		#if ($resource.image) 			
+			<img src="$resource.image.url" align="right" vspace="10">
+		#end	
 		#if ($tag_select) 
 			<p><label for="tags">Tags: </label>
 	    	$tag_select	
 			</p>
 		#end
 				
-		<p><label for="description">Description: </label>
-		<textarea name="description" rows="6" cols="40">$resource.description</textarea>
+		<p>			
+		<label for="description">Description: </label>
+		<textarea name="description" rows="6" cols="50">$resource.description</textarea>
 		</p>
 		
 		

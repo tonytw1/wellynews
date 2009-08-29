@@ -9,6 +9,7 @@ public class FeedNewsitem extends NewsitemImpl {
 	private int itemNumber;
 	private Resource localCopy;
 	private boolean isSuppressed;
+	private Image image;
 	
     public FeedNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds) {       
         this.id = id;
@@ -58,5 +59,13 @@ public class FeedNewsitem extends NewsitemImpl {
 	public void setSuppressed(boolean isSuppressed) {
 		this.isSuppressed = isSuppressed;
 	}
-		
+
+	public Image getImage() {
+		return image;
+	}
+
+	public void setImage(Image image) {
+		this.image = image;
+	}
+			
 }

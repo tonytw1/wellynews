@@ -9,7 +9,9 @@ import java.util.List;
 import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.utils.TextTrimmer;
@@ -21,6 +23,7 @@ import org.apache.log4j.Logger;
 import com.sun.syndication.feed.module.mediarss.MediaEntryModuleImpl;
 import com.sun.syndication.feed.module.mediarss.MediaModule;
 import com.sun.syndication.feed.module.mediarss.types.MediaContent;
+import com.sun.syndication.feed.module.mediarss.types.Metadata;
 import com.sun.syndication.feed.module.mediarss.types.Thumbnail;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -80,49 +83,44 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
             url = urlCleaner.cleanSubmittedItemUrl(url);
         }
                 
-        String imageUrl = extractThumbnail(feed, item);
         
         // TODO This reference should really come from the resourceDAO.
         FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle(), url, description, itemDate, null, new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
-        feedItem.setImageUrl(imageUrl);
+        feedItem.setImage(extractThumbnail(feed, item));
+      
         log.debug("Date of loaded newsitem is: " + feedItem.getDate());
         feedItem.setFeed(feed);
         return feedItem;
     }
 
 
-	private String extractThumbnail(Feed feed, SyndEntry item) {
-		String imageUrl = null;
+	private Image extractThumbnail(Feed feed, SyndEntry item) {		
         MediaEntryModuleImpl mediaModule = (MediaEntryModuleImpl) item.getModule(MediaModule.URI);
         if (mediaModule != null) {
         	
         	log.debug("Found media module for feed: " + feed.getName());
         	
-        	Thumbnail thumbnail = null;
         	MediaContent[] mediaContents = mediaModule.getMediaContents();
 			if (mediaContents.length > 0) {
 				MediaContent mediaContent = mediaContents[0];				
-				Thumbnail[] thumbnails = mediaContent.getMetadata().getThumbnail();
+				Metadata metadata = mediaContent.getMetadata();
+				Thumbnail[] thumbnails = metadata.getThumbnail();
 				if (thumbnails.length > 0) {
-					thumbnail = thumbnails[0];
+					Thumbnail thumbnail = thumbnails[0];		
 					log.info("Found thumbnail on first media content: " + thumbnail);
-				}
-				log.info(thumbnails.length);							                                                   			                                                
-			}
-			
-			if (thumbnail == null) {
-				Thumbnail[] thumbnails = mediaModule.getMetadata().getThumbnail();
-				if (thumbnails.length > 0) {					
-					thumbnail = thumbnails[0];
-					log.info("Found first thumbnail on module metadata: " + thumbnail);
+					return new Image(thumbnail.getUrl().toExternalForm(), null);
 				}
 			}
 			
-			if (thumbnail != null) {
-				imageUrl = thumbnail.getUrl().toExternalForm();
-			}			
-        }
-		return imageUrl;
+			
+			Thumbnail[] thumbnails = mediaModule.getMetadata().getThumbnail();
+			if (thumbnails.length > 0) {					
+				Thumbnail thumbnail = thumbnails[0];
+				log.info("Found first thumbnail on module metadata: " + thumbnail);
+				return new Image(thumbnail.getUrl().toExternalForm(), null);				
+			}						
+        }	
+		return null;
 	}
 	
 

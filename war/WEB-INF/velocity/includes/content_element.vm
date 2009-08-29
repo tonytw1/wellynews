@@ -4,9 +4,9 @@
 #end
 	
 	<li>		
-	
-		#if ($item.imageUrl) 
-			<img src="$item.imageUrl" align="right" vspace="10">
+		
+		#if ($item.image) 
+			<img src="$item.image.url" align="right" vspace="10">
 		#end	
 	
 		<h5><a href="$itemUrl">$item.name</a></h5>

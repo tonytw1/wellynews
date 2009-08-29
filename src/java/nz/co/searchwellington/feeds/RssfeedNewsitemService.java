@@ -32,7 +32,8 @@ public abstract class RssfeedNewsitemService {
 	// TODO constructor calls should be in the resourceDAO?
 	    	Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedPublisher, 
 	    			new HashSet<Tag>(),
-	    			new HashSet<DiscoveredFeed>());    	
+	    			new HashSet<DiscoveredFeed>());
+	    	newsitem.setImage(feedNewsitem.getImage());
 	    	return newsitem;
 		}
 	 

@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
@@ -254,11 +255,11 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	}
 
 
-	public void setImageUrl(String imageUrl) {
+	public void setImage(Image image) {
 	}
 
 
-	public String getImageUrl() {
+	public Image getImage() {
 		return null;
 	}
 	
