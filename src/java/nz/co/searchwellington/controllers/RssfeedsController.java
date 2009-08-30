@@ -14,6 +14,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -32,11 +33,12 @@ public class RssfeedsController extends BaseMultiActionController {
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedsRepository;
+	private SuggestionDAO suggestionDAO;
 	
     
-    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, LoggedInUserFilter loggedInUserFilter) {   
-        this.resourceDAO = resourceDAO;       
-        this.requestFilter = requestFilter;       
+    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, LoggedInUserFilter loggedInUserFilter, SuggestionDAO suggestionDAO) {
+        this.resourceDAO = resourceDAO;   
+        this.requestFilter = requestFilter;    
         this.publisherSelectFactory = publisherSelectFactory;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
@@ -45,6 +47,7 @@ public class RssfeedsController extends BaseMultiActionController {
         this.rssUrlBuilder = rssUrlBuilder;
         this.discoveredFeedsRepository = discoveredFeedsRepository;
         this.loggedInUserFilter = loggedInUserFilter;
+        this.suggestionDAO = suggestionDAO;
     }
     
         
@@ -107,6 +110,11 @@ public class RssfeedsController extends BaseMultiActionController {
     
         populateSecondaryFeeds(mv, loggedInUser);        
         populateDiscoveredFeeds(mv);
+        
+        
+        // Populate suggestions
+        mv.addObject("suggestions", suggestionDAO.getAllSuggestions());
+        
         
         mv.setViewName("rssfeeds");
         log.info("Finished rssfeeds method.");

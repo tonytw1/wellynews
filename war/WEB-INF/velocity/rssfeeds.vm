@@ -85,6 +85,9 @@ tags or publishers. To create a custom feed, select a tag or publisher from the 
 
 #parse("includes/discovered_feeds.vm")
 
+
+#parse("includes/suggestions.vm")
+
 </div>
 
 </div>

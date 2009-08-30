@@ -139,6 +139,9 @@
 					$item.geocode.address</li>
 				#end
 				
+					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))					
+						<li>Http Status: $item.httpStatus</li>
+					#end
 				
 					#if ($editPermissionService.canEdit($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
@@ -148,9 +151,6 @@
 					#end
 					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
 						<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
-					#end
-					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))					
-						<li>Http Status: $item.httpStatus</li>
 					#end
 								
 				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))			

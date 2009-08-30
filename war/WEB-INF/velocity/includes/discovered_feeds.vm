@@ -4,10 +4,8 @@
 <h2>Discovered Feeds</h2>
 
 <p>The following feed urls have been automagically discovered.</p>
-<p>Your mileage may vary. Might be useful; might not be.
-</p>
- 
- </p>
+
+<p>Your mileage may vary. Might be useful; might not be.</p>
 
 <ul>
 #foreach($discovered_feed in $discovered_feeds)

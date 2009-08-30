@@ -1,0 +1,27 @@
+#if($editPermissionService.canSeeSuggestions() && $suggestions && $suggestions.size() > 0) 
+
+<div class="box">
+<h2>Feed Suggestions</h2>
+
+<ul>
+#foreach($suggestion in $suggestions)
+	#if($velocityCount <= 10) 
+	<li>
+		<ul>
+		
+			<li>
+			<ul class="flat_list">
+				<li><a href="$suggestion.url">$suggestion.url</a></li>
+				<li class="admin">accept</li>
+				<li class="admin">ignore</li>
+			</ul>
+			</li>
+			
+		</ul>
+	</li>	
+	#end
+#end
+</ul>
+</div>
+
+#end
