@@ -4,6 +4,7 @@ public enum FeedAcceptancePolicy {
         
     ACCEPT("accept", "Accept"),
     IGNORE("ignore", "Ignore"),
+    SUGGEST("suggest", "Suggest"),
     ACCEPT_EVEN_WITHOUT_DATES("accept_without_dates", "Accept even without dates.");
     
     String name;

@@ -27,7 +27,7 @@ import com.sun.syndication.io.FeedException;
 
 public class FeedReader {
     
-    private static final int NUMEBR_OF_FEEDS_TO_READ = 100;
+    private static final int NUMBER_OF_FEEDS_TO_READ = 256;
 
 	Logger log = Logger.getLogger(FeedReader.class);
     
@@ -65,7 +65,7 @@ public class FeedReader {
         log.info("Accepting feeds.");        
         int processed = 0;        
         for (Feed feed: resourceDAO.getFeedsToRead()) {      
-            if (processed < NUMEBR_OF_FEEDS_TO_READ) {
+            if (processed < NUMBER_OF_FEEDS_TO_READ) {
                 processFeed(feed);
                 processed ++;
             }
@@ -77,17 +77,27 @@ public class FeedReader {
     public void processFeed(Feed feed) throws FeedException, IOException {        
         log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));
        
-        // TODO can this move the the enum?
-        boolean canAcceptFromFeed =  feed.getAcceptancePolicy() != null && feed.getAcceptancePolicy().equals("accept") || feed.getAcceptancePolicy().equals("accept_without_dates");
-        if (canAcceptFromFeed) {
-            List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
-        
+        // TODO can this move onto the enum?
+        boolean shouldLookAtFeed =  feed.getAcceptancePolicy() != null && feed.getAcceptancePolicy().equals("accept") 
+        	|| feed.getAcceptancePolicy().equals("accept_without_dates")
+        	|| feed.getAcceptancePolicy().equals("suggest");
+
+        if (shouldLookAtFeed) {
+            List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);            
             for (FeedNewsitem feednewsitem : feedNewsitems) {
-                feednewsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
-                boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
-                if (acceptThisItem) {
-                    acceptFeedItem(feednewsitem, feed.getTags(), feed.getPublisher());
-                }
+            	feednewsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
+                
+                if (feed.getAcceptancePolicy().startsWith("accept")) {
+                	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
+                	if (acceptThisItem) {
+                		acceptFeedItem(feednewsitem, feed.getTags(), feed.getPublisher());               		
+                	} 
+                	
+                } else {                	
+                	if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
+                		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
+                	}
+                }            
             }
     
             // TODO what's this all about.
@@ -95,6 +105,7 @@ public class FeedReader {
             feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
             
             log.info("Feed latest item publication date is: " + feed.getLatestItemDate());
+            
         } else {
             log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept");
         }

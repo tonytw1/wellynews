@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
@@ -50,7 +51,19 @@ public class FeedAcceptanceDecider {
         return acceptanceErrors;        
     }
 
-
+    
+	public boolean shouldSuggest(FeedNewsitem feednewsitem) {
+		final boolean isSuppressed = supressionDAO.isSupressed(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
+		if (isSuppressed) {
+			return false;
+		}
+		
+		List<String> acceptanceErrors = new ArrayList<String>();		
+		alreadyHaveThisFeedItem(feednewsitem, acceptanceErrors);		
+		return acceptanceErrors.size() == 0;		
+	}
+    
+    
     private void hasDateInTheFuture(Resource resource, List<String> acceptanceErrors) {
     	Calendar oneDayFromNow = Calendar.getInstance();
     	oneDayFromNow.add(Calendar.DATE, 1);  	
@@ -82,5 +95,8 @@ public class FeedAcceptanceDecider {
             acceptanceErrors.add("Item is more than one week old");            
         }
     }
+
+
+
     
 }
