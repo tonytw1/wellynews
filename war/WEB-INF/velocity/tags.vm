@@ -17,7 +17,7 @@
 #set($letter = "")
 #foreach ($tag in $tags) 
 	#if (!$tag.hidden)
-		#set($current = $tag.name.substring(0, 1).toUpperCase())
+		#set($current = $tag.displayName.substring(0, 1).toUpperCase())
 		#if ($current != $letter)
 			#set($letter = $current)		
 			</ul>
