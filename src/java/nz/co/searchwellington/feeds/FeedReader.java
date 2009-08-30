@@ -100,9 +100,9 @@ public class FeedReader {
                 } else {                	
                 	if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
                 		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());                		
-                		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feednewsitem.getUrl()));
+                		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl()));
                 	}
-                }            
+                }
             }
     
             // TODO what's this all about.

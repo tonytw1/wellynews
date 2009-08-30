@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 
 public class AdminUrlBuilder {
@@ -31,6 +32,10 @@ public class AdminUrlBuilder {
 	
 	public String getFeedNewsitemAcceptUrl(FeedNewsitem feednewsitem) {
 		return siteInformation.getUrl() + "/edit/accept?feed=" + feednewsitem.getFeed().getId() + "&item=" + feednewsitem.getItemNumber();
+	}
+	
+	public String getSuggestionAcceptUrl(Suggestion suggestion) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/edit/accept?feed=" + suggestion.getFeed().getId() + "&url=" + URLEncoder.encode(suggestion.getUrl(), "UTF-8");		
 	}
 	
 	public String getFeedNewsitemSuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {

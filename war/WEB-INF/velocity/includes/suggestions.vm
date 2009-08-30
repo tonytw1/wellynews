@@ -12,7 +12,8 @@
 			<li>
 			<ul class="flat_list">
 				<li><a href="$suggestion.url">$suggestion.url</a></li>
-				<li class="admin">accept</li>
+				<li class="publisher">$suggestion.feed.name</li>			
+				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
 				<li class="admin">ignore</li>
 			</ul>
 			</li>

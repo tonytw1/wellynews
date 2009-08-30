@@ -4,15 +4,15 @@ public class Suggestion {
 	
 	private int id;
 	private String url;
-	
+	private Feed feed;
 	
 	
 	public Suggestion() {	
 	}
 
-
-	public Suggestion(String url) {
-		id = 0;
+	
+	public Suggestion(Feed feed, String url) {
+		this.feed = feed;
 		this.url = url;
 	}
 
@@ -26,7 +26,14 @@ public class Suggestion {
 		this.id = id;
 	}
 
-
+	public Feed getFeed() {
+		return feed;
+	}
+	
+	public void setFeed(Feed feed) {
+		this.feed = feed;
+	}
+	
 	public String getUrl() {
 		return url;
 	}

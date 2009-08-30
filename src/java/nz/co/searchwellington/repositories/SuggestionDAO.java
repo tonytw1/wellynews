@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories;
 
 import java.util.List;
 
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.SupressionImpl;
@@ -23,11 +24,8 @@ public class SuggestionDAO {
 	 }
 
 	 
-	 public Suggestion createSuggestion(String url) {
-		 if (url != null) {
-			 return new Suggestion(url);
-		 }
-		 return null;
+	 public Suggestion createSuggestion(Feed feed, String url) {
+		 return new Suggestion(feed, url);
 	 }
 	 
 	 
@@ -56,6 +54,7 @@ public class SuggestionDAO {
 		 return sessionFactory.getCurrentSession().createCriteria(Suggestion.class).
 	        addOrder(Order.desc("id")).
 	        setCacheable(true).
+	        setMaxResults(50).
 	        list();        
 	 }
 	 
