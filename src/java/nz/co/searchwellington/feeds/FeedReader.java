@@ -14,6 +14,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -40,6 +41,7 @@ public class FeedReader {
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
+    private SuggestionDAO suggestionDAO;
  
     
     public FeedReader() {        
@@ -47,7 +49,7 @@ public class FeedReader {
     
     
     
-    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, LinkCheckerQueue linkCheckerQueue, AutoTaggingService autoTagger, Notifier notifier, String notificationReciept, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner) {
+    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, LinkCheckerQueue linkCheckerQueue, AutoTaggingService autoTagger, Notifier notifier, String notificationReciept, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.linkCheckerQueue = linkCheckerQueue;
@@ -57,6 +59,7 @@ public class FeedReader {
         this.feedAcceptanceDecider = feedAcceptanceDecider;      
         this.dateFormatter = dateFormatter;
         this.urlCleaner = urlCleaner;
+        this.suggestionDAO = suggestionDAO;
     }
 
 
@@ -85,7 +88,8 @@ public class FeedReader {
         if (shouldLookAtFeed) {
             List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);            
             for (FeedNewsitem feednewsitem : feedNewsitems) {
-            	feednewsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl()));
+            	String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
+				feednewsitem.setUrl(cleanSubmittedItemUrl);
                 
                 if (feed.getAcceptancePolicy().startsWith("accept")) {
                 	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
@@ -95,7 +99,8 @@ public class FeedReader {
                 	
                 } else {                	
                 	if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
-                		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
+                		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());                		
+                		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feednewsitem.getUrl()));
                 	}
                 }            
             }

@@ -45,7 +45,11 @@
 	</bean>
 	
 	<bean id="supressionDAO" class="nz.co.searchwellington.repositories.SupressionDAO">
-			<constructor-arg ref="sessionFactory" />
-	</bean>		
+		<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+	<bean id="suggestionDAO" class="nz.co.searchwellington.repositories.SuggestionDAO">
+		<constructor-arg ref="sessionFactory" />
+	</bean>	
 	 
  </beans>

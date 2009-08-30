@@ -48,6 +48,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="urlCleaner" />
+		<constructor-arg ref="suggestionDAO" />
 	</bean>
 
 
@@ -80,6 +81,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<constructor-arg ref="feedAcceptanceDecider" />
 	<constructor-arg ref="dateFormatter" />
 	<constructor-arg ref="urlCleaner" />
+	<constructor-arg ref="suggestionDAO" />
 </bean>
 
 <bean id="commentFeedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">

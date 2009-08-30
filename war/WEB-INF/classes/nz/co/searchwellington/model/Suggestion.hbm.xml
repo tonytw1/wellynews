@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping default-lazy="true">
+
+	<class name="nz.co.searchwellington.model.Suggestion"
+		proxy="nz.co.searchwellington.model.Suggestion" table="suggestion">
+
+	
+		<cache usage="read-write" />
+
+		<id name="id" type="integer" unsaved-value="0">
+			<column name="id" sql-type="integer" not-null="true" />
+			<generator class="native" />
+		</id>
+
+		<property name="url">
+			<column name="url" length="255" not-null="true" />
+		</property>
+		    
+	</class>
+
+</hibernate-mapping>
