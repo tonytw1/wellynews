@@ -242,7 +242,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     @SuppressWarnings("unchecked")
     public List<Tag> getAllTags() {        
         return sessionFactory.getCurrentSession().createCriteria(Tag.class).
-        addOrder(Order.asc("name")).
+        addOrder(Order.asc("displayName")).
         setCacheable(true).
         list();        
     }
