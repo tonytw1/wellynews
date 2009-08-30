@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.SupressionImpl;
+import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionRepository;
 
 import org.apache.log4j.Logger;
@@ -22,12 +23,14 @@ public class SupressionController extends MultiActionController {
 
     private SupressionRepository supressionDAO;  
     private UrlStack urlStack;
+	private SuggestionDAO suggestionDAO;
   
 
     
-    public SupressionController(SupressionRepository supressionDAO, UrlStack urlStack) {
+    public SupressionController(SupressionRepository supressionDAO, UrlStack urlStack, SuggestionDAO suggestionDAO) {
         this.supressionDAO = supressionDAO;       
         this.urlStack = urlStack;
+        this.suggestionDAO = suggestionDAO;
     }
 
     public ModelAndView supress(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -39,7 +42,11 @@ public class SupressionController extends MultiActionController {
             Supression supression = new SupressionImpl(urlToSupress);
             
             log.info("Adding a url supression for: " + supression.getUrl());
-            supressionDAO.addSupression(supression);
+            if (!supressionDAO.isSupressed(urlToSupress)) {
+            	supressionDAO.addSupression(supression);
+            }
+            // TODO put this somewhere of it's own?
+            suggestionDAO.removeSuggestion(urlToSupress);
         }
         return mv;
     }

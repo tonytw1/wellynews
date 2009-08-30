@@ -4,9 +4,6 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Suggestion;
-import nz.co.searchwellington.model.Supression;
-import nz.co.searchwellington.model.SupressionImpl;
-import nz.co.searchwellington.model.Tag;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
@@ -57,6 +54,17 @@ public class SuggestionDAO {
 	        setMaxResults(50).
 	        list();        
 	 }
+
+
+	 
+
+	public void removeSuggestion(String url) {
+		Suggestion existingsuggestion = (Suggestion) sessionFactory.getCurrentSession().createCriteria(Suggestion.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();
+		if (existingsuggestion != null) {
+			sessionFactory.getCurrentSession().delete(existingsuggestion);
+			sessionFactory.getCurrentSession().flush();
+		}
+	}
 	 
 
 

@@ -26,6 +26,7 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TwitteredNewsitem;
@@ -34,6 +35,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -78,13 +80,13 @@ public class ResourceEditController extends BaseTagEditingController {
     private RequestFilter requestFilter;
     private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
     private TwitterService twitterService;
-    
+    private SuggestionDAO suggestionDAO;
       
     public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter, 
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack, RequestFilter requestFilter, TwitterNewsitemBuilderService twitterNewsitemBuilderService, TwitterService twitterService) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack, RequestFilter requestFilter, TwitterNewsitemBuilderService twitterNewsitemBuilderService, TwitterService twitterService, SuggestionDAO suggestionDAO) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
@@ -104,6 +106,7 @@ public class ResourceEditController extends BaseTagEditingController {
         this.requestFilter = requestFilter;
         this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
         this.twitterService = twitterService;
+        this.suggestionDAO = suggestionDAO;
     }
    
     
@@ -208,6 +211,7 @@ public class ResourceEditController extends BaseTagEditingController {
             if (newsitemToAccept != null) {
             	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(newsitemToAccept);                  
             	saveResource(request, loggedInUser, newsitem, true, true);
+            	            	
             	log.info("Saving resource: " + newsitem.getId());
             } else {
             	log.warn("Could not find twitter with id: " + twitterId);
@@ -483,7 +487,13 @@ private void removePublisherFromPublishersContent(Resource editResource) {
          
             boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
             // TODO validate. - what exactly?
-            if (okToSave) {         
+            if (okToSave) {
+            	
+            	// TODO this should be on redirect accept method only
+            	if (suggestionDAO.isSuggested(editResource.getUrl())) {            		
+            		suggestionDAO.removeSuggestion(editResource.getUrl());
+            	}
+            	
                 saveResource(request, loggedInUser, editResource, newSubmission, resourceUrlHasChanged);
                 
             } else {

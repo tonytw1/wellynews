@@ -14,7 +14,7 @@
 				<li><a href="$suggestion.url">$suggestion.url</a></li>
 				<li class="publisher">$suggestion.feed.name</li>			
 				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
-				<li class="admin">ignore</li>
+				<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($suggestion)">ignore</a></li>
 			</ul>
 			</li>
 			
