@@ -168,6 +168,7 @@
 				<property name="mappings">
 					<props>														
 						<prop key="/feeds">rssfeeds</prop>
+						<prop key="/feeds/inbox">suggestions</prop>
 						<prop key="/feeds/**">rssfeeds</prop>					
 					</props>
 				</property>
@@ -666,7 +667,9 @@
 				<prop key="/*/*/json">jsonController</prop>				
 								
 				
+				<prop key="/feeds/inbox">rssfeedsController</prop>   
 				<prop key="/feeds/**">rssfeedsController</prop>
+				
 				<prop key="/search">searchController</prop>
 				
 				<prop key="/viewcalendar">viewCalendarController</prop>

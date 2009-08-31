@@ -107,10 +107,8 @@ public class RssfeedsController extends BaseMultiActionController {
         mv.getModel().put("publisher_select", publisherSelect);
         log.debug("Finished building publishers select.");
         
-    
         populateSecondaryFeeds(mv, loggedInUser);        
         populateDiscoveredFeeds(mv);
-        
         
         // Populate suggestions
         mv.addObject("suggestions", suggestionDAO.getAllSuggestions());
@@ -121,11 +119,24 @@ public class RssfeedsController extends BaseMultiActionController {
         return mv;
     }
 
+    
+    public ModelAndView suggestions(HttpServletRequest request, HttpServletResponse response) throws IOException {     
+        ModelAndView mv = new ModelAndView();        
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());        
+        mv.addObject("heading", "Feed newsitem suggestions");    
+        urlStack.setUrlStack(request);
+                
+        mv.addObject("suggestions", suggestionDAO.getAllSuggestions());       
+        mv.setViewName("suggestions");    
+        return mv;
+    }
 
+    
     private void populateDiscoveredFeeds(ModelAndView mv) {
         mv.addObject("discovered_feeds", discoveredFeedsRepository.getAllNonCommentDiscoveredFeeds());
         mv.addObject("discovered_feeds_moreurl", "feeds/discovered");
     }
 
+    
 }
     
