@@ -2,6 +2,7 @@ package nz.co.searchwellington.feeds;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import nz.co.searchwellington.model.DiscoveredFeed;
@@ -10,6 +11,7 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 
@@ -35,6 +37,19 @@ public abstract class RssfeedNewsitemService {
 	    			new HashSet<DiscoveredFeed>());
 	    	newsitem.setImage(feedNewsitem.getImage());
 	    	return newsitem;
+	}
+	
+	
+	public FeedNewsitem getFeedNewsitemByUrl(Suggestion suggestion) {
+		List<FeedNewsitem> feedNewsitems = this.getFeedNewsitems(suggestion.getFeed());
+		Iterator<FeedNewsitem> i = feedNewsitems.iterator();
+		while (i.hasNext()) {
+			FeedNewsitem feedNewsitem = i.next();
+			if (feedNewsitem.getUrl().equals(suggestion.getUrl())) {
+				return feedNewsitem;
+			}
 		}
-	 
+		return null;
+	}
+	
 }

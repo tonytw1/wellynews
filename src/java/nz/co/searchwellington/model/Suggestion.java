@@ -2,9 +2,9 @@ package nz.co.searchwellington.model;
 
 public class Suggestion {
 	
-	private int id;
-	private String url;
-	private Feed feed;
+	protected int id;
+	protected String url;
+	protected Feed feed;
 	
 	
 	public Suggestion() {	
