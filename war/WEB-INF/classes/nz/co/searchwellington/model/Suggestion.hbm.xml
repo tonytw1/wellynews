@@ -21,6 +21,10 @@
 		<property name="url">
 			<column name="url" length="255" not-null="true" />
 		</property>
+		
+		 <property name="firstSeen" type="timestamp">
+        	<column name="first_seen"/>
+        </property>
 		    
 	</class>
 

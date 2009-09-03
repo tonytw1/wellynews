@@ -110,7 +110,7 @@ public class RssfeedsController extends BaseMultiActionController {
         populateSecondaryFeeds(mv, loggedInUser);        
         populateDiscoveredFeeds(mv);
                
-        mv.addObject("suggestions", decorateSuggestions(suggestionDAO.getSuggestions(6)));
+        mv.addObject("suggestions", suggestionDAO.getDecoratedSuggestions(suggestionDAO.getSuggestions(6)));
         
         mv.setViewName("rssfeeds");
         log.info("Finished rssfeeds method.");
@@ -125,28 +125,13 @@ public class RssfeedsController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         
         List<Suggestion> bareSuggestions = suggestionDAO.getAllSuggestions();
-        List<Suggestion> suggestions = decorateSuggestions(bareSuggestions);        
+        List<Suggestion> suggestions = suggestionDAO.getDecoratedSuggestions(bareSuggestions);        
 		mv.addObject("suggestions", suggestions);       
         mv.setViewName("suggestions");    
         return mv;
     }
-
-
-	private List<Suggestion> decorateSuggestions(
-		List<Suggestion> bareSuggestions) {
-		List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        for (Suggestion suggestion : bareSuggestions) {			
-			if (suggestion.getFeed() != null) {
-				FeedNewsitem feednewsitem = rssNewsitemService.getFeedNewsitemByUrl(suggestion);
-				if (feednewsitem != null) {
-					suggestions.add(new SuggestionFeednewsitem(suggestion, feednewsitem.getName(), feednewsitem.getDate()));
-				}
-			}
-		}
-		return suggestions;
-	}
-
-	
+    
+    
     private void populateDiscoveredFeeds(ModelAndView mv) {
         mv.addObject("discovered_feeds", discoveredFeedsRepository.getAllNonCommentDiscoveredFeeds());
         mv.addObject("discovered_feeds_moreurl", "feeds/discovered");

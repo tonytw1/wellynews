@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ public class RssController extends MultiActionController {
     private ResourceRepository resourceDAO;
     private RssUrlBuilder rssUrlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
+	private SuggestionDAO suggestionDAO;
 
     
        
@@ -36,6 +38,7 @@ public class RssController extends MultiActionController {
         this.resourceDAO = resourceDAO;       
         this.rssUrlBuilder = rssUrlBuilder;      
         this.contentModelBuilderService = contentModelBuilderService;
+        this.suggestionDAO = suggestionDAO;
     }
     
     
@@ -83,6 +86,21 @@ public class RssController extends MultiActionController {
         RssView rssView = new RssView(siteInformation);        
         return new ModelAndView(rssView, model);        
     }
+    
+    
+    public ModelAndView suggestionsRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	HashMap <String, Object> model = new HashMap <String, Object>();     
+    	model.put("heading", rssUrlBuilder.getTitleForWatchlist());
+    	model.put("link", siteInformation.getUrl());
+    	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
+    	
+    	// TODO Decorate with titles etc.
+    	model.put("main_content", suggestionDAO.getSuggestions(MAX_RSS_ITEMS));
+    	
+        RssView rssView = new RssView(siteInformation);        
+        return new ModelAndView(rssView, model);        
+    }
+    
     
     
 	private ModelAndView redirectToFeedburnerMainFeed() {
