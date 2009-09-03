@@ -99,8 +99,8 @@ public class FeedReader {
                 	
                 } else {                	
                 	if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
-                		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());                		
-                		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl()));
+                		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
+                		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl(), new DateTime().toDate()));
                 	}
                 }
             }

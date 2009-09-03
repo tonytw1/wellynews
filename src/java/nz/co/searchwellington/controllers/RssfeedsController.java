@@ -10,9 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.SuggestionFeednewsitem;
 import nz.co.searchwellington.model.Tag;
@@ -32,25 +30,23 @@ import org.springframework.web.servlet.ModelAndView;
 public class RssfeedsController extends BaseMultiActionController {
 
     Logger log = Logger.getLogger(RssfeedsController.class);
-
-    private RequestFilter requestFilter;
+    
     private PublisherSelectFactory publisherSelectFactory;
     private TagWidgetFactory tagWidgetFactory;    
-    private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedsRepository;
 	private SuggestionDAO suggestionDAO;
 	private RssfeedNewsitemService rssNewsitemService;
 	
     
-    public RssfeedsController(ResourceRepository resourceDAO, RequestFilter requestFilter, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, TagWidgetFactory tagWidgetFactory, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, LoggedInUserFilter loggedInUserFilter, SuggestionDAO suggestionDAO, RssfeedNewsitemService rssNewsitemService) {
+    public RssfeedsController(ResourceRepository resourceDAO, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, 
+    		TagWidgetFactory tagWidgetFactory, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, 
+    		LoggedInUserFilter loggedInUserFilter, SuggestionDAO suggestionDAO, RssfeedNewsitemService rssNewsitemService) {
         this.resourceDAO = resourceDAO;   
-        this.requestFilter = requestFilter;    
         this.publisherSelectFactory = publisherSelectFactory;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.tagWidgetFactory = tagWidgetFactory;       
-        this.siteInformation = siteInformation;
         this.rssUrlBuilder = rssUrlBuilder;
         this.discoveredFeedsRepository = discoveredFeedsRepository;
         this.loggedInUserFilter = loggedInUserFilter;
@@ -70,12 +66,8 @@ public class RssfeedsController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
-        
-        
+                
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());        
-        mv.getModel().put("description", "Local newsitems and RSS feeds from " + siteInformation.getAreaname() + " based organisations.");
-
-        
         
         if (request.getAttribute("publisher") != null) { 
             publisher = (Website) request.getAttribute("publisher");            
@@ -100,7 +92,7 @@ public class RssfeedsController extends BaseMultiActionController {
         } else {
             mv.getModel().put("main_content", resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, false));            
             mv.getModel().put("heading", "RSS Feeds");
-            mv.getModel().put("rss_url", siteInformation.getUrl() + "/rss");
+            mv.getModel().put("rss_url", rssUrlBuilder.getBaseRssUrl());
             mv.getModel().put("rss_title", "Newslog");            
         }
         
@@ -117,10 +109,8 @@ public class RssfeedsController extends BaseMultiActionController {
         
         populateSecondaryFeeds(mv, loggedInUser);        
         populateDiscoveredFeeds(mv);
-        
-        // Populate suggestions
-        mv.addObject("suggestions", suggestionDAO.getAllSuggestions());
-        
+               
+        mv.addObject("suggestions", decorateSuggestions(suggestionDAO.getSuggestions(6)));
         
         mv.setViewName("rssfeeds");
         log.info("Finished rssfeeds method.");
@@ -135,25 +125,28 @@ public class RssfeedsController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         
         List<Suggestion> bareSuggestions = suggestionDAO.getAllSuggestions();
-        List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        for (Suggestion suggestion : bareSuggestions) {			
-			if (suggestion.getFeed() != null) {
-				FeedNewsitem feednewsitem = rssNewsitemService.getFeedNewsitemByUrl(suggestion);
-				if (feednewsitem != null) {
-					suggestions.add(new SuggestionFeednewsitem(suggestion.getFeed(), suggestion.getUrl(), feednewsitem.getName(), feednewsitem.getDate()));
-				}
-			}
-		}
-        
+        List<Suggestion> suggestions = decorateSuggestions(bareSuggestions);        
 		mv.addObject("suggestions", suggestions);       
         mv.setViewName("suggestions");    
         return mv;
     }
 
 
-	
+	private List<Suggestion> decorateSuggestions(
+		List<Suggestion> bareSuggestions) {
+		List<Suggestion> suggestions = new ArrayList<Suggestion>();
+        for (Suggestion suggestion : bareSuggestions) {			
+			if (suggestion.getFeed() != null) {
+				FeedNewsitem feednewsitem = rssNewsitemService.getFeedNewsitemByUrl(suggestion);
+				if (feednewsitem != null) {
+					suggestions.add(new SuggestionFeednewsitem(suggestion, feednewsitem.getName(), feednewsitem.getDate()));
+				}
+			}
+		}
+		return suggestions;
+	}
 
-    
+	
     private void populateDiscoveredFeeds(ModelAndView mv) {
         mv.addObject("discovered_feeds", discoveredFeedsRepository.getAllNonCommentDiscoveredFeeds());
         mv.addObject("discovered_feeds_moreurl", "feeds/discovered");

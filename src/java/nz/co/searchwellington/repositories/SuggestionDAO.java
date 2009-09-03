@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.Date;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
@@ -21,8 +22,8 @@ public class SuggestionDAO {
 	 }
 
 	 
-	 public Suggestion createSuggestion(Feed feed, String url) {
-		 return new Suggestion(feed, url);
+	 public Suggestion createSuggestion(Feed feed, String url, Date firstSeen) {
+		 return new Suggestion(feed, url, firstSeen);
 	 }
 	 
 	 
@@ -45,14 +46,19 @@ public class SuggestionDAO {
 		 return false;
 	 }
 	 
+	 	
+	 public List<Suggestion> getAllSuggestions() {        
+		 return getSuggestions(500); 
+	 }
+	 
 	 
 	 @SuppressWarnings("unchecked")
-	 public List<Suggestion> getAllSuggestions() {        
+	public List<Suggestion> getSuggestions(int maxResults) {
 		 return sessionFactory.getCurrentSession().createCriteria(Suggestion.class).
-	        addOrder(Order.desc("id")).
+	        addOrder(Order.desc("firstSeen")).
 	        setCacheable(true).
-	        setMaxResults(50).
-	        list();        
+	        setMaxResults(maxResults).
+	        list();
 	 }
 
 
@@ -65,6 +71,9 @@ public class SuggestionDAO {
 			sessionFactory.getCurrentSession().flush();
 		}
 	}
+
+
+	
 	 
 
 

@@ -122,7 +122,6 @@ public class OpenIDLoginController extends MultiActionController {
 			
 			setUser(request, user);			
 			
-			// TODO Apply ownership to anything on the session.
 			loginResourceOwnershipService.assignOwnership(user);
 		    request.getSession().setAttribute("owned", null);
 		    

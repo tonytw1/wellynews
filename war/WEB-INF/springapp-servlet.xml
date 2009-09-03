@@ -151,13 +151,11 @@
 	
 	
 	<bean id="rssfeedsController" class="nz.co.searchwellington.controllers.RssfeedsController">
-		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />	
+		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="publisherSelectFactory" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="tagWidgetFactory"/>	
-		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="loggedInUserFilter" />
@@ -431,7 +429,6 @@
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />
 		<constructor-arg ref="twitterService" />
 		<constructor-arg ref="suggestionDAO" />

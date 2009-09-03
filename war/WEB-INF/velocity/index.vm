@@ -51,13 +51,9 @@
 		#parse("includes/login.vm")
 		
 		#parse("includes/your_listing.vm")
-
-	
-
+		
 		#parse("includes/geocoded.vm")
 		
-		#parse("includes/events.vm")
-
 		#parse("includes/featured.vm")
 		
 		<div class="box">

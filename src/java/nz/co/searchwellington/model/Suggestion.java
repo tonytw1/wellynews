@@ -1,19 +1,23 @@
 package nz.co.searchwellington.model;
 
+import java.util.Date;
+
 public class Suggestion {
 	
 	protected int id;
 	protected String url;
 	protected Feed feed;
-	
+    protected Date firstSeen;
+    
 	
 	public Suggestion() {	
 	}
 
 	
-	public Suggestion(Feed feed, String url) {
+	public Suggestion(Feed feed, String url, Date firstSeen) {
 		this.feed = feed;
 		this.url = url;
+		this.firstSeen = firstSeen;
 	}
 
 
@@ -42,5 +46,15 @@ public class Suggestion {
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	
+
+
+	public Date getFirstSeen() {
+		return firstSeen;
+	}
+
+
+	public void setFirstSeen(Date firstSeen) {
+		this.firstSeen = firstSeen;
+	}
+		
 }

@@ -15,7 +15,6 @@ import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Feed;
@@ -26,7 +25,6 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TwitteredNewsitem;
@@ -77,7 +75,6 @@ public class ResourceEditController extends BaseTagEditingController {
     private UrlCleaner urlCleaner;
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
-    private RequestFilter requestFilter;
     private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
     private TwitterService twitterService;
     private SuggestionDAO suggestionDAO;
@@ -86,7 +83,9 @@ public class ResourceEditController extends BaseTagEditingController {
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, EditPermissionService editPermissionService, UrlStack urlStack, RequestFilter requestFilter, TwitterNewsitemBuilderService twitterNewsitemBuilderService, TwitterService twitterService, SuggestionDAO suggestionDAO) {
+            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
+            EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService, 
+            TwitterService twitterService, SuggestionDAO suggestionDAO) {    	
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
@@ -103,7 +102,6 @@ public class ResourceEditController extends BaseTagEditingController {
         this.loggedInUserFilter = loggedInUserFilter;
         this.editPermissionService = editPermissionService;
         this.urlStack = urlStack;
-        this.requestFilter = requestFilter;
         this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
         this.twitterService = twitterService;
         this.suggestionDAO = suggestionDAO;

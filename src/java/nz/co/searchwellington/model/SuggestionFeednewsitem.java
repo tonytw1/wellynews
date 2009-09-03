@@ -7,8 +7,8 @@ public class SuggestionFeednewsitem extends Suggestion {
 	private String title;
 	private Date date;
 	
-	public SuggestionFeednewsitem(Feed feed, String url, String title, Date date) {
-		super(feed, url);
+	public SuggestionFeednewsitem(Suggestion suggestion, String title, Date date) {
+		super(suggestion.feed, suggestion.getUrl(), suggestion.getFirstSeen());
 		this.title = title;
 		this.date = date;
 	}

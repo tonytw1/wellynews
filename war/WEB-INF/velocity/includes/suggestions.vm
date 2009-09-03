@@ -1,27 +1,31 @@
 #if($editPermissionService.canSeeSuggestions() && $suggestions && $suggestions.size() > 0) 
 
 <div class="box">
-<h2>Feed Suggestions</h2>
+<h2>Feed Inbox</h2>
+
+<p>These items have been seen in a third party feed and are awaiting review.</p>
+</p>
 
 <ul>
 #foreach($suggestion in $suggestions)
 	#if($velocityCount <= 10) 
 	<li>
-		<ul>
-		
+		<ul>		
 			<li>
 			<ul class="flat_list">
-				<li><a href="$suggestion.url">$suggestion.url</a></li>
-				<li class="publisher">$suggestion.feed.name</li>			
+				<li><a href="$suggestion.url">$suggestion.title</a></li>
+				<li class="publisher">$suggestion.feed.name</li>	
 				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
 				<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($suggestion)">ignore</a></li>
 			</ul>
-			</li>
-			
+			</li>			
 		</ul>
 	</li>	
 	#end
 #end
+
+<li class="more"><a href="$urlBuilder.getFeedsInboxUrl()">More...</a></li>
+
 </ul>
 </div>
 
