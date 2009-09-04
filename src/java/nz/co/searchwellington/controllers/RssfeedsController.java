@@ -36,12 +36,11 @@ public class RssfeedsController extends BaseMultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedsRepository;
 	private SuggestionDAO suggestionDAO;
-	private RssfeedNewsitemService rssNewsitemService;
 	
-    
+	
     public RssfeedsController(ResourceRepository resourceDAO, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, 
     		TagWidgetFactory tagWidgetFactory, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, 
-    		LoggedInUserFilter loggedInUserFilter, SuggestionDAO suggestionDAO, RssfeedNewsitemService rssNewsitemService) {
+    		LoggedInUserFilter loggedInUserFilter, SuggestionDAO suggestionDAO) {
         this.resourceDAO = resourceDAO;   
         this.publisherSelectFactory = publisherSelectFactory;
         this.urlStack = urlStack;
@@ -51,7 +50,6 @@ public class RssfeedsController extends BaseMultiActionController {
         this.discoveredFeedsRepository = discoveredFeedsRepository;
         this.loggedInUserFilter = loggedInUserFilter;
         this.suggestionDAO = suggestionDAO;
-        this.rssNewsitemService = rssNewsitemService;
     }
     
         
@@ -75,14 +73,13 @@ public class RssfeedsController extends BaseMultiActionController {
         if (request.getAttribute("tag") != null) {
             tag = (Tag) request.getAttribute("tag");
         }
-
         
         if (publisher != null) {
             mv.getModel().put("heading", publisher.getName() + " RSS Feed");
             mv.getModel().put("custom", new Boolean(true));                        
             mv.getModel().put("main_content", resourceDAO.getPublisherNewsitems(publisher, MAX_NEWSITEMS, showBroken));
-            setRss(mv, rssUrlBuilder.getRssUrlForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));  
-               
+            setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));  
+            
         } else if (tag != null) {
             mv.getModel().put("heading", tag.getDisplayName() + " RSS Feed");
             mv.getModel().put("custom", new Boolean(true));            
@@ -99,8 +96,7 @@ public class RssfeedsController extends BaseMultiActionController {
         final Select tagSelect = tagWidgetFactory.createTagSelect("tag", tag, new HashSet<Tag>(), "No Tag");
         tagSelect.setOnChange("tagForm.submit();");
         mv.getModel().put("tag_select", tagSelect.toString());
-        
-               
+                       
         log.debug("Building publishers select.");
         final Select publisherSelect = publisherSelectFactory.createPublisherSelectWithCounts(publisher, false);        
         publisherSelect.setOnChange("publisherForm.submit();");        
@@ -127,7 +123,8 @@ public class RssfeedsController extends BaseMultiActionController {
         List<Suggestion> bareSuggestions = suggestionDAO.getAllSuggestions();
         List<Suggestion> suggestions = suggestionDAO.getDecoratedSuggestions(bareSuggestions);        
 		mv.addObject("suggestions", suggestions);       
-        mv.setViewName("suggestions");    
+        mv.setViewName("suggestions");        
+        setRss(mv, rssUrlBuilder.getTitleForSuggestions(), rssUrlBuilder.getRssUrlForFeedSuggestions());
         return mv;
     }
     

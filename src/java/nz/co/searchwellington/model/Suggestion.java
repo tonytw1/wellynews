@@ -2,7 +2,10 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
-public class Suggestion {
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
+
+public class Suggestion implements RssFeedable {
 	
 	protected int id;
 	protected String url;
@@ -56,5 +59,15 @@ public class Suggestion {
 	public void setFirstSeen(Date firstSeen) {
 		this.firstSeen = firstSeen;
 	}
-		
+
+
+	@Override
+	public SyndEntry getRssItem() {
+		SyndEntry entry = new SyndEntryImpl();      
+		entry.setTitle(this.url);
+		entry.setLink(url);
+		return entry;
+	}
+	
+	
 }

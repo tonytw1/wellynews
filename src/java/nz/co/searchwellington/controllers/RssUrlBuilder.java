@@ -91,9 +91,17 @@ public class RssUrlBuilder {
 	public String getRssUrlForTagGeotagged(Tag tag) {
 		return siteInformation.getUrl() + "/" + tag.getName() + "/geotagged/rss";
 	}
+	
+	public String getRssUrlForFeedSuggestions() {
+		return siteInformation.getUrl() + "/feeds/inbox/rss";
+	}
 
 	public String getRssDescriptionForTag(Tag tag) {
 		return siteInformation.getAreaname() + " related items tagged with " + tag.getDisplayName();
+	}
+
+	public String getTitleForSuggestions() {
+		return "Feed newsitem suggestions";
 	}
     
 	

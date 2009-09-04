@@ -2,6 +2,8 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
+import com.sun.syndication.feed.synd.SyndEntry;
+
 public class SuggestionFeednewsitem extends Suggestion {
 
 	private String title;
@@ -28,5 +30,15 @@ public class SuggestionFeednewsitem extends Suggestion {
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
+	@Override
+	public SyndEntry getRssItem() {
+		SyndEntry item = super.getRssItem();
+		item.setTitle(this.title);
+		item.setPublishedDate(this.date);
+		return item;
+	}
+	
+	
 	
 }

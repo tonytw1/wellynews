@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -8,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.views.RssView;
@@ -29,16 +31,18 @@ public class RssController extends MultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
 	private SuggestionDAO suggestionDAO;
+	private UrlBuilder urlBuilder;
 
     
        
-    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService) {     
+    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, SuggestionDAO suggestionDAO, UrlBuilder urlBuilder) {
         this.siteInformation = siteInformation;
         this.requestFilter = requestFilter;
         this.resourceDAO = resourceDAO;       
         this.rssUrlBuilder = rssUrlBuilder;      
         this.contentModelBuilderService = contentModelBuilderService;
         this.suggestionDAO = suggestionDAO;
+        this.urlBuilder = urlBuilder;
     }
     
     
@@ -90,12 +94,12 @@ public class RssController extends MultiActionController {
     
     public ModelAndView suggestionsRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	HashMap <String, Object> model = new HashMap <String, Object>();     
-    	model.put("heading", rssUrlBuilder.getTitleForWatchlist());
-    	model.put("link", siteInformation.getUrl());
-    	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
+    	model.put("heading", rssUrlBuilder.getTitleForSuggestions());
+    	model.put("link", urlBuilder.getFeedsInboxUrl());
+    	model.put("description","Suggested newsitems from local feeds.");   
     	
-    	// TODO Decorate with titles etc.
-    	model.put("main_content", suggestionDAO.getSuggestions(MAX_RSS_ITEMS));
+    	List<Suggestion> bareSuggestions = suggestionDAO.getSuggestions(MAX_RSS_ITEMS);
+		model.put("main_content", suggestionDAO.getDecoratedSuggestions(bareSuggestions));
     	
         RssView rssView = new RssView(siteInformation);        
         return new ModelAndView(rssView, model);        

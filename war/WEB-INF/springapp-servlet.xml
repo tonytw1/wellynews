@@ -160,8 +160,7 @@
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="suggestionDAO" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />		
-		
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -364,13 +363,16 @@
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="rssUrlBuilder" />		
 		<constructor-arg ref="contentModelBuilder" />
+		<constructor-arg ref="suggestionDAO" />
+		<constructor-arg ref="urlBuilder" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
 						<prop key="/rss">mainRss</prop>
-						<prop key="/watchlist/rss">watchlistRss</prop>						
+						<prop key="/watchlist/rss">watchlistRss</prop>
+						<prop key="/feeds/inbox/rss">suggestionsRss</prop>						
 						<prop key="/*/rss">contentRss</prop>						
 						<prop key="/*/*/rss">contentRss</prop>																
 					</props>
@@ -660,9 +662,11 @@
 				<prop key="/rss">rssController</prop>
 				<prop key="/*/rss">rssController</prop>
 				<prop key="/*/*/rss">rssController</prop>
-												
+				<prop key="/feeds/inbox/rss">rssController</prop>
+					
+													
 				<prop key="*/json">jsonController</prop>
-				<prop key="/*/*/json">jsonController</prop>				
+				<prop key="/*/*/json">jsonController</prop>
 								
 				
 				<prop key="/feeds/inbox">rssfeedsController</prop>   
