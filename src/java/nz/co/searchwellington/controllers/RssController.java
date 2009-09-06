@@ -91,22 +91,6 @@ public class RssController extends MultiActionController {
         return new ModelAndView(rssView, model);        
     }
     
-    
-    public ModelAndView suggestionsRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	HashMap <String, Object> model = new HashMap <String, Object>();     
-    	model.put("heading", rssUrlBuilder.getTitleForSuggestions());
-    	model.put("link", urlBuilder.getFeedsInboxUrl());
-    	model.put("description","Suggested newsitems from local feeds.");   
-    	
-    	List<Suggestion> bareSuggestions = suggestionDAO.getSuggestions(MAX_RSS_ITEMS);
-		model.put("main_content", suggestionDAO.getDecoratedSuggestions(bareSuggestions));
-    	
-        RssView rssView = new RssView(siteInformation);        
-        return new ModelAndView(rssView, model);        
-    }
-    
-    
-    
 	private ModelAndView redirectToFeedburnerMainFeed() {
 		View redirectView = new RedirectView(siteInformation.getFeedburnerUrl());
 		return new ModelAndView(redirectView);		

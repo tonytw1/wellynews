@@ -114,21 +114,6 @@ public class RssfeedsController extends BaseMultiActionController {
     }
 
     
-    public ModelAndView suggestions(HttpServletRequest request, HttpServletResponse response) throws IOException {     
-        ModelAndView mv = new ModelAndView();        
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());        
-        mv.addObject("heading", "Feed newsitem suggestions");    
-        urlStack.setUrlStack(request);
-        
-        List<Suggestion> bareSuggestions = suggestionDAO.getAllSuggestions();
-        List<Suggestion> suggestions = suggestionDAO.getDecoratedSuggestions(bareSuggestions);        
-		mv.addObject("suggestions", suggestions);       
-        mv.setViewName("suggestions");        
-        setRss(mv, rssUrlBuilder.getTitleForSuggestions(), rssUrlBuilder.getRssUrlForFeedSuggestions());
-        return mv;
-    }
-    
-    
     private void populateDiscoveredFeeds(ModelAndView mv) {
         mv.addObject("discovered_feeds", discoveredFeedsRepository.getAllNonCommentDiscoveredFeeds());
         mv.addObject("discovered_feeds_moreurl", "feeds/discovered");

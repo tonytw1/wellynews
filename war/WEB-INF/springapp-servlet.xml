@@ -165,8 +165,7 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
-						<prop key="/feeds">rssfeeds</prop>
-						<prop key="/feeds/inbox">suggestions</prop>
+						<prop key="/feeds">rssfeeds</prop>						
 						<prop key="/feeds/**">rssfeeds</prop>					
 					</props>
 				</property>
@@ -372,7 +371,6 @@
 					<props>
 						<prop key="/rss">mainRss</prop>
 						<prop key="/watchlist/rss">watchlistRss</prop>
-						<prop key="/feeds/inbox/rss">suggestionsRss</prop>						
 						<prop key="/*/rss">contentRss</prop>						
 						<prop key="/*/*/rss">contentRss</prop>																
 					</props>
@@ -395,7 +393,8 @@
 						<prop key="/*">normal</prop>						
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
-						<prop key="/feed/*">normal</prop>											
+						<prop key="/feed/*">normal</prop>
+						<prop key="/feeds/inbox">normal</prop>											
 					</props>
 				</property>
 			</bean>		
@@ -663,13 +662,11 @@
 				<prop key="/*/rss">rssController</prop>
 				<prop key="/*/*/rss">rssController</prop>
 				<prop key="/feeds/inbox/rss">rssController</prop>
-					
-													
+																	
 				<prop key="*/json">jsonController</prop>
 				<prop key="/*/*/json">jsonController</prop>
 								
 				
-				<prop key="/feeds/inbox">rssfeedsController</prop>   
 				<prop key="/feeds/**">rssfeedsController</prop>
 				
 				<prop key="/search">searchController</prop>
@@ -728,7 +725,9 @@
 				<prop key="/*/comment">tagController</prop>
 				<prop key="/*/geotagged">tagController</prop>				
 				<prop key="/feed/*">tagController</prop>
-			
+								
+				<prop key="/feeds/inbox">tagController</prop>
+				
 				<prop key="/*">tagController</prop>
 				<prop key="/comment">tagController</prop>
 				<prop key="/geotagged">tagController</prop>            	

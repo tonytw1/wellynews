@@ -68,11 +68,21 @@
 		<constructor-arg ref="supressionDAO" />
 	</bean>
 	
+	
+		
+	<bean id="suggestionsModelBuilder" class="nz.co.searchwellington.controllers.models.SuggestionsModelBuilder">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="suggestionDAO" />
+		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="urlBuilder" />
+	</bean>
+	
 
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg>
 			<list>
+				<ref bean="suggestionsModelBuilder" />
 				<ref bean="justinModelBuilder" />		
 				<ref bean="commentModelBuilder" />
 				<ref bean="geotaggedModelBuilder" />

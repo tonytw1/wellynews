@@ -6,21 +6,21 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 public class SuggestionFeednewsitem extends Suggestion {
 
-	private String title;
+	private String name;
 	private Date date;
 	
-	public SuggestionFeednewsitem(Suggestion suggestion, String title, Date date) {
+	public SuggestionFeednewsitem(Suggestion suggestion, String name, Date date) {
 		super(suggestion.feed, suggestion.getUrl(), suggestion.getFirstSeen());
-		this.title = title;
+		this.name = name;
 		this.date = date;
 	}
 	
-	public String getTitle() {
-		return title;
+	public String getName() {
+		return name;
 	}
 	
-	public void setTitle(String title) {
-		this.title = title;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Date getDate() {
@@ -34,7 +34,7 @@ public class SuggestionFeednewsitem extends Suggestion {
 	@Override
 	public SyndEntry getRssItem() {
 		SyndEntry item = super.getRssItem();
-		item.setTitle(this.title);
+		item.setTitle(this.name);
 		item.setPublishedDate(this.date);
 		return item;
 	}

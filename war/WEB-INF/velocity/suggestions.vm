@@ -20,31 +20,7 @@
 
 <p>New newsitems found on local feeds which may be suitable for inclusion.</p>
 
-
-<ul>
-#foreach($suggestion in $suggestions)
-	#if($velocityCount <= 10) 
-	<li>
-		<ul>
-		
-			<li>
-			<ul class="flat_list">
-				<li><a href="$suggestion.url">$suggestion.title</a></li>
-				#if ($suggestion.date) 
-					<li class="date">$dateFormatter.formatDate($suggestion.date, 'd MMM yyyy')</li>
-				#end
-				<li class="publisher">$suggestion.feed.name</li>			
-				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
-				<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($suggestion)">ignore</a></li>
-			</ul>
-			</li>
-			
-		</ul>
-	</li>	
-	#end
-#end
-</ul>
-
+#parse("includes/main_content.vm")
 
 </div>
 

@@ -20,7 +20,7 @@ public class ContentModelBuilderService {
 	}
 
 	public ModelAndView populateContentModel(HttpServletRequest request) {
-		logger.debug("Building content model");
+		logger.info("Building content model");
 		boolean showBroken = false;	
 		if (loggedInUserFilter.getLoggedInUser() != null) {
 			showBroken = true;
