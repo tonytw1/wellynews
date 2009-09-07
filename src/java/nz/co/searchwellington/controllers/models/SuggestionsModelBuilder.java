@@ -8,6 +8,7 @@ import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Suggestion;
+import nz.co.searchwellington.model.SuggestionFeednewsitem;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 
@@ -41,7 +42,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 			ModelAndView mv = new ModelAndView();
 			
 			List<Suggestion> bareSuggestions = suggestionDAO.getAllSuggestions();
-			List<Suggestion> suggestions = suggestionDAO.getDecoratedSuggestions(bareSuggestions);        
+			List<SuggestionFeednewsitem> suggestions = suggestionDAO.getSuggestionFeednewsitems(bareSuggestions);        
 			mv.addObject("main_content", suggestions);       
 			
 			mv.addObject("heading", "Feeds inbox");

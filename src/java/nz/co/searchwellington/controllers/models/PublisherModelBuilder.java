@@ -65,7 +65,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken, int page) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
-		mv.addObject("description", publisher.getName());
+		mv.addObject("description", publisher.getName() + " newsitems");
 		mv.addObject("link", urlBuilder.getPublisherUrl(publisher));
 		
 		int startIndex = getStartIndex(page);

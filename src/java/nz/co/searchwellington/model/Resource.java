@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 
+// TODO can we get an EditableResource into the tree somewhere, to put all write methods onto?
 public interface Resource {
     
    

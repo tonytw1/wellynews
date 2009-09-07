@@ -81,9 +81,9 @@ public class SuggestionDAO {
 	
 	
 
-	public List<Suggestion> getDecoratedSuggestions(List<Suggestion> bareSuggestions) {
-		List<Suggestion> suggestions = new ArrayList<Suggestion>();
-        for (Suggestion suggestion : bareSuggestions) {			
+	public List<SuggestionFeednewsitem> getSuggestionFeednewsitems(List<Suggestion> bareSuggestions) {
+		List<SuggestionFeednewsitem> suggestions = new ArrayList<SuggestionFeednewsitem>();
+        for (Suggestion suggestion : bareSuggestions) {
 			if (suggestion.getFeed() != null) {
 				FeedNewsitem feednewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(suggestion);
 				if (feednewsitem != null) {

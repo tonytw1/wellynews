@@ -1,44 +1,40 @@
 package nz.co.searchwellington.model;
 
 import java.util.Date;
+import java.util.HashSet;
 
 import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndEntryImpl;
 
-public class SuggestionFeednewsitem extends Suggestion {
+public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable, Resource {
 
-	private String name;
-	private Date date;
+	private Suggestion suggestion;
 	
 	public SuggestionFeednewsitem(Suggestion suggestion, String name, Date date) {
-		super(suggestion.feed, suggestion.getUrl(), suggestion.getFirstSeen());
+		super();
+		this.suggestion = suggestion;
 		this.name = name;
 		this.date = date;
+		this.tags = new HashSet<Tag>();
 	}
 	
-	public String getName() {
-		return name;
+	final public String getType() {
+		return "S";
+	}
+		
+	@Override
+	public String getUrl() {
+		return suggestion.getUrl();
 	}
 	
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Date getDate() {
-		return date;
-	}
-
-	public void setDate(Date date) {
-		this.date = date;
-	}
-
 	@Override
 	public SyndEntry getRssItem() {
-		SyndEntry item = super.getRssItem();
-		item.setTitle(this.name);
-		item.setPublishedDate(this.date);
-		return item;
+		SyndEntry entry = new SyndEntryImpl();      
+		entry.setTitle(this.name);
+		entry.setLink(this.getUrl());
+		entry.setTitle(this.name);
+		entry.setPublishedDate(this.date);
+		return entry;
 	}
-	
-	
 	
 }

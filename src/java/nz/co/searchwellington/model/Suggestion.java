@@ -5,7 +5,7 @@ import java.util.Date;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 
-public class Suggestion implements RssFeedable {
+public class Suggestion {
 	
 	protected int id;
 	protected String url;
@@ -59,15 +59,5 @@ public class Suggestion implements RssFeedable {
 	public void setFirstSeen(Date firstSeen) {
 		this.firstSeen = firstSeen;
 	}
-
-
-	@Override
-	public SyndEntry getRssItem() {
-		SyndEntry entry = new SyndEntryImpl();      
-		entry.setTitle(this.url);
-		entry.setLink(url);
-		return entry;
-	}
-	
 	
 }

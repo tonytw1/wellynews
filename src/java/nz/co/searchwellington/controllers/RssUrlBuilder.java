@@ -97,7 +97,7 @@ public class RssUrlBuilder {
 	}
 
 	public String getRssDescriptionForTag(Tag tag) {
-		return siteInformation.getAreaname() + " related items tagged with " + tag.getDisplayName();
+		return siteInformation.getAreaname() + " related newsitems tagged with " + tag.getDisplayName();
 	}
 
 	public String getTitleForSuggestions() {

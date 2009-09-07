@@ -1,7 +1,8 @@
-package nz.co.searchwellington.utils;
+package nz.co.searchwellington.urls;
 
 
 import java.io.IOException;
+
 
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
@@ -11,9 +12,9 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.log4j.Logger;
 
-public abstract class AbstractRedirectResolverService implements RedirectingUrlResolver {
+public abstract class AbstractRedirectResolver implements RedirectingUrlResolver {
     
-    Logger log = Logger.getLogger(AbstractRedirectResolverService.class);        
+    Logger log = Logger.getLogger(AbstractRedirectResolver.class);        
     public static final int HTTP_TIMEOUT = 10000;
         
     public abstract boolean isValid(String url);

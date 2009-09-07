@@ -1,4 +1,4 @@
-package nz.co.searchwellington.utils;
+package nz.co.searchwellington.urls;
 
 
 public interface RedirectingUrlResolver {

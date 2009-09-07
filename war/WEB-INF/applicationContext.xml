@@ -54,14 +54,22 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 
 	<bean id="urlCleaner" class="nz.co.searchwellington.utils.UrlCleaner">
+		<constructor-arg ref="urlResolverService" />		
+	</bean>
+	
+	<bean id="urlResolverService" class="nz.co.searchwellington.urls.UrlResolverService">
 		<constructor-arg>
 			<list>
-				<ref bean="feedBurnerRedirectResolverService" />
-				<ref bean="tinyUrlResolverService" />
-				<ref bean="bitlyUrlResolverService" />
+				<ref bean="feedBurnerRedirectResolver" />
+				<ref bean="tinyUrlResolver" />
+				<ref bean="bitlyUrlResolver" />
 			</list>
 		</constructor-arg>
 	</bean>
+	
+	<bean id="bitlyUrlResolver" class="nz.co.searchwellington.urls.BitlyUrlResolver" />
+	<bean id="tinyUrlResolver" class="nz.co.searchwellington.urls.TinyUrlResolver" />
+	<bean id="feedBurnerRedirectResolver" class="nz.co.searchwellington.urls.FeedBurnerRedirectResolver" />
 
 <bean id="feedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 	<property name="transactionManager" ref="transactionManager" />
@@ -227,9 +235,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 	</bean>
 	
-	<bean id="bitlyUrlResolverService" class="nz.co.searchwellington.twitter.BitlyUrlResolverService" />
-	<bean id="tinyUrlResolverService" class="nz.co.searchwellington.twitter.TinyUrlResolverService" />
-	<bean id="feedBurnerRedirectResolverService" class="nz.co.searchwellington.feeds.FeedBurnerRedirectResolverService" />
+
 	
 	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
 		
