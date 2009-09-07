@@ -19,6 +19,11 @@
 			#if ($item.publisher)
 				<li class="publisher">$item.publisher.name</li>
 			#end
+			
+			#if ($item.type == "S" && $item.suggestion.feed.publisher)
+				<li class="publisher">$item.suggestion.feed.publisher.name</li>
+			#end
+			
 			#if ($item.latestItem)
 				<li>Latest Item: $item.latestItem</li>
 			#end
@@ -139,7 +144,7 @@
 					$item.geocode.address</li>
 				#end
 				
-					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))					
+					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 						<li>Http Status: $item.httpStatus</li>
 					#end
 				
@@ -169,6 +174,11 @@
 				#if ($editPermissionService.canEdit($item) && ($item.type == "TNI"))
 					<li>Twitter id: $item.twitterId</li>
 					<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
+				#end
+								
+				#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
+					<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($item)">accept</a></li>
+					<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($item)">ignore</a></li>
 				#end
 															
 				#if ($item.owner && $item.owner.profilename) 	

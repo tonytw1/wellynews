@@ -26,7 +26,7 @@ public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable,
 	public String getUrl() {
 		return suggestion.getUrl();
 	}
-	
+		
 	@Override
 	public SyndEntry getRssItem() {
 		SyndEntry entry = new SyndEntryImpl();      
@@ -36,5 +36,9 @@ public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable,
 		entry.setPublishedDate(this.date);
 		return entry;
 	}
-	
+
+	public Suggestion getSuggestion() {
+		return suggestion;
+	}
+		
 }

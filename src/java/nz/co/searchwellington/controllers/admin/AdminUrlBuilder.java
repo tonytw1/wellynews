@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Suggestion;
+import nz.co.searchwellington.model.SuggestionFeednewsitem;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 
 public class AdminUrlBuilder {
@@ -34,8 +35,8 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/edit/accept?feed=" + feednewsitem.getFeed().getId() + "&item=" + feednewsitem.getItemNumber();
 	}
 	
-	public String getSuggestionAcceptUrl(Suggestion suggestion) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/edit/accept?feed=" + suggestion.getFeed().getId() + "&url=" + URLEncoder.encode(suggestion.getUrl(), "UTF-8");		
+	public String getSuggestionAcceptUrl(SuggestionFeednewsitem suggestion) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/edit/accept?feed=" + suggestion.getSuggestion().getFeed().getId() + "&url=" + URLEncoder.encode(suggestion.getUrl(), "UTF-8");		
 	}
 	
 	// TODO merge with below
@@ -43,8 +44,8 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
 	}
 	
-	public String getSuggestionSuppressUrl(Suggestion suggestion) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(suggestion.getUrl(), "UTF-8");
+	public String getSuggestionSuppressUrl(SuggestionFeednewsitem suggestion) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(suggestion.getSuggestion().getUrl(), "UTF-8");
 	}
 	
 	

@@ -14,7 +14,9 @@
 			<li>
 			<ul class="flat_list">
 				<li><a href="$suggestion.url">$suggestion.name</a></li>
-				<li class="publisher">$suggestion.feed.name</li>	
+				#if ($suggestion.suggestion.feed.publisher.name)
+					<li class="publisher">$suggestion.suggestion.feed.publisher.name</li>
+				#end
 				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
 				<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($suggestion)">ignore</a></li>
 			</ul>
