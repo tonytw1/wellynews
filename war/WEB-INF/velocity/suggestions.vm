@@ -20,7 +20,12 @@
 
 <p>New newsitems found on local feeds which may be suitable for inclusion.</p>
 
-#parse("includes/main_content.vm")
+
+#if ($main_content && $main_content.size() > 0) 
+	#parse("includes/main_content.vm")
+#else 
+	<p>The are currently no suggestions in the inbox.</p>
+#end
 
 </div>
 

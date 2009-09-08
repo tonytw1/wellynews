@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="urlCleaner" class="nz.co.searchwellington.utils.UrlCleaner">
+		<constructor-arg ref="urlResolverService" />		
+	</bean>
+	
+	<bean id="urlResolverService" class="nz.co.searchwellington.urls.CachingUrlResolverService">
+		<constructor-arg ref="cacheManager" />
+		<constructor-arg>
+			<list>
+				<ref bean="feedBurnerRedirectResolver" />
+				<ref bean="tinyUrlResolver" />
+				<ref bean="bitlyUrlResolver" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+		
+	<bean id="bitlyUrlResolver" class="nz.co.searchwellington.urls.BitlyUrlResolver" />
+	<bean id="tinyUrlResolver" class="nz.co.searchwellington.urls.TinyUrlResolver" />
+	<bean id="feedBurnerRedirectResolver" class="nz.co.searchwellington.urls.FeedBurnerRedirectResolver" />
+
+</beans>

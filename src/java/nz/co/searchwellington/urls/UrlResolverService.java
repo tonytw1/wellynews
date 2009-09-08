@@ -6,7 +6,7 @@ public class UrlResolverService {
 
 	Logger log = Logger.getLogger(UrlResolverService.class);
 
-	private RedirectingUrlResolver[] redirectResolvers;
+	protected RedirectingUrlResolver[] redirectResolvers;
 
 	public UrlResolverService(RedirectingUrlResolver... redirectResolvers) {
 		this.redirectResolvers = redirectResolvers;

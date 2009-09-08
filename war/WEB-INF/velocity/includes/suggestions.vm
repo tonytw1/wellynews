@@ -17,8 +17,10 @@
 				#if ($suggestion.suggestion.feed.publisher.name)
 					<li class="publisher">$suggestion.suggestion.feed.publisher.name</li>
 				#end
-				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
-				<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($suggestion)">ignore</a></li>
+				#if($editPermissionService.canSeeSuggestions())
+					<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
+					<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($suggestion)">ignore</a></li>
+				#end
 			</ul>
 			</li>			
 		</ul>
