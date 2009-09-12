@@ -3,12 +3,22 @@
     <diskStore path="java.io.tmpdir/searchwellington"/>
         
     <cache name="resolvedurls"
-        maxElementsInMemory="500"
+        maxElementsInMemory="1000"
         eternal="false"
-        timeToIdleSeconds="7200"
-        timeToLiveSeconds="7200"
+        timeToIdleSeconds="72000"
+        timeToLiveSeconds="72000"
         overflowToDisk="false"
         />
+        
+        
+  	<cache name="twitterreplies"
+        maxElementsInMemory="1"
+        eternal="false"
+        timeToIdleSeconds="3600"
+        timeToLiveSeconds="3600"
+        overflowToDisk="false"
+        />
+    
     
     
     <defaultCache

@@ -1,12 +1,7 @@
 package nz.co.searchwellington.jobs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.unto.twitter.Status;
 import nz.co.searchwellington.model.LinkCheckerQueue;
-import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;

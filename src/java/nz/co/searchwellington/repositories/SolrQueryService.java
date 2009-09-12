@@ -50,7 +50,6 @@ public class SolrQueryService {
 		if (response != null) {
 			FacetField facetField = response.getFacetField(facetFieldName);
 			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);				
 				return facetField.getValues();				
 			}
 		}

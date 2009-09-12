@@ -9,7 +9,7 @@
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="rssUrlBuilder" />
-		<constructor-arg ref="twitterService" />
+		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />

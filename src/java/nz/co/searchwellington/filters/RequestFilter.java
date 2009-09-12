@@ -50,7 +50,7 @@ public class RequestFilter {
 
     
 	public void loadAttributesOntoRequest(HttpServletRequest request) {
-		log.info("Loading attributes onto requesst");
+		log.info("Loading attributes onto request");
     	loadAnonResource(request);
     	if (request.getParameter("page") != null) {
     		String pageString = request.getParameter("page");
@@ -98,7 +98,7 @@ public class RequestFilter {
         }
         
                 
-        log.info("Looking for publiser watchlist and feeds urls");
+        log.debug("Looking for publiser watchlist and feeds urls");
         final String publisherUrlWords = getPublisherUrlWordsFromPath(request.getPathInfo());
         if (publisherUrlWords != null) {
         	Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
@@ -106,21 +106,21 @@ public class RequestFilter {
         	return;
         }
         
-        log.info("Looking for combiner urls");        
+        log.debug("Looking for combiner urls");        
         Pattern pattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
         Matcher matcher = pattern.matcher(request.getPathInfo());
         if (matcher.matches()) {
         	final String left = matcher.group(1);
         	final String right = matcher.group(2);        	
-        	log.info("Path matches combiner pattern for '" + left + "', '" + right + "'");        	
+        	log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'");        	
         	// righthand side is always a tag;
         	// Left could be a publisher or a tag.
         	Tag rightHandTag = resourceDAO.loadTagByName(right);        	
         	if (rightHandTag != null) {
 	        	Website publisher = resourceDAO.getPublisherByUrlWords(left);
-	        	log.info("Right matches tag: " + rightHandTag.getName());
+	        	log.debug("Right matches tag: " + rightHandTag.getName());
 	        	if (publisher != null) {
-	        		log.info("Left matches publisher: " + publisher.getName());
+	        		log.debug("Left matches publisher: " + publisher.getName());
 	        		request.setAttribute("publisher", publisher);
 	        		request.setAttribute("tag", rightHandTag);
 	        		return;
@@ -128,7 +128,7 @@ public class RequestFilter {
 	        	} else {
 	        		Tag leftHandTag = resourceDAO.loadTagByName(left);
 	        		if (leftHandTag != null) {
-	        			log.info("Left matches tag: " + leftHandTag.getName());
+	        			log.debug("Left matches tag: " + leftHandTag.getName());
 	        			log.info("Setting tags '" + leftHandTag.getName() + "', '" + rightHandTag.getName() + "'");
 	        			List<Tag> tags = new ArrayList<Tag>();
 	        			tags.add(leftHandTag);
@@ -142,7 +142,7 @@ public class RequestFilter {
         } 
         
              
-        log.info("Looking for single publisher and tag urls");
+        log.debug("Looking for single publisher and tag urls");
         Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
         Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
         if (contentMatcher.matches()) {
@@ -151,7 +151,7 @@ public class RequestFilter {
         	if (!isReservedUrlWord(match)) {
 	        	log.debug("'" + match + "' matches content");
 		        	
-	        	log.info("Looking for tag '" + match + "'");	        	
+	        	log.debug("Looking for tag '" + match + "'");	        	
 	        	Tag tag = resourceDAO.loadTagByName(match);
 		        if (tag != null) {
 		        	log.info("Setting tag: " + tag.getName());
@@ -161,7 +161,7 @@ public class RequestFilter {
 		        	request.setAttribute("tags", tags);
 		        	return;
 		        } else {
-		        	log.info("Looking for publisher '" + match + "'");
+		        	log.debug("Looking for publisher '" + match + "'");
 		        	Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
 		        	if (publisher != null) {
 		        		log.info("Setting publisher: " + publisher.getName());

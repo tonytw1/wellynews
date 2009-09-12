@@ -205,18 +205,25 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="contentDeduper" class="nz.co.searchwellington.controllers.ContentDedupingService" />
 	
 
-
+	<bean id="cachingTwitterService" class="nz.co.searchwellington.twitter.CachingTwitterService">
+		<constructor-arg ref="twitterService" />
+		<constructor-arg ref="cacheManager" />
+	</bean>
 	
-	<bean id="twitterService" class="nz.co.searchwellington.twitter.TwitterService">
+	<bean id="twitterService" class="nz.co.searchwellington.twitter.LiveTwitterService">
 		<property name="username" value="${twitter.username}" />
 		<property name="password" value="${twitter.password}" />		
 	</bean>
+	
+	
+	
+	
 	
 	<bean id="twitterNewsitemBuilderService" class="nz.co.searchwellington.twitter.TwitterNewsitemBuilderService">
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="publisherGuessingService" />
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="twitterService" />		
+		<constructor-arg ref="cachingTwitterService" />		
 	</bean>
 	
 

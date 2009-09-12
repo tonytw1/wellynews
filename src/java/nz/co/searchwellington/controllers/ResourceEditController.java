@@ -10,7 +10,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.unto.twitter.Status;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
@@ -38,7 +37,6 @@ import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
-import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
