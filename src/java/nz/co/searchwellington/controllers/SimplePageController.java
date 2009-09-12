@@ -36,7 +36,7 @@ public class SimplePageController extends BaseMultiActionController {
 	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private LoggedInUserFilter loggedInUserFilter;
-    private TwitterNewsitemBuilderService newsitemBuilder;
+    private TwitterNewsitemBuilderService twitterNewsitemsService;
 	
     public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter, TwitterNewsitemBuilderService newsitemBuilder) {
         this.resourceDAO = resourceDAO;        
@@ -47,7 +47,7 @@ public class SimplePageController extends BaseMultiActionController {
         this.twitterService = twitterService;
         this.discoveredFeedRepository = discoveredFeedRepository;
         this.loggedInUserFilter = loggedInUserFilter;
-        this.newsitemBuilder = newsitemBuilder;
+        this.twitterNewsitemsService = newsitemBuilder;
     }
     
        
@@ -239,8 +239,9 @@ public class SimplePageController extends BaseMultiActionController {
         // TODO permissions
         if(loggedInUser != null) {        	       	        	
         	Status[] replies = twitterService.getReplies();
-			mv.addObject("twitterReplies", replies);        	
-			List<TwitteredNewsitem> potentialTwitterSubmissions = newsitemBuilder.extractPossibleSubmissionsFromTwitterReplies(replies);
+			mv.addObject("twitterReplies", replies);
+			
+			List<TwitteredNewsitem> potentialTwitterSubmissions = twitterNewsitemsService.getPossibleSubmissions();
 			mv.addObject("submissions", potentialTwitterSubmissions);			
         }
         
@@ -250,9 +251,6 @@ public class SimplePageController extends BaseMultiActionController {
 
 
 	
-    
-  
-     
     public ModelAndView watchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);

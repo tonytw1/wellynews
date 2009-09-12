@@ -31,7 +31,7 @@ public class TwitterListenerJob {
     }
 
     public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, ResourceRepository resourceDAO, LinkCheckerQueue linkCheckerQueue, ConfigRepository configDAO) {
-        this.twitterService = twitterService;
+        this.twitterService = twitterService;	// This injection no longer needed.
         this.newsitemBuilder = newsitemBuilder;
         this.resourceDAO = resourceDAO;
         this.linkCheckerQueue = linkCheckerQueue;
@@ -39,6 +39,7 @@ public class TwitterListenerJob {
     }
 
     
+    // TODO suppressions? - use feed acceptance deciders?
     @Transactional
     public void run() {
 
@@ -53,7 +54,7 @@ public class TwitterListenerJob {
         	Status[] replies = twitterService.getReplies();
 			if (replies != null) {
 				log.info("Found " + replies.length + " replies.");
-				for (TwitteredNewsitem newsitem : newsitemBuilder.extractPossibleSubmissionsFromTwitterReplies(replies)) {					
+				for (TwitteredNewsitem newsitem : newsitemBuilder.getPossibleSubmissions()) {					
 					log.info("Twitted newsitem has title " + newsitem.getName());
 					log.info("Twittered newsitem has url: " + newsitem.getUrl());
 

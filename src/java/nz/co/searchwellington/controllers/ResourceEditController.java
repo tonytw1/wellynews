@@ -76,7 +76,6 @@ public class ResourceEditController extends BaseTagEditingController {
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
     private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
-    private TwitterService twitterService;
     private SuggestionDAO suggestionDAO;
       
     public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter, 
@@ -85,7 +84,7 @@ public class ResourceEditController extends BaseTagEditingController {
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService, 
-            TwitterService twitterService, SuggestionDAO suggestionDAO) {    	
+            SuggestionDAO suggestionDAO) {    	
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
@@ -103,7 +102,6 @@ public class ResourceEditController extends BaseTagEditingController {
         this.editPermissionService = editPermissionService;
         this.urlStack = urlStack;
         this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
-        this.twitterService = twitterService;
         this.suggestionDAO = suggestionDAO;
     }
    
@@ -200,10 +198,8 @@ public class ResourceEditController extends BaseTagEditingController {
         if (request.getAttribute("twitterId") != null) {        
             Long twitterId = (Long) request.getAttribute("twitterId");
             log.info("Accepting newsitem from twitter id: " + twitterId);
-            
-        	Status[] replies = twitterService.getReplies(); // TODO this injection's not right.
-        	
-        	List <TwitteredNewsitem> twitteredNewsitems = twitterNewsitemBuilderService.extractPossibleSubmissionsFromTwitterReplies(replies);
+                   	
+        	List <TwitteredNewsitem> twitteredNewsitems = twitterNewsitemBuilderService.getPossibleSubmissions();
             TwitteredNewsitem newsitemToAccept = twitterNewsitemBuilderService.getTwitteredNewsitemByTwitterId(twitterId, twitteredNewsitems);
             
             if (newsitemToAccept != null) {
@@ -368,7 +364,7 @@ private void removePublisherFromPublishersContent(Resource editResource) {
         Resource editResource = (Resource) request.getAttribute("resource");       
         if (editResource != null) {             
             modelAndView.addObject("resource", editResource);
-                      
+            
             String urlToSupress = urlCleaner.cleanSubmittedItemUrl(editResource.getUrl());
             log.info("Deleting resource.");
             resourceDAO.deleteResource(editResource);

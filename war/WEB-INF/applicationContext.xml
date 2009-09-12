@@ -216,6 +216,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="publisherGuessingService" />
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="twitterService" />		
 	</bean>
 	
 

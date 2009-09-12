@@ -17,21 +17,12 @@ public class TwitterService {
 	public TwitterService() {		
 	}
 
-
-	public void twit(String message) {
-		Api api = new Api(username, password);		
-		log.info("Twittering: " + message);
-		try {			
-			api.updateStatus(message);
-		} catch (TwitterException e) {
-			log.error("Twitter exception:", e);
-		}
-	}
 	
 	public Status[] getReplies() {
 		Api api = new Api(username, password);
 		log.debug("Getting twitter replies for " + username);
-		try {			
+		try {
+			// TODO This needs to be cached.
 			Status[] replies = api.getReplies();			
 			return replies;			
 		} catch (TwitterException e) {
@@ -40,8 +31,8 @@ public class TwitterService {
 		return null;
 	}
 
-	// TODO can these be populated with reflection instead?
-    public String getPassword() {
+
+	public String getPassword() {
         return password;
     }
 
@@ -64,5 +55,5 @@ public class TwitterService {
 	public boolean isConfigured() {
 		return this.username != null && !this.username.equals("") && this.password != null && !this.password.equals("");
 	}
-	
+		
 }

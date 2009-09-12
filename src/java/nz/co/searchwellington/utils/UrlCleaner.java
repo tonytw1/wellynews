@@ -14,8 +14,13 @@ public class UrlCleaner {
 		this.urlResolver = urlResolver;
 	}
 
-	public String cleanSubmittedItemUrl(String url) {        
-        return filterSubmittedURL(urlResolver.resolveUrl(url));
+	public String cleanSubmittedItemUrl(String url) {
+		url = UrlFilters.trimWhiteSpace(url);
+		if (!url.isEmpty()) {
+			return filterSubmittedURL(urlResolver.resolveUrl(url));
+		}
+		log.warn("Called with an empty url");
+		return url;
     }
     
     protected String filterSubmittedURL(String url) {

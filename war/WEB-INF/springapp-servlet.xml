@@ -431,7 +431,6 @@
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />
-		<constructor-arg ref="twitterService" />
 		<constructor-arg ref="suggestionDAO" />
 		
 		<property name="methodNameResolver">
