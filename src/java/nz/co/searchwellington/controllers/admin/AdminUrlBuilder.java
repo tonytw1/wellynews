@@ -36,7 +36,7 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getSuggestionAcceptUrl(SuggestionFeednewsitem suggestion) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/edit/accept?feed=" + suggestion.getSuggestion().getFeed().getId() + "&url=" + URLEncoder.encode(suggestion.getUrl(), "UTF-8");		
+		return siteInformation.getUrl() + "/edit/accept?url=" + URLEncoder.encode(suggestion.getUrl(), "UTF-8");		
 	}
 	
 	// TODO merge with below
