@@ -144,46 +144,51 @@ public class ResourceEditController extends BaseTagEditingController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean userIsLoggedIn = loggedInUser != null;
         
-
         adminRequestFilter.loadAttributesOntoRequest(request);
-        if (request.getAttribute("feedAttribute") != null) {
-            Feed feed = (Feed) request.getAttribute("feedAttribute");
-            
-            List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-            
-            FeedNewsitem feednewsitem = null;
-            if (request.getParameter("item") != null) {
-                int item = (Integer) request.getAttribute("item");
-                if (item > 0 && item <= feednewsItems.size()) {                    
-                	feednewsitem = feednewsItems.get(item-1);
+        
+        FeedNewsitem feednewsitem = null;
+        Website feednewsitemPublisher = null;
+        if (request.getParameter("item") != null) {
+        	int item = (Integer) request.getAttribute("item");
+    	  
+        	if (request.getAttribute("feedAttribute") != null) {
+        		log.info("Looking for feeditem by feed and item number: " + item);
+        		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
+        		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+        		if (item > 0 && item <= feednewsItems.size()) {                    
+        			feednewsitem = feednewsItems.get(item-1);
+        			feednewsitemPublisher = feed.getPublisher();
+        		}
+        	}
+      
+        } else if (request.getParameter("url") != null) {
+        	log.info("Looking for feeditem by url: " + request.getParameter("url"));
+        	for(Feed feed : resourceDAO.getAllFeeds()) {
+                List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+                for (FeedNewsitem feedNewsitem : feednewsItems) {
+                	log.info(feedNewsitem.getUrl() + " -> " + request.getParameter("url"));
+                	if (feedNewsitem.getUrl().equals(request.getParameter("url"))) {
+                		feednewsitem = feedNewsitem;
+            			feednewsitemPublisher = feed.getPublisher();
+                	}
                 }
-                
-            } else if (request.getParameter("url") != null) {
-            	log.info("Looking for feeditem by url: " + request.getParameter("url"));
-            	for (FeedNewsitem feedNewsitem : feednewsItems) {
-            		log.info(feedNewsitem.getUrl() + " -> " + request.getParameter("url"));
-					if (feedNewsitem.getUrl().equals(request.getParameter("url"))) {
-						feednewsitem = feedNewsitem;
-					}
-            	}            	            	
-            }
-                
-            if (feednewsitem != null) {
-            	final Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed.getPublisher());                   
-                    
-            	boolean newsitemHasNoDate = (feednewsitem.getDate() == null);
-            	if (newsitemHasNoDate) {
-            		final Date today = Calendar.getInstance().getTime();
-            		feednewsitem.setDate(today);
-            	}
-                    
-            	modelAndView.addObject("resource", newsitem); 
-            	modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(feednewsitem.getPublisher(), userIsLoggedIn).toString());
-            	modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
-            }
-                        
+            }         	            	
         }
-              
+                
+        if (feednewsitem != null) {
+        	final Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feednewsitemPublisher);    // TODO publisher should be on feednewsitem?               
+                    
+        	boolean newsitemHasNoDate = (feednewsitem.getDate() == null);
+            if (newsitemHasNoDate) {
+            	final Date today = Calendar.getInstance().getTime();
+            	feednewsitem.setDate(today);
+            }
+                    
+            modelAndView.addObject("resource", newsitem); 
+            modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(feednewsitem.getPublisher(), userIsLoggedIn).toString());
+            modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
+        }
+        
         populateSecondaryFeeds(modelAndView, loggedInUser);
         return modelAndView;
     }
