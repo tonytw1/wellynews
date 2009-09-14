@@ -4,11 +4,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.unto.twitter.Status;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.Website;
@@ -27,7 +30,9 @@ public class TwitterNewsitemBuilderService {
 	private ResourceRepository resourceDAO;
 	private TwitterService twitterService;
     
-    public TwitterNewsitemBuilderService(UrlCleaner urlCleaner, PublisherGuessingService publisherGuessingService, ResourceRepository resourceDAO, TwitterService twitterService) {     
+	
+    public TwitterNewsitemBuilderService(UrlCleaner urlCleaner, PublisherGuessingService publisherGuessingService, 
+    		ResourceRepository resourceDAO, TwitterService twitterService) {     
         this.urlCleaner = urlCleaner;
         this.publisherGuessingService = publisherGuessingService;
         this.resourceDAO = resourceDAO;
@@ -35,12 +40,31 @@ public class TwitterNewsitemBuilderService {
     }
     
     
-
 	public List<TwitteredNewsitem> getPossibleSubmissions() {
 		Status[] replies = twitterService.getReplies();
 		return extractPossibleSubmissionsFromTwitterReplies(replies);
 	}
     
+	
+	public void getRTs() {
+		Status[] replies = twitterService.getReplies();
+		for (Status status : replies) {
+			final String message = status.getText();
+			final String twitterName = '@' + twitterService.getUsername();
+			if (message != null && message.contains(twitterName)) {				
+				final String url = this.extractUrlFromMessage(message);
+				if (url != null) {
+					final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(url);
+					log.info("Found url '" + cleanedUrl + "' in message: " + message);
+					
+					Resource resource = resourceDAO.loadResourceByUrl(cleanedUrl);
+					if (resource != null) {
+						log.info("Found RT: " + resource.getName() + ", " + message);
+					}
+				}
+			}			
+		}		
+	}
 	
 	
 	public TwitteredNewsitem getTwitteredNewsitemByTwitterId(Long twitterId, List<TwitteredNewsitem> twitteredNewsitems) {
@@ -54,8 +78,7 @@ public class TwitterNewsitemBuilderService {
 		return newsitemToAccept;
 	}
 	
-	
-	
+		
 	public Newsitem makeNewsitemFromTwitteredNewsitem(TwitteredNewsitem twitteredNewsitem) {
 		// TODO constructor calls should be in the resourceDAO?
     	Newsitem newsitem = new NewsitemImpl(0, twitteredNewsitem.getName(), twitteredNewsitem.getUrl(), twitteredNewsitem.getDescription(), twitteredNewsitem.getDate(), null, 
@@ -67,8 +90,7 @@ public class TwitterNewsitemBuilderService {
     	return newsitem;
 	}
 
-	
-    
+	    
     private List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(Status[] replies) {
     	List<TwitteredNewsitem> potentialTwitterSubmissions = new ArrayList<TwitteredNewsitem>();
     	for (Status status : replies) {
@@ -118,6 +140,17 @@ public class TwitterNewsitemBuilderService {
 
 	private boolean isValidMessage(String message) {
 		return message.startsWith("@wellynews ");
+	}
+
+
+
+	public String extractUrlFromMessage(String message) {
+		Pattern pattern = Pattern.compile(".*(http://[\\S]+).*");
+		Matcher matcher = pattern.matcher(message);
+		if (matcher.matches()) {
+			return matcher.group(1);
+		}
+		return null;
 	}
 
 	

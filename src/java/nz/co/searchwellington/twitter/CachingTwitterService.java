@@ -22,6 +22,13 @@ public class CachingTwitterService implements TwitterService {
 		this.twitterService = twitterService;
 		this.manager = manager;
 	}
+	
+	
+
+	@Override
+	public String getUsername() {
+		return twitterService.getUsername();
+	}
 
 	
 	@Override
@@ -55,5 +62,10 @@ public class CachingTwitterService implements TwitterService {
 		Element cachedResult = new Element(CACHE_KEY, results);
 		cache.put(cachedResult);
 	}
+
+
+
+
+
 	
 }

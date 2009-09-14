@@ -1,10 +1,14 @@
 package nz.co.searchwellington.urls;
 
+import org.apache.log4j.Logger;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 public class CachingUrlResolverService extends UrlResolverService {
+	
+	Logger log = Logger.getLogger(CachingUrlResolverService.class);
 	
 	private static final String RESOLVED_URL_CACHE = "resolvedurls";
 
@@ -17,10 +21,9 @@ public class CachingUrlResolverService extends UrlResolverService {
 		this.manager = manager;
 	}
 
-
+	
 	@Override
-	public String resolveUrl(String url) {
-		
+	protected String resolveSingleUrl(String url) {		
 		if (url != null && !url.isEmpty()) {
 			Cache cache = manager.getCache(RESOLVED_URL_CACHE);		
 			if (cache != null) {
@@ -33,7 +36,7 @@ public class CachingUrlResolverService extends UrlResolverService {
 			}
 		
 			log.info("Delegrating to live url resolver");
-			final String fetchedResult = super.resolveUrl(url);
+			final String fetchedResult = super.resolveSingleUrl(url);
 			if (fetchedResult != null) {
 				putUrlIntoCache(cache, url, fetchedResult);
 			}

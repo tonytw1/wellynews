@@ -160,19 +160,9 @@ public class ResourceEditController extends BaseTagEditingController {
         	}
       
         } else if (request.getParameter("url") != null) {
-        	log.info("Looking for feeditem by url: " + request.getParameter("url"));
-        	for(Feed feed : resourceDAO.getAllFeeds()) {
-                List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-                for (FeedNewsitem feedNewsitem : feednewsItems) {
-                	log.info(feedNewsitem.getUrl() + " -> " + request.getParameter("url"));
-                	if (feedNewsitem.getUrl().equals(request.getParameter("url"))) {
-                		feednewsitem = feedNewsitem;
-            			feednewsitemPublisher = feed.getPublisher();
-                	}
-                }
-            }         	            	
+        	getRequestedFeedItemByUrl(request, feednewsitem, feednewsitemPublisher);
         }
-                
+        
         if (feednewsitem != null) {
         	final Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feednewsitemPublisher);    // TODO publisher should be on feednewsitem?               
                     
@@ -191,6 +181,49 @@ public class ResourceEditController extends BaseTagEditingController {
         return modelAndView;
     }
     
+    
+    
+    private void getRequestedFeedItemByUrl(HttpServletRequest request, FeedNewsitem feednewsitem, Website feednewsitemPublisher) {
+    	if (request.getParameter("url") != null) {
+    		log.info("Looking for feeditem by url: " + request.getParameter("url"));
+    		for(Feed feed : resourceDAO.getAllFeeds()) {
+                List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+                for (FeedNewsitem feedNewsitem : feednewsItems) {
+                	log.info(feedNewsitem.getUrl() + " -> " + request.getParameter("url"));
+                	if (feedNewsitem.getUrl().equals(request.getParameter("url"))) {
+                		feednewsitem = feedNewsitem;
+            			feednewsitemPublisher = feed.getPublisher();
+                	}
+                }
+            }  
+    	}
+    }
+    
+    
+    // TODO needs auth by api etc.
+    public ModelAndView acceptFastByUrl(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {               
+        adminRequestFilter.loadAttributesOntoRequest(request);
+        if (request.getAttribute("url") != null) {        
+        	FeedNewsitem feednewsitem = null;
+        	Website feednewsitemPublisher = null;
+            getRequestedFeedItemByUrl(request, feednewsitem, feednewsitemPublisher);        	
+        	if (feednewsitem != null) {
+            	final Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feednewsitemPublisher); 
+            	saveResource(request, null, newsitem, true, true);
+            	            	
+            	log.info("Saving resource: " + newsitem.getId());
+            } else {
+            	log.warn("Could not find feed news item with url: " + request.getAttribute("url"));
+            	
+            }
+            
+        } else {
+        	log.warn("No twitted id found on request");
+        }
+        
+        // TODO this is an api call; should retun JSON or something.
+		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
+    }    
     
     
     @Transactional
@@ -512,6 +545,7 @@ private void removePublisherFromPublishersContent(Resource editResource) {
 private void saveResource(HttpServletRequest request, User loggedInUser,
 		Resource editResource, boolean newSubmission,
 		boolean resourceUrlHasChanged) {
+	
 	if (resourceUrlHasChanged) {
 	    linkCheckerQueue.add(editResource.getId());
 	    editResource.setHttpStatus(0);

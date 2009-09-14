@@ -1,5 +1,7 @@
 package nz.co.searchwellington.jobs;
 
+import java.util.List;
+
 import net.unto.twitter.Status;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.TwitteredNewsitem;
@@ -20,6 +22,7 @@ public class TwitterListenerJob {
     private ResourceRepository resourceDAO;
     private LinkCheckerQueue linkCheckerQueue;
     private ConfigRepository configDAO;
+    
   
    
     public TwitterListenerJob() {
@@ -49,28 +52,43 @@ public class TwitterListenerJob {
         	Status[] replies = twitterService.getReplies();
 			if (replies != null) {
 				log.info("Found " + replies.length + " replies.");
-				for (TwitteredNewsitem newsitem : newsitemBuilder.getPossibleSubmissions()) {					
-					log.info("Twitted newsitem has title " + newsitem.getName());
-					log.info("Twittered newsitem has url: " + newsitem.getUrl());
 
-					if (!resourceDAO.isResourceWithUrl(newsitem.getUrl())) {
-						log.info("Saving new newsitem: " + newsitem.getName());
-						resourceDAO.saveResource(newsitem);
-						linkCheckerQueue.add(newsitem.getId());
-
-						// TODO record datetime that we last recieved a twitter.
-						// TODO need to compare / logout the datetime on the twitter vs system time.
-					} else {
-						log.info("Existing resource on this url; not accepting.");
-					}
-					
-				}
+				// TODO wire into config switch
+				List<TwitteredNewsitem> possibleSubmissions = newsitemBuilder.getPossibleSubmissions();
+				//acceptSubmissions(possibleSubmissions);
+				
+				log.info("Looking or RTs");
+				findReTwits(replies);
+				
 			} else {
 				log.warn("Call for Twitter replies returned null.");
 			}
 			log.info("Twitter listener completed.");
 		}
     }
+
+	private void findReTwits(Status[] replies) {		
+		newsitemBuilder.getRTs();		
+	}
+
+	private void acceptSubmissions(List<TwitteredNewsitem> possibleSubmissions) {
+		for (TwitteredNewsitem newsitem : possibleSubmissions) {					
+			log.info("Twitted newsitem has title " + newsitem.getName());
+			log.info("Twittered newsitem has url: " + newsitem.getUrl());
+
+			if (!resourceDAO.isResourceWithUrl(newsitem.getUrl())) {
+				log.info("Saving new newsitem: " + newsitem.getName());
+				resourceDAO.saveResource(newsitem);
+				linkCheckerQueue.add(newsitem.getId());
+
+				// TODO record datetime that we last recieved a twitter.
+				// TODO need to compare / logout the datetime on the twitter vs system time.
+			} else {
+				log.info("Existing resource on this url; not accepting.");
+			}
+			
+		}
+	}
 
     
     

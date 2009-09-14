@@ -449,6 +449,7 @@
 						<prop key="/edit/submit/website">submitWebsite</prop>
 						
 						<prop key="/edit/accept">accept</prop>
+						<prop key="/edit/acceptfast">acceptFastByUrl</prop>						
 						<prop key="/edit/twitteraccept">twitteraccept</prop>	
 					</props>
 				</property>
@@ -686,6 +687,7 @@
 				<prop key="/edit/submit/watchlist">editController</prop>
 				<prop key="/edit/submit/website">editController</prop>
 				<prop key="/edit/accept">editController</prop>
+				<prop key="/edit/acceptfast">editController</prop>
 				<prop key="/edit/twitteraccept">editController</prop>
 				
 				<prop key="/tagging/tag">publicTaggingController</prop>

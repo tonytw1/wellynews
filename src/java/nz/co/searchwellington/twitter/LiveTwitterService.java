@@ -6,7 +6,6 @@ import net.unto.twitter.Api;
 import net.unto.twitter.Status;
 import net.unto.twitter.TwitterException;
 
-// TODO needs to cache replies.
 public class LiveTwitterService implements TwitterService {
 	
     Logger log = Logger.getLogger(LiveTwitterService.class);
@@ -17,10 +16,7 @@ public class LiveTwitterService implements TwitterService {
 	public LiveTwitterService() {		
 	}
 
-	
-	/* (non-Javadoc)
-	 * @see nz.co.searchwellington.twitter.TwitterService#getReplies()
-	 */
+		
 	public Status[] getReplies() {
 		Api api = new Api(username, password);
 		log.info("Getting twitter replies from live api for " + username);
