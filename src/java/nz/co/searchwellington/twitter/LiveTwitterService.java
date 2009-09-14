@@ -1,6 +1,9 @@
 package nz.co.searchwellington.twitter;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
+
+import com.sun.tools.javac.code.Attribute.Array;
 
 import net.unto.twitter.Api;
 import net.unto.twitter.Status;
@@ -8,7 +11,9 @@ import net.unto.twitter.TwitterException;
 
 public class LiveTwitterService implements TwitterService {
 	
-    Logger log = Logger.getLogger(LiveTwitterService.class);
+    private static final int REPLY_PAGES_TO_FETCH = 5;
+
+	Logger log = Logger.getLogger(LiveTwitterService.class);
 
     String username;
     String password;
@@ -20,9 +25,14 @@ public class LiveTwitterService implements TwitterService {
 	public Status[] getReplies() {
 		Api api = new Api(username, password);
 		log.info("Getting twitter replies from live api for " + username);
-		try {
-			Status[] replies = api.getReplies();			
-			return replies;			
+		try {			
+			Status[] all = new Status[] {};
+			for (int i = 1; i < REPLY_PAGES_TO_FETCH; i++) {
+				Status[] repliesPage = api.getReplies(i);				
+				all = (Status[]) ArrayUtils.addAll(all, repliesPage);
+			}
+			return all;
+			
 		} catch (TwitterException e) {
 			log.error("Twitter exception:", e);
 		}
