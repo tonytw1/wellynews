@@ -152,6 +152,12 @@
         	<property name="twitterId" type="long">
         		<column name="twitter_id"/>
         	</property>
+        	        	
+        	<set name="reTwits" table="newsitem_retwits" access="field">
+				<cache usage="read-write" />		
+				<key column="resource_id" />
+				<many-to-many class="nz.co.searchwellington.model.Twit" column="twit_id" order-by="date" />
+			</set>
         		
 		</subclass>
 
