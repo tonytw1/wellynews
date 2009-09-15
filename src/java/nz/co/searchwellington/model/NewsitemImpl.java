@@ -14,14 +14,20 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     
         
     CommentFeed commentFeed;
-    private String twitterSubmitter;
-    private String twitterMessage;
-    Long twitterId;
     Image image;
     
-    public NewsitemImpl() {}
+    // TODO model a twitterSubmission with a Twit
+    Long twitterId;
+    private String twitterMessage;
+    private String twitterSubmitter;
     
-    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds) {       
+    private Set<Twit> reTwits;
+    
+    
+    public NewsitemImpl() {
+    }
+    
+    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Set<Twit> retwits) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -31,6 +37,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.tags = tags;
         this.discoveredFeeds = discoveredFeeds;
         this.twitterSubmitter = null;
+        this.reTwits = retwits;
     }
 
  
@@ -106,6 +113,18 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 	public void setImage(Image image) {
 		this.image = image;
 	}
+
+	
+	
+	public Set<Twit> getReTwits() {
+		return reTwits;
+	}
+
+	public void addReTwit(Twit retwit) {
+		this.reTwits.add(retwit);
+	}
+
+	
 	
 	
   

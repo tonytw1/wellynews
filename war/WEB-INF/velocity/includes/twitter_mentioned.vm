@@ -1,0 +1,6 @@
+<h2>Twitter Mentions</h2>
+
+#set ($righthand_content_one = $columnSplitter.left($twitterMentioned))
+#set ($righthand_content_two = $columnSplitter.right($twitterMentioned))
+
+#parse("includes/righthand_two_columns.vm")

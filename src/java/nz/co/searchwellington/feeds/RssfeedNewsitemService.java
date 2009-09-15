@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -13,6 +14,7 @@ import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.Website;
 
 public abstract class RssfeedNewsitemService {
@@ -34,7 +36,7 @@ public abstract class RssfeedNewsitemService {
 	// TODO constructor calls should be in the resourceDAO?
 	    	Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedPublisher, 
 	    			new HashSet<Tag>(),
-	    			new HashSet<DiscoveredFeed>());
+	    			new HashSet<DiscoveredFeed>(), new HashSet<Twit>());
 	    	newsitem.setImage(feedNewsitem.getImage());
 	    	return newsitem;
 	}

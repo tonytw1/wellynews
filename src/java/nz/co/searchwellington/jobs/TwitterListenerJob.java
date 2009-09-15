@@ -4,6 +4,8 @@ import java.util.List;
 
 import net.unto.twitter.Status;
 import nz.co.searchwellington.model.LinkCheckerQueue;
+import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -17,7 +19,7 @@ public class TwitterListenerJob {
 
     Logger log = Logger.getLogger(TwitterListenerJob.class);
     
-    private TwitterService twitterService;
+    private TwitterService twitterService;		// TODO depreciated
     private TwitterNewsitemBuilderService newsitemBuilder;
     private ResourceRepository resourceDAO;
     private LinkCheckerQueue linkCheckerQueue;
@@ -54,11 +56,11 @@ public class TwitterListenerJob {
 				log.info("Found " + replies.length + " replies.");
 
 				// TODO wire into config switch
-				List<TwitteredNewsitem> possibleSubmissions = newsitemBuilder.getPossibleSubmissions();
+				//List<TwitteredNewsitem> possibleSubmissions = newsitemBuilder.getPossibleSubmissions();
 				//acceptSubmissions(possibleSubmissions);
 				
 				log.info("Looking or RTs");
-				findReTwits(replies);
+				findReTwits();
 				
 			} else {
 				log.warn("Call for Twitter replies returned null.");
@@ -67,10 +69,22 @@ public class TwitterListenerJob {
 		}
     }
 
-	private void findReTwits(Status[] replies) {		
-		newsitemBuilder.getRTs();		
+    
+	private void findReTwits() {
+		List<TwitterMention> newsitemMentions = newsitemBuilder.getNewsitemMentions();
+		for (TwitterMention reTwit : newsitemMentions) {
+			Newsitem newsitem = reTwit.getNewsitem();			
+			boolean isMentionRT = true; // TODO ignore submissions
+			if (isMentionRT && !newsitem.getReTwits().contains(reTwit.getTwit())) {				
+				log.info("Adding new RT to newsitem: " + reTwit.getTwit().getText());
+				newsitem.addReTwit(reTwit.getTwit());
+				resourceDAO.saveResource(newsitem);				
+			}
+		}
 	}
 
+	
+	
 	private void acceptSubmissions(List<TwitteredNewsitem> possibleSubmissions) {
 		for (TwitteredNewsitem newsitem : possibleSubmissions) {					
 			log.info("Twitted newsitem has title " + newsitem.getName());

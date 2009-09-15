@@ -14,10 +14,15 @@ public class UrlResolverService {
 
 	
 	public String resolveUrl(String url) {
-		while (isResolvable(url)) {
+		return fullyResolveUrl(url, 0);		
+	}
+	
+	public String fullyResolveUrl(String url, int depth) {
+		depth = depth + 1;
+		while (isResolvable(url) && depth < 5) {
 			String resolvedUrl = resolveSingleUrl(url);
 			if (!resolvedUrl.equals(url)) {
-				return resolveUrl(resolvedUrl);
+				return fullyResolveUrl(resolvedUrl, depth);
 			}
 			return resolvedUrl;
 		}

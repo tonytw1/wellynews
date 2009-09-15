@@ -4,9 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Restrictions;
-
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
@@ -16,6 +13,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
@@ -140,5 +138,9 @@ public interface ResourceRepository {
 	public TwitteredNewsitem createNewTwitteredNewsitem(long twitterId);	
 	public List<Resource> getNewsitemsMatchingStem(String stem);
 	public List<Resource> getBrokenSites();
-		
+	
+	public void saveTwit(Twit twit);
+	public Twit loadTwitByTwitterId(Long id);
+    public List<Resource> getTwitterMentionedNewsitems();
+    
 }

@@ -144,6 +144,16 @@
 					$item.geocode.address</li>
 				#end
 				
+				
+					#if ($item.type == "N" && $item.reTwits.size() > 0)
+						<ul>
+							#foreach ($twit in $item.reTwits) 
+								<li class="twitterMessage">$twit.author $twit.text</li>							
+							#end
+						</ul>					
+					#end
+				
+				
 					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 						<li>Http Status: $item.httpStatus</li>
 					#end

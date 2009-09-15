@@ -1,7 +1,6 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -12,10 +11,10 @@ import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
@@ -261,8 +260,14 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 	}
 
    
-    
- 
+    @SuppressWarnings("unchecked")
+    public List<Resource> getTwitterMentionedNewsitems() {
+    	 return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
+         	add(Restrictions.isNotEmpty("reTwits")).
+         	addOrder(Order.desc("date")).
+         	setCacheable(true).
+         	list();
+    }
     
     
     
@@ -364,7 +369,22 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
-    public void saveResource(Resource resource) {     
+    public void saveTwit(Twit twit) {     
+        sessionFactory.getCurrentSession().saveOrUpdate(twit);
+        sessionFactory.getCurrentSession().flush();        
+    }
+    
+    
+	public Twit loadTwitByTwitterId(Long twitterId) {
+    	 return (Twit) sessionFactory.getCurrentSession().createCriteria(Twit.class).
+         	add(Expression.eq("twitterid", twitterId)).
+         	setMaxResults(1).
+         	setCacheable(true).
+         	uniqueResult();  
+	}
+
+
+	public void saveResource(Resource resource) {     
         sessionFactory.getCurrentSession().saveOrUpdate(resource);
         sessionFactory.getCurrentSession().flush();
         //if (resource.getType().equals("F")) {

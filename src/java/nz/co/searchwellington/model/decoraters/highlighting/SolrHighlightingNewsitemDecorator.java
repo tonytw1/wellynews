@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
@@ -262,5 +263,17 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public Image getImage() {
 		return null;
 	}
+
+
+	public void addReTwit(Twit retwit) {
+		newsitem.addReTwit(retwit);
+	}
+
+
+	public Set<Twit> getReTwits() {
+		return newsitem.getReTwits();
+	}
+	
+	
 	
 }

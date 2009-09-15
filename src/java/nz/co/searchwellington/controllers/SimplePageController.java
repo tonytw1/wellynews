@@ -245,6 +245,8 @@ public class SimplePageController extends BaseMultiActionController {
 			mv.addObject("submissions", potentialTwitterSubmissions);			
         }
         
+        mv.addObject("twitterMentioned", resourceDAO.getTwitterMentionedNewsitems());        
+        
         mv.setViewName("twitter");
         return mv;
     }

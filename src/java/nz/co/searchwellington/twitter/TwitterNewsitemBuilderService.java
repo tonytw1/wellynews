@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,8 +12,10 @@ import net.unto.twitter.Status;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
+import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
@@ -46,7 +49,9 @@ public class TwitterNewsitemBuilderService {
 	}
     
 	
-	public void getRTs() {
+	public List<TwitterMention> getNewsitemMentions() {
+		List<TwitterMention> RTs = new ArrayList<TwitterMention>();
+		
 		Status[] replies = twitterService.getReplies();
 		for (Status status : replies) {
 			final String message = status.getText();
@@ -55,18 +60,32 @@ public class TwitterNewsitemBuilderService {
 				final String url = this.extractUrlFromMessage(message);
 				if (url != null) {
 					final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(url);
-					log.info("Found url '" + cleanedUrl + "' in message: " + message);
+					log.debug("Found url '" + cleanedUrl + "' in message: " + message);
 					
-					Resource resource = resourceDAO.loadResourceByUrl(cleanedUrl);
-					if (resource != null) {
+					Resource resource = resourceDAO.loadResourceByUrl(cleanedUrl); // TOOO load newsitem by url method on DAO instead?
+					if (resource != null && resource.getType().equals("N")) {
 						log.info("Found RT: " + resource.getName() + ", " + message);
+						Twit twit = loadOrCreateTwit(status);
+						RTs.add(new TwitterMention((Newsitem) resource, twit));						
 					}
 				}
 			}			
-		}		
+		}
+		return RTs;
+	}
+
+
+	private Twit loadOrCreateTwit(Status status) {
+		Twit twit = resourceDAO.loadTwitByTwitterId(status.getId());
+		if (twit == null) {
+			twit = new Twit(status);
+			resourceDAO.saveTwit(twit);
+		}
+		return twit;
 	}
 	
 	
+	// TODO not sure about this.
 	public TwitteredNewsitem getTwitteredNewsitemByTwitterId(Long twitterId, List<TwitteredNewsitem> twitteredNewsitems) {
 		TwitteredNewsitem newsitemToAccept = null;
 		for (TwitteredNewsitem twitteredNewsitem : twitteredNewsitems) {
@@ -83,7 +102,7 @@ public class TwitterNewsitemBuilderService {
 		// TODO constructor calls should be in the resourceDAO?
     	Newsitem newsitem = new NewsitemImpl(0, twitteredNewsitem.getName(), twitteredNewsitem.getUrl(), twitteredNewsitem.getDescription(), twitteredNewsitem.getDate(), null, 
     			new HashSet<Tag>(),
-    			new HashSet<DiscoveredFeed>());   	
+    			new HashSet<DiscoveredFeed>(), new HashSet<Twit>());   	
     	newsitem.setTwitterSubmitter(twitteredNewsitem.getTwitterSubmitter());
     	newsitem.setTwitterMessage(twitteredNewsitem.getTwitterMessage());
     	newsitem.setTwitterId(twitteredNewsitem.getTwitterId());

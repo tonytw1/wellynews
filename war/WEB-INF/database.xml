@@ -19,7 +19,9 @@
       			<value>nz/co/searchwellington/model/Tag.hbm.xml</value>
       	 		<value>nz/co/searchwellington/model/User.hbm.xml</value>
       			<value>nz/co/searchwellington/model/Supression.hbm.xml</value>
-      			<value>nz/co/searchwellington/model/Suggestion.hbm.xml</value>      			
+      			<value>nz/co/searchwellington/model/Suggestion.hbm.xml</value>
+      			<value>nz/co/searchwellington/model/Twit.hbm.xml</value>      			
+      			
     		</list>
   		</property>
   		<property name="hibernateProperties">
