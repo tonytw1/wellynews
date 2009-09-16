@@ -148,8 +148,8 @@
 					#if ($item.type == "N" && $item.reTwits.size() > 0)
 						<ul>
 							#foreach ($twit in $item.reTwits) 
-								<li class="twitterMessage">$twit.author $twit.text</li>							
-							#end
+                            	<li class="twitterMessage"><a href="http://twitter.com/$twit.author"><img src="$twit.profileImage" align="left" width="30" border="0" /></a> $twit.author $twit.text</li>       
+                        	#end
 						</ul>					
 					#end
 				
