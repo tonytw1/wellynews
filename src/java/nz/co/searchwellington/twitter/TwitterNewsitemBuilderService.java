@@ -113,9 +113,9 @@ public class TwitterNewsitemBuilderService {
     private List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(Status[] replies) {
     	List<TwitteredNewsitem> potentialTwitterSubmissions = new ArrayList<TwitteredNewsitem>();
     	for (Status status : replies) {
-    		TwitteredNewsitem newsitem = this.createNewsitemFromTwitterReply(status
-    				.getText(), status.getUser()
-    				.getScreenName(), status.getId());
+    		Twit twit = new Twit(status);
+    		
+    		TwitteredNewsitem newsitem = this.createNewsitemFromTwitterReply(twit);
     		
     		if (newsitem != null && newsitem.getUrl() != null && !newsitem.getUrl().equals("")) {
     			boolean isRT = newsitem.getName() != null & newsitem.getName().startsWith("RT");
@@ -128,16 +128,15 @@ public class TwitterNewsitemBuilderService {
     }
     
     
-    private TwitteredNewsitem createNewsitemFromTwitterReply(String message, String submitter, long twitterId) {
-		if (isValidMessage(message)) {			
-			TwitteredNewsitem newsitem = resourceDAO.createNewTwitteredNewsitem(new Long(twitterId));
+    public TwitteredNewsitem createNewsitemFromTwitterReply(Twit twit) {
+		if (isValidMessage(twit.getText())) {
+			TwitteredNewsitem newsitem = resourceDAO.createNewTwitteredNewsitem(twit);
 			
-	    	newsitem.setTwitterSubmitter(submitter);
-			newsitem.setTwitterMessage(message);			
+			String message = twit.getText();
 			message = message.replaceFirst("@.*? ", "");
 			String titleText = message.replaceFirst("http.*", "").trim();
 			newsitem.setName(titleText);
-	
+			
 			String url = message.replace(titleText, "").trim();
 			// TODO trim trailing text after url.
 			//  ie. @wellynews  RT Hutt City Council - Blind dates with books at your library http://tinyurl.com/n9j77c // Great minds meet! wcl_library too
@@ -153,10 +152,11 @@ public class TwitterNewsitemBuilderService {
 	            return null;
 	        }
 		}
-		log.info("Not a valid message: " + message);
+		log.info("Not a valid submitted newsitem message: " + twit.getText());
 		return null;
 	}
 
+    
 	private boolean isValidMessage(String message) {
 		return message.startsWith("@wellynews ");
 	}

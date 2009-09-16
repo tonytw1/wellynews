@@ -93,8 +93,8 @@ public class FeedReader {
                 
                 if (feed.getAcceptancePolicy().startsWith("accept")) {
                 	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
-                	if (acceptThisItem) {
-                		acceptFeedItem(feednewsitem, feed.getTags(), feed.getPublisher());               		
+                	if (acceptThisItem) {                		
+                		acceptFeedItem(feednewsitem, feed.getTags());               		
                 	} 
                 	
                 } else {                	
@@ -121,9 +121,9 @@ public class FeedReader {
 
 
 
-    private void acceptFeedItem(FeedNewsitem feeditem, Set<Tag> feedTags, Website feedPublisher) {
+    private void acceptFeedItem(FeedNewsitem feeditem, Set<Tag> feedTags) {
         log.info("Accepting: " + feeditem.getName());
-        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feedPublisher);
+        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem);
         log.info("Item body after makeNewsitemFromFeedItem: " + resource.getDescription());
         
         flattenLoudCapsInTitle(resource);

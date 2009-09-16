@@ -135,7 +135,7 @@ public interface ResourceRepository {
 	public List<String> getPublisherNamesByStartingLetters(String q);
 	public Resource getPublisherByName(String publisherName);
 	public List<Resource> getOwnedBy(User loggedInUser);
-	public TwitteredNewsitem createNewTwitteredNewsitem(long twitterId);	
+	public TwitteredNewsitem createNewTwitteredNewsitem(Twit twit);	
 	public List<Resource> getNewsitemsMatchingStem(String stem);
 	public List<Resource> getBrokenSites();
 	

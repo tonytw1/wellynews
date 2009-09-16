@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,23 +21,23 @@ public abstract class RssfeedNewsitemService {
 	public abstract List<FeedNewsitem> getFeedNewsitems(Feed feed);
 
 	public final Date getLatestPublicationDate(Feed feed) {
-	        Date latestPublicationDate = null;
-	        List<FeedNewsitem> feeditems = getFeedNewsitems(feed);
-	        for (Resource resource : feeditems) {
-	            if (resource.getDate() != null && (latestPublicationDate == null || resource.getDate().after(latestPublicationDate))) {
-	                latestPublicationDate = resource.getDate();           
-	            }
-	       }
-	        return latestPublicationDate;
+		Date latestPublicationDate = null;
+		List<FeedNewsitem> feeditems = getFeedNewsitems(feed);
+		for (Resource resource : feeditems) {
+			if (resource.getDate() != null && (latestPublicationDate == null || resource.getDate().after(latestPublicationDate))) {
+				latestPublicationDate = resource.getDate();           
+			}
+		}
+		return latestPublicationDate;
 	}
 	
-	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem, Website feedPublisher) {
-	// TODO constructor calls should be in the resourceDAO?
-	    	Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedPublisher, 
-	    			new HashSet<Tag>(),
-	    			new HashSet<DiscoveredFeed>(), new HashSet<Twit>());
-	    	newsitem.setImage(feedNewsitem.getImage());
-	    	return newsitem;
+	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem) {
+		// TODO constructor calls should be in the resourceDAO?
+	    Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedNewsitem.getPublisher(), 
+	    		new HashSet<Tag>(),
+	    		new HashSet<DiscoveredFeed>(), new HashSet<Twit>());
+	    newsitem.setImage(feedNewsitem.getImage());
+	    return newsitem;
 	}
 	
 	

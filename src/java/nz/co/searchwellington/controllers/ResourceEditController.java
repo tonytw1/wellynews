@@ -20,12 +20,14 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.GeocodeImpl;
+import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
@@ -144,81 +146,83 @@ public class ResourceEditController extends BaseTagEditingController {
         
         adminRequestFilter.loadAttributesOntoRequest(request);
         
-        FeedNewsitem feednewsitem = null;
-        Website feednewsitemPublisher = null;
+        Newsitem newsitem = null;
         if (request.getParameter("item") != null) {
-        	int item = (Integer) request.getAttribute("item");
-    	  
+        	int item = (Integer) request.getAttribute("item");    	  
         	if (request.getAttribute("feedAttribute") != null) {
-        		log.info("Looking for feeditem by feed and item number: " + item);
-        		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
-        		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-        		if (item > 0 && item <= feednewsItems.size()) {                    
-        			feednewsitem = feednewsItems.get(item-1);
-        			feednewsitemPublisher = feed.getPublisher();
-        		}
+        		newsitem = getRequestedFeedItemByFeedAndItemNumber(request, newsitem, item);
         	}
       
         } else if (request.getParameter("url") != null) {
-        	getRequestedFeedItemByUrl(request, feednewsitem, feednewsitemPublisher);
+        	newsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
         }
         
-        if (feednewsitem != null) {
-        	final Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feednewsitemPublisher);    // TODO publisher should be on feednewsitem?               
-                    
-        	boolean newsitemHasNoDate = (feednewsitem.getDate() == null);
+        if (newsitem != null) {        	      
+        	boolean newsitemHasNoDate = (newsitem.getDate() == null);
             if (newsitemHasNoDate) {
             	final Date today = Calendar.getInstance().getTime();
-            	feednewsitem.setDate(today);
+            	newsitem.setDate(today);
             }
                     
             modelAndView.addObject("resource", newsitem); 
-            modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(feednewsitem.getPublisher(), userIsLoggedIn).toString());
+            modelAndView.addObject("publisher_select",
+            		publisherSelectFactory.createPublisherSelectWithNoCounts(newsitem.getPublisher(), 
+            		userIsLoggedIn).toString()); // TODO select still in use? should be the autocomplete field now.
             modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
         }
         
         populateSecondaryFeeds(modelAndView, loggedInUser);
         return modelAndView;
     }
+
+
+
+	private Newsitem getRequestedFeedItemByFeedAndItemNumber(
+			HttpServletRequest request, Newsitem newsitem, int item) {
+		log.info("Looking for feeditem by feed and item number: " + item);
+		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
+		
+		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+		if (item > 0 && item <= feednewsItems.size()) {                    
+			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
+			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem);
+			newsitem.setPublisher(feed.getPublisher());
+		}
+		return newsitem;
+	}
     
     
     
-    private void getRequestedFeedItemByUrl(HttpServletRequest request, FeedNewsitem feednewsitem, Website feednewsitemPublisher) {
-    	if (request.getParameter("url") != null) {
-    		log.info("Looking for feeditem by url: " + request.getParameter("url"));
-    		for(Feed feed : resourceDAO.getAllFeeds()) {
-                List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-                for (FeedNewsitem feedNewsitem : feednewsItems) {
-                	log.info(feedNewsitem.getUrl() + " -> " + request.getParameter("url"));
-                	if (feedNewsitem.getUrl().equals(request.getParameter("url"))) {
-                		feednewsitem = feedNewsitem;
-            			feednewsitemPublisher = feed.getPublisher();
-                	}
+    private Newsitem getRequestedFeedItemByUrl(String url) {    	
+    	log.info("Looking for feeditem by url: " + url);
+    	for(Feed feed : resourceDAO.getAllFeeds()) {
+    		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+    		for (FeedNewsitem feedNewsitem : feednewsItems) {                	
+    			if (feedNewsitem.getUrl().equals(url)) {
+    				Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feedNewsitem);
+        			newsitem.setPublisher(feed.getPublisher());
+        			return newsitem;
                 }
-            }  
-    	}
+    		}
+        }    	
+    	return null;
     }
     
     
     // TODO needs auth by api etc.
+    // TODO no feed tags or autotagging?
+    // TODO don't duplicate?
     public ModelAndView acceptFastByUrl(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {               
-        adminRequestFilter.loadAttributesOntoRequest(request);
-        if (request.getAttribute("url") != null) {        
-        	FeedNewsitem feednewsitem = null;
-        	Website feednewsitemPublisher = null;
-            getRequestedFeedItemByUrl(request, feednewsitem, feednewsitemPublisher);        	
-        	if (feednewsitem != null) {
-            	final Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feednewsitemPublisher); 
-            	saveResource(request, null, newsitem, true, true);
-            	            	
-            	log.info("Saving resource: " + newsitem.getId());
-            } else {
-            	log.warn("Could not find feed news item with url: " + request.getAttribute("url"));
-            	
-            }
-            
+        adminRequestFilter.loadAttributesOntoRequest(request);        
+        if (request.getParameter("url") != null) {
+        	Newsitem newsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
+        	log.info("Saving resource: " + newsitem.getName());
+        	
+        	saveResource(request, null, newsitem, true, true);
+        	
+        	
         } else {
-        	log.warn("No twitted id found on request");
+            log.warn("Could not find feed news item with url: " + request.getAttribute("url"));            	
         }
         
         // TODO this is an api call; should retun JSON or something.
@@ -227,22 +231,27 @@ public class ResourceEditController extends BaseTagEditingController {
     
     
     @Transactional
-    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {               
+    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
+        ModelAndView modelAndView = new ModelAndView("acceptResource");       
+
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
         adminRequestFilter.loadAttributesOntoRequest(request);
         if (request.getAttribute("twitterId") != null) {        
             Long twitterId = (Long) request.getAttribute("twitterId");
-            log.info("Accepting newsitem from twitter id: " + twitterId);
-                   	
-        	List <TwitteredNewsitem> twitteredNewsitems = twitterNewsitemBuilderService.getPossibleSubmissions();
-            TwitteredNewsitem newsitemToAccept = twitterNewsitemBuilderService.getTwitteredNewsitemByTwitterId(twitterId, twitteredNewsitems);
+            Twit sourceTwit = resourceDAO.loadTwitByTwitterId(twitterId);
             
-            if (newsitemToAccept != null) {
-            	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(newsitemToAccept);                  
-            	saveResource(request, loggedInUser, newsitem, true, true);
-            	            	
-            	log.info("Saving resource: " + newsitem.getId());
+            if (sourceTwit != null) {
+            	log.info("Accepting newsitem from twitter id: " + twitterId);                   	
+            	
+            	// TODO this looks abit barking - merge and remove TNI model item?
+            	TwitteredNewsitem twitterNewsitemToAccept = twitterNewsitemBuilderService.createNewsitemFromTwitterReply(sourceTwit);
+            	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(twitterNewsitemToAccept);
+            	
+            	//saveResource(request, loggedInUser, newsitem, true, true);
+                modelAndView.addObject("resource", newsitem); 
+            	
+            	//log.info("Saving resource: " + newsitem.getId());
             } else {
             	log.warn("Could not find twitter with id: " + twitterId);
             	
@@ -252,7 +261,7 @@ public class ResourceEditController extends BaseTagEditingController {
         	log.warn("No twitted id found on request");
         }
         
-		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   
+		return modelAndView;
     }
 
 
@@ -473,8 +482,11 @@ private void removePublisherFromPublishersContent(Resource editResource) {
             processDate(request, editResource);
             processDescription(request, loggedInUser, editResource);
             processTags(request, editResource, loggedInUser);
-                        
-                
+            
+            if (editResource.getType().equals("N")) {
+            	processImage(request, (Newsitem) editResource, loggedInUser);            
+            }
+            
             // Set publisher field.
             boolean isPublishedResource = editResource instanceof PublishedResource;
             if (isPublishedResource) {
@@ -517,13 +529,7 @@ private void removePublisherFromPublishersContent(Resource editResource) {
          
             boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
             // TODO validate. - what exactly?
-            if (okToSave) {
-            	
-            	// TODO this should be on redirect accept method only
-            	if (suggestionDAO.isSuggested(editResource.getUrl())) {            		
-            		suggestionDAO.removeSuggestion(editResource.getUrl());
-            	}
-            	
+            if (okToSave) {            	
                 saveResource(request, loggedInUser, editResource, newSubmission, resourceUrlHasChanged);
                 
             } else {
@@ -542,6 +548,17 @@ private void removePublisherFromPublishersContent(Resource editResource) {
 
 
 
+private void removeSuggestion(Resource editResource) {
+	if (suggestionDAO.isSuggested(editResource.getUrl())) {            		
+		suggestionDAO.removeSuggestion(editResource.getUrl());
+	}
+}
+
+
+
+
+
+
 private void saveResource(HttpServletRequest request, User loggedInUser,
 		Resource editResource, boolean newSubmission,
 		boolean resourceUrlHasChanged) {
@@ -550,12 +567,14 @@ private void saveResource(HttpServletRequest request, User loggedInUser,
 	    linkCheckerQueue.add(editResource.getId());
 	    editResource.setHttpStatus(0);
 	    log.info("Resource url has changed; will link check.");
+	    
 	} else {
 	    log.info("Resource url has not changed; not adding to link check queue.");
 	}
 	
 	resourceDAO.saveResource(editResource);
-
+	removeSuggestion(editResource);
+	
 	final boolean newPublicSubmission = loggedInUser == null && newSubmission;
 	if (newPublicSubmission) {
 	    // Record the user's right to reedit this resource.
@@ -587,6 +606,12 @@ private void saveResource(HttpServletRequest request, User loggedInUser,
         editResource.setDescription(description);
     }
     
+    
+    private void processImage(HttpServletRequest request, Newsitem editResource, User loggedInUser) {
+    	Image image = (Image) request.getAttribute("image");
+    	editResource.setImage(image);
+    }
+
     
     
     

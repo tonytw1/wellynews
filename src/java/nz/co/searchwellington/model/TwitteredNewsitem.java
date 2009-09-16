@@ -5,9 +5,9 @@ import java.util.Set;
 
 public class TwitteredNewsitem extends NewsitemImpl {
 	
-	private Long twitterId;
-
-    public TwitteredNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, long twitterId) {       
+	private Twit twit;
+	
+    public TwitteredNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Twit twit) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -16,7 +16,7 @@ public class TwitteredNewsitem extends NewsitemImpl {
         this.publisher = publisher;
         this.tags = tags;
         this.discoveredFeeds = discoveredFeeds;
-        this.twitterId  = twitterId;
+        this.twit = twit;
     }
 	
 	@Override
@@ -24,12 +24,12 @@ public class TwitteredNewsitem extends NewsitemImpl {
 		return "TNI";
 	}
 
-	public Long getTwitterId() {
-		return twitterId;
+	public Twit getTwit() {
+		return twit;
 	}
 
-	public void setTwitterId(Long twitterId) {
-		this.twitterId = twitterId;
+	public void setTwit(Twit twit) {
+		this.twit = twit;
 	}
 	
 }

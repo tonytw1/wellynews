@@ -9,7 +9,6 @@ import java.util.List;
 import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Resource;
@@ -85,7 +84,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
                 
         
         // TODO This reference should really come from the resourceDAO.
-        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle(), url, description, itemDate, null, new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
+        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle(), url, description, itemDate, new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
         feedItem.setImage(extractThumbnail(feed, item));
       
         log.debug("Date of loaded newsitem is: " + feedItem.getDate());

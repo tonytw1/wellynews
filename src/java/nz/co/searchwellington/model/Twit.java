@@ -22,7 +22,7 @@ public class Twit {
 		this.twitterid = status.getId();
 		this.text = status.getText();
 		this.author = status.getUser().getScreenName();
-		this.profileImage = status.getUser().getProfileImageUrl();		
+		this.profileImage = status.getUser().getProfileImageUrl();	
 		this.date = status.getCreatedAt().toDate();
 	}
 
