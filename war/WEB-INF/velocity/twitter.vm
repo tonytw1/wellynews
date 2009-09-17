@@ -57,16 +57,6 @@ Twitter badge code provided by <a href="http://chrisjf.blogspot.com/2007/03/chri
 </div>
 
 
-<div class="box">
-#parse("includes/latest_twitters.vm")
-</div>
-
-
-#if ($twitterReplies) 
-<div class="box">
-#parse("includes/twitter_replies.vm")
-</div>
-#end
 
 #if ($twitterMentioned) 
 	<div class="box">
@@ -74,6 +64,23 @@ Twitter badge code provided by <a href="http://chrisjf.blogspot.com/2007/03/chri
 	</div>
 #end
 
+
+
+<div class="box">
+#parse("includes/latest_twitters.vm")
+</div>
+
+
+
+
+
+
+
+#if ($twitterReplies) 
+<div class="box">
+#parse("includes/twitter_replies.vm")
+</div>
+#end
 
 
 

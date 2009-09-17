@@ -237,7 +237,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateSecondaryLatestNewsitems(mv, loggedInUser);
 
         // TODO permissions
-        if(loggedInUser != null) {        	       	        	
+        if(loggedInUser != null) {
         	Status[] replies = twitterService.getReplies();
 			mv.addObject("twitterReplies", replies);
 			

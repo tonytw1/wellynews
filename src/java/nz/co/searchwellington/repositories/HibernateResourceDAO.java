@@ -423,8 +423,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     @SuppressWarnings("unchecked")
     public List<Newsitem> getLatestTwitteredNewsitems(int number, boolean showBroken) {        
         return criteriaForLatestNewsitems(number, showBroken).
-        add(Expression.isNotNull("twitterSubmitter")).
-        setCacheable(true).list();      
+        add(Expression.isNotNull("submittingTwit")).
+        setCacheable(true).list();    
     }
     
     private Criteria criteriaForLatestNewsitems(int number, boolean showBroken) {

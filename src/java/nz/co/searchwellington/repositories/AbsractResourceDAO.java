@@ -30,7 +30,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
       
     public Newsitem createNewNewsitem() {         
         return new NewsitemImpl(0, "", "", "", Calendar.getInstance().getTime(), null, new HashSet<Tag>(),
-                            new HashSet<DiscoveredFeed>(), new HashSet<Twit>());
+                            new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
     }
     
     public TwitteredNewsitem createNewTwitteredNewsitem(Twit twit) {         

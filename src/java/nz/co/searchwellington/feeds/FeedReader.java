@@ -94,7 +94,7 @@ public class FeedReader {
                 if (feed.getAcceptancePolicy().startsWith("accept")) {
                 	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
                 	if (acceptThisItem) {                		
-                		acceptFeedItem(feednewsitem, feed.getTags());               		
+                		acceptFeedItem(feednewsitem, feed);               		
                 	} 
                 	
                 } else {                	
@@ -121,9 +121,9 @@ public class FeedReader {
 
 
 
-    private void acceptFeedItem(FeedNewsitem feeditem, Set<Tag> feedTags) {
+    private void acceptFeedItem(FeedNewsitem feeditem, Feed feed) {
         log.info("Accepting: " + feeditem.getName());
-        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem);
+        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
         log.info("Item body after makeNewsitemFromFeedItem: " + resource.getDescription());
         
         flattenLoudCapsInTitle(resource);
@@ -133,7 +133,7 @@ public class FeedReader {
             resource.setDate(new DateTime().toDate());
         }
       
-        tagAcceptedFeedItem(resource, feedTags);
+        tagAcceptedFeedItem(resource, feed.getTags());
         log.info("Item body before save: " + resource.getDescription());
         resourceDAO.saveResource(resource);
         linkCheckerQueue.add(resource.getId());

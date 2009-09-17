@@ -15,19 +15,15 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         
     CommentFeed commentFeed;
     Image image;
-    
-    // TODO model a twitterSubmission with a Twit
-    Long twitterId;
-    private String twitterMessage;
-    private String twitterSubmitter;
-    
+      
+    private Twit submittingTwit;
     private Set<Twit> reTwits;
     
     
     public NewsitemImpl() {
     }
     
-    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Set<Twit> retwits) {
+    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Twit submittingTwit,  Set<Twit> retwits) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -36,7 +32,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.publisher = publisher;
         this.tags = tags;
         this.discoveredFeeds = discoveredFeeds;
-        this.twitterSubmitter = null;
+        this.submittingTwit = submittingTwit;
         this.reTwits = retwits;
     }
 
@@ -82,29 +78,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.commentFeed = commentFeed;
     }
 
-    public String getTwitterSubmitter() {
-        return twitterSubmitter;
-    }
-
-    public void setTwitterSubmitter(String twitterSubmitter) {
-        this.twitterSubmitter = twitterSubmitter;
-    }
-
-    public String getTwitterMessage() {
-        return twitterMessage;
-    }
-
-    public void setTwitterMessage(String twitterMessage) {
-        this.twitterMessage = twitterMessage;
-    }
-
-	public Long getTwitterId() {
-		return twitterId;
-	}
-
-	public void setTwitterId(Long twitterId) {
-		this.twitterId = twitterId;
-	}
+    
 
 	public Image getImage() {
 		return image;
@@ -115,7 +89,14 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 	}
 
 	
-	
+	public Twit getSubmittingTwit() {
+		return submittingTwit;
+	}
+
+	public void setSubmittingTwit(Twit submittingTwit) {
+		this.submittingTwit = submittingTwit;
+	}
+
 	public Set<Twit> getReTwits() {
 		return reTwits;
 	}

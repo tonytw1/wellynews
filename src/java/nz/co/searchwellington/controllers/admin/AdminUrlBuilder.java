@@ -54,7 +54,7 @@ public class AdminUrlBuilder {
 	}
 		
 	public String getTwitteredNewsitemAcceptUrl(TwitteredNewsitem twitteredNewsitem) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/edit/twitteraccept?twitterid=" + URLEncoder.encode(Long.toString(twitteredNewsitem.getTwitterId()), "UTF-8");
+		return siteInformation.getUrl() + "/edit/twitteraccept?twitterid=" + URLEncoder.encode(Long.toString(twitteredNewsitem.getTwit().getTwitterid()), "UTF-8");
 	}
 	
 	public String getPublisherAutoGatherUrl(Resource resource) throws UnsupportedEncodingException {

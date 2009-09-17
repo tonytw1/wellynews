@@ -9,8 +9,10 @@ import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.SuggestionFeednewsitem;
+import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
+import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,14 +25,17 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	private SuggestionDAO suggestionDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
+	private TwitterNewsitemBuilderService twitterNewsitemBuilder;
 
 	
-	public SuggestionsModelBuilder(ResourceRepository resourceDAO, SuggestionDAO suggestionDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {
+	public SuggestionsModelBuilder(ResourceRepository resourceDAO, SuggestionDAO suggestionDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, TwitterNewsitemBuilderService twitterNewsitemBuilder) {
 		this.resourceDAO = resourceDAO;
 		this.suggestionDAO = suggestionDAO;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
+		this.twitterNewsitemBuilder = twitterNewsitemBuilder;
 	}
+	
 
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/feeds/inbox(/(rss|json))?$");	
@@ -58,6 +63,8 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		List<TwitteredNewsitem> potentialTwitterSubmissions = twitterNewsitemBuilder.getPossibleSubmissions();
+		mv.addObject("submissions", potentialTwitterSubmissions);
 		populateSecondaryFeeds(mv);
 	}
 	

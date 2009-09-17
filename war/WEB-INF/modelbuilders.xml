@@ -75,6 +75,7 @@
 		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="twitterNewsitemBuilderService" />		
 	</bean>
 	
 

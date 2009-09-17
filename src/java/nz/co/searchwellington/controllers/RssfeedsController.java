@@ -1,18 +1,12 @@
 package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Suggestion;
-import nz.co.searchwellington.model.SuggestionFeednewsitem;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;

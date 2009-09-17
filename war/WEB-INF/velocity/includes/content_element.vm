@@ -12,7 +12,7 @@
 		<h5><a href="$itemUrl">$item.name</a></h5>
 				
 		<ul>		
-			#if ($item.date && ($item.type == "N" || $item.type == "FNI") && $dateFormatter)
+			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "TNI") && $dateFormatter)
 				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
 			#end
 							
@@ -120,11 +120,12 @@
 				#end
 				
 				
-				#if ($item.twitterSubmitter) 
-					<li class="twitteredby">Twittered by: <a href="http://www.twitter.com/$item.twitterSubmitter">@$item.twitterSubmitter</a></li>
-					#if ($item.twitterMessage) 
-						<li class="twitterMessage">$item.twitterMessage</li>
-					#end						
+				#if ($item.submittingTwit) 
+					<li class="twitteredby">Twittered by: <a href="http://www.twitter.com/$item.submittingTwit.author">@$item.submittingTwit.author</a></li>
+					#if ($item.submittingTwit.text) 
+						#set ($twit = $item.submittingTwit)
+						#parse("includes/twittermessage.vm")
+					#end
 				#end
 			
 			
@@ -148,8 +149,10 @@
 					#if ($item.type == "N" && $item.reTwits.size() > 0)
 						<ul>
 							#foreach ($twit in $item.reTwits) 
-                            	<li class="twitterMessage"><a href="http://twitter.com/$twit.author"><img src="$twit.profileImage" align="left" width="30" border="0" /></a> $twit.author $twit.text</li>       
-                        	#end
+						
+								#parse("includes/twittermessage.vm")
+											
+                         	#end
 						</ul>					
 					#end
 				
@@ -182,7 +185,6 @@
 				#end
 								
 				#if ($editPermissionService.canEdit($item) && ($item.type == "TNI"))
-					<li>Twitter id: $item.twitterId</li>
 					<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
 				#end
 								

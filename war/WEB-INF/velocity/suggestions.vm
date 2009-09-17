@@ -36,9 +36,18 @@
 
 #parse("includes/login.vm")
 
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-<br clear="all"/>
+#if ($submissions)
+	<div class="box">
+	<h2>Twitter Submissions</h2>
+	
+	<p>These twits could be reader submissions.</p>
+	
+	#set ($righthand_content_one = $columnSplitter.left($submissions))
+	#set ($righthand_content_two = $columnSplitter.right($submissions))
+	#parse("includes/righthand_two_columns.vm")
+	</div>
+#end
+
 
 </div>
 

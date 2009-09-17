@@ -121,17 +121,7 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		return newsitem.getTechnoratiCount();
 	}
 
-
-	public String getTwitterMessage() {
-		return newsitem.getTwitterMessage();
-	}
-
-
-	public String getTwitterSubmitter() {
-		return newsitem.getTwitterSubmitter();
-	}
-
-
+	
 	public String getType() {
 		return newsitem.getType();
 	}
@@ -211,26 +201,7 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		newsitem.setTechnoratiCount(technoratiCount);
 	}
 
-	public Long getTwitterId() {
-		return newsitem.getTwitterId();
-	}
-
-
-	public void setTwitterId(Long twitterId) {
-		newsitem.setTwitterId(twitterId);
-	}
-
-
-	public void setTwitterMessage(String twitterMessage) {
-		newsitem.setTwitterMessage(twitterMessage);
-	}
-
-
-	public void setTwitterSubmitter(String submitter) {
-		newsitem.setTwitterSubmitter(submitter);
-	}
-
-
+	
 	public void setUrl(String url) {
 		newsitem.setUrl(url);
 	}
@@ -262,6 +233,18 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 
 	public Image getImage() {
 		return null;
+	}
+
+
+	
+	
+	public Twit getSubmittingTwit() {
+		return newsitem.getSubmittingTwit();
+	}
+
+
+	public void setSubmittingTwit(Twit submittingTwit) {
+		newsitem.setSubmittingTwit(submittingTwit);
 	}
 
 

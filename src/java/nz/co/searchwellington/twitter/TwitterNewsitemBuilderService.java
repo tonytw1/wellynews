@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,10 +11,10 @@ import net.unto.twitter.Status;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
-import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
+import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
@@ -46,6 +45,16 @@ public class TwitterNewsitemBuilderService {
 	public List<TwitteredNewsitem> getPossibleSubmissions() {
 		Status[] replies = twitterService.getReplies();
 		return extractPossibleSubmissionsFromTwitterReplies(replies);
+	}
+	
+	
+	public TwitteredNewsitem getPossibleSubmissionByTwitterId(Long twitterId) {
+		for (TwitteredNewsitem possibleSubmission : getPossibleSubmissions()) {
+			if (possibleSubmission.getTwit().getTwitterid().equals(twitterId)) {
+				return possibleSubmission;
+			}
+		}
+		return null;
 	}
     
 	
@@ -85,38 +94,54 @@ public class TwitterNewsitemBuilderService {
 	}
 	
 	
-	// TODO not sure about this.
-	public TwitteredNewsitem getTwitteredNewsitemByTwitterId(Long twitterId, List<TwitteredNewsitem> twitteredNewsitems) {
-		TwitteredNewsitem newsitemToAccept = null;
-		for (TwitteredNewsitem twitteredNewsitem : twitteredNewsitems) {
-			log.info(twitteredNewsitem.getTwitterMessage() + ": " + twitteredNewsitem.getTwitterId());
-			if (twitteredNewsitem.getTwitterId().longValue() == twitterId.longValue()) {
-				newsitemToAccept = twitteredNewsitem;
-			}
-		}
-		return newsitemToAccept;
-	}
 	
-		
 	public Newsitem makeNewsitemFromTwitteredNewsitem(TwitteredNewsitem twitteredNewsitem) {
 		// TODO constructor calls should be in the resourceDAO?
     	Newsitem newsitem = new NewsitemImpl(0, twitteredNewsitem.getName(), twitteredNewsitem.getUrl(), twitteredNewsitem.getDescription(), twitteredNewsitem.getDate(), null, 
     			new HashSet<Tag>(),
-    			new HashSet<DiscoveredFeed>(), new HashSet<Twit>());   	
-    	newsitem.setTwitterSubmitter(twitteredNewsitem.getTwitterSubmitter());
-    	newsitem.setTwitterMessage(twitteredNewsitem.getTwitterMessage());
-    	newsitem.setTwitterId(twitteredNewsitem.getTwitterId());
+    			new HashSet<DiscoveredFeed>(),
+    			twitteredNewsitem.getTwit(),    	
+    			new HashSet<Twit>()); 
     	return newsitem;
 	}
 
-	    
+	
+	 public TwitteredNewsitem createNewsitemFromTwitterReply(Twit twit) {
+			if (isValidMessage(twit.getText())) {
+				TwitteredNewsitem newsitem = resourceDAO.createNewTwitteredNewsitem(twit);
+				
+				String message = twit.getText();
+				message = message.replaceFirst("@.*? ", "");
+				String titleText = message.replaceFirst("http.*", "").trim();
+				newsitem.setName(titleText);
+				
+				String url = message.replace(titleText, "").trim();
+				// TODO trim trailing text after url.
+				//  ie. @wellynews  RT Hutt City Council - Blind dates with books at your library http://tinyurl.com/n9j77c // Great minds meet! wcl_library too
+		        if (url != "") {	        	
+		            newsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
+		            newsitem.setDate(Calendar.getInstance().getTime());            
+		            Website publisher = publisherGuessingService.guessPublisherBasedOnUrl(newsitem.getUrl());
+		            newsitem.setPublisher(publisher);
+		            newsitem.setSubmittingTwit(twit);
+		            newsitem.setDate(twit.getDate());
+		            return newsitem;
+		            
+		        } else {
+		            log.warn("Could not resolve url from twit");
+		            return null;
+		        }
+			}
+			log.info("Not a valid submitted newsitem message: " + twit.getText());
+			return null;
+		}
+	
     private List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(Status[] replies) {
     	List<TwitteredNewsitem> potentialTwitterSubmissions = new ArrayList<TwitteredNewsitem>();
     	for (Status status : replies) {
     		Twit twit = new Twit(status);
     		
-    		TwitteredNewsitem newsitem = this.createNewsitemFromTwitterReply(twit);
-    		
+    		TwitteredNewsitem newsitem = this.createNewsitemFromTwitterReply(twit);    		
     		if (newsitem != null && newsitem.getUrl() != null && !newsitem.getUrl().equals("")) {
     			boolean isRT = newsitem.getName() != null & newsitem.getName().startsWith("RT");
 				if (!isRT) {					
@@ -127,35 +152,6 @@ public class TwitterNewsitemBuilderService {
     	return potentialTwitterSubmissions;
     }
     
-    
-    public TwitteredNewsitem createNewsitemFromTwitterReply(Twit twit) {
-		if (isValidMessage(twit.getText())) {
-			TwitteredNewsitem newsitem = resourceDAO.createNewTwitteredNewsitem(twit);
-			
-			String message = twit.getText();
-			message = message.replaceFirst("@.*? ", "");
-			String titleText = message.replaceFirst("http.*", "").trim();
-			newsitem.setName(titleText);
-			
-			String url = message.replace(titleText, "").trim();
-			// TODO trim trailing text after url.
-			//  ie. @wellynews  RT Hutt City Council - Blind dates with books at your library http://tinyurl.com/n9j77c // Great minds meet! wcl_library too
-	        if (url != "") {	        	
-	            newsitem.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
-	            newsitem.setDate(Calendar.getInstance().getTime());            
-	            Website publisher = publisherGuessingService.guessPublisherBasedOnUrl(newsitem.getUrl());
-	            newsitem.setPublisher(publisher);
-	            return newsitem;
-	            
-	        } else {
-	            log.warn("Could not resolve url from twit");
-	            return null;
-	        }
-		}
-		log.info("Not a valid submitted newsitem message: " + twit.getText());
-		return null;
-	}
-
     
 	private boolean isValidMessage(String message) {
 		return message.startsWith("@wellynews ");

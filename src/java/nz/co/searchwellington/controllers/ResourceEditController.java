@@ -39,6 +39,7 @@ import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
+import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
@@ -185,8 +186,7 @@ public class ResourceEditController extends BaseTagEditingController {
 		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (item > 0 && item <= feednewsItems.size()) {                    
 			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
-			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem);
-			newsitem.setPublisher(feed.getPublisher());
+			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
 		}
 		return newsitem;
 	}
@@ -199,8 +199,7 @@ public class ResourceEditController extends BaseTagEditingController {
     		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
     		for (FeedNewsitem feedNewsitem : feednewsItems) {                	
     			if (feedNewsitem.getUrl().equals(url)) {
-    				Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feedNewsitem);
-        			newsitem.setPublisher(feed.getPublisher());
+    				Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feedNewsitem, feed);
         			return newsitem;
                 }
     		}
@@ -230,31 +229,29 @@ public class ResourceEditController extends BaseTagEditingController {
     }    
     
     
+    
     @Transactional
     public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
-
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
         adminRequestFilter.loadAttributesOntoRequest(request);
         if (request.getAttribute("twitterId") != null) {        
             Long twitterId = (Long) request.getAttribute("twitterId");
-            Twit sourceTwit = resourceDAO.loadTwitByTwitterId(twitterId);
+            TwitteredNewsitem twittedNewsitem = twitterNewsitemBuilderService.getPossibleSubmissionByTwitterId(twitterId);
             
-            if (sourceTwit != null) {
-            	log.info("Accepting newsitem from twitter id: " + twitterId);                   	
+            if (twittedNewsitem != null) {
+            	log.info("Attempting to accept newsitem from twitter id: " + twitterId);
+            	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(twittedNewsitem);
             	
-            	// TODO this looks abit barking - merge and remove TNI model item?
-            	TwitteredNewsitem twitterNewsitemToAccept = twitterNewsitemBuilderService.createNewsitemFromTwitterReply(sourceTwit);
-            	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(twitterNewsitemToAccept);
+            	if (newsitem != null) {            		
+            		modelAndView.addObject("resource", newsitem);
+            		
+            	} else {
+            		log.info("Could not extract a newsitem from this twit");            		
+            	}
             	
-            	//saveResource(request, loggedInUser, newsitem, true, true);
-                modelAndView.addObject("resource", newsitem); 
-            	
-            	//log.info("Saving resource: " + newsitem.getId());
             } else {
-            	log.warn("Could not find twitter with id: " + twitterId);
-            	
+            	log.warn("Could not find twitter with id: " + twitterId);            	
             }
             
         } else {

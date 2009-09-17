@@ -14,7 +14,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
-import nz.co.searchwellington.model.Website;
 
 public abstract class RssfeedNewsitemService {
 
@@ -31,12 +30,13 @@ public abstract class RssfeedNewsitemService {
 		return latestPublicationDate;
 	}
 	
-	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem) {
+	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem, Feed feed) {
 		// TODO constructor calls should be in the resourceDAO?
 	    Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedNewsitem.getPublisher(), 
 	    		new HashSet<Tag>(),
-	    		new HashSet<DiscoveredFeed>(), new HashSet<Twit>());
+	    		new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
 	    newsitem.setImage(feedNewsitem.getImage());
+	    newsitem.setPublisher(feed.getPublisher());
 	    return newsitem;
 	}
 	
