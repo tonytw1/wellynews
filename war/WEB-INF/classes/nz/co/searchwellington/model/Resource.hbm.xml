@@ -142,17 +142,9 @@
 
 			<many-to-one name="commentFeed" class="nz.co.searchwellington.model.CommentFeed" 
 				column="comment_feed" cascade="" />
+		            	        	
+		    <many-to-one name="submittingTwit" class="nz.co.searchwellington.model.Twit" column="submitting_twit" />
 		    
-	       	<property name="twitterSubmitter" type="string">
-        		<column name="twitter_submitter"/>
-        	</property>
-       		<property name="twitterMessage" type="string">
-        		<column name="twitter_message"/>
-        	</property>
-        	<property name="twitterId" type="long">
-        		<column name="twitter_id"/>
-        	</property>
-        	        	
         	<set name="reTwits" table="newsitem_retwits" access="field">
 				<cache usage="read-write" />		
 				<key column="resource_id" />
