@@ -1,5 +1,5 @@
 #if ($latest_twitters && $latest_twitters.size() > 0)
-<h2>Latest Twitters</h2>
+<h2>Twitter Submissions</h2>
 
 <p>Newsitems received via Twitter.</p>
 

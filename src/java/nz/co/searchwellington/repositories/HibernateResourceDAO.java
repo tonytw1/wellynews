@@ -352,8 +352,8 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         setCacheable(true).
         uniqueResult();  
     }
-
-
+    
+    
     public Tag loadTagById(int tagID) {
         return (Tag) sessionFactory.getCurrentSession().load(Tag.class, tagID);
     }
@@ -382,6 +382,10 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
          	setCacheable(true).
          	uniqueResult();  
 	}
+
+	
+	
+
 
 
 	public void saveResource(Resource resource) {     

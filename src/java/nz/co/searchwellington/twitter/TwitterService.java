@@ -1,13 +1,18 @@
 package nz.co.searchwellington.twitter;
 
-import net.unto.twitter.Status;
+import java.util.List;
+
+import net.unto.twitter.TwitterProtos.Status;
+
 
 public interface TwitterService {
 
-	public Status[] getReplies();
+	public List<Status> getReplies();
 	
     public String getUsername();
 
 	public boolean isConfigured();
+
+	public Status getTwitById(long twitterId);
 
 }

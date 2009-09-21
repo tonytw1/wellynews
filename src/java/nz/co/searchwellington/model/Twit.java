@@ -2,7 +2,7 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
-import net.unto.twitter.Status;
+import net.unto.twitter.TwitterProtos.Status;
 
 public class Twit {
 	
@@ -22,8 +22,8 @@ public class Twit {
 		this.twitterid = status.getId();
 		this.text = status.getText();
 		this.author = status.getUser().getScreenName();
-		this.profileImage = status.getUser().getProfileImageUrl();	
-		this.date = status.getCreatedAt().toDate();
+		this.profileImage = status.getUser().getProfile().getImageUrl();	
+		//this.date = status.getCreatedAt(); // TODO parse	
 	}
 
 	

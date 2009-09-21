@@ -6,7 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.unto.twitter.Status;
+import net.unto.twitter.TwitterProtos.Status;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
@@ -238,7 +238,7 @@ public class SimplePageController extends BaseMultiActionController {
 
         // TODO permissions
         if(loggedInUser != null) {
-        	Status[] replies = twitterService.getReplies();
+        	List<Status> replies = twitterService.getReplies();
 			mv.addObject("twitterReplies", replies);
 			
 			List<TwitteredNewsitem> potentialTwitterSubmissions = twitterNewsitemsService.getPossibleSubmissions();

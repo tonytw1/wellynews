@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.unto.twitter.Status;
+import net.unto.twitter.TwitterProtos.Status;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
@@ -15,6 +15,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitterMention;
+import nz.co.searchwellington.model.TwitterSubmittable;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
@@ -42,9 +43,14 @@ public class TwitterNewsitemBuilderService {
     }
     
     
-	public List<TwitteredNewsitem> getPossibleSubmissions() {
-		Status[] replies = twitterService.getReplies();
-		return extractPossibleSubmissionsFromTwitterReplies(replies);
+	public List<TwitteredNewsitem> getPossibleSubmissions() {		
+		List<TwitteredNewsitem> unacceptedSubmissions = new ArrayList<TwitteredNewsitem>();
+		for (TwitteredNewsitem twitteredNewsitem : extractPossibleSubmissionsFromTwitterReplies(twitterService.getReplies())) {
+			//if (resourceDAO.loadNewsitemBySubmittingTwitterId(twitteredNewsitem.getTwit()) == null) {
+				unacceptedSubmissions.add(twitteredNewsitem);
+			//}				
+		}		
+		return unacceptedSubmissions;		
 	}
 	
 	
@@ -61,27 +67,84 @@ public class TwitterNewsitemBuilderService {
 	public List<TwitterMention> getNewsitemMentions() {
 		List<TwitterMention> RTs = new ArrayList<TwitterMention>();
 		
-		Status[] replies = twitterService.getReplies();
+		List<Status> replies = twitterService.getReplies();
+		
+		replies.add(twitterService.getTwitById(new Long("3393948406")));
+		replies.add(twitterService.getTwitById(new Long("3397279838")));
+		replies.add(twitterService.getTwitById(new Long("3572778870")));
+		replies.add(twitterService.getTwitById(new Long("3572838497")));
+		replies.add(twitterService.getTwitById(new Long("3675588649")));
+		replies.add(twitterService.getTwitById(new Long("3731068173")));
+		replies.add(twitterService.getTwitById(new Long("3851408485")));
+	
+		
 		for (Status status : replies) {
-			final String message = status.getText();
-			final String twitterName = '@' + twitterService.getUsername();
-			if (message != null && message.contains(twitterName)) {				
-				final String url = this.extractUrlFromMessage(message);
-				if (url != null) {
-					final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(url);
-					log.debug("Found url '" + cleanedUrl + "' in message: " + message);
-					
-					Resource resource = resourceDAO.loadResourceByUrl(cleanedUrl); // TOOO load newsitem by url method on DAO instead?
-					if (resource != null && resource.getType().equals("N")) {
-						log.info("Found RT: " + resource.getName() + ", " + message);
-						Twit twit = loadOrCreateTwit(status);
-						RTs.add(new TwitterMention((Newsitem) resource, twit));						
+	
+			
+			String message = status.getText();			
+			if (status.getInReplyToStatusId() > 0) {
+							
+				long inReplyTo = status.getInReplyToStatusId();
+				log.info("Twit '" + status.getText() + "' is in reply to twit #: " + inReplyTo);
+				
+				Twit referencedTwit = resourceDAO.loadTwitByTwitterId(inReplyTo);
+				if (referencedTwit == null) {
+					Status referencedStatus = twitterService.getTwitById(inReplyTo);
+					if (status != null) {
+						referencedTwit = new Twit(referencedStatus);
+						resourceDAO.saveTwit(referencedTwit);						
 					}
 				}
+				
+				if (referencedTwit != null) {
+					message = referencedTwit.getText();
+					Resource referencedNewsitem = extractReferencedResourceFromMessage(message);
+					if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
+						Twit replyTwit = loadOrCreateTwit(status);
+						RTs.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
+						log.info("Twit '" + replyTwit + "' is a reply to: " + referencedNewsitem);
+					}
+				} else {
+					log.warn("Could not find replied to tweet: " + inReplyTo);
+				}
+			
+			} else if (message != null) {				
+				Resource referencedNewsitem = extractReferencedResourceFromMessage(message);					
+				if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
+					log.info("Found RT: " + referencedNewsitem.getName() + ", " + message);
+					Twit tweet = loadOrCreateTwit(status);
+					
+					boolean isSubmittingTwit = ((TwitterSubmittable) referencedNewsitem).getSubmittingTwit() != null &&
+						((TwitterSubmittable) referencedNewsitem).getSubmittingTwit().getTwitterid().equals(tweet.getTwitterid());
+										
+					log.info("isSubmittedTwit: " + isSubmittingTwit);
+					if (!isSubmittingTwit) {					
+						RTs.add(new TwitterMention((Newsitem) referencedNewsitem, tweet));
+						
+					} else {
+						log.info("Not adding to mentions as looks like submitting tweet: " + tweet.getText());
+					}
+				}				
 			}			
 		}
 		return RTs;
 	}
+
+
+	private Resource extractReferencedResourceFromMessage(String message) {
+		final String url = this.extractUrlFromMessage(message);
+		Resource referencedNewsitem = null;
+		if (url != null) {
+			final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(url);
+			log.debug("Found url '" + cleanedUrl + "' in message: " + message);
+			
+			referencedNewsitem = resourceDAO.loadResourceByUrl(cleanedUrl); // TOOO load newsitem by url method on DAO instead?
+		}
+		return referencedNewsitem;
+	}
+
+
+	
 
 
 	private Twit loadOrCreateTwit(Status status) {
@@ -136,7 +199,7 @@ public class TwitterNewsitemBuilderService {
 			return null;
 		}
 	
-    private List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(Status[] replies) {
+    private List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(List<Status> replies) {
     	List<TwitteredNewsitem> potentialTwitterSubmissions = new ArrayList<TwitteredNewsitem>();
     	for (Status status : replies) {
     		Twit twit = new Twit(status);

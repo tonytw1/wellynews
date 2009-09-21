@@ -1,11 +1,13 @@
 package nz.co.searchwellington.twitter;
 
-import org.apache.log4j.Logger;
+import java.util.List;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
-import net.unto.twitter.Status;
+import net.unto.twitter.TwitterProtos.Status;
+
+import org.apache.log4j.Logger;
 
 public class CachingTwitterService implements TwitterService {
 	
@@ -13,6 +15,10 @@ public class CachingTwitterService implements TwitterService {
     
 	private static final String TWITTER_REPLIES_CACHE = "twitterreplies";
 	private static final String CACHE_KEY = "replies";
+	
+	private static final String TWEETS_CACHE = "tweets";
+		
+
 
 	private TwitterService twitterService;
 	private CacheManager manager;
@@ -37,19 +43,44 @@ public class CachingTwitterService implements TwitterService {
 	}
 
 	
-	public Status[] getReplies() {
+	
+	
+	
+	@Override
+	public Status getTwitById(long twitterId) {
+		Cache cache = manager.getCache(TWEETS_CACHE);		
+		if (cache != null) {
+			Element cacheElement = cache.get(CACHE_KEY);
+			if (cacheElement != null && cacheElement.getObjectValue() != null) {
+				Status cachedResult = (Status) cacheElement.getObjectValue();
+				log.info("Found tweet in cache");
+				return cachedResult;
+			}
+		}
+		
+		
+		log.info("Delegrating to live twitter service");
+		Status tweet = twitterService.getTwitById(twitterId);
+		putTweetIntoCache(cache, tweet);		
+		return tweet;		
+	}
+
+
+
+	@SuppressWarnings("unchecked")
+	public List<Status> getReplies() {
 		Cache cache = manager.getCache(TWITTER_REPLIES_CACHE);		
 		if (cache != null) {
 			Element cacheElement = cache.get(CACHE_KEY);
 			if (cacheElement != null && cacheElement.getObjectValue() != null) {
-				Status[] cachedResult = (Status[]) cacheElement.getObjectValue();
+				List<Status> cachedResult = (List<Status>) cacheElement.getObjectValue();
 				log.info("Found replies in cache");
 				return cachedResult;
 			}
 		}
 		
 		log.info("Delegrating to live twitter service");
-		final Status[] fetchedResults = twitterService.getReplies();
+		final List<Status> fetchedResults = (List<Status>) twitterService.getReplies();
 		if (fetchedResults != null) {
 			putIntoCache(cache, fetchedResults);
 		}
@@ -57,12 +88,18 @@ public class CachingTwitterService implements TwitterService {
 	}
 
 	
-	private void putIntoCache(Cache cache, Status[] results) {	
+	private void putIntoCache(Cache cache, List<Status> results) {	
 		log.info("Caching result");
 		Element cachedResult = new Element(CACHE_KEY, results);
 		cache.put(cachedResult);
 	}
 
+	
+	private void putTweetIntoCache(Cache cache, Status tweet) {
+		log.info("Caching result");
+		Element cachedResult = new Element(tweet.getId(), tweet);
+		cache.put(cachedResult);		
+	}
 
 
 

@@ -141,7 +141,7 @@
 			<li><code><a href="$site_information.url/comment/json">$site_information.url/waterfront/comment/json</a></code></li>
 		</ul>
 
-		<p>Commented newsitems also specifiy the newitems'comment feed url on the <code>commentFeed</code> field on the JSON results.</p>
+		<p>Commented newsitems also specifiy the newsitems'comment feed url on the <code>commentFeed</code> field on the JSON results.</p>
 
 
 

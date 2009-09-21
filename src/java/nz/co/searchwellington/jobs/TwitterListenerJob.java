@@ -2,7 +2,7 @@ package nz.co.searchwellington.jobs;
 
 import java.util.List;
 
-import net.unto.twitter.Status;
+import net.unto.twitter.TwitterProtos.Status;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.TwitterMention;
@@ -51,9 +51,9 @@ public class TwitterListenerJob {
         log.info("Running Twitter listener");
         if (twitterService.isConfigured()) {
 
-        	Status[] replies = twitterService.getReplies();
+        	List<Status> replies = twitterService.getReplies();
 			if (replies != null) {
-				log.info("Found " + replies.length + " replies.");
+				log.info("Found " + replies.size() + " replies.");
 
 				// TODO wire into config switch
 				//List<TwitteredNewsitem> possibleSubmissions = newsitemBuilder.getPossibleSubmissions();

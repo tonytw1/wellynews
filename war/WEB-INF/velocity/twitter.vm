@@ -22,7 +22,7 @@
 
 <h3>Submitting newsitems via Twitter</h3>
 
-<p>You can also submit your ${site_information.areaname} related newitems via Twitter.
+<p>You can also submit your ${site_information.areaname} related newsitems via Twitter.
 Follow @${site_information.twitterUsername} then twitter your submission as a reply using this format:
 </p>
 
@@ -50,12 +50,6 @@ Twitter badge code provided by <a href="http://chrisjf.blogspot.com/2007/03/chri
 
 <div class="right">
 #parse("includes/login.vm")
-
-
-<div class="box">
-#parse("includes/twitterBadge.vm")
-</div>
-
 
 
 #if ($twitterMentioned) 

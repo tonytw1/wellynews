@@ -18,7 +18,14 @@
         timeToLiveSeconds="3600"
         overflowToDisk="false"
         />
-    
+        
+    <cache name="tweets"
+        maxElementsInMemory="500"
+        eternal="false"
+        timeToIdleSeconds="3600"
+        timeToLiveSeconds="3600"
+        overflowToDisk="false"
+        />
     
     
     <defaultCache
