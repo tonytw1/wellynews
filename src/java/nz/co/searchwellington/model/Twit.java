@@ -2,6 +2,10 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import net.unto.twitter.TwitterProtos.Status;
 
 public class Twit {
@@ -22,8 +26,11 @@ public class Twit {
 		this.twitterid = status.getId();
 		this.text = status.getText();
 		this.author = status.getUser().getScreenName();
-		this.profileImage = status.getUser().getProfile().getImageUrl();	
-		//this.date = status.getCreatedAt(); // TODO parse	
+		this.profileImage = status.getUser().getProfile().getImageUrl();
+		
+		DateTimeFormatter parser = DateTimeFormat.forPattern("E MMM dd HH:mm:ss Z YYYY");
+		DateTime time = parser.parseDateTime(status.getCreatedAt());
+		this.date = time.toDate();
 	}
 
 	
