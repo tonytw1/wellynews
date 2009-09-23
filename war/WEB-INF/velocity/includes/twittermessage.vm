@@ -1,3 +1,2 @@
-($twit.twitterid)
    	<li class="twitterMessage"><a href="http://twitter.com/$twit.author"><img src="$twit.profileImage" align="left" width="30" border="0" /></a> $twit.author $twit.text</li>     
                         

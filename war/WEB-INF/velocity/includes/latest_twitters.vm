@@ -1,7 +1,20 @@
 #if ($latest_twitters && $latest_twitters.size() > 0)
 <h2>Twitter Submissions</h2>
 
-<p>Newsitems received via Twitter.</p>
+<p>These newsitems were submitted via Twitter.</p
+
+<p>To submit a ${site_information.areaname} related newsitem, tweet it to @${site_information.twitterUsername} using this format:
+</p>
+
+<ul>
+<code>@${site_information.twitterUsername} (headline) (url)</code>
+</ul>
+
+<ul>
+ie. <code>@${site_information.twitterUsername} The newslog now accepts twitter submissions http://wellington.gen.nz/twitter</code>
+</ul>
+
+<p>Twittered newsitems will appear with a credit linking back to the submitting Twitter account.</p>
 
 #set ($righthand_content_one = $columnSplitter.left($latest_twitters))
 #set ($righthand_content_two = $columnSplitter.right($latest_twitters))

@@ -38,9 +38,9 @@
 
 #if ($submissions)
 	<div class="box">
-	<h2>Twitter Submissions</h2>
+	<h2>Twitter Inbox</h2>
 	
-	<p>These twits could be reader submissions.</p>
+	<p>These tweets could be reader submissions.</p>
 	
 	#set ($righthand_content_one = $columnSplitter.left($submissions))
 	#set ($righthand_content_two = $columnSplitter.right($submissions))

@@ -24,7 +24,7 @@
 
 			<h2>Meanwhile...</h2>
 			<p>The $site_information.areaname Newslog is an informal roundup of the $site_information.areaname webspace.
-				The Newslog is also available as an <a href="feeds">RSS feed</a>#if ($site_information.twitterUsername) or via <a href="http://twitter.com/$site_information.twitterUsername">Twitter</a>#end.
+				The Newslog is also available as an <a href="feeds">RSS feed</a>#if ($site_information.twitterUsername) or via <a href="twitter">Twitter</a>#end.
 			</p>
 			
 			#if ($commented_newsitems)	

@@ -16,33 +16,18 @@
 
 <p>You can now follow the <a href="index#newslog">${site_information.areaname} Newslog</a> on <a href="http://www.twitter.com">Twitter</a>.</p>
 
-<p>The Twitter name to follow is: 
+<p>Our Twitter username is: 
 <code><a href="http://www.twitter.com/${site_information.twitterUsername}">@${site_information.twitterUsername}</a></code></p>
+<p>
+<br/>
 
 
-<h3>Submitting newsitems via Twitter</h3>
+<h2>Twitter Mentions</h2>
 
-<p>You can also submit your ${site_information.areaname} related newsitems via Twitter.
-Follow @${site_information.twitterUsername} then twitter your submission as a reply using this format:
-</p>
+<p>These newsitems have been mentioned on Twitter. This could mean they're of interest.</p>
 
-<ul>
-<code>@${site_information.twitterUsername} (headline) (url)</code>
-</ul>
+#parse("includes/main_content.vm")
 
-<ul>
-ie. <code>@${site_information.twitterUsername} The newslog now accepts twitters http://www.wellington.gen.nz/twitter</code>
-</ul>
-
-<p>Twittered newsitems will appear in the newslog with a credit linking back to the submitting 
-Twitter account.</p>
-
-
-<p>This service was shamelessly inspired by the 
-<a href="http://www.twitter.com/freewellington"></code>@freewellington</code></a> Twitter bot.<br/>
-We make use of the <a href="http://code.google.com/p/java-twitter/">Java Twitter</a> library.<br/>
-Twitter badge code provided by <a href="http://chrisjf.blogspot.com/2007/03/chris-forbes-original-twitter-badge.html">ChrisJF</a>.
-</p>
 
 
 </div>

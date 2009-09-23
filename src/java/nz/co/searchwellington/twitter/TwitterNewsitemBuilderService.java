@@ -67,17 +67,7 @@ public class TwitterNewsitemBuilderService {
 	public List<TwitterMention> getNewsitemMentions() {
 		List<TwitterMention> RTs = new ArrayList<TwitterMention>();
 		
-		List<Status> replies = twitterService.getReplies();
-		
-		replies.add(twitterService.getTwitById(new Long("3393948406")));
-		replies.add(twitterService.getTwitById(new Long("3397279838")));
-		replies.add(twitterService.getTwitById(new Long("3572778870")));
-		replies.add(twitterService.getTwitById(new Long("3572838497")));
-		replies.add(twitterService.getTwitById(new Long("3675588649")));
-		replies.add(twitterService.getTwitById(new Long("3731068173")));
-		replies.add(twitterService.getTwitById(new Long("3851408485")));
-	
-		
+		List<Status> replies = twitterService.getReplies();	
 		for (Status status : replies) {
 	
 			
@@ -101,9 +91,15 @@ public class TwitterNewsitemBuilderService {
 					Resource referencedNewsitem = extractReferencedResourceFromMessage(message);
 					if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
 						Twit replyTwit = loadOrCreateTwit(status);
-						RTs.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
-						log.info("Twit '" + replyTwit + "' is a reply to: " + referencedNewsitem);
+						
+						boolean isSubmittingTwit = isSubmittingTwit((Newsitem) referencedNewsitem, replyTwit);
+						if (!isSubmittingTwit) {
+							RTs.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
+							log.info("Twit '" + replyTwit + "' is a reply to: " + referencedNewsitem);
+						}
+						
 					}
+					
 				} else {
 					log.warn("Could not find replied to tweet: " + inReplyTo);
 				}
@@ -128,6 +124,16 @@ public class TwitterNewsitemBuilderService {
 			}			
 		}
 		return RTs;
+	}
+
+
+	private boolean isSubmittingTwit(Newsitem referencedNewsitem, Twit replyTwit) {
+		log.info("Newsitems submitting twit: " + referencedNewsitem.getSubmittingTwit());
+		if (referencedNewsitem.getSubmittingTwit() != null) {
+			log.info("Newsitems submitted twit is: " + referencedNewsitem.getSubmittingTwit().getTwitterid() + ". Reply twit is " + replyTwit.getTwitterid());
+			return referencedNewsitem.getSubmittingTwit().getTwitterid().equals(replyTwit.getTwitterid());
+		}
+		return false;
 	}
 
 

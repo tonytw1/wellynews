@@ -12,10 +12,7 @@
 		#end	
 	
 		<h5><a href="$itemUrl">$item.name</a></h5>
-				
-				
-	--$item.id
-					
+							
 		<ul>		
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "TNI") && $dateFormatter)
 				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>

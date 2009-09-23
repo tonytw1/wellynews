@@ -231,7 +231,7 @@ public class SimplePageController extends BaseMultiActionController {
         
         final String twitterUsername = siteInformation.getTwitterUsername();
         mv.addObject("twitterUsername", twitterUsername);
-        mv.addObject("heading", "@" + twitterUsername + " - Following the newslog on Twitter");
+        mv.addObject("heading",  "Following the " + siteInformation.getAreaname() + " newslog on Twitter");
         populateLatestTwitters(mv, loggedInUser);
         
         populateSecondaryLatestNewsitems(mv, loggedInUser);
@@ -245,7 +245,7 @@ public class SimplePageController extends BaseMultiActionController {
 			mv.addObject("submissions", potentialTwitterSubmissions);			
         }
         
-        mv.addObject("twitterMentioned", resourceDAO.getTwitterMentionedNewsitems());        
+        mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems());        
         
         mv.setViewName("twitter");
         return mv;
