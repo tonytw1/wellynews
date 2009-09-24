@@ -46,9 +46,9 @@ public class TwitterNewsitemBuilderService {
 	public List<TwitteredNewsitem> getPossibleSubmissions() {		
 		List<TwitteredNewsitem> unacceptedSubmissions = new ArrayList<TwitteredNewsitem>();
 		for (TwitteredNewsitem twitteredNewsitem : extractPossibleSubmissionsFromTwitterReplies(twitterService.getReplies())) {
-			//if (resourceDAO.loadNewsitemBySubmittingTwitterId(twitteredNewsitem.getTwit()) == null) {
+			if (resourceDAO.loadNewsitemBySubmittingTwitterId(twitteredNewsitem.getTwit().getId()) == null) {
 				unacceptedSubmissions.add(twitteredNewsitem);
-			//}				
+			}	
 		}		
 		return unacceptedSubmissions;		
 	}

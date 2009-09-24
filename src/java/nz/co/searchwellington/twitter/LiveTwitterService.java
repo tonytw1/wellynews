@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 public class LiveTwitterService implements TwitterService {
 	
-    private static final int REPLY_PAGES_TO_FETCH = 5;
+    private static final int REPLY_PAGES_TO_FETCH = 1;
 
 	Logger log = Logger.getLogger(LiveTwitterService.class);
 

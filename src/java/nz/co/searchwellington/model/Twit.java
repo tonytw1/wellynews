@@ -27,7 +27,7 @@ public class Twit {
 		this.text = status.getText();
 		this.author = status.getUser().getScreenName();
 		this.profileImage = status.getUser().getProfile().getImageUrl();
-		
+				
 		DateTimeFormatter parser = DateTimeFormat.forPattern("E MMM dd HH:mm:ss Z YYYY");
 		DateTime time = parser.parseDateTime(status.getCreatedAt());
 		this.date = time.toDate();

@@ -3,10 +3,9 @@ package nz.co.searchwellington.jobs;
 import java.util.List;
 
 import net.unto.twitter.TwitterProtos.Status;
-import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitterMention;
-import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
@@ -19,62 +18,66 @@ public class TwitterListenerJob {
 
     Logger log = Logger.getLogger(TwitterListenerJob.class);
     
-    private TwitterService twitterService;		// TODO depreciated
+    private TwitterService twitterService;
     private TwitterNewsitemBuilderService newsitemBuilder;
     private ResourceRepository resourceDAO;
-    private LinkCheckerQueue linkCheckerQueue;
     private ConfigRepository configDAO;
     
-  
-   
+    
     public TwitterListenerJob() {
     }
 
-    public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, ResourceRepository resourceDAO, LinkCheckerQueue linkCheckerQueue, ConfigRepository configDAO) {
-        this.twitterService = twitterService;	// This injection no longer needed.
+    public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, 
+    		ResourceRepository resourceDAO, ConfigRepository configDAO) {
+        this.twitterService = twitterService;
         this.newsitemBuilder = newsitemBuilder;
         this.resourceDAO = resourceDAO;
-        this.linkCheckerQueue = linkCheckerQueue;
         this.configDAO= configDAO;
     }
 
     
-    // TODO suppressions? - use feed acceptance deciders?
     @Transactional
     public void run() {
-
         if (!configDAO.isTwitterListenerEnabled()) {
         	log.info("Twitter listener is not enabled");
         	return;
         }
-
+        
         log.info("Running Twitter listener");
         if (twitterService.isConfigured()) {
-
-        	List<Status> replies = twitterService.getReplies();
-			if (replies != null) {
-				log.info("Found " + replies.size() + " replies.");
-
-				// TODO wire into config switch
-				//List<TwitteredNewsitem> possibleSubmissions = newsitemBuilder.getPossibleSubmissions();
-				//acceptSubmissions(possibleSubmissions);
-				
-				log.info("Looking or RTs");
-				findReTwits();
-				
-			} else {
-				log.warn("Call for Twitter replies returned null.");
-			}
-			log.info("Twitter listener completed.");
+        	refreshTweets();
+        	fetchMentions();			
+		} else {
+			log.warn("Twitter service is not configured; not running");
 		}
+        log.info("Twitter listener completed.");
     }
 
     
-	private void findReTwits() {
+    // TODO this should be on an admin controller.
+	private void refreshTweets() {
+		List<Twit> allLocalTwits = resourceDAO.getAllTweets();
+		for (Twit twit : allLocalTwits) {
+			if (twit.getDate() == null) {
+				Status status = twitterService.getTwitById(twit.getTwitterid());
+				if (status != null) {
+					twit.setDate(new Twit(status).getDate());
+					resourceDAO.saveTwit(twit);
+					log.info("Tweet date for '" + twit.getText() + "' updated to: " + twit.getDate());
+				
+				} else {
+					log.warn("Could not load tweet #" + twit.getTwitterid().toString() + " from api");
+				}
+			}
+		}
+	}
+
+	
+	private void fetchMentions() {
 		List<TwitterMention> newsitemMentions = newsitemBuilder.getNewsitemMentions();
 		for (TwitterMention reTwit : newsitemMentions) {
 			Newsitem newsitem = reTwit.getNewsitem();			
-			boolean isMentionRT = true; // TODO ignore submissions
+			boolean isMentionRT = true;
 			if (isMentionRT && !newsitem.getReTwits().contains(reTwit.getTwit())) {				
 				log.info("Adding new RT to newsitem: " + reTwit.getTwit().getText());
 				newsitem.addReTwit(reTwit.getTwit());
@@ -82,33 +85,5 @@ public class TwitterListenerJob {
 			}
 		}
 	}
-
-	
-	
-	private void acceptSubmissions(List<TwitteredNewsitem> possibleSubmissions) {
-		for (TwitteredNewsitem newsitem : possibleSubmissions) {					
-			log.info("Twitted newsitem has title " + newsitem.getName());
-			log.info("Twittered newsitem has url: " + newsitem.getUrl());
-
-			if (!resourceDAO.isResourceWithUrl(newsitem.getUrl())) {
-				log.info("Saving new newsitem: " + newsitem.getName());
-				resourceDAO.saveResource(newsitem);
-				linkCheckerQueue.add(newsitem.getId());
-
-				// TODO record datetime that we last recieved a twitter.
-				// TODO need to compare / logout the datetime on the twitter vs system time.
-			} else {
-				log.info("Existing resource on this url; not accepting.");
-			}
-			
-		}
-	}
-
-    
-    
-    
-  }
-
-
-
-
+  
+}

@@ -167,7 +167,6 @@
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="linkCheckerQueue" />
 		<constructor-arg ref="configDAO" />
 </bean>
 

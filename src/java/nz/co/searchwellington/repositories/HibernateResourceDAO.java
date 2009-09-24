@@ -74,8 +74,14 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         setCacheable(true).
         list();    
     }
-    
-    
+	
+	
+	@SuppressWarnings("unchecked")
+	public List<Twit> getAllTweets() {
+		return sessionFactory.getCurrentSession().createCriteria(Twit.class).list();
+	}
+
+
 	@SuppressWarnings("unchecked")
     final public List<Feed> getAllFeedsByName() {
     	  return sessionFactory.getCurrentSession().createCriteria(Feed.class).      
@@ -526,6 +532,19 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     	return taggedResources.list();
 	}
 
+
+	@Override
+	public Newsitem loadNewsitemBySubmittingTwitterId(int twitterId) {		
+		Criteria criteria = sessionFactory.getCurrentSession().
+			createCriteria(Newsitem.class).
+			createAlias("submittingTwit", "st").
+			add(Restrictions.eq("st.twitterId", twitterId));		
+		return (Newsitem) criteria.uniqueResult();
+	}
+
+    
+    
+    
     
 	
 	

@@ -142,5 +142,7 @@ public interface ResourceRepository {
 	public void saveTwit(Twit twit);
 	public Twit loadTwitByTwitterId(Long id);
     public List<Resource> getTwitterMentionedNewsitems();
+	public List<Twit> getAllTweets();
+	public Newsitem loadNewsitemBySubmittingTwitterId(int twitterId);
     
 }
