@@ -28,7 +28,7 @@ public class LiveTwitterService implements TwitterService {
         Api api = new Api.Builder().username(username).password(password).build();
         List<Status> all = new ArrayList<Status>();
         
-		for (int i = 1; i < REPLY_PAGES_TO_FETCH; i++) {
+		for (int i = 1; i <= REPLY_PAGES_TO_FETCH; i++) {
 			RepliesRequest repliesRequest = api.replies().page(i).build();
 			repliesRequest.get();
 			all.addAll(repliesRequest.get());
