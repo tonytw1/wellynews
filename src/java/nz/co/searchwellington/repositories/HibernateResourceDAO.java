@@ -534,11 +534,11 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
 	@Override
-	public Newsitem loadNewsitemBySubmittingTwitterId(int twitterId) {		
+	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId) {		
 		Criteria criteria = sessionFactory.getCurrentSession().
 			createCriteria(Newsitem.class).
 			createAlias("submittingTwit", "st").
-			add(Restrictions.eq("st.twitterId", twitterId));		
+			add(Restrictions.eq("st.twitterid", twitterId));		
 		return (Newsitem) criteria.uniqueResult();
 	}
 

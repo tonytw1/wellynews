@@ -143,6 +143,6 @@ public interface ResourceRepository {
 	public Twit loadTwitByTwitterId(Long id);
     public List<Resource> getTwitterMentionedNewsitems();
 	public List<Twit> getAllTweets();
-	public Newsitem loadNewsitemBySubmittingTwitterId(int twitterId);
+	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
     
 }
