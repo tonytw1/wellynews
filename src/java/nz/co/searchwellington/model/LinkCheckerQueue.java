@@ -11,7 +11,6 @@ public class LinkCheckerQueue {
     
     Logger log = Logger.getLogger(LinkCheckerQueue.class);
     
-    
     private ConcurrentLinkedQueue<Integer> queue;
        
     public LinkCheckerQueue() {
@@ -23,6 +22,7 @@ public class LinkCheckerQueue {
     }
 
     public Integer getNext() {
+    	log.debug("Getting next from queue currently contains " + queue.size() + " items.");
         if (queue.size() > 0) {
             int nextId = queue.poll();
             return nextId;
@@ -32,12 +32,13 @@ public class LinkCheckerQueue {
     }
     
     public List<Integer> getContents() {
+    	log.debug("Getting queue contents; currently contains " + queue.size() + " items.");
     	List<Integer> contents = new ArrayList<Integer>();
     	Iterator<Integer> contentIds = queue.iterator();
     	while(contentIds.hasNext()) {
     		contents.add(contentIds.next());
-    	}    	
-    	return contents;    	
+    	}
+    	return contents;
     }
 
     public void add(int id) {
@@ -49,5 +50,5 @@ public class LinkCheckerQueue {
            log.warn("Queue already contains id: " + id);
         }
     }
-   
+    
 }

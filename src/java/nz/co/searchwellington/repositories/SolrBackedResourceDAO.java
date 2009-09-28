@@ -222,7 +222,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 			if (response != null) {
 				FacetField facetField = response.getFacetField("publisher");
 				if (facetField != null && facetField.getValues() != null) {
-					log.info("Found facet field: " + facetField);
+					log.debug("Found facet field: " + facetField);
 					List<Count> values = facetField.getValues();			
 					for (Count count : values) {
 						final int relatedPublisherId = Integer.parseInt(count.getName());
@@ -365,7 +365,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 			QueryResponse response = solr.query(query);
 			FacetField facetField = response.getFacetField("tags");
 			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);
+				log.debug("Found facet field: " + facetField);
 				List<Count> values = facetField.getValues();
 				for (Count count : values) {
 					final int tagId = Integer.parseInt(count.getName());
@@ -401,7 +401,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 			QueryResponse response = solr.query(query);
 			FacetField facetField = response.getFacetField("tags");
 			if (facetField != null && facetField.getValues() != null) {
-				log.info("Found facet field: " + facetField);
+				log.debug("Found facet field: " + facetField);
 				List<Count> values = facetField.getValues();
 				for (Count count : values) {
 					final int tagId = Integer.parseInt(count.getName());
@@ -426,10 +426,10 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 				if (response.getHighlighting() != null) {
 					Map<String, List<String>> map = response.getHighlighting().get(resourceId.toString());
 					if (resource.getType().equals("N") && !map.isEmpty()) {
-						log.info("Highlighting: " + map);
+						log.debug("Highlighting: " + map);
 						results.add(new SolrHighlightingNewsitemDecorator((Newsitem) resource, map));
 					} else if (resource.getType().equals("W") && !map.isEmpty()) {
-						log.info("Highlighting: " + map);
+						log.debug("Highlighting: " + map);
 						results.add(new SolrHighlightingWebsiteDecorator((Website) resource, map));
 					} else {
 						results.add(resource);

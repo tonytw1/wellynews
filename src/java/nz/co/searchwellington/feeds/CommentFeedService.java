@@ -75,13 +75,16 @@ public class CommentFeedService {
 
 
 	private String stripAndTrimContent(String contentValue) {
-		String body = UrlFilters.stripHtml(StringEscapeUtils.unescapeHtml(contentValue));                
-		int clip = body.length();
-		if (body.length() > 255) {
-		    clip = 255;
-		}                
-		String finalValue = body.substring(0, clip-1);
-		return finalValue;
+		String body = UrlFilters.stripHtml(StringEscapeUtils.unescapeHtml(contentValue));
+		if (!body.isEmpty()) {
+			int clip = body.length();
+			if (body.length() > 255) {
+				clip = 255;
+			}                
+			String finalValue = body.substring(0, clip-1);
+			return finalValue;
+		}
+		return body;
 	}
     
 }

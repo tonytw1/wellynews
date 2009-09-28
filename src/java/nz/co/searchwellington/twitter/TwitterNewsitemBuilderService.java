@@ -222,10 +222,9 @@ public class TwitterNewsitemBuilderService {
     }
     
     
-	private boolean isValidMessage(String message) {
-		return message.startsWith("@wellynews ");
+	private boolean isValidMessage(String message) {		
+		return message.startsWith("@" + twitterService.getUsername() + " ");
 	}
-
 
 
 	public String extractUrlFromMessage(String message) {

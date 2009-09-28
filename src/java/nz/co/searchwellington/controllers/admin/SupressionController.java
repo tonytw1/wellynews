@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.UrlStack;
-import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.SupressionImpl;
 import nz.co.searchwellington.repositories.SuggestionDAO;
@@ -19,7 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class SupressionController extends MultiActionController {
 
-    Logger log = Logger.getLogger(LinkCheckerQueue.class);
+    Logger log = Logger.getLogger(SupressionController.class);
 
     private SupressionRepository supressionDAO;  
     private UrlStack urlStack;

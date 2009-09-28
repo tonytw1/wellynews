@@ -19,7 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class LinkCheckerController extends BaseMultiActionController {
 
-    Logger log = Logger.getLogger(LinkCheckerQueue.class);
+    Logger log = Logger.getLogger(LinkCheckerController.class);
     
     private LinkCheckerQueue queue;
     private AdminRequestFilter requestFilter;
@@ -54,8 +54,9 @@ public class LinkCheckerController extends BaseMultiActionController {
             Resource resource = (Resource) request.getAttribute("resource");
             log.info("Adding resource to queue: " + resource.getUrl() + "(" + resource.getId() + ")");
             queue.add(resource.getId()); 
+        } else {
+        	log.warn("No resource found on request; not adding to queue");
         }
-        log.warn("No resource found on request; not adding to queue");
         return mv;
     }
     
