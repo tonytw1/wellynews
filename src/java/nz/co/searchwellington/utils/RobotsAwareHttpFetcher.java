@@ -1,19 +1,25 @@
 package nz.co.searchwellington.utils;
 
+
 public class RobotsAwareHttpFetcher implements HttpFetcher {
 	
 	private RobotExclusionService robotExclusionService;
 	private StandardHttpFetcher httpFetcher;
+	private String[] exceptions;
 		
-	public RobotsAwareHttpFetcher(RobotExclusionService robotExclusionService, StandardHttpFetcher httpFetcher) {		
+	public RobotsAwareHttpFetcher(RobotExclusionService robotExclusionService, StandardHttpFetcher httpFetcher, String... exceptions) {
 		this.robotExclusionService = robotExclusionService;
 		this.httpFetcher = httpFetcher;
+		this.exceptions = exceptions;
 	}
 
-	public HttpFetchResult httpFetch(String url) {	
-		boolean overrideRobotDotTxt = url.startsWith("http://www.allsaints.org.nz/") ||
-			url.startsWith("http://www.visitzealandia.com/") ||
-			url.startsWith("http://www.wellingtonphoenix.com/");
+	public HttpFetchResult httpFetch(String url) {		
+		boolean overrideRobotDotTxt = false;
+		for (String exception : exceptions) {
+			if (url.startsWith(exception)) {
+				overrideRobotDotTxt = true;
+			}
+		}
 		
 		if (overrideRobotDotTxt || robotExclusionService.isUrlCrawlable(url, httpFetcher.getUserAgent())) {
 			return httpFetcher.httpFetch(url);

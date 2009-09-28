@@ -348,6 +348,13 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="httpFetcher" class="nz.co.searchwellington.utils.RobotsAwareHttpFetcher">
 		<constructor-arg ref="robotExclusionService" />
 		<constructor-arg ref="standardHttpFetcher" />
+		<constructor-arg>
+			<list>
+				<value>http://www.allsaints.org.nz/</value>
+				<value>http://www.visitzealandia.com/</value>
+				<value>http://www.wellingtonphoenix.com/</value>
+			</list>
+		</constructor-arg>
 	</bean>	
 		
 	<import resource="calendarfeeds.xml" />

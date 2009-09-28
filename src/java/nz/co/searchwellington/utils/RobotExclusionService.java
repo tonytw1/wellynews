@@ -1,11 +1,10 @@
 package nz.co.searchwellington.utils;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
-
 import net.sourceforge.jrobotx.RobotExclusion;
+
+import org.apache.log4j.Logger;
 
 public class RobotExclusionService {
 
@@ -18,8 +17,8 @@ public class RobotExclusionService {
 			boolean isCrawlable = jrobotx.allows(new URL(url), userAgent);
 			log.info(url + "' is crawlable: " + isCrawlable);
 			return isCrawlable;
-		} catch (MalformedURLException e) {
-			log.warn(url + " caused a MalformedUrlException");
+		} catch (Exception e) {
+			log.warn(url + " caused an exception: " + e);
 			return false;
 		}
 	}
