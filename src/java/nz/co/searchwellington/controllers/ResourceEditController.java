@@ -27,7 +27,6 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
@@ -39,7 +38,6 @@ import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
-import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
@@ -298,7 +296,6 @@ public class ResourceEditController extends BaseTagEditingController {
     
     @Transactional
     public ModelAndView submitNewsitem(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         ModelAndView modelAndView = new ModelAndView("submitNewsitem");
         modelAndView.addObject("heading", "Submitting a Newsitem");
         Resource editResource = resourceDAO.createNewNewsitem();
@@ -542,48 +539,43 @@ private void removePublisherFromPublishersContent(Resource editResource) {
        
         return modelAndView;
     }
-
-
-
-private void removeSuggestion(Resource editResource) {
-	if (suggestionDAO.isSuggested(editResource.getUrl())) {            		
-		suggestionDAO.removeSuggestion(editResource.getUrl());
-	}
-}
-
-
-
-
-
-
-private void saveResource(HttpServletRequest request, User loggedInUser,
-		Resource editResource, boolean newSubmission,
-		boolean resourceUrlHasChanged) {
+   
+   
+   	
+	private void saveResource(HttpServletRequest request, User loggedInUser,
+			Resource editResource, boolean newSubmission,
+			boolean resourceUrlHasChanged) {
+		
+		resourceDAO.saveResource(editResource);
+		removeSuggestion(editResource);
+		
+		if (resourceUrlHasChanged) {
+		    linkCheckerQueue.add(editResource.getId());
+		    editResource.setHttpStatus(0);
+		    log.info("Resource url has changed; adding to link queue: " + editResource.getId());	    
+		} else {
+		    log.info("Resource url has not changed; not adding to link check queue.");
+		}
+		
+		final boolean newPublicSubmission = loggedInUser == null && newSubmission;
+		if (newPublicSubmission) {
+		    // Record the user's right to reedit this resource.
+		    request.getSession().setAttribute("owned", new Integer(editResource.getId()));
+		    log.info("Owned put onto session.");
 	
-	if (resourceUrlHasChanged) {
-	    linkCheckerQueue.add(editResource.getId());
-	    editResource.setHttpStatus(0);
-	    log.info("Resource url has changed; will link check.");
-	    
-	} else {
-	    log.info("Resource url has not changed; not adding to link check queue.");
+		    // Send a notification of a public submission.
+		    notifier.sendSubmissionNotification("tony@ditonics.com", "New submission", editResource);                                        
+		}	
 	}
-	
-	resourceDAO.saveResource(editResource);
-	removeSuggestion(editResource);
-	
-	final boolean newPublicSubmission = loggedInUser == null && newSubmission;
-	if (newPublicSubmission) {
-	    // Record the user's right to reedit this resource.
-	    request.getSession().setAttribute("owned", new Integer(editResource.getId()));
-	    log.info("Owned put onto session.");
 
-	    // Send a notification of a public submission.
-	    notifier.sendSubmissionNotification("tony@ditonics.com", "New submission", editResource);                                        
+
+	private void removeSuggestion(Resource editResource) {
+		if (suggestionDAO.isSuggested(editResource.getUrl())) {            		
+			suggestionDAO.removeSuggestion(editResource.getUrl());
+		}
 	}
-}
 
-
+	
 
     private void processDate(HttpServletRequest request, Resource editResource) {
         editResource.setDate((Date) request.getAttribute("date"));
