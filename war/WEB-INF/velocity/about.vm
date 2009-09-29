@@ -106,7 +106,140 @@ Pigeons consume the berries in large quantities. The Nikau berry is
 extremely hard and was sometimes used as shotgun ammunition by early 
 settlers. 
 </p>
+
+
+<h2>Software</h2>
+
+<p>This site uses a custom system to arregate and index local content. Here is
+an overview of the system's features</p>
+
+<h5>Listings</h5>
+
+<p>The directory accepts four main categories of listing; websites, news items, feeds and watch list items.</p>
+
+<p>A website represents a local organization's website. A news item is a link to a post or media release on a local site. 
+A feed represents an RSS or ATOM feed. A watch list item represents a page which is know to content news items
+which should be watched for updates (see news watch list below).</p>
+
+<p>News items,  feeds and watchlist items can be assigned to their source website.
+A website with has published other listings is referred to as a publisher.</p>
+
+
+<h5>Tagging</h5>
+
+<p>All listings can be tagged with Flickr style tags; these tags can be nested to form a  navigation tree.</p>
+
+
+<h5>Types of pages</h5>
+
+<p>Listings are displayed on several different types of page.</p>
+
+
+<p><b>Tag pages</b><br/ >
+Displays news items and websites with tagged with the given tag.</p>
+
+<p>
+ie. the <a href="/transport">transport tag page</a>.</p>
+<p>
+Tag pages also pull in all news items tagged with tags which are children of this tag
+and news items from a publisher which is tagged with this tag.<p>
+
+<p><b>Publisher pages</b><br />
+Displays all news items from a given publisher.
+</p>
+
+<p><b>Combinations</b><br />
+Returns newsitems tagged with a combination of two tags, or a publisher and a tag.
+<p>
+ie. all news items tagged with <a href="/transport+consultation">transport and consultation</a> and all news items 
+<a href="/wellington-city-council+indoorsportscentre">Wellington City Council media releases tagged with indoor sports centre</a>.</p>
+
+
+
+<h5>Automatically reading news items from feeds</h5>
+
+<p>Submitted feeds are checked periodically for new news items by the feed reader.</p>
+
+<p>Some feeds might be known to always contain good, relevant content; such as the local council's press release. Other feeds might contain mainly
+internal interest only content which would not be of wider interest; ie. the universities' staff notices.</p>
+
+<p>To control this decisions,  each feed has a feed acceptance policy which controls what todo with news items discovered in that feed.</p>
+
+<p><b>Accept</b><br/>
+Accept all news items from the feed and publish them immediately, if they
+are dated within the last week.
+</p>
+
+<p><b>Accept even without dates</b><br/>
+Accept and publish, even if no publication date is given.</p>
+
+<p><b>Ignore</b><br/>
+Do nothing.</p>
+
+<p><b>Suggest</b><br/>
+No not publish, but make a note of new items so that an editor may review them.
+Suggestions appear in the feeds inbox where they await processing (see below).
+</p>
+
+
+
+<h5>Supressing feed news items</h5>
+
+<p>News items in feeds may be supressed by url; suppressing prevents a feed newsitem
+from been automatically expected in the future. Supressions can be used to prevent a
+deleted news item been reimported by the feed reader.</p>
+
+
+<h5>Feed autotagging</h5>
+<p>
+News items accepted from a feed are automatically tagged with the feed's tags, and any matching place names.
+</p>
+
+
+<h5>Feeds Inbox</h5>
+
+<p>The <a href="/feeds/inbox">feed inbox</a> screen lists suspected news items which the feed reader has discovered in feeds
+with an acceptance policy set to suggest.  Items in the inbox may be accepted or suppressed by an editor.</p>
+
+
+<h5>The News Watchlist</h5>
+
+<p>Many organizations who provide news items, do not provide feeds. The <a href="/watchlist">watchlist</a> attempts to monitor 
+pages on these sites (say the news archive page) for changes, which could indicate new content.
+The pages to be checked are entered into the system by an editor as watch list items.</p>
+
+<p>The watchlist is exported as an RSS feed so that an editor can monitor it. All of the changed pages
+may be opened at once using Firefox's 'open all in tabs' option.</p>
+
+
+
+<h5>RSS feeds</h5>
+
+<p>It's important that the local content you've aggregated and sorted is available for reuse by other community members.
+To this end most pages are available as a RSS feed. Other local sites can take these feeds and display them on their sites without
+having to undertake a complicated integration.</p>
+
+<p>All of the main page types are available as an RSS or JSON feed.
+The complete  range of available feeds is documented in the <a href="/api">API instructions</a>.</p>
+
+
+
+
+<h5>Technical</h5>
+
+<p>The system is implemented as an a Java / Spring application. Mysql And Solr provide the indexing functionality.</p>
+
+
+
 </div>
+
+
+
+
+
+
+
+
 
 
 
