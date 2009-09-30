@@ -19,8 +19,19 @@
  		<constructor-arg ref="sessionFactory" />
  		<constructor-arg ref="solrQueryService" />
  		<constructor-arg ref="urlBuilder" />
+ 		<constructor-arg ref="tagDAO" />
+ 		<constructor-arg ref="tweetDAO" />
  		<property name="solrUrl" value="${solr.url}" />
 	</bean>
+	
+	<bean id="tagDAO" class="nz.co.searchwellington.repositories.TagDAO">
+ 		<constructor-arg ref="sessionFactory" /> 		
+	</bean>
+	
+	<bean id="tweetDAO" class="nz.co.searchwellington.repositories.TweetDAO">
+ 		<constructor-arg ref="sessionFactory" />
+	</bean>
+		
 		
 	<bean id="relatedTagsService" class="nz.co.searchwellington.controllers.RelatedTagsService">
 		<constructor-arg ref="resourceDAO" />

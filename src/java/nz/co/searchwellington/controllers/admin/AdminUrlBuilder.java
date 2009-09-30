@@ -39,15 +39,16 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/edit/accept?url=" + URLEncoder.encode(suggestion.getUrl(), "UTF-8");		
 	}
 	
-	// TODO merge with below
 	public String getFeedNewsitemSuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
-	}
-	
+		return makeSuppressionUrl(makeSuppressionUrl(feednewsitem.getUrl()));
+	}	
 	public String getSuggestionSuppressUrl(SuggestionFeednewsitem suggestion) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(suggestion.getSuggestion().getUrl(), "UTF-8");
+		return makeSuppressionUrl(suggestion.getSuggestion().getUrl());		
 	}
-	
+		
+	private String makeSuppressionUrl(String url) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(url, "UTF-8");
+	}
 	
 	public String getFeedNewsitemUnsuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/supress/unsupress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");

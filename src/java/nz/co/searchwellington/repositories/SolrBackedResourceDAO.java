@@ -45,8 +45,8 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
     private SolrQueryService solrQueryService;
     private String solrUrl;
 	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService) {
-		super(sessionFactory);
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService, TagDAO tagDAO, TweetDAO tweetDAO) {
+		super(sessionFactory, tagDAO, tweetDAO);
 		this.solrQueryService = solrQueryService;
 	}
 
@@ -91,7 +91,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
     	return getQueryCount(query);
 	}
 	
-	
+
 	public int getCommentedNewsitemsCount(boolean showBroken) {
 		log.info("Getting commented newsitem count");
 		SolrQuery query = getCommentedNewsitemsQuery(showBroken);

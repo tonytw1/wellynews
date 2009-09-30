@@ -77,12 +77,12 @@ public class TwitterNewsitemBuilderService {
 				long inReplyTo = status.getInReplyToStatusId();
 				log.info("Twit '" + status.getText() + "' is in reply to twit #: " + inReplyTo);
 				
-				Twit referencedTwit = resourceDAO.loadTwitByTwitterId(inReplyTo);
+				Twit referencedTwit = resourceDAO.loadTweetByTwitterId(inReplyTo);
 				if (referencedTwit == null) {
 					Status referencedStatus = twitterService.getTwitById(inReplyTo);
 					if (status != null) {
 						referencedTwit = new Twit(referencedStatus);
-						resourceDAO.saveTwit(referencedTwit);						
+						resourceDAO.saveTweet(referencedTwit);						
 					}
 				}
 				
@@ -154,10 +154,10 @@ public class TwitterNewsitemBuilderService {
 
 
 	private Twit loadOrCreateTwit(Status status) {
-		Twit twit = resourceDAO.loadTwitByTwitterId(status.getId());
+		Twit twit = resourceDAO.loadTweetByTwitterId(status.getId());
 		if (twit == null) {
 			twit = new Twit(status);
-			resourceDAO.saveTwit(twit);
+			resourceDAO.saveTweet(twit);
 		}
 		return twit;
 	}
@@ -201,7 +201,7 @@ public class TwitterNewsitemBuilderService {
 		            return null;
 		        }
 			}
-			log.info("Not a valid submitted newsitem message: " + twit.getText());
+			log.debug("Not a valid submitted newsitem message: " + twit.getText());
 			return null;
 		}
 	

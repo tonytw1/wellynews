@@ -62,7 +62,7 @@ public class TwitterListenerJob {
 				Status status = twitterService.getTwitById(twit.getTwitterid());
 				if (status != null) {
 					twit.setDate(new Twit(status).getDate());
-					resourceDAO.saveTwit(twit);
+					resourceDAO.saveTweet(twit);
 					log.info("Tweet date for '" + twit.getText() + "' updated to: " + twit.getDate());
 				
 				} else {

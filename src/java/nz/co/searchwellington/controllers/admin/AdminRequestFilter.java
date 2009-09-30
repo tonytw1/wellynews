@@ -81,7 +81,8 @@ public class AdminRequestFilter {
         if (request.getParameter("publisherName") != null && !request.getParameter("publisherName").equals("")) {
             final String publisherName = request.getParameter("publisherName");
             Resource publisher = resourceDAO.getPublisherByName(publisherName);
-            if (publisher != null) {            
+            if (publisher != null) {
+            	log.info("Found publisher: " + publisher.getName());
                 request.setAttribute("publisher", publisher);
             }
         }
@@ -97,31 +98,34 @@ public class AdminRequestFilter {
 				int tagID = Integer.parseInt(tagIdString);
 				if (tagID > 0) {          
 					Tag tag = resourceDAO.loadTagById(tagID);
-					tags.add(tag);
-				} // TODO catch
+					if (tag != null) {
+						tags.add(tag);
+					} else {
+						log.warn("Could not find tag with id: " + tagID);
+					}
+				} 
 			}           
 			request.setAttribute("tags", tags);
 		}
 		
-		log.info("Looking for resource parameter");
 		if (request.getParameter("resource") != null) {
 			String resourceParametere = request.getParameter("resource");			
 			try {
         		final int resourceId = Integer.parseInt(resourceParametere);
         		if (resourceId > 0) {
         			Resource resource = resourceDAO.loadResourceById(resourceId);
-        			if (resource != null) {        				
+        			if (resource != null) {
+        				log.info("Found resource: " + resource.getName());
         				request.setAttribute("resource", resource);
         				return;
         			}
         		}
         	} catch (NumberFormatException e) {
-        		log.debug("Invalid resource id given: " + resourceParametere);
+        		log.warn("Invalid resource id given: " + resourceParametere);
         	}
 		}
 		
 		
-		log.info("Looking for feed parameter");
 		if (request.getParameter("feed") != null) {
 			String feedParameter = request.getParameter("feed");			
 			try {
@@ -129,8 +133,8 @@ public class AdminRequestFilter {
         		if (feedID > 0) {
         			Resource feed = resourceDAO.loadResourceById(feedID);
         			if (feed != null) {                	
-        				request.setAttribute("feedAttribute", feed);
-        				return;
+        				log.info("Found feed: " + feed.getName());
+        				request.setAttribute("feedAttribute", feed);        			
         			}
         		}
         	} catch (NumberFormatException e) {
@@ -138,11 +142,11 @@ public class AdminRequestFilter {
         	}
 		}
 		
-        log.info("Looking for parent tag");
         if (request.getParameter("parent") != null) {
             String tagName = request.getParameter("parent");
             Tag tag = resourceDAO.loadTagByName(tagName);
             if (tag != null) {
+            	log.info("Found parent tag: " + tag.getName());
             	request.setAttribute("parent_tag", tag);
             }
         }

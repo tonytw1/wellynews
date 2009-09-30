@@ -139,10 +139,11 @@ public interface ResourceRepository {
 	public List<Resource> getNewsitemsMatchingStem(String stem);
 	public List<Resource> getBrokenSites();
 	
-	public void saveTwit(Twit twit);
-	public Twit loadTwitByTwitterId(Long id);
+	public void saveTweet(Twit twit);
+	public Twit loadTweetByTwitterId(Long id);
     public List<Resource> getTwitterMentionedNewsitems();
 	public List<Twit> getAllTweets();
 	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
+	public int getCommentCount();
     
 }

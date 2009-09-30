@@ -31,13 +31,17 @@ import org.joda.time.DateTime;
 public abstract class HibernateResourceDAO extends AbsractResourceDAO implements ResourceRepository {
 
     SessionFactory sessionFactory;
+    private TagDAO tagDAO;
+    private TweetDAO tweetDAO;
     
     public HibernateResourceDAO() {
     }
     
     
-    public HibernateResourceDAO(SessionFactory sessionFactory) {     
+    public HibernateResourceDAO(SessionFactory sessionFactory, TagDAO tagDAO, TweetDAO twitterDAO) {     
         this.sessionFactory = sessionFactory;
+        this.tagDAO = tagDAO;
+        this.tweetDAO = twitterDAO;
     }
     
     
@@ -76,10 +80,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 	
 	
-	@SuppressWarnings("unchecked")
-	public List<Twit> getAllTweets() {
-		return sessionFactory.getCurrentSession().createCriteria(Twit.class).list();
-	}
+	
 
 
 	@SuppressWarnings("unchecked")
@@ -244,27 +245,25 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).list();   
     }
 
-    @SuppressWarnings("unchecked")
+
     public List<Tag> getAllTags() {        
-        return sessionFactory.getCurrentSession().createCriteria(Tag.class).
-        addOrder(Order.asc("displayName")).
-        setCacheable(true).
-        list();        
+        return tagDAO.getAllTags();      
     }
     
    
-    // TODO can hiberate do a batch load?
     public List<Tag> loadTagsById(List<Integer> tagIds) {
-		List<Tag> tags = new ArrayList<Tag>();
-		for (Integer tagId : tagIds) {
-			Tag tag = this.loadTagById(tagId);
-			if (tag != null) {
-				tags.add(tag);
-			}
-		}
-		return tags;		
+		return tagDAO.loadTagsById(tagIds);		
 	}
 
+    public void saveTag(Tag editTag) {
+        tagDAO.saveTag(editTag);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Tag> getTopLevelTags() {
+    	return tagDAO.getTopLevelTags();
+    }
+    
    
     @SuppressWarnings("unchecked")
     public List<Resource> getTwitterMentionedNewsitems() {
@@ -277,14 +276,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     
-    @SuppressWarnings("unchecked")
-    public List<Tag> getTopLevelTags() {
-        return sessionFactory.getCurrentSession().createCriteria(Tag.class).
-        add(Restrictions.isNull("parent")).
-        addOrder(Order.asc("name")).
-        setCacheable(true).
-        list();
-    }
 
 
     
@@ -298,16 +289,12 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 
 
-    @SuppressWarnings("deprecation")
 	public int getCommentCount() {
-        // TODO implement show broken logic.
+        // TODO implement show broken logic if the parent newsitem is broken
         return ((Long) sessionFactory.getCurrentSession().
-                iterate("select count(*) from Comment").
-                next()).intValue();
+        		iterate("select count(*) from Comment").
+        		next()).intValue();
     }
-    
-
-    
     
 
     public boolean isResourceWithUrl(String url) {
@@ -361,7 +348,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     public Tag loadTagById(int tagID) {
-        return (Tag) sessionFactory.getCurrentSession().load(Tag.class, tagID);
+      return tagDAO.loadTagById(tagID);
     }
     
     
@@ -375,18 +362,16 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
-    public void saveTwit(Twit twit) {     
-        sessionFactory.getCurrentSession().saveOrUpdate(twit);
-        sessionFactory.getCurrentSession().flush();        
+    public List<Twit> getAllTweets() {
+		return tweetDAO.getAllTweets();
+	}
+    
+    public void saveTweet(Twit twit) {     
+    	tweetDAO.saveTwit(twit);
     }
-    
-    
-	public Twit loadTwitByTwitterId(Long twitterId) {
-    	 return (Twit) sessionFactory.getCurrentSession().createCriteria(Twit.class).
-         	add(Expression.eq("twitterid", twitterId)).
-         	setMaxResults(1).
-         	setCacheable(true).
-         	uniqueResult();  
+        
+	public Twit loadTweetByTwitterId(Long twitterId) {
+    	 return tweetDAO.loadTweetByTwitterId(twitterId);  
 	}
 
 	
@@ -422,13 +407,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
 
-    public void saveTag(Tag editTag) {
-        sessionFactory.getCurrentSession().saveOrUpdate(editTag);
-        sessionFactory.getCurrentSession().flush();
-        sessionFactory.evictCollection("nz.co.searchwellington.model.Tag.children");
-        // TODO solr index needs updating if a tag moves to a new parent.
-    }
-
+ 
     
     @SuppressWarnings("unchecked")
     public List<Newsitem> getLatestTwitteredNewsitems(int number, boolean showBroken) {        
