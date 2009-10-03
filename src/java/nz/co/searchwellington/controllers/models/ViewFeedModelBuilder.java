@@ -7,9 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SupressionRepository;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,14 +18,13 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
     	
 	private ResourceRepository resourceDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
-	private SupressionRepository suppressionDAO;
 	
 	 
-	public ViewFeedModelBuilder(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, SupressionRepository suppressionDAO) {
+	public ViewFeedModelBuilder(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
-		this.suppressionDAO = suppressionDAO;
 	}
+	
 
 	public boolean isValid(HttpServletRequest request) {
 		return request.getAttribute("feedAttribute") != null;	
@@ -42,8 +39,8 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 				mv.addObject("feed", feed);        
 				
 				List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
-				addSupressionAndLocalCopyInformation(feedNewsitems);
-		            
+				rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems);
+				
 		       if (feedNewsitems != null && feedNewsitems.size() > 0) {
 		    	   mv.addObject("main_content", feedNewsitems);
 		       } else {
@@ -60,19 +57,6 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 	}
 
 	
-	// TODO this needs to be shared with the tag related feed on tag pages.
-	private void addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
-		for (FeedNewsitem feedNewsitem : feedNewsitems) {
-			if (feedNewsitem.getUrl() != null) {
-				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
-				if (localCopy != null) {
-					feedNewsitem.setLocalCopy(localCopy);
-				}				
-				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
-				feedNewsitem.setSuppressed(isSuppressed);						
-			}
-		}
-	}
 	
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {

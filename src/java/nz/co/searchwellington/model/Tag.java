@@ -29,14 +29,14 @@ public class Tag implements RssFeedable {
     }
     
     
-    public Tag(int id, String name, String displayName, Tag parent, Set <Tag> children, int flickrCount) {        
+    public Tag(int id, String name, String displayName, Tag parent, Set <Tag> children, int flickrCount, boolean hidden) {  
         this.id = id;
         this.name = name;
         this.displayName = displayName;
         this.parent = parent;
         this.children = children;
+        this.hidden = hidden;
         this.relatedFeed = null;
-        this.hidden = false;
     }
     
     
@@ -152,8 +152,7 @@ public class Tag implements RssFeedable {
 	}
 
 	 public boolean isHidden() {
-		// TODO return hidden;
-		 return name.equals("wcnhosted") || name.equals("featured");
+		 return hidden;
 	}
 
 

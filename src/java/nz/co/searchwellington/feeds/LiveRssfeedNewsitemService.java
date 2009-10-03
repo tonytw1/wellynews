@@ -13,6 +13,8 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -38,7 +40,9 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 	private RssHttpFetcher rssFetcher;
     private TextTrimmer textTrimmer;
 	
-    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer) {		
+    public LiveRssfeedNewsitemService(ResourceRepository resourceDAO, SupressionRepository suppressionDAO, UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer) {
+    	this.resourceDAO = resourceDAO;
+    	this.suppressionDAO = suppressionDAO;
 		this.urlCleaner = urlCleaner;
 		this.rssFetcher = rssFetcher;
 		this.textTrimmer = textTrimmer;
@@ -123,11 +127,10 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 	}
 	
 
-
 	private String getBodyFromSyndItem(SyndEntry item, String description) {
-		// TODO; what's going on here? - why two settings?
+		// TODO; what's going on here? - why two settings? Check if this API call has updated?
 		SyndContent descriptionContent = (SyndContent) item.getDescription();
-        if (descriptionContent != null) {                	
+        if (descriptionContent != null) {
             description = UrlFilters.stripHtml(descriptionContent.getValue());
         }
         
@@ -139,18 +142,12 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 		return description;
 	}
     
-    
-  
-    
-    
-    
+	
     private void trimExcessivelyLongBodies(Resource feedItem) {
         boolean bodyIsToLong = feedItem.getDescription() != null && feedItem.getDescription().length() > MAXIMUM_BODY_LENGTH;
         if (bodyIsToLong) {
             feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
         }
     }
-    
-    
     
 }

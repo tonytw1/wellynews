@@ -5,12 +5,17 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SupressionRepository;
 
 public class CachingRssfeedNewsitemService extends RssfeedNewsitemService {
 
 	private FeedNewsitemCache feedNewsitemCache;
 
-	public CachingRssfeedNewsitemService(FeedNewsitemCache feedNewsitemCache) {	
+	
+	public CachingRssfeedNewsitemService(ResourceRepository resourceDAO, SupressionRepository suppressionDAO, FeedNewsitemCache feedNewsitemCache) {
+		this.resourceDAO = resourceDAO;
+		this.suppressionDAO = suppressionDAO;
 		this.feedNewsitemCache = feedNewsitemCache;
 	}
 

@@ -209,17 +209,19 @@ public class ResourceEditController extends BaseTagEditingController {
     // TODO needs auth by api etc.
     // TODO no feed tags or autotagging?
     // TODO don't duplicate?
-    public ModelAndView acceptFastByUrl(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {               
-        adminRequestFilter.loadAttributesOntoRequest(request);        
-        if (request.getParameter("url") != null) {
-        	Newsitem newsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
-        	log.info("Saving resource: " + newsitem.getName());
-        	
-        	saveResource(request, null, newsitem, true, true);
-        	
-        	
+    public ModelAndView acceptFastByUrl(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {    	
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        if (loggedInUser == null) {
+        	adminRequestFilter.loadAttributesOntoRequest(request);
+        	if (request.getParameter("url") != null) {
+        		Newsitem newsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
+        		log.info("Saving resource: " + newsitem.getName());        	
+        		saveResource(request, null, newsitem, true, true);        	
+        	} else {
+        		log.warn("Could not find feed news item with url: " + request.getAttribute("url"));            	
+        	}
         } else {
-            log.warn("Could not find feed news item with url: " + request.getAttribute("url"));            	
+        	log.warn("No authed user; not processing fast accept call");
         }
         
         // TODO this is an api call; should retun JSON or something.
@@ -353,16 +355,16 @@ public class ResourceEditController extends BaseTagEditingController {
    
     
     
-    // TODO permissions check
-   @Transactional
+    @Transactional
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
         adminRequestFilter.loadAttributesOntoRequest(request);    
-        Resource editResource = (Resource) request.getAttribute("resource");       
-        if (editResource != null) {
+        Resource editResource = (Resource) request.getAttribute("resource");    
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        if (editResource != null && loggedInUser != null && loggedInUser.isAdmin()) {
             modelAndView.addObject("resource", editResource);
             editResource = (Resource) request.getAttribute("resource");
             
@@ -371,29 +373,30 @@ public class ResourceEditController extends BaseTagEditingController {
             }
             resourceDAO.deleteResource(editResource);
         }
+        // TODO need to given failure messahe if we didn't actually remove the item.
         return modelAndView;
     }
 
 
 
-private void removePublisherFromPublishersContent(Resource editResource) {
-	Website publisher = (Website) editResource;
-	for (Newsitem newsitem : publisher.getNewsitems()) {
-		newsitem.setPublisher(null);
-		resourceDAO.saveResource(newsitem);					
-	}
-	for (Feed feed : publisher.getFeeds()) {
-		feed.setPublisher(null);
-		resourceDAO.saveResource(feed);					
-	}
-	for (Watchlist watchlist : publisher.getWatchlist()) {
-		watchlist.setPublisher(null);
-		resourceDAO.saveResource(watchlist);					
-	}
-}
+    private void removePublisherFromPublishersContent(Resource editResource) {
+    	Website publisher = (Website) editResource;
+    	for (Newsitem newsitem : publisher.getNewsitems()) {
+    		newsitem.setPublisher(null);
+    		resourceDAO.saveResource(newsitem);					
+    	}
+    	for (Feed feed : publisher.getFeeds()) {
+    		feed.setPublisher(null);
+    		resourceDAO.saveResource(feed);					
+    	}
+    	for (Watchlist watchlist : publisher.getWatchlist()) {
+    		watchlist.setPublisher(null);
+    		resourceDAO.saveResource(watchlist);					
+    	}
+    }
     
     
-   @Transactional
+    @Transactional
     public ModelAndView deleteAndSupress(HttpServletRequest request, HttpServletResponse response) throws IOException {   
         ModelAndView modelAndView = new ModelAndView("deletedResource");
         populateCommonLocal(modelAndView);
@@ -686,7 +689,7 @@ private void removePublisherFromPublishersContent(Resource editResource) {
         modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(null, userIsLoggedIn).toString());
         
         if (userIsLoggedIn) {
-            // TODO duplication
+            // TODO duplication - also - what does this do?
             modelAndView.addObject("show_additional_tags", 1);
         }
     }

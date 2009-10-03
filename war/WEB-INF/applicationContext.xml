@@ -7,7 +7,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
 	
-	<bean id="testFilter" class="nz.co.searchwellington.filters.TestFilter" >	
+	<bean id="requestObjectLoaderFilter" class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" >	
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />	
 	</bean>

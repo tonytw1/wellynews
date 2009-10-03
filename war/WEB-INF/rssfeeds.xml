@@ -25,13 +25,17 @@
 	</bean>
 	
 	<bean id="liveRssfeedNewsitemService" class="nz.co.searchwellington.feeds.LiveRssfeedNewsitemService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="rssHttpFetcher" />
 		<constructor-arg ref="textTrimmer" />
 	</bean>
 	
 	
-	<bean id="cachingRssfeedNewsitemService" class="nz.co.searchwellington.feeds.CachingRssfeedNewsitemService">	
+	<bean id="cachingRssfeedNewsitemService" class="nz.co.searchwellington.feeds.CachingRssfeedNewsitemService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="feedNewsitemCache" />
 	</bean>
 	

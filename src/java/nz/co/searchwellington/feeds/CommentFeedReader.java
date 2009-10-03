@@ -70,15 +70,16 @@ public class CommentFeedReader {
     	return true;        
 	}
 
-
     
     private void loadCommentsForCommentFeed(CommentFeed commentFeed) {
     	log.info("Loading comments from url: " + commentFeed.getUrl());
     	final List<Comment> loadedComments = commentFeedService.loadComments(commentFeed);
         commentFeed.getComments().clear();
         commentFeed.getComments().addAll(loadedComments);
-        commentFeed.setLastRead(Calendar.getInstance().getTime());        
-        // TODO Must update the newsitem(s) to ensure that the index is updated.
+        commentFeed.setLastRead(Calendar.getInstance().getTime());
+        if (commentFeed.getNewsitem() != null) {
+        	resourceDAO.saveResource(commentFeed.getNewsitem());
+        }        
     }
     
 }

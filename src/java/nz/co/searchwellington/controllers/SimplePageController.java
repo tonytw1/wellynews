@@ -12,12 +12,22 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
+import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.model.DiscoveredFeed;
+import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
@@ -36,10 +46,10 @@ public class SimplePageController extends BaseMultiActionController {
 	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private LoggedInUserFilter loggedInUserFilter;
-    private TwitterNewsitemBuilderService twitterNewsitemsService;
-	
-    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter, TwitterNewsitemBuilderService newsitemBuilder) {
-        this.resourceDAO = resourceDAO;        
+    
+    
+    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter) {
+        this.resourceDAO = resourceDAO;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;        
@@ -47,7 +57,6 @@ public class SimplePageController extends BaseMultiActionController {
         this.twitterService = twitterService;
         this.discoveredFeedRepository = discoveredFeedRepository;
         this.loggedInUserFilter = loggedInUserFilter;
-        this.twitterNewsitemsService = newsitemBuilder;
     }
     
        
@@ -226,27 +235,20 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        populateLocalCommon(mv);
-        
-        final String twitterUsername = siteInformation.getTwitterUsername();
-        mv.addObject("twitterUsername", twitterUsername);
+        mv.addObject("twitterUsername", siteInformation.getTwitterUsername());
         mv.addObject("heading",  "Following the " + siteInformation.getAreaname() + " newslog on Twitter");
-        populateLatestTwitters(mv, loggedInUser);
-        
+
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        populateLatestTwitters(mv, loggedInUser);        
         populateSecondaryLatestNewsitems(mv, loggedInUser);
 
-        // TODO permissions
         if(loggedInUser != null) {
-        	List<Status> replies = twitterService.getReplies();
-			mv.addObject("twitterReplies", replies);
-			
-			List<TwitteredNewsitem> potentialTwitterSubmissions = twitterNewsitemsService.getPossibleSubmissions();
-			mv.addObject("submissions", potentialTwitterSubmissions);			
+        	mv.addObject("twitterReplies", twitterService.getReplies());			
         }
         
-        mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems());        
+        mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems());
         
+        populateLocalCommon(mv);
         mv.setViewName("twitter");
         return mv;
     }
@@ -292,7 +294,7 @@ public class SimplePageController extends BaseMultiActionController {
 
 		if (geocoded.size() > 0) {
 			mv.addObject("main_content", geocoded);
-			// TODO inject
+			// TODO inject into the velocity context, as this is a view thing - didn't work list time this we tried?
 			GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();
 			mv.addObject("geocoded", cleaner.dedupe(geocoded, selected));
 			setRss(mv, "Geocoded newsitems RSS Feed", rssUrlBuilder
@@ -302,4 +304,3 @@ public class SimplePageController extends BaseMultiActionController {
 
 
 }
-    

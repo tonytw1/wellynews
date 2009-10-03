@@ -1,5 +1,7 @@
 package nz.co.searchwellington.model;
 
+import nz.co.searchwellington.model.User;
+
 
 
 
@@ -11,6 +13,9 @@ public class UserImpl implements User {
     String url;
     String name;
     String bio;
+
+    String apikey;
+    
     
     boolean admin;
     
@@ -83,7 +88,13 @@ public class UserImpl implements User {
 	public void setBio(String bio) {
 		this.bio = bio;
 	}
-	
-	
-	
+
+	public String getApikey() {
+		return apikey;
+	}
+
+	public void setApikey(String apikey) {
+		this.apikey = apikey;
+	}
+		
 }

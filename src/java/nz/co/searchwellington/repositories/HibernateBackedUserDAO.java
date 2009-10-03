@@ -8,8 +8,7 @@ import org.hibernate.criterion.Expression;
 public class HibernateBackedUserDAO implements UserRepository {
 
     private SessionFactory sessionFactory;
-
-
+    
     public HibernateBackedUserDAO(SessionFactory sessionFactory) {
         super();
         this.sessionFactory = sessionFactory;
@@ -18,11 +17,7 @@ public class HibernateBackedUserDAO implements UserRepository {
     public User getUser(String username) {
     	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("username", username)).uniqueResult();     
     }
-    
-    
-    
-    
-    
+        
     public void saveUser(User user) {     
         sessionFactory.getCurrentSession().saveOrUpdate(user);
         sessionFactory.getCurrentSession().flush();       
@@ -30,6 +25,10 @@ public class HibernateBackedUserDAO implements UserRepository {
 
 	public User getUserByProfileName(String profilename) {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("profilename", profilename)).uniqueResult();     	    
+	}
+	
+	public User getUserByApiKey(String apiKey) {
+	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("apikey", apiKey)).uniqueResult();     	    
 	}
 
 }

@@ -1,9 +1,11 @@
 package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Event;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
@@ -18,6 +21,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.tagging.TagInformationService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -36,10 +40,12 @@ public class IndexController extends BaseMultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private LoggedInUserFilter loggedInUserFilter;
 	private UrlBuilder urlBuilder;
-	private RequestFilter requestFilter;    
+	private RequestFilter requestFilter;
+	private TagInformationService tagInformationService;
+
     
     
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter, TagInformationService tagInformationService) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;       
@@ -49,6 +55,7 @@ public class IndexController extends BaseMultiActionController {
         this.loggedInUserFilter = loggedInUserFilter;
         this.urlBuilder = urlBuilder;
         this.requestFilter = requestFilter;
+        this.tagInformationService = tagInformationService;
     }
     
 
@@ -83,7 +90,8 @@ public class IndexController extends BaseMultiActionController {
         
         populateNewslogLastUpdated(mv);        
         populateFeatured(mv, loggedInUser);               
-        populateUntaggedNewsitem(mv, loggedInUser);        
+        populateUntaggedNewsitem(mv, loggedInUser);
+        //populateUntaggedPercentage(mv, loggedInUser);
         populateEvents(mv);
         
         populateLatestGeocoded(mv, loggedInUser);
@@ -172,20 +180,43 @@ public class IndexController extends BaseMultiActionController {
     }
 
 
-
-	private ArchiveLink getArchiveLinkForDate(Date dateOfLastNewsitem,
-			List<ArchiveLink> archiveMonths) {
-		ArchiveLink archiveLink = null;
+    
+    private ArchiveLink getArchiveLinkForDate(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {
 		for (ArchiveLink monthLink : archiveMonths) {
     		boolean monthMatches = monthLink.getMonth().getMonth() == dateOfLastNewsitem.getMonth() && monthLink.getMonth().getYear() == dateOfLastNewsitem.getYear();
-    		// TODO Want an early break out.
     		if (monthMatches) {
-    			archiveLink = monthLink;
+    			return monthLink;
     		}
 		}
-		return archiveLink;
+		return null;
 	}
    
+
+    @SuppressWarnings("unchecked")
+    protected void populateUntaggedNewsitem(ModelAndView mv, User loggedInUser) throws IOException {        
+    	List <Newsitem> untaggedNewsitems = resourceDAO.getRecentUntaggedNewsitems(); 
+    	if (untaggedNewsitems.size() > 0) {
+    		List<Newsitem> untaggedItems = new ArrayList<Newsitem>();
+    		for (int i = 0; i < 2; i++) {
+    			int randomIndex = new Random().nextInt(untaggedNewsitems.size());    
+    			untaggedItems.add(untaggedNewsitems.get(randomIndex));
+    			untaggedNewsitems.remove(randomIndex);                      
+    		}
+    		mv.getModel().put("tagless", untaggedItems);
+    	}	       
+    }
+
+
+
+	private void populateUntaggedPercentage(ModelAndView mv, User loggedInUser) {
+		List<Resource> recentNewsitems = resourceDAO.getLatestNewsitems(100, loggedInUser != null);
+		if (recentNewsitems.size() > 0) {        
+		    int percentageUntagged = tagInformationService.getPercentageUntagged(recentNewsitems);
+		    int percentageTagged = 100 - percentageUntagged;
+		    log.debug("Tagged = " + percentageTagged + "%");           
+		    mv.addObject("tagging_success_chart", percentageTagged);
+		}
+	}
 
     
 }

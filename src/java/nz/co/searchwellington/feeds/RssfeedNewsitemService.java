@@ -14,11 +14,17 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
+import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SupressionRepository;
 
 public abstract class RssfeedNewsitemService {
 
 	public abstract List<FeedNewsitem> getFeedNewsitems(Feed feed);
 
+	protected ResourceRepository resourceDAO;
+	protected SupressionRepository suppressionDAO;
+	
+	
 	public final Date getLatestPublicationDate(Feed feed) {
 		Date latestPublicationDate = null;
 		List<FeedNewsitem> feeditems = getFeedNewsitems(feed);
@@ -30,14 +36,15 @@ public abstract class RssfeedNewsitemService {
 		return latestPublicationDate;
 	}
 	
+	// TODO merge with addSuppressAndLocalCopyInformation?
 	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem, Feed feed) {
-		// TODO constructor calls should be in the resourceDAO?
-	    Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedNewsitem.getPublisher(), 
-	    		new HashSet<Tag>(),
-	    		new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
-	    newsitem.setImage(feedNewsitem.getImage());
-	    newsitem.setPublisher(feed.getPublisher());
-	    return newsitem;
+		// TODO why are we newing up an instance of our superclass?
+	//    Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), feedNewsitem.getDescription(), feedNewsitem.getDate(), feedNewsitem.getPublisher(), 
+	 //   		new HashSet<Tag>(),
+	  //  		new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
+	   // newsitem.setImage(feedNewsitem.getImage());		
+	    feedNewsitem.setPublisher(feed.getPublisher());
+	    return feedNewsitem;
 	}
 	
 	
@@ -51,6 +58,20 @@ public abstract class RssfeedNewsitemService {
 			}
 		}
 		return null;
+	}
+	
+	
+	public void addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+		for (FeedNewsitem feedNewsitem : feedNewsitems) {
+			if (feedNewsitem.getUrl() != null) {
+				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
+				if (localCopy != null) {
+					feedNewsitem.setLocalCopy(localCopy);
+				}				
+				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
+				feedNewsitem.setSuppressed(isSuppressed);						
+			}
+		}
 	}
 	
 }

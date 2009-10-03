@@ -8,7 +8,10 @@
 #if($tag) 
 	<p><a href="$urlBuilder.getTagGeocodedUrl($tag)">More...</a></p>
 #else
-	<p><a href="$site_information.url/geotagged">More...</a></p>
+
+<p>Relevent newsitems are now geotagged with location information.</p>
+
+<p><a href="$site_information.url/geotagged">More...</a></p>
 #end
 </div>
 #end

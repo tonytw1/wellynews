@@ -25,5 +25,7 @@ public interface User {
 	public void setName(String name);
 	public String getBio();
 	public void setBio(String bio);
+	public String getApikey();
+	public void setApikey(String apikey);
        
 }

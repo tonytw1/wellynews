@@ -39,6 +39,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected UrlStack urlStack;
     protected ConfigRepository configDAO;
     protected LoggedInUserFilter loggedInUserFilter;
+
     
     final protected void setRss(ModelAndView mv, String url) {
         mv.addObject("rss_url", url);
@@ -90,35 +91,8 @@ public abstract class BaseMultiActionController extends MultiActionController {
     }
 
     
-    @SuppressWarnings("unchecked")
-    protected void populateUntaggedNewsitem(ModelAndView mv, User loggedInUser) throws IOException {        
-        List <Newsitem> untaggedNewsitems = resourceDAO.getRecentUntaggedNewsitems(); 
-        if (untaggedNewsitems.size() > 0) {
-            List<Newsitem> untaggedItems = new ArrayList<Newsitem>();
-            for (int i = 0; i < 2; i++) {
-                int randomIndex = new Random().nextInt(untaggedNewsitems.size());    
-                untaggedItems.add(untaggedNewsitems.get(randomIndex));
-                untaggedNewsitems.remove(randomIndex);                      
-            }
-            mv.getModel().put("tagless", untaggedItems);
-        }
-        
-        // TODO seperate method
-        List<Resource> recentNewsitems = resourceDAO.getLatestNewsitems(100, loggedInUser != null);
-        if (recentNewsitems.size() > 0) {
-        	// TODO inject
-        	TagInformationService tagInformationService = new TagInformationService();
-            int percentageUntagged = tagInformationService.getPercentageUntagged(recentNewsitems);
-            int percentageTagged = 100 - percentageUntagged;
-            log.debug("Tagged = " + percentageTagged + "%");           
-            mv.addObject("tagging_success_chart", percentageTagged);
-        }
-    }
+   
 
-
-
-	
-    
     
     @SuppressWarnings("unchecked")
     protected void populateAds(HttpServletRequest request, ModelAndView mv, boolean showBroken) {
@@ -140,8 +114,8 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected void populateLatestGeocoded(ModelAndView mv, User loggedInUser) throws IOException {
         boolean showBroken = loggedInUser != null;
         List<Resource> geocoded = resourceDAO.getAllValidGeocoded(10, showBroken);
-        log.info("Found " + geocoded.size() + " valid geocoded resources.");                
         if (geocoded.size() > 0) {
+        	log.debug("Found " + geocoded.size() + " valid geocoded resources.");                
             mv.addObject("geocoded", geocoded);
             mv.addObject("geotags_is_small", 1);            
         }

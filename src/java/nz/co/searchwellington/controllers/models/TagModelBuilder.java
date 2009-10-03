@@ -16,7 +16,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SupressionDAO;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
@@ -32,17 +31,15 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RelatedTagsService relatedTagsService;
 	private ConfigDAO configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
-	private SupressionDAO supressionDAO;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, SupressionDAO supressionDAO) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService) {
 		this.resourceDAO = resourceDAO;	
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.configDAO = configDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
-		this.supressionDAO = supressionDAO;
 	}
 
 	
@@ -150,20 +147,24 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 
 	
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
-        List<Resource> allCommentedNewsitems = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1, 0);        
+        List<Resource> recentCommentedNewsitems = resourceDAO.getRecentCommentedNewsitemsForTag(tag, showBroken, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
+
         List<Resource>commentedToShow;
-        if (allCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
-            commentedToShow = allCommentedNewsitems;            
+        if (recentCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
+            commentedToShow = recentCommentedNewsitems;            
+
         } else {
-            commentedToShow = allCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);            
-            final String moreCommentsUrl = urlBuilder.getTagCommentUrl(tag);
-            mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
-            
+            commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);            
             final int commentsCount = resourceDAO.getCommentedNewsitemsForTagCount(tag, showBroken);
             final int moreCommentCount = commentsCount - MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS;
-            mv.addObject("commented_newsitems_morecount", moreCommentCount);           
-        }        
-        mv.addObject("commented_newsitems", commentedToShow);        
+            if (moreCommentCount > 0) {
+            	mv.addObject("commented_newsitems_morecount", moreCommentCount);
+            	final String moreCommentsUrl = urlBuilder.getTagCommentUrl(tag);
+            	mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
+            }
+        }
+        
+        mv.addObject("commented_newsitems", commentedToShow);
         mv.addObject("tag_watchlist", resourceDAO.getTagWatchlist(tag, showBroken));        
     }
 	
@@ -184,28 +185,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
             mv.addObject("related_feed", relatedFeed);
             
             List<FeedNewsitem> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);
-            addSupressionAndLocalCopyInformation(relatedFeedItems);
-            mv.addObject("related_feed_items", relatedFeedItems);            
+            rssfeedNewsitemService.addSupressionAndLocalCopyInformation(relatedFeedItems);
+            mv.addObject("related_feed_items", relatedFeedItems);
+            
         } else {
             log.debug("No related feed.");
         }
     }
-    
-    
-    
-    // TODO duplication this needs to be shared with the tag related feed on tag pages.
-	private void addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
-		for (FeedNewsitem feedNewsitem : feedNewsitems) {
-			if (feedNewsitem.getUrl() != null) {
-				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
-				if (localCopy != null) {
-					feedNewsitem.setLocalCopy(localCopy);
-				}				
-				boolean isSuppressed = supressionDAO.isSupressed(feedNewsitem.getUrl());					
-				feedNewsitem.setSuppressed(isSuppressed);						
-			}
-		}
-	}
-    
-    
+        
 }

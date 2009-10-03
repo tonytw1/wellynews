@@ -24,9 +24,7 @@ public interface ResourceRepository {
 
     public Tag createNewTag();
     public Resource loadResourceById(int resourceID);
-    public Tag loadTagByName(String tagname);
-    public void saveTag(Tag editTag);   
-    public List <Tag> getAllTags();
+ 
     
     public boolean isResourceWithUrl(String url);
     public Resource loadResourceByUrl(String url);
@@ -60,34 +58,29 @@ public interface ResourceRepository {
     
     public List<Resource> getAllCalendarFeeds();
     public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken);
-
     public List<Resource> getAllWatchlists(boolean showBroken);
     
     
     public Tag loadTagById(int tagID);
+    public Tag loadTagByName(String tagname);
+    public void saveTag(Tag editTag);   
+    public List <Tag> getAllTags();
+    public List<Tag> getTopLevelTags();
+    
   
     public List<Resource> getTaggedResources(Tag tag, int max_newsitems);
-
-    public Object getTopLevelTags();
-
-
-
     public List<Resource> getTaggedWebsites(Tag tag, boolean showBroken, int max_newsitems);
-    public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites);
-        
+    public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites);        
     public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems);
-    public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int max_secondary_items);
-    
+    public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int max_secondary_items);    
     public List<Resource> getTagWatchlist(Tag tag, boolean showBroken);
 
-  
     
     public void deleteResource(Resource resource);
     public void deleteTag(Tag tag);
     
     public List<Resource> getNotCheckedSince(Date date, int maxItems);
 
-    public List<CommentFeed> getCurrentCommentFeeds(int maxItems);
     public List<CommentFeed> getCommentFeedsToCheck(int maxItems);
     
     public List<PublisherContentCount> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems);
@@ -127,10 +120,14 @@ public interface ResourceRepository {
 	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken);
 
 	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex);
-	public int getCommentedNewsitemsCount(boolean showBroken);
-	
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex);
+	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems);
+	public int getCommentedNewsitemsCount(boolean showBroken);	
 	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken);
+	
+	public List<Resource> getTwitterMentionedNewsitems();
+	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
+	
 	public Resource loadResourceByUniqueUrl(String url);
 	public List<String> getPublisherNamesByStartingLetters(String q);
 	public Resource getPublisherByName(String publisherName);
@@ -139,11 +136,13 @@ public interface ResourceRepository {
 	public List<Resource> getNewsitemsMatchingStem(String stem);
 	public List<Resource> getBrokenSites();
 	
-	public void saveTweet(Twit twit);
-	public Twit loadTweetByTwitterId(Long id);
-    public List<Resource> getTwitterMentionedNewsitems();
 	public List<Twit> getAllTweets();
-	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
+	public Twit loadTweetByTwitterId(Long id);
+	public void saveTweet(Twit twit);
+	
+	
+	
+	
 	public int getCommentCount();
     
 }

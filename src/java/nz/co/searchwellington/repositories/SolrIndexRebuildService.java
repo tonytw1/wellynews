@@ -35,28 +35,28 @@ public class SolrIndexRebuildService {
 	}
 
 
-	public void buildIndex() {		
+	public boolean buildIndex() {		
 		Set<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
 		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			deleteAllFromIndex(solr);
-	
+			deleteAllFromIndex(solr);	
 			if (resourceIdsToIndex.size() > 0) {
-				reindexResources(resourceIdsToIndex, solr);			
+				reindexResources(resourceIdsToIndex, solr);
+				return true;
 			}
 			
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error while rebuilding index: " + e.getMessage());
+			return false;
 		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error while rebuilding index: " + e.getMessage());
+			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error while rebuilding index: " + e.getMessage());
+			return false;
 		}
-		
+		return false;		
 	}
 
 	

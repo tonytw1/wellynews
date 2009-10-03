@@ -212,14 +212,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
         
-    public List<CommentFeed> getCurrentCommentFeeds(int maxItems) {
-        // TODO Auto-generated method stub
-        //select date, comment_feed.url, last_scanned from resource, comment_feed where comment_feed.id = resource.comment_feed and type ='N' and comment_feed is not null order by date asc;
-        return null;
-    }
- 
     
-
     @SuppressWarnings("unchecked")
     public List<CommentFeed> getCommentFeedsToCheck(int maxItems) {
         return sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).
@@ -229,16 +222,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         list();
     }
 
-
-    
-
-    
-    @SuppressWarnings("unchecked")
-    // TODO depricate this; where is it used? Used by luceneindexbuilder
-    final public List<Resource> getAllNewsitems() {
-        return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).list();        
-    }
-    
     
     @SuppressWarnings("unchecked")
     public List<Resource> getAllResources() {
@@ -521,11 +504,4 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 		return (Newsitem) criteria.uniqueResult();
 	}
 
-    
-    
-    
-    
-	
-	
-	
 }

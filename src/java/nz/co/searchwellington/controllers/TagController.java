@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
@@ -19,7 +18,6 @@ import com.sun.syndication.io.FeedException;
 
 public class TagController extends BaseMultiActionController {
    
-    private LoggedInUserFilter loggedInUserFilter;   
     private ContentModelBuilderService contentModelBuilder;
 
 

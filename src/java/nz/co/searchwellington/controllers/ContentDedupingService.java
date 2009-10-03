@@ -15,7 +15,7 @@ public class ContentDedupingService {
     	List <Resource> depuded  = new ArrayList<Resource>(latestNewsitems);
     	depuded.removeAll(commentedNewsitems);
     	if (depuded.size() < latestNewsitems.size()) {
-    		log.info("Removed " + (latestNewsitems.size() - depuded.size()) + " duplicates");
+    		log.debug("Removed " + (latestNewsitems.size() - depuded.size()) + " duplicates");
     	}
     	return depuded;
     }

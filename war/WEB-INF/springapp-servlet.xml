@@ -12,8 +12,7 @@
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="twitterNewsitemBuilderService" />
-								
+										
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -57,6 +56,9 @@
 			</bean>		
 		</property>					
 	</bean>
+	
+	
+	<bean id="tagInformationService" class="nz.co.searchwellington.tagging.TagInformationService" />
 		
 	<bean id="indexController" class="nz.co.searchwellington.controllers.IndexController">		
 		<constructor-arg ref="resourceDAO" />		
@@ -67,7 +69,8 @@
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="requestFilter" />	
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="tagInformationService" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -179,12 +182,15 @@
 	
 	<bean id="indexRebuildController" class="nz.co.searchwellington.controllers.admin.IndexRebuildController">
 		<constructor-arg ref="solrIndexRebuildService" />
+		<constructor-arg ref="cachingTwitterService" />
+		<constructor-arg ref="resourceDAO" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
-						<prop key="/admin/indexbuilder">build</prop>						
+						<prop key="/admin/indexbuilder">build</prop>
+						<prop key="/admin/refreshtweets">refreshTweets</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -710,9 +716,10 @@
 								
 				<prop key="/openid/auth">loginController</prop>
 				<prop key="/openid/verify">loginController</prop>
-				
-									
+													
 				<prop key="/admin/indexbuilder">indexRebuildController</prop>
+				<prop key="/admin/refreshtweets">indexRebuildController</prop>
+								
 				<prop key="/admin/linkchecker/*">linkCheckerController</prop>
 				<prop key="/admin/config/edit">configEditController</prop>
 				<prop key="/admin/config/save">configEditController</prop>

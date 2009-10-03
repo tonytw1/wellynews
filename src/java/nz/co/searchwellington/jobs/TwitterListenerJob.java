@@ -2,9 +2,7 @@ package nz.co.searchwellington.jobs;
 
 import java.util.List;
 
-import net.unto.twitter.TwitterProtos.Status;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -41,11 +39,9 @@ public class TwitterListenerJob {
         if (!configDAO.isTwitterListenerEnabled()) {
         	log.info("Twitter listener is not enabled");
         	return;
-        }
-        
+        }        
         log.info("Running Twitter listener");
-        if (twitterService.isConfigured()) {
-        	refreshTweets();
+        if (twitterService.isConfigured()) {        	
         	fetchMentions();			
 		} else {
 			log.warn("Twitter service is not configured; not running");
@@ -53,26 +49,7 @@ public class TwitterListenerJob {
         log.info("Twitter listener completed.");
     }
 
-    
-    // TODO this should be on an admin controller.
-	private void refreshTweets() {
-		List<Twit> allLocalTwits = resourceDAO.getAllTweets();
-		for (Twit twit : allLocalTwits) {
-			if (twit.getDate() == null) {
-				Status status = twitterService.getTwitById(twit.getTwitterid());
-				if (status != null) {
-					twit.setDate(new Twit(status).getDate());
-					resourceDAO.saveTweet(twit);
-					log.info("Tweet date for '" + twit.getText() + "' updated to: " + twit.getDate());
-				
-				} else {
-					log.warn("Could not load tweet #" + twit.getTwitterid().toString() + " from api");
-				}
-			}
-		}
-	}
-
-	
+    	
 	private void fetchMentions() {
 		List<TwitterMention> newsitemMentions = newsitemBuilder.getNewsitemMentions();
 		for (TwitterMention reTwit : newsitemMentions) {
