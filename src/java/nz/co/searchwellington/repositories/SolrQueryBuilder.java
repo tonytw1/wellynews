@@ -57,6 +57,11 @@ public class SolrQueryBuilder {
 		return this;
 	}
 
+	public SolrQueryBuilder dateRange(int daysAgo) {
+		sb.append(" +date:[NOW-" + daysAgo + "DAY TO NOW]");
+		return this;
+	}
+	
 	public SolrQueryBuilder publisher(Website publisher) {
 		if (publisher != null) {
 			sb.append(" +publisher:" + publisher.getId());			

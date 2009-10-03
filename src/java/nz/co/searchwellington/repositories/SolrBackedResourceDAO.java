@@ -103,9 +103,9 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	@Override
 	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {
-		log.info("Getting commented newsitem count");
-		SolrQuery query = getCommentedNewsitemsQuery(showBroken);		
-		// TODO add date creteria
+		log.info("Getting recent commented newsitem count");
+		// TODO duplication
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).dateRange(14).commented(true).toQuery();					
 		setDateDescendingOrder(query);
 		query.setRows(maxItems);
 		return getQueryResults(query);
@@ -301,7 +301,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 
 	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
 		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);		
-		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();		
+		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);;
     	return getQueryResults(query);
     }

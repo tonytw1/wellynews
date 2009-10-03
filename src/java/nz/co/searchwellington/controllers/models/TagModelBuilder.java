@@ -154,20 +154,21 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
             commentedToShow = recentCommentedNewsitems;            
 
         } else {
-            commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);            
-            final int commentsCount = resourceDAO.getCommentedNewsitemsForTagCount(tag, showBroken);
-            final int moreCommentCount = commentsCount - MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS;
-            if (moreCommentCount > 0) {
-            	mv.addObject("commented_newsitems_morecount", moreCommentCount);
-            	final String moreCommentsUrl = urlBuilder.getTagCommentUrl(tag);
-            	mv.addObject("commented_newsitems_moreurl", moreCommentsUrl);
-            }
+            commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);
         }
         
+        final int commentsCount = resourceDAO.getCommentedNewsitemsForTagCount(tag, showBroken);
+        final int moreCommentCount = commentsCount - commentedToShow.size();
+        if (moreCommentCount > 0) {
+        	mv.addObject("commented_newsitems_morecount", moreCommentCount);
+        	mv.addObject("commented_newsitems_moreurl", urlBuilder.getTagCommentUrl(tag));
+        }
+                
         mv.addObject("commented_newsitems", commentedToShow);
         mv.addObject("tag_watchlist", resourceDAO.getTagWatchlist(tag, showBroken));        
     }
 	
+    
     
     private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
         List<Resource> geocoded = resourceDAO.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);

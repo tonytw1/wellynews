@@ -1,7 +1,7 @@
 #if ($commented_newsitems && $commented_newsitems.size() > 0)
-<h2>Commented newsitems</h2>
+<h2>Commented</h2>
 
-<p>These $tag.displayName.toLowerCase() tagged newsitems have comments.</p>
+<p>These recent newsitems have comments.</p>
 <ul class="flat_list">
 #foreach ($item in $commented_newsitems)	
 	<li class="content_item">
@@ -11,8 +11,7 @@
 
 #if ($commented_newsitems_moreurl)
 	<li class="more"><a href="$commented_newsitems_moreurl">
-	#if ($commented_newsitems_morecount) $commented_newsitems_morecount #end
-	More...</a></li>
+	$commented_newsitems_morecount more commented...</a></li>
 #end
 
 </ul>
