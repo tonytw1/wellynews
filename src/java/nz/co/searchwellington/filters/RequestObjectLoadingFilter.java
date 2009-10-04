@@ -12,13 +12,13 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 
-public class TestFilter implements Filter{
+public class RequestObjectLoadingFilter implements Filter{
 
 	private RequestFilter requestFilter;
 	private LoggedInUserFilter loggedInUserFilter;
 	
 	
-	public TestFilter(RequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter) {	
+	public RequestObjectLoadingFilter(RequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter) {	
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
 	}
