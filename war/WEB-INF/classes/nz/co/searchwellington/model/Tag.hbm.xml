@@ -33,7 +33,10 @@
 			class="nz.co.searchwellington.model.FeedImpl" column="related_feed" 
 			/>
 			
-
+		<property name="hidden" type="boolean">
+			<column name="hidden" />
+		</property>
+		
 		<property name="mainImage">
 			<column name="main_image" length="255" not-null="false" />
 		</property>

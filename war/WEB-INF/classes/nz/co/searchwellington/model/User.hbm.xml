@@ -17,8 +17,7 @@
         <property name="username">
             <column name="username" length="255" not-null="true"/>
         </property>
-        
-        
+                
         <property name="profilename">
             <column name="profilename" length="255" not-null="false"/>
         </property>
@@ -31,13 +30,16 @@
 			<column name="admin" />
 		</property>
 		
-		
-		 <property name="name">
+		<property name="name">
             <column name="name" length="255" not-null="false"/>
         </property>
         
         <property name="bio">
             <column name="bio" not-null="false"/>
+        </property>
+        
+      	<property name="apikey">
+            <column name="apikey" not-null="false"/>
         </property>		
                        
     </class>
