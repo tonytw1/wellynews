@@ -44,7 +44,7 @@ public abstract class RssfeedNewsitemService {
 	    		new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
 	    newsitem.setImage(feedNewsitem.getImage());		
 	    feedNewsitem.setPublisher(feed.getPublisher());
-	    return feedNewsitem;
+	    return newsitem;
 	}
 	
 	
