@@ -40,7 +40,7 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getFeedNewsitemSuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
-		return makeSuppressionUrl(makeSuppressionUrl(feednewsitem.getUrl()));
+		return makeSuppressionUrl(feednewsitem.getUrl());
 	}	
 	public String getSuggestionSuppressUrl(SuggestionFeednewsitem suggestion) throws UnsupportedEncodingException {
 		return makeSuppressionUrl(suggestion.getSuggestion().getUrl());		
