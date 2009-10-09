@@ -136,6 +136,7 @@
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="suggestionDAO" />
+		<constructor-arg ref="loggedInUserFilter" />		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

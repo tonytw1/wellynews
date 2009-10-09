@@ -5,9 +5,11 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.SupressionImpl;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionRepository;
 
@@ -23,20 +25,22 @@ public class SupressionController extends MultiActionController {
     private SupressionRepository supressionDAO;  
     private UrlStack urlStack;
 	private SuggestionDAO suggestionDAO;
-  
+	private LoggedInUserFilter loggedInUserFilter;
 
     
-    public SupressionController(SupressionRepository supressionDAO, UrlStack urlStack, SuggestionDAO suggestionDAO) {
+    public SupressionController(SupressionRepository supressionDAO, UrlStack urlStack, SuggestionDAO suggestionDAO, LoggedInUserFilter loggedInUserFilter) {
         this.supressionDAO = supressionDAO;       
         this.urlStack = urlStack;
         this.suggestionDAO = suggestionDAO;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
 
     public ModelAndView supress(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-                
         setRedirect(mv, request);        
-        if (request.getParameter("url") != null) {
+        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();;        
+        if (loggedInUser != null && request.getParameter("url") != null) {
             String urlToSupress = request.getParameter("url");
             Supression supression = new SupressionImpl(urlToSupress);
             
@@ -52,10 +56,11 @@ public class SupressionController extends MultiActionController {
     
     
     public ModelAndView unsupress(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-                
-        setRedirect(mv, request);        
-        if (request.getParameter("url") != null) {
+        ModelAndView mv = new ModelAndView();                
+        setRedirect(mv, request);
+        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        if (loggedInUser != null && request.getParameter("url") != null) {
             String urlToSupress = request.getParameter("url");
             Supression supression = new SupressionImpl(urlToSupress);
             
