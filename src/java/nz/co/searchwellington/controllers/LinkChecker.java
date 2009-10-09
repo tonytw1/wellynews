@@ -11,10 +11,6 @@ import java.util.Iterator;
 
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.commentfeeds.CommentFeedGuesserService;
-import nz.co.searchwellington.commentfeeds.guessers.CommentFeedGuesser;
-import nz.co.searchwellington.commentfeeds.guessers.EyeOfTheFishCommentFeedGuesser;
-import nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser;
-import nz.co.searchwellington.commentfeeds.guessers.WordpressDotComCommentFeedGuesser;
 import nz.co.searchwellington.feeds.CommentFeedReader;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.htmlparsing.LinkExtractor;
@@ -46,13 +42,13 @@ public class LinkChecker {
     private TechnoratiDAO technoratiDAO;
 	private HttpFetcher httpFetcher;
 	private LinkExtractor linkExtractor;
-
+	private CommentFeedGuesserService commentFeedGuesser;
     
     public LinkChecker() {
     }
     
     
-    public LinkChecker(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO, HttpFetcher httpFetcher, LinkExtractor linkExtractor) {    
+    public LinkChecker(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, CommentFeedReader commentFeedReader, CommentFeedDetectorService commentFeedDetector, SnapshotDAO snapshotDAO, TechnoratiDAO technoratiDAO, HttpFetcher httpFetcher, LinkExtractor linkExtractor, CommentFeedGuesserService commentFeedGuesser) {    
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.commentFeedReader = commentFeedReader;
@@ -60,7 +56,8 @@ public class LinkChecker {
         this.snapshotDAO = snapshotDAO;
         this.technoratiDAO = technoratiDAO;
         this.httpFetcher = httpFetcher;
-        this.linkExtractor = linkExtractor;       
+        this.linkExtractor = linkExtractor;
+        this.commentFeedGuesser = commentFeedGuesser;
     }
 
 
@@ -160,13 +157,7 @@ public class LinkChecker {
 
 
     private void addGuessedCommentFeeds(Resource checkResource) {
-        // TODO Inject with spring.       
-        CommentFeedGuesser eyeOfTheFishCommentFeedGuesser = new EyeOfTheFishCommentFeedGuesser();       
-        CommentFeedGuesser wordpressCommentFeedGuesser = new WordpressCommentFeedGuesser();
-        CommentFeedGuesser wordpressDotComCommentFeedGuesser = new WordpressDotComCommentFeedGuesser();
-        
-        CommentFeedGuesserService commentFeedGuesser = new CommentFeedGuesserService(eyeOfTheFishCommentFeedGuesser, wordpressCommentFeedGuesser, wordpressDotComCommentFeedGuesser); 
-        String commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(checkResource.getUrl());
+    	String commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(checkResource.getUrl());
         if (commentFeedUrl != null) {
             recordCommentFeed(checkResource, commentFeedUrl);         
         }

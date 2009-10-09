@@ -109,7 +109,7 @@ public class ResourceEditController extends BaseTagEditingController {
     @Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
     	adminRequestFilter.loadAttributesOntoRequest(request);    	
-    	User loggedInUser = loggedInUserFilter.getLoggedInUser();;
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	
     	Resource editResource = (Resource) request.getAttribute("resource");    	
     	if (request.getAttribute("resource") != null && userIsAllowedToEdit(editResource, request, loggedInUser)) {    		

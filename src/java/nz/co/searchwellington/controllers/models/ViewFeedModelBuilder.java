@@ -27,7 +27,7 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 	
 
 	public boolean isValid(HttpServletRequest request) {
-		return request.getAttribute("feedAttribute") != null;	
+		return request.getAttribute("feedAttribute") != null;
 	}
 
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {

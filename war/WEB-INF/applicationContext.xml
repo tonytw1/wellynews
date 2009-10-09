@@ -18,8 +18,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			<value>file:conf/springapp.properties</value>
 		</property>
 	</bean>
-	
-	
+		
 	<import resource="database.xml" />
 	<import resource="daos.xml" />	
 	<import resource="timertasks.xml"/>
@@ -88,22 +87,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 </bean>
 
 
-<bean name="feedReaderJob" class="nz.co.searchwellington.jobs.FeedReaderJob">
-	<constructor-arg ref="feedReader" />
+<bean name="commentFeedReaderJob" class="nz.co.searchwellington.jobs.FeedReaderJob">
 	<constructor-arg ref="commentFeedReader" />
 </bean>
 
 
-
-
-
-
-
-
-
-
- 
-    
     <bean id="publisherSelectFactory"
     	class="nz.co.searchwellington.widgets.PublisherSelectFactory">
     	<constructor-arg ref="resourceDAO"/>	
@@ -262,7 +250,16 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			</list>
 		</constructor-arg>
 	</bean>
-	
+		
+	<bean id="commentFeedGuesserService" class="nz.co.searchwellington.commentfeeds.CommentFeedGuesserService">
+		<constructor-arg>
+			<list>
+				<bean class="nz.co.searchwellington.commentfeeds.guessers.EyeOfTheFishCommentFeedGuesser" />
+				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser" />
+				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressDotComCommentFeedGuesser" />
+			</list>
+		</constructor-arg>
+	</bean>
 	
 	<bean id="linkCheckerTarget" class="nz.co.searchwellington.controllers.LinkChecker" >
 		<constructor-arg ref="resourceDAO" />
@@ -273,8 +270,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="technoratiDAO" />
 		<constructor-arg ref="httpFetcher" />
 		<constructor-arg ref="compositeLinkExtractor" />
+		<constructor-arg ref="commentFeedGuesserService" />
 	</bean>
-		
+	
 	<bean id="discoveredFeedRespository" class="nz.co.searchwellington.feeds.DiscoveredFeedRepository" >
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedDetector" />
