@@ -18,6 +18,7 @@
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="liveRssfeedNewsitemService" />
 		<constructor-arg ref="feedNewsitemCache" />
+		<constructor-arg ref="feedReaderTarget" />
 	</bean>
 		
 	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >

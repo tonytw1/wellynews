@@ -87,7 +87,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 </bean>
 
 
-<bean name="commentFeedReaderJob" class="nz.co.searchwellington.jobs.FeedReaderJob">
+<bean name="feedReaderJob" class="nz.co.searchwellington.jobs.FeedReaderJob">
 	<constructor-arg ref="commentFeedReader" />
 </bean>
 

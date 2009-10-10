@@ -64,7 +64,7 @@ public class FeedReader {
 
 
     @Transactional
-    public void acceptFeeditems() throws FeedException, IOException {              
+    public void acceptFeeditems() {              
         log.info("Accepting feeds.");        
         int processed = 0;        
         for (Feed feed: resourceDAO.getFeedsToRead()) {      
@@ -77,7 +77,7 @@ public class FeedReader {
     }
 
  
-    public void processFeed(Feed feed) throws FeedException, IOException {        
+    public void processFeed(Feed feed) {        
         log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));
        
         // TODO can this move onto the enum?

@@ -13,19 +13,6 @@
     <property name="repeatInterval" value="3600000" />
 </bean>
 
-
-<bean id="feedReaderJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-  <property name="targetObject" ref="feedReaderJob" />
-  <property name="targetMethod" value="runFeeds" />
-  <property name="concurrent" value="false" />
-</bean>
-<bean id="feedReaderTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
-    <property name="jobDetail" ref="feedReaderJobRun" />
-    <property name="startDelay" value="180000" />
-    <property name="repeatInterval" value="1800000" />
-</bean>
-
-
 <bean id="flickrJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
   <property name="targetObject" ref="flickrJob" />
   <property name="targetMethod" value="run" />
@@ -70,7 +57,7 @@
 
 <bean id="twitterListenerJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
     <property name="jobDetail" ref="twitterListenerJobRun" />
-    <property name="startDelay" value="0" />
+    <property name="startDelay" value="10000" />
     <property name="repeatInterval" value="3600000" />
 </bean>
 
@@ -140,7 +127,7 @@
 
 <bean id="rssPrefetcherTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
     <property name="jobDetail" ref="rssPrefetcherRun" />
-    <property name="startDelay" value="600000" />
+    <property name="startDelay" value="10000" />
     <property name="repeatInterval" value="3600000" />
 </bean>
 
@@ -194,7 +181,6 @@
 	<property name="triggers">
 		<list>
 			<ref bean="linkCheckerTrigger"/>
-			<ref bean="feedReaderTrigger" />
 			<ref bean="commentReaderTrigger" />
 			<ref bean="flickrJobTrigger" />
 			<ref bean="feedCheckerSchedulerTrigger"/>
