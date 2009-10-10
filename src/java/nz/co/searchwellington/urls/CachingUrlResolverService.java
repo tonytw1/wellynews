@@ -51,7 +51,9 @@ public class CachingUrlResolverService extends UrlResolverService {
 	private void putUrlIntoCache(Cache cache, String url, String result) {	
 		log.info("Caching result for url: " + url);
 		Element cachedResult = new Element(url, result);
-		cache.put(cachedResult);		
+		cache.put(cachedResult);
+		log.info("Flushing resolved urls cache.");
+		cache.flush();
 	}
 		
 }

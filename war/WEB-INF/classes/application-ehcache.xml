@@ -4,10 +4,9 @@
         
     <cache name="resolvedurls"
         maxElementsInMemory="1000"
-        eternal="false"
-        timeToIdleSeconds="72000"
-        timeToLiveSeconds="72000"
-        overflowToDisk="false"
+ 	  	eternal="true"	
+		overflowToDisk="true"
+		diskPersistent="true"
         />
         
         
