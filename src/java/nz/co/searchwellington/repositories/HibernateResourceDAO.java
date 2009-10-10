@@ -63,7 +63,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
 
-    public List<String> getPublisherNamesByStartingLetters(String q) {
+    @Override
+	public Tag createNewTag() {
+		return tagDAO.createNewTag();
+	}
+
+
+	public List<String> getPublisherNamesByStartingLetters(String q) {
          Session session = sessionFactory.getCurrentSession();
          List<String> rows = session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
          return rows;
@@ -333,17 +339,11 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     public Tag loadTagById(int tagID) {
       return tagDAO.loadTagById(tagID);
     }
-    
-    
-    
-    
+        
     public Tag loadTagByName(String tagName) {
-        return (Tag) sessionFactory.getCurrentSession().
-        createCriteria(Tag.class).
-        add(Restrictions.eq("name", tagName)).
-        uniqueResult();    
+        return tagDAO.loadTagByName(tagName);
     }
-    
+        
     
     public List<Twit> getAllTweets() {
 		return tweetDAO.getAllTweets();

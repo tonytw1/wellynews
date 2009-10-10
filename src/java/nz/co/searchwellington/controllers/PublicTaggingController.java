@@ -6,7 +6,6 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
@@ -17,29 +16,27 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 
-public class PublicTaggingController extends BaseTagEditingController {
+public class PublicTaggingController extends BaseMultiActionController {
         
     Logger log = Logger.getLogger(PublicTaggingController.class);
         
-    private RequestFilter requestFilter;    
     private TagWidgetFactory tagWidgetFactory;
     private Notifier notifier;
+	private SubmissionProcessingService submissionProcessingService;
 
     
-    public PublicTaggingController(ResourceRepository resourceDAO, 
-                RequestFilter requestFilter, 
-                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter) {       
+    public PublicTaggingController(ResourceRepository resourceDAO,           
+                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter, SubmissionProcessingService submissionProcessingService) {       
         this.resourceDAO = resourceDAO;      
-        this.requestFilter = requestFilter;
         this.tagWidgetFactory = tagWidgetFactory;
         this.notifier = notifier;
         this.loggedInUserFilter = loggedInUserFilter;
+        this.submissionProcessingService = submissionProcessingService;
     }
    
     
     
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         ModelAndView mv = new ModelAndView("publicTagging");    
         mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
         mv.addObject("heading", "Tagging a Resource");
@@ -79,7 +76,7 @@ public class PublicTaggingController extends BaseTagEditingController {
         
         if (request.getAttribute("resource") != null) {         
             editResource = (Resource) request.getAttribute("resource");
-            processTags(request, editResource, loggedInUser);
+            submissionProcessingService.processTags(request, editResource, loggedInUser);
             resourceDAO.saveResource(editResource);           
             notifier.sendTaggingNotification("tony@ditonics.com", "Public Tagging", editResource);            
             modelAndView.addObject("resource", editResource);    

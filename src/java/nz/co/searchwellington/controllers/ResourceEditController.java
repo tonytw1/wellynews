@@ -14,12 +14,9 @@ import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
-import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
@@ -52,15 +49,10 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.sun.syndication.io.FeedException;
 
 
-public class ResourceEditController extends BaseTagEditingController {
-    
+public class ResourceEditController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ResourceEditController.class);
-    
-    
-    private static final String REQUEST_TITLE_NAME = "title";
-    private static final String REQUEST_GEOCODE_NAME = "geocode";
-       
+           
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
     private LinkCheckerQueue linkCheckerQueue;       
@@ -70,20 +62,20 @@ public class ResourceEditController extends BaseTagEditingController {
     private Notifier notifier;
     private AutoTaggingService autoTagger;
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
-    private GoogleGeoCodeService geocodeService;
     private UrlCleaner urlCleaner;
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
     private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
     private SuggestionDAO suggestionDAO;
+    private SubmissionProcessingService submissionProcessingService;
       
     public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter, 
     		LinkCheckerQueue linkCheckerQueue, 
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            GoogleGeoCodeService geocodeService, UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
+            UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService, 
-            SuggestionDAO suggestionDAO) {    	
+            SuggestionDAO suggestionDAO, SubmissionProcessingService submissionProcessingService) {    	
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
@@ -93,8 +85,7 @@ public class ResourceEditController extends BaseTagEditingController {
         this.supressionDAO = supressionDAO;
         this.notifier = notifier;
         this.autoTagger = autoTagger;
-        this.acceptanceWidgetFactory = acceptanceWidgetFactory;
-        this.geocodeService = geocodeService;
+        this.acceptanceWidgetFactory = acceptanceWidgetFactory;      
         this.urlCleaner = urlCleaner;
         this.rssPrefetcher = rssPrefetcher;
         this.loggedInUserFilter = loggedInUserFilter;
@@ -102,6 +93,7 @@ public class ResourceEditController extends BaseTagEditingController {
         this.urlStack = urlStack;
         this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
         this.suggestionDAO = suggestionDAO;
+        this.submissionProcessingService = submissionProcessingService;
     }
    
     
@@ -472,13 +464,13 @@ public class ResourceEditController extends BaseTagEditingController {
         if (editResource != null) {                      
             boolean newSubmission = editResource.getId() == 0;
                    
-            boolean resourceUrlHasChanged = processUrl(request, editResource);
-            processTitle(request, editResource);
+            boolean resourceUrlHasChanged = submissionProcessingService.processUrl(request, editResource);
+            submissionProcessingService.processTitle(request, editResource);
             log.info("Calling geocode");
-            processGeocode(request, editResource);
-            processDate(request, editResource);
-            processDescription(request, loggedInUser, editResource);
-            processTags(request, editResource, loggedInUser);
+            submissionProcessingService.processGeocode(request, editResource);
+            submissionProcessingService.processDate(request, editResource);
+            submissionProcessingService.processDescription(request, loggedInUser, editResource);
+            submissionProcessingService.processTags(request, editResource, loggedInUser);
             
             if (editResource.getType().equals("N")) {
             	processImage(request, (Newsitem) editResource, loggedInUser);            
@@ -609,64 +601,13 @@ public class ResourceEditController extends BaseTagEditingController {
     
     
     
-    private void processTitle(HttpServletRequest req, Resource editResource) {           
-        if (req.getParameter(REQUEST_TITLE_NAME) != null) {
-            String title = new String(req.getParameter(REQUEST_TITLE_NAME));
-            title = UrlFilters.trimWhiteSpace(title);
-            title = UrlFilters.stripHtml(title);
-            
-            log.info("Resource title is: " + title);
-    
-            String flattenedTitle = UrlFilters.lowerCappedSentence(title);           
-            if (!flattenedTitle.equals(title)) {
-                title = flattenedTitle;             
-                log.info("Flatten capitalised sentence to '" + title + "'");
-            }
-            editResource.setName(title);
-        }
-    }
     
     
     
-    private void processGeocode(HttpServletRequest req, Resource editResource) {      
-        log.info("Starting processing of geocode.");
-        if (req.getParameter(REQUEST_GEOCODE_NAME) != null) {           
-
-        	String address = new String(req.getParameter(REQUEST_GEOCODE_NAME));
-            log.info("Found address: " + address);
-            address = UrlFilters.trimWhiteSpace(address);
-            address = UrlFilters.stripHtml(address);
-            if (address != null && !address.trim().equals("")) {
-                Geocode geocode = new GeocodeImpl(address);
-                log.info("Setting geocode to: " + geocode.getAddress());                
-    
-                log.info("Attempting to resolve geocode: '" + geocode.getAddress() + "'");
-                geocodeService.resolveAddress(geocode);
-                
-                editResource.setGeocode(geocode);
-                return;
-            }
-        }
-        editResource.setGeocode(null);        
-    }
+   
     
     
-    
-    private boolean processUrl(HttpServletRequest req, Resource editResource) {
-        // Process url creating a new page if required.
-        if (req.getParameter("url") != null) {
-            final String previousUrl = editResource.getUrl();
-            String url = req.getParameter("url");                                   
-            if (url != null) {
-            	url = url.trim();
-            	url = UrlFilters.addHttpPrefixIfMissing(url);            	
-            	editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
-            }
-            boolean urlHasNotChanged = (previousUrl == null && editResource.getUrl() == null) || (previousUrl.equals(editResource.getUrl()));           
-            return !urlHasNotChanged;
-        }
-        return false;
-    }
+   
     
 
     private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {    

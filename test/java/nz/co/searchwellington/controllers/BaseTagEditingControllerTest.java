@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers;
 import junit.framework.TestCase;
 
 public class BaseTagEditingControllerTest extends TestCase {
-	
+	// TODO move somewhere
 	public void testShouldDetectInvalidTagnames() throws Exception {
 		
 		BaseTagEditingController controller = new BaseTagEditingController();

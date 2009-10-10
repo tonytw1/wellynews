@@ -59,11 +59,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
                 new HashSet <DiscoveredFeed>());
     }
 
-    public Tag createNewTag() {
-        Tag newTag = new Tag(0, "", "", null, new HashSet<Tag>(), 0, false);
-        log.info("Created tag: " + newTag.getName() + " (#" + newTag.getId() + ")");
-		return newTag;
-    }
+   
     
     
     

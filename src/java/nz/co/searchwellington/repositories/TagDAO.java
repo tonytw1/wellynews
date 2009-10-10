@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import nz.co.searchwellington.model.Tag;
 
@@ -14,14 +15,29 @@ public class TagDAO {
 
 	public TagDAO() {
 	}
-
+	
 	public TagDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
+	
+	public Tag createNewTag() {
+	        Tag newTag = new Tag(0, "", "", null, new HashSet<Tag>(), 0, false);	     
+			return newTag;
+	 }
+	
+	
 	public Tag loadTagById(int tagID) {
 		return (Tag) sessionFactory.getCurrentSession().load(Tag.class, tagID);
 	}
+	
+	
+	public Tag loadTagByName(String tagName) {
+        return (Tag) sessionFactory.getCurrentSession().
+        createCriteria(Tag.class).
+        add(Restrictions.eq("name", tagName)).
+        uniqueResult();    
+    }
 
 	@SuppressWarnings("unchecked")
 	public List<Tag> getAllTags() {
