@@ -473,6 +473,39 @@
 	</bean>
 	
 	
+	<bean id="apiSubmitController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="apiSubmitControllerTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	<bean id="apiSubmitControllerTarget" class="nz.co.searchwellington.controllers.api.SubmitController">
+		<constructor-arg ref="resourceDAO" />	
+		<constructor-arg ref="adminRequestFilter" />			
+		<constructor-arg ref="apiKeyAuthenticator" />
+		<constructor-arg ref="submissionProcessingService" />
+				
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>						
+						<prop key="/api/submit/newsitem">save</prop>						
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="tagWidgetFactory" />
@@ -704,6 +737,8 @@
 				<prop key="/edit/accept">editController</prop>
 				<prop key="/edit/acceptfast">editController</prop>
 				<prop key="/edit/twitteraccept">editController</prop>
+				
+				<prop key="/api/submit/newsitem">apiSubmitController</prop>
 				
 				<prop key="/tagging/tag">publicTaggingController</prop>
 				<prop key="/tagging/save">publicTaggingController</prop>

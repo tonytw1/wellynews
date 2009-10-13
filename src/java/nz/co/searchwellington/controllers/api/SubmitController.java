@@ -1,16 +1,19 @@
 package nz.co.searchwellington.controllers.api;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
+import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -18,42 +21,60 @@ public class SubmitController extends MultiActionController {
 
 	Logger log = Logger.getLogger(SubmitController.class);
 	private ResourceRepository resourceDAO;
-	private AdminRequestFilter requestFilter;
+	private AdminRequestFilter adminRequestFilter;
 	private ApiKeyAuthenticator keyAuthenticator;
+	private SubmissionProcessingService submissionProcessingService;
         
 
-    public SubmitController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, ApiKeyAuthenticator keyAuthenticator) {		
+    public SubmitController(ResourceRepository resourceDAO, AdminRequestFilter adminRequestFilter, ApiKeyAuthenticator keyAuthenticator, SubmissionProcessingService submissionProcessingService) {		
 		this.resourceDAO = resourceDAO;
-		this.requestFilter = requestFilter;
+		this.adminRequestFilter = adminRequestFilter;
 		this.keyAuthenticator = keyAuthenticator;
+		this.submissionProcessingService = submissionProcessingService;
+	}
+    
+    
+    
+    // TODO process publisher
+    @Transactional
+    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    	ModelAndView mv = new ModelAndView();
+    	request.setCharacterEncoding("UTF-8");
+    	
+    	log.info("Accepting newsitem from api call");
+        adminRequestFilter.loadAttributesOntoRequest(request);
+        
+        Resource editResource = resourceDAO.createNewFeed();
+    	boolean resourceUrlHasChanged = submissionProcessingService.processUrl(request, editResource);
+         
+    	submissionProcessingService.processTitle(request, editResource);
+    	log.info("Calling geocode");
+    	submissionProcessingService.processGeocode(request, editResource);
+    	submissionProcessingService.processDate(request, editResource);
+    	submissionProcessingService.processDescription(request, editResource);
+    	submissionProcessingService.processTags(request, editResource);
+         
+    	if (editResource.getType().equals("N")) {
+    		//	processImage(request, (Newsitem) editResource, loggedInUser);            
+    	}
+         
+    	// Set publisher field.
+    	boolean isPublishedResource = editResource instanceof PublishedResource;
+    	if (isPublishedResource) {
+    		((PublishedResource) editResource).setPublisher((Website) request.getAttribute("publisher"));           
+    	}
+    	
+    	log.info("Saving api submitted newsitem: " + editResource.getName());
+    	saveResource(editResource); 
+    	log.info("Id after save is: " + editResource.getId());
+    	mv.setViewName("apiResponseOK");
+    	return mv;      
+     }
+    
+    
+	private void saveResource(Resource editResource) {
+		resourceDAO.saveResource(editResource);		
 	}
 
-    
-    public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        if (request.getParameter("key") != null && keyAuthenticator.isAuthentic(request.getParameter("key"))) {        
-        	requestFilter.loadAttributesOntoRequest(request);        
-        	final String resourceUrl = request.getParameter("url");
-        	final Tag tag = (Tag) request.getAttribute("tag");        
-        	if (resourceUrl != null && tag != null) {
-        		Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
-        		if (resource != null) {
-        			resource.addTag(tag);
-        			log.info("Applied tag: " + tag.getDisplayName() + " to resource: " + resource.getName());
-        			resourceDAO.saveResource(resource);
-        			mv.setViewName("apiResponseOK");
-        			return mv;
-        		} else {
-        			log.info("No unique resource found for url: " + resourceUrl);
-        		}
-        	} else {
-        		log.info("No resource url or valid tag found");
-        	}
-        } else {
-        	log.info("no valid key");
-        }
-		mv.setViewName("apiResponseERROR");
-        return mv; 		
-    }
-
+	
 }

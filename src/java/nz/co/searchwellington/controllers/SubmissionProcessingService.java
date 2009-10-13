@@ -22,10 +22,11 @@ import nz.co.searchwellington.utils.UrlFilters;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+//TODO process publisher
 public class SubmissionProcessingService {
 
+	private static final String REQUEST_TITLE_NAME = "title";
 	private static final String REQUEST_DATE_NAME = "date";
-    private static final String REQUEST_TITLE_NAME = "title";
     private static final String REQUEST_DESCRIPTION_NAME = "description";
     private static final String REQUEST_GEOCODE_NAME = "geocode";
     
@@ -111,11 +112,10 @@ public class SubmissionProcessingService {
 
 
 
-    public void processDescription(HttpServletRequest request, User loggedInUser, Resource editResource) {
+    public void processDescription(HttpServletRequest request, Resource editResource) {
         String description = request.getParameter(REQUEST_DESCRIPTION_NAME);
-        if (loggedInUser == null) {
-            description = UrlFilters.stripHtml(description);
-            log.info("No logged in user; stripping html from description.");
+        if (description != null) {
+        	description = UrlFilters.stripHtml(description);
         }
         editResource.setDescription(description);
     }
@@ -123,7 +123,7 @@ public class SubmissionProcessingService {
     
     
     @SuppressWarnings("unchecked")
-	protected void processTags(HttpServletRequest request, Resource editResource, User loggedInUser) {
+	public void processTags(HttpServletRequest request, Resource editResource) {
         if (request.getAttribute("tags") != null) {
             List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
             Set<Tag> tags = new HashSet<Tag>(requestTagsList);
@@ -135,14 +135,7 @@ public class SubmissionProcessingService {
             processAdditionalTags(request, editResource);                   
         } else {
             //log.info("No additional tag string found.");
-        }
-        // Don't let the greate unwashed drop stuff into the featured slot.
-        Tag featuredTag = tagDAO.loadTagByName("featured");
-        boolean containsFeaturedTag = featuredTag != null && editResource.getTags().contains(featuredTag);
-        if (containsFeaturedTag && loggedInUser == null) {
-            //log.info("Removing featured tag from public submission.");
-            editResource.getTags().remove(featuredTag);            
-        }                
+        }    
         trimTags(editResource, 4);               
     }
     

@@ -469,8 +469,8 @@ public class ResourceEditController extends BaseMultiActionController {
             log.info("Calling geocode");
             submissionProcessingService.processGeocode(request, editResource);
             submissionProcessingService.processDate(request, editResource);
-            submissionProcessingService.processDescription(request, loggedInUser, editResource);
-            submissionProcessingService.processTags(request, editResource, loggedInUser);
+            submissionProcessingService.processDescription(request, editResource);
+            submissionProcessingService.processTags(request, editResource);
             
             if (editResource.getType().equals("N")) {
             	processImage(request, (Newsitem) editResource, loggedInUser);            
