@@ -197,18 +197,17 @@
 			</bean>		
 		</property>	
 	</bean>
-			
-	<bean id="apiKeyAuthenticator" class="nz.co.searchwellington.controllers.api.ApiKeyAuthenticator" />
-
+	
 	<bean id="apiTagUrlController" class="nz.co.searchwellington.controllers.api.TagUrlController">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="adminRequestFilter" />
-		<constructor-arg ref="apiKeyAuthenticator" />
+		<constructor-arg ref="loggedInUserFilter" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
 						<prop key="/api/tag">tag</prop>
+						<prop key="/api/changeurl">changeUrl</prop>
 					</props>
 				</property>
 			</bean>		
@@ -484,9 +483,8 @@
 	<bean id="apiSubmitControllerTarget" class="nz.co.searchwellington.controllers.api.SubmitController">
 		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="adminRequestFilter" />			
-		<constructor-arg ref="apiKeyAuthenticator" />
-		<constructor-arg ref="submissionProcessingService" />
-				
+		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="submissionProcessingService" />				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -497,14 +495,6 @@
 			</bean>		
 		</property>
 	</bean>
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
 		<constructor-arg ref="resourceDAO" />		
@@ -675,7 +665,7 @@
         <property name="mappings">
             <props>
             	<prop key="/api/tag">apiTagUrlController</prop>
-            	            	
+            	<prop key="/api/changeurl">apiTagUrlController</prop>            	            	
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>

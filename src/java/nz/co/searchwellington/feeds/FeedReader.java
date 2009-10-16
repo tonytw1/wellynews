@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds;
 
-import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -12,7 +11,6 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -22,8 +20,6 @@ import nz.co.searchwellington.utils.UrlFilters;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.sun.syndication.io.FeedException;
 
 
 public class FeedReader {

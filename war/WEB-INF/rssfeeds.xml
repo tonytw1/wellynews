@@ -19,6 +19,7 @@
 		<constructor-arg ref="liveRssfeedNewsitemService" />
 		<constructor-arg ref="feedNewsitemCache" />
 		<constructor-arg ref="feedReaderTarget" />
+		<constructor-arg ref="wallclock" />
 	</bean>
 		
 	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >

@@ -14,9 +14,13 @@ public class LoggedInUserFilter {
 	   	
 	private User loggedInUser;
 	private UserRepository userDAO;
-	
-	public LoggedInUserFilter() {	
+		
+	public LoggedInUserFilter() {
+	}
+
+	public LoggedInUserFilter(UserRepository userDAO) {	
 		this.loggedInUser = null;
+		this.userDAO = userDAO; 
 	}
 	
 	public void loadLoggedInUser(HttpServletRequest request) {		 

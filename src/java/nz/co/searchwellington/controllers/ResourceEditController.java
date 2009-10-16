@@ -36,7 +36,6 @@ import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.utils.UrlCleaner;
-import nz.co.searchwellington.utils.UrlFilters;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
@@ -198,7 +197,6 @@ public class ResourceEditController extends BaseMultiActionController {
     }
     
     
-    // TODO needs auth by api etc.
     // TODO no feed tags or autotagging?
     // TODO don't duplicate?
     public ModelAndView acceptFastByUrl(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {    	
@@ -320,7 +318,6 @@ public class ResourceEditController extends BaseMultiActionController {
     
     @Transactional
     public ModelAndView submitFeed(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        
         ModelAndView modelAndView = new ModelAndView("submitFeed");
         modelAndView.addObject("heading", "Submitting a Feed");
         Resource editResource = resourceDAO.createNewFeed();
@@ -470,23 +467,15 @@ public class ResourceEditController extends BaseMultiActionController {
             submissionProcessingService.processGeocode(request, editResource);
             submissionProcessingService.processDate(request, editResource);
             submissionProcessingService.processDescription(request, editResource);
-            submissionProcessingService.processTags(request, editResource);
+            submissionProcessingService.processTags(request, editResource);            
+            submissionProcessingService.processPublisher(request, editResource);
             
             if (editResource.getType().equals("N")) {
             	processImage(request, (Newsitem) editResource, loggedInUser);            
             }
             
-            // Set publisher field.
-            boolean isPublishedResource = editResource instanceof PublishedResource;
-            if (isPublishedResource) {
-                ((PublishedResource) editResource).setPublisher((Website) request.getAttribute("publisher"));           
-            }
             
-            if (editResource.getType().equals("F")) {              
-                ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
-                log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
-                rssPrefetcher.decacheAndLoad((Feed) editResource);
-            }
+            processFeedAcceptancePolicy(request, editResource);
                         
             // Apply the auto tagger if this submission is by a logged in user.
             if (newSubmission && loggedInUser != null) {
@@ -534,8 +523,20 @@ public class ResourceEditController extends BaseMultiActionController {
        
         return modelAndView;
     }
-   
-   
+
+
+
+private void processFeedAcceptancePolicy(HttpServletRequest request,
+		Resource editResource) {
+	if (editResource.getType().equals("F")) {              
+	    ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
+	    log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
+	    rssPrefetcher.decacheAndLoad((Feed) editResource);
+	}
+}
+
+
+
    	
 	private void saveResource(HttpServletRequest request, User loggedInUser,
 			Resource editResource, boolean newSubmission,
@@ -570,46 +571,13 @@ public class ResourceEditController extends BaseMultiActionController {
 		}
 	}
 
-	
 
-    private void processDate(HttpServletRequest request, Resource editResource) {
-        editResource.setDate((Date) request.getAttribute("date"));
-        if (editResource.getDate() == null && editResource.getId() == 0) {
-            editResource.setDate(Calendar.getInstance().getTime());
-        }
-    }
-
-
-
-    private void processDescription(HttpServletRequest request, User loggedInUser, Resource editResource) {
-        String description = request.getParameter("description");
-        if (loggedInUser == null) {
-            description = UrlFilters.stripHtml(description);
-            log.info("No logged in user; stripping html from description.");
-        }
-        editResource.setDescription(description);
-    }
-    
-    
     private void processImage(HttpServletRequest request, Newsitem editResource, User loggedInUser) {
     	Image image = (Image) request.getAttribute("image");
     	editResource.setImage(image);
     }
 
     
-    
-    
-    
-    
-    
-    
-    
-   
-    
-    
-   
-    
-
     private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {    
     	return editPermissionService.canEdit(editResource);
     }
@@ -636,8 +604,6 @@ public class ResourceEditController extends BaseMultiActionController {
     }
     
     
-    
-
     protected void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) throws IOException {
         boolean isPublishedResource = editResource instanceof PublishedResource;  
         if (isPublishedResource) {

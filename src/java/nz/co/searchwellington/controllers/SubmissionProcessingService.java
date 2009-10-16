@@ -10,11 +10,14 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.GeocodeImpl;
+import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -138,6 +141,15 @@ public class SubmissionProcessingService {
         }    
         trimTags(editResource, 4);               
     }
+    
+
+    public void processPublisher(HttpServletRequest request, Resource editResource) {
+    	boolean isPublishedResource = editResource instanceof PublishedResource;
+    	if (isPublishedResource) {
+    		((PublishedResource) editResource).setPublisher((Website) request.getAttribute("publisher"));
+    	}
+    }
+    
     
     
     private void processAdditionalTags(HttpServletRequest request, Resource editResource) {
