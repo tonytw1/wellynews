@@ -28,7 +28,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" scope="request">
 		<aop:scoped-proxy/>
-		<constructor-arg ref="usersDAO" />
+		<constructor-arg ref="userDAO" />
 	</bean>
 	
 	<bean id="wallclock" class="nz.co.searchwellington.repositories.WallClock" />
