@@ -294,7 +294,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken, int startIndex) {
 		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).maxItems(maxItems).startIndex(startIndex).toQuery();
-		setDateDescendingOrder(query);;
+		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	

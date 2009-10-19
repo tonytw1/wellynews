@@ -11,7 +11,9 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SupressionService;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -22,11 +24,13 @@ public class TagUrlController extends MultiActionController {
 	private ResourceRepository resourceDAO;
 	private AdminRequestFilter requestFilter;
 	private LoggedInUserFilter loggedInUserFilter;
+	private SupressionService suppressionService;
 
-    public TagUrlController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter) {		
+    public TagUrlController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService) {		
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
+		this.suppressionService = suppressionService;
 	}
 
     
@@ -58,7 +62,26 @@ public class TagUrlController extends MultiActionController {
  		return mv;    	
     }
     
-        
+    
+    public ModelAndView suppress(HttpServletRequest request, HttpServletResponse response) {
+    	ModelAndView mv = new ModelAndView();	
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (loggedInUser != null && loggedInUser.isAdmin()) {                
+    		final String urlToSupress = request.getParameter("url");    	    		
+    		if (urlToSupress != null) {    			 
+    			suppressionService.suppressUrl(urlToSupress);
+    			mv.setViewName("apiResponseOK");
+    			return mv;
+    		}
+    		
+    	} else {
+    		response.setStatus(HttpStatus.SC_FORBIDDEN);
+        }    	
+    	mv.setViewName("apiResponseERROR");
+    	return mv;    
+	}
+    
+            
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = loggedInUserFilter.getLoggedInUser();

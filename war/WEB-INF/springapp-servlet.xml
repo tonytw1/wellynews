@@ -133,10 +133,9 @@
 	
 
 	<bean id="supressionController" class="nz.co.searchwellington.controllers.admin.SupressionController">	
-		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="loggedInUserFilter" />		
+		<constructor-arg ref="suppressionService" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -198,16 +197,24 @@
 		</property>	
 	</bean>
 	
+	<bean id="suppressionService" class="nz.co.searchwellington.repositories.SupressionService">
+		<constructor-arg ref="supressionDAO" />
+		<constructor-arg ref="suggestionDAO" />		
+	</bean>
+	
+	
 	<bean id="apiTagUrlController" class="nz.co.searchwellington.controllers.api.TagUrlController">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="suppressionService" />		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
 						<prop key="/api/tag">tag</prop>
 						<prop key="/api/changeurl">changeUrl</prop>
+						<prop key="/api/supress">suppress</prop>
 					</props>
 				</property>
 			</bean>		
@@ -665,7 +672,8 @@
         <property name="mappings">
             <props>
             	<prop key="/api/tag">apiTagUrlController</prop>
-            	<prop key="/api/changeurl">apiTagUrlController</prop>            	            	
+            	<prop key="/api/changeurl">apiTagUrlController</prop>
+            	<prop key="/api/suppress">apiTagUrlController</prop>
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>

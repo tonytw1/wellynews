@@ -7,11 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlStack;
-import nz.co.searchwellington.model.Supression;
-import nz.co.searchwellington.model.SupressionImpl;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.SuggestionDAO;
-import nz.co.searchwellington.repositories.SupressionRepository;
+import nz.co.searchwellington.repositories.SupressionService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -22,50 +19,36 @@ public class SupressionController extends MultiActionController {
 
     Logger log = Logger.getLogger(SupressionController.class);
 
-    private SupressionRepository supressionDAO;  
+    private SupressionService suppressionService;
     private UrlStack urlStack;
-	private SuggestionDAO suggestionDAO;
 	private LoggedInUserFilter loggedInUserFilter;
 
-    
-    public SupressionController(SupressionRepository supressionDAO, UrlStack urlStack, SuggestionDAO suggestionDAO, LoggedInUserFilter loggedInUserFilter) {
-        this.supressionDAO = supressionDAO;       
-        this.urlStack = urlStack;
-        this.suggestionDAO = suggestionDAO;
-        this.loggedInUserFilter = loggedInUserFilter;
-    }
+	
+    protected SupressionController(SupressionService suppressionService, UrlStack urlStack, LoggedInUserFilter loggedInUserFilter) {		
+		this.suppressionService = suppressionService;
+		this.urlStack = urlStack;
+		this.loggedInUserFilter = loggedInUserFilter;
+	}
 
-    public ModelAndView supress(HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+	public ModelAndView supress(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         setRedirect(mv, request);        
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();;        
         if (loggedInUser != null && request.getParameter("url") != null) {
             String urlToSupress = request.getParameter("url");
-            Supression supression = new SupressionImpl(urlToSupress);
-            
-            log.info("Adding a url supression for: " + supression.getUrl());
-            if (!supressionDAO.isSupressed(urlToSupress)) {
-            	supressionDAO.addSupression(supression);
-            }
-            // TODO put this somewhere of it's own?
-            suggestionDAO.removeSuggestion(urlToSupress);
+            suppressionService.suppressUrl(urlToSupress);                       
         }
         return mv;
     }
     
     
-    public ModelAndView unsupress(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();                
+    public ModelAndView unsupress(HttpServletRequest request, HttpServletResponse response) throws IOException {ModelAndView mv = new ModelAndView();                
         setRedirect(mv, request);
-        
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        if (loggedInUser != null && request.getParameter("url") != null) {
-            String urlToSupress = request.getParameter("url");
-            Supression supression = new SupressionImpl(urlToSupress);
-            
-            log.info("Removing url supression for: " + supression.getUrl());
-            supressionDAO.removeSupressionForUrl(supression.getUrl());
+        if (loggedInUser != null && request.getParameter("url") != null) {        	
+           suppressionService.unsupressUrl(request.getParameter("url"));
         }
         return mv;
     }
