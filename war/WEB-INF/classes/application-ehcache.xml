@@ -38,7 +38,7 @@
 		
 	<!-- cache external RSS SyndFeeds -->
 	<cache name="feeds"
-		maxElementsInMemory="200"
+		maxElementsInMemory="300"
 		eternal="false"
 		timeToIdleSeconds="7200"
 		timeToLiveSeconds="7200"
@@ -46,7 +46,6 @@
 		/>
 	
 	
-
 	<!-- cache external Calendars -->
 	<cache name="calendars"
 		maxElementsInMemory="100"
