@@ -4,7 +4,6 @@
 	
 	<bean id="linkCheckerTarget" class="nz.co.searchwellington.controllers.LinkChecker" >
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="snapshotDAO" />	
 		<constructor-arg ref="httpFetcher" />
 		<constructor-arg>
@@ -20,6 +19,12 @@
 					<constructor-arg ref="commentFeedDetector" />
 					<constructor-arg ref="commentFeedGuesserService" />
 				</bean>
+				<bean class="nz.co.searchwellington.linkchecking.FeedLatestNewsitemProcesser">
+					<constructor-arg ref="cachingRssfeedNewsitemService" />				
+				</bean>
+				<bean class="nz.co.searchwellington.linkchecking.ContentHasChangedProcesser">
+					<constructor-arg ref="snapshotDAO" />				
+				</bean>	
 			</list>
 		</constructor-arg>
 	</bean>
