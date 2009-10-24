@@ -104,7 +104,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	@Override
 	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {
 		log.info("Getting recent commented newsitem count");
-		// TODO duplication
+		// TODO duplication - with what?
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).dateRange(14).commented(true).toQuery();					
 		setDateDescendingOrder(query);
 		query.setRows(maxItems);
@@ -309,11 +309,11 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	private List<Resource> getQueryResults(SolrQuery query) {
 		List<Resource> results = new ArrayList<Resource>();
-		log.info(query);
-			QueryResponse response = solrQueryService.querySolr(query);
-			if (response != null) {
-				loadResourcesFromSolrResults(results, response);			
-			}
+		log.debug("Solr query: " + query);
+		QueryResponse response = solrQueryService.querySolr(query);
+		if (response != null) {
+			loadResourcesFromSolrResults(results, response);			
+		}
 		return results;
 	}
 
