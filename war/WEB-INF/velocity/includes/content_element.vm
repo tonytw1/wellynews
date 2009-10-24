@@ -26,10 +26,10 @@
 				<li class="publisher">$item.suggestion.feed.publisher.name</li>
 			#end
 			
-			#if ($item.latestItem)
-				<li>Latest Item: $item.latestItem</li>
+			#if ($item.latestItemDate)
+				<li>Latest Item: $item.latestItemDate</li>
 			#end
-			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItem)
+			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItemDate)
 				<li>Last Changed: $dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')</li>
 			#end
 			

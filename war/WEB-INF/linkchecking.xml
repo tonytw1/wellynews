@@ -18,10 +18,7 @@
 					<constructor-arg ref="compositeLinkExtractor" />
 					<constructor-arg ref="commentFeedDetector" />
 					<constructor-arg ref="commentFeedGuesserService" />
-				</bean>
-				<bean class="nz.co.searchwellington.linkchecking.FeedLatestNewsitemProcesser">
-					<constructor-arg ref="cachingRssfeedNewsitemService" />				
-				</bean>
+				</bean>				
 				<bean class="nz.co.searchwellington.linkchecking.ContentHasChangedProcesser">
 					<constructor-arg ref="snapshotDAO" />				
 				</bean>	

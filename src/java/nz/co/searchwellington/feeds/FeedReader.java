@@ -100,11 +100,8 @@ public class FeedReader {
                 	}
                 }
             }
-    
-            // TODO what's this all about.
-            // Everytime we look at a feed, we should update the latest publication field.
-            feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
             
+            feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
             log.info("Feed latest item publication date is: " + feed.getLatestItemDate());
             
         } else {
@@ -112,6 +109,7 @@ public class FeedReader {
         }
         
         feed.setLastRead(Calendar.getInstance().getTime());        
+        resourceDAO.saveResource(feed); //TODO this works from @Transaction on timer task, but not severlet
         log.info("Done processing feed.");      
     }
 
