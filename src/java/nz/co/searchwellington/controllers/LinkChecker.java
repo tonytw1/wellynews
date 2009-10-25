@@ -57,7 +57,10 @@ public class LinkChecker {
 			checkResource.setLastScanned(new DateTime().toDate());
 			snapshotDAO.setSnapshotContentForUrl(checkResource.getUrl(), pageContentAfterHttpCheck);
 			resourceDAO.saveResource(checkResource);
-        }     
+			
+        } else {
+        	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database (has creating process committed yet)");
+        }
     }
 
 	
