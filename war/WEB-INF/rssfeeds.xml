@@ -18,10 +18,37 @@
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="liveRssfeedNewsitemService" />
 		<constructor-arg ref="feedNewsitemCache" />
-		<constructor-arg ref="feedReaderTarget" />
+		<constructor-arg ref="feedReaderRunner" />
 		<constructor-arg ref="wallclock" />
 	</bean>
-		
+	
+	<bean id="feedReaderRunner" class="nz.co.searchwellington.feeds.FeedReaderRunner" >
+		<constructor-arg ref="feedReader" />	
+		<constructor-arg ref="linkCheckerQueue" />	
+		<constructor-arg ref="notifier" />
+		<constructor-arg ref="resourceDAO" />
+	</bean>
+	
+	
+	<bean id="feedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="feedReaderTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	<bean id="feedReaderTarget" class="nz.co.searchwellington.feeds.FeedReader">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="autoTaggingService" />
+		<constructor-arg ref="feedAcceptanceDecider" />
+		<constructor-arg ref="dateFormatter" />
+		<constructor-arg ref="urlCleaner" />
+		<constructor-arg ref="suggestionDAO" />
+	</bean>
+	
+			
 	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >
 		<constructor-arg ref="cacheManager" />
 	</bean>

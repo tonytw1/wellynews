@@ -288,7 +288,7 @@
 		<constructor-arg ref="loggedInUserFilter" />	
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="configDAO" />	
-		<constructor-arg ref="feedReader" />
+		<constructor-arg ref="feedReaderRunner" />
 		<constructor-arg ref="rssPrefetcher" />
 		<constructor-arg ref="urlBuilder" />
 		

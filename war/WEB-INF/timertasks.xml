@@ -3,7 +3,7 @@
 <beans>
 
 <bean id="commentReaderJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-  <property name="targetObject" ref="feedReaderJob" />
+  <property name="targetObject" ref="commentFeedReaderJob" />
   <property name="targetMethod" value="runComments" />
   <property name="concurrent" value="false" />
 </bean>

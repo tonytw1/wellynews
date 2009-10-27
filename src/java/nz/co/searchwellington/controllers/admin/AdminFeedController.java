@@ -10,6 +10,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.feeds.FeedReader;
+import nz.co.searchwellington.feeds.FeedReaderRunner;
 import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.model.Feed;
@@ -32,18 +33,19 @@ public class AdminFeedController extends BaseMultiActionController {
     private AdminRequestFilter requestFilter;
     private LoggedInUserFilter loggedInUserFilter;
     private SupressionRepository supressionDAO;
-    private FeedReader feedReader;    
+    private FeedReaderRunner feedReaderRunner;    
 	private RssNewsitemPrefetcher rssPrefetcher;
     private UrlBuilder urlBuilder;
     
     
-    public AdminFeedController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, SupressionRepository supressionDAO, ConfigRepository configDAO, FeedReader feedReader, RssNewsitemPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
+    public AdminFeedController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, SupressionRepository supressionDAO, 
+    		ConfigRepository configDAO, FeedReaderRunner feedReaderRunner, RssNewsitemPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.loggedInUserFilter = loggedInUserFilter;       
         this.supressionDAO = supressionDAO;
         this.configDAO = configDAO;        
-        this.feedReader = feedReader;
+        this.feedReaderRunner = feedReaderRunner;
         this.rssPrefetcher = rssPrefetcher;
         this.urlBuilder = urlBuilder;       
     }
@@ -71,7 +73,8 @@ public class AdminFeedController extends BaseMultiActionController {
         if (request.getAttribute("feedAttribute") != null) {
             feed = (Feed) request.getAttribute("feedAttribute");
             log.info("Reading feed: " + feed.getName());           
-            feedReader.processFeed(feed);            
+            feedReaderRunner.readSingleFeed(feed);
+            
         } else {
             log.info("No feed seen on request; nothing to reread.");
         }        

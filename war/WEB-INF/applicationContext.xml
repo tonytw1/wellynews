@@ -57,26 +57,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 
 
-<bean id="feedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="feedReaderTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
 
-<bean id="feedReaderTarget" class="nz.co.searchwellington.feeds.FeedReader">
-	<constructor-arg ref="resourceDAO" />
-	<constructor-arg ref="cachingRssfeedNewsitemService" />
-	<constructor-arg ref="linkCheckerQueue" />
-	<constructor-arg ref="autoTaggingService" />
-	<constructor-arg ref="notifier" />
-	<constructor-arg value="${feedreader.email}" />
-	<constructor-arg ref="feedAcceptanceDecider" />
-	<constructor-arg ref="dateFormatter" />
-	<constructor-arg ref="urlCleaner" />
-	<constructor-arg ref="suggestionDAO" />
-</bean>
 
 <bean id="commentFeedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 	<property name="transactionManager" ref="transactionManager" />
@@ -91,9 +72,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 </bean>
 
 
-<bean name="feedReaderJob" class="nz.co.searchwellington.jobs.FeedReaderJob">
-	<constructor-arg ref="commentFeedReader" />
-</bean>
+	<bean name="commentFeedReaderJob" class="nz.co.searchwellington.jobs.CommentFeedReaderJob">
+		<constructor-arg ref="commentFeedReader" />
+	</bean>
 
 
     <bean id="publisherSelectFactory"
@@ -292,11 +273,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="notifier" class="nz.co.searchwellington.mail.Notifier">
 		<constructor-arg ref="mailSender" />
 		<constructor-arg ref="velocityEngine" />
+		<property name="recipient" value="${feedreader.email}" />	
 	</bean>
-	
-	
-	
-	
+		
 	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService" />	
 	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
  		<constructor-arg ref="resourceDAO" /> 		

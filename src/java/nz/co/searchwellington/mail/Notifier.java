@@ -19,31 +19,30 @@ public class Notifier {
 
     private VelocityEngine velocityEngine;
     private MailSender mailSender;
- 
+    private String recipient;
+
     Logger log = Logger.getLogger(Notifier.class);
     
-    public Notifier(VelocityEngine velocityEngine, MailSender mailSender) {
-        super();
+    public Notifier(VelocityEngine velocityEngine, MailSender mailSender) {        
         this.velocityEngine = velocityEngine;
         this.mailSender = mailSender;
     }
     
 
-    public void sendAcceptanceNotification(String toAddress, String subject, Resource resource) {
-        mailSender.sendMessage(toAddress, subject, createAcceptanceMessageBody(resource));
-        ;
-        
+	public void sendAcceptanceNotification(String subject, Resource resource) {
+        mailSender.sendMessage(recipient, subject, createAcceptanceMessageBody(resource));                
     }
     
-    public void sendTaggingNotification(String toAddress, String subject, Resource editResource) {      
-        mailSender.sendMessage(toAddress, subject, createPublicTaggingMessageBody(editResource));
+    public void sendTaggingNotification(String subject, Resource editResource) {      
+        mailSender.sendMessage(recipient, subject, createPublicTaggingMessageBody(editResource));
     }
     
-    public void sendSubmissionNotification(String toAddress, String subject, Resource editResource) {
-        mailSender.sendMessage(toAddress, subject, createSubmissionMessageBody(editResource));     
+    public void sendSubmissionNotification(String subject, Resource editResource) {
+        mailSender.sendMessage(recipient, subject, createSubmissionMessageBody(editResource));     
     }
     
-    
+
+    // TODO this should be injected and shared
     private String createAcceptanceMessageBody(Resource accepted) {
      return processTemplate(accepted, "mail/acceptance.vm");      
     }
@@ -56,11 +55,15 @@ public class Notifier {
         return processTemplate(editResource, "mail/tagging.vm");        
     }
 
+    // TODO reflection setting
+    public String getRecipient() {
+    	return recipient;
+    }
     
+    public void setRecipient(String recipient) {
+    	this.recipient = recipient;
+    }
     
-    
-    
-
     private String processTemplate(Resource editResource, String templatePath) {
         try {
             Template template = velocityEngine.getTemplate(templatePath);
@@ -86,8 +89,4 @@ public class Notifier {
         return null;
     }
 
-
-
-   
-      
 }

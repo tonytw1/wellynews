@@ -1,14 +1,13 @@
 package nz.co.searchwellington.feeds;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
-import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -19,21 +18,17 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
 public class FeedReader {
-    
-    private static final int NUMBER_OF_FEEDS_TO_READ = 256;
-
+      
 	Logger log = Logger.getLogger(FeedReader.class);
     
     private ResourceRepository resourceDAO;
     private RssfeedNewsitemService rssfeedNewsitemService;
-    private LinkCheckerQueue linkCheckerQueue;
     private AutoTaggingService autoTagger;   
-    private Notifier notifier;
-    private String notificationReciept;
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
@@ -45,38 +40,25 @@ public class FeedReader {
     
     
     
-    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, LinkCheckerQueue linkCheckerQueue, AutoTaggingService autoTagger, Notifier notifier, String notificationReciept, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
+    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AutoTaggingService autoTagger, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
-        this.linkCheckerQueue = linkCheckerQueue;
         this.autoTagger = autoTagger;
-        this.notifier = notifier;
-        this.notificationReciept = notificationReciept;
         this.feedAcceptanceDecider = feedAcceptanceDecider;      
         this.dateFormatter = dateFormatter;
         this.urlCleaner = urlCleaner;
         this.suggestionDAO = suggestionDAO;
     }
 
+    
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Set<Integer> processFeed(int feedId) {
+    	Set<Integer> acceptedNewsitemIds = new HashSet<Integer>();
+    	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
+    	
+    	log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));               
 
-    @Transactional
-    public void acceptFeeditems() {              
-        log.info("Accepting feeds.");        
-        int processed = 0;        
-        for (Feed feed: resourceDAO.getFeedsToRead()) {      
-            if (processed < NUMBER_OF_FEEDS_TO_READ) {
-                processFeed(feed);
-                processed ++;
-            }
-        }
-        log.info("Finished reading feeds.");
-    }
-
- 
-    public void processFeed(Feed feed) {        
-        log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));
-       
-        // TODO can this move onto the enum?
+    	// TODO can this move onto the enum?
         boolean shouldLookAtFeed =  feed.getAcceptancePolicy() != null && feed.getAcceptancePolicy().equals("accept") 
         	|| feed.getAcceptancePolicy().equals("accept_without_dates")
         	|| feed.getAcceptancePolicy().equals("suggest");
@@ -90,7 +72,7 @@ public class FeedReader {
                 if (feed.getAcceptancePolicy().startsWith("accept")) {
                 	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
                 	if (acceptThisItem) {                		
-                		acceptFeedItem(feednewsitem, feed);               		
+                		acceptFeedItem(feednewsitem, feed, acceptedNewsitemIds);
                 	} 
                 	
                 } else {                	
@@ -110,12 +92,13 @@ public class FeedReader {
         
         feed.setLastRead(Calendar.getInstance().getTime());        
         resourceDAO.saveResource(feed); //TODO this works from @Transaction on timer task, but not severlet
-        log.info("Done processing feed.");      
+        log.info("Done processing feed.");
+        return acceptedNewsitemIds;
     }
 
 
 
-    private void acceptFeedItem(FeedNewsitem feeditem, Feed feed) {
+    private void acceptFeedItem(FeedNewsitem feeditem, Feed feed, Set<Integer> acceptedNewsitemIds) {
         log.info("Accepting: " + feeditem.getName());
         Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
         log.info("Item body after makeNewsitemFromFeedItem: " + resource.getDescription());
@@ -129,9 +112,8 @@ public class FeedReader {
       
         tagAcceptedFeedItem(resource, feed.getTags());
         log.info("Item body before save: " + resource.getDescription());
-        resourceDAO.saveResource(resource);
-        linkCheckerQueue.add(resource.getId());
-        notifier.sendAcceptanceNotification(notificationReciept, "Accepted newsitem from feed", resource);
+        resourceDAO.saveResource(resource);        
+        acceptedNewsitemIds.add(resource.getId());
     }
 
 

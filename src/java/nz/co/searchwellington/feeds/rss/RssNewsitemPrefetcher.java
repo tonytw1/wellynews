@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.feeds.FeedNewsitemCache;
-import nz.co.searchwellington.feeds.FeedReader;
+import nz.co.searchwellington.feeds.FeedReaderRunner;
 import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -23,34 +23,37 @@ public class RssNewsitemPrefetcher {
 	private ResourceRepository resourceDAO;
 	private LiveRssfeedNewsitemService rssNewsitemService;
 	private FeedNewsitemCache feedNewsitemCache;
-	private FeedReader feedReader;
+	private FeedReaderRunner feedReaderRunner;
 	private WallClock wallClock;
 	
 	public RssNewsitemPrefetcher() {		
 	}
 
-	public RssNewsitemPrefetcher(ResourceRepository resourceDAO, LiveRssfeedNewsitemService rssNewsitemService, FeedNewsitemCache feedNewsitemCache, FeedReader feedReader, WallClock wallClock) {
+	public RssNewsitemPrefetcher(ResourceRepository resourceDAO, LiveRssfeedNewsitemService rssNewsitemService, FeedNewsitemCache feedNewsitemCache, FeedReaderRunner feedReaderRunner, WallClock wallClock) {
 		this.resourceDAO = resourceDAO;
 		this.rssNewsitemService = rssNewsitemService;
 		this.feedNewsitemCache = feedNewsitemCache;
-		this.feedReader = feedReader;
+		this.feedReaderRunner = feedReaderRunner;
 		this.wallClock = wallClock;
 	}
 
-	@Transactional
+	
+    @Transactional
 	public void run() {
 		List<Feed> allFeeds = resourceDAO.getAllFeeds();
 		for (Feed feed : decideWhichFeedsToDecache(allFeeds)) {
 			if (feed != null) {
 				loadAndCacheFeedNewsitems(feed);
 			}
-		}
-		feedReader.acceptFeeditems();
+		}		
+		feedReaderRunner.readAllFeeds(allFeeds);	
 	}
 		
+    
+    // TODO implement something other than all here
 	private List<Feed> decideWhichFeedsToDecache(List<Feed> allFeeds) {
 		List<Feed> feedsToDecache = new ArrayList<Feed>();
-		log.info("Deciding which feeds to accept");
+		log.info("Deciding which feeds to decache");
 		log.info("Localtime is: " + wallClock.getLocalWallClockTime() + ". Is daytime: " + wallClock.isCurrentlyDaytime());	
 		for (Feed feed : allFeeds) {
 			log.debug("Feed '" + feed.getName() + "' was last read at: " + feed.getLastRead());
@@ -64,6 +67,7 @@ public class RssNewsitemPrefetcher {
 		loadAndCacheFeedNewsitems(feed);		
 	}
 	
+	
 	private void loadAndCacheFeedNewsitems(Feed feed) {
 		if (feed != null) {
 			List<FeedNewsitem> loadedItems = rssNewsitemService.getFeedNewsitems(feed);
@@ -72,5 +76,5 @@ public class RssNewsitemPrefetcher {
 			}
 		}
 	}
-	
+			
 }

@@ -8,15 +8,14 @@ import org.apache.log4j.Logger;
 
 import com.sun.syndication.io.FeedException;
 
-public class FeedReaderJob {
+public class CommentFeedReaderJob {
 
-    Logger log = Logger.getLogger(FeedReaderJob.class);
+    Logger log = Logger.getLogger(CommentFeedReaderJob.class);
 
     private CommentFeedReader commentReader;
 
- 
-
-    public FeedReaderJob(CommentFeedReader commentReader) {
+    
+    public CommentFeedReaderJob(CommentFeedReader commentReader) {
         this.commentReader = commentReader;
     }
 

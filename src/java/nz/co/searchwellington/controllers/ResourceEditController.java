@@ -560,7 +560,7 @@ private void processFeedAcceptancePolicy(HttpServletRequest request,
 		    log.info("Owned put onto session.");
 	
 		    // Send a notification of a public submission.
-		    notifier.sendSubmissionNotification("tony@ditonics.com", "New submission", editResource);                                        
+		    notifier.sendSubmissionNotification("New submission", editResource);                                        
 		}	
 	}
 
