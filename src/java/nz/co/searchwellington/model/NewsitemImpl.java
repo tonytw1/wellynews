@@ -11,10 +11,10 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 
 public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
-    
-        
+         
     CommentFeed commentFeed;
     Image image;
+    Feed feed;
       
     private Twit submittingTwit;
     private Set<Twit> reTwits;
@@ -34,6 +34,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.discoveredFeeds = discoveredFeeds;
         this.submittingTwit = submittingTwit;
         this.reTwits = retwits;
+        this.feed = null;
     }
 
  
@@ -105,8 +106,12 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 		this.reTwits.add(retwit);
 	}
 
-	
-	
-	
-  
+	public Feed getFeed() {
+		return feed;
+	}
+
+	public void setFeed(Feed feed) {
+		this.feed = feed;
+	}
+	  
 }

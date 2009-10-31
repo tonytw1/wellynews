@@ -48,6 +48,7 @@ public abstract class RssfeedNewsitemService {
 	}
 	
 	
+	// TODO naming of this method is confusing
 	public FeedNewsitem getFeedNewsitemByUrl(Suggestion suggestion) {
 		List<FeedNewsitem> feedNewsitems = this.getFeedNewsitems(suggestion.getFeed());
 		Iterator<FeedNewsitem> i = feedNewsitems.iterator();

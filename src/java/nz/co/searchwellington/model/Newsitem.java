@@ -10,5 +10,8 @@ public interface Newsitem extends PublishedResource, TwitterSubmittable, Comment
 	
 	public Set<Twit> getReTwits();
 	public void addReTwit(Twit retwit);
-   
+	
+	public Feed getFeed();
+	public void setFeed(Feed feed);
+	
 }

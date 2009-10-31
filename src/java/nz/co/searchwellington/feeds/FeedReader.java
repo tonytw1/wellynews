@@ -8,6 +8,7 @@ import java.util.Set;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -100,7 +101,9 @@ public class FeedReader {
 
     private void acceptFeedItem(FeedNewsitem feeditem, Feed feed, Set<Integer> acceptedNewsitemIds) {
         log.info("Accepting: " + feeditem.getName());
-        Resource resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
+        Newsitem resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
+        resource.setFeed(feed);
+        
         log.info("Item body after makeNewsitemFromFeedItem: " + resource.getDescription());
         
         flattenLoudCapsInTitle(resource);

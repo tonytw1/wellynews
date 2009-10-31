@@ -8,6 +8,7 @@ import java.util.Set;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
@@ -256,7 +257,18 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public Set<Twit> getReTwits() {
 		return newsitem.getReTwits();
 	}
+
+
+	public Feed getFeed() {
+		return newsitem.getFeed();
+	}
+
+
+	public void setFeed(Feed feed) {
+		newsitem.setFeed(feed);
+	}
+
+
 	
-	
-	
+		
 }

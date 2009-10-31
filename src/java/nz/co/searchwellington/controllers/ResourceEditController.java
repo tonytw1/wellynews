@@ -360,6 +360,10 @@ public class ResourceEditController extends BaseMultiActionController {
             if (editResource.getType().equals("W")) {
             	removePublisherFromPublishersContent(editResource);            	
             }
+            
+            if (editResource.getType().equals("F")) {
+            	removeFeedFromFeedNewsitems(editResource);            	
+            }
             resourceDAO.deleteResource(editResource);
         }
         // TODO need to given failure messahe if we didn't actually remove the item.
@@ -382,6 +386,16 @@ public class ResourceEditController extends BaseMultiActionController {
     		watchlist.setPublisher(null);
     		resourceDAO.saveResource(watchlist);					
     	}
+    }
+    
+    
+    
+    private void removeFeedFromFeedNewsitems(Resource editResource) {
+    	Feed feed = (Feed) editResource;
+    	for (Newsitem newsitem : feed.getNewsitems()) {
+    		newsitem.setFeed(null);
+    		resourceDAO.saveResource(newsitem);					
+    	}    	
     }
     
     

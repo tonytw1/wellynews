@@ -7,6 +7,7 @@ import java.util.Set;
 
 public class FeedImpl extends PublishedResourceImpl implements Feed {
   
+    Set <Newsitem> newsitems;
     // TODO migrate acceptance options to Enums.
     String acceptancePolicy;
     Date latestItemDate;
@@ -58,6 +59,14 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
 
     public void setLastRead(Date lastRead) {
         this.lastRead = lastRead;
+    }
+    
+    public Set <Newsitem> getNewsitems() {
+        return newsitems;
+    }
+    
+    public void setNewsitems(Set<Newsitem> newsitems) {
+        this.newsitems = newsitems;
     }
     
 }

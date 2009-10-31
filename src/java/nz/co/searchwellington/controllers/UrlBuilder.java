@@ -5,6 +5,7 @@ import java.util.Date;
 
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
@@ -76,6 +77,13 @@ public class UrlBuilder {
 	public String getGeotaggedUrl() {
 		return siteInformation.getUrl() + "/geotagged";
 	}
+	
+	
+	public String getPublicTaggingUrl(Resource resource) {
+		return siteInformation.getUrl() + "/tagging/tag?resource=" + resource.getId();
+	}
+	
+	
 	
 	public String getArchiveLinkUrl(ArchiveLink archiveLink) {
 		// TODO if this dateformatter thread safe? Replace with DateFormatter

@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model;
 
 import java.util.Date;
+import java.util.Set;
 
 
 public interface Feed extends PublishedResource {
@@ -18,4 +19,8 @@ public interface Feed extends PublishedResource {
     public void setLastRead(Date lastRead);
         
     public String getUrlWords();
+
+	public Set <Newsitem> getNewsitems();
+
+	public void setNewsitems(Set<Newsitem> newsitems);
 }

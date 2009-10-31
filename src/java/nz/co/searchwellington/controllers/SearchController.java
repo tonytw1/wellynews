@@ -58,7 +58,7 @@ public class SearchController extends BaseMultiActionController {
                 if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                     // TODO what do you done if there are no matches for a search?
                 }
-                // TODO this should be an if/else group.                
+                // TODO this should be in the view                
                 if (matchingSites.size() >= matchingNewsitems.size()) {
                     mv.getModel().put("main_heading", "Matching Sites");
                     
