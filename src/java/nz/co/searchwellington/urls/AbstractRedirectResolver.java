@@ -2,6 +2,7 @@ package nz.co.searchwellington.urls;
 
 
 import java.io.IOException;
+import java.net.URLDecoder;
 
 
 import org.apache.commons.httpclient.Header;
@@ -33,7 +34,7 @@ public abstract class AbstractRedirectResolver implements RedirectingUrlResolver
                 if (httpResponseWasRedirect) {
                     Header locationHeader = method.getResponseHeader("Location");
                     if (locationHeader != null) {
-                        return locationHeader.getValue();
+                        return URLDecoder.decode(locationHeader.getValue(), "UTF-8");
                     }
                 } else {
                     log.warn("The http call did not return an expected redirect.");
