@@ -12,7 +12,9 @@
 				<bean class="nz.co.searchwellington.linkchecking.TechnoratiCountUpdater">				
 					<constructor-arg ref="technoratiDAO" />
 				</bean>
-				<bean class="nz.co.searchwellington.linkchecking.NewsitemCommentReader" />
+				<bean class="nz.co.searchwellington.linkchecking.NewsitemCommentReader">
+					<constructor-arg ref="commentFeedReader" />
+				</bean>
 				<bean class="nz.co.searchwellington.linkchecking.FeedAutodiscoveryProcesser">
 					<constructor-arg ref="resourceDAO" />				
 					<constructor-arg ref="compositeLinkExtractor" />
