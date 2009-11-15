@@ -23,7 +23,8 @@ public class UrlCleaner {
 		return url;
     }
     
-    protected String filterSubmittedURL(String url) {
+    protected String filterSubmittedURL(String url) {    	
+    	url = UrlFilters.stripFeedburnerParams(url);    	
         url = UrlFilters.trimWhiteSpace(url);
         url = UrlFilters.stripPhpSession(url);
         url = UrlFilters.addHttpPrefixIfMissing(url);
