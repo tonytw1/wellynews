@@ -23,7 +23,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/ehcache-1.2.3.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/flickrapi-1.0b1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-email-1.0.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jTechnorati.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/quartz-1.6.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-lang-2.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-collections-3.2.jar"/>

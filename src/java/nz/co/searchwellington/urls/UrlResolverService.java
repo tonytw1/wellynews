@@ -1,5 +1,7 @@
 package nz.co.searchwellington.urls;
 
+import java.net.URLDecoder;
+
 import org.apache.log4j.Logger;
 
 public class UrlResolverService {
@@ -45,6 +47,7 @@ public class UrlResolverService {
 			if (resolver.isValid(url)) {
 				String resolvedUrl = resolver.resolveUrl(url);
 				if (resolvedUrl != null) {
+					resolvedUrl = URLDecoder.decode(resolvedUrl);
 					log.info("Redirected url '" + url + "' resolved to: " + resolvedUrl);
 					url = resolvedUrl;
 				} else {

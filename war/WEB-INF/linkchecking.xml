@@ -8,10 +8,7 @@
 		<constructor-arg ref="httpFetcher" />
 		<constructor-arg>
 			<list>
-				<bean class="nz.co.searchwellington.linkchecking.FirstLiveTimeSetter" />
-				<bean class="nz.co.searchwellington.linkchecking.TechnoratiCountUpdater">				
-					<constructor-arg ref="technoratiDAO" />
-				</bean>
+				<bean class="nz.co.searchwellington.linkchecking.FirstLiveTimeSetter" />			
 				<bean class="nz.co.searchwellington.linkchecking.NewsitemCommentReader">
 					<constructor-arg ref="commentFeedReader" />
 				</bean>
