@@ -132,7 +132,7 @@ public class UrlFilters {
     }
 
 	public static String stripFeedburnerParams(String url) {
-		Pattern p = Pattern.compile("&utm_.*(.*)$");
+		Pattern p = Pattern.compile("[&|?]utm_.*(.*)$");
         return p.matcher(url).replaceAll("");
 	}
 
