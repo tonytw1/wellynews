@@ -362,7 +362,7 @@ public class ResourceEditController extends BaseMultiActionController {
             }
             
             if (editResource.getType().equals("F")) {
-            	removeFeedFromFeedNewsitems(editResource);            	
+            	removeFeedFromFeedNewsitems((Feed) editResource);
             }
             resourceDAO.deleteResource(editResource);
         }
@@ -390,9 +390,8 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     
-    private void removeFeedFromFeedNewsitems(Resource editResource) {
-    	Feed feed = (Feed) editResource;
-    	for (Newsitem newsitem : feed.getNewsitems()) {
+    private void removeFeedFromFeedNewsitems(Feed feed) {    	
+    	for (Newsitem newsitem : resourceDAO.getNewsitemsForFeed(feed)) {
     		newsitem.setFeed(null);
     		resourceDAO.saveResource(newsitem);					
     	}    	

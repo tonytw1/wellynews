@@ -161,7 +161,17 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
-    @SuppressWarnings("unchecked")  
+    @SuppressWarnings("unchecked")
+	@Override
+	public List<Newsitem> getNewsitemsForFeed(Feed feed) {
+    	return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
+    		add(Restrictions.eq("feed", feed)).
+    		addOrder(Order.desc("date")).
+    		list();
+    }
+	
+
+	@SuppressWarnings("unchecked")  
     final public List<Resource> getOwnedBy(User owner) {    
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).
                 add(Restrictions.eq("owner", owner)).

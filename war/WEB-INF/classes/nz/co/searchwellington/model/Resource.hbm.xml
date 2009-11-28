@@ -137,9 +137,10 @@
 			proxy="nz.co.searchwellington.model.Newsitem"
 			discriminator-value="N">
 
-			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="publisher"
-				cascade="" />
+			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="publisher" cascade="" />
 
+			<many-to-one name="feed" class="nz.co.searchwellington.model.FeedImpl" column="feed" cascade="" />
+			
 			<many-to-one name="commentFeed" class="nz.co.searchwellington.model.CommentFeed" 
 				column="comment_feed" cascade="" />
 		            	        	
@@ -170,15 +171,12 @@
 		</subclass>
 
 
-		<subclass name="nz.co.searchwellington.model.FeedImpl"
-			proxy="nz.co.searchwellington.model.Feed" discriminator-value="F">
+		<subclass name="nz.co.searchwellington.model.FeedImpl" proxy="nz.co.searchwellington.model.Feed" discriminator-value="F">
 
-			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl"
-				column="feed_publisher" />
-				
-				
+			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="feed_publisher" />
+			
 			<property name="acceptancePolicy" type="text">
-  					<column name="acceptance" length="10" not-null="false"/>
+  				<column name="acceptance" length="10" not-null="false"/>
 			</property>
 			
 			<property name="latestItemDate" type="date">
@@ -187,10 +185,8 @@
 	        
 	       	<property name="lastRead" type="timestamp">
         		<column name="last_read"/>
-        	</property> 	
-	        
-	        	
-
+        	</property>
+        	
 		</subclass>
 
 

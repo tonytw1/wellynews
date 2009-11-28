@@ -144,5 +144,6 @@ public interface ResourceRepository {
 	
 	
 	public int getCommentCount();
+	public List<Newsitem> getNewsitemsForFeed(Feed feed);
     
 }

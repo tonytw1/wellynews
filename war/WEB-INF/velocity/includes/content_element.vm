@@ -27,7 +27,7 @@
 			#end
 			
 			#if ($item.latestItemDate)
-				<li>Latest Item: $item.latestItemDate</li>
+				<li>Latest Item: $dateFormatter.formatDate($item.latestItemDate, 'd MMM yyyy')</li>				
 			#end
 			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItemDate)
 				<li>Last Changed: $dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')</li>
@@ -189,16 +189,19 @@
 					<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
 				#end
 								
+															
+				#if ($item.owner && $item.owner.profilename) 	
+					<li>Submitted by: <a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a></li>
+				#end
+				
+				#if ($item.type == "N" && $item.feed) 
+					<li>Accepted from <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
+				#end
+				
 				#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
 					<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($item)">accept</a></li>
 					<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($item)">ignore</a></li>
 				#end
-															
-				#if ($item.owner && $item.owner.profilename) 	
-					<li>Submitted by:					
-						<a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a>					
-					</li>
-				#end	
 		</ul>				
 	</li>
 	<br clear="all">				
