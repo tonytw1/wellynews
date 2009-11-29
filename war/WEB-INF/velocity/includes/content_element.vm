@@ -195,7 +195,7 @@
 				#end
 				
 				#if ($item.type == "N" && $item.feed) 
-					<li>Accepted from <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
+					<li>Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
 				#end
 				
 				#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
