@@ -190,7 +190,7 @@
 				#end
 								
 															
-				#if ($item.owner && $item.owner.profilename) 	
+				#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	
 					<li>Submitted by: <a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a></li>
 				#end
 				
