@@ -14,11 +14,9 @@ import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
-import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Image;
-import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -40,6 +38,7 @@ import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -54,11 +53,9 @@ public class ResourceEditController extends BaseMultiActionController {
            
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
-    private LinkCheckerQueue linkCheckerQueue;       
     private TagWidgetFactory tagWidgetFactory;
     private PublisherSelectFactory publisherSelectFactory;
     private SupressionRepository supressionDAO;
-    private Notifier notifier;
     private AutoTaggingService autoTagger;
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
     private UrlCleaner urlCleaner;
@@ -67,22 +64,20 @@ public class ResourceEditController extends BaseMultiActionController {
     private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
     private SuggestionDAO suggestionDAO;
     private SubmissionProcessingService submissionProcessingService;
+    private ContentUpdateService contentUpdateService;
       
-    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter, 
-    		LinkCheckerQueue linkCheckerQueue, 
+    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
-            Notifier notifier, AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
+            AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService, 
-            SuggestionDAO suggestionDAO, SubmissionProcessingService submissionProcessingService) {    	
+            SuggestionDAO suggestionDAO, SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService) {    	
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
-        this.linkCheckerQueue = linkCheckerQueue;
         this.tagWidgetFactory = tagWidgetFactory;
         this.publisherSelectFactory = publisherSelectFactory;
         this.supressionDAO = supressionDAO;
-        this.notifier = notifier;
         this.autoTagger = autoTagger;
         this.acceptanceWidgetFactory = acceptanceWidgetFactory;      
         this.urlCleaner = urlCleaner;
@@ -93,6 +88,7 @@ public class ResourceEditController extends BaseMultiActionController {
         this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
         this.suggestionDAO = suggestionDAO;
         this.submissionProcessingService = submissionProcessingService;
+        this.contentUpdateService = contentUpdateService;
     }
    
     
@@ -182,41 +178,9 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     
-    private Newsitem getRequestedFeedItemByUrl(String url) {    	
-    	log.info("Looking for feeditem by url: " + url);
-    	for(Feed feed : resourceDAO.getAllFeeds()) {
-    		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-    		for (FeedNewsitem feedNewsitem : feednewsItems) {                	
-    			if (feedNewsitem.getUrl().equals(url)) {
-    				Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feedNewsitem, feed);
-        			return newsitem;
-                }
-    		}
-        }    	
-    	return null;
+    private Newsitem getRequestedFeedItemByUrl(String url) {
+    	return rssfeedNewsitemService.getFeedNewsitemByUrl(url);    	
     }
-    
-    
-    // TODO no feed tags or autotagging?
-    // TODO don't duplicate?
-    public ModelAndView acceptFastByUrl(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {    	
-    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        if (loggedInUser == null) {
-        	adminRequestFilter.loadAttributesOntoRequest(request);
-        	if (request.getParameter("url") != null) {
-        		Newsitem newsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
-        		log.info("Saving resource: " + newsitem.getName());        	
-        		saveResource(request, null, newsitem, true, true);        	
-        	} else {
-        		log.warn("Could not find feed news item with url: " + request.getAttribute("url"));            	
-        	}
-        } else {
-        	log.warn("No authed user; not processing fast accept call");
-        }
-        
-        // TODO this is an api call; should retun JSON or something.
-		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
-    }    
     
     
     
@@ -364,9 +328,20 @@ public class ResourceEditController extends BaseMultiActionController {
             if (editResource.getType().equals("F")) {
             	removeFeedFromFeedNewsitems((Feed) editResource);
             }
+            
+            if (editResource.getType().equals("N")) {
+            	Newsitem deletedNewsitem = (Newsitem) editResource;
+            	if (deletedNewsitem.getFeed() != null) {            		
+            		if (rssfeedNewsitemService.getFeedNewsitemByUrl(deletedNewsitem.getFeed(), deletedNewsitem.getUrl()) != null) {
+            			log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl());
+            			supressionDAO.createSupression(deletedNewsitem.getUrl());
+            		}
+            	}           		            	
+            }
+            
             resourceDAO.deleteResource(editResource);
         }
-        // TODO need to given failure messahe if we didn't actually remove the item.
+        // TODO need to given failure message if we didn't actually remove the item.
         return modelAndView;
     }
 
@@ -551,30 +526,8 @@ private void processFeedAcceptancePolicy(HttpServletRequest request,
 
 
    	
-	private void saveResource(HttpServletRequest request, User loggedInUser,
-			Resource editResource, boolean newSubmission,
-			boolean resourceUrlHasChanged) {
-		
-		resourceDAO.saveResource(editResource);
-		removeSuggestion(editResource);
-		
-		if (resourceUrlHasChanged) {
-		    linkCheckerQueue.add(editResource.getId());
-		    editResource.setHttpStatus(0);
-		    log.info("Resource url has changed; adding to link queue: " + editResource.getId());	    
-		} else {
-		    log.info("Resource url has not changed; not adding to link check queue.");
-		}
-		
-		final boolean newPublicSubmission = loggedInUser == null && newSubmission;
-		if (newPublicSubmission) {
-		    // Record the user's right to reedit this resource.
-		    request.getSession().setAttribute("owned", new Integer(editResource.getId()));
-		    log.info("Owned put onto session.");
-	
-		    // Send a notification of a public submission.
-		    notifier.sendSubmissionNotification("New submission", editResource);                                        
-		}	
+	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource, boolean newSubmission, boolean resourceUrlHasChanged) {		
+		contentUpdateService.update(editResource, loggedInUser, request, newSubmission, resourceUrlHasChanged);
 	}
 
 

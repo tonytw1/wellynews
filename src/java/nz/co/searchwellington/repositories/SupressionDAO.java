@@ -38,8 +38,7 @@ public class SupressionDAO implements SupressionRepository {
     public void addSupression(Supression supression) {
         log.info("Creating supression for: " + supression.getUrl());        
         sessionFactory.getCurrentSession().saveOrUpdate(supression);
-        sessionFactory.getCurrentSession().flush();
-        
+        sessionFactory.getCurrentSession().flush();        
     }
 
 

@@ -85,7 +85,7 @@ public class SuggestionDAO {
 		List<SuggestionFeednewsitem> suggestions = new ArrayList<SuggestionFeednewsitem>();
         for (Suggestion suggestion : bareSuggestions) {
 			if (suggestion.getFeed() != null) {
-				FeedNewsitem feednewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(suggestion);
+				FeedNewsitem feednewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(suggestion.getFeed(), suggestion.getUrl());
 				if (feednewsitem != null) {
 					suggestions.add(new SuggestionFeednewsitem(suggestion, feednewsitem.getName(), feednewsitem.getDate()));
 				}

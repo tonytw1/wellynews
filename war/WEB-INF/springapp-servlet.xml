@@ -202,19 +202,26 @@
 		<constructor-arg ref="suggestionDAO" />		
 	</bean>
 	
-	
-	<bean id="apiTagUrlController" class="nz.co.searchwellington.controllers.api.TagUrlController">
+
+
+
+
+	<bean id="apiController" class="nz.co.searchwellington.controllers.api.ApiController">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="suppressionService" />		
+		<constructor-arg ref="suppressionService" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="contentUpdateService" />
+		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
 						<prop key="/api/tag">tag</prop>
 						<prop key="/api/changeurl">changeUrl</prop>
-						<prop key="/api/supress">suppress</prop>
+						<prop key="/api/suppress">suppress</prop>
+						<prop key="/edit/acceptfast">accept</prop>
 					</props>
 				</property>
 			</bean>		
@@ -434,15 +441,21 @@
 	</bean>
 	
 	
+	<bean id="contentUpdateService"  class="nz.co.searchwellington.controllers.ContentUpdateService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="suggestionDAO" />	
+		<constructor-arg ref="linkCheckerQueue" />		
+		<constructor-arg ref="notifier" />	
+	</bean>
+	
+	
 	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="adminRequestFilter" />	
-		<constructor-arg ref="linkCheckerQueue" />		
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="publisherSelectFactory" />
 		<constructor-arg ref="supressionDAO" />
-		<constructor-arg ref="notifier" />
 		<constructor-arg ref="autoTaggingService" />
 		<constructor-arg ref="acceptanceWidgetFactory" />
 		<constructor-arg ref="urlCleaner" />
@@ -453,6 +466,7 @@
 		<constructor-arg ref="twitterNewsitemBuilderService" />
 		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="submissionProcessingService" />
+		<constructor-arg ref="contentUpdateService" />
 				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -671,9 +685,12 @@
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-            	<prop key="/api/tag">apiTagUrlController</prop>
-            	<prop key="/api/changeurl">apiTagUrlController</prop>
-            	<prop key="/api/suppress">apiTagUrlController</prop>
+            	<prop key="/api/tag">apiController</prop>
+            	<prop key="/api/changeurl">apiController</prop>
+            	<prop key="/api/suppress">apiController</prop>
+				<prop key="/edit/acceptfast">apiController</prop>
+				
+            	
             	<prop key="/about">simplePageController</prop>
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>
@@ -733,7 +750,6 @@
 				<prop key="/edit/submit/watchlist">editController</prop>
 				<prop key="/edit/submit/website">editController</prop>
 				<prop key="/edit/accept">editController</prop>
-				<prop key="/edit/acceptfast">editController</prop>
 				<prop key="/edit/twitteraccept">editController</prop>
 				
 				<prop key="/api/submit/newsitem">apiSubmitController</prop>

@@ -48,13 +48,26 @@ public abstract class RssfeedNewsitemService {
 	}
 	
 	
-	// TODO naming of this method is confusing
-	public FeedNewsitem getFeedNewsitemByUrl(Suggestion suggestion) {
-		List<FeedNewsitem> feedNewsitems = this.getFeedNewsitems(suggestion.getFeed());
+	// TODO should return a FeedNewsitem
+	public Newsitem getFeedNewsitemByUrl(String url) {
+		for(Feed feed : resourceDAO.getAllFeeds()) {
+			List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
+			for (FeedNewsitem feedNewsitem : feednewsItems) {                	
+				if (feedNewsitem.getUrl().equals(url)) {					
+					return this.makeNewsitemFromFeedItem(feedNewsitem, feed);					
+				}
+			}
+		}
+		return null;
+	}
+	
+	
+	public FeedNewsitem getFeedNewsitemByUrl(Feed feed, String url) {
+		List<FeedNewsitem> feedNewsitems = this.getFeedNewsitems(feed);
 		Iterator<FeedNewsitem> i = feedNewsitems.iterator();
 		while (i.hasNext()) {
 			FeedNewsitem feedNewsitem = i.next();
-			if (feedNewsitem.getUrl().equals(suggestion.getUrl())) {
+			if (feedNewsitem.getUrl().equals(url)) {
 				return feedNewsitem;
 			}
 		}
@@ -74,5 +87,5 @@ public abstract class RssfeedNewsitemService {
 			}
 		}
 	}
-	
+
 }
