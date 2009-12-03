@@ -304,12 +304,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="dateFormatter" />
 		<constructor-arg ref="urlBuilder" />
 	</bean>
-	
-	
-	<bean id="technoratiDAO" class="nz.co.searchwellington.repositories.TechnoratiDAO">
-		<constructor-arg value="${technorati.apikey}" />
-	</bean>
-	
+		
 	<bean id="robotExclusionService" class="nz.co.searchwellington.utils.RobotExclusionService" />
 	<bean id="standardHttpFetcher" class="nz.co.searchwellington.utils.StandardHttpFetcher" >
 		<property name="userAgent">
