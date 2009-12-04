@@ -25,23 +25,37 @@ public class ContentUpdateService {
 		this.notifier = notifier;
 	}
 
+	
+	public void update(Resource resource, User loggedInUser, HttpServletRequest request) {				
+		boolean resourceUrlHasChanged = false;
+		boolean newSubmission = resource.getId() == 0;
+		if (!newSubmission) {
+			Resource existingResource = resourceDAO.loadResourceById(resource.getId());
+			resourceUrlHasChanged = !resource.getUrl().equals(existingResource.getUrl());			
+		}
+
+		boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
+		update(resource, needsLinkCheck);
+		
+        if (newSubmission && loggedInUser != null) {        	
+        	resource.setOwner(loggedInUser);
+        }
+		
+		final boolean isNewPublicSubmission = loggedInUser == null && newSubmission;
+		if (isNewPublicSubmission) {			
+			 notifier.sendSubmissionNotification("New submission", resource);
+		}
+	}
 
 	
-	public void update(Resource resource, User loggedInUser, HttpServletRequest request, boolean newSubmission, boolean resourceUrlHasChanged) {
+	public void update(Resource resource, boolean needsLinkCheck) {
 		resourceDAO.saveResource(resource);
 		if (resource.getType().equals("N")) {
 			suggestionsDAO.removeSuggestion(resource.getUrl());
 		}
-		
-		if (resourceUrlHasChanged || newSubmission) {
+		if (needsLinkCheck) {
 			resource.setHttpStatus(0);
-			linkCheckerQueue.add(resource.getId());
-		}
-		
-		final boolean isNewPublicSubmission = loggedInUser == null && newSubmission;
-		if (isNewPublicSubmission) {
-			 request.getSession().setAttribute("owned", new Integer(resource.getId()));
-			 notifier.sendSubmissionNotification("New submission", resource);
+			linkCheckerQueue.add(resource);
 		}		
 	}
 	

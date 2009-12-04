@@ -65,19 +65,16 @@ public class SubmissionProcessingService {
     }
 	
 		
-	public boolean processUrl(HttpServletRequest req, Resource editResource) {
+	public void processUrl(HttpServletRequest req, Resource editResource) {
 		if (req.getParameter("url") != null) {
 			final String previousUrl = editResource.getUrl();
-	         	String url = req.getParameter("url");                                   
-	         	if (url != null) {
-	            	url = url.trim();
-	            	url = UrlFilters.addHttpPrefixIfMissing(url);            	
-	            	editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
-	            }
-	            boolean urlHasNotChanged = (previousUrl == null && editResource.getUrl() == null) || (previousUrl.equals(editResource.getUrl()));           
-	            return !urlHasNotChanged;
+			String url = req.getParameter("url");
+			if (url != null) {
+				url = url.trim();
+				url = UrlFilters.addHttpPrefixIfMissing(url);
+				editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
+			}
 		}
-		return false;
 	}
 	
 

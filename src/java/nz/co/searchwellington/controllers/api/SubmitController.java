@@ -36,7 +36,8 @@ public class SubmitController extends MultiActionController {
 		this.submissionProcessingService = submissionProcessingService;
 	}
     
-        
+    
+    // TODO needs to move to the api controller.
     @Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
     	ModelAndView mv = new ModelAndView();
@@ -48,8 +49,8 @@ public class SubmitController extends MultiActionController {
         if (loggedInUser != null && loggedInUser.isAdmin()) {        	
         	log.info("Accepting newsitem from api call by user: " + loggedInUser.getName());
 	        Resource editResource = resourceDAO.createNewNewsitem();
-	    	boolean resourceUrlHasChanged = submissionProcessingService.processUrl(request, editResource);
-	         
+	        
+	        submissionProcessingService.processUrl(request, editResource);	         
 	    	submissionProcessingService.processTitle(request, editResource);
 	    	log.info("Calling geocode");
 	    	submissionProcessingService.processGeocode(request, editResource);

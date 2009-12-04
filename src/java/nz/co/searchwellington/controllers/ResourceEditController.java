@@ -28,7 +28,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -38,7 +37,6 @@ import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
-import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -62,16 +60,15 @@ public class ResourceEditController extends BaseMultiActionController {
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
     private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
-    private SuggestionDAO suggestionDAO;
     private SubmissionProcessingService submissionProcessingService;
     private ContentUpdateService contentUpdateService;
-      
+    
     public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
-            EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService, 
-            SuggestionDAO suggestionDAO, SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService) {    	
+            EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService) {    	
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
@@ -86,7 +83,6 @@ public class ResourceEditController extends BaseMultiActionController {
         this.editPermissionService = editPermissionService;
         this.urlStack = urlStack;
         this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
-        this.suggestionDAO = suggestionDAO;
         this.submissionProcessingService = submissionProcessingService;
         this.contentUpdateService = contentUpdateService;
     }
@@ -437,19 +433,14 @@ public class ResourceEditController extends BaseMultiActionController {
                     editResource = resourceDAO.createNewWebsite();
                 }
             }
-            
-            if (loggedInUser != null) {
-            	log.info("New resource assigned to owner: " + loggedInUser.getUsername());
-            	editResource.setOwner(loggedInUser);
-            }
-            
+                        
         }
        
         log.info("In save");
         if (editResource != null) {                      
             boolean newSubmission = editResource.getId() == 0;
                    
-            boolean resourceUrlHasChanged = submissionProcessingService.processUrl(request, editResource);
+            submissionProcessingService.processUrl(request, editResource);
             submissionProcessingService.processTitle(request, editResource);
             log.info("Calling geocode");
             submissionProcessingService.processGeocode(request, editResource);
@@ -495,15 +486,17 @@ public class ResourceEditController extends BaseMultiActionController {
          
             boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
             // TODO validate. - what exactly?
-            if (okToSave) {            	
-                saveResource(request, loggedInUser, editResource, newSubmission, resourceUrlHasChanged);
+            if (okToSave) {
+            	// TODO could be a collection?
+   			 	request.getSession().setAttribute("owned", new Integer(editResource.getId()));
+   			 
+                saveResource(request, loggedInUser, editResource);
                 
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
             }
            
             modelAndView.addObject("item", editResource);
-          
             
         } else {
             log.warn("No edit resource could be setup.");
@@ -513,32 +506,23 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
 
-
-private void processFeedAcceptancePolicy(HttpServletRequest request,
-		Resource editResource) {
-	if (editResource.getType().equals("F")) {              
-	    ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
-	    log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
-	    rssPrefetcher.decacheAndLoad((Feed) editResource);
-	}
-}
-
-
+   // TODO move to submission handling service.
+   private void processFeedAcceptancePolicy(HttpServletRequest request, Resource editResource) {
+	   if (editResource.getType().equals("F")) {
+		   ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
+		   log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
+		   rssPrefetcher.decacheAndLoad((Feed) editResource);
+	   }
+   }
 
    	
-	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource, boolean newSubmission, boolean resourceUrlHasChanged) {		
-		contentUpdateService.update(editResource, loggedInUser, request, newSubmission, resourceUrlHasChanged);
+	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource) {		
+		contentUpdateService.update(editResource, loggedInUser, request);
 	}
 
-
-	private void removeSuggestion(Resource editResource) {
-		if (suggestionDAO.isSuggested(editResource.getUrl())) {            		
-			suggestionDAO.removeSuggestion(editResource.getUrl());
-		}
-	}
-
-
-    private void processImage(HttpServletRequest request, Newsitem editResource, User loggedInUser) {
+	
+	// TODO move to submission service.
+	private void processImage(HttpServletRequest request, Newsitem editResource, User loggedInUser) {
     	Image image = (Image) request.getAttribute("image");
     	editResource.setImage(image);
     }
@@ -546,12 +530,6 @@ private void processFeedAcceptancePolicy(HttpServletRequest request,
     
     private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {    
     	return editPermissionService.canEdit(editResource);
-    }
-
-
-
-    private void populateCommonLocal(ModelAndView mv) {      
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());      
     }
 
     
@@ -579,7 +557,7 @@ private void processFeedAcceptancePolicy(HttpServletRequest request,
             }
             modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(publisher, userIsLoggedIn).toString());   
         } else {
-            log.info("Edit resource is not a publiser resource.");
+            log.info("Edit resource is not a publisher resource.");
         }
     }
 

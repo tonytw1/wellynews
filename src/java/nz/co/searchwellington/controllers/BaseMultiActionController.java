@@ -51,6 +51,12 @@ public abstract class BaseMultiActionController extends MultiActionController {
     }
     
    
+    // TODO migrate all inlines to use this.
+    final protected void populateCommonLocal(ModelAndView mv) {      
+        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());      
+    }
+    
+    
     final protected void populateSecondaryLatestNewsitems(ModelAndView mv, User loggedInUser) {
         boolean showBroken = loggedInUser != null;      
         final int numberOfItems = 5;

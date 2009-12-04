@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.controllers.ContentUpdateService;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -34,6 +35,7 @@ public class FeedReader {
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
     private SuggestionDAO suggestionDAO;
+    private ContentUpdateService contentUpdateService;
  
     
     public FeedReader() {        
@@ -41,7 +43,7 @@ public class FeedReader {
     
     
     
-    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AutoTaggingService autoTagger, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
+    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AutoTaggingService autoTagger, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO, ContentUpdateService contentUpdateService) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.autoTagger = autoTagger;
@@ -49,6 +51,7 @@ public class FeedReader {
         this.dateFormatter = dateFormatter;
         this.urlCleaner = urlCleaner;
         this.suggestionDAO = suggestionDAO;
+        this.contentUpdateService = contentUpdateService;
     }
 
     
@@ -74,7 +77,7 @@ public class FeedReader {
                 	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
                 	if (acceptThisItem) {                		
                 		acceptFeedItem(feednewsitem, feed, acceptedNewsitemIds);
-                	} 
+                	}
                 	
                 } else {                	
                 	if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
@@ -98,7 +101,7 @@ public class FeedReader {
     }
 
 
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void acceptFeedItem(FeedNewsitem feeditem, Feed feed, Set<Integer> acceptedNewsitemIds) {
         log.info("Accepting: " + feeditem.getName());
         Newsitem resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
@@ -112,15 +115,16 @@ public class FeedReader {
         	log.info("Accepting a feeditem with no date; setting date to current time");            
             resource.setDate(new DateTime().toDate());
         }
-      
+        
         tagAcceptedFeedItem(resource, feed.getTags());
         log.info("Item body before save: " + resource.getDescription());
-        resourceDAO.saveResource(resource);        
-        acceptedNewsitemIds.add(resource.getId());
+        contentUpdateService.update(resource, true);
     }
 
 
-
+	
+    
+    
 	private void flattenLoudCapsInTitle(Resource resource) {
 		String flattenedTitle = UrlFilters.lowerCappedSentence(resource.getName());           
         if (!flattenedTitle.equals(resource.getName())) {

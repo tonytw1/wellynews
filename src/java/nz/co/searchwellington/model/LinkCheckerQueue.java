@@ -41,7 +41,13 @@ public class LinkCheckerQueue {
     	return contents;
     }
 
-    public void add(int id) {
+    public void add(Resource resource) {
+    	this.add(resource.getId());		
+
+    }
+
+    
+    private void add(int id) {
         log.debug("Adding id to queue: " + id);
         if (!queue.contains(id)) {
             queue.offer(id);
@@ -50,5 +56,6 @@ public class LinkCheckerQueue {
            log.warn("Queue already contains id: " + id);
         }
     }
+
     
 }

@@ -49,12 +49,12 @@ public class ApiController extends MultiActionController {
     	ModelAndView mv = new ModelAndView();
 
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
-    	if (loggedInUser != null && loggedInUser.isAdmin()) {  
+    	if (isAuthorised(loggedInUser)) {  
     		if (request.getParameter("url") != null) {
     			final String url = request.getParameter("url");
     			Newsitem newsitemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(url);
     			if (newsitemToAccept != null) {
-    				contentUpdateService.update(newsitemToAccept, loggedInUser, request, true, false);
+    				contentUpdateService.update(newsitemToAccept, loggedInUser, request);
     			}
     		}
     	}
@@ -67,7 +67,7 @@ public class ApiController extends MultiActionController {
     public ModelAndView changeUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {    		
     	 ModelAndView mv = new ModelAndView();
          User loggedInUser = loggedInUserFilter.getLoggedInUser();
-         if (loggedInUser != null && loggedInUser.isAdmin()) {                
+         if (isAuthorised(loggedInUser)) {                
          	requestFilter.loadAttributesOntoRequest(request);        
          	final String resourceUrl = request.getParameter("url");
          	final String newUrl = (String) request.getAttribute("newurl");
@@ -93,12 +93,13 @@ public class ApiController extends MultiActionController {
  		mv.setViewName("apiResponseERROR");
  		return mv;    	
     }
+
     
     
     public ModelAndView suppress(HttpServletRequest request, HttpServletResponse response) {
     	ModelAndView mv = new ModelAndView();	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
-    	if (loggedInUser != null && loggedInUser.isAdmin()) {                
+    	if (isAuthorised(loggedInUser)) {                
     		final String urlToSupress = request.getParameter("url");    	    		
     		if (urlToSupress != null) {    			 
     			suppressionService.suppressUrl(urlToSupress);
@@ -117,7 +118,7 @@ public class ApiController extends MultiActionController {
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        if (loggedInUser != null && loggedInUser.isAdmin()) {                
+        if (isAuthorised(loggedInUser)) {                
         	requestFilter.loadAttributesOntoRequest(request);        
         	final String resourceUrl = request.getParameter("url");
         	final Tag tag = (Tag) request.getAttribute("tag");
@@ -143,6 +144,11 @@ public class ApiController extends MultiActionController {
         
 		mv.setViewName("apiResponseERROR");
         return mv; 		
+    }
+
+    
+    private boolean isAuthorised(User loggedInUser) {
+    	return loggedInUser != null && loggedInUser.isAdmin();
     }
 
 }

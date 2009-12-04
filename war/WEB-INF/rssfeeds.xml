@@ -23,10 +23,7 @@
 	</bean>
 	
 	<bean id="feedReaderRunner" class="nz.co.searchwellington.feeds.FeedReaderRunner" >
-		<constructor-arg ref="feedReader" />	
-		<constructor-arg ref="linkCheckerQueue" />	
-		<constructor-arg ref="notifier" />
-		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="feedReader" />		
 	</bean>
 	
 	
@@ -46,6 +43,7 @@
 		<constructor-arg ref="dateFormatter" />
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="suggestionDAO" />
+		<constructor-arg ref="contentUpdateService" />
 	</bean>
 	
 			

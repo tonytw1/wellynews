@@ -263,7 +263,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		return getQueryCount(query);
 	}
 	
-		
+	// TODO need a paginating method
 	public List<Resource> getAllWatchlists(boolean showBroken) {
 		// TODO make this limit to things which changed in the last week.
 		SolrQuery query = new SolrQueryBuilder().type("L").maxItems(255).showBroken(showBroken).toQuery();

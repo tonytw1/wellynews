@@ -53,7 +53,7 @@ public class LinkCheckerController extends BaseMultiActionController {
         if (request.getAttribute("resource") != null) {
             Resource resource = (Resource) request.getAttribute("resource");
             log.info("Adding resource to queue: " + resource.getUrl() + "(" + resource.getId() + ")");
-            queue.add(resource.getId()); 
+            queue.add(resource); 
         } else {
         	log.warn("No resource found on request; not adding to queue");
         }

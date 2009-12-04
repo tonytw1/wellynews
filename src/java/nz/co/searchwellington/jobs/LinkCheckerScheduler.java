@@ -37,7 +37,7 @@ public class LinkCheckerScheduler {
         log.info("Queuing feeds for checking.");
         for (Resource resource : resourceDAO.getAllFeeds()) {
             log.info("Queuing feed item for checking: " + resource.getName());
-            linkCheckerQueue.add(resource.getId());
+            linkCheckerQueue.add(resource);
         }
     }
 
@@ -49,7 +49,7 @@ public class LinkCheckerScheduler {
         log.info("Queuing watchlist items for checking.");
         for (Resource resource : resourceDAO.getAllWatchlists(true)) {
             log.info("Queuing watchlist item for checking: " + resource.getName());
-            linkCheckerQueue.add(resource.getId());
+            linkCheckerQueue.add(resource);
         }
         
        
@@ -65,7 +65,7 @@ public class LinkCheckerScheduler {
         Date oneMonthAgo = Calendar.getInstance().getTime();
         for (Resource resource: resourceDAO.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue)) {
             log.info("Queuing for scheduled checking: " + resource.getName() + " - " + resource.getLastScanned());
-            linkCheckerQueue.add(resource.getId());
+            linkCheckerQueue.add(resource);
         }                
     }
     

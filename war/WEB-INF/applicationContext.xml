@@ -321,8 +321,17 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<value>http://www.wellingtonphoenix.com/</value>
 			</list>
 		</constructor-arg>
-	</bean>	
+	</bean>
+	
+	
+	<bean id="contentUpdateService"  class="nz.co.searchwellington.controllers.ContentUpdateService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="suggestionDAO" />	
+		<constructor-arg ref="linkCheckerQueue" />		
+		<constructor-arg ref="notifier" />	
+	</bean>
 		
+	
 	<import resource="calendarfeeds.xml" />
 	
 		

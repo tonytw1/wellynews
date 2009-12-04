@@ -441,14 +441,6 @@
 	</bean>
 	
 	
-	<bean id="contentUpdateService"  class="nz.co.searchwellington.controllers.ContentUpdateService">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="suggestionDAO" />	
-		<constructor-arg ref="linkCheckerQueue" />		
-		<constructor-arg ref="notifier" />	
-	</bean>
-	
-	
 	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
@@ -464,7 +456,6 @@
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />
-		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="submissionProcessingService" />
 		<constructor-arg ref="contentUpdateService" />
 				
