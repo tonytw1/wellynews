@@ -233,7 +233,7 @@ public class SimplePageController extends BaseMultiActionController {
         	mv.addObject("twitterReplies", twitterService.getReplies());			
         }
         
-        mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems());
+        mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems(MAX_NEWSITEMS));
         
         populateLocalCommon(mv);
         mv.setViewName("twitter");

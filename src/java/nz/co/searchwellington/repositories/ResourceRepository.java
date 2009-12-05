@@ -125,7 +125,7 @@ public interface ResourceRepository {
 	public int getCommentedNewsitemsCount(boolean showBroken);	
 	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken);
 	
-	public List<Resource> getTwitterMentionedNewsitems();
+	public List<Resource> getTwitterMentionedNewsitems(int maxItems);
 	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
 	
 	public Resource loadResourceByUniqueUrl(String url);

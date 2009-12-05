@@ -1,18 +1,22 @@
 package nz.co.searchwellington.controllers.api;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.ContentUpdateService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
 
@@ -33,15 +37,65 @@ public class ApiController extends MultiActionController {
 	private SupressionService suppressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentUpdateService contentUpdateService;
+	private SubmissionProcessingService submissionProcessingService;
 
-    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService) {		
+    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService) {		
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.suppressionService = suppressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentUpdateService = contentUpdateService;
+		this.submissionProcessingService = submissionProcessingService;
 	}
+    
+    
+    
+    public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    	ModelAndView mv = new ModelAndView();
+    	request.setCharacterEncoding("UTF-8");
+    	
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        if (isAuthorised(loggedInUser)) {
+        	log.info("Accepting newsitem submission from api call by user: " + loggedInUser.getName());
+	        Resource resource = resourceDAO.createNewNewsitem();
+	        
+	        submissionProcessingService.processUrl(request, resource);	         
+	    	submissionProcessingService.processTitle(request, resource);
+	    	log.info("Calling geocode");
+	    	submissionProcessingService.processGeocode(request, resource);
+	    	submissionProcessingService.processDate(request, resource);
+	    	submissionProcessingService.processDescription(request, resource);
+	    	submissionProcessingService.processTags(request, resource);
+	    	submissionProcessingService.processPublisher(request, resource);
+	    	
+	    	if (resource.getType().equals("N")) {
+	    		// TODO implement once method is on submission service
+	    		//	processImage(request, (Newsitem) editResource, loggedInUser);            
+	    	}
+	         
+	    	// Set publisher field.
+	    	boolean isPublishedResource = resource instanceof PublishedResource;
+	    	if (isPublishedResource) {
+	    		((PublishedResource) resource).setPublisher((Website) request.getAttribute("publisher"));           
+	    	}
+	    	
+	    	log.info("Saving api submitted newsitem: " + resource.getName());
+	    	contentUpdateService.update(resource, true);
+	    	log.info("Id after save is: " + resource.getId());
+	    	mv.setViewName("apiResponseOK");
+	    	
+        } else {
+        	response.setStatus(HttpStatus.SC_FORBIDDEN);
+        }
+        mv.setViewName("apiResponseERROR");
+    	return mv;      
+    }
+    
+    
+    
+    
+    
     
     
     // TODO no feed tags or autotagging?

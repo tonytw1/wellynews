@@ -265,10 +265,11 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
    
     @SuppressWarnings("unchecked")
-    public List<Resource> getTwitterMentionedNewsitems() {
+    public List<Resource> getTwitterMentionedNewsitems(int maxItems) {
     	 return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
+    	 	setMaxResults(maxItems).
          	add(Restrictions.isNotEmpty("reTwits")).
-         	addOrder(Order.desc("date")).
+         	addOrder(Order.desc("date")).         
          	setCacheable(true).
          	list();
     }
