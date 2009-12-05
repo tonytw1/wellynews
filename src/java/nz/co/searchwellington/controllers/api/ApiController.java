@@ -103,9 +103,10 @@ public class ApiController extends MultiActionController {
     	ModelAndView mv = new ModelAndView();
 
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
-    	if (isAuthorised(loggedInUser)) {  
-    		if (request.getParameter("url") != null) {
+    	if (isAuthorised(loggedInUser)) { 
+    		if (request.getParameter("url") != null) {    			
     			final String url = request.getParameter("url");
+    			log.info("Attempting to accept feed item with url: " + url);
     			Newsitem newsitemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(url);
     			if (newsitemToAccept != null) {
     				contentUpdateService.update(newsitemToAccept, loggedInUser, request);
@@ -202,7 +203,14 @@ public class ApiController extends MultiActionController {
 
     
     private boolean isAuthorised(User loggedInUser) {
-    	return loggedInUser != null && loggedInUser.isAdmin();
+    	if (loggedInUser != null) {
+    		log.info("API call user is " + loggedInUser.getName());
+    	} else {
+    		log.info("API call user is null");
+    	}
+    	boolean isAuthorised = loggedInUser != null && loggedInUser.isAdmin();
+    	log.info("User is authorised: " + isAuthorised);
+    	return isAuthorised;
     }
 
 }
