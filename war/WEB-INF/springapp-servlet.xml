@@ -219,10 +219,10 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
+						<prop key="/api/accept">accept</prop>
+						<prop key="/api/suppress">suppress</prop>
 						<prop key="/api/tag">tag</prop>
 						<prop key="/api/changeurl">changeUrl</prop>
-						<prop key="/api/suppress">suppress</prop>
-					<prop key="/edit/acceptfast">accept</prop>
 						<prop key="/api/submit/newsitem">submit</prop>
 					</props>
 				</property>
@@ -477,7 +477,6 @@
 						<prop key="/edit/submit/website">submitWebsite</prop>
 						
 						<prop key="/edit/accept">accept</prop>
-						<prop key="/edit/acceptfast">acceptFastByUrl</prop>						
 						<prop key="/edit/twitteraccept">twitteraccept</prop>	
 					</props>
 				</property>
@@ -657,7 +656,7 @@
             	<prop key="/api/tag">apiController</prop>
             	<prop key="/api/changeurl">apiController</prop>
             	<prop key="/api/suppress">apiController</prop>
-		<prop key="/edit/acceptfast">apiController</prop>
+				<prop key="/api/accept">apiController</prop>
 				<prop key="/api/submit/newsitem">apiController</prop>
             	
             	<prop key="/about">simplePageController</prop>
