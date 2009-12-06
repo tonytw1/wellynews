@@ -161,6 +161,10 @@
 					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 						<li>Http Status: $item.httpStatus</li>
 					#end
+					
+					#if ($editPermissionService.canEdit($item) && $item.commentFeed)
+						<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
+					#end
 				
 					#if ($editPermissionService.canEdit($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
@@ -197,7 +201,7 @@
 				#if ($item.type == "N" && $item.feed) 
 					<li>Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
 				#end
-				
+								
 				#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
 					<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($item)">accept</a></li>
 					<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($item)">ignore</a></li>
