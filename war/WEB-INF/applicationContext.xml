@@ -319,6 +319,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<value>http://www.allsaints.org.nz/</value>
 				<value>http://www.visitzealandia.com/</value>
 				<value>http://www.wellingtonphoenix.com/</value>
+				<value>http://www.huttcity.com/</value>
 			</list>
 		</constructor-arg>
 	</bean>
