@@ -16,7 +16,6 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -450,7 +449,7 @@ public class ResourceEditController extends BaseMultiActionController {
             submissionProcessingService.processPublisher(request, editResource);
             
             if (editResource.getType().equals("N")) {
-            	processImage(request, (Newsitem) editResource, loggedInUser);            
+            	submissionProcessingService.processImage(request, (Newsitem) editResource, loggedInUser);            
             }
             
             
@@ -521,12 +520,7 @@ public class ResourceEditController extends BaseMultiActionController {
 	}
 
 	
-	// TODO move to submission service.
-	private void processImage(HttpServletRequest request, Newsitem editResource, User loggedInUser) {
-    	Image image = (Image) request.getAttribute("image");
-    	editResource.setImage(image);
-    }
-
+	
     
     private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {    
     	return editPermissionService.canEdit(editResource);

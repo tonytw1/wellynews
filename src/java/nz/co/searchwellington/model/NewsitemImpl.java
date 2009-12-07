@@ -12,7 +12,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
          
-    CommentFeed commentFeed;
+    CommentFeed commentFeed;	// TODO should be visible on the interface
     Image image;
     Feed feed;
       

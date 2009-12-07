@@ -21,7 +21,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.tagging.TagInformationService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -41,11 +40,10 @@ public class IndexController extends BaseMultiActionController {
 	private LoggedInUserFilter loggedInUserFilter;
 	private UrlBuilder urlBuilder;
 	private RequestFilter requestFilter;
-	private TagInformationService tagInformationService;
 
     
     
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter, TagInformationService tagInformationService) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;       
@@ -55,7 +53,6 @@ public class IndexController extends BaseMultiActionController {
         this.loggedInUserFilter = loggedInUserFilter;
         this.urlBuilder = urlBuilder;
         this.requestFilter = requestFilter;
-        this.tagInformationService = tagInformationService;
     }
     
 
@@ -139,10 +136,10 @@ public class IndexController extends BaseMultiActionController {
         
     private void populateUserOwnedResource(HttpServletRequest request, ModelAndView mv, User loggedInUser) {        
     	Resource ownedItem = requestFilter.getAnonResource();
-    	if (ownedItem != null) {
+    	if (loggedInUser == null && ownedItem != null) {
     		log.info("Owned item put onto model: " + ownedItem.getName());
     		mv.addObject("owneditem", ownedItem);
-    	}        
+    	}
     }
 
     
@@ -205,19 +202,6 @@ public class IndexController extends BaseMultiActionController {
     		mv.getModel().put("tagless", untaggedItems);
     	}	       
     }
-
-
-
-	private void populateUntaggedPercentage(ModelAndView mv, User loggedInUser) {
-		List<Resource> recentNewsitems = resourceDAO.getLatestNewsitems(100, loggedInUser != null);
-		if (recentNewsitems.size() > 0) {        
-		    int percentageUntagged = tagInformationService.getPercentageUntagged(recentNewsitems);
-		    int percentageTagged = 100 - percentageUntagged;
-		    log.debug("Tagged = " + percentageTagged + "%");           
-		    mv.addObject("tagging_success_chart", percentageTagged);
-		}
-	}
-
     
 }
     

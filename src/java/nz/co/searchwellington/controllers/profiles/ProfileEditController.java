@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.profiles;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.User;
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class ProfileEditController extends MultiActionController {
+public class ProfileEditController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ProfileEditController.class);
 
@@ -89,7 +90,7 @@ public class ProfileEditController extends MultiActionController {
 				  mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
 				  
 				  mv.addObject("user", loggedInUser);
-				  mv.addObject("submitted", resourceDAO.getOwnedBy(loggedInUser));
+				  mv.addObject("submitted", resourceDAO.getOwnedBy(loggedInUser, MAX_NEWSITEMS));
 				  mv.setViewName("profile");
 				  return mv;
 			  } else {
@@ -120,7 +121,7 @@ public class ProfileEditController extends MultiActionController {
 	        		
 	        		log.info("Put user onto model: " + user.getUsername());
 	        		mv.addObject("profileuser", user);
-	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user));
+	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user, MAX_NEWSITEMS));
 	        		return mv;
 	        	}
 	        }

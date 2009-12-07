@@ -77,12 +77,13 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 	
 	
 	 // TODO merge this with the discoveredFeedUrl method.
-    private void recordCommentFeed(Resource checkResource, String discoveredUrl) {
+    private void recordCommentFeed(Resource checkResource, String commentFeedUrl) {
+    	log.info("Recording comment feed url for '" + checkResource.getName() + "': " + commentFeedUrl);
         // TODO can hibernate take care of this?
-        CommentFeed commentFeed = resourceDAO.loadCommentFeedByUrl(discoveredUrl);                        
+        CommentFeed commentFeed = resourceDAO.loadCommentFeedByUrl(commentFeedUrl);   
         if (commentFeed == null) {
-            log.debug("Comment feed url was not found in the database. Creating new comment feed: " + discoveredUrl);
-            commentFeed = resourceDAO.createNewCommentFeed(discoveredUrl);                         
+            log.debug("Comment feed url was not found in the database. Creating new comment feed: " + commentFeedUrl);
+            commentFeed = resourceDAO.createNewCommentFeed(commentFeedUrl);                         
             resourceDAO.saveCommentFeed(commentFeed);
         }
         ((Newsitem) checkResource).setCommentFeed(commentFeed);      

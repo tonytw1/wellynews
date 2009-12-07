@@ -172,11 +172,12 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 	
 
 	@SuppressWarnings("unchecked")  
-    final public List<Resource> getOwnedBy(User owner) {    
+    final public List<Resource> getOwnedBy(User owner, int maxItems) {    
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).
                 add(Restrictions.eq("owner", owner)).
                 addOrder(Order.desc("date")).
                 addOrder(Order.desc("id")).
+                setMaxResults(maxItems).
                 list();
     }
     

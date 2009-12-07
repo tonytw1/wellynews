@@ -19,6 +19,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
+import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
@@ -38,8 +39,9 @@ public class ApiController extends MultiActionController {
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentUpdateService contentUpdateService;
 	private SubmissionProcessingService submissionProcessingService;
-
-    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService) {		
+	private AutoTaggingService autoTagger;
+	
+    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger) {		
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
@@ -47,6 +49,7 @@ public class ApiController extends MultiActionController {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentUpdateService = contentUpdateService;
 		this.submissionProcessingService = submissionProcessingService;
+		this.autoTagger = autoTagger;
 	}
     
     
@@ -70,8 +73,7 @@ public class ApiController extends MultiActionController {
 	    	submissionProcessingService.processPublisher(request, resource);
 	    	
 	    	if (resource.getType().equals("N")) {
-	    		// TODO implement once method is on submission service
-	    		//	processImage(request, (Newsitem) editResource, loggedInUser);            
+	    		submissionProcessingService.processImage(request, (Newsitem) resource, loggedInUser);            
 	    	}
 	         
 	    	// Set publisher field.
@@ -109,6 +111,10 @@ public class ApiController extends MultiActionController {
     			log.info("Attempting to accept feed item with url: " + url);
     			Newsitem newsitemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(url);
     			if (newsitemToAccept != null) {
+    				
+    				log.info("Applying autotagging to new submission.");
+    				autoTagger.autotag(newsitemToAccept);
+    	            
     				contentUpdateService.update(newsitemToAccept, loggedInUser, request);
     			}
     		}

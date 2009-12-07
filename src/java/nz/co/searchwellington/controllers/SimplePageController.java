@@ -24,9 +24,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class SimplePageController extends BaseMultiActionController {
     
-    Logger log = Logger.getLogger(SimplePageController.class);
+    private static final int MAX_GEOCODED_TO_SHOW = 50;
+    private static final int MAX_TWITTERS_TO_SHOW = 12;
+
+	Logger log = Logger.getLogger(SimplePageController.class);
     
-    final int MAX_TWITTERS_TO_SHOW = 12;
     
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
@@ -51,7 +53,7 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
                     
-        populateLocalCommon(mv);             
+        populateCommonLocal(mv);             
         mv.addObject("heading", "About");        
         populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
         
@@ -60,15 +62,11 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
     
-    
-    
-    
-      
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
 
-        populateLocalCommon(mv);        
+        populateCommonLocal(mv);        
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
         mv.addObject("heading", "Archive");
@@ -85,7 +83,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;        
@@ -105,7 +103,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView broken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
      
@@ -124,7 +122,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView calendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
      
@@ -141,7 +139,7 @@ public class SimplePageController extends BaseMultiActionController {
        
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -158,7 +156,7 @@ public class SimplePageController extends BaseMultiActionController {
                 
     public ModelAndView lastUpdated(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
 
         urlStack.setUrlStack(request);
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -179,7 +177,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
@@ -193,17 +191,10 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
     
-    
-    
-    
-    
-    
-    
-    
     public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean showBroken = loggedInUser != null;
@@ -216,8 +207,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
-    
-    
+     
     public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -235,7 +225,7 @@ public class SimplePageController extends BaseMultiActionController {
         
         mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems(MAX_NEWSITEMS));
         
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         mv.setViewName("twitter");
         return mv;
     }
@@ -245,7 +235,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView watchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateLocalCommon(mv);
+        populateCommonLocal(mv);
         
         mv.addObject("heading", "News Watchlist");
         mv.addObject("main_content", resourceDAO.getAllWatchlists(false));
@@ -265,15 +255,9 @@ public class SimplePageController extends BaseMultiActionController {
         mv.getModel().put("latest_twitters", latestNewsitems);  
     }
     
-    private void populateLocalCommon(ModelAndView mv) {
-              mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
-    }
     
-    
-	protected void populateGeocoded(ModelAndView mv, boolean showBroken,
-			Resource selected) throws IOException {
-		List<Resource> geocoded = resourceDAO.getAllValidGeocoded(50,
-				showBroken);
+	protected void populateGeocoded(ModelAndView mv, boolean showBroken, Resource selected) throws IOException {
+		List<Resource> geocoded = resourceDAO.getAllValidGeocoded(MAX_GEOCODED_TO_SHOW, showBroken);
 		log.info("Found " + geocoded.size() + " valid geocoded resources.");
 		if (selected != null && !geocoded.contains(selected)) {
 			geocoded.add(selected);

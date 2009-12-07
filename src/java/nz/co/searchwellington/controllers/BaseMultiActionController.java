@@ -1,24 +1,17 @@
 package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.tagging.TagInformationService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;

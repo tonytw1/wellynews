@@ -10,9 +10,10 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
-import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.GeocodeImpl;
+import nz.co.searchwellington.model.Image;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -67,7 +68,6 @@ public class SubmissionProcessingService {
 		
 	public void processUrl(HttpServletRequest req, Resource editResource) {
 		if (req.getParameter("url") != null) {
-			final String previousUrl = editResource.getUrl();
 			String url = req.getParameter("url");
 			if (url != null) {
 				url = url.trim();
@@ -77,6 +77,12 @@ public class SubmissionProcessingService {
 		}
 	}
 	
+	
+	public void processImage(HttpServletRequest request, Newsitem editResource, User loggedInUser) {
+		Image image = (Image) request.getAttribute("image");
+    	editResource.setImage(image);
+    }
+
 
 
 	public void processGeocode(HttpServletRequest req, Resource editResource) {      
