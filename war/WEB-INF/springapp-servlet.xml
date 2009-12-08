@@ -85,7 +85,6 @@
 
 	<bean id="browseController" class="nz.co.searchwellington.controllers.BrowseController">
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />		
 		<constructor-arg ref="loggedInUserFilter" />

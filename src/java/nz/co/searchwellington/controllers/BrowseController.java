@@ -20,12 +20,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class BrowseController extends BaseMultiActionController {
 
-    private RequestFilter requestFilter;
     private UrlBuilder urlBuilder;
  
-	public BrowseController(ResourceRepository resourceDAO, RequestFilter requestFilter, UrlStack urlStack, ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder) {       
+	public BrowseController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder) {       
 		this.resourceDAO = resourceDAO;     
-        this.requestFilter = requestFilter;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.loggedInUserFilter = loggedInUserFilter;
