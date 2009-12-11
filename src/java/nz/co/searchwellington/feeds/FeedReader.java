@@ -1,7 +1,6 @@
 package nz.co.searchwellington.feeds;
 
 import java.util.Calendar;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -56,8 +55,7 @@ public class FeedReader {
 
     
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Set<Integer> processFeed(int feedId) {
-    	Set<Integer> acceptedNewsitemIds = new HashSet<Integer>();
+    public void processFeed(int feedId) {
     	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
     	
     	log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));               
@@ -68,23 +66,14 @@ public class FeedReader {
         	|| feed.getAcceptancePolicy().equals("suggest");
 
         if (shouldLookAtFeed) {
-            List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);            
-            for (FeedNewsitem feednewsitem : feedNewsitems) {
-            	String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
-				feednewsitem.setUrl(cleanSubmittedItemUrl);
-                
-                if (feed.getAcceptancePolicy().startsWith("accept")) {
-                	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
-                	if (acceptThisItem) {                		
-                		acceptFeedItem(feednewsitem, feed, acceptedNewsitemIds);
-                	}
-                	
-                } else {                	
-                	if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
-                		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
-                		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl(), new DateTime().toDate()));
-                	}
-                }
+            List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
+            
+            if (!feedNewsitems.isEmpty()) {
+            	processFeedItems(feed, feedNewsitems);
+            	feed.setHttpStatus(200);
+            } else {
+            	log.warn("Incoming feed '" + feed.getName() + "' contained no items");
+            	feed.setHttpStatus(-3);
             }
             
             feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
@@ -97,12 +86,34 @@ public class FeedReader {
         feed.setLastRead(Calendar.getInstance().getTime());        
         resourceDAO.saveResource(feed); //TODO this works from @Transaction on timer task, but not severlet
         log.info("Done processing feed.");
-        return acceptedNewsitemIds;
+        return;
     }
 
 
+
+	private void processFeedItems(Feed feed, List<FeedNewsitem> feedNewsitems) {
+		for (FeedNewsitem feednewsitem : feedNewsitems) {
+			String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
+			feednewsitem.setUrl(cleanSubmittedItemUrl);
+		    
+		    if (feed.getAcceptancePolicy().startsWith("accept")) {
+		    	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
+		    	if (acceptThisItem) {                		
+		    		acceptFeedItem(feednewsitem, feed);
+		    	}
+		    	
+		    } else {                	
+		    	if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
+		    		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
+		    		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl(), new DateTime().toDate()));
+		    	}
+		    }
+		}
+	}
+
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private void acceptFeedItem(FeedNewsitem feeditem, Feed feed, Set<Integer> acceptedNewsitemIds) {
+    private void acceptFeedItem(FeedNewsitem feeditem, Feed feed) {
         log.info("Accepting: " + feeditem.getName());
         Newsitem resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
         resource.setFeed(feed);
