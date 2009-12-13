@@ -177,10 +177,13 @@
 					#end
 								
 				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))			
+					
 					#if ($item.localCopy) 
 						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.getLocalCopy())">edit local copy</a></li>
+					#else
+						<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemAcceptUrl($item)">accept</a></li>					
 					#end
-					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemAcceptUrl($item)">accept</a></li>
+									
 					#if ($item.suppressed) 
 						<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemUnsuppressUrl($item)">unsuppress</a></li>
 					#else
