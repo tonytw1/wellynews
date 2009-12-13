@@ -10,6 +10,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
+import org.htmlparser.http.HttpHeader;
 
 public class StandardHttpFetcher implements HttpFetcher {
 
@@ -23,8 +24,11 @@ public class StandardHttpFetcher implements HttpFetcher {
     	log.info("Attempting fetch of url: " + url);
 		HttpClient client = setupClient();        
 		try {
-		    HttpMethod method = new GetMethod(url);
+		    HttpMethod method = new GetMethod(url);		    
+		    method.addRequestHeader("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.7");
+		    method.addRequestHeader("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
 			client.executeMethod(method);
+			
             log.info("http status was: " + method.getStatusCode());
 			if (method.getStatusCode() == HttpStatus.SC_OK) {
 				InputStream stream = method.getResponseBodyAsStream();
