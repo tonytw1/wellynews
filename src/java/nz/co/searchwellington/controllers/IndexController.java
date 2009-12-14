@@ -21,6 +21,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -40,10 +41,11 @@ public class IndexController extends BaseMultiActionController {
 	private LoggedInUserFilter loggedInUserFilter;
 	private UrlBuilder urlBuilder;
 	private RequestFilter requestFilter;
+	private GoogleMapsDisplayCleaner googleMapCleaner;
 
     
     
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter, GoogleMapsDisplayCleaner googleMapCleaner) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;       
@@ -53,6 +55,7 @@ public class IndexController extends BaseMultiActionController {
         this.loggedInUserFilter = loggedInUserFilter;
         this.urlBuilder = urlBuilder;
         this.requestFilter = requestFilter;
+        this.googleMapCleaner = googleMapCleaner;
     }
     
 
@@ -87,8 +90,7 @@ public class IndexController extends BaseMultiActionController {
         
         populateNewslogLastUpdated(mv);        
         populateFeatured(mv, loggedInUser);               
-        populateUntaggedNewsitem(mv, loggedInUser);
-        //populateUntaggedPercentage(mv, loggedInUser);
+        populateUntaggedNewsitem(mv, loggedInUser);     
         populateEvents(mv);
         
         populateLatestGeocoded(mv, loggedInUser);
@@ -201,6 +203,17 @@ public class IndexController extends BaseMultiActionController {
     		}
     		mv.getModel().put("tagless", untaggedItems);
     	}	       
+    }
+    
+    
+    protected void populateLatestGeocoded(ModelAndView mv, User loggedInUser) throws IOException {
+        boolean showBroken = loggedInUser != null;
+        List<Resource> geocoded = resourceDAO.getAllValidGeocoded(10, showBroken);
+        if (geocoded.size() > 0) {
+        	log.debug("Found " + geocoded.size() + " valid geocoded resources.");                
+        	mv.addObject("geocoded", googleMapCleaner.dedupe(geocoded));
+            mv.addObject("geotags_is_small", 1);      
+        }
     }
     
 }

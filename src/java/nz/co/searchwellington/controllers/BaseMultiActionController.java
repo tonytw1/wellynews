@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected UrlStack urlStack;
     protected ConfigRepository configDAO;
     protected LoggedInUserFilter loggedInUserFilter;
-
+    
     
     final protected void setRss(ModelAndView mv, String url) {
         mv.addObject("rss_url", url);
@@ -108,19 +107,5 @@ public abstract class BaseMultiActionController extends MultiActionController {
             mv.getModel().put("last_updated", latestChange);
         }
     }
-    
-    
-    protected void populateLatestGeocoded(ModelAndView mv, User loggedInUser) throws IOException {
-        boolean showBroken = loggedInUser != null;
-        List<Resource> geocoded = resourceDAO.getAllValidGeocoded(10, showBroken);
-        if (geocoded.size() > 0) {
-        	log.debug("Found " + geocoded.size() + " valid geocoded resources.");                
-            mv.addObject("geocoded", geocoded);
-            mv.addObject("geotags_is_small", 1);            
-        }
-    }
-
-
-
-        
+            
 }

@@ -70,7 +70,8 @@
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="requestFilter" />
-				
+		<constructor-arg ref="googleMapsCleaner" />
+			
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,12 +21,14 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 	private ResourceRepository resourceDAO;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
+	private GoogleMapsDisplayCleaner googleMapCleaner;
 
 	
-	public TagGeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
+	public TagGeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, GoogleMapsDisplayCleaner googleMapCleaner) {
 		this.resourceDAO = resourceDAO;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
+		this.googleMapCleaner = googleMapCleaner;
 	}
 
 	
@@ -57,10 +60,10 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		mv.addObject("description", "Geotagged " + tag.getDisplayName() + " newsitems");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));		
 	    final List<Resource> allGeotaggedForTag = resourceDAO.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
-		mv.addObject("main_content", allGeotaggedForTag);
+		mv.addObject("main_content", googleMapCleaner.dedupe(allGeotaggedForTag));
 		if (allGeotaggedForTag.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag));
-		}		
+		}
 		mv.setViewName("geotagged");
 		return mv;
 	}

@@ -23,12 +23,14 @@
 		<constructor-arg ref="relatedTagsService" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="googleMapsCleaner" />
 	</bean>
 	
 	<bean id="geotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.GeotaggedModelBuilder">
 		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="rssUrlBuilder" />		
+		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="googleMapsCleaner" />	
 	</bean>
 	
 	<bean id="commentModelBuilder" class="nz.co.searchwellington.controllers.models.CommentModelBuilder">
@@ -51,7 +53,8 @@
 	<bean id="TagGeotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.TagGeotaggedModelBuilder">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="rssUrlBuilder" />	
+		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="googleMapsCleaner" />		
 	</bean>
 
 	<bean id="TagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.TagCombinerModelBuilder">

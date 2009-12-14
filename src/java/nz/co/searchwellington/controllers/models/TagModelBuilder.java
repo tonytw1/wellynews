@@ -16,6 +16,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
@@ -31,15 +32,17 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RelatedTagsService relatedTagsService;
 	private ConfigDAO configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
+	private GoogleMapsDisplayCleaner googleMapsCleaner;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner) {
 		this.resourceDAO = resourceDAO;	
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.configDAO = configDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
+		this.googleMapsCleaner = googleMapsCleaner;
 	}
 
 	
@@ -174,7 +177,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         List<Resource> geocoded = resourceDAO.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
-            mv.addObject("geocoded", geocoded);
+            mv.addObject("geocoded", googleMapsCleaner.dedupe(geocoded));
         }
     }
 	

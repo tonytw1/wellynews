@@ -8,6 +8,7 @@ import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -19,11 +20,13 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	private ResourceRepository resourceDAO;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
+	private GoogleMapsDisplayCleaner googleMapsCleaner;
 	
-	public GeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
+	public GeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, GoogleMapsDisplayCleaner googleMapsCleaner) {
 		this.resourceDAO = resourceDAO;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
+		this.googleMapsCleaner = googleMapsCleaner;
 	}
 
 	public boolean isValid(HttpServletRequest request) {
@@ -42,7 +45,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			// TODO pagination
 			final List<Resource> geotaggedNewsitems = resourceDAO.getAllValidGeocoded(MAX_NEWSITEMS, showBroken);
 			mv.addObject("main_content", geotaggedNewsitems);
-			mv.addObject("geocoded", geotaggedNewsitems);
+			mv.addObject("geocoded", googleMapsCleaner.dedupe(geotaggedNewsitems));
 			
 			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
 
