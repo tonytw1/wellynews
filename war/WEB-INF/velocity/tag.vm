@@ -88,7 +88,7 @@
 		#parse("includes/flickr_group_tag.vm")
 		
 		#if($tag.name == 'animals' || $tag.name == 'dogs') 
-			#parse("includes/spca_widget.vm")
+			#parse("widgets/spca_widget.vm")
 		#end
 		
 		#parse("includes/tag_related_feed.vm")

@@ -48,7 +48,7 @@
 #parse("includes/login.vm")
 
 #if($publisher && $publisher.name == 'Wellington SPCA') 
-	#parse("includes/spca_widget.vm")
+	#parse("widgets/spca_widget.vm")
 #end
 
 <div class="box">
