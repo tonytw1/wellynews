@@ -85,14 +85,18 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
 		populateRelatedFeed(mv, tag);
 		populateGeocoded(mv, showBroken, tag);		
-		populateTagFlickrPool(mv, tag);
+		populateTagFlickrPool(mv, tag);		
+		populateTagRelatedTwitter(mv, tag);
 		
+		mv.addObject("tag_feeds", resourceDAO.getTaggedFeeds(tag, showBroken));
+	}
+
+
+	private void populateTagRelatedTwitter(ModelAndView mv, Tag tag) {
 		if (tag.getRelatedTwitter() != null && !tag.getRelatedTwitter().equals("")) {
 			log.info("Setting related twitter to: " + tag.getRelatedTwitter());
 			mv.addObject("twitterUsername", tag.getRelatedTwitter());
 		}
-		
-		mv.addObject("tag_feeds", resourceDAO.getTaggedFeeds(tag, showBroken));
 	}
  	
 	
