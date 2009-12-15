@@ -100,7 +100,7 @@ public class RssfeedsController extends BaseMultiActionController {
         populateSecondaryFeeds(mv, loggedInUser);        
         populateDiscoveredFeeds(mv);
         
-        mv.addObject("suggestions", suggestionDAO.getSuggestionFeednewsitems(suggestionDAO.getSuggestions(6)));
+        mv.addObject("suggestions", suggestionDAO.getSuggestionFeednewsitems(suggestionDAO.getSuggestions(6), 6));
         
         mv.setViewName("rssfeeds");
         log.info("Finished rssfeeds method.");

@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
@@ -59,8 +60,9 @@ public class SuggestionDAO {
 	 }
 	 
 	 
+	 // TODO This should really be private or in a wrapping service - ping ponging between this, the caller and getFeedNewsitems
 	 @SuppressWarnings("unchecked")
-	public List<Suggestion> getSuggestions(int maxResults) {
+	 public List<Suggestion> getSuggestions(int maxResults) {
 		 return sessionFactory.getCurrentSession().createCriteria(Suggestion.class).
 	        addOrder(Order.desc("firstSeen")).
 	        setCacheable(true).
@@ -81,13 +83,15 @@ public class SuggestionDAO {
 	
 	
 
-	public List<SuggestionFeednewsitem> getSuggestionFeednewsitems(List<Suggestion> bareSuggestions) {
+	public List<SuggestionFeednewsitem> getSuggestionFeednewsitems(List<Suggestion> bareSuggestions, int maxItems) {
 		List<SuggestionFeednewsitem> suggestions = new ArrayList<SuggestionFeednewsitem>();
-        for (Suggestion suggestion : bareSuggestions) {
+		Iterator<Suggestion> bareSuggresionsIterator = bareSuggestions.iterator();		
+		while (suggestions.size() < maxItems && bareSuggresionsIterator.hasNext()) {
+			Suggestion suggestion = bareSuggresionsIterator.next();			
 			if (suggestion.getFeed() != null) {
 				FeedNewsitem feednewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(suggestion.getFeed(), suggestion.getUrl());
 				if (feednewsitem != null) {
-					suggestions.add(new SuggestionFeednewsitem(suggestion, feednewsitem.getName(), feednewsitem.getDate()));
+					suggestions.add(new SuggestionFeednewsitem(suggestion, feednewsitem.getName(), feednewsitem.getDate(), feednewsitem.getDescription()));
 				}
 			}
 		}

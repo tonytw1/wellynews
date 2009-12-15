@@ -43,7 +43,7 @@ public class EditPermissionService {
 	}
 	
 	
-	public boolean canSeeSuggestions() {
+	public boolean canEditSuggestions() {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}

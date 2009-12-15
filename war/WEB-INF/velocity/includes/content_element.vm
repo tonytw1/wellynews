@@ -128,7 +128,10 @@
 						#parse("includes/twittermessage.vm")
 					#end
 				#end
-			
+					
+				#if ($item.type == "S" && $item.firstSeen) 
+					<li class="firstseen">First noticed $dateFormatter.timeSince($item.firstSeen)</li>				
+				#end
 			
 				#if ($item.geocode && $item.geocode.address)
 					#if ($editPermissionService.canEdit($item)) 

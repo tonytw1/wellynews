@@ -10,12 +10,13 @@ public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable,
 
 	private Suggestion suggestion;
 	
-	public SuggestionFeednewsitem(Suggestion suggestion, String name, Date date) {
+	public SuggestionFeednewsitem(Suggestion suggestion, String name, Date date, String description) {
 		super();
 		this.suggestion = suggestion;
 		this.name = name;
 		this.date = date;
-		this.tags = new HashSet<Tag>();
+		this.tags = new HashSet<Tag>();		
+		this.description = description;
 	}
 	
 	final public String getType() {
@@ -39,6 +40,10 @@ public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable,
 
 	public Suggestion getSuggestion() {
 		return suggestion;
+	}
+	
+	public Date getFirstSeen() {
+		return suggestion.getFirstSeen();
 	}
 		
 }

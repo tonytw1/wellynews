@@ -1,4 +1,4 @@
-#if($editPermissionService.canSeeSuggestions() && $suggestions && $suggestions.size() > 0) 
+#if($suggestions && $suggestions.size() > 0) 
 
 <div class="box">
 <h2>Feed Inbox</h2>
@@ -6,31 +6,11 @@
 <p>These items have been seen in a third party feed and are awaiting review.</p>
 </p>
 
-<ul>
-#foreach($suggestion in $suggestions)
-	#if($velocityCount <= 10) 
-	<li>
-		<ul>		
-			<li>
-			<ul class="flat_list">
-				<li><a href="$suggestion.url">$suggestion.name</a></li>
-				#if ($suggestion.suggestion.feed.publisher.name)
-					<li class="publisher">$suggestion.suggestion.feed.publisher.name</li>
-				#end
-				#if($editPermissionService.canSeeSuggestions())
-					<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($suggestion)">accept</a></li>
-					<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($suggestion)">ignore</a></li>
-				#end
-			</ul>
-			</li>			
-		</ul>
-	</li>	
-	#end
-#end
+#set ($righthand_content_one = $columnSplitter.left($suggestions))
+#set ($righthand_content_two = $columnSplitter.right($suggestions))
+#set ($righthand_content_moreurl = "feeds/inbox")
 
-<li class="more"><a href="$urlBuilder.getFeedsInboxUrl()">More...</a></li>
+#parse("includes/righthand_two_columns.vm")
 
-</ul>
 </div>
-
 #end

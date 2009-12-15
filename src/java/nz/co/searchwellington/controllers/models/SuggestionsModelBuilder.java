@@ -19,6 +19,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class SuggestionsModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
+	private static final int MAX_SUGGESTIONS = 50;
+	
 	Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
     	
 	private ResourceRepository resourceDAO;
@@ -47,15 +49,15 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 			ModelAndView mv = new ModelAndView();
 			
 			List<Suggestion> bareSuggestions = suggestionDAO.getAllSuggestions();
-			List<SuggestionFeednewsitem> suggestions = suggestionDAO.getSuggestionFeednewsitems(bareSuggestions);        
-			mv.addObject("main_content", suggestions);       
+			List<SuggestionFeednewsitem> suggestions = suggestionDAO.getSuggestionFeednewsitems(bareSuggestions, MAX_SUGGESTIONS);
+			mv.addObject("main_content", suggestions); 
 			
 			mv.addObject("heading", "Feeds inbox");
 			mv.addObject("link", urlBuilder.getFeedsInboxUrl());
 			mv.addObject("description","Suggested newsitems from local feeds.");  
 			
 			setRss(mv, rssUrlBuilder.getTitleForSuggestions(), rssUrlBuilder.getRssUrlForFeedSuggestions());
-			mv.setViewName("suggestions");        
+			mv.setViewName("suggestions");
 			return mv;
 		}
 		return null;
