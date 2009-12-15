@@ -110,23 +110,21 @@ public class OpenIDLoginController extends MultiActionController {
 			final String username = verified.getIdentifier();
 			log.info("Verfied identifer: " + username);
 			
-			mv.addObject("id", verified);			
-			User user = userDAO.getUser(username);
-			
-			if (user == null) {				
-				// Create new user
-				User newUser = new UserImpl(username);
-				userDAO.saveUser(newUser);
-				user = newUser;
+			User user = userDAO.getUser(username);			
+			if (user == null) {
+				user = createNewUser(username);
 			}
 			
-			setUser(request, user);			
-			
-			loginResourceOwnershipService.assignOwnership(user);
-		    request.getSession().setAttribute("owned", null);
+			if (user != null) {
+				log.info("Setting logged in user to: " + user.getName());
+				setUser(request, user);						
+				loginResourceOwnershipService.assignOwnership(user);
+				request.getSession().setAttribute("owned", null);
+			} else {
+				log.warn("User was null after successful openid auth");
+			}						
+		    return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
 		    
-		    return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl()));
-						
 		} else {
 			mv.addObject("error", "Could not verify id");			
 		}
@@ -134,6 +132,15 @@ public class OpenIDLoginController extends MultiActionController {
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
 	}
 
+	
+	private User createNewUser(final String username) {
+		log.info("Creating new user with username: " + username);
+		User newUser = new UserImpl(username);
+		userDAO.saveUser(newUser);		
+		return newUser;
+	}
+
+	
 	private void setUser(HttpServletRequest request, User user) {
 		request.getSession().setAttribute("user", user);		
 		request.getSession().setAttribute("login_prompt", null);
