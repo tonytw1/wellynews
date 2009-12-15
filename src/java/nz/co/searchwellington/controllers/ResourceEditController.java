@@ -369,36 +369,8 @@ public class ResourceEditController extends BaseMultiActionController {
     	}    	
     }
     
-    
+         
     @Transactional
-    public ModelAndView deleteAndSupress(HttpServletRequest request, HttpServletResponse response) throws IOException {   
-        ModelAndView modelAndView = new ModelAndView("deletedResource");
-        populateCommonLocal(modelAndView);
-        modelAndView.addObject("heading", "Resource Deleted");
-        
-        adminRequestFilter.loadAttributesOntoRequest(request);    
-        Resource editResource = (Resource) request.getAttribute("resource");       
-        if (editResource != null) {             
-            modelAndView.addObject("resource", editResource);
-            
-            String urlToSupress = urlCleaner.cleanSubmittedItemUrl(editResource.getUrl());
-            log.info("Deleting resource.");
-            resourceDAO.deleteResource(editResource);
-            
-            if (!supressionDAO.isSupressed(urlToSupress)) {
-                log.info("Supressing url: " + urlToSupress);               
-                Supression supression = supressionDAO.createSupression(urlToSupress);
-                supressionDAO.addSupression(supression);
-            } else {
-                log.info("Deleted url is already supressed.");
-            }
-        }
-        return modelAndView;
-    }
-    
-    
-       
-   @Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
 	   	// TODO is this needed?
         request.setCharacterEncoding("UTF-8");                

@@ -467,9 +467,7 @@
 					<props>
 						<prop key="/edit/edit">edit</prop>
 						<prop key="/edit/save">save</prop>
-						<prop key="/edit/delete">delete</prop>
-						<prop key="/edit/deleteandsupress">deleteAndSupress</prop>
-						
+						<prop key="/edit/delete">delete</prop>						
 						<prop key="/edit/submit/calendar">submitCalendar</prop>
 						<prop key="/edit/submit/feed">submitFeed</prop>
 						<prop key="/edit/submit/newsitem">submitNewsitem</prop>
@@ -709,7 +707,6 @@
 				
 				<prop key="/edit/edit">editController</prop>
 				<prop key="/edit/delete">editController</prop>
-				<prop key="/edit/deleteandsupress">editController</prop>				
 				<prop key="/edit/save">editController</prop>
 
 				<prop key="/edit/submit/calendar">editController</prop>			
