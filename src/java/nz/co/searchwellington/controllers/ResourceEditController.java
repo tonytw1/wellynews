@@ -322,11 +322,13 @@ public class ResourceEditController extends BaseMultiActionController {
             
             if (editResource.getType().equals("F")) {
             	removeFeedFromFeedNewsitems((Feed) editResource);
+            	urlStack.setUrlStack(request, "/index");
             }
             
             if (editResource.getType().equals("N")) {
             	Newsitem deletedNewsitem = (Newsitem) editResource;
-            	if (deletedNewsitem.getFeed() != null) {            		
+            	if (deletedNewsitem.getFeed() != null) {
+            		log.info("Deleting a newsitem which was accepted from a feed; checking for required supression");
             		if (rssfeedNewsitemService.getFeedNewsitemByUrl(deletedNewsitem.getFeed(), deletedNewsitem.getUrl()) != null) {
             			log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl());
             			supressionDAO.createSupression(deletedNewsitem.getUrl());
