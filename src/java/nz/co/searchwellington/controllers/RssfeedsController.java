@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
@@ -29,12 +30,12 @@ public class RssfeedsController extends BaseMultiActionController {
     private TagWidgetFactory tagWidgetFactory;    
     private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedsRepository;
-	private SuggestionDAO suggestionDAO;
+	private SuggestedFeeditemsService suggestedFeeditemsService;
 	
 	
     public RssfeedsController(ResourceRepository resourceDAO, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, 
     		TagWidgetFactory tagWidgetFactory, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, 
-    		LoggedInUserFilter loggedInUserFilter, SuggestionDAO suggestionDAO) {
+    		LoggedInUserFilter loggedInUserFilter, SuggestedFeeditemsService suggestedFeeditemsService) {
         this.resourceDAO = resourceDAO;   
         this.publisherSelectFactory = publisherSelectFactory;
         this.urlStack = urlStack;
@@ -43,7 +44,7 @@ public class RssfeedsController extends BaseMultiActionController {
         this.rssUrlBuilder = rssUrlBuilder;
         this.discoveredFeedsRepository = discoveredFeedsRepository;
         this.loggedInUserFilter = loggedInUserFilter;
-        this.suggestionDAO = suggestionDAO;
+        this.suggestedFeeditemsService = suggestedFeeditemsService;
     }
     
         
@@ -100,7 +101,7 @@ public class RssfeedsController extends BaseMultiActionController {
         populateSecondaryFeeds(mv, loggedInUser);        
         populateDiscoveredFeeds(mv);
         
-        mv.addObject("suggestions", suggestionDAO.getSuggestionFeednewsitems(suggestionDAO.getSuggestions(6), 6));
+        mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6));
         
         mv.setViewName("rssfeeds");
         log.info("Finished rssfeeds method.");

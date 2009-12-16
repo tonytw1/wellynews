@@ -73,7 +73,7 @@
 		
 	<bean id="suggestionsModelBuilder" class="nz.co.searchwellington.controllers.models.SuggestionsModelBuilder">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="suggestionDAO" />
+		<constructor-arg ref="suggestedFeeditemsService" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />		

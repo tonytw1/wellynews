@@ -60,8 +60,7 @@
 	</bean>
 	
 	<bean id="suggestionDAO" class="nz.co.searchwellington.repositories.SuggestionDAO">
-		<constructor-arg ref="sessionFactory" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />	
+		<constructor-arg ref="sessionFactory" />		
 	</bean>	
 	 
  </beans>

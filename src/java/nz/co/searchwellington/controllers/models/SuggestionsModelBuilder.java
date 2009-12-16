@@ -7,11 +7,9 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Suggestion;
-import nz.co.searchwellington.model.SuggestionFeednewsitem;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SuggestionDAO;
+import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 
 import org.apache.log4j.Logger;
@@ -24,15 +22,15 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
     	
 	private ResourceRepository resourceDAO;
-	private SuggestionDAO suggestionDAO;
+	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private TwitterNewsitemBuilderService twitterNewsitemBuilder;
 
 	
-	public SuggestionsModelBuilder(ResourceRepository resourceDAO, SuggestionDAO suggestionDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, TwitterNewsitemBuilderService twitterNewsitemBuilder) {
+	public SuggestionsModelBuilder(ResourceRepository resourceDAO, SuggestedFeeditemsService suggestedFeeditemsService, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, TwitterNewsitemBuilderService twitterNewsitemBuilder) {
 		this.resourceDAO = resourceDAO;
-		this.suggestionDAO = suggestionDAO;
+		this.suggestedFeeditemsService = suggestedFeeditemsService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.twitterNewsitemBuilder = twitterNewsitemBuilder;
@@ -48,9 +46,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 			log.info("Building suggestions model");
 			ModelAndView mv = new ModelAndView();
 			
-			List<Suggestion> bareSuggestions = suggestionDAO.getAllSuggestions();
-			List<SuggestionFeednewsitem> suggestions = suggestionDAO.getSuggestionFeednewsitems(bareSuggestions, MAX_SUGGESTIONS);
-			mv.addObject("main_content", suggestions); 
+			mv.addObject("main_content", suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)); 
 			
 			mv.addObject("heading", "Feeds inbox");
 			mv.addObject("link", urlBuilder.getFeedsInboxUrl());

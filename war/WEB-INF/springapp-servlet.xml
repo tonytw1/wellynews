@@ -161,7 +161,7 @@
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="suggestionDAO" />
+		<constructor-arg ref="suggestedFeeditemsService" />
 				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

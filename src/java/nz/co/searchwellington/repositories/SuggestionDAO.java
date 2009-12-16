@@ -1,15 +1,10 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
-import nz.co.searchwellington.model.SuggestionFeednewsitem;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
@@ -21,15 +16,13 @@ public class SuggestionDAO {
 	Logger log = Logger.getLogger(SuggestionDAO.class);
 	    
 	private SessionFactory sessionFactory;
-	private RssfeedNewsitemService rssfeedNewsitemService;
 	    	
 	
-	public SuggestionDAO(SessionFactory sessionFactory, RssfeedNewsitemService rssfeedNewsitemService) {
+	public SuggestionDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
-		this.rssfeedNewsitemService = rssfeedNewsitemService;
 	}
 
-	 
+	
 	public Suggestion createSuggestion(Feed feed, String url, Date firstSeen) {
 		return new Suggestion(feed, url, firstSeen);
 	}
@@ -78,27 +71,5 @@ public class SuggestionDAO {
 			sessionFactory.getCurrentSession().flush();
 		}
 	}
-
-
 	
-	
-
-	public List<SuggestionFeednewsitem> getSuggestionFeednewsitems(List<Suggestion> bareSuggestions, int maxItems) {
-		List<SuggestionFeednewsitem> suggestions = new ArrayList<SuggestionFeednewsitem>();
-		Iterator<Suggestion> bareSuggresionsIterator = bareSuggestions.iterator();		
-		while (suggestions.size() < maxItems && bareSuggresionsIterator.hasNext()) {
-			Suggestion suggestion = bareSuggresionsIterator.next();			
-			if (suggestion.getFeed() != null) {
-				FeedNewsitem feednewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(suggestion.getFeed(), suggestion.getUrl());
-				if (feednewsitem != null) {
-					suggestions.add(new SuggestionFeednewsitem(suggestion, feednewsitem.getName(), feednewsitem.getDate(), feednewsitem.getDescription()));
-				}
-			}
-		}
-		return suggestions;
-	}
-
-	 
-
-
 }

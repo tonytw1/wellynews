@@ -331,7 +331,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="linkCheckerQueue" />		
 		<constructor-arg ref="notifier" />	
 	</bean>
+	
 		
+	<bean id="suggestedFeeditemsService" class="nz.co.searchwellington.repositories.SuggestedFeeditemsService">
+		<constructor-arg ref="suggestionDAO" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />	
+	</bean>	
 	
 	<import resource="calendarfeeds.xml" />
 	
