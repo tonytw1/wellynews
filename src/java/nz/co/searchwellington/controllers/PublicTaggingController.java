@@ -38,15 +38,12 @@ public class PublicTaggingController extends BaseMultiActionController {
     
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView("publicTagging");    
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        populateCommonLocal(mv);
         mv.addObject("heading", "Tagging a Resource");
         
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-           
-        Resource editResource = null;
-        
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();                  
         if (request.getAttribute("resource") != null) {
-            editResource = (Resource) request.getAttribute("resource");        
+            Resource editResource = (Resource) request.getAttribute("resource");        
             log.info("Loaded resource #" + editResource.getId() + " for tagging.");
             mv.addObject("resource", editResource);
             mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
@@ -67,22 +64,19 @@ public class PublicTaggingController extends BaseMultiActionController {
     
       
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {                
-        ModelAndView modelAndView = new ModelAndView("publicTagged");   
-        modelAndView.addObject("heading", "Resource Saved");
-        modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());        
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();        
-        Resource editResource = null;
+        ModelAndView mv = new ModelAndView("publicTagged");   
+        populateCommonLocal(mv);        
+        mv.addObject("heading", "Resource tagged");
         
         if (request.getAttribute("resource") != null) {         
-            editResource = (Resource) request.getAttribute("resource");
+           Resource editResource = (Resource) request.getAttribute("resource");
             submissionProcessingService.processTags(request, editResource);
             resourceDAO.saveResource(editResource);           
             notifier.sendTaggingNotification("Public Tagging", editResource);            
-            modelAndView.addObject("resource", editResource);    
+            mv.addObject("resource", editResource);    
         }
         
-        return modelAndView;
+        return mv;
     }
 
 

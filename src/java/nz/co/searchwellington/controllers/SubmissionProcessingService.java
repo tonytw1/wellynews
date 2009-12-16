@@ -130,17 +130,17 @@ public class SubmissionProcessingService {
     
     @SuppressWarnings("unchecked")
 	public void processTags(HttpServletRequest request, Resource editResource) {
-        if (request.getAttribute("tags") != null) {
+        if (request.getAttribute("tags") != null) {        	
             List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
             Set<Tag> tags = new HashSet<Tag>(requestTagsList);
-            editResource.setTags(tags);
+            log.info("Found " + tags.size() + " tags on the request");
+            editResource.setTags(tags);            
         }
-                   
-        // Process additional tags
+        
         if (request.getParameter("additional_tags") != null) {
             processAdditionalTags(request, editResource);                   
         } else {
-            //log.info("No additional tag string found.");
+        	log.debug("No additional tag string found.");
         }    
         trimTags(editResource, 4);               
     }

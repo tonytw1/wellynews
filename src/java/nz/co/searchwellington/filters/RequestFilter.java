@@ -61,6 +61,46 @@ public class RequestFilter {
     		}    		
     	}
     	
+    	// TODO duplicate from admin request filter
+    	if (request.getParameter("tags") != null) {
+    		String[] tagIds = request.getParameterValues("tags");
+    		List <Tag> tags = new ArrayList <Tag>();
+    		for (int i = 0; i < tagIds.length; i++) {             
+    			String tagIdString = tagIds[i];
+    			int tagID = Integer.parseInt(tagIdString);
+    			if (tagID > 0) {          
+    				Tag tag = resourceDAO.loadTagById(tagID);
+    				if (tag != null) {
+    					tags.add(tag);
+    				} else {
+    					log.warn("Could not find tag with id: " + tagID);
+    				}
+    			} 
+    		}           
+    		request.setAttribute("tags", tags);
+    	}
+    	
+    	
+    	// TODO this is duplication from the admin filter.
+    	if (request.getParameter("resource") != null) {
+			String resourceParametere = request.getParameter("resource");			
+			try {
+        		final int resourceId = Integer.parseInt(resourceParametere);
+        		if (resourceId > 0) {
+        			Resource resource = resourceDAO.loadResourceById(resourceId);
+        			if (resource != null) {
+        				log.info("Found resource: " + resource.getName());
+        				request.setAttribute("resource", resource);
+        				return;
+        			}
+        		}
+        	} catch (NumberFormatException e) {
+        		log.warn("Invalid resource id given: " + resourceParametere);
+        	}
+		}
+    	
+		
+    	
     	
         // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
     	// Used by the rssfeeds index page?
@@ -200,6 +240,7 @@ public class RequestFilter {
     	return reservedUrlWords.contains(urlWord);
 	}
 
+    // TODO depricated?
 	protected Integer parseResourceIDFromRequestParameter(HttpServletRequest request) {
         Integer requestResourceID = null;        
         if (request.getParameter("resource") != null) {       
