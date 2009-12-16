@@ -24,6 +24,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
+	private static final int MAX_RELATED = 5;
+
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	
 	private ResourceRepository resourceDAO;	
@@ -71,12 +73,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
 		
-		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagLinks(tag, showBroken);
+		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagLinks(tag, showBroken, MAX_RELATED);
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}
 		
-		List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublisherLinks(tag, showBroken);
+		List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublisherLinks(tag, showBroken, MAX_RELATED);
 		if (relatedPublisherLinks.size() > 0) {
 			mv.addObject("related_publishers", relatedPublisherLinks);
 		}

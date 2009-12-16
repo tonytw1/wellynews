@@ -35,7 +35,15 @@ public class RelatedTagsService {
 		this.resourceDAO = resourceDAO;
 		this.solrQueryService = solrQueryService;
 	}
-
+	
+	
+	public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken, int maxItems) {    	
+		List<TagContentCount> relatedTagLinks = this.getRelatedTagLinks(tag, showBroken);
+		if (relatedTagLinks.size() <= maxItems) {
+			return relatedTagLinks;
+		}
+		return relatedTagLinks.subList(0, maxItems);
+	}
 
 
 	public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken) {    	
@@ -79,6 +87,17 @@ public class RelatedTagsService {
 		}			
 		return relatedTags;     
     }
+    
+    
+    
+    
+    public List<PublisherContentCount> getRelatedPublisherLinks(Tag tag, boolean showBroken, int maxItems) {    	
+		List<PublisherContentCount> relatedLinks = this.getRelatedPublisherLinks(tag, showBroken);
+		if (relatedLinks.size() <= maxItems) {
+			return relatedLinks;
+		}
+		return relatedLinks.subList(0, maxItems);
+	}
     
     
     public List<PublisherContentCount> getRelatedPublisherLinks(Tag tag, boolean showBroken) {
