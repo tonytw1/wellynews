@@ -5,17 +5,17 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
-
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
-import nz.co.searchwellington.model.RomeRssFeed;
 import nz.co.searchwellington.model.RssFeedable;
+import nz.co.searchwellington.views.RomeRssFeed;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 
 public class RomeRssFeedTests extends TestCase {
 

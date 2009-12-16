@@ -6,7 +6,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.model.RomeRssFeed;
 import nz.co.searchwellington.model.RssFeedable;
 import nz.co.searchwellington.model.SiteInformation;
 

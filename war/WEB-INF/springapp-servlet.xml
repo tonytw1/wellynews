@@ -540,14 +540,14 @@
 	
 	<bean id="profileEditController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="profileEditControllerTarget" />
+		<property name="target" ref="profileController" />
 		<property name="transactionAttributeSource">
 			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
 		</property>	
 	</bean>
 	
 	
-	<bean id="profileEditControllerTarget" class="nz.co.searchwellington.controllers.profiles.ProfileEditController">
+	<bean id="profileController" class="nz.co.searchwellington.controllers.profiles.ProfileEditController">
 		<constructor-arg ref="userDAO" />		
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="resourceDAO" />
@@ -665,10 +665,10 @@
            		<prop key="/feeds/discovered">simplePageController</prop>           	
 				<prop key="/lastupdated">simplePageController</prop>
 									
-				<prop key="/profile/edit">profileEditController</prop>
-				<prop key="/profile/save">profileEditController</prop>
-				<prop key="/profile/*">profileEditController</prop>
-				<prop key="/profile">profileEditController</prop>
+				<prop key="/profile/edit">profileController</prop>
+				<prop key="/profile/save">profileController</prop>
+				<prop key="/profile/*">profileController</prop>
+				<prop key="/profile">profileController</prop>
 																
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/tags">simplePageController</prop>
