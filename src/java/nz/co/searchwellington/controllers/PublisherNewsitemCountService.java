@@ -19,19 +19,15 @@ public class PublisherNewsitemCountService {
 	private LoggedInUserFilter loggedInFilter;
 	private SolrQueryService solrQueryService;
 	
-	Map<Integer, Integer> publisherNewsitemCounts;
-	Map<Integer, Integer> showBrokenPublisherNewsitemCounts;
+	Map<Integer, Integer> newsitemCounts;
 
 	
 	
 	public PublisherNewsitemCountService() {	
 	}
 
-	
-	
-	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter,
-			SolrQueryService solrQueryService) {
-		super();
+		
+	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter, SolrQueryService solrQueryService) {
 		this.loggedInFilter = loggedInFilter;
 		this.solrQueryService = solrQueryService;
 	}
@@ -39,49 +35,9 @@ public class PublisherNewsitemCountService {
 
 
 	public int getNewsitemCount(Website publisher) {	
-		boolean showBroken = loggedInFilter.getLoggedInUser() != null;
-		
-		Map<Integer, Integer>  newsitemCounts = null;
-		if (showBroken) {
-			if (showBrokenPublisherNewsitemCounts == null) {
-				showBrokenPublisherNewsitemCounts = new HashMap<Integer, Integer>();		
-				getPublisherNewsitemCounts(true, showBrokenPublisherNewsitemCounts);				
-			}
-			newsitemCounts = showBrokenPublisherNewsitemCounts;
-		
-		} else {
-			if (publisherNewsitemCounts == null) {
-				publisherNewsitemCounts = new HashMap<Integer, Integer>();		
-				getPublisherNewsitemCounts(false, publisherNewsitemCounts);				
-			}			
-			newsitemCounts = publisherNewsitemCounts;
-		}
-		
+		boolean showBroken = loggedInFilter.getLoggedInUser() != null;		
+		Map<Integer, Integer> newsitemCounts = createOrGetCorrectPublisherNewsitemCounts(showBroken);		
 		final int publisherId = publisher.getId();
-		if (newsitemCounts.containsKey(publisherId)) {
-			return newsitemCounts.get(publisherId);
-		}
-		return 0;	
-	}
-	
-		
-	private int getNewsitemCount(int publisherId, boolean showBroken) {
-		Map<Integer, Integer>  newsitemCounts = null;
-		if (showBroken) {
-			if (showBrokenPublisherNewsitemCounts == null) {
-				showBrokenPublisherNewsitemCounts = new HashMap<Integer, Integer>();		
-				getPublisherNewsitemCounts(true, showBrokenPublisherNewsitemCounts);				
-			}
-			newsitemCounts = showBrokenPublisherNewsitemCounts;
-
-		} else {
-			if (publisherNewsitemCounts == null) {
-				publisherNewsitemCounts = new HashMap<Integer, Integer>();		
-				getPublisherNewsitemCounts(false, publisherNewsitemCounts);				
-			}			
-			newsitemCounts = publisherNewsitemCounts;
-		}
-		
 		if (newsitemCounts.containsKey(publisherId)) {
 			return newsitemCounts.get(publisherId);
 		}
@@ -89,8 +45,16 @@ public class PublisherNewsitemCountService {
 	}
 
 
+	private Map<Integer, Integer> createOrGetCorrectPublisherNewsitemCounts(boolean showBroken) {	
+		if (this.newsitemCounts == null) {		
+			this.newsitemCounts = populatePublisherNewsitemCounts(showBroken);				
+		}
+		return this.newsitemCounts;
+	}
 	
-	public void getPublisherNewsitemCounts(boolean showBroken, Map<Integer, Integer> newsitemCounts) {		
+	
+	private Map<Integer, Integer> populatePublisherNewsitemCounts(boolean showBroken) {
+		
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
 		query.addFacetField("publisher");
 		query.setFacetMinCount(1);
@@ -98,12 +62,15 @@ public class PublisherNewsitemCountService {
 		
 		List<Count> facetQueryResults = solrQueryService.getFacetQueryResults(query, "publisher");
 		if (facetQueryResults != null) {
+			Map<Integer, Integer>  newsitemCounts = new HashMap<Integer, Integer>();
 			for (Count count : facetQueryResults) {
 				final int publisherId = Integer.parseInt(count.getName());						
 				final Long relatedItemCount = count.getCount();
-				newsitemCounts.put(publisherId, relatedItemCount.intValue());				
+				newsitemCounts.put(publisherId, relatedItemCount.intValue());
 			}
+			return newsitemCounts;
 		}
+		return null;
     }
 
 }
