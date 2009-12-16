@@ -150,6 +150,14 @@
 				#end
 				
 				
+				#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	
+					<li>Submitted by: <a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a></li>
+				#end
+				
+				#if ($item.type == "N" && $item.feed) 
+					<li>Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
+				#end
+				
 					#if ($item.type == "N" && $item.reTwits.size() > 0)
 						<ul>
 							#foreach ($twit in $item.reTwits) 
@@ -198,16 +206,7 @@
 				#if ($editPermissionService.canEdit($item) && ($item.type == "TNI"))
 					<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
 				#end
-								
-															
-				#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	
-					<li>Submitted by: <a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a></li>
-				#end
-				
-				#if ($item.type == "N" && $item.feed) 
-					<li>Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
-				#end
-								
+												
 				#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
 					<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($item)">accept</a></li>
 					<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($item)">ignore</a></li>
