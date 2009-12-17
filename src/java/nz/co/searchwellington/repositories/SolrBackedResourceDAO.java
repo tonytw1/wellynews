@@ -347,17 +347,35 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	
 	
-	
+	// TODO hell pissed - push to new search query builder
 	public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").keywords(keywords).toQuery();		
+		SolrQuery query = new SolrQuery();	
+		//	SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").keywords(keywords).toQuery();		
+		
+		query.setQuery(keywords);
+		query.setQueryType("search");
+		query.setFilterQueries("+type:N");	
+		if (!showBroken) {
+			query.setFilterQueries(" +httpStatus:200");
+		}
+		
 		query.setRows(100);
-		query.setHighlight(true);		
-		return getQueryResults(query);		
+		query.setHighlight(true);
+		return getQueryResults(query);
 	}
 	
 	
 	public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("W").keywords(keywords).toQuery();		
+		SolrQuery query = new SolrQuery();				
+		//		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("W").keywords(keywords).toQuery();		
+		
+		query.setQuery(keywords);
+		query.setQueryType("search");
+		query.setFilterQueries("+type:W");
+		if (!showBroken) {
+			query.setFilterQueries(" +httpStatus:200");
+		}
+			
 		query.setRows(100);
 		query.setHighlight(true);		
 		return getQueryResults(query);		

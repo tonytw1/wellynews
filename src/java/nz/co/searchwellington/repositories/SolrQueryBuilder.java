@@ -86,15 +86,7 @@ public class SolrQueryBuilder {
 		}
 		return this;
 	}
-	
-
-	public SolrQueryBuilder keywords(String keywords) {
-		if (keywords != null) {
-			sb.append(" +name:" + keywords);			
-		}
-		return this;		
-	}
-
+		
 	public SolrQueryBuilder geotagged() {
 		sb.append(" +geotagged:true");
 		return this;
