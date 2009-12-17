@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import com.sun.syndication.io.FeedException;
 
 
 public class ResourceEditController extends BaseMultiActionController {
@@ -109,7 +108,7 @@ public class ResourceEditController extends BaseMultiActionController {
 
 
     @Transactional
-    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {        
+    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {        
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Accepting a submission");
@@ -172,7 +171,7 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     @Transactional
-    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
+    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
         
         adminRequestFilter.loadAttributesOntoRequest(request);
