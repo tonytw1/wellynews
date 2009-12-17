@@ -332,6 +332,13 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="notifier" />	
 	</bean>
 	
+	
+	<bean id="contentDeletionService" class="nz.co.searchwellington.controllers.ContentDeletionService">
+		<constructor-arg ref="supressionDAO" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="resourceDAO" />
+	</bean>
+	
 		
 	<bean id="suggestedFeeditemsService" class="nz.co.searchwellington.repositories.SuggestedFeeditemsService">
 		<constructor-arg ref="suggestionDAO" />

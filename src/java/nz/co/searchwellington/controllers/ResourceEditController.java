@@ -19,19 +19,14 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Supression;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
-import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
@@ -51,32 +46,28 @@ public class ResourceEditController extends BaseMultiActionController {
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
     private TagWidgetFactory tagWidgetFactory;
-    private PublisherSelectFactory publisherSelectFactory;
-    private SupressionRepository supressionDAO;
+    private PublisherSelectFactory publisherSelectFactory;   
     private AutoTaggingService autoTagger;
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
-    private UrlCleaner urlCleaner;
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
     private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
     private SubmissionProcessingService submissionProcessingService;
     private ContentUpdateService contentUpdateService;
+	private ContentDeletionService contentDeletionService;
     
-    public ResourceEditController(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
-            TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory, SupressionRepository supressionDAO,
+    public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
+            TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            UrlCleaner urlCleaner, RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
+            RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService) {    	
-        this.resourceDAO = resourceDAO;
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService) {       
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;
         this.publisherSelectFactory = publisherSelectFactory;
-        this.supressionDAO = supressionDAO;
         this.autoTagger = autoTagger;
-        this.acceptanceWidgetFactory = acceptanceWidgetFactory;      
-        this.urlCleaner = urlCleaner;
+        this.acceptanceWidgetFactory = acceptanceWidgetFactory;
         this.rssPrefetcher = rssPrefetcher;
         this.loggedInUserFilter = loggedInUserFilter;
         this.editPermissionService = editPermissionService;
@@ -84,6 +75,7 @@ public class ResourceEditController extends BaseMultiActionController {
         this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
         this.submissionProcessingService = submissionProcessingService;
         this.contentUpdateService = contentUpdateService;
+        this.contentDeletionService = contentDeletionService;
     }
    
     
@@ -314,62 +306,19 @@ public class ResourceEditController extends BaseMultiActionController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (editResource != null && loggedInUser != null && loggedInUser.isAdmin()) {
             modelAndView.addObject("resource", editResource);
-            editResource = (Resource) request.getAttribute("resource");
+            editResource = (Resource) request.getAttribute("resource");            
+            contentDeletionService.performDelete(editResource);
             
-            if (editResource.getType().equals("W")) {
-            	removePublisherFromPublishersContent(editResource);            	
-            }
-            
-            if (editResource.getType().equals("F")) {
-            	removeFeedFromFeedNewsitems((Feed) editResource);
-            	urlStack.setUrlStack(request, "/index");
-            }
-            
-            if (editResource.getType().equals("N")) {
-            	Newsitem deletedNewsitem = (Newsitem) editResource;
-            	if (deletedNewsitem.getFeed() != null) {
-            		log.info("Deleting a newsitem which was accepted from a feed; checking for required supression");
-            		if (rssfeedNewsitemService.getFeedNewsitemByUrl(deletedNewsitem.getFeed(), deletedNewsitem.getUrl()) != null) {
-            			log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl());
-            			supressionDAO.createSupression(deletedNewsitem.getUrl());
-            		}
-            	}           		            	
-            }
-            
-            resourceDAO.deleteResource(editResource);
+    		if (editResource.getType().equals("F")) { 
+    			urlStack.setUrlStack(request, "/index");
+    		}
         }
         // TODO need to given failure message if we didn't actually remove the item.
         return modelAndView;
     }
 
 
-
-    private void removePublisherFromPublishersContent(Resource editResource) {
-    	Website publisher = (Website) editResource;
-    	for (Newsitem newsitem : publisher.getNewsitems()) {
-    		newsitem.setPublisher(null);
-    		resourceDAO.saveResource(newsitem);					
-    	}
-    	for (Feed feed : publisher.getFeeds()) {
-    		feed.setPublisher(null);
-    		resourceDAO.saveResource(feed);					
-    	}
-    	for (Watchlist watchlist : publisher.getWatchlist()) {
-    		watchlist.setPublisher(null);
-    		resourceDAO.saveResource(watchlist);					
-    	}
-    }
     
-    
-    
-    private void removeFeedFromFeedNewsitems(Feed feed) {    	
-    	for (Newsitem newsitem : resourceDAO.getNewsitemsForFeed(feed)) {
-    		newsitem.setFeed(null);
-    		resourceDAO.saveResource(newsitem);					
-    	}    	
-    }
-    
-         
     @Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
 	   	// TODO is this needed?
