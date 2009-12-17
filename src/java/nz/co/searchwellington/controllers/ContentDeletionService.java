@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 
 public class ContentDeletionService {
 	
-    private static Logger log = Logger.getLogger(ResourceEditController.class);
+    private static Logger log = Logger.getLogger(ContentDeletionService.class);
     	
 	private SupressionRepository supressionDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
