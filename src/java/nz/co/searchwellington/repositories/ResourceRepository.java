@@ -35,9 +35,6 @@ public interface ResourceRepository {
     public List <Website> getPublisherFeeds(Website publisher);
     public List <Website> getPublisherWatchlist(Website publisher);
 
-    public List <Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken);
-    public List <Resource> getNewsitemsMatchingKeywords(String keywords,  boolean showBroken);
-    
     public List <Resource> getNewsitemsForMonth(Date month, boolean showBroken);
 
 

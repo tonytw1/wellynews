@@ -6,11 +6,11 @@ import nz.co.searchwellington.repositories.SolrQueryBuilder;
 
 public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
 	
-	public SolrQuery getSolrWebsiteKeywordQuery(String keywords, boolean showBroken) {
+	
+	public SolrQuery getSolrKeywordQuery(String keywords, boolean showBroken) {
 		SolrQuery query = new SolrQuery();	
 		query.setQuery(keywords);
-		query.setQueryType("search");
-		query.setFilterQueries("+type:W");
+		query.setQueryType("search");	
 		if (!showBroken) {
 			query.setFilterQueries(" +httpStatus:200");
 		}
@@ -18,14 +18,16 @@ public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
 	}
 	
 	
+	public SolrQuery getSolrWebsiteKeywordQuery(String keywords, boolean showBroken) {
+		SolrQuery query = getSolrKeywordQuery(keywords, showBroken);
+		query.setFilterQueries(" +type:W");
+		return query;
+	}
+	
+	
 	public SolrQuery getSolrNewsitemKeywordQuery(String keywords, boolean showBroken) {
-		SolrQuery query = new SolrQuery();	
-		query.setQuery(keywords);
-		query.setQueryType("search");
-		query.setFilterQueries("+type:N");	
-		if (!showBroken) {
-			query.setFilterQueries(" +httpStatus:200");
-		}
+		SolrQuery query = getSolrKeywordQuery(keywords, showBroken);		
+		query.setFilterQueries(" +type:N");	
 		return query;
 	}
 	

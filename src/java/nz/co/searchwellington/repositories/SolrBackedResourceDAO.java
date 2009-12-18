@@ -350,21 +350,10 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	
 	
-	public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = solrKeywordQueryBuilder.getSolrNewsitemKeywordQuery(keywords, showBroken);		
-		query.setRows(100);
-		query.setHighlight(true);
-		return getQueryResults(query);
-	}
 	
 	
 	
-	public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = solrKeywordQueryBuilder.getSolrWebsiteKeywordQuery(keywords, showBroken);			
-		query.setRows(100);
-		query.setHighlight(true);		
-		return getQueryResults(query);		
-	}
+	
 
 	
 	public List<Tag> getCommentedTags(boolean showBroken) {

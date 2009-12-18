@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.KeywordSearchService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
@@ -17,18 +18,20 @@ import org.springframework.web.servlet.view.RedirectView;
 
 
 public class SearchController extends BaseMultiActionController {
-
-		
-    Logger log = Logger.getLogger(SearchController.class);
-    RequestFilter requestFilter;
-	private ShowBrokenDecisionService showBrokenDecisionService;
 	
-    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ShowBrokenDecisionService showBrokenDecisionService) {    
+	Logger log = Logger.getLogger(SearchController.class);
+    
+	private RequestFilter requestFilter;
+	private ShowBrokenDecisionService showBrokenDecisionService;
+	private KeywordSearchService keywordSearchService;
+	
+    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ShowBrokenDecisionService showBrokenDecisionService, KeywordSearchService keywordSearchService) {    
 		this.resourceDAO = resourceDAO;     
         this.urlStack = urlStack;
         this.requestFilter = requestFilter;
         this.configDAO = configDAO;
         this.showBrokenDecisionService = showBrokenDecisionService;
+        this.keywordSearchService = keywordSearchService;
 	}
 
     @SuppressWarnings("unchecked")
@@ -49,8 +52,10 @@ public class SearchController extends BaseMultiActionController {
                 urlStack.setUrlStack(request);
                 mv.getModel().put("heading", "Search Results");
                 
-                final List<Resource> matchingSites = resourceDAO.getWebsitesMatchingKeywords(keywords, showBroken);
-                final List<Resource> matchingNewsitems = resourceDAO.getNewsitemsMatchingKeywords(keywords, showBroken);
+                mv.addObject("related_tags", keywordSearchService.getKeywordSearchFacets(keywords, showBroken));
+                
+                final List<Resource> matchingSites = keywordSearchService.getWebsitesMatchingKeywords(keywords, showBroken);
+                final List<Resource> matchingNewsitems = keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBroken);
                                                 
                 if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                     // TODO what do you done if there are no matches for a search?
