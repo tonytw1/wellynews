@@ -2,7 +2,9 @@ package nz.co.searchwellington.repositories;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nz.co.searchwellington.model.Resource;
 
@@ -45,15 +47,15 @@ public class SolrQueryService {
 	
 	
 	
-	public List<Count> getFacetQueryResults(SolrQuery query, String facetFieldName) {
+	public Map<String, List<Count>> getFacetQueryResults(SolrQuery query) {
+		Map<String, List<Count>> results = new HashMap<String, List<Count>>();
 		QueryResponse response = querySolr(query);
-		if (response != null) {
-			FacetField facetField = response.getFacetField(facetFieldName);
-			if (facetField != null && facetField.getValues() != null) {
-				return facetField.getValues();				
+		for (FacetField field : response.getFacetFields()) {
+			if (field.getValues() != null) {
+				results.put(field.getName(), field.getValues());
 			}
 		}
-		return null;
+		return results;
 	}
 
 	

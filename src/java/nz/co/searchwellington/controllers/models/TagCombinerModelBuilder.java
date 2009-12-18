@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.TagRelatedLinks;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -52,7 +53,9 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
-		mv.addObject("related_tags", relatedTagsService.getRelatedTagLinks(tag, showBroken));
+		
+		TagRelatedLinks relatedLinks = relatedTagsService.getTagsRelatedLinks(tag, showBroken, 1000);
+		mv.addObject("related_tags", relatedLinks.getRelatedTags());
 	}
 
 

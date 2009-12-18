@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.TagRelatedLinks;
 import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
@@ -72,17 +73,18 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
-		
-		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagLinks(tag, showBroken, MAX_RELATED);
+
+		TagRelatedLinks relatedLinks = relatedTagsService.getTagsRelatedLinks(tag, showBroken, MAX_NEWSITEMS);
+		List<TagContentCount> relatedTagLinks = relatedLinks.getRelatedTags();
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}
 		
-		List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublisherLinks(tag, showBroken, MAX_RELATED);
+		List<PublisherContentCount> relatedPublisherLinks = relatedLinks.getRelatedPublisers();
 		if (relatedPublisherLinks.size() > 0) {
 			mv.addObject("related_publishers", relatedPublisherLinks);
 		}
-				
+		
 		populateCommentedTaggedNewsitems(mv, tag, showBroken);
 		mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
 		populateRelatedFeed(mv, tag);

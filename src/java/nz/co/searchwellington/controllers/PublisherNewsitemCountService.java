@@ -54,16 +54,16 @@ public class PublisherNewsitemCountService {
 	
 	
 	private Map<Integer, Integer> populatePublisherNewsitemCounts(boolean showBroken) {
-		
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
 		query.addFacetField("publisher");
 		query.setFacetMinCount(1);
 		query.setFacetLimit(5000);
 		
-		List<Count> facetQueryResults = solrQueryService.getFacetQueryResults(query, "publisher");
-		if (facetQueryResults != null) {
+		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);
+		List<Count> field = facetQueryResults.get("publisher");
+		if (field != null) {
 			Map<Integer, Integer>  newsitemCounts = new HashMap<Integer, Integer>();
-			for (Count count : facetQueryResults) {
+			for (Count count : field) {
 				final int publisherId = Integer.parseInt(count.getName());						
 				final Long relatedItemCount = count.getCount();
 				newsitemCounts.put(publisherId, relatedItemCount.intValue());

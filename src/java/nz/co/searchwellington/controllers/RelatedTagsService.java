@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
@@ -30,78 +31,51 @@ public class RelatedTagsService {
 		this.solrQueryService = solrQueryService;
 	}
 	
+		
+	public TagRelatedLinks getTagsRelatedLinks(Tag tag, boolean showBroken, int maxItems) {
+		TagRelatedLinks relatedLinks = new TagRelatedLinks();
 	
-	public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken, int maxItems) {    	
-		List<TagContentCount> relatedTagLinks = this.getRelatedTagLinks(tag, showBroken);
-		if (relatedTagLinks.size() <= maxItems) {
-			return relatedTagLinks;
-		}
-		return relatedTagLinks.subList(0, maxItems);
+		SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
+		query.addFacetField("tags");
+		query.addFacetField("publisher");
+		query.setFacetMinCount(1);
+		
+		Map<String, List<Count>> facetResuls = solrQueryService.getFacetQueryResults(query);		
+		relatedLinks.setRelatedTags(getRelatedTagLinks(facetResuls.get("tags"), tag));
+		relatedLinks.setRelatedPublisers(getRelatedPublisherLinks(facetResuls.get("publisher")));
+		return relatedLinks;
 	}
-
-
-	public List<TagContentCount> getRelatedTagLinks(Tag tag, boolean showBroken) {    	
-    	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
 	
-    	SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
+	
+
+	public List<TagContentCount> getRelatedTagLinks(Website publisher, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).toQuery();
 		query.addFacetField("tags");
 		query.setFacetMinCount(1);
-			
-		List<Count> values = solrQueryService.getFacetQueryResults(query, "tags");
-		if (values != null) {			
-			for (Count count : values) {
-				final int relatedTagId = Integer.parseInt(count.getName());
-				Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
-				if (isTagSuitable(relatedTag, tag)) {
+		
+		Map<String, List<Count>> facetResuls = solrQueryService.getFacetQueryResults(query);
+		return getRelatedTagLinks(facetResuls.get("tags"), null);
+	}
+	
+	
+	private List<TagContentCount> getRelatedTagLinks(List<Count> values, Tag ignoreTag) {
+    	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
+    	if (values != null) {
+    		for (Count count : values) {
+    			final int relatedTagId = Integer.parseInt(count.getName());
+    			Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
+    			if (isTagSuitable(relatedTag, ignoreTag)) {
 					final Long relatedItemCount = count.getCount();
 					relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));
 				}
 			}
-		}		
-		return relatedTags;     
-    }
-    
-    
-    
-    public List<TagContentCount> getRelatedTagLinks(Website publisher, boolean showBroken) {    	
-    	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
-		
-    	SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).toQuery();
-		query.addFacetField("tags");			
-		query.setFacetMinCount(1);
-			
-		List<Count> values = solrQueryService.getFacetQueryResults(query, "tags");
-		if (values != null) {
-			for (Count count : values) {
-				final int relatedTagId = Integer.parseInt(count.getName());
-				Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
-				final Long relatedItemCount = count.getCount();
-				relatedTags.add(new TagContentCount(relatedTag, relatedItemCount.intValue()));				
-			}
-		}			
-		return relatedTags;     
-    }
-    
-    
-    
-    
-    public List<PublisherContentCount> getRelatedPublisherLinks(Tag tag, boolean showBroken, int maxItems) {    	
-		List<PublisherContentCount> relatedLinks = this.getRelatedPublisherLinks(tag, showBroken);
-		if (relatedLinks.size() <= maxItems) {
-			return relatedLinks;
 		}
-		return relatedLinks.subList(0, maxItems);
-	}
+		return relatedTags;     
+    }
     
-    
-    public List<PublisherContentCount> getRelatedPublisherLinks(Tag tag, boolean showBroken) {
-    	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();
-		
-		SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
-		query.addFacetField("publisher");			
-		query.setFacetMinCount(1);
-			
-		List<Count> values = solrQueryService.getFacetQueryResults(query, "publisher");
+	
+    private List<PublisherContentCount> getRelatedPublisherLinks(List<Count> values) {
+    	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();		
 		if (values != null) {			
 			for (Count count : values) {
 				final int relatedPublisherId = Integer.parseInt(count.getName());
@@ -114,8 +88,13 @@ public class RelatedTagsService {
     }
      
 	
-	private boolean isTagSuitable(Tag relatedTag, Tag tag) {
-		return !(tag.equals(relatedTag)) && !(relatedTag.isParentOf(tag) || relatedTag.getAncestors().contains(tag) || relatedTag.isHidden());
+	private boolean isTagSuitable(Tag relatedTag, Tag ignoreTag) {
+		if (ignoreTag != null) {
+			return !(ignoreTag.equals(relatedTag)) && !(relatedTag.isParentOf(ignoreTag) || relatedTag.getAncestors().contains(ignoreTag) || relatedTag.isHidden());
+		}
+		return true;
 	}
+
+
 	
 }
