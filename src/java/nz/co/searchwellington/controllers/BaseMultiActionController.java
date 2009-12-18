@@ -49,8 +49,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     }
     
     
-    final protected void populateSecondaryLatestNewsitems(ModelAndView mv, User loggedInUser) {
-        boolean showBroken = loggedInUser != null;      
+    final protected void populateSecondaryLatestNewsitems(ModelAndView mv, boolean showBroken) {            
         final int numberOfItems = 5;
         final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(numberOfItems, showBroken);        
         mv.addObject("latest_newsitems", latestNewsitems);
@@ -58,14 +57,13 @@ public abstract class BaseMultiActionController extends MultiActionController {
     }
     
   
-    final protected void populateArchiveLinks(ModelAndView mv, User loggedInUser, List<ArchiveLink> archiveMonths) {                        
+    final protected void populateArchiveLinks(ModelAndView mv, boolean showBroken, List<ArchiveLink> archiveMonths) {                        
         final int MAX_BACK_ISSUES = 6;
         if (archiveMonths.size() <= MAX_BACK_ISSUES) {
             mv.addObject("archive_links", archiveMonths);
         } else {
             mv.addObject("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
         }
-        boolean showBroken = loggedInUser != null;
         populateContentCounts(mv, showBroken);
     }
 

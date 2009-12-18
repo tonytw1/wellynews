@@ -42,10 +42,11 @@ public class IndexController extends BaseMultiActionController {
 	private UrlBuilder urlBuilder;
 	private RequestFilter requestFilter;
 	private GoogleMapsDisplayCleaner googleMapCleaner;
+	private ShowBrokenDecisionService showBrokenDecisionService;
 
     
     
-    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter, GoogleMapsDisplayCleaner googleMapCleaner) {   
+    public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter, GoogleMapsDisplayCleaner googleMapCleaner, ShowBrokenDecisionService showBrokenDecisionService) {   
         this.resourceDAO = resourceDAO;        
         this.urlStack = urlStack;
         this.configDAO = configDAO;       
@@ -56,6 +57,7 @@ public class IndexController extends BaseMultiActionController {
         this.urlBuilder = urlBuilder;
         this.requestFilter = requestFilter;
         this.googleMapCleaner = googleMapCleaner;
+        this.showBrokenDecisionService = showBrokenDecisionService;
     }
     
 
@@ -66,10 +68,10 @@ public class IndexController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         
         urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean showBroken = loggedInUser != null;
+        final boolean showBroken = showBrokenDecisionService.shouldShowBroken();
+        
         populateAds(request, mv, showBroken);    
-        populateSecondaryJustin(mv, loggedInUser);               
+        populateSecondaryJustin(mv, showBroken);               
      
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
@@ -78,14 +80,14 @@ public class IndexController extends BaseMultiActionController {
         populateCommentedNewsitems(mv, showBroken);
         
         List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(showBroken);
-		populateArchiveLinks(mv, loggedInUser, archiveMonths);
+		populateArchiveLinks(mv, showBroken, archiveMonths);
         if (monthOfLastItem(latestNewsitems) != null) {
             mv.getModel().put("main_content_moreurl", makeArchiveUrl(monthOfLastItem(latestNewsitems), archiveMonths ));
         }
                
-        populateUserOwnedResource(request, mv, loggedInUser);       
-        setRss(mv, "Search " + siteInformation.getAreaname() + " Newslog", rssUrlBuilder.getBaseRssUrl());
-     
+        User loggedInUser = loggedInUserFilter.getLoggedInUser();
+        populateUserOwnedResource(request, mv, loggedInUser);   
+        setRss(mv, "Search " + siteInformation.getAreaname() + " Newslog", rssUrlBuilder.getBaseRssUrl());        
         mv.addObject("current_time", Calendar.getInstance().getTime());
         
         populateNewslogLastUpdated(mv);        
@@ -160,11 +162,10 @@ public class IndexController extends BaseMultiActionController {
 
     
     @SuppressWarnings("unchecked")
-    private void populateSecondaryJustin(ModelAndView mv, User loggedInUser) throws IOException {
-        boolean showBroken = loggedInUser != null;
+    private void populateSecondaryJustin(ModelAndView mv, boolean showBroken) {
         mv.getModel().put("secondary_heading", "Just In");
         mv.getModel().put("secondary_description", "New additions.");
-        mv.getModel().put("secondary_content", resourceDAO.getLatestWebsites(MAX_SECONDARY_ITEMS, showBroken));                  
+        mv.getModel().put("secondary_content", resourceDAO.getLatestWebsites(MAX_SECONDARY_ITEMS, showBroken));   
         mv.getModel().put("secondary_content_moreurl", "justin");        
     }
     

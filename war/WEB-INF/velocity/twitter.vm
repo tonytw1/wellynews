@@ -55,11 +55,7 @@
 
 
 
-#if ($twitterReplies) 
-<div class="box">
-#parse("includes/twitter_replies.vm")
-</div>
-#end
+
 
 
 

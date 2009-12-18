@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
@@ -22,24 +21,22 @@ public class SearchController extends BaseMultiActionController {
 		
     Logger log = Logger.getLogger(SearchController.class);
     RequestFilter requestFilter;
+	private ShowBrokenDecisionService showBrokenDecisionService;
 	
-    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter) {    
+    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ShowBrokenDecisionService showBrokenDecisionService) {    
 		this.resourceDAO = resourceDAO;     
         this.urlStack = urlStack;
         this.requestFilter = requestFilter;
         this.configDAO = configDAO;
-        this.loggedInUserFilter = loggedInUserFilter;
+        this.showBrokenDecisionService = showBrokenDecisionService;
 	}
 
     @SuppressWarnings("unchecked")
 	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
-        ModelAndView mv = new ModelAndView();
-        
-        mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        
-        boolean showBroken = loggedInUser != null;
+        ModelAndView mv = new ModelAndView();        
+        this.populateCommonLocal(mv);
+                
+        boolean showBroken = showBrokenDecisionService.shouldShowBroken();
         populateAds(request, mv, showBroken);
      
         String keywords = null;
@@ -79,7 +76,7 @@ public class SearchController extends BaseMultiActionController {
          
             mv.getModel().put("search_keywords", keywords);
            
-            populateSecondaryLatestNewsitems(mv, loggedInUser);
+            populateSecondaryLatestNewsitems(mv, showBroken);
           
             if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                 log.debug("Using single column layout.");

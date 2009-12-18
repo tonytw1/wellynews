@@ -34,10 +34,10 @@ public class SimplePageController extends BaseMultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
-    private LoggedInUserFilter loggedInUserFilter;
+    private ShowBrokenDecisionService showBrokenDecisionService;
     
     
-    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, LoggedInUserFilter loggedInUserFilter) {
+    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, ShowBrokenDecisionService showBrokenDecisionService) {
         this.resourceDAO = resourceDAO;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
@@ -45,7 +45,7 @@ public class SimplePageController extends BaseMultiActionController {
         this.rssUrlBuilder = rssUrlBuilder;
         this.twitterService = twitterService;
         this.discoveredFeedRepository = discoveredFeedRepository;
-        this.loggedInUserFilter = loggedInUserFilter;
+        this.showBrokenDecisionService = showBrokenDecisionService;
     }
     
        
@@ -55,7 +55,7 @@ public class SimplePageController extends BaseMultiActionController {
                     
         populateCommonLocal(mv);             
         mv.addObject("heading", "About");        
-        populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
         
         mv.setViewName("about");                     
         return mv;
@@ -67,12 +67,11 @@ public class SimplePageController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
 
         populateCommonLocal(mv);        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        
+   
         mv.addObject("heading", "Archive");
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-            
-        List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(loggedInUser != null);
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        
+        List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken());
         mv.addObject("archiveLinks", archiveMonths);
                 
         mv.setViewName("archiveIndex");
@@ -84,15 +83,13 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean showBroken = loggedInUser != null;        
+           
         mv.addObject("heading", "The Wellynews API");
 
         mv.addObject("feeds", resourceDAO.getAllFeedsByName());
-        mv.addObject("publishers", resourceDAO.getAllPublishers(showBroken, true));
+        mv.addObject("publishers", resourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), true));
         mv.addObject("api_tags", resourceDAO.getTopLevelTags());
-        populateSecondaryLatestNewsitems(mv, loggedInUser);        
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());        
         mv.setViewName("api");
         return mv;      
     }
@@ -105,10 +102,8 @@ public class SimplePageController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
         
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-     
         mv.addObject("heading", "Broken sites");
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
              
         List<Resource> wrappedCalendars = resourceDAO.getBrokenSites();        
         mv.addObject("main_content", wrappedCalendars);
@@ -124,10 +119,8 @@ public class SimplePageController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
         
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-     
         mv.addObject("heading", "Calendar Feeds");
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
              
         List<Resource> wrappedCalendars = resourceDAO.getAllCalendarFeeds();        
         mv.addObject("main_content", wrappedCalendars);        
@@ -142,10 +135,9 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
         
         urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        
+
         mv.addObject("heading", "Discovered Feeds");
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
         
         List<DiscoveredFeed> nonCommentFeeds = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds();        
 		mv.addObject("discovered_feeds", nonCommentFeeds);        
@@ -159,12 +151,11 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
 
         urlStack.setUrlStack(request);
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        
+      
         mv.addObject("heading", "Latest Updates");
         // TODO this should show resources order by last live time. - the the last update query won't have to interate ethier.
         mv.addObject("main_content", resourceDAO.getLatestNewsitems(20, false));
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
         populateNewslogLastUpdated(mv);
 
         mv.setViewName("lastupdated");
@@ -178,13 +169,11 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        
+     
         mv.addObject("heading", "All Tags");        
         mv.addObject("tags", resourceDAO.getAllTags());
                 
-        populateSecondaryLatestNewsitems(mv, loggedInUser);       
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
         
         mv.setViewName("tags");
         return mv;
@@ -202,7 +191,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "All Publishers");    
         mv.addObject("publishers", resourceDAO.getAllPublishers(showBroken, true));
         
-        populateSecondaryLatestNewsitems(mv, loggedInUser);       
+        populateSecondaryLatestNewsitems(mv, showBroken);       
         mv.setViewName("publishers");
         return mv;
     }
@@ -215,13 +204,8 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("twitterUsername", siteInformation.getTwitterUsername());
         mv.addObject("heading",  "Following the " + siteInformation.getAreaname() + " newslog on Twitter");
 
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        populateLatestTwitters(mv, loggedInUser);        
-        populateSecondaryLatestNewsitems(mv, loggedInUser);
-
-        if(loggedInUser != null) {
-        	mv.addObject("twitterReplies", twitterService.getReplies());			
-        }
+        populateLatestTwitters(mv, showBrokenDecisionService.shouldShowBroken());        
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
         
         mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems(MAX_NEWSITEMS));
         
@@ -240,7 +224,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "News Watchlist");
         mv.addObject("main_content", resourceDAO.getAllWatchlists(false));
 
-        populateSecondaryLatestNewsitems(mv, loggedInUserFilter.getLoggedInUser());
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
 
         setRss(mv, rssUrlBuilder.getRssTitleForWatchlist(), rssUrlBuilder.getRssUrlForWatchlist());
         mv.setViewName("watchlist");
@@ -248,11 +232,9 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
     
-    @SuppressWarnings("unchecked")
-    private void populateLatestTwitters(ModelAndView mv, User loggedInUser) throws IOException {
-        boolean showBroken = loggedInUser != null;       
+    private void populateLatestTwitters(ModelAndView mv, boolean showBroken) throws IOException {       
         final List<Newsitem> latestNewsitems = resourceDAO.getLatestTwitteredNewsitems(MAX_TWITTERS_TO_SHOW, showBroken);        
-        mv.getModel().put("latest_twitters", latestNewsitems);  
+        mv.addObject("latest_twitters", latestNewsitems);  
     }
     
     

@@ -11,7 +11,7 @@
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="discoveredFeedRespository" />
-		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="showBrokenDecisionService" />
 										
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -71,6 +71,7 @@
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="googleMapsCleaner" />
+		<constructor-arg ref="showBrokenDecisionService" />
 			
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -88,8 +89,8 @@
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />		
-		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="showBrokenDecisionService" />
 			
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -249,13 +250,17 @@
 			</bean>		
 		</property>
 	</bean>
+	
+	<bean id="showBrokenDecisionService" class="nz.co.searchwellington.controllers.ShowBrokenDecisionService">
+		<constructor-arg ref="loggedInUserFilter" />
+	</bean>
 
 	<bean id="searchController" class="nz.co.searchwellington.controllers.SearchController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="showBrokenDecisionService" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
