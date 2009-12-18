@@ -202,7 +202,8 @@
 					#end
 					<li>Http Status: $item.httpStatus</li>
 				#end
-								
+				
+									
 				#if ($editPermissionService.canEdit($item) && ($item.type == "TNI"))
 					<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
 				#end

@@ -15,14 +15,19 @@
 		<property name="solrUrl" value="${solr.url}" />
 	</bean>
 	
+	
+	<bean id="solrKeywordQueryBuilder" class="nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder" />
+	
 	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.SolrBackedResourceDAO">
  		<constructor-arg ref="sessionFactory" />
  		<constructor-arg ref="solrQueryService" />
  		<constructor-arg ref="urlBuilder" />
  		<constructor-arg ref="tagDAO" />
  		<constructor-arg ref="tweetDAO" />
+ 		<constructor-arg ref="solrKeywordQueryBuilder" />
  		<property name="solrUrl" value="${solr.url}" />
 	</bean>
+	
 	
 	<bean id="tagDAO" class="nz.co.searchwellington.repositories.TagDAO">
  		<constructor-arg ref="sessionFactory" /> 		

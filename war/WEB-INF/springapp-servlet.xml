@@ -459,6 +459,7 @@
 		<constructor-arg ref="submissionProcessingService" />
 		<constructor-arg ref="contentUpdateService" />
 		<constructor-arg ref="contentDeletionService" />
+		<constructor-arg ref="resourceDAO" />
 				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
