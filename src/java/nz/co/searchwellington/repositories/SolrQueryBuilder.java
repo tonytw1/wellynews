@@ -52,7 +52,7 @@ public class SolrQueryBuilder {
 
 	public SolrQueryBuilder commented(boolean commented) {
 		if (commented) {
-			sb.append(" +commented:1");			
+			sb.append(" +commented:1");		
 		}
 		return this;
 	}

@@ -19,6 +19,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
+import nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -44,10 +45,12 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
     
     private SolrQueryService solrQueryService;
     private String solrUrl;
+	private SolrKeywordQueryBuilder solrKeywordQueryBuilder;
 	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService, TagDAO tagDAO, TweetDAO tweetDAO) {
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService, TagDAO tagDAO, TweetDAO tweetDAO, SolrKeywordQueryBuilder solrKeywordQueryBuilder) {
 		super(sessionFactory, tagDAO, tweetDAO);
 		this.solrQueryService = solrQueryService;
+		this.solrKeywordQueryBuilder = solrKeywordQueryBuilder;
 	}
 
 	public void setSolrUrl(String solrUrl) {
@@ -347,42 +350,23 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	
 	
-	// TODO hell pissed - push to new search query builder
 	public List<Resource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = new SolrQuery();	
-		//	SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").keywords(keywords).toQuery();		
-		
-		query.setQuery(keywords);
-		query.setQueryType("search");
-		query.setFilterQueries("+type:N");	
-		if (!showBroken) {
-			query.setFilterQueries(" +httpStatus:200");
-		}
-		
+		SolrQuery query = solrKeywordQueryBuilder.getSolrNewsitemKeywordQuery(keywords, showBroken);		
 		query.setRows(100);
 		query.setHighlight(true);
 		return getQueryResults(query);
 	}
 	
 	
+	
 	public List<Resource> getWebsitesMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = new SolrQuery();				
-		//		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("W").keywords(keywords).toQuery();		
-		
-		query.setQuery(keywords);
-		query.setQueryType("search");
-		query.setFilterQueries("+type:W");
-		if (!showBroken) {
-			query.setFilterQueries(" +httpStatus:200");
-		}
-			
+		SolrQuery query = solrKeywordQueryBuilder.getSolrWebsiteKeywordQuery(keywords, showBroken);			
 		query.setRows(100);
 		query.setHighlight(true);		
 		return getQueryResults(query);		
 	}
-	
-	
 
+	
 	public List<Tag> getCommentedTags(boolean showBroken) {
 		List<Integer> tagIds = new ArrayList<Integer>();
 		try {
