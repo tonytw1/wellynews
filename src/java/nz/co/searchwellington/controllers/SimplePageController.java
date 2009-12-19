@@ -184,14 +184,11 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean showBroken = loggedInUser != null;
-        
+                
         mv.addObject("heading", "All Publishers");    
-        mv.addObject("publishers", resourceDAO.getAllPublishers(showBroken, true));
+        mv.addObject("publishers", resourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), true));
         
-        populateSecondaryLatestNewsitems(mv, showBroken);       
+        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
         mv.setViewName("publishers");
         return mv;
     }
