@@ -42,7 +42,6 @@ public class SearchController extends BaseMultiActionController {
         this.populateCommonLocal(mv);
         
         requestFilter.loadAttributesOntoRequest(request);	// TODO should be on filter
-        System.out.println(request.getAttribute("tag"));
 
                 
         boolean showBroken = showBrokenDecisionService.shouldShowBroken();

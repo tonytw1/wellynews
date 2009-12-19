@@ -2,8 +2,18 @@
  <fieldset>
  <input name="keywords"  
  		#if ($search_keywords) value="$search_keywords" #end />
- 
-		 <input type="submit" value="Search" />
-   
+
+		<input type="submit" value="Search" />
+		<br />
+		#if ($tag && $tags.size() == 1 && !$publisher)
+	   		<input type="checkbox" name="tag" value="$tag.name" CHECKED>Just $tag.displayName	   		
+   		#end
+   		   		
+   	<!--
+   		#if ($publisher && !$tag)
+	   		<input type="checkbox" name="publisher-only" CHECKED>Just $publisher.name
+   		#end
+   -->
+
   </fieldset>
 </form>
