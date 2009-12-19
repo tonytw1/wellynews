@@ -10,7 +10,6 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
@@ -27,7 +26,21 @@ public class SolrHighlightingWebsiteDecorator implements Website {
     	this.website = website;
     	this.map = map;
     }
+    
+    public String getName() {
+    	if (map.containsKey("name")) {
+    		return map.get("name").get(0);
+    	}
+    	return website.getName();	
+    }
 
+    public String getDescription() {
+    	if (map.containsKey("description")) {
+    		return map.get("description").get(0);
+    	}
+    	return website.getDescription();
+    }
+    
 	public void addTag(Tag tag) {
 		website.addTag(tag);
 	}
@@ -40,9 +53,6 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 		return website.getDate();
 	}
 
-	public String getDescription() {
-		return website.getDescription();
-	}
 
 	public Set<DiscoveredFeed> getDiscoveredFeeds() {
 		return website.getDiscoveredFeeds();
@@ -76,12 +86,6 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 		return website.getLiveTime();
 	}
 
-	public String getName() {
-		if (map.containsKey("name")) {
-			return map.get("name").get(0);
-		}
-		return website.getName();	
-	}
 
 	public Set<Newsitem> getNewsitems() {
 		return website.getNewsitems();

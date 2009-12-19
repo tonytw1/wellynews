@@ -1,9 +1,11 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
+import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -33,10 +35,20 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("lastChanged", resource.getLastChanged());
 		}
 		
-		if (resource.getType().equals("N") && ((Newsitem) resource).getComments().size() > 0) {
-			inputDocument.addField("commented", 1);
-		} else {
-			inputDocument.addField("commented", 0);
+		if (resource.getType().equals("N")) {
+			List<Comment> comments = ((Newsitem) resource).getComments();
+			if(comments.size() > 0) {
+				inputDocument.addField("commented", 1);
+				for (Comment comment : comments) {
+					inputDocument.addField("comment", comment.getTitle());
+				}
+				
+			} else {
+				inputDocument.addField("commented", 0);
+			}
+			
+			
+			
 		}
 		
 		if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
@@ -48,7 +60,7 @@ public class SolrInputDocumentBuilder {
 		for(Tag tag: getIndexTagsForResource(resource)) {
 			inputDocument.addField("tags", tag.getId());
 		}
-		
+				
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
 			inputDocument.addField("publisher", publisher.getId());

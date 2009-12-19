@@ -1,5 +1,7 @@
 package nz.co.searchwellington.model.decoraters.highlighting;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +31,21 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
     	this.newsitem = newsitem;
     	this.map = map;
     }
+       
+    public String getName() {
+		if (map.containsKey("name")) {
+			return map.get("name").get(0);
+		}
+		return newsitem.getName();
+	}
     
-     
+    public String getDescription() {    	
+    	if (map.containsKey("description")) {
+			return map.get("description").get(0);
+		}
+		return newsitem.getDescription();
+	}
+    
     public void addTag(Tag tag) {
 		newsitem.addTag(tag);
 	}
@@ -40,20 +55,23 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	}
 
 
-	public List<Comment> getComments() {
-		return newsitem.getComments();
+	public List<Comment> getComments() {		
+		List<Comment> highlightedComments = new ArrayList<Comment>();		
+    	if (map.containsKey("comment")) {
+    		List<String> list = map.get("comment");
+    		for (String string : list) {
+    			Comment highlightedComment = new Comment();
+    			highlightedComment.setTitle(string);
+    			highlightedComments.add(highlightedComment);
+			}
+    	}
+		return highlightedComments;
 	}
 
 
 	public Date getDate() {
 		return newsitem.getDate();
 	}
-
-
-	public String getDescription() {
-		return newsitem.getDescription();
-	}
-
 
 	public Set<DiscoveredFeed> getDiscoveredFeeds() {
 		return newsitem.getDiscoveredFeeds();
@@ -88,15 +106,6 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public Date getLiveTime() {
 		return newsitem.getLiveTime();
 	}
-
-
-	public String getName() {
-		if (map.containsKey("name")) {
-			return map.get("name").get(0);
-		}
-		return newsitem.getName();
-	}
-
 
 	public Website getPublisher() {
 		return newsitem.getPublisher();
