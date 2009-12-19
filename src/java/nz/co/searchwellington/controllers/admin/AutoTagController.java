@@ -11,6 +11,7 @@ import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
 import org.apache.log4j.Logger;
@@ -22,12 +23,14 @@ public class AutoTagController extends BaseMultiActionController {
     
     private AdminRequestFilter requestFilter;
     private ImpliedTagService autoTagService;
+	private KeywordSearchService keywordSearchService;
     
-	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService) {      
+	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
         this.urlStack = urlStack;
         this.autoTagService = autoTagService;
+        this.keywordSearchService = keywordSearchService;
 	}
 
 
@@ -87,10 +90,9 @@ public class AutoTagController extends BaseMultiActionController {
     
     
     private List<Resource> getPossibleAutotagResources(Tag editTag) {
-	//	List<Resource> resources = resourceDAO.getWebsitesMatchingKeywords(editTag.getDisplayName(), true);
-	//	resources.addAll(resourceDAO.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true));
-	//	return resources;
-    	return null;
+    	List<Resource> resources = keywordSearchService.getWebsitesMatchingKeywords(editTag.getDisplayName(), true, null);
+    	resources.addAll(keywordSearchService.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true, null));
+    	return resources;    	
 	}
     
     

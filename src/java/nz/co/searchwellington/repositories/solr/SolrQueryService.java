@@ -1,4 +1,4 @@
-package nz.co.searchwellington.repositories;
+package nz.co.searchwellington.repositories.solr;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;

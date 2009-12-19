@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.SolrQueryBuilder;
-import nz.co.searchwellington.repositories.SolrQueryService;
+import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
+import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;

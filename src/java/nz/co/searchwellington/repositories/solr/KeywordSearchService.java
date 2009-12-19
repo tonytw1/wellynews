@@ -1,18 +1,17 @@
-package nz.co.searchwellington.repositories;
+package nz.co.searchwellington.repositories.solr;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
-import nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder;
+import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -24,16 +23,24 @@ import org.apache.solr.common.SolrDocumentList;
 public class KeywordSearchService {
 	
 	
-	Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
+	Logger log = Logger.getLogger(KeywordSearchService.class);
 
 	
 	private SolrQueryService solrQueryService;
 	private SolrKeywordQueryBuilder solrKeywordQueryBuilder;
+	private SolrFacetLoader solrFacetLoader;
 	private ResourceRepository resourceDAO;
+	
 
-	public KeywordSearchService(SolrQueryService solrQueryService, SolrKeywordQueryBuilder solrKeywordQueryBuilder, ResourceRepository resourceDAO) {		
+	
+
+
+	public KeywordSearchService(SolrQueryService solrQueryService,
+			SolrKeywordQueryBuilder solrKeywordQueryBuilder,
+			SolrFacetLoader solrFacetLoader, ResourceRepository resourceDAO) {		
 		this.solrQueryService = solrQueryService;
 		this.solrKeywordQueryBuilder = solrKeywordQueryBuilder;
+		this.solrFacetLoader = solrFacetLoader;
 		this.resourceDAO = resourceDAO;
 	}
 
@@ -48,9 +55,8 @@ public class KeywordSearchService {
 		query.addFacetField("tags");
 		query.setFacetMinCount(1);
 		
-		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);
-				
-		List<TagContentCount> relatedTagLinks = this.getRelatedTagLinks(facetQueryResults.get("tags"), null);		
+		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);				
+		List<TagContentCount> relatedTagLinks = solrFacetLoader.getRelatedTagLinks(facetQueryResults.get("tags"), null);		
 		return relatedTagLinks;		
 	}
 	
@@ -83,9 +89,7 @@ public class KeywordSearchService {
 		return results;
 	}
 	
-	
-
-	
+		
 	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
 		SolrDocumentList solrResults = response.getResults();
 		for (SolrDocument result : solrResults) {
@@ -109,46 +113,5 @@ public class KeywordSearchService {
 			}
 		}
 	}
-	
-	
-	
-	// TODO duplication with relatedTagService
-	private List<TagContentCount> getRelatedTagLinks(List<Count> values, Tag ignoreTag) {
-    	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
-    	if (values != null) {
-    		for (Count count : values) {
-    			final int relatedTagId = Integer.parseInt(count.getName());
-    			Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
-    			if (isTagSuitable(relatedTag, ignoreTag)) {
-					final Long relatedItemCount = count.getCount();
-					relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));
-				}
-			}
-		}
-		return relatedTags;     
-    }
-    
-	
-    private List<PublisherContentCount> getRelatedPublisherLinks(List<Count> values) {
-    	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();		
-		if (values != null) {			
-			for (Count count : values) {
-				final int relatedPublisherId = Integer.parseInt(count.getName());
-				Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);				
-				final Long relatedItemCount = count.getCount();
-				relatedPublishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));					
-			}		
-		}		
-		return relatedPublishers;     
-    }
-     
-	
-	private boolean isTagSuitable(Tag relatedTag, Tag ignoreTag) {
-		if (ignoreTag != null) {
-			return !(ignoreTag.equals(relatedTag)) && !(relatedTag.isParentOf(ignoreTag) || relatedTag.getAncestors().contains(ignoreTag) || relatedTag.isHidden());
-		}
-		return true;
-	}
-
-	
+		
 }

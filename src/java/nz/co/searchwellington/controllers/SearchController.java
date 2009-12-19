@@ -9,8 +9,8 @@ import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.KeywordSearchService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;

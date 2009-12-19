@@ -1,4 +1,4 @@
-package nz.co.searchwellington.repositories;
+package nz.co.searchwellington.repositories.solr;
 
 import java.util.Set;
 

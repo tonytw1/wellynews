@@ -20,6 +20,8 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
 import nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder;
+import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
+import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
