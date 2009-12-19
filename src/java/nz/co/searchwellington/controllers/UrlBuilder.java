@@ -1,7 +1,13 @@
 package nz.co.searchwellington.controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.commons.lang.StringEscapeUtils;
+
+import com.sun.org.apache.xerces.internal.util.URI;
 
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Feed;
@@ -49,6 +55,15 @@ public class UrlBuilder {
 	public String getTagCombinerUrl(Tag firstTag, Tag secondTag) {
 		return siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName();
 	}
+	
+	public String getTagSearchUrl(Tag tag, String keywords) {
+		try {
+			return siteInformation.getUrl() + "/search?keywords=" + URLEncoder.encode(keywords, "UTF-8") + "&tag="+ URLEncoder.encode(tag.getName(), "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}
+
 
 	public String getPublisherUrl(Website publisher) {
 		return siteInformation.getUrl() + "/" + publisher.getUrlWords();

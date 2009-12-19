@@ -7,10 +7,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.KeywordSearchService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -38,6 +40,10 @@ public class SearchController extends BaseMultiActionController {
 	public ModelAndView search(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView();        
         this.populateCommonLocal(mv);
+        
+        requestFilter.loadAttributesOntoRequest(request);	// TODO should be on filter
+        System.out.println(request.getAttribute("tag"));
+
                 
         boolean showBroken = showBrokenDecisionService.shouldShowBroken();
         populateAds(request, mv, showBroken);
@@ -45,6 +51,13 @@ public class SearchController extends BaseMultiActionController {
         String keywords = null;
         if (request.getParameter("keywords") != null) {
             keywords = request.getParameter("keywords");
+            mv.addObject("query", StringEscapeUtils.escapeHtml(keywords));
+        }
+        
+        Tag tag = null;
+        if (request.getAttribute("tag") != null) {
+        	tag = (Tag) request.getAttribute("tag");
+        	mv.addObject("tag", tag);
         }
 
         final boolean nokeywordsGiven = (keywords == null) || ("".equals(keywords));
@@ -52,10 +65,10 @@ public class SearchController extends BaseMultiActionController {
                 urlStack.setUrlStack(request);
                 mv.getModel().put("heading", "Search Results");
                 
-                mv.addObject("related_tags", keywordSearchService.getKeywordSearchFacets(keywords, showBroken));
+                mv.addObject("related_tags", keywordSearchService.getKeywordSearchFacets(keywords, showBroken, null));
                 
-                final List<Resource> matchingSites = keywordSearchService.getWebsitesMatchingKeywords(keywords, showBroken);
-                final List<Resource> matchingNewsitems = keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBroken);
+                final List<Resource> matchingSites = keywordSearchService.getWebsitesMatchingKeywords(keywords, showBroken, tag);
+                final List<Resource> matchingNewsitems = keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBroken, tag);
                                                 
                 if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                     // TODO what do you done if there are no matches for a search?

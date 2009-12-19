@@ -114,7 +114,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page) {		
 		int startIndex = getStartIndex(page);
-		int totalNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, showBroken);		
+		int totalNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, showBroken);		// TODO can you get this during the main news solr call, saving a solr round trip?
 		if (startIndex > totalNewsitemCount) {
 			return null;
 		}

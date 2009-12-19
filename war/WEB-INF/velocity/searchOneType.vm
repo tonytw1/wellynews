@@ -9,12 +9,20 @@
 </div>
 
 <div class="main">
-<h2>$heading</h2>
+#if ($tag) 
+	<h2>&ldquo;$query&rdquo; / <a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2>
+#else
+	<h2>$heading / &ldquo;$query&rdquo;</h2>
+#end
 
 #parse("includes/search_widget.vm")
 
+	<ul class="childtags">	
+		#foreach ($related_tag in $related_tags)
+    	    <li><a href="$urlBuilder.getTagSearchUrl($related_tag.tag, $query)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
+		#end
+	</ul>
 
-#parse("includes/468x60ad.vm")
 
 #parse("includes/search_matching_tags.vm")
 

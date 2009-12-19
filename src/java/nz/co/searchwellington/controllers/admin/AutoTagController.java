@@ -87,9 +87,10 @@ public class AutoTagController extends BaseMultiActionController {
     
     
     private List<Resource> getPossibleAutotagResources(Tag editTag) {
-		List<Resource> resources = resourceDAO.getWebsitesMatchingKeywords(editTag.getDisplayName(), true);
-		resources.addAll(resourceDAO.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true));
-		return resources;
+	//	List<Resource> resources = resourceDAO.getWebsitesMatchingKeywords(editTag.getDisplayName(), true);
+	//	resources.addAll(resourceDAO.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true));
+	//	return resources;
+    	return null;
 	}
     
     
