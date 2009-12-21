@@ -5,9 +5,7 @@
 
 <hibernate-mapping default-lazy="true">
 
-	<class name="nz.co.searchwellington.model.SupressionImpl"
-		proxy="nz.co.searchwellington.model.Supression" table="supression">
-
+	<class name="nz.co.searchwellington.model.Supression" table="supression">
 	
 		<cache usage="read-write" />
 

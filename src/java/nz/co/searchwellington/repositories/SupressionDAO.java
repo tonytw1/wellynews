@@ -1,7 +1,6 @@
 package nz.co.searchwellington.repositories;
 
 import nz.co.searchwellington.model.Supression;
-import nz.co.searchwellington.model.SupressionImpl;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
@@ -19,22 +18,16 @@ public class SupressionDAO implements SupressionRepository {
     public SupressionDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-
-
-    
     
     
     public Supression createSupression(String urlToSupress) {
         if (urlToSupress != null) {
-            return new SupressionImpl(urlToSupress);
+            return new Supression(urlToSupress);
         }
         return null;
     }
 
-
-
-
-
+    
     public void addSupression(Supression supression) {
         log.info("Creating supression for: " + supression.getUrl());        
         sessionFactory.getCurrentSession().saveOrUpdate(supression);
@@ -58,6 +51,5 @@ public class SupressionDAO implements SupressionRepository {
             sessionFactory.getCurrentSession().flush();
         }
     }
-
 
 }

@@ -1,13 +1,31 @@
 package nz.co.searchwellington.model;
 
-public interface Supression {
+public class Supression {
 
-    public int getId();
-
-    public void setId(int id);
-
-    public String getUrl();
-
-    public void setUrl(String url);
+    private int id;
+    private String url;
+    
+    public Supression() {        
+    }
+      
+    public Supression(String urlToSupress) {
+        url = urlToSupress;
+    }
+    
+    public int getId() {
+        return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getUrl() {
+        return url;
+    }
+    
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
 }

@@ -1,6 +1,6 @@
 package nz.co.searchwellington.repositories;
 
-import nz.co.searchwellington.model.SupressionImpl;
+import nz.co.searchwellington.model.Supression;
 
 public class SupressionService {
 
@@ -14,7 +14,7 @@ public class SupressionService {
 	
 	public void suppressUrl(String urlToSupress) {		
 		if (!suppressionDAO.isSupressed(urlToSupress)) {
-			suppressionDAO.addSupression(new SupressionImpl(urlToSupress));
+			suppressionDAO.addSupression(new Supression(urlToSupress));
           	suggestionDAO.removeSuggestion(urlToSupress);
 		 }		
 	}
