@@ -16,7 +16,7 @@ public class SupressionService {
 		if (!suppressionDAO.isSupressed(urlToSupress)) {
 			suppressionDAO.addSupression(new Supression(urlToSupress));
           	suggestionDAO.removeSuggestion(urlToSupress);
-		 }		
+		}		
 	}
 
 	public void unsupressUrl(String url) {

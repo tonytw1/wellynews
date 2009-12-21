@@ -94,7 +94,7 @@ public class SubmissionProcessingService {
 	        address = UrlFilters.trimWhiteSpace(address);
 	        address = UrlFilters.stripHtml(address);
 	        if (address != null && !address.trim().equals("")) {
-	            Geocode geocode = new GeocodeImpl(address);
+	            Geocode geocode = new Geocode(address);
 	            log.info("Setting geocode to: " + geocode.getAddress());                
 	
 	            log.info("Attempting to resolve geocode: '" + geocode.getAddress() + "'");
