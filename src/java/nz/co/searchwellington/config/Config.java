@@ -1,17 +1,62 @@
 package nz.co.searchwellington.config;
 
-public interface Config {
-
-    public int getId();
-    public void setId(int id);
+public class Config {
     
-    public String getStatsTracking();
-    public void setStatsTracking(String statsTracking);
-    public String getFlickrPoolGroupId();
-    public void setFlickrPoolGroupId(String flickrPoolGroupId);
-    public String getUseClickthroughCounter();
-    public void setUseClickthroughCounter(String useClickthroughCounter);
-    public boolean isTwitterListenerEnabled();
-	public void setTwitterListenerEnabled(boolean twitterListenerEnabled);
-  
+    int id;  
+    String statsTracking;
+    String flickrPoolGroupId;
+    String useClickthroughCounter;
+    private boolean twitterListenerEnabled;
+    
+    public Config() {
+    }
+    
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getStatsTracking() {
+        return statsTracking;
+    }
+
+
+    public void setStatsTracking(String statsTracking) {
+        this.statsTracking = statsTracking;
+    }
+
+
+    public String getFlickrPoolGroupId() {
+        return flickrPoolGroupId;
+    }
+
+
+    public void setFlickrPoolGroupId(String flickrPoolGroupOId) {
+        this.flickrPoolGroupId = flickrPoolGroupOId;
+    }
+
+
+    public String getUseClickthroughCounter() {
+        return useClickthroughCounter;
+    }
+
+
+    public void setUseClickthroughCounter(String useClickthroughCounter) {
+        this.useClickthroughCounter = useClickthroughCounter;
+    }
+
+
+	public void setTwitterListenerEnabled(boolean twitterListenerEnabled) {
+		this.twitterListenerEnabled = twitterListenerEnabled;
+	}
+
+
+	public boolean isTwitterListenerEnabled() {
+		return twitterListenerEnabled;
+	}
+
 }

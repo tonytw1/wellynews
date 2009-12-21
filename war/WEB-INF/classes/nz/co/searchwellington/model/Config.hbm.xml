@@ -5,13 +5,10 @@
 
 <hibernate-mapping> 
 
-	<class name="nz.co.searchwellington.config.ConfigImpl"
-		proxy="nz.co.searchwellington.config.Config" table="config">
+	<class name="nz.co.searchwellington.config.Config" table="config">
 		
-	
 		<cache usage="read-write" />
 		
-
 		<id name="id" type="integer" unsaved-value="0">
 			<column name="id" sql-type="integer" not-null="true" />
 			<generator class="native" />

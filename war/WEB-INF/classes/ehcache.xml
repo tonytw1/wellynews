@@ -102,8 +102,8 @@
 	
 
 
-	<cache name="nz.co.searchwellington.config.ConfigImpl"
-		maxElementsInMemory="5"
+	<cache name="nz.co.searchwellington.config.Config"
+		maxElementsInMemory="1"
 		eternal="true"
 		overflowToDisk="false"
 		/>
