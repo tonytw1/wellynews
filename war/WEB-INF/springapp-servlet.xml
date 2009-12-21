@@ -379,7 +379,6 @@
 	<import resource="modelbuilders.xml"/>
 
 	<bean id="jsonController" class="nz.co.searchwellington.controllers.JSONController">
-		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="contentModelBuilder" />		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

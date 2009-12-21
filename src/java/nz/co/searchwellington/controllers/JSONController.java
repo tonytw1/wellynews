@@ -18,12 +18,10 @@ public class JSONController extends MultiActionController {
 
 	Logger log = Logger.getLogger(JSONController.class);
         
-    private RequestFilter requestFilter;
 	private ContentModelBuilderService contentModelBuilderService;
 
        
-    public JSONController(RequestFilter requestFilter, ContentModelBuilderService contentModelBuilderService) {        
-        this.requestFilter = requestFilter;       
+    public JSONController(ContentModelBuilderService contentModelBuilderService) {        
         this.contentModelBuilderService = contentModelBuilderService;
     }
    

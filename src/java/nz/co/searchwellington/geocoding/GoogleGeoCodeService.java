@@ -17,23 +17,15 @@ public class GoogleGeoCodeService {
     public GoogleGeoCodeService() {      
     }
 
-   
     
-    
-
     public String getApiKey() {
         return apiKey;
     }
 
 
-
-
-
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
-
-
 
 
     // TODO Set scope to NZL / Welly if possible.

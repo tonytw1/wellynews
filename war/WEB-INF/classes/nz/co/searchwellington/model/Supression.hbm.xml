@@ -7,8 +7,8 @@
 
 	<class name="nz.co.searchwellington.model.Supression" table="supression">
 	
-		<cache usage="read-write" />
-
+	    <cache usage="read-write" region="nz.co.searchwellington.model.Suppression" />
+	    	
 		<id name="id" type="integer" unsaved-value="0">
 			<column name="id" sql-type="integer" not-null="true" />
 			<generator class="native" />
