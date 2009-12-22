@@ -9,9 +9,9 @@
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="rssUrlBuilder" />
-		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="showBrokenDecisionService" />
+		<constructor-arg ref="contentRetrievalService" />
 										
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -251,10 +251,6 @@
 		</property>
 	</bean>
 	
-	<bean id="showBrokenDecisionService" class="nz.co.searchwellington.controllers.ShowBrokenDecisionService">
-		<constructor-arg ref="loggedInUserFilter" />
-	</bean>
-
 	<bean id="keywordSearchService"  class="nz.co.searchwellington.repositories.solr.KeywordSearchService">
 		<constructor-arg ref="solrQueryService" />
 		<constructor-arg ref="solrKeywordQueryBuilder" />

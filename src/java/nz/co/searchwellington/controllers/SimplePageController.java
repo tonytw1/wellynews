@@ -12,10 +12,9 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.twitter.TwitterService;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
@@ -32,20 +31,22 @@ public class SimplePageController extends BaseMultiActionController {
     
     private SiteInformation siteInformation;
     private RssUrlBuilder rssUrlBuilder;
-	private TwitterService twitterService;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private ShowBrokenDecisionService showBrokenDecisionService;
+	private ContentRetrievalService contentRetrievalService;
     
     
-    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, TwitterService twitterService, DiscoveredFeedRepository discoveredFeedRepository, ShowBrokenDecisionService showBrokenDecisionService) {
+    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, 
+    		SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedRepository, 
+    		ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {
         this.resourceDAO = resourceDAO;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;        
         this.rssUrlBuilder = rssUrlBuilder;
-        this.twitterService = twitterService;
         this.discoveredFeedRepository = discoveredFeedRepository;
         this.showBrokenDecisionService = showBrokenDecisionService;
+        this.contentRetrievalService = contentRetrievalService;
     }
     
        
@@ -219,7 +220,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
         
         mv.addObject("heading", "News Watchlist");
-        mv.addObject("main_content", resourceDAO.getAllWatchlists(false));
+        mv.addObject("main_content", contentRetrievalService.getAllWatchlists());	// TODO limit
 
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
 

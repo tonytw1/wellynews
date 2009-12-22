@@ -154,6 +154,14 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="siteInformation" />
 	</bean>
 	
+	<bean id="showBrokenDecisionService" class="nz.co.searchwellington.controllers.ShowBrokenDecisionService">
+		<constructor-arg ref="loggedInUserFilter" />
+	</bean>
+	
+	<bean id="contentRetrievalService" class="nz.co.searchwellington.repositories.ContentRetrievalService">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="showBrokenDecisionService" />		
+	</bean>
 	
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">
 		<constructor-arg ref="configDAO" />
