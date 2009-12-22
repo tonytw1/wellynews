@@ -1,18 +1,13 @@
 package nz.co.searchwellington.controllers;
 
 import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SuggestionDAO;
-import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;
@@ -27,23 +22,17 @@ public class RssController extends MultiActionController {
     
     private static final int MAX_RSS_ITEMS = 30;
     private SiteInformation siteInformation;
-    private RequestFilter requestFilter;
     private ResourceRepository resourceDAO;
     private RssUrlBuilder rssUrlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
-	private SuggestionDAO suggestionDAO;
-	private UrlBuilder urlBuilder;
 
     
        
-    public RssController(SiteInformation siteInformation, RequestFilter requestFilter, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, SuggestionDAO suggestionDAO, UrlBuilder urlBuilder) {
+    public RssController(SiteInformation siteInformation, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService) {
         this.siteInformation = siteInformation;
-        this.requestFilter = requestFilter;
-        this.resourceDAO = resourceDAO;       
-        this.rssUrlBuilder = rssUrlBuilder;      
+        this.resourceDAO = resourceDAO;
+        this.rssUrlBuilder = rssUrlBuilder;
         this.contentModelBuilderService = contentModelBuilderService;
-        this.suggestionDAO = suggestionDAO;
-        this.urlBuilder = urlBuilder;
     }
     
     
