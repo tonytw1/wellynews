@@ -27,7 +27,7 @@
         	#foreach ($dtag in $tags)
                 <a href="$dtag.name">$dtag.displayName</a>
                 #if ($counter < $tags.size())
-                	+
+                	and
                 #end
                 #set( $counter = $counter + 1 )
    			#end

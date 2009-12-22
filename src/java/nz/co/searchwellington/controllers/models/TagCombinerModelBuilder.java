@@ -67,7 +67,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("tag", firstTag);
 		mv.addObject("tags", tags);
 		
-		mv.addObject("heading", firstTag.getDisplayName() +  " + " + secondTag.getDisplayName());
+		mv.addObject("heading", firstTag.getDisplayName() +  " and " + secondTag.getDisplayName());
 		mv.addObject("description", "Items tagged with " + firstTag.getDisplayName() +  " and " + secondTag.getDisplayName() + ".");
 		mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
 		

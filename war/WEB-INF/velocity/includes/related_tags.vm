@@ -1,11 +1,11 @@
 #if ($related_tags)
 	<h2>Related Tags</h2>
-	<p>Items tagged with both $tag.displayName.toLowerCase() and:</p>
+	<p>Items tagged with:</p>
 
 	<ul>
 	#set ($first =1)
 	#foreach ($related_tag in $related_tags)
-        <li><a href="$urlBuilder.getTagCombinerUrl($tag, $related_tag.tag)">$related_tag.tag.displayName.toLowerCase()</a>
+        <li><a href="$urlBuilder.getTagCombinerUrl($tag, $related_tag.tag)">$related_tag.tag.displayName.toLowerCase() and $tag.displayName.toLowerCase()</a>
         #if ($first == 1)
           	($related_tag.count #showPluralWord($related_tag.count "item"))
            	#set ($first =0)

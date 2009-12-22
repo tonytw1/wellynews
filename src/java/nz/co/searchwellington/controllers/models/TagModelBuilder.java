@@ -25,8 +25,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	private static final int MAX_RELATED = 5;
-
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	
 	private ResourceRepository resourceDAO;	

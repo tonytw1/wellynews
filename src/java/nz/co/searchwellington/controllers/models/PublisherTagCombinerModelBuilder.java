@@ -48,7 +48,7 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 			Website publisher = (Website) request.getAttribute("publisher"); 
 			ModelAndView mv = new ModelAndView();		
 			mv.addObject("publisher", publisher);
-			mv.addObject("heading", publisher.getName() + " + " + tag.getDisplayName());
+			mv.addObject("heading", publisher.getName() + " and " + tag.getDisplayName());
 			mv.addObject("description", "");
 			mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag));			
 			populatePublisherTagCombinerNewsitems(mv, publisher, tag, showBroken);		
