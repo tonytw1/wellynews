@@ -8,10 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.TagRelatedLinks;
-import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.springframework.web.servlet.ModelAndView;
 

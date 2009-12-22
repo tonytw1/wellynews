@@ -21,6 +21,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;

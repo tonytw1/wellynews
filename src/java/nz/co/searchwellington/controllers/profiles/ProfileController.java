@@ -5,10 +5,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;

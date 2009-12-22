@@ -83,7 +83,7 @@
         </property>
         
 
-        <many-to-one name="geocode" class="nz.co.searchwellington.model.GeocodeImpl" column="geocode_id" 
+        <many-to-one name="geocode" class="nz.co.searchwellington.model.Geocode" column="geocode_id" 
         	cascade="all" />
 		    
         

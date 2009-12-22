@@ -5,11 +5,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.UserImpl;
 import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.openid4java.consumer.ConsumerException;

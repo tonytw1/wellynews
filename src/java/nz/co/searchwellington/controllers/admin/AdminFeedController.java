@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.feeds.FeedReader;
 import nz.co.searchwellington.feeds.FeedReaderRunner;
@@ -17,6 +16,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;

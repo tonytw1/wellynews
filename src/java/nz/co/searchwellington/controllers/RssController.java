@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
+import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;

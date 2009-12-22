@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;

@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.springframework.web.servlet.ModelAndView;
 

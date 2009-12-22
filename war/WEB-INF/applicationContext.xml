@@ -144,7 +144,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	
 	
-	<bean id="urlBuilder" class="nz.co.searchwellington.controllers.UrlBuilder">
+	<bean id="urlBuilder" class="nz.co.searchwellington.urls.UrlBuilder">
 		<constructor-arg ref="siteInformation" />
 	</bean>	
 	<bean id="adminUrlBuilder" class="nz.co.searchwellington.controllers.admin.AdminUrlBuilder">

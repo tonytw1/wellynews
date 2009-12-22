@@ -3,10 +3,10 @@ package nz.co.searchwellington.sitemap;
 import java.util.Date;
 import java.util.List;
 
-import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.dom4j.Document;

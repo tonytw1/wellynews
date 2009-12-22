@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import nz.co.searchwellington.controllers.UrlBuilder;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
@@ -22,6 +21,7 @@ import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebs
 import nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;

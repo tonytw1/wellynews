@@ -561,7 +561,7 @@
 	</bean>
 	
 	
-	<bean id="profileController" class="nz.co.searchwellington.controllers.profiles.ProfileEditController">
+	<bean id="profileController" class="nz.co.searchwellington.controllers.profiles.ProfileController">
 		<constructor-arg ref="userDAO" />		
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="resourceDAO" />
