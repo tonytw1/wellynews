@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.views.JSONView;
 
 import org.apache.log4j.Logger;

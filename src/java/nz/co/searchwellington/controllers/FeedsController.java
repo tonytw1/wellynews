@@ -13,7 +13,6 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
-import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -22,9 +21,9 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 
-public class RssfeedsController extends BaseMultiActionController {
+public class FeedsController extends BaseMultiActionController {
 
-    Logger log = Logger.getLogger(RssfeedsController.class);
+    Logger log = Logger.getLogger(FeedsController.class);
     
     private PublisherSelectFactory publisherSelectFactory;
     private TagWidgetFactory tagWidgetFactory;    
@@ -33,7 +32,7 @@ public class RssfeedsController extends BaseMultiActionController {
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	
 	
-    public RssfeedsController(ResourceRepository resourceDAO, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, 
+    public FeedsController(ResourceRepository resourceDAO, PublisherSelectFactory publisherSelectFactory, UrlStack urlStack, ConfigRepository configDAO, 
     		TagWidgetFactory tagWidgetFactory, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedsRepository, 
     		LoggedInUserFilter loggedInUserFilter, SuggestedFeeditemsService suggestedFeeditemsService) {
         this.resourceDAO = resourceDAO;   

@@ -153,7 +153,7 @@
 	
 	
 	
-	<bean id="rssfeedsController" class="nz.co.searchwellington.controllers.RssfeedsController">
+	<bean id="feedsController" class="nz.co.searchwellington.controllers.FeedsController">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="publisherSelectFactory" />
 		<constructor-arg ref="urlStack" />
@@ -708,7 +708,7 @@
 				<prop key="/*/*/json">jsonController</prop>
 								
 				
-				<prop key="/feeds/**">rssfeedsController</prop>
+				<prop key="/feeds/**">feedsController</prop>
 				
 				<prop key="/search">searchController</prop>
 				
