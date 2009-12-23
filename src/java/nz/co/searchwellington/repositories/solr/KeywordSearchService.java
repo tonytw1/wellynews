@@ -56,7 +56,7 @@ public class KeywordSearchService {
 		query.setFacetMinCount(1);
 		
 		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);				
-		List<TagContentCount> relatedTagLinks = solrFacetLoader.getRelatedTagLinks(facetQueryResults.get("tags"), null);		
+		List<TagContentCount> relatedTagLinks = solrFacetLoader.loadTagFacet(facetQueryResults.get("tags"));		
 		return relatedTagLinks;		
 	}
 	

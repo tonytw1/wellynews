@@ -54,7 +54,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
 		
-		TagRelatedLinks relatedLinks = relatedTagsService.getTagsRelatedLinks(tag, showBroken, 1000);
+		TagRelatedLinks relatedLinks = relatedTagsService.getRelatedLinksForTag(tag, showBroken, 1000);
 		mv.addObject("related_tags", relatedLinks.getRelatedTags());
 	}
 

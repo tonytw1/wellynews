@@ -61,7 +61,7 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		Website publisher = (Website) request.getAttribute("publisher"); 
-		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagLinks(publisher, showBroken);
+		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher, showBroken);
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}		

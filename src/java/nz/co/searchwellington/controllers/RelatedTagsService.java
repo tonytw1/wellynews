@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ public class RelatedTagsService {
 	}
 	
 		
-	public TagRelatedLinks getTagsRelatedLinks(Tag tag, boolean showBroken, int maxItems) {
+	public TagRelatedLinks getRelatedLinksForTag(Tag tag, boolean showBroken, int maxItems) {
 		TagRelatedLinks relatedLinks = new TagRelatedLinks();
 	
 		SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
@@ -37,19 +38,41 @@ public class RelatedTagsService {
 		query.addFacetField("publisher");
 		query.setFacetMinCount(1);
 		
-		Map<String, List<Count>> facetResuls = solrQueryService.getFacetQueryResults(query);		
-		relatedLinks.setRelatedTags(solrFacetLoader.getRelatedTagLinks(facetResuls.get("tags"), tag));
-		relatedLinks.setRelatedPublisers(solrFacetLoader.getRelatedPublisherLinks(facetResuls.get("publisher")));
+		Map<String, List<Count>> facetResults = solrQueryService.getFacetQueryResults(query);		
+		
+		List<TagContentCount> loadedTagFacet = solrFacetLoader.loadTagFacet(facetResults.get("tags"));
+		relatedLinks.setRelatedTags(removeUnsuitableTags(tag, loadedTagFacet));
+		
+		// TODO why don't we just do this in two calls?
+		relatedLinks.setRelatedPublisers(solrFacetLoader.loadPublisherFacet(facetResults.get("publisher")));
 		return relatedLinks;
 	}
 	
-	public List<TagContentCount> getRelatedTagLinks(Website publisher, boolean showBroken) {
+
+	public List<TagContentCount> getRelatedLinksForPublisher(Website publisher, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).toQuery();
 		query.addFacetField("tags");
 		query.setFacetMinCount(1);
 		
 		Map<String, List<Count>> facetResuls = solrQueryService.getFacetQueryResults(query);
-		return solrFacetLoader.getRelatedTagLinks(facetResuls.get("tags"), null);
+		return solrFacetLoader.loadTagFacet(facetResuls.get("tags"));
+	}
+	
+	
+	private List<TagContentCount> removeUnsuitableTags(Tag tag, List<TagContentCount> loadedTagFacet) {
+		List<TagContentCount> suitableTagFacets = new ArrayList<TagContentCount>();
+		for (TagContentCount count : loadedTagFacet) {			
+			if (isTagSuitableRelatedTag(tag, count.getTag())) {
+				suitableTagFacets.add(count);
+			}
+		}
+		return suitableTagFacets;
+	}
+
+	
+	private boolean isTagSuitableRelatedTag(Tag tag, Tag relatedTag) {	
+		return !relatedTag.isHidden() && !tag.equals(relatedTag) && !relatedTag.isParentOf(tag) && 
+			!tag.getAncestors().contains(relatedTag) && !tag.getChildren().contains(tag);
 	}
 	
 }

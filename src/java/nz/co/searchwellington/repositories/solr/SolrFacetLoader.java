@@ -22,23 +22,21 @@ public class SolrFacetLoader {
 	}
 
 
-	public List<TagContentCount> getRelatedTagLinks(List<Count> values, Tag ignoreTag) {
+	public List<TagContentCount> loadTagFacet(List<Count> values) {
     	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
     	if (values != null) {
     		for (Count count : values) {
     			final int relatedTagId = Integer.parseInt(count.getName());
-    			Tag relatedTag = resourceDAO.loadTagById(relatedTagId);
-    			if (isTagSuitable(relatedTag, ignoreTag)) {
-					final Long relatedItemCount = count.getCount();
-					relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));
-				}
+    			Tag relatedTag = resourceDAO.loadTagById(relatedTagId);    			
+				final Long relatedItemCount = count.getCount();
+				relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));				
 			}
 		}
-		return relatedTags;     
+		return relatedTags;
     }
     
 	
-    public List<PublisherContentCount> getRelatedPublisherLinks(List<Count> values) {
+    public List<PublisherContentCount> loadPublisherFacet(List<Count> values) {
     	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();		
 		if (values != null) {			
 			for (Count count : values) {
@@ -46,17 +44,9 @@ public class SolrFacetLoader {
 				Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);				
 				final Long relatedItemCount = count.getCount();
 				relatedPublishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));					
-			}		
-		}		
+			}
+		}	
 		return relatedPublishers;     
     }
-     
-	
-	private boolean isTagSuitable(Tag relatedTag, Tag ignoreTag) {
-		if (ignoreTag != null) {
-			return !(ignoreTag.equals(relatedTag)) && !(relatedTag.isParentOf(ignoreTag) || relatedTag.getAncestors().contains(ignoreTag) || relatedTag.isHidden());
-		}
-		return true;
-	}
-	
+    
 }
