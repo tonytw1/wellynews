@@ -72,7 +72,7 @@ public class RelatedTagsService {
 	
 	private boolean isTagSuitableRelatedTag(Tag tag, Tag relatedTag) {	
 		return !relatedTag.isHidden() && !tag.equals(relatedTag) && !relatedTag.isParentOf(tag) && 
-			!tag.getAncestors().contains(relatedTag) && !tag.getChildren().contains(tag);
+			!tag.getAncestors().contains(relatedTag) && !tag.getChildren().contains(relatedTag);
 	}
 	
 }
