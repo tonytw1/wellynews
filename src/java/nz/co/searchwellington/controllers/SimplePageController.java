@@ -88,8 +88,8 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "The Wellynews API");
 
         mv.addObject("feeds", resourceDAO.getAllFeedsByName());
-        mv.addObject("publishers", resourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), true));
-        mv.addObject("api_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("publishers", contentRetrievalService.getAllPublishersWithNewsitemCounts(true));
+        mv.addObject("api_tags", contentRetrievalService.getTopLevelTags());
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());        
         mv.setViewName("api");
         return mv;      
@@ -237,7 +237,7 @@ public class SimplePageController extends BaseMultiActionController {
     
     
 	protected void populateGeocoded(ModelAndView mv, boolean showBroken, Resource selected) throws IOException {
-		List<Resource> geocoded = resourceDAO.getAllValidGeocoded(MAX_GEOCODED_TO_SHOW, showBroken);
+		List<Resource> geocoded = contentRetrievalService.getAllValidGeocoded(MAX_GEOCODED_TO_SHOW);
 		log.info("Found " + geocoded.size() + " valid geocoded resources.");
 		if (selected != null && !geocoded.contains(selected)) {
 			geocoded.add(selected);

@@ -24,6 +24,7 @@
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="googleMapsCleaner" />
+		<constructor-arg ref="contentRetrievalService" />
 	</bean>
 	
 	<bean id="geotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.GeotaggedModelBuilder">

@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.controllers.TagRelatedLinks;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -15,6 +14,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ConfigDAO;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
@@ -34,9 +34,10 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private ConfigDAO configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private GoogleMapsDisplayCleaner googleMapsCleaner;
+	private ContentRetrievalService contentRetrievalService;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner, ContentRetrievalService contentRetrievalService) {
 		this.resourceDAO = resourceDAO;	
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
@@ -44,6 +45,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.configDAO = configDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.googleMapsCleaner = googleMapsCleaner;
+		this.contentRetrievalService = contentRetrievalService;
 	}
 
 	
@@ -111,7 +113,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page) {		
 		int startIndex = getStartIndex(page);
-		int totalNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, showBroken);		// TODO can you get this during the main news solr call, saving a solr round trip?
+		int totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
 		if (startIndex > totalNewsitemCount) {
 			return null;
 		}
@@ -123,8 +125,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
 		final List<Resource> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
-		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(tag, showBroken, startIndex, MAX_NEWSITEMS);         
-				
+		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);
+		
 		mv.addObject("main_content", taggedNewsitems);
 		mv.addObject("websites", taggedWebsites);
 		
