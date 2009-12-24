@@ -45,9 +45,14 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 			return;
 		}
 		
+		if (pageContent == null) {
+			log.warn("Page content was null");
+			return;
+		}
+		
 		for (Iterator iter = linkExtractor.extractLinks(pageContent).iterator(); iter.hasNext();) {
 		    String discoveredUrl = (String) iter.next();
-		    
+		    log.info("Processing discovered url: " + discoveredUrl);
 		    if (!discoveredUrl.startsWith("http://")) {
 		        log.info("url is not fully qualified: " + discoveredUrl);
 				try {

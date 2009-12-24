@@ -24,7 +24,6 @@ public class ContentHasChangedProcesser implements LinkCheckerProcessor {
 	}
 	
 	// TODO cleaning and filtering?
-	// TODO push to a linkchecker processor
     private void checkForChangeUsingSnapshots(Resource checkResource, String after) {             
     	log.debug("Comparing content before and after snapshots from content change.");
     	

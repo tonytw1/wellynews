@@ -43,8 +43,7 @@ public class LinkChecker {
 	        log.info("Checking: " + checkResource.getName() + "(" + checkResource.getUrl() + ")");        
 			log.debug("Before status: " + checkResource.getHttpStatus());      
 			
-			final String pageContentAfterHttpCheck = httpCheck(checkResource);
-			final String pageContent = snapshotDAO.loadContentForUrl(checkResource.getUrl());
+			final String pageContent = httpCheck(checkResource);
 
 			log.info("Running linkchecking processors");
 			for (LinkCheckerProcessor processor : processers) {
@@ -53,9 +52,9 @@ public class LinkChecker {
 			}
 			log.info("Finished linkchecking");
 			
-			log.debug("Saving resource.");
+			log.debug("Saving resource and updating snapshot");
 			checkResource.setLastScanned(new DateTime().toDate());
-			snapshotDAO.setSnapshotContentForUrl(checkResource.getUrl(), pageContentAfterHttpCheck);
+			snapshotDAO.setSnapshotContentForUrl(checkResource.getUrl(), pageContent);
 			resourceDAO.saveResource(checkResource);
 			
         } else {
