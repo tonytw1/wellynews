@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
@@ -30,25 +31,19 @@ public class RelatedTagsService {
 	}
 	
 		
-	public TagRelatedLinks getRelatedLinksForTag(Tag tag, boolean showBroken, int maxItems) {
-		TagRelatedLinks relatedLinks = new TagRelatedLinks();
-	
-		SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
-		query.addFacetField("tags");
-		query.addFacetField("publisher");
-		query.setFacetMinCount(1);
-		
-		Map<String, List<Count>> facetResults = solrQueryService.getFacetQueryResults(query);		
-		
+	public List<TagContentCount> getRelatedLinksForTag(Tag tag, boolean showBroken, int maxItems) {	
+		Map<String, List<Count>> facetResults = queryForFacets(tag, showBroken);		
 		List<TagContentCount> loadedTagFacet = solrFacetLoader.loadTagFacet(facetResults.get("tags"));
-		relatedLinks.setRelatedTags(removeUnsuitableTags(tag, loadedTagFacet));
-		
-		// TODO why don't we just do this in two calls?
-		relatedLinks.setRelatedPublisers(solrFacetLoader.loadPublisherFacet(facetResults.get("publisher")));
-		return relatedLinks;
+		return removeUnsuitableTags(tag, loadedTagFacet);		
 	}
 	
+	
+	public List<PublisherContentCount> getRelatedPublishersForTag(Tag tag, boolean showBroken, int maxItems) {
+		Map<String, List<Count>> facetResults = queryForFacets(tag, showBroken);		
+		return solrFacetLoader.loadPublisherFacet(facetResults.get("publisher"));		
+	}
 
+	
 	public List<TagContentCount> getRelatedLinksForPublisher(Website publisher, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).toQuery();
 		query.addFacetField("tags");
@@ -57,6 +52,19 @@ public class RelatedTagsService {
 		Map<String, List<Count>> facetResuls = solrQueryService.getFacetQueryResults(query);
 		return solrFacetLoader.loadTagFacet(facetResuls.get("tags"));
 	}
+	
+	
+	private Map<String, List<Count>> queryForFacets(Tag tag, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).toQuery();
+		query.addFacetField("tags");
+		query.addFacetField("publisher");
+		query.setFacetMinCount(1);
+		
+		Map<String, List<Count>> facetResults = solrQueryService.getFacetQueryResults(query);
+		return facetResults;
+	}
+
+	
 	
 	
 	private List<TagContentCount> removeUnsuitableTags(Tag tag, List<TagContentCount> loadedTagFacet) {
@@ -72,7 +80,8 @@ public class RelatedTagsService {
 	
 	private boolean isTagSuitableRelatedTag(Tag tag, Tag relatedTag) {	
 		return !relatedTag.isHidden() && !tag.equals(relatedTag) && !relatedTag.isParentOf(tag) && 
-			!tag.getAncestors().contains(relatedTag) && !tag.getChildren().contains(relatedTag);
+			!tag.getAncestors().contains(relatedTag) && !tag.getChildren().contains(relatedTag) &&
+			!relatedTag.getName().equals("places") && !relatedTag.getName().equals("blogs");
 	}
 	
 }
