@@ -19,19 +19,14 @@ public class SupressionDAO implements SupressionRepository {
         this.sessionFactory = sessionFactory;
     }
     
-    
-    public Supression createSupression(String urlToSupress) {
-        if (urlToSupress != null) {
-            return new Supression(urlToSupress);
-        }
-        return null;
-    }
-
-    
-    public void addSupression(Supression supression) {
-        log.info("Creating supression for: " + supression.getUrl());        
-        sessionFactory.getCurrentSession().saveOrUpdate(supression);
-        sessionFactory.getCurrentSession().flush();        
+        
+    public void addSuppression(String urlToSuppress) {
+    	Supression suppression = createSupression(urlToSuppress);
+    	if (suppression != null) {
+    		sessionFactory.getCurrentSession().saveOrUpdate(suppression);
+    		sessionFactory.getCurrentSession().flush();
+    		log.info("Created suppression for: " + suppression.getUrl());
+    	}
     }
 
 
@@ -52,4 +47,10 @@ public class SupressionDAO implements SupressionRepository {
         }
     }
 
+    private Supression createSupression(String urlToSupress) {
+    	if (urlToSupress != null) {
+    		return new Supression(urlToSupress);
+    	}
+    	return null;
+    }
 }
