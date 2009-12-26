@@ -51,8 +51,8 @@ public class ContentDeletionService {
 	private void suppressDeletedNewsitem(Newsitem deletedNewsitem) {
 		log.info("Deleting a newsitem which was accepted from a feed; checking for required supression");
 		if (rssfeedNewsitemService.getFeedNewsitemByUrl(deletedNewsitem.getFeed(), deletedNewsitem.getUrl()) != null) {
-			log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl());
-			supressionDAO.createSupression(deletedNewsitem.getUrl());
+			log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl());			
+			supressionDAO.addSupression(supressionDAO.createSupression(deletedNewsitem.getUrl()));
 		}
 	}
 
