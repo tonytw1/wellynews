@@ -281,7 +281,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		
 	public List<Resource> getBrokenSites() {
 		SolrQuery query = new SolrQueryBuilder().type("W").maxItems(255).isBroken().toQuery();
-		query.setSortField("name", ORDER.asc);
+		query.setSortField("titleSort", ORDER.asc);
 		return getQueryResults(query);
 	}
 	

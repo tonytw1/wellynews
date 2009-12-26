@@ -22,7 +22,7 @@ public class SolrInputDocumentBuilder {
 	public SolrInputDocument buildResouceInputDocument(Resource resource) {
 		SolrInputDocument inputDocument = new SolrInputDocument();
 		inputDocument.addField("id", resource.getId());
-		inputDocument.addField("name", resource.getName());
+		inputDocument.addField("title", resource.getName());
 		inputDocument.addField("type", resource.getType());
 		inputDocument.addField("httpStatus", resource.getHttpStatus());
 		inputDocument.addField("description", resource.getDescription());
