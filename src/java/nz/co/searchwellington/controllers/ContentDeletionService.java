@@ -7,7 +7,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SupressionRepository;
+import nz.co.searchwellington.repositories.SupressionService;
 
 import org.apache.log4j.Logger;
 
@@ -15,15 +15,18 @@ public class ContentDeletionService {
 	
     private static Logger log = Logger.getLogger(ContentDeletionService.class);
     	
-	private SupressionRepository supressionDAO;
+	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ResourceRepository resourceDAO;
 	
 
-	public ContentDeletionService(SupressionRepository supressionDAO,
+	
+
+
+	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			ResourceRepository resourceDAO) {
-		this.supressionDAO = supressionDAO;
+			ResourceRepository resourceDAO) {		
+		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
 	}
@@ -52,7 +55,7 @@ public class ContentDeletionService {
 		log.info("Deleting a newsitem which was accepted from a feed; checking for required supression");
 		if (rssfeedNewsitemService.getFeedNewsitemByUrl(deletedNewsitem.getFeed(), deletedNewsitem.getUrl()) != null) {
 			log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl());			
-			supressionDAO.addSuppression(deletedNewsitem.getUrl());
+			supressionService.suppressUrl(deletedNewsitem.getUrl());
 		}
 	}
 
