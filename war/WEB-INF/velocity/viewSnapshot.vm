@@ -1,0 +1,29 @@
+#parse("includes/header.vm")
+
+<div class="page">
+	#parse("includes/topbar.vm")
+
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
+
+	<div class="main">
+		<h2>Editing a Resource</h2>
+
+		#if ($resource)
+			
+			<hr>
+			$body
+			<hr>
+	#else
+		<p>There was a problem loading this resource for editing. You may 
+		not have permission to edit this paricular listing.</p>
+	#end
+
+	<form action="$site_information.url/cancel" method="POST">
+		<input type="submit" value="cancel" />
+	</form>
+
+</div>
+
+#parse("includes/footer.vm")

@@ -14,6 +14,7 @@ import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
+import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
@@ -55,13 +56,14 @@ public class ResourceEditController extends BaseMultiActionController {
     private SubmissionProcessingService submissionProcessingService;
     private ContentUpdateService contentUpdateService;
 	private ContentDeletionService contentDeletionService;
+    private SnapshotBodyExtractor snapBodyExtractor;
     
     public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO) {       
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor) {       
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;
@@ -76,7 +78,8 @@ public class ResourceEditController extends BaseMultiActionController {
         this.submissionProcessingService = submissionProcessingService;
         this.contentUpdateService = contentUpdateService;
         this.contentDeletionService = contentDeletionService;
-        this.resourceDAO = resourceDAO;        
+        this.resourceDAO = resourceDAO;
+        this.snapBodyExtractor = snapBodyExtractor;
     }
    
     
@@ -107,8 +110,35 @@ public class ResourceEditController extends BaseMultiActionController {
        
     	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   	
     }
+    
+    
+    
+    @Transactional
+    public ModelAndView viewSnapshot(HttpServletRequest request, HttpServletResponse response) {    	
+    	adminRequestFilter.loadAttributesOntoRequest(request);    	
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	
+    	Resource editResource = (Resource) request.getAttribute("resource");    	
+    	if (request.getAttribute("resource") != null && userIsAllowedToEdit(editResource, request, loggedInUser)) {    		
+    		ModelAndView mv = new ModelAndView("viewSnapshot");
+    		populateCommonLocal(mv);
+    		mv.addObject("heading", "Resource snapshot");
+    		
+            mv.addObject("resource", editResource);
+            mv.addObject("body", snapBodyExtractor.extractSnapshotBodyTextFor(editResource));
+            
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
+            mv.addObject("show_additional_tags", 1);
+            
+            return mv;
+        }
+       
+    	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   
 
-
+    }
+    
+    
+    
     @Transactional
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {        
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
