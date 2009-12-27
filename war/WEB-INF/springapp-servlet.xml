@@ -196,12 +196,7 @@
 			</bean>		
 		</property>	
 	</bean>
-	
-	<bean id="suppressionService" class="nz.co.searchwellington.repositories.SupressionService">
-		<constructor-arg ref="supressionDAO" />
-		<constructor-arg ref="suggestionDAO" />		
-	</bean>
-	
+
 
 
 

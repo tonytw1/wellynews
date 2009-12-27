@@ -226,15 +226,23 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 	</bean>
 	
-	<bean id ="blogspotCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.BlogspotCommentFeedDetector" />	
-	<bean id ="tepapaBlogCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TepapaBlogCommentFeedDetector" />	
+	<bean id ="aucklandTrainsCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
+		<property name="regex" value="^http://www.aucklandtrains.co.nz/\d{4}/\d{2}/\d{2}/.*?/feed/$" />
+	</bean>	
+	<bean id ="blogspotCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.BlogspotCommentFeedDetector" />		
+	<bean id ="tepapaBlogCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
+		<property name="regex" value="^http://blog.tepapa.govt.nz/\d{4}/\d{2}/\d{2}/.*?/feed/$" />
+	</bean>				
 	<bean id ="textureCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TextureCommentFeedDetector" />
 	<bean id ="wellingtonistaCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.WellingtonistaCommentFeedDetector" />
-	<bean id ="newswiresCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.NewswireCommentFeedDetector" />
-		  		  	
+	<bean id ="newswiresCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
+		<property name="regex" value="^http://www.newswire.co.nz/\\d{4}/\\d{2}/.*?/feed/$" />
+	</bean>
+				  		  	
 	<bean id="commentFeedDetector" class="nz.co.searchwellington.commentfeeds.CommentFeedDetectorService">
 		<constructor-arg>
 			<list>
+				<ref bean="aucklandTrainsCommentFeedDetector" />
 				<ref bean="blogspotCommentFeedDetector" />
 				<ref bean="tepapaBlogCommentFeedDetector" />
 				<ref bean="textureCommentFeedDetector" />
@@ -340,9 +348,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="notifier" />	
 	</bean>
 	
+		
+	<bean id="suppressionService" class="nz.co.searchwellington.repositories.SupressionService">
+		<constructor-arg ref="supressionDAO" />
+		<constructor-arg ref="suggestionDAO" />		
+	</bean>
+	
 	
 	<bean id="contentDeletionService" class="nz.co.searchwellington.controllers.ContentDeletionService">
-		<constructor-arg ref="supressionService" />
+		<constructor-arg ref="suppressionService" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="resourceDAO" />
 	</bean>
