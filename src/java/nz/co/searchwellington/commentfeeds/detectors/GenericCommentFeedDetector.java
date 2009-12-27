@@ -9,7 +9,7 @@ public class GenericCommentFeedDetector implements CommentFeedDetector {
 
 	
 	public boolean isValid(String url) {		
-		return url.matches(regex);				
+		return url != null && url.matches(regex);				
 	}
 	
 	public String getRegex() {

@@ -23,6 +23,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="daos.xml" />	
 	<import resource="timertasks.xml"/>
 	<import resource="rssfeeds.xml" />
+	<import resource="commentfeeds.xml" />	
 	<import resource="linkextractors.xml" />
 	<import resource="urls.xml" />
 	<import resource="linkchecking.xml" />
@@ -226,41 +227,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 	</bean>
 	
-	<bean id ="aucklandTrainsCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
-		<property name="regex" value="^http://www.aucklandtrains.co.nz/\d{4}/\d{2}/\d{2}/.*?/feed/$" />
-	</bean>	
-	<bean id ="blogspotCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.BlogspotCommentFeedDetector" />		
-	<bean id ="tepapaBlogCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
-		<property name="regex" value="^http://blog.tepapa.govt.nz/\d{4}/\d{2}/\d{2}/.*?/feed/$" />
-	</bean>				
-	<bean id ="textureCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TextureCommentFeedDetector" />
-	<bean id ="wellingtonistaCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.WellingtonistaCommentFeedDetector" />
-	<bean id ="newswiresCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
-		<property name="regex" value="^http://www.newswire.co.nz/\\d{4}/\\d{2}/.*?/feed/$" />
-	</bean>
-				  		  	
-	<bean id="commentFeedDetector" class="nz.co.searchwellington.commentfeeds.CommentFeedDetectorService">
-		<constructor-arg>
-			<list>
-				<ref bean="aucklandTrainsCommentFeedDetector" />
-				<ref bean="blogspotCommentFeedDetector" />
-				<ref bean="tepapaBlogCommentFeedDetector" />
-				<ref bean="textureCommentFeedDetector" />
-				<ref bean="wellingtonistaCommentFeedDetector" />
-				<ref bean="newswiresCommentFeedDetector" />
-			</list>
-		</constructor-arg>
-	</bean>
-		
-	<bean id="commentFeedGuesserService" class="nz.co.searchwellington.commentfeeds.CommentFeedGuesserService">
-		<constructor-arg>
-			<list>
-				<bean class="nz.co.searchwellington.commentfeeds.guessers.EyeOfTheFishCommentFeedGuesser" />
-				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser" />
-				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressDotComCommentFeedGuesser" />
-			</list>
-		</constructor-arg>
-	</bean>
+
 	
 	
 	
