@@ -92,7 +92,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 
 
-
+	<bean id="snapshotBodyExtractor" class="nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor" >
+		<constructor-arg ref="snapshotDAO" />
+	</bean>
+	
+	
 	
 		
 	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />

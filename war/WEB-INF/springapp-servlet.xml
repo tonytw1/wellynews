@@ -445,10 +445,6 @@
 	</bean>
 	
 	
-	<bean id="snapshotBodyExtractor" class="nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor" >
-		<constructor-arg ref="snapshotDAO" />
-	</bean>
-	
 	
 	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
 		<constructor-arg ref="cachingRssfeedNewsitemService" />

@@ -41,6 +41,14 @@ public class SolrHighlightingWebsiteDecorator implements Website {
     	return website.getDescription();
     }
     
+    public List<String> getBodytext() {    	
+    	if (map.containsKey("bodytext")) {
+			return map.get("bodytext");
+		}
+		return null;
+	}
+    
+    
 	public void addTag(Tag tag) {
 		website.addTag(tag);
 	}

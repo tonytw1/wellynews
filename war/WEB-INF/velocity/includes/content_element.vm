@@ -17,7 +17,7 @@
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "TNI" || $item.type == "S") && $dateFormatter)
 				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
 			#end
-							
+				
 			#if ($item.publisher)
 				<li class="publisher">$item.publisher.name</li>
 			#end
@@ -38,7 +38,12 @@
 			#if ($item.description) 
 				<li>$item.description</li>
 			#end
-			
+						
+			#if ($item.bodytext) 			
+				#foreach($snippet in $item.bodytext)
+					<li class="bodytext">$snippet</li>
+				#end
+			#end
 							
 			#if ($item.type == ('F') && $editPermissionService.canEdit($item))
 				#if ($item.acceptancePolicy)

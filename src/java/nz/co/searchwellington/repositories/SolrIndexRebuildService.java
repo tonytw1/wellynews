@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Set;
 
+import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Resource;
 
 import org.apache.log4j.Logger;
@@ -21,12 +22,15 @@ public class SolrIndexRebuildService {
 
 	private ResourceRepository resourceDAO;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
+	private SnapshotBodyExtractor snapshotBodyExtractor;
+	
 	private String solrUrl;
 
 	
-	public SolrIndexRebuildService(ResourceRepository resourceDAO, SolrInputDocumentBuilder solrInputDocumentBuilder) {		
+	public SolrIndexRebuildService(ResourceRepository resourceDAO, SolrInputDocumentBuilder solrInputDocumentBuilder, SnapshotBodyExtractor snapshotBodyExtractor) {		
 		this.resourceDAO = resourceDAO;
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
+		this.snapshotBodyExtractor = snapshotBodyExtractor;
 	}
 
 	
@@ -75,7 +79,12 @@ public class SolrIndexRebuildService {
 			Resource resource = resourceDAO.loadResourceById(id);
 			log.info("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
 			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
-		updateRequest.add(inputDocument);
+			
+			final String bodytext = snapshotBodyExtractor.extractSnapshotBodyTextFor(resource);
+			if (bodytext != null) {
+				inputDocument.addField("bodytext", bodytext);
+			}
+			updateRequest.add(inputDocument);			
 		}
 		
 		updateRequest.process(solr);

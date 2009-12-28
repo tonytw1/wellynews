@@ -1,7 +1,6 @@
 package nz.co.searchwellington.model.decoraters.highlighting;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +44,14 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		}
 		return newsitem.getDescription();
 	}
+    
+    public List<String> getBodytext() {    	
+    	if (map.containsKey("bodytext")) {
+			return map.get("bodytext");
+		}
+		return null;
+	}
+    
     
     public void addTag(Tag tag) {
 		newsitem.addTag(tag);
