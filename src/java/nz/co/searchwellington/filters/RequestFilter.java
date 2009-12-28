@@ -25,13 +25,15 @@ public class RequestFilter {
     Logger log = Logger.getLogger(RequestFilter.class);
     
     protected ResourceRepository resourceDAO;
-	private Resource anonResource;
+    private GoogleSearchTermExtractor searchTermExtractor;
+    private Resource anonResource;
 
     public RequestFilter() {         
     }
     
-    public RequestFilter(ResourceRepository resourceDAO) {
+    public RequestFilter(ResourceRepository resourceDAO, GoogleSearchTermExtractor searchTermExtractor) {
         this.resourceDAO = resourceDAO;
+        this.searchTermExtractor = searchTermExtractor;
         this.anonResource = null;
     }
     
@@ -50,7 +52,11 @@ public class RequestFilter {
 
     
 	public void loadAttributesOntoRequest(HttpServletRequest request) {
-		log.debug("Loading attributes onto request");
+		log.debug("Looking for google search referrer");
+		extractGoogleReferrer(request);
+		
+		
+		log.debug("Loading attributes onto request");		
     	loadAnonResource(request);
     	if (request.getParameter("page") != null) {
     		String pageString = request.getParameter("page");
@@ -228,7 +234,21 @@ public class RequestFilter {
     }
 
     
-    private boolean isReservedUrlWord(String urlWord) {
+    private void extractGoogleReferrer(HttpServletRequest request) {
+		final String referer = request.getHeader("Referer");
+		if (referer != null) {
+			log.info("Referer is: " + referer);
+			
+			final String searchTerm = searchTermExtractor.extractSearchTerm(referer);
+			if (searchTerm != null) {
+				log.info("Referrer search term is: " + searchTerm);
+				request.setAttribute("googlesearchterm", searchTerm);
+			}			
+		}		
+	}
+    
+
+	private boolean isReservedUrlWord(String urlWord) {
     	Set<String> reservedUrlWords = new HashSet<String>();
     	reservedUrlWords.add("about");
     	reservedUrlWords.add("api");

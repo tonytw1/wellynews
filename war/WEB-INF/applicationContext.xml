@@ -215,9 +215,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	
 	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
-		
+	
+	<bean id="googleSearchTermExtractor" class="nz.co.searchwellington.filters.GoogleSearchTermExtractor" />
+			
 	<bean id="requestFilter" class="nz.co.searchwellington.filters.RequestFilter" scope="request">
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="googleSearchTermExtractor" />
 		<aop:scoped-proxy/>
 	</bean>
 		
