@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
+import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -19,6 +20,14 @@ public class SolrInputDocumentBuilder {
 	
 	Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
 	
+	private SnapshotBodyExtractor snapshotBodyExtractor;
+	
+	
+	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor) {
+		this.snapshotBodyExtractor = snapshotBodyExtractor;
+	}
+
+
 	public SolrInputDocument buildResouceInputDocument(Resource resource) {
 		SolrInputDocument inputDocument = new SolrInputDocument();
 		inputDocument.addField("id", resource.getId());
@@ -65,6 +74,13 @@ public class SolrInputDocumentBuilder {
 		if (publisher != null) {
 			inputDocument.addField("publisher", publisher.getId());
 		}
+		
+		// TODO not sure this is in the right place; should be under content update service.
+		final String bodyText = snapshotBodyExtractor.extractSnapshotBodyTextFor(resource);
+		if (bodyText != null) {
+			inputDocument.addField("bodytext", bodyText);
+		}
+		
 		return inputDocument;
 	}
 

@@ -2,8 +2,10 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	<bean id="solrInputDocumentBuilder" class="nz.co.searchwellington.repositories.SolrInputDocumentBuilder" />
-
+	<bean id="solrInputDocumentBuilder" class="nz.co.searchwellington.repositories.SolrInputDocumentBuilder" >
+		<constructor-arg ref="snapshotBodyExtractor" />
+	</bean>
+	
 	<bean id="solrQueryService" class="nz.co.searchwellington.repositories.solr.SolrQueryService">
 		<constructor-arg ref="solrInputDocumentBuilder" />
 		<property name="solrUrl" value="${solr.url}" />
