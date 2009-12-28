@@ -34,13 +34,21 @@ public class RelatedTagsService {
 	public List<TagContentCount> getRelatedLinksForTag(Tag tag, boolean showBroken, int maxItems) {	
 		Map<String, List<Count>> facetResults = queryForFacets(tag, showBroken);		
 		List<TagContentCount> loadedTagFacet = solrFacetLoader.loadTagFacet(facetResults.get("tags"));
-		return removeUnsuitableTags(tag, loadedTagFacet);		
+		List<TagContentCount> allFacets = removeUnsuitableTags(tag, loadedTagFacet);
+		if (allFacets.size() > maxItems) {
+			return allFacets.subList(0, maxItems);
+		}
+		return allFacets;		
 	}
 	
 	
 	public List<PublisherContentCount> getRelatedPublishersForTag(Tag tag, boolean showBroken, int maxItems) {
 		Map<String, List<Count>> facetResults = queryForFacets(tag, showBroken);		
-		return solrFacetLoader.loadPublisherFacet(facetResults.get("publisher"));		
+		List<PublisherContentCount> allFacets = solrFacetLoader.loadPublisherFacet(facetResults.get("publisher"));
+		if (allFacets.size() > maxItems) {
+			return allFacets.subList(0, maxItems);
+		}
+		return allFacets;	
 	}
 
 	

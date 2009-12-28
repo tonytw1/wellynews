@@ -1,6 +1,6 @@
 #if ($related_publishers)
 	<h2>Related Publishers</h2>
-	<p>These publisers have been posting newsitems tagged with $tag.displayName.toLowerCase().</p>
+	<p>These publisers have been posting newsitems tagged with $tag.displayName.toLowerCase():</p>
 	
 	<ul>
 	#set ($first =1)

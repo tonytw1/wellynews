@@ -9,6 +9,7 @@
 		#end
 
 		#parse("includes/related_tags.vm")
+		#parse("includes/related_publishers.vm")		
 		#parse("includes/tag_tree.vm")
 		#parse("includes/sibling_tags.vm")
 	</div>

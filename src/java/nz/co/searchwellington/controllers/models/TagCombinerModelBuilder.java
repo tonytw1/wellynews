@@ -52,7 +52,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);		
-		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, showBroken, 1000));
+		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8));
 	}
 
 
