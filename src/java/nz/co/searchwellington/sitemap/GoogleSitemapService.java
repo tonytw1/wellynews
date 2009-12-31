@@ -17,7 +17,9 @@ import org.dom4j.QName;
 
 public class GoogleSitemapService {
     
-    Logger log = Logger.getLogger(GoogleSitemapService.class);
+    private static final int MAX_NEWSITEMS = 30;	// TODO duplicated - move to a paginator class
+
+	Logger log = Logger.getLogger(GoogleSitemapService.class);
     
     
     private static final String NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9";
@@ -45,19 +47,34 @@ public class GoogleSitemapService {
 
     
     private void addTagUrl(Element root, Tag tag, String siteLocation) {      
-        Element tagElement = root.addElement(new QName("url", new Namespace("sitemap", NAMESPACE)));   
-        tagElement.addNamespace("sitemap", NAMESPACE);
         
-        Element locElement = tagElement.addElement(new QName("loc", new Namespace("sitemap", NAMESPACE)));
-        locElement.setText(urlBuilder.getTagUrl(tag));
-        
+        final String url = urlBuilder.getTagUrl(tag);     
+        String lastmod = null;        
         Date lastUpdated = resourceDAO.getLastLiveTimeForTag(tag);
         if (lastUpdated != null) {
-        	final String dateString = dateFormatter.formatW3CDate(lastUpdated);
+        	lastmod = dateFormatter.formatW3CDate(lastUpdated);
+        }        
+        addUrlElement(root, url, lastmod);
+        
+        
+        int tagNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, false);
+        for (int i = 2; ((i -1)  * MAX_NEWSITEMS) <= tagNewsitemCount; i =i + 1) {
+        	 addUrlElement(root, url + "?page=" + i, null);	
+        }
+    }
+
+
+	private void addUrlElement(Element root, final String url, final String dateString) {
+		Element tagElement = root.addElement(new QName("url", new Namespace("sitemap", NAMESPACE)));   
+        tagElement.addNamespace("sitemap", NAMESPACE);
+
+        Element locElement = tagElement.addElement(new QName("loc", new Namespace("sitemap", NAMESPACE)));
+		locElement.setText(url);
+        
+        if (dateString != null) {
         	Element lastmod = tagElement.addElement(new QName("lastmod", new Namespace("sitemap", NAMESPACE)));
         	lastmod.setText(dateString);
-        }            
-        
-    }
+        }
+	}
 
 }
