@@ -32,7 +32,7 @@
 	</li>
 #end
 
-<ul class="tagtree">
+<ul class="tagtree" rel="noindex">
 #foreach($tree_tag in $top_level_tags)
 	#if (!$tree_tag.hidden)
 		#showNode($tree_tag)

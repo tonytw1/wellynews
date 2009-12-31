@@ -96,7 +96,7 @@
 				#end
 								
 				#if ($item.tags && $item.tags.size() > 0)
-					<li class="tagged">Tagged as:</li>
+					<li class="tagged" rel="noindex">Tagged as:</li>
 					#foreach ($tag in $item.tags)
 						#if (!$tag.hidden)
 							<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
