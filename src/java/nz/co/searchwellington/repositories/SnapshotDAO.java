@@ -23,7 +23,7 @@ public class SnapshotDAO {
 		Snapshot snapshot = this.loadSnapshot(url);
         if (snapshot != null) {
         	return snapshot.getBody();
-        }
+        }        
         return null;
 	}
 	
@@ -35,6 +35,7 @@ public class SnapshotDAO {
 		snapshot.setBody(content);
 		this.saveSnapshot(url, snapshot);
 	}
+
 	
 	private Snapshot loadSnapshot(String url) {		
 		return getSnapshotFromCache(url);        
@@ -60,6 +61,11 @@ public class SnapshotDAO {
     private Snapshot getSnapshotFromCache(String url) {
 		Cache cache = manager.getCache(SNAPSHOTS_CACHE_NAME);
 		if (cache != null) {
+			
+			 // TODO Probably expensive - push to a user invoked admin url
+	        log.info("Snapshot cache in memory store size: " + cache.getMemoryStoreSize());
+	        log.info("Snapshot cache disk store size: " + cache.getDiskStoreSize());	        
+			
 			Element cacheElement = cache.get(url);
 			if (cacheElement != null) {
 				String snapshotBody = (String) cacheElement.getObjectValue();
