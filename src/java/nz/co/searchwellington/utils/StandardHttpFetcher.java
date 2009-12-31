@@ -10,7 +10,6 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
-import org.htmlparser.http.HttpHeader;
 
 public class StandardHttpFetcher implements HttpFetcher {
 
@@ -65,6 +64,7 @@ public class StandardHttpFetcher implements HttpFetcher {
 			client.getParams().setParameter(HttpClientParams.USER_AGENT, userAgent);
 		}
 		client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));
+		client.getParams().setParameter("http.connection.timeout", new Integer(HTTP_TIMEOUT));
 		client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
 		return client;
 	}

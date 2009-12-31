@@ -294,8 +294,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="dateFormatter" />
 		<constructor-arg ref="urlBuilder" />
 	</bean>
-		
-	<bean id="robotExclusionService" class="nz.co.searchwellington.utils.RobotExclusionService" />
+	
+	<bean id="robotExclusionService" class="nz.co.searchwellington.utils.RobotExclusionService" >
+		<constructor-arg ref="standardHttpFetcher" />
+	</bean>
+	
+	
 	<bean id="standardHttpFetcher" class="nz.co.searchwellington.utils.StandardHttpFetcher" >
 		<property name="userAgent">
 			<value>${http.useragent}</value>

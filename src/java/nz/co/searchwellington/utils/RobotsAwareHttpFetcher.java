@@ -1,8 +1,12 @@
 package nz.co.searchwellington.utils;
 
+import org.apache.log4j.Logger;
+
 
 public class RobotsAwareHttpFetcher implements HttpFetcher {
 	
+    Logger log = Logger.getLogger(RobotsAwareHttpFetcher.class);
+
 	private RobotExclusionService robotExclusionService;
 	private StandardHttpFetcher httpFetcher;
 	private String[] exceptions;
@@ -23,7 +27,8 @@ public class RobotsAwareHttpFetcher implements HttpFetcher {
 		
 		if (overrideRobotDotTxt || robotExclusionService.isUrlCrawlable(url, httpFetcher.getUserAgent())) {
 			return httpFetcher.httpFetch(url);
-		}		
+		}
+		log.info("Url is not allowed to be crawled: " + url);
 		return new HttpFetchResult(-2, null);
 	}
 	
