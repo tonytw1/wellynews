@@ -22,7 +22,9 @@ import org.apache.log4j.Logger;
 
 public class RequestFilter {
 
-    Logger log = Logger.getLogger(RequestFilter.class);
+    public static final String SEARCH_TERM = "searchterm";
+
+	Logger log = Logger.getLogger(RequestFilter.class);
     
     protected ResourceRepository resourceDAO;
     private GoogleSearchTermExtractor searchTermExtractor;
@@ -242,7 +244,7 @@ public class RequestFilter {
 			final String searchTerm = searchTermExtractor.extractSearchTerm(referer);
 			if (searchTerm != null) {
 				log.info("Referrer search term is: " + searchTerm);
-				request.setAttribute("googlesearchterm", searchTerm);
+				request.setAttribute(SEARCH_TERM, searchTerm);
 			}			
 		}		
 	}

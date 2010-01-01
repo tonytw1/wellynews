@@ -4,7 +4,7 @@
 #parse("includes/topbar.vm")
 
 <div class="left">
-#parse("includes/160x600ad.vm")
+#parse("includes/200x200ad.vm")
 
 #parse("includes/related_tags.vm")
 

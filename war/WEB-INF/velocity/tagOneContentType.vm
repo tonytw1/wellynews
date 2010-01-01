@@ -5,7 +5,7 @@
 
 	<div class="left">
 		#if($use_big_ads) 
-			#parse("includes/160x600ad.vm")
+			#parse("includes/200x200ad.vm")
 		#end
 
 		#parse("includes/related_tags.vm")

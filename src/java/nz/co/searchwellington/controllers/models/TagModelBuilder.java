@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
@@ -16,12 +17,15 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.sun.tools.internal.ws.processor.model.Request;
 
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
@@ -35,9 +39,10 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private GoogleMapsDisplayCleaner googleMapsCleaner;
 	private ContentRetrievalService contentRetrievalService;
+	private KeywordSearchService keywordSearchService;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner, ContentRetrievalService contentRetrievalService) {
+	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner, ContentRetrievalService contentRetrievalService, KeywordSearchService keywordSearchService) {
 		this.resourceDAO = resourceDAO;	
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
@@ -46,6 +51,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.googleMapsCleaner = googleMapsCleaner;
 		this.contentRetrievalService = contentRetrievalService;
+		this.keywordSearchService = keywordSearchService;
 	}
 
 	
@@ -90,6 +96,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateGeocoded(mv, showBroken, tag);		
 		populateTagFlickrPool(mv, tag);		
 		populateTagRelatedTwitter(mv, tag);
+
+		if (request.getAttribute(RequestFilter.SEARCH_TERM) != null) {
+			final String searchTerm = (String) request.getAttribute(RequestFilter.SEARCH_TERM);
+			mv.addObject("searchterm", searchTerm);
+			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, showBroken, null));
+		}
 		
 		mv.addObject("tag_feeds", resourceDAO.getTaggedFeeds(tag, showBroken));
 	}

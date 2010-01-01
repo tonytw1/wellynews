@@ -6,7 +6,7 @@
 
 	<div class="left">
 	
-		#parse("includes/160x600ad.vm")
+		#parse("includes/200x200ad.vm")
 	                			
 		#parse("includes/related_tags.vm")
 		#parse("includes/related_publishers.vm")
@@ -17,6 +17,18 @@
 
 
 	<div class="main">
+	
+		<div class="yellow">	
+		#if ($searchterm) 
+			<p>This site has matches for '$searchterm' on the following pages:</p>
+				<ul class="childtags">
+				#foreach ($related_tag in $searchfacets)
+        			<li><a href="$urlBuilder.getTagUrl($related_tag.tag)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
+				#end
+				</ul>
+		#end
+		</div>
+	
 		<div class="rss">
 			#parse("includes/rss_widget_for_tag.vm")
 		</div>
@@ -46,7 +58,7 @@
 		#end
 
 		#parse("includes/search_widget.vm")
-		
+			
 		<div class="tag_main_content">
 			#if ($tag.getMainImage()) 
 				<img src="$urlBuilder.getImageUrl($tag.getMainImage())" width="320" class="mainimage" >
