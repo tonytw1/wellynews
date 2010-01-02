@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -15,11 +15,13 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 
 	Logger log = Logger.getLogger(CommentModelBuilder.class);
 	
-	private ResourceRepository resourceDAO;
+	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 		
-	public CommentModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder) {
-		this.resourceDAO = resourceDAO;
+	
+
+	public CommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder) {		
+		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 	}
 
@@ -38,10 +40,10 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 						
 			int page = getPage(request);
 			int startIndex = getStartIndex(page);
-			final List<Resource> commentedNewsitms = resourceDAO.getCommentedNewsitems(MAX_NEWSITEMS, showBroken, true, startIndex);
+			final List<Resource> commentedNewsitms = contentRetrievalService.getCommentedNewsitems(MAX_NEWSITEMS, startIndex);
 			mv.addObject("main_content", commentedNewsitms);
 			
-			int commentedCounted = resourceDAO.getCommentedNewsitemsCount(showBroken);
+			int commentedCounted = contentRetrievalService.getCommentedNewsitemsCount();
 			mv.addObject("main_content_total", commentedCounted);
 			
 			mv.setViewName("commented");
@@ -52,7 +54,7 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 	
 
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		mv.addObject("commented_tags", resourceDAO.getCommentedTags(showBroken)); 
+		mv.addObject("commented_tags", contentRetrievalService.getCommentedTags()); 
 	}
 
 }

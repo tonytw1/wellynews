@@ -69,5 +69,21 @@ public class ContentRetrievalService {
 	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems) {
 		return resourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
-		
+
+	public List<Tag> getGeotaggedTags() {
+		return resourceDAO.getGeotaggedTags(showBrokenDecisionService.shouldShowBroken());
+	}
+	
+	public List<Resource> getCommentedNewsitems(int maxItems, int startIndex) {
+		return resourceDAO.getCommentedNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken(), true, startIndex);
+	}
+
+	public int getCommentedNewsitemsCount() {
+		return resourceDAO.getCommentedNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
+	}
+
+	public List<Tag> getCommentedTags() {
+		return resourceDAO.getCommentedTags(showBrokenDecisionService.shouldShowBroken());
+	}
+	
 }

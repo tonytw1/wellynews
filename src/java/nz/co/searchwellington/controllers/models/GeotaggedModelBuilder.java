@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
@@ -17,13 +17,13 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 	Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
-	private ResourceRepository resourceDAO;
+	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
 	private GoogleMapsDisplayCleaner googleMapsCleaner;
 	
-	public GeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, GoogleMapsDisplayCleaner googleMapsCleaner) {
-		this.resourceDAO = resourceDAO;
+	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, GoogleMapsDisplayCleaner googleMapsCleaner) {
+		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.googleMapsCleaner = googleMapsCleaner;
@@ -43,12 +43,11 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());	
 
 			// TODO pagination
-			final List<Resource> geotaggedNewsitems = resourceDAO.getAllValidGeocoded(MAX_NEWSITEMS, showBroken);
+			final List<Resource> geotaggedNewsitems = contentRetrievalService.getAllValidGeocoded(MAX_NEWSITEMS);
 			mv.addObject("main_content", geotaggedNewsitems);
 			mv.addObject("geocoded", googleMapsCleaner.dedupe(geotaggedNewsitems));
 			
 			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
-
 			
 			// TODO rename
 			mv.setViewName("geocoded");
@@ -57,9 +56,8 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		return null;
 	}
 	
-
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		mv.addObject("geotagged_tags", resourceDAO.getGeotaggedTags(showBroken)); 
+		mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());		
 	}
 
 }

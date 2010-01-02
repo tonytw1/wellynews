@@ -28,14 +28,14 @@
 	</bean>
 	
 	<bean id="geotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.GeotaggedModelBuilder">
-		<constructor-arg ref="resourceDAO" />	
+		<constructor-arg ref="contentRetrievalService" />	
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="googleMapsCleaner" />	
 	</bean>
 	
 	<bean id="commentModelBuilder" class="nz.co.searchwellington.controllers.models.CommentModelBuilder">
-		<constructor-arg ref="resourceDAO" />	
+		<constructor-arg ref="contentRetrievalService" />	
 		<constructor-arg ref="urlBuilder" />	
 	</bean>
 	

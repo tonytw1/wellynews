@@ -40,7 +40,7 @@ public class LinkChecker {
     public void scanResource(int checkResourceId) {
         Resource checkResource = resourceDAO.loadResourceById(checkResourceId);         
         if (checkResource != null) {
-	        log.info("Checking: " + checkResource.getName() + "(" + checkResource.getUrl() + ")");        
+	        log.info("Checking: " + checkResource.getName() + " (" + checkResource.getUrl() + ")");        
 			log.debug("Before status: " + checkResource.getHttpStatus());      
 			
 			final String pageContent = httpCheck(checkResource);
