@@ -7,7 +7,13 @@
 	</bean>
 	
 	<bean id="urlResolverService" class="nz.co.searchwellington.urls.CachingUrlResolverService">
-		<constructor-arg ref="cacheManager" />
+		<constructor-arg>
+			<bean class="nz.co.searchwellington.repositories.redis.RedisKeyStore">
+				<property name="keyPrefix" value="resolved-urls::" />
+				<property name="redisHostname" value="${redis.hostname}" />
+				<property name="redisPort" value="${redis.port}" />
+			</bean>
+		</constructor-arg>
 		<constructor-arg>
 			<list>
 				<ref bean="feedBurnerRedirectResolver" />
@@ -16,8 +22,7 @@
 			</list>
 		</constructor-arg>
 	</bean>
-	
-		
+			
 	<bean id="bitlyUrlResolver" class="nz.co.searchwellington.urls.BitlyUrlResolver" />
 	<bean id="tinyUrlResolver" class="nz.co.searchwellington.urls.TinyUrlResolver" />
 	<bean id="feedBurnerRedirectResolver" class="nz.co.searchwellington.urls.FeedBurnerRedirectResolver" />

@@ -1,59 +1,48 @@
 package nz.co.searchwellington.urls;
 
-import org.apache.log4j.Logger;
+import nz.co.searchwellington.repositories.redis.RedisKeyStore;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import org.apache.log4j.Logger;
 
 public class CachingUrlResolverService extends UrlResolverService {
 	
 	Logger log = Logger.getLogger(CachingUrlResolverService.class);
 	
-	private static final String RESOLVED_URL_CACHE = "resolvedurls";
-
-	private CacheManager manager;
+	private RedisKeyStore resolvedUrlsCache;
 	
 	
-	public CachingUrlResolverService(CacheManager manager,
-		RedirectingUrlResolver... redirectResolvers) {
+	public CachingUrlResolverService(RedisKeyStore resolvedUrlsCache, RedirectingUrlResolver... redirectResolvers) {
 		super(redirectResolvers);
-		this.manager = manager;
+		this.resolvedUrlsCache = resolvedUrlsCache;
 	}
 
 	
 	@Override
 	protected String resolveSingleUrl(String url) {		
 		if (url != null && !url.isEmpty()) {
-			Cache cache = manager.getCache(RESOLVED_URL_CACHE);		
-			if (cache != null) {
-				Element cacheElement = cache.get(url);
-				if (cacheElement != null && cacheElement.getObjectValue() != null) {
-					String cachedResult = (String) cacheElement.getObjectValue();
-					log.info("Found content for url '" + url + "' in cache: " + cachedResult);
-					return cachedResult;
-				}
+			
+			final String cachedResult = resolvedUrlsCache.get(url);
+			if (cachedResult != null) {
+				log.info("Found content for url '" + url + "' in cache: " + cachedResult);
+				return cachedResult;				
 			}
 		
 			log.info("Delegrating to live url resolver");
 			final String fetchedResult = super.resolveSingleUrl(url);
 			if (fetchedResult != null) {
-				putUrlIntoCache(cache, url, fetchedResult);
-			}
+				putUrlIntoCache(url, fetchedResult);
+			}			
 			return fetchedResult;
+			
 		} else {
 			log.warn("Called with empty url");
 		}
 		return url;
 	}
 
-		
-	private void putUrlIntoCache(Cache cache, String url, String result) {	
+	private void putUrlIntoCache(String url, String result) {	
 		log.info("Caching result for url: " + url);
-		Element cachedResult = new Element(url, result);
-		cache.put(cachedResult);
-		log.info("Flushing resolved urls cache.");
-		cache.flush();
+		resolvedUrlsCache.put(url, result);
 	}
-		
+	
 }

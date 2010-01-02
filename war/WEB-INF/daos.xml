@@ -53,9 +53,15 @@
 	 	<constructor-arg ref="sessionFactory" />
 	</bean>
 	
+	
 	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
-		<property name="redisHostname" value="${redis.hostname}" />
-		<property name="redisPort" value="${redis.port}" />
+		<constructor-arg>
+			<bean class="nz.co.searchwellington.repositories.redis.RedisKeyStore">
+				<property name="keyPrefix" value="url-snapshots::" />
+				<property name="redisHostname" value="${redis.hostname}" />
+				<property name="redisPort" value="${redis.port}" />
+			</bean>
+		</constructor-arg>
 	</bean>
 
 	<bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">
