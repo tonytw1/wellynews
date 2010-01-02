@@ -301,10 +301,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	
 	<bean id="standardHttpFetcher" class="nz.co.searchwellington.utils.StandardHttpFetcher" >
-		<property name="userAgent">
-			<value>${http.useragent}</value>
-		</property>
+		<property name="userAgent" value="${http.useragent}" />
+		<property name="httpProxyHostname" value="${http.proxy.hostname}" />
+		<property name="httpProxyPort" value="${http.proxy.port}" />
 	</bean>
+	
 	<bean id="httpFetcher" class="nz.co.searchwellington.utils.RobotsAwareHttpFetcher">
 		<constructor-arg ref="robotExclusionService" />
 		<constructor-arg ref="standardHttpFetcher" />

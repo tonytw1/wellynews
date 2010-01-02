@@ -16,8 +16,9 @@ public class StandardHttpFetcher implements HttpFetcher {
     Logger log = Logger.getLogger(StandardHttpFetcher.class);
     private static final int HTTP_TIMEOUT = 10000;
     
-    private String userAgent;
-
+    private String userAgent;    
+    private String httpProxyHostname;
+    private int httpProxyPort;
     
     public HttpFetchResult httpFetch(String url) {
     	log.info("Attempting fetch of url: " + url);
@@ -58,11 +59,29 @@ public class StandardHttpFetcher implements HttpFetcher {
 		this.userAgent = userAgent;
 	}
 	
+	
+	
+	
+	public void setHttpProxyHostname(String httpProxyHostname) {
+		this.httpProxyHostname = httpProxyHostname;
+	}
+
+
+	public void setHttpProxyPort(int httpProxyPort) {
+		this.httpProxyPort = httpProxyPort;
+	}
+
+
 	private HttpClient setupClient() {
 		HttpClient client = new HttpClient();
 		if (userAgent != null) {
 			client.getParams().setParameter(HttpClientParams.USER_AGENT, userAgent);
 		}
+		
+		if (httpProxyHostname != null && !httpProxyHostname.isEmpty()) {
+			client.getHostConfiguration().setProxy(httpProxyHostname, httpProxyPort);
+		}
+		
 		client.getParams().setParameter("http.socket.timeout", new Integer(HTTP_TIMEOUT));
 		client.getParams().setParameter("http.connection.timeout", new Integer(HTTP_TIMEOUT));
 		client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
