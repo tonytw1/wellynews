@@ -12,6 +12,7 @@ import nz.co.searchwellington.utils.HttpFetcher;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 public class LinkChecker {
@@ -36,7 +37,7 @@ public class LinkChecker {
 	}
 
 
-	@Transactional
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void scanResource(int checkResourceId) {
         Resource checkResource = resourceDAO.loadResourceById(checkResourceId);         
         if (checkResource != null) {
