@@ -86,8 +86,7 @@ public class SolrQueryService {
 			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
 			updateRequest.add(inputDocument);					
 			updateRequest.process(solr);
-			solr.commit();
-			solr.optimize();
+			solr.commit();		
 			
 		} catch (MalformedURLException e) {
 			log.error(e);	
