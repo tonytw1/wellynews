@@ -54,7 +54,8 @@
 	</bean>
 	
 	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
-		<constructor-arg ref="cacheManager" />
+		<property name="redisHostname" value="${redis.hostname}" />
+		<property name="redisPort" value="${redis.port}" />
 	</bean>
 
 	<bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">

@@ -6,6 +6,10 @@ import java.net.URL;
 
 import net.sourceforge.jrobotx.util.URLInputStreamFactory;
 
+import org.apache.commons.httpclient.HttpStatus;
+
+import com.sun.xml.bind.StringInputStream;
+
  public class HttpClientInputStreamFactory implements URLInputStreamFactory {
 
 	 StandardHttpFetcher httpFetcher;
@@ -17,6 +21,9 @@ import net.sourceforge.jrobotx.util.URLInputStreamFactory;
 	 public InputStream openStream(URL url) throws IOException {
 		 HttpFetchResult httpResult = httpFetcher.httpFetch(url.toString());
 		 if (httpResult != null) {
+			 if (httpResult.getStatus() == HttpStatus.SC_NOT_FOUND) {
+				 return new StringInputStream("");
+			 }
 			 return httpResult.getInputStream();
 		 }
 		 return null;

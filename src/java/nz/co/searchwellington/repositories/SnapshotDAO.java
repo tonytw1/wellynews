@@ -1,81 +1,95 @@
 package nz.co.searchwellington.repositories;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-import nz.co.searchwellington.model.Snapshot;
+import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jredis.JRedis;
+import org.jredis.RedisException;
+import org.jredis.ri.alphazero.JRedisClient;
 
 public class SnapshotDAO {
 		
-	private static final String SNAPSHOTS_CACHE_NAME = "snapshots";
-    Logger log = Logger.getLogger(SnapshotDAO.class);
+    private static final String SNAPSHOT_URL_PREFIX = "url-snapshots::";
 
-	private CacheManager manager;
-   
+	Logger log = Logger.getLogger(SnapshotDAO.class);
+    	
+    private  JRedis jredis;
     
-	public SnapshotDAO(CacheManager manager) {		
-		this.manager = manager;
+    private String redisHostname;
+    private int redisPort;
+    
+	
+    public SnapshotDAO() {
 	}
 	
+        
 	public String loadContentForUrl(String url) {
-		Snapshot snapshot = this.loadSnapshot(url);
-        if (snapshot != null) {
-        	return snapshot.getBody();
-        }        
+		final String key = generateKey(url);			
+		try {
+			connect();
+			logoutSize();			
+			
+			if (jredis.exists(key)) {
+				return new String(jredis.get(key));
+			}
+			
+		} catch (Exception e) {
+			log.warn("A Redis exception occured while trying to fetch for key '" + key + "': ", e);
+		}
         return null;
 	}
+
 	
 	public void setSnapshotContentForUrl(String url, String content) {
-		Snapshot snapshot = this.loadSnapshot(url);
-		if (snapshot == null) {
-			snapshot = new Snapshot(url);
-		}
-		snapshot.setBody(content);
-		this.saveSnapshot(url, snapshot);
-	}
-
-	
-	private Snapshot loadSnapshot(String url) {		
-		return getSnapshotFromCache(url);        
-	}
-	
-	private void saveSnapshot(String url, Snapshot snapshot) {
-	    putSyndFeedIntoCache(url, snapshot);
-	}
-        
-    
-	private void putSyndFeedIntoCache(String url, Snapshot snapshot) {
-		Cache cache = manager.getCache(SNAPSHOTS_CACHE_NAME);
-		if (cache != null && snapshot != null) {
-			Element cachedFeedElement = new Element(url, snapshot.getBody());
-			cache.put(cachedFeedElement);
-			log.info("Caching snapshot for url: " + url);			
-		}
-		log.info("Flushing snapshots cache.");
-		cache.flush();
-
-	}
-	
-    private Snapshot getSnapshotFromCache(String url) {
-		Cache cache = manager.getCache(SNAPSHOTS_CACHE_NAME);
-		if (cache != null) {
-			
-			 // TODO Probably expensive - push to a user invoked admin url
-	        log.info("Snapshot cache in memory store size: " + cache.getMemoryStoreSize());
-	        log.info("Snapshot cache disk store size: " + cache.getDiskStoreSize());	        
-			
-			Element cacheElement = cache.get(url);
-			if (cacheElement != null) {
-				String snapshotBody = (String) cacheElement.getObjectValue();
-				log.info("Found snapshot body in cache for url: " + url);
-				return new Snapshot(url, snapshotBody);
+		final String key = generateKey(url);
+		try {			
+			connect();
+			log.info("Setting snapshot for key: " + key);
+			if (content != null) {
+				jredis.set(key, content);
 			} else {
-				log.info("No cached snapshot found for url: " + url);
+				log.info("Content for key '" + key + "' was null; deleting");
+				jredis.del(key);
 			}
+			
+		} catch (Exception e) {
+			log.warn("A Redis exception occured while trying to set for key '" + key + "': ", e);
 		}
-		return null;
+	}
+	
+		
+	
+	
+	public void setRedisHostname(String redisHostname) {
+		this.redisHostname = redisHostname;
 	}
 
+
+	public void setRedisPort(int redisPort) {
+		this.redisPort = redisPort;
+	}
+
+
+	private void connect() throws RedisException {
+		if (jredis == null) {
+			jredis = new JRedisClient(redisHostname, redisPort);
+		}
+		jredis.ping();
+	}
+
+
+	private void logoutSize() throws RedisException {
+		List<String> keys = jredis.keys(SNAPSHOT_URL_PREFIX + "*");
+		if (keys != null) {
+			log.info("Snapshot cache contains: " + keys.size() + " items");	// TODO expensive - move to admin controller invoke
+		}
+	}
+
+
+	private String generateKey(String url) {
+		return SNAPSHOT_URL_PREFIX + url;
+	}
+	
+	
+	
 }

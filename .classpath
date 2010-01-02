@@ -54,11 +54,12 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.15.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/xstream-1.3.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jettison-1.0.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/apache-solr-common-1.3.0.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/apache-solr-solrj-1.3.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jrobotx-0.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/openid4java-0.9.5.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mediarss-0.2.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/java-twitter-0.9-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="/Users/tony/git/wellynews/war/WEB-INF/lib/apache-solr-core-1.4.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/apache-solr-solrj-1.4.0.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
