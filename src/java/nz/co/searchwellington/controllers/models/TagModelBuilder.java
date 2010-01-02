@@ -16,7 +16,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
@@ -25,13 +24,10 @@ import nz.co.searchwellington.utils.UrlFilters;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sun.tools.internal.ws.processor.model.Request;
-
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	Logger log = Logger.getLogger(TagModelBuilder.class);
     	
-	private ResourceRepository resourceDAO;	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
@@ -42,8 +38,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private KeywordSearchService keywordSearchService;
 	
 	 
-	public TagModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner, ContentRetrievalService contentRetrievalService, KeywordSearchService keywordSearchService) {
-		this.resourceDAO = resourceDAO;	
+	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner, ContentRetrievalService contentRetrievalService, KeywordSearchService keywordSearchService) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -91,7 +86,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 		
 		populateCommentedTaggedNewsitems(mv, tag, showBroken);
-		mv.addObject("last_changed", resourceDAO.getLastLiveTimeForTag(tag));
+		mv.addObject("last_changed", contentRetrievalService.getLastLiveTimeForTag(tag));
 		populateRelatedFeed(mv, tag);
 		populateGeocoded(mv, showBroken, tag);		
 		populateTagFlickrPool(mv, tag);		
@@ -103,7 +98,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, showBroken, null));
 		}
 		
-		mv.addObject("tag_feeds", resourceDAO.getTaggedFeeds(tag, showBroken));
+		mv.addObject("tag_feeds", contentRetrievalService.getTaggedFeeds(tag));
 	}
 
 
@@ -136,7 +131,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
-		final List<Resource> taggedWebsites = resourceDAO.getTaggedWebsites(tag, showBroken, MAX_WEBSITES);
+		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
 		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);
 		
 		mv.addObject("main_content", taggedNewsitems);
@@ -169,7 +164,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 
 	
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
-        List<Resource> recentCommentedNewsitems = resourceDAO.getRecentCommentedNewsitemsForTag(tag, showBroken, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
+        List<Resource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
 
         List<Resource>commentedToShow;
         if (recentCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
@@ -179,7 +174,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
             commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);
         }
         
-        final int commentsCount = resourceDAO.getCommentedNewsitemsForTagCount(tag, showBroken);
+        final int commentsCount = contentRetrievalService.getCommentedNewsitemsForTagCount(tag);
         final int moreCommentCount = commentsCount - commentedToShow.size();
         if (moreCommentCount > 0) {
         	mv.addObject("commented_newsitems_morecount", moreCommentCount);
@@ -187,13 +182,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         }
                 
         mv.addObject("commented_newsitems", commentedToShow);
-        mv.addObject("tag_watchlist", resourceDAO.getTagWatchlist(tag, showBroken));        
+        mv.addObject("tag_watchlist", contentRetrievalService.getTagWatchlist(tag));        
     }
 	
     
     
     private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
-        List<Resource> geocoded = resourceDAO.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
+        List<Resource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", googleMapsCleaner.dedupe(geocoded));

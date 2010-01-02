@@ -17,7 +17,6 @@
 	</bean>
 	
 	<bean id="TagModelBuilder" class="nz.co.searchwellington.controllers.models.TagModelBuilder">
-		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
