@@ -1,5 +1,7 @@
 <ehcache>
-   
+
+    <diskStore path="java.io.tmpdir/searchwellington"/>
+            
   	<cache name="twitterreplies"
         maxElementsInMemory="1"
         eternal="false"
