@@ -21,7 +21,6 @@
 						<prop key="/api">api</prop>
 						<prop key="/broken">broken</prop>						
 						<prop key="/archive">archive</prop>
-						<prop key="/calendars">calendars</prop>
 						<prop key="/feeds/discovered">discovered</prop>
 						<prop key="/lastupdated">lastUpdated</prop>
 						<prop key="/publishers">publishers</prop>
@@ -98,7 +97,6 @@
 					<props>														
 						<prop key="/archive/*/*">archive</prop>
 						<prop key="/browse">publisherContent</prop>
-						<prop key="/*/calendars">publisherCalendars</prop>
 						<prop key="/*/feeds">publisherFeeds</prop>				
 						<prop key="/*/watchlist">publisherWatchlist</prop>
 					</props>
