@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jredis.RedisException;
-import org.jredis.ri.alphazero.JRedisClient;
+import org.jredis.ri.alphazero.JRedisService;
 
 public class RedisKeyStore {
 
 	private static Logger log = Logger.getLogger(RedisKeyStore.class);
 	
-	private JRedisClient jredis;
+	private JRedisService jredis;
 	private String keyPrefix;	
 	private String redisHostname;
 	private int redisPort;
@@ -24,8 +24,7 @@ public class RedisKeyStore {
 		final String key = generateKey(id);
 
 		try {
-			connect();
-			log.info("Keystore contents " + this.size() + " entires for prefix: " + keyPrefix);
+			connect();			
 			if (jredis.exists(key)) {
 				return new String(jredis.get(key));
 			}
@@ -85,7 +84,7 @@ public class RedisKeyStore {
 
 	private void connect() throws RedisException {
 		if (jredis == null) {
-			jredis = new JRedisClient(redisHostname, redisPort);
+			jredis = new JRedisService(redisHostname, redisPort);			
 		}
 	}
 

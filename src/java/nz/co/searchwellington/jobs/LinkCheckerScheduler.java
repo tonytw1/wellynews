@@ -1,14 +1,14 @@
 package nz.co.searchwellington.jobs;
 
-import java.util.Calendar;
 import java.util.Date;
-
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
 
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
+
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.springframework.transaction.annotation.Transactional;
 
 
 public class LinkCheckerScheduler {
@@ -55,19 +55,15 @@ public class LinkCheckerScheduler {
        
     }
     
-    // Add items older than a month.
     @Transactional()
-    public void queueExpiredItems() {
-        
-        final int numberOfItemsToQueue = 10;
-        log.info("Queuing " + numberOfItemsToQueue + " items not scanned for more than one month.");
-        
-        Date oneMonthAgo = Calendar.getInstance().getTime();
+    public void queueExpiredItems() {  
+        final int numberOfItemsToQueue = 30;
+        log.info("Queuing " + numberOfItemsToQueue + " items not scanned for more than one month.");        
+        Date oneMonthAgo = new DateTime().minusMonths(1).toDate();
         for (Resource resource: resourceDAO.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue)) {
             log.info("Queuing for scheduled checking: " + resource.getName() + " - " + resource.getLastScanned());
             linkCheckerQueue.add(resource);
         }                
     }
-    
     
 }
