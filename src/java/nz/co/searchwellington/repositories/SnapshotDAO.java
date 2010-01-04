@@ -1,12 +1,12 @@
 package nz.co.searchwellington.repositories;
 
-import nz.co.searchwellington.repositories.redis.RedisKeyStore;
+import nz.co.searchwellington.repositories.redis.KeyStore;
 
 public class SnapshotDAO {
 		
-	private RedisKeyStore snapshotsCache;
+	private KeyStore snapshotsCache;
 
-	public SnapshotDAO(RedisKeyStore snapshotsCache) {
+	public SnapshotDAO(KeyStore snapshotsCache) {
 		this.snapshotsCache = snapshotsCache;
 	}
 

@@ -61,5 +61,7 @@
 	<classpathentry kind="lib" path="/Users/tony/git/wellynews/war/WEB-INF/lib/apache-solr-core-1.4.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/apache-solr-solrj-1.4.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/tokyotyrant-0.10.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/netty-3.1.5.GA.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

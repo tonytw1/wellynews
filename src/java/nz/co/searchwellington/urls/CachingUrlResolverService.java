@@ -1,6 +1,6 @@
 package nz.co.searchwellington.urls;
 
-import nz.co.searchwellington.repositories.redis.RedisKeyStore;
+import nz.co.searchwellington.repositories.redis.KeyStore;
 
 import org.apache.log4j.Logger;
 
@@ -8,10 +8,10 @@ public class CachingUrlResolverService extends UrlResolverService {
 	
 	Logger log = Logger.getLogger(CachingUrlResolverService.class);
 	
-	private RedisKeyStore resolvedUrlsCache;
+	private KeyStore resolvedUrlsCache;
 	
 	
-	public CachingUrlResolverService(RedisKeyStore resolvedUrlsCache, RedirectingUrlResolver... redirectResolvers) {
+	public CachingUrlResolverService(KeyStore resolvedUrlsCache, RedirectingUrlResolver... redirectResolvers) {
 		super(redirectResolvers);
 		this.resolvedUrlsCache = resolvedUrlsCache;
 	}
