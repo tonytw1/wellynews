@@ -244,13 +244,7 @@
 		</property>
 	</bean>
 	
-	<bean id="keywordSearchService"  class="nz.co.searchwellington.repositories.solr.KeywordSearchService">
-		<constructor-arg ref="solrQueryService" />
-		<constructor-arg ref="solrKeywordQueryBuilder" />
-		<constructor-arg ref="solrFacetLoader" />		
-		<constructor-arg ref="resourceDAO" />		
-	</bean>
-	
+
 	
 
 	<bean id="searchController" class="nz.co.searchwellington.controllers.SearchController">

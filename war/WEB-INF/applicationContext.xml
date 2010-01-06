@@ -163,6 +163,15 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="loggedInUserFilter" />
 	</bean>
 	
+	
+	
+	<bean id="keywordSearchService"  class="nz.co.searchwellington.repositories.solr.KeywordSearchService">
+		<constructor-arg ref="solrQueryService" />
+		<constructor-arg ref="solrKeywordQueryBuilder" />
+		<constructor-arg ref="solrFacetLoader" />		
+		<constructor-arg ref="resourceDAO" />		
+	</bean>
+		
 	<bean id="contentRetrievalService" class="nz.co.searchwellington.repositories.ContentRetrievalService">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="keywordSearchService" />
