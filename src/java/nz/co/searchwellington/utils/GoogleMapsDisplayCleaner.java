@@ -40,7 +40,7 @@ public class GoogleMapsDisplayCleaner {
     private boolean listAlreadyContainsResourceWithThisLocation(List<Resource> deduped, Resource candidiate) {
         for (Resource resource : deduped) {
             if (resource.getGeocode().isSameLocation(candidiate.getGeocode())) {
-                log.info("Rejected " + candidiate.getName() + " as a duplicate: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
+                log.info("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
                 return true;
             }
         }

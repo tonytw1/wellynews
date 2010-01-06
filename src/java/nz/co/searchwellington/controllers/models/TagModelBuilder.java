@@ -33,18 +33,16 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RelatedTagsService relatedTagsService;
 	private ConfigDAO configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
-	private GoogleMapsDisplayCleaner googleMapsCleaner;
 	private ContentRetrievalService contentRetrievalService;
 	private KeywordSearchService keywordSearchService;
 	
 	 
-	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, GoogleMapsDisplayCleaner googleMapsCleaner, ContentRetrievalService contentRetrievalService, KeywordSearchService keywordSearchService) {
+	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService, KeywordSearchService keywordSearchService) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.configDAO = configDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
-		this.googleMapsCleaner = googleMapsCleaner;
 		this.contentRetrievalService = contentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
 	}
@@ -191,7 +189,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         List<Resource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
-            mv.addObject("geocoded", googleMapsCleaner.dedupe(geocoded));
+            mv.addObject("geocoded", geocoded);
         }
     }
 	

@@ -32,6 +32,7 @@
 
 
 <div id="map_canvas" style="width: 520px; height: 520px"></div>
+#set($geocoded = $main_content)
 #parse("includes/geocodedjs.vm")
 #parse("includes/main_content.vm")
 
