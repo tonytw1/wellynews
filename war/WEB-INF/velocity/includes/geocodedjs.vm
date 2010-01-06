@@ -1,7 +1,8 @@
 <script>
 	initialize();
 	
-	#foreach($item in $geocoded)
+	#set($deduped = $googleMapCleaner.dedupe($geocoded))
+	#foreach($item in $deduped)
 	showAddress($item.geocode.latitude, $item.geocode.longitude,
 		"$escape.javascript($item.name)",
 		"$escape.javascript($item.url)",

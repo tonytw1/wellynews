@@ -5,7 +5,6 @@
 	<bean id="indexModelBuilder" class="nz.co.searchwellington.controllers.models.IndexModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssUrlBuilder" />
-		<constructor-arg ref="googleMapsCleaner" />						
 	</bean>
 
 	<bean id="publisherModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherModelBuilder">

@@ -141,6 +141,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<entry key="editPermissionService" value-ref="editPermissionService" />
 				<entry key="loggedInUserFilter" value-ref="loggedInUserFilter" />
 				<entry key="publisherNewsitemCountService"  value-ref="publisherNewsitemCountService" />
+				<entry key="googleMapCleaner" value-ref="googleMapsCleaner" />
 			</map>
 		</property> 
 	</bean>

@@ -20,12 +20,10 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 	ContentRetrievalService contentRetrievalService;
 	RssUrlBuilder rssUrlBuilder;
-	GoogleMapsDisplayCleaner googleMapsDisplayCleaner;
-			
-	public IndexModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder, GoogleMapsDisplayCleaner googleMapsDisplayCleaner) {
+	
+	public IndexModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
-		this.googleMapsDisplayCleaner = googleMapsDisplayCleaner;
 	}
 
 	@Override
@@ -70,7 +68,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	private void populateGeocoded(ModelAndView mv) {
         List<Resource> geocoded = contentRetrievalService.getGeocoded(MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         if (geocoded.size() > 0) {
-            mv.addObject("geocoded", googleMapsDisplayCleaner.dedupe(geocoded));
+            mv.addObject("geocoded", geocoded);
         }
     }
 	
