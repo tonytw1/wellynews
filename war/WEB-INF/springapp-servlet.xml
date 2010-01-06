@@ -688,7 +688,6 @@
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
             	<prop key="/ajax/publishers">publishersAjaxController</prop>
             	            	
-            	<prop key="/index">indexController</prop>				
 				
 				<prop key="/rss">rssController</prop>
 				<prop key="/*/rss">rssController</prop>
@@ -763,6 +762,7 @@
 				<prop key="/feeds/inbox">tagController</prop>
 				
 				<prop key="/*">tagController</prop>
+				<prop key="/index">tagController</prop>				
 				<prop key="/comment">tagController</prop>
 				<prop key="/geotagged">tagController</prop>            	
             	<prop key="/justin">tagController</prop>				

@@ -33,7 +33,7 @@
 <bean id="linkCheckerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
     <property name="jobDetail" ref="linkCheckerJobRun" />
     <property name="startDelay" value="10000" />
-    <property name="repeatInterval" value="10000" />
+    <property name="repeatInterval" value="60000" />
 </bean>
 
 <bean id="linkCheckerScheduler" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
@@ -106,7 +106,7 @@
 
 <bean id="rssPrefetcherTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
     <property name="jobDetail" ref="rssPrefetcherRun" />
-    <property name="startDelay" value="100000000" />
+    <property name="startDelay" value="600000" />
     <property name="repeatInterval" value="3600000" />
 </bean>
 

@@ -2,6 +2,12 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+	<bean id="indexModelBuilder" class="nz.co.searchwellington.controllers.models.IndexModelBuilder">
+		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="googleMapsCleaner" />						
+	</bean>
+
 	<bean id="publisherModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherModelBuilder">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="rssUrlBuilder" />
@@ -85,6 +91,7 @@
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg>
 			<list>
+				<ref bean="indexModelBuilder" />
 				<ref bean="suggestionsModelBuilder" />
 				<ref bean="justinModelBuilder" />		
 				<ref bean="commentModelBuilder" />

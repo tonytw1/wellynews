@@ -56,10 +56,10 @@
 	
 	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
 		<constructor-arg>
-			<bean class="nz.co.searchwellington.repositories.redis.RedisKeyStore">
+			<bean class="nz.co.searchwellington.repositories.redis.KeyStore">
 				<property name="keyPrefix" value="url-snapshots::" />
-				<property name="redisHostname" value="${redis.hostname}" />
-				<property name="redisPort" value="${redis.port}" />
+				<property name="hostname" value="${keystore.hostname}" />
+				<property name="port" value="${keystore.port}" />
 			</bean>
 		</constructor-arg>
 	</bean>

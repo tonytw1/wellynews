@@ -338,6 +338,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="suppressionService" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="snapshotDAO" />
 	</bean>
 	
 		

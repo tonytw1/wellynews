@@ -8,10 +8,10 @@
 	
 	<bean id="urlResolverService" class="nz.co.searchwellington.urls.CachingUrlResolverService">
 		<constructor-arg>
-			<bean class="nz.co.searchwellington.repositories.redis.RedisKeyStore">
+			<bean class="nz.co.searchwellington.repositories.redis.KeyStore">
 				<property name="keyPrefix" value="resolved-urls::" />
-				<property name="redisHostname" value="${redis.hostname}" />
-				<property name="redisPort" value="${redis.port}" />
+				<property name="hostname" value="${keystore.hostname}" />
+				<property name="port" value="${keystore.port}" />
 			</bean>
 		</constructor-arg>
 		<constructor-arg>
