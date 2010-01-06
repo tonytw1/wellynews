@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 
 import org.apache.log4j.Logger;
@@ -18,17 +19,16 @@ public class ContentDeletionService {
 	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ResourceRepository resourceDAO;
+	private SnapshotDAO snapshotDAO;
 	
-
-	
-
 
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			ResourceRepository resourceDAO) {		
+			ResourceRepository resourceDAO, SnapshotDAO snapshotDAO) {		
 		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
+		this.snapshotDAO = snapshotDAO;
 	}
 
 
@@ -46,7 +46,8 @@ public class ContentDeletionService {
 			if (deletedNewsitem.getFeed() != null) {
 				suppressDeletedNewsitem(deletedNewsitem);
 			}
-		}		
+		}
+		snapshotDAO.evict(editResource.getUrl());
 		resourceDAO.deleteResource(editResource);
 	}
 
