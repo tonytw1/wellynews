@@ -10,6 +10,7 @@ import java.util.Random;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.models.IndexModelBuilder;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Event;
@@ -32,7 +33,6 @@ import com.sun.syndication.io.FeedException;
 
 public class IndexController extends BaseMultiActionController {
         
-    private static final int NUMBER_OF_COMMENTED_TO_SHOW = 2;
     
     Logger log = Logger.getLogger(IndexController.class);
 
@@ -44,7 +44,7 @@ public class IndexController extends BaseMultiActionController {
 	private RequestFilter requestFilter;
 	private GoogleMapsDisplayCleaner googleMapCleaner;
 	private ShowBrokenDecisionService showBrokenDecisionService;
-
+	private IndexModelBuilder indexModelBuilder;
     
     
     public IndexController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, EventsDAO eventsDAO, SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder, RequestFilter requestFilter, GoogleMapsDisplayCleaner googleMapCleaner, ShowBrokenDecisionService showBrokenDecisionService) {   
@@ -59,6 +59,7 @@ public class IndexController extends BaseMultiActionController {
         this.requestFilter = requestFilter;
         this.googleMapCleaner = googleMapCleaner;
         this.showBrokenDecisionService = showBrokenDecisionService;
+        this.indexModelBuilder = indexModelBuilder;
     }
     
 
@@ -72,19 +73,19 @@ public class IndexController extends BaseMultiActionController {
         final boolean showBroken = showBrokenDecisionService.shouldShowBroken();
         
         populateAds(request, mv, showBroken);    
-        populateSecondaryJustin(mv, showBroken);               
+      //  populateSecondaryJustin(mv, showBroken);               
      
         mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
         
-        final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, showBroken);                
-        mv.addObject("main_content", latestNewsitems);
-        populateCommentedNewsitems(mv, showBroken);
+        //final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(MAX_NEWSITEMS, showBroken);                
+        //mv.addObject("main_content", latestNewsitems);
+        //populateCommentedNewsitems(mv, showBroken);
         
         List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(showBroken);
 		populateArchiveLinks(mv, showBroken, archiveMonths);
-        if (monthOfLastItem(latestNewsitems) != null) {
-            mv.getModel().put("main_content_moreurl", makeArchiveUrl(monthOfLastItem(latestNewsitems), archiveMonths ));
-        }
+    //    if (monthOfLastItem(latestNewsitems) != null) {
+     //       mv.getModel().put("main_content_moreurl", makeArchiveUrl(monthOfLastItem(latestNewsitems), archiveMonths ));
+     //   }
                
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         populateUserOwnedResource(request, mv, loggedInUser);   
@@ -130,12 +131,12 @@ public class IndexController extends BaseMultiActionController {
 
     private void populateCommentedNewsitems(ModelAndView mv, boolean showBroken) { 
         final List<Resource> recentCommentedNewsitems = resourceDAO.getCommentedNewsitems(2, showBroken, true, 0);                
-        if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
+  //      if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
         	mv.addObject("commented_newsitems", recentCommentedNewsitems);
-        } else {
-        	mv.addObject("commented_newsitems", recentCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW));            
-        }   
-        mv.addObject("commented_newsitems_moreurl", "comment");        
+     //   } else {
+//        	mv.addObject("commented_newsitems", recentCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW));            
+    //    }   
+    //    mv.addObject("commented_newsitems_moreurl", "comment");        
     }
 
         
@@ -162,13 +163,7 @@ public class IndexController extends BaseMultiActionController {
 
 
     
-    @SuppressWarnings("unchecked")
-    private void populateSecondaryJustin(ModelAndView mv, boolean showBroken) {
-        mv.getModel().put("secondary_heading", "Just In");
-        mv.getModel().put("secondary_description", "New additions.");
-        mv.getModel().put("secondary_content", resourceDAO.getLatestWebsites(MAX_SECONDARY_ITEMS, showBroken));   
-        mv.getModel().put("secondary_content_moreurl", "justin");        
-    }
+  
     
     
 

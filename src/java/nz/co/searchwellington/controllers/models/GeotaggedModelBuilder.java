@@ -43,7 +43,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());	
 
 			// TODO pagination
-			final List<Resource> geotaggedNewsitems = contentRetrievalService.getAllValidGeocoded(MAX_NEWSITEMS);
+			final List<Resource> geotaggedNewsitems = contentRetrievalService.getGeocoded(MAX_NEWSITEMS);
 			mv.addObject("main_content", geotaggedNewsitems);
 			mv.addObject("geocoded", googleMapsCleaner.dedupe(geotaggedNewsitems));
 			

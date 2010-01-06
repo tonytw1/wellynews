@@ -22,7 +22,7 @@ public class ContentRetrievalService {
 		return resourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<Resource> getAllValidGeocoded(int maxItems) {
+	public List<Resource> getGeocoded(int maxItems) {
 		return resourceDAO.getAllValidGeocoded(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
@@ -85,5 +85,13 @@ public class ContentRetrievalService {
 	public List<Tag> getCommentedTags() {
 		return resourceDAO.getCommentedTags(showBrokenDecisionService.shouldShowBroken());
 	}
-	
+
+	public List<Resource> getLatestNewsitems(int maxItems) {
+		return resourceDAO.getLatestNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
+	}
+
+	public List<Resource> getLatestWebsites(int maxItems) {
+		return resourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken());
+	}
+
 }

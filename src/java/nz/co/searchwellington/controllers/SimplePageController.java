@@ -237,7 +237,7 @@ public class SimplePageController extends BaseMultiActionController {
     
     
 	protected void populateGeocoded(ModelAndView mv, boolean showBroken, Resource selected) throws IOException {
-		List<Resource> geocoded = contentRetrievalService.getAllValidGeocoded(MAX_GEOCODED_TO_SHOW);
+		List<Resource> geocoded = contentRetrievalService.getGeocoded(MAX_GEOCODED_TO_SHOW);
 		log.info("Found " + geocoded.size() + " valid geocoded resources.");
 		if (selected != null && !geocoded.contains(selected)) {
 			geocoded.add(selected);

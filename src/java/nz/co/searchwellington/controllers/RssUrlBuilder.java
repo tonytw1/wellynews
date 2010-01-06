@@ -15,6 +15,10 @@ public class RssUrlBuilder {
     public String getBaseRssUrl() {
         return siteInformation.getUrl() + "/rss";        
     }
+    
+    public String getBaseRssTitke() {
+    	return siteInformation.getAreaname() + " Newslog";
+    }
        
     public String getRssUrlForPublisher(Website publisher) {
         return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "/rss";
@@ -103,6 +107,5 @@ public class RssUrlBuilder {
 	public String getTitleForSuggestions() {
 		return "Feed newsitem suggestions";
 	}
-    
 	
 }
