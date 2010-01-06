@@ -29,7 +29,7 @@ public class KeyStore {
 			if (db.get(key) != null) {
 				return (String) db.get(key);
 			}
-
+			
 		} catch (Exception e) {
 			log.warn("An xception occured while trying to fetch for key '" + key + "': ", e);
 		}
@@ -38,35 +38,29 @@ public class KeyStore {
 
 	
 	public synchronized void put(String id, String content) {
-		final String key = generateKey(id);
 		connect();
 		if (content != null) {
+			final String key = generateKey(id);
 			log.info("Setting snapshot for key: " + key);
 			connect();
-			db.put(key, content);
+			db.put(key, content);			
 		} else {
-			log.warn("Content is null for key; removing: " + key);
-			db.out(key);
+			log.warn("Content is null for id; removing: " + id);
+			this.evict(id);
 		}
 		
 	}
 
+	public void evict(String id) {
+		connect();
+		final String key = generateKey(id);
+		log.info("Evicting key: " + key);
+		db.out(key);
+	}
+	
 	
 	public long size() {		
 		return db.rnum();
-	}
-
-	
-	public void setKeyPrefix(String keyPrefix) {
-		this.keyPrefix = keyPrefix;
-	}
-
-	public void setRedisHostname(String redisHostname) {
-		this.hostname = redisHostname;
-	}
-
-	public void setRedisPort(int redisPort) {
-		this.port = redisPort;
 	}
 
 	private void connect() {		
@@ -77,8 +71,22 @@ public class KeyStore {
 		log.info("Keystore contains: " + Long.toString(this.size()));
 	}
 
+	
 	private String generateKey(String id) {
 		return keyPrefix + id;
 	}
+	
+	public void setKeyPrefix(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
+	}
+
+	public void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
 
 }

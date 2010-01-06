@@ -18,5 +18,9 @@ public class SnapshotDAO {
 	public String loadContentForUrl(String url) {
 		return snapshotsCache.get(url);
 	}
+
+	public void evict(String url) {
+		snapshotsCache.evict(url);
+	}
 					
 }
