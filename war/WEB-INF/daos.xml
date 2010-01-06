@@ -27,7 +27,6 @@
  		<constructor-arg ref="urlBuilder" />
  		<constructor-arg ref="tagDAO" />
  		<constructor-arg ref="tweetDAO" />
- 		<constructor-arg ref="solrKeywordQueryBuilder" />
  		<property name="solrUrl" value="${solr.url}" />
 	</bean>
 	

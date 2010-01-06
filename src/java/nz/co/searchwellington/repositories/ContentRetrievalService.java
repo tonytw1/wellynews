@@ -7,14 +7,19 @@ import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.TagContentCount;
+import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
 public class ContentRetrievalService {
 
 	private ResourceRepository resourceDAO;
+	private KeywordSearchService keywordSearchService;
 	private ShowBrokenDecisionService showBrokenDecisionService;
+	
 
-	public ContentRetrievalService(ResourceRepository resourceDAO, ShowBrokenDecisionService showBrokenDecisionService) {
+	public ContentRetrievalService(ResourceRepository resourceDAO, KeywordSearchService keywordSearchService, ShowBrokenDecisionService showBrokenDecisionService) {
 		this.resourceDAO = resourceDAO;
+        this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
 	}
 
@@ -92,6 +97,18 @@ public class ContentRetrievalService {
 
 	public List<Resource> getLatestWebsites(int maxItems) {
 		return resourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken());
+	}
+
+	public List<TagContentCount> getKeywordSearchFacets(String keywords) {
+		return keywordSearchService.getKeywordSearchFacets(keywords, showBrokenDecisionService.shouldShowBroken(), null);
+	}
+
+	public List<Resource> getWebsitesMatchingKeywords(String keywords, Tag tag) {
+		return keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
+	}
+
+	public List<Resource> getNewsitemsMatchingKeywords(String keywords, Tag tag) {
+		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
 	}
 
 }

@@ -258,9 +258,7 @@
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="showBrokenDecisionService" />
-		<constructor-arg ref="keywordSearchService" />
-		
+		<constructor-arg ref="showBrokenDecisionService" />		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

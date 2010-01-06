@@ -18,7 +18,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
-import nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -39,6 +38,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+// TODO date order needs to suborder by id.
 public class SolrBackedResourceDAO extends HibernateResourceDAO implements ResourceRepository {
 
     private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
@@ -47,12 +47,10 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
     
     private SolrQueryService solrQueryService;
     private String solrUrl;
-	private SolrKeywordQueryBuilder solrKeywordQueryBuilder;
 	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService, TagDAO tagDAO, TweetDAO tweetDAO, SolrKeywordQueryBuilder solrKeywordQueryBuilder) {
+    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService, TagDAO tagDAO, TweetDAO tweetDAO) {
 		super(sessionFactory, tagDAO, tweetDAO);
 		this.solrQueryService = solrQueryService;
-		this.solrKeywordQueryBuilder = solrKeywordQueryBuilder;
 	}
 
 	public void setSolrUrl(String solrUrl) {

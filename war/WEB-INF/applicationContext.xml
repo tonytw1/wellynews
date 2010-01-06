@@ -165,6 +165,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="contentRetrievalService" class="nz.co.searchwellington.repositories.ContentRetrievalService">
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="keywordSearchService" />
 		<constructor-arg ref="showBrokenDecisionService" />		
 	</bean>
 	

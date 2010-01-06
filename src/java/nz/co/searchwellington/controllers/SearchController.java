@@ -9,8 +9,8 @@ import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -25,15 +25,15 @@ public class SearchController extends BaseMultiActionController {
     
 	private RequestFilter requestFilter;
 	private ShowBrokenDecisionService showBrokenDecisionService;
-	private KeywordSearchService keywordSearchService;
+	private ContentRetrievalService contentRetrievalService;
 	
-    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ShowBrokenDecisionService showBrokenDecisionService, KeywordSearchService keywordSearchService) {    
-		this.resourceDAO = resourceDAO;     
+    public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {    
+		this.resourceDAO = resourceDAO;
         this.urlStack = urlStack;
         this.requestFilter = requestFilter;
         this.configDAO = configDAO;
         this.showBrokenDecisionService = showBrokenDecisionService;
-        this.keywordSearchService = keywordSearchService;
+        this.contentRetrievalService = contentRetrievalService;
 	}
 
     @SuppressWarnings("unchecked")
@@ -64,10 +64,10 @@ public class SearchController extends BaseMultiActionController {
                 urlStack.setUrlStack(request);
                 mv.getModel().put("heading", "Search Results");
                 
-                mv.addObject("related_tags", keywordSearchService.getKeywordSearchFacets(keywords, showBroken, null));
+                mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords));
                 
-                final List<Resource> matchingSites = keywordSearchService.getWebsitesMatchingKeywords(keywords, showBroken, tag);
-                final List<Resource> matchingNewsitems = keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBroken, tag);
+                final List<Resource> matchingSites = contentRetrievalService.getWebsitesMatchingKeywords(keywords, tag);
+                final List<Resource> matchingNewsitems = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag);
                                                 
                 if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                     // TODO what do you done if there are no matches for a search?
