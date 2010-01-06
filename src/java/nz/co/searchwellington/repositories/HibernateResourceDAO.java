@@ -228,9 +228,20 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         setMaxResults(maxItems).list();       
     }
     
+    
         
     
-    @SuppressWarnings("unchecked")
+    @Override
+	public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems) {
+    	   return sessionFactory.getCurrentSession().createCriteria(Resource.class).
+    	   add(Restrictions.gt("liveTime", launchedDate)).
+           add(Restrictions.lt("lastScanned", lastScanned)).
+           addOrder(Order.asc("lastScanned")).
+           setMaxResults(maxItems).list();       
+	}
+
+
+	@SuppressWarnings("unchecked")
     public List<CommentFeed> getCommentFeedsToCheck(int maxItems) {
         return sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).
         addOrder(Order.desc("lastRead")).

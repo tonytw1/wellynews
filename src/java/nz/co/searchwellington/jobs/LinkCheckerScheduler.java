@@ -50,14 +50,25 @@ public class LinkCheckerScheduler {
         for (Resource resource : resourceDAO.getAllWatchlists(true)) {
             log.info("Queuing watchlist item for checking: " + resource.getName());
             linkCheckerQueue.add(resource);
-        }
-        
-       
+        }       
     }
+
     
     @Transactional()
     public void queueExpiredItems() {  
-        final int numberOfItemsToQueue = 30;
+        final int numberOfItemsToQueue = 10;
+
+        log.info("Queuing items launched within the last 24 hours with but not scanned within the last 4 hours");
+        Date oneDayAgo = new DateTime().minusDays(1).toDate();
+        Date fourHoursAgo = new DateTime().minusHours(4).toDate();
+        
+        for (Resource resource: resourceDAO.getNotCheckedSince(oneDayAgo, fourHoursAgo, numberOfItemsToQueue)) {
+        	if (resource.getType().equals("N")) {
+        		log.info("Queying recent newsitem for checking: " + resource.getName() + " - " + resource.getLastScanned());
+        		linkCheckerQueue.add(resource);
+        	}
+        }
+        
         log.info("Queuing " + numberOfItemsToQueue + " items not scanned for more than one month.");        
         Date oneMonthAgo = new DateTime().minusMonths(1).toDate();
         for (Resource resource: resourceDAO.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue)) {

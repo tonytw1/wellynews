@@ -77,7 +77,8 @@ public interface ResourceRepository {
     public void deleteTag(Tag tag);
     
     public List<Resource> getNotCheckedSince(Date date, int maxItems);
-
+    public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems);
+    
     public List<CommentFeed> getCommentFeedsToCheck(int maxItems);
     
     public List<PublisherContentCount> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems);
