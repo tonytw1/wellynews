@@ -7,13 +7,7 @@
 	</bean>
 	
 	<bean id="urlResolverService" class="nz.co.searchwellington.urls.CachingUrlResolverService">
-		<constructor-arg>
-			<bean class="nz.co.searchwellington.repositories.redis.KeyStore">
-				<property name="keyPrefix" value="resolved-urls::" />
-				<property name="hostname" value="${keystore.hostname}" />
-				<property name="port" value="${keystore.port}" />
-			</bean>
-		</constructor-arg>
+		<constructor-arg ref="keystore" />
 		<constructor-arg>
 			<list>
 				<ref bean="feedBurnerRedirectResolver" />
@@ -21,6 +15,7 @@
 				<ref bean="bitlyUrlResolver" />
 			</list>
 		</constructor-arg>
+		<property name="keyPrefix" value="resolved-urls::" />
 	</bean>
 			
 	<bean id="bitlyUrlResolver" class="nz.co.searchwellington.urls.BitlyUrlResolver" />

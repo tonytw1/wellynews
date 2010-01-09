@@ -51,16 +51,10 @@
 	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
 	 	<constructor-arg ref="sessionFactory" />
 	</bean>
-	
-	
+			
 	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
-		<constructor-arg>
-			<bean class="nz.co.searchwellington.repositories.redis.KeyStore">
-				<property name="keyPrefix" value="url-snapshots::" />
-				<property name="hostname" value="${keystore.hostname}" />
-				<property name="port" value="${keystore.port}" />
-			</bean>
-		</constructor-arg>
+		<constructor-arg ref="keystore" />			
+		<property name="keyPrefix" value="url-snapshots::" />
 	</bean>
 
 	<bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">

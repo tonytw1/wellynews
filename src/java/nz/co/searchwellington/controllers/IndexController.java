@@ -30,7 +30,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
 
-
+@Deprecated
 public class IndexController extends BaseMultiActionController {
         
     

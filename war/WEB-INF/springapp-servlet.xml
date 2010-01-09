@@ -642,11 +642,26 @@
 	
 	
 	
+	<bean id="adminIndexController" class="nz.co.searchwellington.controllers.admin.AdminIndexController">
+		<constructor-arg ref="keystore" />
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/admin/index">index</prop>							
+					</props>
+				</property>
+			</bean>		
+		</property>
+	</bean>
+	
+	
 	
 
     <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
+            	<prop key="/admin/index">adminIndexController</prop>
             	<prop key="/api/tag">apiController</prop>
             	<prop key="/api/changeurl">apiController</prop>
             	<prop key="/api/suppress">apiController</prop>

@@ -1,26 +1,35 @@
 package nz.co.searchwellington.repositories;
 
-import nz.co.searchwellington.repositories.redis.KeyStore;
+import nz.co.searchwellington.repositories.keystore.KeyStore;
 
 public class SnapshotDAO {
 		
-	private KeyStore snapshotsCache;
-
+	private KeyStore keystore;
+	private String keyPrefix;
+	
 	public SnapshotDAO(KeyStore snapshotsCache) {
-		this.snapshotsCache = snapshotsCache;
+		this.keystore = snapshotsCache;
 	}
-
 	
 	public void setSnapshotContentForUrl(String url, String content) {
-		snapshotsCache.put(url, content);
+		keystore.put(generateKey(url), content);
 	}
 	
 	public String loadContentForUrl(String url) {
-		return snapshotsCache.get(url);
+		return keystore.get(generateKey(url));
 	}
 
 	public void evict(String url) {
-		snapshotsCache.evict(url);
+		keystore.evict(generateKey(url));
 	}
-					
+	
+	
+	private String generateKey(String id) {
+		return keyPrefix + id;
+	}
+	
+	public void setKeyPrefix(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
+	}
+
 }

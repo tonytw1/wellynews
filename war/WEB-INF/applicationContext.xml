@@ -28,6 +28,10 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="urls.xml" />
 	<import resource="linkchecking.xml" />
 	
+	<bean id="keystore" class="nz.co.searchwellington.repositories.keystore.KeyStore">
+		<property name="hostname" value="${keystore.hostname}" />
+		<property name="port" value="${keystore.port}" />
+	</bean>
 
 	<bean id="loggedInUserFilter" class="nz.co.searchwellington.controllers.LoggedInUserFilter" scope="request">
 		<aop:scoped-proxy/>

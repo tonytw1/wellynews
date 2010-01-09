@@ -1,6 +1,6 @@
 package nz.co.searchwellington.urls;
 
-import nz.co.searchwellington.repositories.redis.KeyStore;
+import nz.co.searchwellington.repositories.keystore.KeyStore;
 
 import org.apache.log4j.Logger;
 
@@ -8,12 +8,12 @@ public class CachingUrlResolverService extends UrlResolverService {
 	
 	Logger log = Logger.getLogger(CachingUrlResolverService.class);
 	
-	private KeyStore resolvedUrlsCache;
+	private KeyStore keystore;
+	private String keyPrefix;
 	
-	
-	public CachingUrlResolverService(KeyStore resolvedUrlsCache, RedirectingUrlResolver... redirectResolvers) {
+	public CachingUrlResolverService(KeyStore keystore, RedirectingUrlResolver... redirectResolvers) {
 		super(redirectResolvers);
-		this.resolvedUrlsCache = resolvedUrlsCache;
+		this.keystore = keystore;
 	}
 
 	
@@ -21,7 +21,7 @@ public class CachingUrlResolverService extends UrlResolverService {
 	protected String resolveSingleUrl(String url) {		
 		if (url != null && !url.isEmpty()) {
 			
-			final String cachedResult = resolvedUrlsCache.get(url);
+			final String cachedResult = keystore.get(generateKey(url));
 			if (cachedResult != null) {
 				log.info("Found content for url '" + url + "' in cache: " + cachedResult);
 				return cachedResult;				
@@ -42,7 +42,16 @@ public class CachingUrlResolverService extends UrlResolverService {
 
 	private void putUrlIntoCache(String url, String result) {	
 		log.info("Caching result for url: " + url);
-		resolvedUrlsCache.put(url, result);
+		keystore.put(generateKey(url), result);
+	}
+	
+	// TODO duplication with snapshotDAO
+	private String generateKey(String id) {
+		return keyPrefix + id;
+	}
+	
+	public void setKeyPrefix(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
 	}
 	
 }
