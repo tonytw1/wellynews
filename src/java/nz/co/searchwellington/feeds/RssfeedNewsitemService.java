@@ -11,7 +11,6 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -88,4 +87,19 @@ public abstract class RssfeedNewsitemService {
 		}
 	}
 
+	
+	public boolean isUrlInAcceptedFeeds(String url) {
+		for(Feed feed : resourceDAO.getAllFeeds()) {
+			if (feed.getAcceptancePolicy() == "accept") {
+				List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
+				for (FeedNewsitem feedNewsitem : feednewsItems) {                	
+					if (feedNewsitem.getUrl().equals(url)) {					
+						return true;
+					}
+				}
+			}
+		}
+		return false;		
+	}
+	
 }
