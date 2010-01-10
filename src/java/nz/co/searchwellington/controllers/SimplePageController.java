@@ -15,7 +15,6 @@ import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class SimplePageController extends BaseMultiActionController {
     
-    private static final int MAX_GEOCODED_TO_SHOW = 50;
     private static final int MAX_TWITTERS_TO_SHOW = 12;
 
 	Logger log = Logger.getLogger(SimplePageController.class);
@@ -235,23 +233,4 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("latest_twitters", latestNewsitems);  
     }
     
-    
-	protected void populateGeocoded(ModelAndView mv, boolean showBroken, Resource selected) throws IOException {
-		List<Resource> geocoded = contentRetrievalService.getGeocoded(MAX_GEOCODED_TO_SHOW);
-		log.info("Found " + geocoded.size() + " valid geocoded resources.");
-		if (selected != null && !geocoded.contains(selected)) {
-			geocoded.add(selected);
-		}
-
-		if (geocoded.size() > 0) {
-			mv.addObject("main_content", geocoded);
-			// TODO inject into the velocity context, as this is a view thing - didn't work list time this we tried?
-			GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();
-			mv.addObject("geocoded", cleaner.dedupe(geocoded, selected));
-			setRss(mv, "Geocoded newsitems RSS Feed", rssUrlBuilder
-					.getRssUrlForGeotagged());
-		}
-	}
-
-
 }

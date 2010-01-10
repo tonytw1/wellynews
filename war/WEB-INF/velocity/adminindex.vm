@@ -15,30 +15,15 @@
 
 <div class="main">
 
-
-
-
-
-
-
-
-
 <h2>$heading</h2>
 
-<p><a href="indexbuilder">Rebuild solr index</a></p>
+	<p><a href="linkchecker/status">Link checker status</a></p>
 
-<p>Key store size: $keystorecount</p>
+	<p><a href="indexbuilder">Rebuild solr index</a></p>
+
+	<p>Key store size: $keystorecount</p>
 
 </div>
-
-
-
-
-
-
-
-
-
 
 
 

@@ -23,7 +23,7 @@ import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.EventsDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
-import nz.co.searchwellington.utils.GoogleMapsDisplayCleaner;
+import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;

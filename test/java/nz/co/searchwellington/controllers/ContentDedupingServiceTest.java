@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
+import nz.co.searchwellington.views.ContentDedupingService;
 
 public class ContentDedupingServiceTest extends TestCase {
     

@@ -1,4 +1,4 @@
-package nz.co.searchwellington.utils;
+package nz.co.searchwellington.views;
 
 import java.util.ArrayList;
 import java.util.List;

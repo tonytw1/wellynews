@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 
 public class GoogleMapsDisplayCleanerTest extends TestCase {
 
