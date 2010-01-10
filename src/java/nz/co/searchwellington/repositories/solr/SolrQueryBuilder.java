@@ -102,5 +102,10 @@ public class SolrQueryBuilder {
 		}		
 		return query;		
 	}
+
+	public SolrQueryBuilder twitterCount(int count) {
+		sb.append(" +twitterCount:[" + count + " TO *]");
+		return this;
+	}
 	
 }

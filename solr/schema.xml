@@ -297,6 +297,8 @@
    <field name="comment" type="text" indexed="true" stored="true" required="false" multiValued="true" /> 
    <field name="geotagged" type="boolean" indexed="true" stored="true" required="false" /> 
 
+   <field name="twitterCount" type="integer" indexed="true" stored="true" required="false" /> 
+
    <!-- Here, default is used to create a "timestamp" field indicating
         When each document was indexed.
      -->

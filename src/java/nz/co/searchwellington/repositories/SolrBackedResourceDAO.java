@@ -181,9 +181,22 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 	
 	
+	
+	@Override
+	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N").
+			showBroken(showBroken).
+			dateRange(60).
+			twitterCount(2).
+			maxItems(maxItems).toQuery();
+	
+		setDateDescendingOrder(query);
+		return getQueryResults(query);
+	}
+
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).maxItems(maxItems).publisher(publisher).toQuery();			
-		setDateDescendingOrder(query);;
+		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	

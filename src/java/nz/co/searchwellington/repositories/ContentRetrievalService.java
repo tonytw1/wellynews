@@ -110,5 +110,9 @@ public class ContentRetrievalService {
 	public List<Resource> getNewsitemsMatchingKeywords(String keywords, Tag tag) {
 		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
 	}
+	
+	public List<Resource> getRecentedTwitteredNewsitems(int maxItems) {
+		return resourceDAO.getRecentTwitteredNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
+	}
 
 }

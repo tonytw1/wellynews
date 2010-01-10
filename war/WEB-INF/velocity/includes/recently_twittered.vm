@@ -1,0 +1,14 @@
+#if ($recently_twittered && $recently_twittered.size() > 0)
+<div class="box">
+	<h2>Twittered</h2>
+
+	<p>These newsitems have been mentioned on Twitter.</p>
+	<p>Twitter mentions could indicate issues of interest; it could also mean it's just another cute animals story...</p>
+	
+	#set ($righthand_content_one = $columnSplitter.left($recently_twittered))
+	#set ($righthand_content_two = $columnSplitter.right($recently_twittered))
+	#set ($righthand_content_moreurl = "twitter")
+
+	#parse("includes/righthand_two_columns.vm")
+</div>
+#end

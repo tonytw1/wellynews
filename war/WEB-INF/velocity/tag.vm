@@ -103,6 +103,8 @@
 			#parse("widgets/spca_widget.vm")
 		#end
 		
+		#parse("includes/recently_twittered.vm")
+				
 		#parse("includes/tag_related_feed.vm")
 	
 		#parse("includes/twitterBadge.vm")

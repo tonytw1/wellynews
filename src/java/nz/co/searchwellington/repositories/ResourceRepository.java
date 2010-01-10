@@ -143,5 +143,6 @@ public interface ResourceRepository {
 	
 	public int getCommentCount();
 	public List<Newsitem> getNewsitemsForFeed(Feed feed);
+	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken);
     
 }

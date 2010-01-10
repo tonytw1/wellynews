@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.twitter.TwitterService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
@@ -45,19 +46,20 @@ public class SolrInputDocumentBuilder {
 		}
 		
 		if (resource.getType().equals("N")) {
-			List<Comment> comments = ((Newsitem) resource).getComments();
+			Newsitem newsitem = (Newsitem) resource;
+			List<Comment> comments = newsitem.getComments();
 			if(comments.size() > 0) {
 				inputDocument.addField("commented", 1);
 				for (Comment comment : comments) {
 					inputDocument.addField("comment", comment.getTitle());
 				}
 				
+				
 			} else {
 				inputDocument.addField("commented", 0);
 			}
 			
-			
-			
+			inputDocument.addField("twitterCount", newsitem.getReTwits().size());			
 		}
 		
 		if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
