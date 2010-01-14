@@ -59,5 +59,10 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
     public void setLastRead(Date lastRead) {
         this.lastRead = lastRead;
     }
+    
+    public boolean isScreenScraped() {
+    	return url.startsWith("http://brownbag.wellington.gen.nz/");    	
+    }
+    
         
 }

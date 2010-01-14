@@ -23,14 +23,22 @@
 				#end
 			</ul>
 		#end
-
-		<p>This feed is provided by a third party.</p>
-
+		
+		#if($feed.isScreenScraped()) 
+			#if($feed.publisher) 
+				<p>This feed is produced by screen scraping a page from the <a href="$feed.publisher.url">$feed.publisher.name</a> site.</p>
+			#else		
+				<p>This feed is provided by screen scraping a third parties site.</p>
+			#end		
+		#else
+			<p>This feed is provided by a third party.</p>
+		#end
+		
 		<p>To subscribe to this feed, enter the following location into your feed reader.</p>
 		<ul>
 			<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
 		</ul>
-
+			
 		#if ($main_content) 
 			<p>This feed currently contains the following newsitems:</p>
 			#parse("includes/main_content.vm")
