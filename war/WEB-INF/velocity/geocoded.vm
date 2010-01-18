@@ -1,3 +1,4 @@
+#set($geocoded = $main_content)
 #parse("includes/header.vm")
 
 <div class="page">
@@ -21,7 +22,6 @@
 
 <h2>$heading</h2>
 
-
 #if ($geotagged_tags.size() > 0)
 <ul class="childtags">
 #foreach ($geotagged_tag in $geotagged_tags)
@@ -32,21 +32,14 @@
 
 
 <div id="map_canvas" style="width: 520px; height: 520px"></div>
-#set($geocoded = $main_content)
 #parse("includes/geocodedjs.vm")
 #parse("includes/main_content.vm")
 
 </div>
 
-
-
-
-
 <div class="right">
 
 #parse("includes/login.vm")
-
-
 
 <div class="box">
 <h2>Who, What, When and <i>Where</i>.</h2>
