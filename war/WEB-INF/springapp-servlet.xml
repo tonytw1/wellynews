@@ -644,6 +644,7 @@
 	
 	<bean id="adminIndexController" class="nz.co.searchwellington.controllers.admin.AdminIndexController">
 		<constructor-arg ref="keystore" />
+		<constructor-arg ref="cacheManager" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
