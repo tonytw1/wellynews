@@ -17,7 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class LinkChecker {
     
-    private static Logger log = Logger.getLogger(LinkChecker.class);
+    private static final int CANT_CONNECT = -1;
+
+	private static Logger log = Logger.getLogger(LinkChecker.class);
        
     private ResourceRepository resourceDAO;
 	private SnapshotDAO snapshotDAO;
@@ -59,7 +61,7 @@ public class LinkChecker {
 			resourceDAO.saveResource(checkResource);
 			
         } else {
-        	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database (has creating process committed yet)");
+        	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database");
         }
     }
 
@@ -75,12 +77,15 @@ public class LinkChecker {
         		return pageContent;
         	}
         	
+        	checkResource.setHttpStatus(httpResult.getStatus());
+        	return null;
+        	        	
         } catch (IllegalArgumentException e) {
         	log.error("Error while checking url: ", e);        
         } catch (IOException e) {
         	log.error("Error while checking url: ", e);
         }
-        checkResource.setHttpStatus(-1);
+        checkResource.setHttpStatus(CANT_CONNECT);
         return null;
     }
     
