@@ -72,7 +72,7 @@ public class LinkCheckerScheduler {
         log.info("Queuing " + numberOfItemsToQueue + " items not scanned for more than one month.");        
         Date oneMonthAgo = new DateTime().minusMonths(1).toDate();
         for (Resource resource: resourceDAO.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue)) {
-            log.info("Queuing for scheduled checking: " + resource.getName() + " - " + resource.getLastScanned());
+            log.info("Queuing for scheduled checking: " + resource.getName() + " - " + resource.getLastScanned());	// TODO time since on this log entire.
             linkCheckerQueue.add(resource);
         }                
     }

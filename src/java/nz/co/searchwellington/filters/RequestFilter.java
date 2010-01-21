@@ -203,9 +203,10 @@ public class RequestFilter {
 	        	Tag tag = resourceDAO.loadTagByName(match);
 		        if (tag != null) {
 		        	log.info("Setting tag: " + tag.getName());
-		        	request.setAttribute("tag", tag);
+		        	request.setAttribute("tag", tag);	// TODO deprecate
 		        	List<Tag> tags = new ArrayList<Tag>();
 		        	tags.add(tag);
+		        	log.info("Setting tags: " + tags);
 		        	request.setAttribute("tags", tags);
 		        	return;
 		        } else {
