@@ -30,6 +30,8 @@ public class ContentModelBuilderService {
 			if (modelBuilder.isValid(request)) {
 				logger.debug("Using " + modelBuilder);
 				ModelAndView mv = modelBuilder.populateContentModel(request, showBroken);
+				
+				// TODO should not do this for rss or json requests
 				modelBuilder.populateExtraModelConent(request, showBroken, mv);
 				return mv;
 			}
