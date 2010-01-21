@@ -45,5 +45,12 @@ public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable,
 	public Date getFirstSeen() {
 		return suggestion.getFirstSeen();
 	}
+
+	public Date getEmbargoedUntil() {
+		return null;
+	}
+
+	public void setEmbargoedUntil(Date embargoedUntil) {
+	}
 		
 }

@@ -40,6 +40,7 @@ public class SolrInputDocumentBuilder {
 		inputDocument.addField("date", resource.getDate());
 		inputDocument.addField("month", new DateFormatter().formatDate(resource.getDate(), DateFormatter.MONTH_FACET));
 		inputDocument.addField("lastLive", resource.getLiveTime());
+		inputDocument.addField("embargoedUntil", resource.getEmbargoedUntil());
 		
 		if (resource.getLastChanged() != null) {
 			inputDocument.addField("lastChanged", resource.getLastChanged());
