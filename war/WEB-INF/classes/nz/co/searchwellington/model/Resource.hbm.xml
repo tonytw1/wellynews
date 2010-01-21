@@ -81,8 +81,11 @@
    		<property name="liveTime" type="timestamp">
         		<column name="live_time"/>
         </property>
+                     
+   		<property name="embargoedUntil" type="timestamp">
+        		<column name="embargoed_until"/>
+        </property>
         
-
         <many-to-one name="geocode" class="nz.co.searchwellington.model.Geocode" column="geocode_id" 
         	cascade="all" />
 		    

@@ -7,8 +7,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 // TODO can we get an EditableResource into the tree somewhere, to put all write methods onto?
 public interface Resource {
-    
-   
+       
     public int getId();
     public void setId(int id);
     
@@ -44,8 +43,13 @@ public interface Resource {
     
     public Set<DiscoveredFeed> getDiscoveredFeeds();
     public void setDiscoveredFeeds(Set<DiscoveredFeed> discoveredFeeds);
+    
     public Date getLiveTime();
     public void setLiveTime(Date time);
+    
+	public Date getEmbargoedUntil();
+	public void setEmbargoedUntil(Date embargoedUntil);
+    
 	public int getTechnoratiCount();
 	public void setTechnoratiCount(int technoratiCount);
 

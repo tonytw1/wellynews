@@ -24,8 +24,9 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
     protected Date lastScanned;
     protected Date lastChanged;
     protected Date liveTime;
-    
-    protected Set<Tag> tags;
+    protected Date embargoedUntil;
+
+	protected Set<Tag> tags;
     protected Snapshot snapshot;
 
     protected String urlWords;
@@ -149,8 +150,14 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
         this.liveTime = liveTime;
     }
     
+    public Date getEmbargoedUntil() {
+		return embargoedUntil;
+	}
+	public void setEmbargoedUntil(Date embargoedUntil) {
+		this.embargoedUntil = embargoedUntil;
+	}
     
-	public int getTechnoratiCount() {
+	public int getTechnoratiCount() {		// TODO Depricated
 		return technoratiCount;
 	}
 	public void setTechnoratiCount(int technoratiCount) {

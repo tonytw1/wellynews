@@ -26,7 +26,8 @@ public class SolrQueryBuilder {
 
 	public SolrQueryBuilder showBroken(boolean showBroken) {
 		if (!showBroken) {
-			sb.append(" +httpStatus:200");			
+			sb.append(" +httpStatus:200");
+			// TODO add not embargoed clause
 		}
 		return this;
 	}
