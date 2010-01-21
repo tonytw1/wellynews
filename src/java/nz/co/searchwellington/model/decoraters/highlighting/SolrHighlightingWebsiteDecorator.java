@@ -171,6 +171,16 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 		website.setLiveTime(time);
 	}
 
+	
+	
+	public Date getEmbargoedUntil() {
+		return website.getEmbargoedUntil();
+	}
+
+	public void setEmbargoedUntil(Date embargoedUntil) {
+		website.setEmbargoedUntil(embargoedUntil);
+	}
+
 	public void setName(String name) {
 		website.setName(name);
 	}

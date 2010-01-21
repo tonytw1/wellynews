@@ -67,6 +67,23 @@ public class AdminRequestFilter {
 			}        	
 		}
 		
+		
+		
+		log.info("Looking for embargoed field");
+		if (request.getParameter("embargo_date") != null) {
+			final String dateString = (String) request.getParameter("embargo_date");
+			SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy hh:mm");              
+			try {            	
+				Date date = df.parse(dateString);
+				if (date != null) {
+					request.setAttribute("embargo_date", new DateTime(date).toDate());   	
+				}              
+			} catch (ParseException e) {
+				log.warn("Invalid embargo date string supplied: " + dateString);
+			}        	
+		}
+		
+				
 		// TODO Test coverage		
         if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {
             final String publisherUrlWords = request.getParameter("publisher");

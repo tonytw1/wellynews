@@ -398,6 +398,7 @@ public class ResourceEditController extends BaseMultiActionController {
             log.info("Calling geocode");
             submissionProcessingService.processGeocode(request, editResource);
             submissionProcessingService.processDate(request, editResource);
+            submissionProcessingService.processEmbargoDate(request, editResource);
             submissionProcessingService.processDescription(request, editResource);
             submissionProcessingService.processTags(request, editResource);            
             submissionProcessingService.processPublisher(request, editResource);
@@ -440,10 +441,9 @@ public class ResourceEditController extends BaseMultiActionController {
             boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
             // TODO validate. - what exactly?
             if (okToSave) {
-            	// TODO could be a collection?
-   			 	request.getSession().setAttribute("owned", new Integer(editResource.getId()));
-   			 
+            	// TODO could be a collection?  			 
                 saveResource(request, loggedInUser, editResource);
+                request.getSession().setAttribute("owned", new Integer(editResource.getId()));
                 
             } else {
                 log.info("Could not save resource. Spam question not answered?");                

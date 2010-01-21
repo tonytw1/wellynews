@@ -32,6 +32,7 @@ public class SubmissionProcessingService {
 	private static final String REQUEST_DATE_NAME = "date";
     private static final String REQUEST_DESCRIPTION_NAME = "description";
     private static final String REQUEST_GEOCODE_NAME = "geocode";
+	private static final String REQUEST_EMBARGO_DATE_NAME = "embargo_date";
     
     Logger log = Logger.getLogger(SubmissionProcessingService.class);
     
@@ -114,7 +115,11 @@ public class SubmissionProcessingService {
             editResource.setDate(Calendar.getInstance().getTime());
         }
     }
-
+	
+	
+	public void processEmbargoDate(HttpServletRequest request, Resource editResource) {
+		editResource.setEmbargoedUntil((Date) request.getAttribute(REQUEST_EMBARGO_DATE_NAME));
+	}
 
 
     public void processDescription(HttpServletRequest request, Resource editResource) {
@@ -218,6 +223,9 @@ public class SubmissionProcessingService {
     protected boolean isValidTagName(String field) {
         return field != null && field.length() > 0 && field.matches("[a-zA-Z0-9]*");
     }
+
+
+	
     
 		
 }

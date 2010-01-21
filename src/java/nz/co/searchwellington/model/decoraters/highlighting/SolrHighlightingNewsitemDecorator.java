@@ -114,6 +114,16 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		return newsitem.getLiveTime();
 	}
 
+	
+	
+	public Date getEmbargoedUntil() {
+		return newsitem.getEmbargoedUntil();
+	}
+
+	public void setEmbargoedUntil(Date embargoedUntil) {
+		newsitem.setEmbargoedUntil(embargoedUntil);
+	}
+
 	public Website getPublisher() {
 		return newsitem.getPublisher();
 	}
