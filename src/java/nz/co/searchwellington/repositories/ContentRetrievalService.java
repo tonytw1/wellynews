@@ -115,4 +115,8 @@ public class ContentRetrievalService {
 		return resourceDAO.getRecentTwitteredNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
+	public List<Resource> getRecentedTwitteredNewsitemsForTag(int maxItems, Tag tag) {
+		return resourceDAO.getRecentTwitteredNewsitemsForTag(maxItems, showBrokenDecisionService.shouldShowBroken(), tag);
+	}
+
 }

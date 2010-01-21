@@ -90,7 +90,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateGeocoded(mv, showBroken, tag);		
 		populateTagFlickrPool(mv, tag);		
 		populateTagRelatedTwitter(mv, tag);		
-		populateRecentlyTwittered(mv);
+		populateRecentlyTwittered(mv, tag);
 
 		if (request.getAttribute(RequestFilter.SEARCH_TERM) != null) {
 			final String searchTerm = (String) request.getAttribute(RequestFilter.SEARCH_TERM);
@@ -102,8 +102,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	}
 
 
-	private void populateRecentlyTwittered(ModelAndView mv) {
-		mv.addObject("recently_twittered", contentRetrievalService.getRecentedTwitteredNewsitems(2));
+	private void populateRecentlyTwittered(ModelAndView mv, Tag tag) {
+		mv.addObject("recently_twittered", contentRetrievalService.getRecentedTwitteredNewsitemsForTag(2, tag));
 	}
 
 
