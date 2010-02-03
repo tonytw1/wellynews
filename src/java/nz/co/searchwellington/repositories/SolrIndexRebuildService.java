@@ -72,14 +72,24 @@ public class SolrIndexRebuildService {
 	
 	private void reindexResources(Set<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {
 		UpdateRequest updateRequest = new UpdateRequest();
+		
+		int batchCounter = 0;
 		for (Integer id : resourceIdsToIndex) {
 			Resource resource = resourceDAO.loadResourceById(id);			
 			log.info("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
 			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);			
-			updateRequest.add(inputDocument);			
+			updateRequest.add(inputDocument);
+			batchCounter++;
+			if (batchCounter > 100) {
+				solr.commit();
+				log.info("Committing");
+				updateRequest.process(solr);				
+				solr.commit();
+				batchCounter = 0;
+			}
 		}
 		
-		updateRequest.process(solr);
+		updateRequest.process(solr);		
 		solr.commit();
 		solr.optimize();
 	}
