@@ -27,7 +27,9 @@
 				<br />
 						
 				#parse("includes/tag_edit_fields.vm")
-					
+				
+				#parse("includes/moderation_fields.vm")
+				
 				#if ($spam_question)
 					#parse("includes/spam_question.vm")
 				#end

@@ -61,5 +61,8 @@ public interface Resource {
 	
 	public User getOwner();
 	public void setOwner(User owner);
+
+	public boolean isHeld();
+	public void setHeld(boolean held);
 	
 }

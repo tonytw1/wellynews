@@ -44,10 +44,8 @@
 					<textarea name="description" rows="6" cols="40">$resource.description</textarea>
 					<br />
 										
-					<label for="embargo_date">Embargo date: </label>
-					<input name="embargo_date" #if($resource.embargoedUntil) value="$dateFormatter.formatDate($resource.embargoedUntil, 'd MMM yyyy hh:mm')" #end />
-					<br/>
-													
+					#parse("includes/moderation_fields.vm")				
+																		
 					<input type="submit" value="Save" />
 					
 				</fieldset>

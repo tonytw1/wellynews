@@ -12,7 +12,6 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.twitter.TwitterService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;

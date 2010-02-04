@@ -41,6 +41,11 @@
         <property name="httpStatus" type="integer">
         	<column name="http_status"/>
         </property>
+        
+      	<property name="held" type="boolean">
+        	<column name="held"/>
+        </property>
+        
 
 
 		<property name="description" type="text">

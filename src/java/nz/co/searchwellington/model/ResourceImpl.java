@@ -24,8 +24,10 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
     protected Date lastScanned;
     protected Date lastChanged;
     protected Date liveTime;
+    
     protected Date embargoedUntil;
-
+    protected boolean held;
+    
 	protected Set<Tag> tags;
     protected Snapshot snapshot;
 
@@ -184,5 +186,12 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
 	public void setOwner(User owner) {
 		this.owner = owner;
 	}
-		
+	
+	public boolean isHeld() {
+		return held;
+	}
+	public void setHeld(boolean held) {
+		this.held = held;
+	}
+			
 }

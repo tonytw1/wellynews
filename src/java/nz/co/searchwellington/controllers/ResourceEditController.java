@@ -395,7 +395,6 @@ public class ResourceEditController extends BaseMultiActionController {
                    
             submissionProcessingService.processUrl(request, editResource);
             submissionProcessingService.processTitle(request, editResource);
-            log.info("Calling geocode");
             submissionProcessingService.processGeocode(request, editResource);
             submissionProcessingService.processDate(request, editResource);
             submissionProcessingService.processEmbargoDate(request, editResource);
@@ -424,7 +423,8 @@ public class ResourceEditController extends BaseMultiActionController {
                         
             // New submissions from the public are spam filtered.
             boolean spamQuestionAnswered = false;
-            if (newSubmission && loggedInUser == null) {
+            boolean isPublicSubmission = loggedInUser == null;
+			if (newSubmission && isPublicSubmission) {
                 String spamAnswer = request.getParameter("spam_question");
                 log.info("Spam question answer was: " + spamAnswer);
                 if (spamAnswer != null && spamAnswer.trim().toLowerCase().equals("wellington")) {
@@ -437,7 +437,11 @@ public class ResourceEditController extends BaseMultiActionController {
             
             SpamFilter spamFilter = new SpamFilter();
             boolean isSpamUrl = spamFilter.isSpam(editResource);
-         
+                     
+            if (isPublicSubmission) {
+            	editResource.setHeld(true);
+            }
+                        
             boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
             // TODO validate. - what exactly?
             if (okToSave) {

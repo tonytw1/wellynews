@@ -208,6 +208,16 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 	public void setOwner(User owner) {
 		website.setOwner(owner);
 	}
+
+	public boolean isHeld() {
+		return website.isHeld();
+	}
+
+	public void setHeld(boolean held) {
+		website.setHeld(held);
+	}
+	
+	
 	
 	
 }

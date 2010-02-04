@@ -294,7 +294,15 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		newsitem.setFeed(feed);
 	}
 
+	public boolean isHeld() {
+		return newsitem.isHeld();
+	}
 
+	public void setHeld(boolean held) {
+		newsitem.setHeld(held);
+	}
+
+	
 	
 		
 }

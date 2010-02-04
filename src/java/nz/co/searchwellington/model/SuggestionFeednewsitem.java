@@ -52,5 +52,12 @@ public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable,
 
 	public void setEmbargoedUntil(Date embargoedUntil) {
 	}
+
+	public boolean isHeld() {
+		return false;
+	}
+
+	public void setHeld(boolean held) {
+	}
 		
 }
