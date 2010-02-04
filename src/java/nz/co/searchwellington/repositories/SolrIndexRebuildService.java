@@ -1,8 +1,8 @@
 package nz.co.searchwellington.repositories;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
 
@@ -16,6 +16,8 @@ import org.apache.solr.common.SolrInputDocument;
 
 
 public class SolrIndexRebuildService {
+
+	private static final int BATCH_COMMIT_SIZE = 1000;
 
 	Logger log = Logger.getLogger(SolrIndexRebuildService.class);
 
@@ -37,61 +39,49 @@ public class SolrIndexRebuildService {
 
 
 	public boolean buildIndex() {		
-		Set<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
+		List<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
 		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
+	
 		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);			
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
 			if (resourceIdsToIndex.size() > 0) {
 				reindexResources(resourceIdsToIndex, solr);
 				return true;
-			}			
-		} catch (Exception e) {
-			log.error("Error while rebuilding index: " + e.getMessage());
-			return false;
-		}
+			}
+			
+		} catch (SolrServerException e) {
+			log.error("Exception during index rebuild", e);
+		} catch (IOException e) {
+			log.error("Exception during index rebuild", e);
+		}		
 		return false;
 	}
-
 	
-	private void deleteAllFromIndex(SolrServer solr) throws SolrServerException, IOException {
-		final String deleteAll = "*:*";
-		UpdateResponse deleteAllQuery = solr.deleteByQuery(deleteAll);
-		log.info(deleteAllQuery.toString());
-		solr.commit(true, true);			
-		solr.optimize();
-	}
 	
-	// TODO implement
-	private void deleteBatchFromIndex(SolrServer solr) throws SolrServerException, IOException {
-		final String deleteAll = "*:*";
-		UpdateResponse deleteAllQuery = solr.deleteByQuery(deleteAll);
-		log.info(deleteAllQuery.toString());
-		solr.commit(true, true);			
-		solr.optimize();
-	}
-
-	
-	private void reindexResources(Set<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {		
-		reindexBatch(resourceIdsToIndex, solr);		
-		solr.optimize();
-	}
-
-
-	private void reindexBatch(Set<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {
-		deleteAllFromIndex(solr);		
-		
-		UpdateRequest updateRequest = new UpdateRequest();		
+	private void reindexResources(List<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {		
+		List<Integer> all = new ArrayList<Integer>(resourceIdsToIndex);
 		int batchCounter = 0;
-		for (Integer id : resourceIdsToIndex) {
-			Resource resource = resourceDAO.loadResourceById(id);			
+		
+		while (all.size() > batchCounter + BATCH_COMMIT_SIZE) {
+			List<Integer> batch = all.subList(batchCounter, batchCounter + BATCH_COMMIT_SIZE);
+			log.info("Processing batch starting at " + batchCounter + " / " + all.size());
+			reindexBatch(batch, solr);
+			batchCounter = batchCounter + BATCH_COMMIT_SIZE;			
+		}
+		
+		List<Integer> batch = all.subList(batchCounter, all.size()-1);
+		reindexBatch(batch, solr);
+		solr.optimize();
+	}
+
+
+	private void reindexBatch(List<Integer> batch, SolrServer solr) throws SolrServerException, IOException {		
+		UpdateRequest updateRequest = new UpdateRequest();
+		for (Integer id : batch) {
+			Resource resource = resourceDAO.loadResourceById(id);
 			log.info("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
 			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);			
 			updateRequest.add(inputDocument);
-			batchCounter++;
-			if (batchCounter > 100) {
-				processAndCommit(solr, updateRequest);
-				batchCounter = 0;
-			}
 		}
 		processAndCommit(solr, updateRequest);
 	}
@@ -101,6 +91,15 @@ public class SolrIndexRebuildService {
 		log.info("Committing");
 		updateRequest.process(solr);				
 		solr.commit();
+	}
+	
+	
+	private void deleteAllFromIndex(SolrServer solr) throws SolrServerException, IOException {
+		final String deleteAll = "*:*";
+		UpdateResponse deleteAllQuery = solr.deleteByQuery(deleteAll);
+		log.info(deleteAllQuery.toString());
+		solr.commit(true, true);			
+		solr.optimize();
 	}
 	
 }

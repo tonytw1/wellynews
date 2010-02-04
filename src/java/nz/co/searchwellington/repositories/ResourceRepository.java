@@ -103,7 +103,7 @@ public interface ResourceRepository {
     public List<Tag> getGeotaggedTags(boolean showBroken);	
     
     public List<ArchiveLink> getArchiveMonths(boolean showBroken);
-    public Set<Integer> getAllResourceIds();
+    public List<Integer> getAllResourceIds();
     public CalendarFeed createNewCalendarFeed(String url);
     public List<Newsitem> getLatestTwitteredNewsitems(int numberOfItems, boolean showBroken);
     

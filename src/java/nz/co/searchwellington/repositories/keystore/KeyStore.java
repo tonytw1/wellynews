@@ -21,15 +21,14 @@ public class KeyStore {
 
 
 	public synchronized String get(String id) {
+		log.debug("Getting content for key: " + id);
 		try {
-			log.info("Getting content for key: " + id);
 			connect();			
-			if (db.get(id) != null) {
+			if (db != null && db.get(id) != null) {
 				return (String) db.get(id);
-			}
-			
+			}			
 		} catch (Exception e) {
-			log.warn("An exception occured while trying to fetch for key '" + id + "': ", e);
+			log.warn("An exception occured while trying to fetch for key '" + id);
 		}
 		return null;
 	}
@@ -37,29 +36,42 @@ public class KeyStore {
 	
 	public synchronized void put(String id, String content) {
 		connect();
-		if (content != null) {
+		if (content != null && db != null) {
 			log.info("Setting snapshot for key: " + id);
 			connect();
 			db.put(id, content);			
 		} else {
 			log.warn("Content is null for id; removing: " + id);
 			this.evict(id);
-		}
-		
+		}		
 	}
 
 	public void evict(String id) {
 		connect();
-		log.info("Evicting key: " + id);
-		db.out(id);
+		if (db != null) {
+			try {
+				log.info("Evicting key: " + id);
+				db.out(id);
+			} catch (Exception e) {
+				return;
+			}
+		}
 	}
 	
 	
 	public long size() {
 		connect();
-		return db.rnum();
+		if (db != null) {
+			try {
+				return db.rnum();
+			} catch (Exception e) {
+				return 0;
+			}
+		}
+		return 0;
 	}
 
+	
 	private void connect() {		
 		if (db == null) {
 			db = new RDB();
@@ -74,6 +86,5 @@ public class KeyStore {
 	public void setPort(int port) {
 		this.port = port;
 	}
-
 
 }
