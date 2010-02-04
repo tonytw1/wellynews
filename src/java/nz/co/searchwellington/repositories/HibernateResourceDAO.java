@@ -46,23 +46,14 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     @SuppressWarnings("unchecked")
-    public Set<Integer> getAllResourceIds() {
+    public List<Integer> getAllResourceIds() {
         Set<Integer> resourceIds = new HashSet<Integer>();        
         Session session = sessionFactory.getCurrentSession();
-        List<Integer> rows = session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl").setFetchSize(100).list();        
-        for (Integer row : rows) {
-            resourceIds.add(row);
-        }               
-        return resourceIds;
+        return session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list();        
+       
     }
     
     
-    
-    
-    
-    
-    
-
     @Override
 	public Tag createNewTag() {
 		return tagDAO.createNewTag();
