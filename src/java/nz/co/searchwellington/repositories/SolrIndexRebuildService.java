@@ -40,24 +40,16 @@ public class SolrIndexRebuildService {
 		Set<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
 		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
 		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
-			deleteAllFromIndex(solr);	
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);			
 			if (resourceIdsToIndex.size() > 0) {
 				reindexResources(resourceIdsToIndex, solr);
 				return true;
-			}
-			
-		} catch (MalformedURLException e) {
-			log.error("Error while rebuilding index: " + e.getMessage());
-			return false;
-		} catch (SolrServerException e) {
-			log.error("Error while rebuilding index: " + e.getMessage());
-			return false;
-		} catch (IOException e) {
+			}			
+		} catch (Exception e) {
 			log.error("Error while rebuilding index: " + e.getMessage());
 			return false;
 		}
-		return false;		
+		return false;
 	}
 
 	
@@ -68,11 +60,27 @@ public class SolrIndexRebuildService {
 		solr.commit(true, true);			
 		solr.optimize();
 	}
+	
+	// TODO implement
+	private void deleteBatchFromIndex(SolrServer solr) throws SolrServerException, IOException {
+		final String deleteAll = "*:*";
+		UpdateResponse deleteAllQuery = solr.deleteByQuery(deleteAll);
+		log.info(deleteAllQuery.toString());
+		solr.commit(true, true);			
+		solr.optimize();
+	}
 
 	
-	private void reindexResources(Set<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {
-		UpdateRequest updateRequest = new UpdateRequest();
+	private void reindexResources(Set<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {		
+		reindexBatch(resourceIdsToIndex, solr);		
+		solr.optimize();
+	}
+
+
+	private void reindexBatch(Set<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {
+		deleteAllFromIndex(solr);		
 		
+		UpdateRequest updateRequest = new UpdateRequest();		
 		int batchCounter = 0;
 		for (Integer id : resourceIdsToIndex) {
 			Resource resource = resourceDAO.loadResourceById(id);			
@@ -81,17 +89,18 @@ public class SolrIndexRebuildService {
 			updateRequest.add(inputDocument);
 			batchCounter++;
 			if (batchCounter > 100) {
-				solr.commit();
-				log.info("Committing");
-				updateRequest.process(solr);				
-				solr.commit();
+				processAndCommit(solr, updateRequest);
 				batchCounter = 0;
 			}
 		}
-		
-		updateRequest.process(solr);		
+		processAndCommit(solr, updateRequest);
+	}
+
+
+	private void processAndCommit(SolrServer solr, UpdateRequest updateRequest) throws SolrServerException, IOException {
+		log.info("Committing");
+		updateRequest.process(solr);				
 		solr.commit();
-		solr.optimize();
 	}
 	
 }
