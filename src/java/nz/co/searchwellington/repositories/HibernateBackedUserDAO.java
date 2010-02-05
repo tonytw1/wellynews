@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.Iterator;
+
 import nz.co.searchwellington.model.User;
 
 import org.hibernate.SessionFactory;
@@ -31,10 +33,13 @@ public class HibernateBackedUserDAO implements UserRepository {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("apikey", apiKey)).uniqueResult();     	    
 	}
 
+	// TODO fails of no users
 	public int getNextAvailableAnonUserNumber() {
-		return ((Integer) sessionFactory.getCurrentSession().
-				iterate("select max(id) from UserImpl").
-	        	next()) + 1;
+		Iterator iterate = sessionFactory.getCurrentSession().iterate("select max(id) from UserImpl");
+		if (iterate != null && iterate.hasNext()) {
+			return ((Integer) iterate.next()) + 1;
+		}
+		return 1;
 	}
 	
 }

@@ -36,8 +36,32 @@
 				
 				<p>Profile names may contain letters and numbers only. ie. johnsmith</p>
 								
-			</form>		
-		#else		
+			</form>
+		
+		#elseif (!$user.username)
+					
+			<p>You are using a temporary anonomous user profile to post your submissions.</p>
+			<p>Access to this profile will cease when you close your browser.</p> 
+			
+			<p>If you wish to retain the ability to edit your submissions in the future,  
+			you will need to link this profile to your OpenID.</a>
+			
+			<form action="$site_information.url/openid/login" method="POST"> 
+ 				<fieldset>	
+					<input name="openid_claimed_identity" style="background: #fff url('$urlBuilder.getImageUrl('openid_logo.png')') no-repeat left; padding-left: 18px">				
+		     	<input type="submit" class="password" value="Link OpenID">
+	  		</fieldset>
+			</form>
+			
+			<p>Sign in using your OpenID above, or use your 
+			<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a>, 
+			<a href="$site_information.url/openid/login?openid_claimed_identity=flickr.com">Flickr</a>		
+			or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> account as an OpenID.
+			
+			
+			
+		#else
+			
 			<ul>
 				<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
 			</ul>
@@ -71,8 +95,6 @@
 		
 		#if ($user.username) 
 			<p>Your profile is linked to the OpenID: $user.username</p>
-		#else
-			<p>Your profile is not linked to an OpenID</p>
 		#end
 
 				
