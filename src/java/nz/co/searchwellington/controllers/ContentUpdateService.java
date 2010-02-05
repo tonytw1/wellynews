@@ -35,14 +35,12 @@ public class ContentUpdateService {
 		}
 
 		boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
-		update(resource, needsLinkCheck);
+		if (newSubmission) {        	
+			resource.setOwner(loggedInUser);
+		}
 		
-        if (newSubmission && loggedInUser != null) {        	
-        	resource.setOwner(loggedInUser);
-        }
-		
-		final boolean isNewPublicSubmission = loggedInUser == null && newSubmission;
-		if (isNewPublicSubmission) {			
+		update(resource, needsLinkCheck);				
+		if ((newSubmission && !loggedInUser.isAdmin())) {			
 			 notifier.sendSubmissionNotification("New submission", resource);
 		}
 	}

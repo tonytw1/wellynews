@@ -57,13 +57,14 @@ public class ResourceEditController extends BaseMultiActionController {
     private ContentUpdateService contentUpdateService;
 	private ContentDeletionService contentDeletionService;
     private SnapshotBodyExtractor snapBodyExtractor;
+    private AnonUserService anonUserService;
     
     public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor) {       
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService) {       
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;
@@ -80,6 +81,7 @@ public class ResourceEditController extends BaseMultiActionController {
         this.contentDeletionService = contentDeletionService;
         this.resourceDAO = resourceDAO;
         this.snapBodyExtractor = snapBodyExtractor;
+        this.anonUserService = anonUserService;
     }
    
     
@@ -234,20 +236,6 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
 
-
-
-    
-	private void populateSpamQuestion(HttpServletRequest request, ModelAndView modelAndView) {
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        if (loggedInUser == null) {
-            modelAndView.addObject("spam_question", "The capital of New Zealand is (10 letters)");
-        }
-    }
-    
-    
-  
-    
-    
     
     @Transactional
     public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -259,7 +247,6 @@ public class ResourceEditController extends BaseMultiActionController {
        
         populateSubmitCommonElements(request, modelAndView);
         
-        populateSpamQuestion(request, modelAndView);
         modelAndView.addObject("publisher_select", null);
         return modelAndView;
     }
@@ -275,10 +262,7 @@ public class ResourceEditController extends BaseMultiActionController {
         Resource editResource = resourceDAO.createNewNewsitem();
         modelAndView.addObject("resource", editResource);
         
-        populateSubmitCommonElements(request, modelAndView);         
-       
-        populateSpamQuestion(request, modelAndView);
-        
+        populateSubmitCommonElements(request, modelAndView);        
         return modelAndView;
     }
 
@@ -290,8 +274,7 @@ public class ResourceEditController extends BaseMultiActionController {
         modelAndView.addObject("heading", "Submitting a Calendar");
         Resource editResource = resourceDAO.createNewCalendarFeed("");
         modelAndView.addObject("resource", editResource);
-       
-        populateSpamQuestion(request, modelAndView);
+        
         populateSubmitCommonElements(request, modelAndView);        
         return modelAndView;
     }
@@ -421,33 +404,27 @@ public class ResourceEditController extends BaseMultiActionController {
             	editResource.setUrlWords(UrlWordsGenerator.makeUrlWordsFromName(editResource.getName()));            	
             }
                         
-            // New submissions from the public are spam filtered.
-            boolean spamQuestionAnswered = false;
-            boolean isPublicSubmission = loggedInUser == null;
-			if (newSubmission && isPublicSubmission) {
-                String spamAnswer = request.getParameter("spam_question");
-                log.info("Spam question answer was: " + spamAnswer);
-                if (spamAnswer != null && spamAnswer.trim().toLowerCase().equals("wellington")) {
-                    spamQuestionAnswered = true;
-                    log.info("Spam question was answered correctly.");
-                } else {
-                    log.info("Spam question was answered incorrectly.");
-                }
-            }
-            
+                      
             SpamFilter spamFilter = new SpamFilter();
             boolean isSpamUrl = spamFilter.isSpam(editResource);
                      
+            boolean isPublicSubmission = loggedInUser == null;
             if (isPublicSubmission) {
             	editResource.setHeld(true);
             }
-                        
-            boolean okToSave = !newSubmission || (spamQuestionAnswered && !isSpamUrl) || loggedInUser != null;
+            
+            boolean okToSave = !newSubmission || !isSpamUrl || loggedInUser != null;
             // TODO validate. - what exactly?
             if (okToSave) {
             	// TODO could be a collection?  			 
-                saveResource(request, loggedInUser, editResource);
-                request.getSession().setAttribute("owned", new Integer(editResource.getId()));
+                
+            	if (loggedInUser == null) {
+            		log.info("Creating new anon user for resource submission");
+            		loggedInUser = anonUserService.createAnonUser();
+            		setUser(request, loggedInUser);
+            	}
+            	
+            	saveResource(request, loggedInUser, editResource);                
                 
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
@@ -463,6 +440,13 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
 
+    
+    private void setUser(HttpServletRequest request, User user) {
+		request.getSession().setAttribute("user", user);		
+		request.getSession().setAttribute("login_prompt", null);
+	}
+    
+    
    // TODO move to submission handling service.
    private void processFeedAcceptancePolicy(HttpServletRequest request, Resource editResource) {
 	   if (editResource.getType().equals("F")) {

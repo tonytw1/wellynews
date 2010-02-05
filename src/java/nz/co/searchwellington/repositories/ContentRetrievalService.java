@@ -8,6 +8,7 @@ import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
 public class ContentRetrievalService {
@@ -119,4 +120,8 @@ public class ContentRetrievalService {
 		return resourceDAO.getRecentTwitteredNewsitemsForTag(maxItems, showBrokenDecisionService.shouldShowBroken(), tag);
 	}
 
+	public List<Resource> getOwnedBy(User loggedInUser, int maxItems) {
+		return resourceDAO.getOwnedBy(loggedInUser, maxItems);
+	}
+	
 }

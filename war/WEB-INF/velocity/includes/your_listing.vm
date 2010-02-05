@@ -1,18 +1,14 @@
-#if ($owneditem)
+#if ($owned && $owned.size() > 0)
+	
 	<div class="box">
-		<h2>Your Listing</h2>
+	<h2>Your Submissions</h2>
 
-		<p>You may <a href="$site_information.url/edit/edit?resource=$owneditem.id">continue to edit</a> your listing.</p>
+	<p>You have submitted these items.</p>
+	
+	#set ($righthand_content_one = $columnSplitter.left($owned))
+	#set ($righthand_content_two = $columnSplitter.right($owned))
 
-		#set ($item = $owneditem)
-			<div class="main_content">
-				<ul class="flat_list">
-					#parse("includes/content_element.vm")
-				</ul>
-			</div>
-			
-	#if($owneditem.httpStatus && $owneditem.httpStatus !=200 && $owneditem.httpStatus !=0) 
-		<p>We've checked the url for this listing ($owneditem.url) and it appears to be invalid.</p>
-	#end
+	#parse("includes/righthand_two_columns.vm")
 </div>
+	
 #end

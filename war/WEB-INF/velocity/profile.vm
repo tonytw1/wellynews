@@ -69,9 +69,11 @@
 						
 		#end
 		
-		
-		<p>Your profile is linked to the OpenID: $user.username</p>
-
+		#if ($user.username) 
+			<p>Your profile is linked to the OpenID: $user.username</p>
+		#else
+			<p>Your profile is not linked to an OpenID</p>
+		#end
 
 				
 		<h3>Your submissions</h3>

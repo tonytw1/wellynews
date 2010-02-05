@@ -118,8 +118,8 @@ public class OpenIDLoginController extends MultiActionController {
 			if (user != null) {
 				log.info("Setting logged in user to: " + user.getName());
 				setUser(request, user);						
-				loginResourceOwnershipService.assignOwnership(user);
-				request.getSession().setAttribute("owned", null);
+				loginResourceOwnershipService.assignOwnership(user);	// TODO depricate
+
 			} else {
 				log.warn("User was null after successful openid auth");
 			}						
@@ -140,7 +140,7 @@ public class OpenIDLoginController extends MultiActionController {
 		return newUser;
 	}
 
-	
+	// TODO duplicated with ResourceEditController
 	private void setUser(HttpServletRequest request, User user) {
 		request.getSession().setAttribute("user", user);		
 		request.getSession().setAttribute("login_prompt", null);

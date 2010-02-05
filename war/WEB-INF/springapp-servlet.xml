@@ -32,6 +32,11 @@
 			</bean>		
 		</property>
 	</bean>
+	
+	
+	<bean id="anonUserService" class="nz.co.searchwellington.controllers.AnonUserService">
+		<constructor-arg ref="userDAO" />
+	</bean>
 			
 	<bean id="loginResourceOwnershipService" class="nz.co.searchwellington.openid.LoginResourceOwnershipService">
 		<constructor-arg ref="resourceDAO" />
@@ -454,7 +459,8 @@
 		<constructor-arg ref="contentDeletionService" />
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="snapshotBodyExtractor" />
-				
+		<constructor-arg ref="anonUserService" />
+		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

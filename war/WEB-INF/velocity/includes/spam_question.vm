@@ -1,8 +1,0 @@
-<h5>Spam Blocker</h5>
-
-<p>We sometimes get unsightly spam submitted through this form. To verify 
-your submission, please answer this local knowledge question:</p>
-
-<code>$spam_question</code>
-<input name="spam_question">
-<br />

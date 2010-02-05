@@ -31,5 +31,11 @@ public class HibernateBackedUserDAO implements UserRepository {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("apikey", apiKey)).uniqueResult();     	    
 	}
 
+	public int getNextAvailableAnonUserNumber() {
+		return ((Integer) sessionFactory.getCurrentSession().
+				iterate("select max(id) from UserImpl").
+	        	next()) + 1;
+	}
+	
 }
 

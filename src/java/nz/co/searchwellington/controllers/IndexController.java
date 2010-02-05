@@ -88,7 +88,7 @@ public class IndexController extends BaseMultiActionController {
      //   }
                
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        populateUserOwnedResource(request, mv, loggedInUser);   
+        populateUserOwnedResources(request, mv, loggedInUser);   
         setRss(mv, "Search " + siteInformation.getAreaname() + " Newslog", rssUrlBuilder.getBaseRssUrl());        
         mv.addObject("current_time", Calendar.getInstance().getTime());
         
@@ -138,14 +138,12 @@ public class IndexController extends BaseMultiActionController {
     //    }   
     //    mv.addObject("commented_newsitems_moreurl", "comment");        
     }
-
-        
-    private void populateUserOwnedResource(HttpServletRequest request, ModelAndView mv, User loggedInUser) {        
-    	Resource ownedItem = requestFilter.getAnonResource();
-    	if (loggedInUser == null && ownedItem != null) {
-    		log.info("Owned item put onto model: " + ownedItem.getName());
-    		mv.addObject("owneditem", ownedItem);
-    	}
+    
+    
+    private void populateUserOwnedResources(HttpServletRequest request, ModelAndView mv, User loggedInUser) {        
+    	List<Resource> ownedBy = resourceDAO.getOwnedBy(loggedInUser, 4);
+    	System.out.println(ownedBy);
+		mv.addObject("owned", ownedBy);
     }
 
     

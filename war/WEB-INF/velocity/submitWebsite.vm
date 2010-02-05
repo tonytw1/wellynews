@@ -30,10 +30,6 @@
 				
 				#parse("includes/moderation_fields.vm")
 				
-				#if ($spam_question)
-					#parse("includes/spam_question.vm")
-				#end
-			
 				<input type="hidden" name="type" value="W" />
 				<input type="submit" value="Save" />		
 			</fieldset>

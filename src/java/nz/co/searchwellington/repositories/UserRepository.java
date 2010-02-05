@@ -9,6 +9,7 @@ public interface UserRepository {
 	public void saveUser(User newUser);
 	public User getUserByProfileName(String profilename);
 	public User getUserByApiKey(String apiKey);
+	public int getNextAvailableAnonUserNumber();
 
 }
 

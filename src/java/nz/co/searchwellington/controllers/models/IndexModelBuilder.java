@@ -4,8 +4,10 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.apache.log4j.Logger;
@@ -19,10 +21,12 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 	ContentRetrievalService contentRetrievalService;
 	RssUrlBuilder rssUrlBuilder;
+	LoggedInUserFilter loggedInUserFilter;
 	
-	public IndexModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder) {
+	public IndexModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
+		this.loggedInUserFilter = loggedInUserFilter;
 	}
 
 	@Override
@@ -49,11 +53,18 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateCommentedNewsitems(mv);
 		populateSecondaryJustin(mv);
 		populateGeocoded(mv);
+		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());
 		// ARCHIVE / ARCHIVE links
 	}
 
-	
-	private void populateCommentedNewsitems(ModelAndView mv) {
+	private void populateUserOwnedResources(ModelAndView mv, User loggedInUser) {
+		 if (loggedInUser != null) {
+			 List<Resource> ownedBy = contentRetrievalService.getOwnedBy(loggedInUser, 4);
+			 mv.addObject("owned", ownedBy);
+		 }
+	 }
+
+	 private void populateCommentedNewsitems(ModelAndView mv) {
 		final List<Resource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(MAX_NUMBER_OF_COMMENTED_TO_SHOW, 0);
 		if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
 			mv.addObject("commented_newsitems", recentCommentedNewsitems);

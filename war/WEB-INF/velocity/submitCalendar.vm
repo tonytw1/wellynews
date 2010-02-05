@@ -23,11 +23,7 @@
 				<br />
 						
 				#parse("includes/tag_edit_fields.vm")
-						
-				#if ($spam_question)
-					#parse("includes/spam_question.vm")
-				#end
-			
+							
 				<input type="hidden" name="type" value="C" />
 	
 				<input type="submit" value="Save" />		
