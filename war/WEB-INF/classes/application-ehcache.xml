@@ -32,8 +32,8 @@
 	<cache name="feeds"
 		maxElementsInMemory="300"
 		eternal="false"
-		timeToIdleSeconds="7200"
-		timeToLiveSeconds="7200"
+		timeToIdleSeconds="14400"
+		timeToLiveSeconds="14400"
 		overflowToDisk="false"
 		/>
 	

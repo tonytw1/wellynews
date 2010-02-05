@@ -107,7 +107,7 @@
 <bean id="rssPrefetcherTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
     <property name="jobDetail" ref="rssPrefetcherRun" />
     <property name="startDelay" value="600000" />
-    <property name="repeatInterval" value="3600000" />
+    <property name="repeatInterval" value="7200000" />
 </bean>
 
 
