@@ -85,7 +85,6 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         if (url != null) {        	
             url = urlCleaner.cleanSubmittedItemUrl(url);
         }
-                
         
         // TODO This reference should really come from the resourceDAO.
         FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle(), url, description, itemDate, new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
@@ -110,16 +109,15 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 				Thumbnail[] thumbnails = metadata.getThumbnail();
 				if (thumbnails.length > 0) {
 					Thumbnail thumbnail = thumbnails[0];		
-					log.info("Found thumbnail on first media content: " + thumbnail);
+					log.info("Found thumbnail on first media content: " + thumbnail.getUrl());
 					return new Image(thumbnail.getUrl().toExternalForm(), null);
 				}
 			}
-			
-			
+						
 			Thumbnail[] thumbnails = mediaModule.getMetadata().getThumbnail();
 			if (thumbnails.length > 0) {					
 				Thumbnail thumbnail = thumbnails[0];
-				log.info("Found first thumbnail on module metadata: " + thumbnail);
+				log.info("Found first thumbnail on module metadata: " + thumbnail.getUrl());
 				return new Image(thumbnail.getUrl().toExternalForm(), null);				
 			}						
         }	
