@@ -4,10 +4,6 @@
 	#parse("includes/topbar.vm")
 
 	<div class="left">
-		#if($use_big_ads) 
-			#parse("includes/200x200ad.vm")
-		#end
-
 		#parse("includes/related_tags.vm")
 		#parse("includes/related_publishers.vm")		
 		#parse("includes/tag_tree.vm")
@@ -32,10 +28,7 @@
 		#parse("includes/child_tags.vm")
 
 		#parse("includes/search_widget.vm")
-
-
-		#parse("includes/468x60ad.vm")
-
+		
 		<div class="main_content">
 			#if ($main_content.empty)
 				#set($main_content = $websites)

@@ -5,8 +5,6 @@
 
 <div class="left">
 
-#parse("includes/200x200ad.vm")
-
 #parse("includes/tag_tree.vm")
 </div>
 

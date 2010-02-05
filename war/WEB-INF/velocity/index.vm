@@ -4,8 +4,7 @@
 <div class="page">
 	#parse("includes/topbar.vm")
 
-	<div class="left">
-		#parse("includes/200x200ad.vm")
+	<div class="left">		
 		#parse("includes/tag_tree.vm")
 	</div>
 

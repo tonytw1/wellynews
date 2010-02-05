@@ -4,10 +4,6 @@
 #parse("includes/topbar.vm")
 
 <div class="left">
-#if($use_big_ads) 
-#parse("includes/200x200ad.vm")
-#end
-
 #parse("includes/related_publisher_tags.vm")
 
 
@@ -30,8 +26,6 @@
    	<a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2>
 
 #parse("includes/search_widget.vm")
-
-#parse("includes/468x60ad.vm")
 
 <div class="main_content">
 	#if ($main_content.empty) 

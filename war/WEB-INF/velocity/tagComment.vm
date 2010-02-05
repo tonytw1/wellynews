@@ -25,9 +25,6 @@
 
 #parse("includes/search_widget.vm")
 
-
-#parse("includes/468x60ad.vm")
-
 #parse("includes/main_content.vm")
 
 #parse("includes/tag_comment_page_links.vm")
