@@ -39,6 +39,7 @@ public class ContentDeletionService {
 		
 		if (editResource.getType().equals("F")) {
 			removeFeedFromFeedNewsitems((Feed) editResource);			
+			removeRelatedFeedFromTags((Feed) editResource);
 		}
 		
 		if (editResource.getType().equals("N")) {
@@ -49,6 +50,11 @@ public class ContentDeletionService {
 		}
 		snapshotDAO.evict(editResource.getUrl());
 		resourceDAO.deleteResource(editResource);
+	}
+
+
+	private void removeRelatedFeedFromTags(Feed editResource) {	
+		// TODO needs to remove related feed from tags
 	}
 
 

@@ -42,5 +42,9 @@ public class ContentDeletionServiceTest extends TestCase {
 		service.performDelete(resource);
 		verify(supressionService).suppressUrl(resource.getUrl());
 	}
+	
+	public void testShouldRemoveRelatedFeedFromTagsOnDelete() throws Exception {
+		fail();
+	}
 
 }
