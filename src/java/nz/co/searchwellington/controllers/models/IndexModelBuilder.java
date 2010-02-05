@@ -59,8 +59,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 
 	private void populateUserOwnedResources(ModelAndView mv, User loggedInUser) {
 		 if (loggedInUser != null) {
-			 List<Resource> ownedBy = contentRetrievalService.getOwnedBy(loggedInUser, 4);
-			 mv.addObject("owned", ownedBy);
+			 mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, 4));
 		 }
 	 }
 

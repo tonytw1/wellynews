@@ -318,7 +318,8 @@ public class ResourceEditController extends BaseMultiActionController {
         adminRequestFilter.loadAttributesOntoRequest(request);    
         Resource editResource = (Resource) request.getAttribute("resource");    
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        if (editResource != null && loggedInUser != null && loggedInUser.isAdmin()) {
+
+		if (editResource != null && editPermissionService.canDelete(editResource)) {
             modelAndView.addObject("resource", editResource);
             editResource = (Resource) request.getAttribute("resource");            
             contentDeletionService.performDelete(editResource);
@@ -327,6 +328,7 @@ public class ResourceEditController extends BaseMultiActionController {
     			urlStack.setUrlStack(request, "/index");
     		}
         }
+		
         // TODO need to given failure message if we didn't actually remove the item.
         return modelAndView;
     }

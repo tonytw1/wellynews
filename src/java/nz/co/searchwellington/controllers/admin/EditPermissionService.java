@@ -32,8 +32,7 @@ public class EditPermissionService {
 	
 	public boolean canDelete(Resource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		boolean isOnRequest = requestFilter.getAnonResource() != null && requestFilter.getAnonResource().getId() == resource.getId();
-		return isAdminOrOwner(resource, loggedInUser) || isOnRequest;
+		return isAdminOrOwner(resource, loggedInUser);
 	}
 
 	

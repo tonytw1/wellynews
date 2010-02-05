@@ -1,11 +1,10 @@
 package nz.co.searchwellington.controllers;
 
-import org.apache.log4j.Logger;
-
-import net.fortuna.ical4j.model.Calendar;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.UserImpl;
 import nz.co.searchwellington.repositories.UserRepository;
+
+import org.apache.log4j.Logger;
 
 public class AnonUserService {
 

@@ -15,7 +15,7 @@
         </id>
 
         <property name="username">
-            <column name="username" length="255" not-null="true"/>
+            <column name="username" length="255" not-null="false"/>
         </property>
                 
         <property name="profilename">
