@@ -68,12 +68,11 @@ public class AdminRequestFilter {
 		}
 		
 		
-		
 		log.info("Looking for embargoed field");
 		if (request.getParameter("embargo_date") != null) {
 			final String dateString = (String) request.getParameter("embargo_date");
-			SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy hh:mm");              
-			try {            	
+			SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm");              
+			try {
 				Date date = df.parse(dateString);
 				if (date != null) {
 					request.setAttribute("embargo_date", new DateTime(date).toDate());   	
