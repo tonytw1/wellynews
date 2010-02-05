@@ -25,8 +25,15 @@ public class SolrIndexRebuildService {
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
 	
 	private String solrUrl;
-
+	private boolean running;
+	private int batchCounter;
 	
+	public SolrIndexRebuildService() {
+		running = false;
+		batchCounter = 0;
+	}
+
+
 	public SolrIndexRebuildService(ResourceRepository resourceDAO, SolrInputDocumentBuilder solrInputDocumentBuilder) {		
 		this.resourceDAO = resourceDAO;
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
@@ -38,7 +45,13 @@ public class SolrIndexRebuildService {
 	}
 
 
-	public boolean buildIndex() {		
+	public boolean buildIndex() {
+		if (running) {
+			log.warn("The index builder is already running; cannot start another process");
+			return false;
+		}
+		
+		running = true;
 		List<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
 		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
 	
@@ -46,21 +59,21 @@ public class SolrIndexRebuildService {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
 			if (resourceIdsToIndex.size() > 0) {
 				reindexResources(resourceIdsToIndex, solr);
+				running = false;
 				return true;
 			}
 			
-		} catch (SolrServerException e) {
+		} catch (Exception e) {
 			log.error("Exception during index rebuild", e);
-		} catch (IOException e) {
-			log.error("Exception during index rebuild", e);
-		}		
+		}	
+		running = false;
 		return false;
 	}
 	
 	
 	private void reindexResources(List<Integer> resourceIdsToIndex, SolrServer solr) throws SolrServerException, IOException {		
 		List<Integer> all = new ArrayList<Integer>(resourceIdsToIndex);
-		int batchCounter = 0;
+		batchCounter = 0;
 		
 		while (all.size() > batchCounter + BATCH_COMMIT_SIZE) {
 			List<Integer> batch = all.subList(batchCounter, batchCounter + BATCH_COMMIT_SIZE);
@@ -71,7 +84,9 @@ public class SolrIndexRebuildService {
 		
 		List<Integer> batch = all.subList(batchCounter, all.size()-1);
 		reindexBatch(batch, solr);
+		log.info("Optimizing");
 		solr.optimize();
+		log.info("Index rebuild complete");
 	}
 
 
@@ -79,7 +94,7 @@ public class SolrIndexRebuildService {
 		UpdateRequest updateRequest = new UpdateRequest();
 		for (Integer id : batch) {
 			Resource resource = resourceDAO.loadResourceById(id);
-			log.info("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
+			log.debug("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
 			SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);			
 			updateRequest.add(inputDocument);
 		}
