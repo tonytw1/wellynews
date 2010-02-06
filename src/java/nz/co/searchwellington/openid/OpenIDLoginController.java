@@ -5,11 +5,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.UserImpl;
 import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
 
 import org.apache.log4j.Logger;
 import org.openid4java.consumer.ConsumerException;
@@ -37,14 +39,16 @@ public class OpenIDLoginController extends MultiActionController {
 	private UrlStack urlStack;
 	private UserRepository userDAO;
 	private LoginResourceOwnershipService loginResourceOwnershipService;
+	private LoggedInUserFilter loggedInUserFilter;
 
-    public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack, UserRepository userDAO, LoginResourceOwnershipService loginResourceOwnershipService) throws ConsumerException {
+    public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack, UserRepository userDAO, LoginResourceOwnershipService loginResourceOwnershipService, LoggedInUserFilter loggedInUserFilter) throws ConsumerException {
         // instantiate a ConsumerManager object
     	manager = new ConsumerManager();
     	this.urlBuilder = urlBuilder;
     	this.urlStack = urlStack;
     	this.userDAO = userDAO;
     	this.loginResourceOwnershipService = loginResourceOwnershipService;
+    	this.loggedInUserFilter = loggedInUserFilter;
     }
 
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -104,22 +108,34 @@ public class OpenIDLoginController extends MultiActionController {
 		VerificationResult verification = manager.verify(receivingURL.toString(), openidResp, discovered);
 
 		// examine the verification result and extract the verified identifier
-		Identifier verified = verification.getVerifiedId();
-		
-		if (verified != null) {			
+		Identifier verified = verification.getVerifiedId();		
+		if (verified != null) {
 			final String username = verified.getIdentifier();
 			log.info("Verfied identifer: " + username);
 			
 			User user = userDAO.getUser(username);			
 			if (user == null) {
-				user = createNewUser(username);
+				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
+				// No existing user for this identity.				
+				if (loggedInUser == null) {
+					user = createNewUser(username);
+					
+				} else {
+					user = loggedInUser;
+					log.info("Attaching verified username to user: " + username);
+					loggedInUser.setUsername(username);					
+				}
 			}
 			
 			if (user != null) {
 				log.info("Setting logged in user to: " + user.getName());
-				setUser(request, user);						
-				loginResourceOwnershipService.assignOwnership(user);	// TODO depricate
+				
+				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
 
+				log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
+				loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
+				setUser(request, user);
+				
 			} else {
 				log.warn("User was null after successful openid auth");
 			}						

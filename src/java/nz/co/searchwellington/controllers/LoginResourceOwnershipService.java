@@ -1,29 +1,25 @@
 package nz.co.searchwellington.controllers;
 
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.repositories.ResourceRepository;
 
 public class LoginResourceOwnershipService {
 	
-	private RequestFilter requestFilter;
+	private ResourceRepository resourceDAO;
 	
-	public LoginResourceOwnershipService(RequestFilter requestFilter) {
-		this.requestFilter = requestFilter;
+	
+	public LoginResourceOwnershipService(ResourceRepository resourceDAO) {
+		this.resourceDAO = resourceDAO;
 	}
-	
-	// TODO should get logged in user from filer bean
-	public void assignOwnershipOfAnonSessionResourcesToLoggedInUser(User user) {
-		Resource unownedResource = requestFilter.getAnonResource();
-		if (user != null && unownedResource != null) {
-			assignOwnership(user, unownedResource);
+
+
+	public void reassignOwnership(User previousOwner, User newOwner) {
+		for (Resource resource : resourceDAO.getOwnedBy(previousOwner, 1000)) {
+			resource.setOwner(newOwner);
+			resourceDAO.saveResource(resource);
 		}
-	}
-
-
-	public void assignOwnership(User user, Resource unownedResource) {
-		unownedResource.setOwner(user);
-		// TODO really want transactional to work so we don have todo this explict save		
+		
 	}
 
 

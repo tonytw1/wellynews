@@ -44,7 +44,7 @@
 			<p>Access to this profile will cease when you close your browser.</p> 
 			
 			<p>If you wish to retain the ability to edit your submissions in the future,  
-			you will need to link this profile to your OpenID.</a>
+			you will need to link this profile to an OpenID.</a>
 			
 			<form action="$site_information.url/openid/login" method="POST"> 
  				<fieldset>	
@@ -53,7 +53,7 @@
 	  		</fieldset>
 			</form>
 			
-			<p>Sign in using your OpenID above, or use your 
+			<p>Sign in using your OpenID above, or follow one of these links to use your 
 			<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a>, 
 			<a href="$site_information.url/openid/login?openid_claimed_identity=flickr.com">Flickr</a>		
 			or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> account as an OpenID.

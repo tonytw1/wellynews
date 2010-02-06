@@ -38,9 +38,8 @@
 		<constructor-arg ref="userDAO" />
 	</bean>
 			
-	<bean id="loginResourceOwnershipService" class="nz.co.searchwellington.openid.LoginResourceOwnershipService">
+	<bean id="loginResourceOwnershipService" class="nz.co.searchwellington.controllers.LoginResourceOwnershipService">
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="requestFilter" />
 	</bean>
 		
 	<bean id="openIDLoginController" class="nz.co.searchwellington.openid.OpenIDLoginController">
