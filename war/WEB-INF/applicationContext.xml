@@ -330,6 +330,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<value>http://www.visitzealandia.com/</value>
 				<value>http://www.wellingtonphoenix.com/</value>
 				<value>http://www.huttcity.com/</value>
+				<value>http://www.metlink.org.nz/</value>
 			</list>
 		</constructor-arg>
 	</bean>
