@@ -128,12 +128,12 @@ public class OpenIDLoginController extends MultiActionController {
 			}
 			
 			if (user != null) {
-				log.info("Setting logged in user to: " + user.getName());
-				
+				log.info("Setting logged in user to: " + user.getName());				
 				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-
-				log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
-				loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
+				if (loggedInUser != null) {
+					log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
+					loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
+				}
 				setUser(request, user);
 				
 			} else {
