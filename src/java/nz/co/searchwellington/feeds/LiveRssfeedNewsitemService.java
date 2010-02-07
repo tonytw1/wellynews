@@ -19,6 +19,7 @@ import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import com.sun.syndication.feed.module.mediarss.MediaEntryModuleImpl;
@@ -137,7 +138,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
             description = UrlFilters.stripHtml(content.getValue());            
         }
         
-		return description;
+		return StringEscapeUtils.unescapeHtml(description);
 	}
     
 	
