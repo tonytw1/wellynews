@@ -41,7 +41,7 @@
 					<br />
 				
 					<label for="description">Description: </label>
-					<textarea name="description" rows="6" cols="40">$resource.description</textarea>
+					<textarea name="description" rows="6" cols="40">$escape.html($resource.description)</textarea>
 					<br />
 										
 					#parse("includes/moderation_fields.vm")				

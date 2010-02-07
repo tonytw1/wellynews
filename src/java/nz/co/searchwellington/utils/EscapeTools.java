@@ -11,4 +11,8 @@ public class EscapeTools {
         return org.apache.commons.lang.StringEscapeUtils.escapeJavaScript(input);
     }
     
+    public String html(String input) {        
+        return org.apache.commons.lang.StringEscapeUtils.escapeHtml(input);
+    }
+    
 }
