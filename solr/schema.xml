@@ -288,7 +288,10 @@
    <field name="month" type="text" indexed="true" stored="true"/>
    <field name="lastChanged" type="date" indexed="true" stored="true"/>
    <field name="lastLive" type="date" indexed="true" stored="true"/>
+   
    <field name="embargoedUntil" type="date" indexed="true" stored="true"/>
+   <field name="held" type="boolean" indexed="true" stored="false"/>
+   
    
    <field name="tags" type="integer" indexed="true" stored="true" required="false" multiValued="true" /> 
    <field name="publisher" type="integer" indexed="true" stored="true" required="false" /> 
