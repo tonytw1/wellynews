@@ -1,9 +1,9 @@
 <div class="nav">
 <ul>
-	<li><a href="$site_information.url/index">Home</a></li>
-	<li><a href="$site_information.url/tags">Tags</a></li>
+	<li><b><a href="${site_information.url}/index">Search $site_information.areaname</a></b></li>
 	<li><a href="$site_information.url/index#submit">Submit</a></li>
 	<li><a href="$site_information.url/feeds">Feeds</a></li>
+	<li><a href="$site_information.url/tags">Tags</a></li>	
 	<li><a href="$site_information.url/about">About</a></li>
 	<li><a href="$site_information.url/about#contact">Contact</a></li>
 </ul>
