@@ -54,11 +54,7 @@
 		#parse("includes/geocoded.vm")
 		
 		#parse("includes/featured.vm")
-		
-		<div class="box">
-			#parse("includes/archive.vm")
-		</div>
-
+			
 		<div class="box">
 			<a name="submit" />
 			<h2>Submit</h2>

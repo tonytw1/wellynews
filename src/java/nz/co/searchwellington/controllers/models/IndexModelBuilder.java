@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
@@ -53,6 +54,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateCommentedNewsitems(mv);
 		populateSecondaryJustin(mv);
 		populateGeocoded(mv);
+		populateFeatured(mv);
 		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());
 		// ARCHIVE / ARCHIVE links
 	}
@@ -63,6 +65,10 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		 }
 	 }
 
+	private void populateFeatured(ModelAndView mv) {
+        mv.addObject("featured", contentRetrievalService.getFeaturedSites());
+    }
+	
 	 private void populateCommentedNewsitems(ModelAndView mv) {
 		final List<Resource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(MAX_NUMBER_OF_COMMENTED_TO_SHOW, 0);
 		if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {

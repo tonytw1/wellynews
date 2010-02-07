@@ -123,5 +123,13 @@ public class ContentRetrievalService {
 	public List<Resource> getOwnedBy(User loggedInUser, int maxItems) {
 		return resourceDAO.getOwnedBy(loggedInUser, maxItems);
 	}
+
+	public List<Resource> getFeaturedSites() {
+		final Tag featuredTag = resourceDAO.loadTagByName("featured");
+		if (featuredTag != null) {         
+			return resourceDAO.getTaggedWebsites(featuredTag,  showBrokenDecisionService.shouldShowBroken(), 10);
+		}
+		return null;
+	}
 	
 }
