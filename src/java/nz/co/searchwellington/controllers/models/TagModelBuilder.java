@@ -73,9 +73,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		Tag tag = tags.get(0);
 
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8);
-		log.debug("Related tag links: " + relatedTagLinks);
 		if (relatedTagLinks.size() > 0) {
-			log.debug("mv: " + mv);
 			mv.addObject("related_tags", relatedTagLinks);
 		}
 		
