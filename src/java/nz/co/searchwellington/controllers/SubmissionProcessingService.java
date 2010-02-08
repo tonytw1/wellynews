@@ -22,6 +22,7 @@ import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -125,6 +126,7 @@ public class SubmissionProcessingService {
     public void processDescription(HttpServletRequest request, Resource editResource) {
         String description = request.getParameter(REQUEST_DESCRIPTION_NAME);
         if (description != null) {
+        	description = StringEscapeUtils.unescapeHtml(description);
         	description = UrlFilters.stripHtml(description);
         }
         editResource.setDescription(description);
