@@ -5,7 +5,9 @@ import org.apache.log4j.Logger;
 
 public class RobotsAwareHttpFetcher implements HttpFetcher {
 	
-    Logger log = Logger.getLogger(RobotsAwareHttpFetcher.class);
+    private static final int CANT_CRAWL = -2;
+
+	Logger log = Logger.getLogger(RobotsAwareHttpFetcher.class);
 
 	private RobotExclusionService robotExclusionService;
 	private StandardHttpFetcher httpFetcher;
@@ -29,7 +31,7 @@ public class RobotsAwareHttpFetcher implements HttpFetcher {
 			return httpFetcher.httpFetch(url);
 		}
 		log.info("Url is not allowed to be crawled: " + url);
-		return new HttpFetchResult(-2, null);
+		return new HttpFetchResult(CANT_CRAWL, null);
 	}
 	
 }
