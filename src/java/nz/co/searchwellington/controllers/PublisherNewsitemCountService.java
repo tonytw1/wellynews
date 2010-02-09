@@ -36,7 +36,10 @@ public class PublisherNewsitemCountService {
 
 	public int getNewsitemCount(Website publisher) {	
 		boolean showBroken = loggedInFilter.getLoggedInUser() != null;		
-		Map<Integer, Integer> newsitemCounts = createOrGetCorrectPublisherNewsitemCounts(showBroken);		
+		Map<Integer, Integer> newsitemCounts = createOrGetCorrectPublisherNewsitemCounts(showBroken);
+		if (newsitemCounts == null) {
+			return 0;
+		}
 		final int publisherId = publisher.getId();
 		if (newsitemCounts.containsKey(publisherId)) {
 			return newsitemCounts.get(publisherId);
