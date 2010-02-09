@@ -5,7 +5,7 @@
 		</ul>
 	#else
 		<ul>
-			<li>#rssIcon($rss_url "$tag.displayName.toLowerCase() news feed")</li>
+			<li>#rssIcon($rss_url "$tag.displayName.toLowerCase() feed")</li>
 		</ul>
 	#end
 #end
