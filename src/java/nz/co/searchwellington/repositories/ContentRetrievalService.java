@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -130,6 +131,10 @@ public class ContentRetrievalService {
 			return resourceDAO.getTaggedWebsites(featuredTag,  showBrokenDecisionService.shouldShowBroken(), 10);
 		}
 		return null;
+	}
+
+	public List<Feed> getAllFeeds() {
+		return resourceDAO.getAllFeeds();	// TODO show broken
 	}
 	
 }

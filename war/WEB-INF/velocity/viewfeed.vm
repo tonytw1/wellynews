@@ -10,7 +10,7 @@
 	</div>
 
 	<div class="main">
-		<h2>$heading</h2>
+		<h2><a href="${site_information.url}/feeds">Feeds</a> / $heading</h2>
 
 		#if ($editPermissionService.canEdit($feed)) 
 			<ul>

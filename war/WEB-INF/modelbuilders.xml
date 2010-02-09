@@ -7,6 +7,10 @@
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="loggedInUserFilter" />
 	</bean>
+	
+	<bean id="feedsModelBuilder" class="nz.co.searchwellington.controllers.models.FeedsModelBuilder">
+		<constructor-arg ref="contentRetrievalService" />	
+	</bean>
 
 	<bean id="publisherModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherModelBuilder">
 		<constructor-arg ref="resourceDAO" />
@@ -89,6 +93,7 @@
 		<constructor-arg>
 			<list>
 				<ref bean="indexModelBuilder" />
+				<ref bean="feedsModelBuilder" />
 				<ref bean="suggestionsModelBuilder" />
 				<ref bean="justinModelBuilder" />		
 				<ref bean="commentModelBuilder" />

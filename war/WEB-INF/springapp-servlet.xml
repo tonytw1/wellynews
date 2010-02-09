@@ -171,7 +171,6 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
-						<prop key="/feeds">rssfeeds</prop>						
 						<prop key="/feeds/**">rssfeeds</prop>					
 					</props>
 				</property>
@@ -768,6 +767,7 @@
 				
 				<prop key="/supress/*">supressionController</prop>
 								
+				<prop key="/feeds">tagController</prop>
 				<prop key="/*+*">tagController</prop>
           		<prop key="/*%2B*">tagController</prop>				
 				<prop key="/*/comment">tagController</prop>

@@ -12,65 +12,6 @@
 <div class="main">
 <h2>$heading</h2>
 
-<p>The $site_information.areaname Newslog is available as an RSS feed and 
-<a href="http://www.mozilla.org/products/firefox/live-bookmarks.html">Live Bookmark</a>.</p>
-
-<p>
-Updated daily, the feed contains links to newsitems published by a 
-wide range of local organisations.</p>
-
-
-#if (!$custom) 
-	<p>To subscribe, load this location into your feed reader:</p>
-	<ul>
-		<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
-	</ul>
-#end
-
-
-
-<p>Many of the sites which regularly have items included in the newslog 
-are also listed on the <a href="watchlist">News Watchlist</a>.</p>
-
-
-
-<a name="custom"></a>
-<h3>Custom RSS Feeds</h3>
-
-<p>The Newslog also allows you to create custom RSS feeds for specific 
-tags or publishers. To create a custom feed, select a tag or publisher from the dropdown menus below.</p>
-
-<form id="tagForm" action="feeds#custom" method="GET">
- <fieldset>
-    <label for="tag">Tag</label>
-    $tag_select
-  </fieldset>
-</form>
-
-
-<form id="publisherForm" action="feeds#custom" method="GET">
- <fieldset>
-    <label for="publisher">Publisher</label>
-    $publisher_select
-  </fieldset>
-</form>
-
-#if ($custom) 
-	<p>To subscribe to this custom feed, load this location into your feed reader:</p>
-	<ul>
-		<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>	
-	</ul>	
-#end
-
-
-
-<h3>Preview</h3>
-
-#if (!$custom) 
-	<p>The $site_information.areaname Newslog feed currently contains the following newsitems:</p>
-#else
-	<p> Your custom feed currently contains these items.</p>
-#end
 
 #parse("includes/main_content.vm")
 </div>
