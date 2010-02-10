@@ -136,7 +136,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     
     
     @SuppressWarnings("unchecked")
-    final public List<Website> getPublisherFeeds(Website publisher) {             
+    final public List<Feed> getPublisherFeeds(Website publisher) {             
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).
         add(Restrictions.eq("publisher", publisher)).
         addOrder(Order.asc("name")).
@@ -144,7 +144,7 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
   
     @SuppressWarnings("unchecked")  
-    final public List<Website> getPublisherWatchlist(Website publisher) {    
+    final public List<Watchlist> getPublisherWatchlist(Website publisher) {    
         return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).
                 add(Restrictions.eq("publisher", publisher)).
                 addOrder(Order.asc("name")).

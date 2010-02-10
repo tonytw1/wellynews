@@ -1,0 +1,16 @@
+#if ($watchlist && $watchlist.size() > 0)
+
+<h2>$publisher.name watchlist</h2>
+
+<p>Pages of interest.</p>
+
+<ul class="flat_list">
+#foreach($item in $watchlist)
+		<li>
+			<ul class="tag_watchlist_item">
+				#parse("includes/content_element.vm")
+			</ul>
+		</li>
+	#end
+</ul>
+#end

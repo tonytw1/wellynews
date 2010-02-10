@@ -32,8 +32,8 @@ public interface ResourceRepository {
     public List<Resource> getLatestNewsitems(int maxItems, boolean showBroken);
     public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken); 
     public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex);
-    public List <Website> getPublisherFeeds(Website publisher);
-    public List <Website> getPublisherWatchlist(Website publisher);
+    public List <Feed> getPublisherFeeds(Website publisher);
+    public List <Watchlist> getPublisherWatchlist(Website publisher);
 
     public List <Resource> getNewsitemsForMonth(Date month, boolean showBroken);
 

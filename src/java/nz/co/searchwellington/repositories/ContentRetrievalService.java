@@ -10,6 +10,8 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.Watchlist;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
 public class ContentRetrievalService {
@@ -135,6 +137,22 @@ public class ContentRetrievalService {
 
 	public List<Feed> getAllFeeds() {
 		return resourceDAO.getAllFeeds();	// TODO show broken
+	}
+
+	public List<Feed> getPublisherFeeds(Website publisher) {
+		return resourceDAO.getPublisherFeeds(publisher);	// TODO show broken
+	}
+
+	public int getPublisherNewsitemsCount(Website publisher) {
+		return resourceDAO.getPublisherNewsitemsCount(publisher, showBrokenDecisionService.shouldShowBroken());
+	}
+
+	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, int startIndex) {
+		return resourceDAO.getPublisherNewsitems(publisher, maxItems, showBrokenDecisionService.shouldShowBroken(), startIndex);
+	}
+
+	public List<Watchlist> getPublisherWatchlist(Website publisher) {
+		return resourceDAO.getPublisherWatchlist(publisher); // TODO show broken
 	}
 	
 }

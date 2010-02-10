@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -20,17 +21,17 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	
 	Logger logger = Logger.getLogger(PublisherModelBuilder.class);
 	
-	private ResourceRepository resourceDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
+	private ContentRetrievalService contentRetrievalService;
 
 	
-	public PublisherModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {		
-		this.resourceDAO = resourceDAO;
+	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService) {		
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
+		this.contentRetrievalService = contentRetrievalService;
 	}
 
 
@@ -47,14 +48,19 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 			logger.info("Building publisher page model");
 			Website publisher = (Website) request.getAttribute("publisher");
 			int page = getPage(request);
-			return populatePublisherPageModelAndView(publisher, showBroken, page);
+			return populatePublisherPageModelAndView(publisher, showBroken, page);			
 		}
 		return null;
 	}
 	
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		Website publisher = (Website) request.getAttribute("publisher"); 
+		Website publisher = (Website) request.getAttribute("publisher");
+		
+		mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher));
+		mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher));
+
+		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher, showBroken);
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
@@ -69,17 +75,17 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		mv.addObject("link", urlBuilder.getPublisherUrl(publisher));
 		
 		int startIndex = getStartIndex(page);
-		final int mainContentTotal = resourceDAO.getPublisherNewsitemsCount(publisher, showBroken);
+		final int mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);
 		if (mainContentTotal > 0) {			
-			final List<Resource> publisherNewsitems = resourceDAO.getPublisherNewsitems(publisher, MAX_NEWSITEMS, showBroken, startIndex);		
+			final List<Resource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex);		
 			mv.addObject("main_content", publisherNewsitems);
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
 			mv.addObject("publisher", publisher);
 			
 			populatePagination(mv, startIndex, mainContentTotal);
 			
-		}		
-		mv.setViewName("browse");
+		}
+		mv.setViewName("publisher");
 		return mv;
 	}
 	

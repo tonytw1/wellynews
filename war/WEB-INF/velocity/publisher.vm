@@ -1,0 +1,69 @@
+#parse("includes/header.vm")
+
+<div class="page">
+	#parse("includes/topbar.vm")
+<div class="left">
+
+#parse("includes/related_publisher_tags.vm")
+
+#parse("includes/tag_tree.vm")
+
+
+</div>
+
+
+<div class="main">
+
+<div class="rss">
+#parse("includes/rss_widget_for_publisher.vm")
+</div>
+
+
+#if ($publisher) 
+	<h2><a href="$publisher.url">$heading</a></h2>
+	#if ($publisher.description)
+		<p>$publisher.description</p>
+	#end
+	
+	#if ($editPermissionService.canEdit($publisher))
+		<ul>
+			<li class="admin"><a href="$adminUrlBuilder.getPublisherAutoGatherUrl($publisher)">gather</a></li>
+		</ul>
+	#end
+#else
+	<h2>$heading</h2>
+#end
+
+
+#parse("includes/search_widget.vm")
+
+	<div class="tag_main_content">	
+		#set($main_heading = "$publisher.getName() newsitems")				
+		#parse("includes/main_content.vm")						
+		#parse("includes/publisher_page_links.vm")
+	</div>
+
+
+	<div class="tag_secondary_content">
+		#set($secondary_heading = "Feeds")
+		#set($secondary_content = $feeds)
+		#parse("includes/secondary_content.vm")
+	
+		#parse("includes/publisher_watchlist.vm")
+	</div>
+
+
+</div>
+
+<div class="right">
+#parse("includes/login.vm")
+
+<div class="box">
+#parse("includes/latest_newsitems.vm")
+</div>
+
+</div>
+
+</div>
+
+#parse("includes/footer.vm")
