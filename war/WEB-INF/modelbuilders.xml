@@ -8,11 +8,15 @@
 		<constructor-arg ref="loggedInUserFilter" />
 	</bean>
 	
+	<bean id="feedsModelBuilder" class="nz.co.searchwellington.controllers.models.FeedsModelBuilder">
+		<constructor-arg ref="contentRetrievalService" />	
+	</bean>
+
 	<bean id="publisherModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherModelBuilder">
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
-		<constructor-arg ref="contentRetrievalService" />			
+		<constructor-arg ref="contentRetrievalService" />	
 	</bean>
 
 	<bean id="publisherTagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherTagCombinerModelBuilder">
@@ -89,6 +93,7 @@
 		<constructor-arg>
 			<list>
 				<ref bean="indexModelBuilder" />
+				<ref bean="feedsModelBuilder" />
 				<ref bean="suggestionsModelBuilder" />
 				<ref bean="justinModelBuilder" />		
 				<ref bean="commentModelBuilder" />
