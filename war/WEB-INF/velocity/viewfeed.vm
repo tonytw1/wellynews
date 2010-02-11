@@ -12,16 +12,23 @@
 	<div class="main">
 		<h2><a href="${site_information.url}/feeds">Feeds</a> / $heading</h2>
 
-		#if ($editPermissionService.canEdit($feed)) 
-			<ul>
+		<ul>
+			#if ($editPermissionService.canEdit($feed)) 
 				<li class="admin"><a href="${site_information.url}/edit/edit?resource=$feed.id">Edit</a></li>
-				<li class="admin"><a href="${site_information.url}/edit/delete?resource=$feed.id">Delete</a></li>				
+				<li class="admin"><a href="${site_information.url}/edit/delete?resource=$feed.id">Delete</a></li>			
+			#end
+		
+			#if ($editPermissionService.canDecache($feed))
 				<li class="admin"><a href="${site_information.url}/admin/feed/decache?feed=$feed.id">Decache</a></li>
-				<li class="admin"><a href="${site_information.url}/admin/feed/read?feed=$feed.id">Read</a></li>		
-				#if ($feed.lastRead)
-					<li class="admin">This feed was last read $dateFormatter.timeSince($feed.lastRead)</li>
-				#end
-			</ul>
+			#end
+		
+			#if ($editPermissionService.canRead($feed))
+				<li class="admin"><a href="${site_information.url}/admin/feed/read?feed=$feed.id">Read</a></li>
+			#end
+		</ul>
+		
+		#if ($feed.lastRead)
+			<p>This feed was last read $dateFormatter.timeSince($feed.lastRead)</p>
 		#end
 		
 		#if($feed.isScreenScraped()) 

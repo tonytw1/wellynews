@@ -34,6 +34,16 @@ public class EditPermissionService {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return isAdminOrOwner(resource, loggedInUser);
 	}
+	
+	public boolean canDecache(Resource resource) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return loggedInUser != null && loggedInUser.isAdmin();
+	}
+	
+	public boolean canRead(Resource resource) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return loggedInUser != null && loggedInUser.isAdmin();
+	}
 
 	
 	public boolean canCheck(Resource resource) {
