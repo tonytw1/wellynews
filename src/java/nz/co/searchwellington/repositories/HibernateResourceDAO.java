@@ -376,7 +376,13 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 
 
 
-	public void saveResource(Resource resource) {     
+	public void saveResource(Resource resource) {
+		if (resource.getType().equals("N")) {
+			if (((Newsitem) resource).getImage() != null) {
+				sessionFactory.getCurrentSession().saveOrUpdate(((Newsitem) resource).getImage());
+			}
+	}
+		
         sessionFactory.getCurrentSession().saveOrUpdate(resource);
         sessionFactory.getCurrentSession().flush();
         //if (resource.getType().equals("F")) {

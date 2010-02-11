@@ -17,6 +17,7 @@
       			<value>nz/co/searchwellington/model/DiscoveredFeed.hbm.xml</value>
       			<value>nz/co/searchwellington/model/Geocode.hbm.xml</value>
      			<value>nz/co/searchwellington/model/Resource.hbm.xml</value>
+     			<value>nz/co/searchwellington/model/Image.hbm.xml</value>     			
       			<value>nz/co/searchwellington/model/Tag.hbm.xml</value>
       	 		<value>nz/co/searchwellington/model/User.hbm.xml</value>
       			<value>nz/co/searchwellington/model/Supression.hbm.xml</value>

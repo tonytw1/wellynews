@@ -151,7 +151,10 @@
 			
 			<many-to-one name="commentFeed" class="nz.co.searchwellington.model.CommentFeed" 
 				column="comment_feed" cascade="" />
-		            	        	
+		            	      
+		    <many-to-one name="image" class="nz.co.searchwellington.model.Image" 
+				column="image_id" cascade="" />
+		            	        	        	      		            	        	
 		    <many-to-one name="submittingTwit" class="nz.co.searchwellington.model.Twit" column="submitting_twit" />
 		    
         	<set name="reTwits" table="newsitem_retwits" access="field">
@@ -163,11 +166,9 @@
 		</subclass>
 
 
-
 		<subclass name="nz.co.searchwellington.model.Watchlist"	discriminator-value="L">
 			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="watchlist_publisher" cascade="" />
 		</subclass>
-
 
 
 		<subclass name="nz.co.searchwellington.model.CalendarFeed"
