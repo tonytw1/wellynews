@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
@@ -56,9 +57,12 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateGeocoded(mv);
 		populateFeatured(mv);
 		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());
-		// ARCHIVE / ARCHIVE links
-	}
 
+		// TODO Archive counts
+		mv.addObject("archive_links", contentRetrievalService.getArchiveMonths());
+	}
+	
+	
 	private void populateUserOwnedResources(ModelAndView mv, User loggedInUser) {
 		 if (loggedInUser != null) {
 			 mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, 4));

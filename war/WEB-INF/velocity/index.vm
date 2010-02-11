@@ -29,9 +29,10 @@
 			#if ($commented_newsitems)	
 				#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
 			#end
+
+			#set($main_content_moreurl = $urlBuilder.getArchiveUrl())
 			#parse("includes/main_content.vm")
 		</div>
-
 
 		<div class="tag_secondary_content">
 			#if ($commented_newsitems)
@@ -73,11 +74,13 @@
 				</ul>
 			#end
 		</div>
-
 		
 		#parse("includes/tag_related_feed.vm")
-	
-
+		
+		<div class="box">
+			#parse("includes/archive.vm")
+		</div>
+		
 		<div class="box">
 			#parse("includes/tagless.vm")
 		</div>

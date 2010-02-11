@@ -94,7 +94,9 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/tagging/tag?resource=" + resource.getId();
 	}
 	
-	
+	public String getArchiveUrl() {
+		return siteInformation.getUrl() + "/archive";
+	}
 	
 	public String getArchiveLinkUrl(ArchiveLink archiveLink) {
 		// TODO if this dateformatter thread safe? Replace with DateFormatter

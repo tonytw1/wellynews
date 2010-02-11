@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
+import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
@@ -153,6 +154,10 @@ public class ContentRetrievalService {
 
 	public List<Watchlist> getPublisherWatchlist(Website publisher) {
 		return resourceDAO.getPublisherWatchlist(publisher); // TODO show broken
+	}
+
+	public List<ArchiveLink> getArchiveMonths() {
+		return resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken());
 	}
 	
 }
