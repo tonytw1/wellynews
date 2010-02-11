@@ -24,6 +24,7 @@ public class LiveTwitterService implements TwitterService {
 
 		
 	public List<Status> getReplies() {
+		// TODO need to consider retweets as well
 		log.info("Getting twitter replies from live api for " + username);
         Api api = new Api.Builder().username(username).password(password).build();
         List<Status> all = new ArrayList<Status>();
