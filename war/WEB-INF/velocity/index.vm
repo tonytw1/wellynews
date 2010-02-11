@@ -64,7 +64,6 @@
 				<li><a href="edit/submit/website">Submit Website</a></li>
 				<li><a href="edit/submit/newsitem">Submit Newsitem</a></li>
 				<li><a href="edit/submit/feed">Submit Feed</a></li>
-				<li><a href="edit/submit/calendar">Submit Calendar</a></li>
 			</ul>
 
 			#if ($editPermissionService.canAddWatchlistAndTag() ) 
