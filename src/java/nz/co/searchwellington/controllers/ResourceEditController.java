@@ -451,9 +451,12 @@ public class ResourceEditController extends BaseMultiActionController {
     
    // TODO move to submission handling service.
    private void processFeedAcceptancePolicy(HttpServletRequest request, Resource editResource) {
-	   if (editResource.getType().equals("F")) {
-		   ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
-		   log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
+	   if (editResource.getType().equals("F")) {		   
+		   ((Feed) editResource).setAcceptancePolicy("ignore");
+		   if (request.getParameter("acceptance") != null) {
+			   ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
+			   log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
+		   }
 		   rssPrefetcher.decacheAndLoad((Feed) editResource);
 	   }
    }
