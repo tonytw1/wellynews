@@ -145,5 +145,6 @@ public interface ResourceRepository {
 	public List<Newsitem> getNewsitemsForFeed(Feed feed);
 	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken);
 	public List<Resource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean showBroken, Tag tag);
+	public List<Resource> getAllFeeds(boolean shouldShowBroken);
     
 }

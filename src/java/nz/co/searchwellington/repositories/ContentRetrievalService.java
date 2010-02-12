@@ -136,8 +136,8 @@ public class ContentRetrievalService {
 		return null;
 	}
 
-	public List<Feed> getAllFeeds() {
-		return resourceDAO.getAllFeeds();	// TODO show broken
+	public List<Resource> getAllFeeds() {
+		return resourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Feed> getPublisherFeeds(Website publisher) {

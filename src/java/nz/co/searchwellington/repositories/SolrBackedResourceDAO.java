@@ -80,7 +80,16 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
     	return getTaggedNewsitems(tags, showBroken, startIndex, maxItems);
 	}
     
+	
+	
        
+	@Override
+	public List<Resource> getAllFeeds(boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(showBroken).maxItems(500).toQuery();
+		setTitleSortOrder(query);
+    	return getQueryResults(query);
+	}
+
 	public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int maxItems) {
 		return getTaggedNewsitems(name, showBroken, 0, maxItems);
 	}
