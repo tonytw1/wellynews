@@ -20,7 +20,7 @@ import org.apache.ecs.html.Select;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
-
+@Deprecated
 public class FeedsController extends BaseMultiActionController {
 
     Logger log = Logger.getLogger(FeedsController.class);

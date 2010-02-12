@@ -30,7 +30,7 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 			
 			mv.addObject("heading", "Feeds");        		
 			mv.addObject("description", "Incoming feeds");
-			//mv.addObject("link", urlBuilder.getJustinUrl());
+			mv.addObject("link", "TODO");	// TODO
 			
 			mv.addObject("main_content", contentRetrievalService.getAllFeeds());
 			mv.setViewName("rssfeeds");
