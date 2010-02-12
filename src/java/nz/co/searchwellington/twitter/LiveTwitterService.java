@@ -28,8 +28,6 @@ public class LiveTwitterService implements TwitterService {
 
 		
 	public List<Twit> getReplies() {
-		// TODO need to consider retweets as well
-
 		log.info("Getting twitter replies from live api for " + username);
 		List<Twit> all = new ArrayList<Twit>();
 				
@@ -42,8 +40,34 @@ public class LiveTwitterService implements TwitterService {
         } catch (Exception e) {
         	log.warn("Error during twitter api call: " + e.getMessage());
         }
+        
+        all.addAll(getRetweets());        
 		return all;
 	}
+	
+	
+	
+	private List<Twit> getRetweets() {
+		log.info("Getting twitter retweets from live api for " + username);
+		List<Twit> all = new ArrayList<Twit>();				
+        try {        	
+        	Twitter receiver = new TwitterFactory().getInstance(username, password);        
+        	List<Status> retweets = receiver.getRetweetsOfMe();
+             for (Status message : retweets) {          
+                 List<Status> messageRetweets = receiver.getRetweets(message.getId());
+                 for (Status retweet : messageRetweets) {
+                	 all.add(new Twit(retweet));
+                 }                 
+             }
+        	
+        } catch (Exception e) {
+        	log.warn("Error during twitter api call: " + e.getMessage());
+        }
+		return all;
+	}
+	
+	
+	
 
 	
 	@Override
@@ -85,5 +109,5 @@ public class LiveTwitterService implements TwitterService {
 	public boolean isConfigured() {
 		return this.username != null && !this.username.equals("") && this.password != null && !this.password.equals("");
 	}
-		
+	
 }
