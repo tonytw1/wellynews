@@ -2,17 +2,17 @@ package nz.co.searchwellington.twitter;
 
 import java.util.List;
 
-import net.unto.twitter.TwitterProtos.Status;
+import nz.co.searchwellington.model.Twit;
 
 
 public interface TwitterService {
 
-	public List<Status> getReplies();
+	public List<Twit> getReplies();
 	
     public String getUsername();
 
 	public boolean isConfigured();
 
-	public Status getTwitById(long twitterId);
+	public Twit getTwitById(long twitterId);
 
 }

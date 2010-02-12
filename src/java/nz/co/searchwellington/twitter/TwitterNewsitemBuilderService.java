@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.unto.twitter.TwitterProtos.Status;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
@@ -67,25 +66,25 @@ public class TwitterNewsitemBuilderService {
 	public List<TwitterMention> getNewsitemMentions() {
 		List<TwitterMention> RTs = new ArrayList<TwitterMention>();
 		
-		List<Status> replies = twitterService.getReplies();	
-		for (Status status : replies) {
-	
-			
+		List<Twit> replies = twitterService.getReplies();
+		for (Twit status : replies) {
+				
 			String message = status.getText();			
 			if (status.getInReplyToStatusId() > 0) {
 							
 				long inReplyTo = status.getInReplyToStatusId();
 				log.info("Twit '" + status.getText() + "' is in reply to twit #: " + inReplyTo);
 				
+				
 				Twit referencedTwit = resourceDAO.loadTweetByTwitterId(inReplyTo);
 				if (referencedTwit == null) {
-					Status referencedStatus = twitterService.getTwitById(inReplyTo);
-					if (status != null) {
-						referencedTwit = new Twit(referencedStatus);
-						resourceDAO.saveTweet(referencedTwit);						
+					Twit referencedStatus = twitterService.getTwitById(inReplyTo);
+					if (referencedStatus != null) {
+						resourceDAO.saveTweet(referencedStatus);						
+						referencedTwit = referencedStatus;
 					}
 				}
-				
+								
 				if (referencedTwit != null) {
 					message = referencedTwit.getText();
 					Resource referencedNewsitem = extractReferencedResourceFromMessage(message);
@@ -153,13 +152,15 @@ public class TwitterNewsitemBuilderService {
 	
 
 
-	private Twit loadOrCreateTwit(Status status) {
-		Twit twit = resourceDAO.loadTweetByTwitterId(status.getId());
-		if (twit == null) {
-			twit = new Twit(status);
+	private Twit loadOrCreateTwit(Twit twit) {
+		Twit existingTwit = resourceDAO.loadTweetByTwitterId(twit.getTwitterid());
+		if (existingTwit == null) {
+			log.info("Saving new twit: " + twit.getText());
 			resourceDAO.saveTweet(twit);
+			return twit;
 		}
-		return twit;
+		// TODO confusing need to have the twitter id as the hibernate id
+		return existingTwit;
 	}
 	
 	
@@ -205,11 +206,9 @@ public class TwitterNewsitemBuilderService {
 			return null;
 		}
 	
-    private List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(List<Status> replies) {
+    private List<TwitteredNewsitem> extractPossibleSubmissionsFromTwitterReplies(List<Twit> replies) {
     	List<TwitteredNewsitem> potentialTwitterSubmissions = new ArrayList<TwitteredNewsitem>();
-    	for (Status status : replies) {
-    		Twit twit = new Twit(status);
-    		
+    	for (Twit twit : replies) {    		
     		TwitteredNewsitem newsitem = this.createNewsitemFromTwitterReply(twit);    		
     		if (newsitem != null && newsitem.getUrl() != null && !newsitem.getUrl().equals("")) {
     			boolean isRT = newsitem.getName() != null & newsitem.getName().startsWith("RT");

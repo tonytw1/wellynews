@@ -3,16 +3,20 @@ package nz.co.searchwellington.twitter;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.unto.twitter.Api;
-import net.unto.twitter.TwitterProtos.Status;
-import net.unto.twitter.methods.RepliesRequest;
+
+import nz.co.searchwellington.model.Twit;
 
 import org.apache.log4j.Logger;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.Status;
 
 
 public class LiveTwitterService implements TwitterService {
 	
-    private static final int REPLY_PAGES_TO_FETCH = 1;
+    private static final int REPLY_PAGES_TO_FETCH = 1;	// TODO implement
 
 	Logger log = Logger.getLogger(LiveTwitterService.class);
 
@@ -23,30 +27,38 @@ public class LiveTwitterService implements TwitterService {
 	}
 
 		
-	public List<Status> getReplies() {
+	public List<Twit> getReplies() {
 		// TODO need to consider retweets as well
+
 		log.info("Getting twitter replies from live api for " + username);
-        Api api = new Api.Builder().username(username).password(password).build();
-        List<Status> all = new ArrayList<Status>();
-        
-        try {
-        	for (int i = 1; i <= REPLY_PAGES_TO_FETCH; i++) {
-        		RepliesRequest repliesRequest = api.replies().page(i).build();
-        		repliesRequest.get();
-        		all.addAll(repliesRequest.get());
-        	}
+		List<Twit> all = new ArrayList<Twit>();
+				
+        try {        	
+        	Twitter receiver = new TwitterFactory().getInstance(username, password);        
+        	for (Status status : receiver.getMentions()) {
+        		all.add(new Twit(status));        		
+        	}        	
+        	
         } catch (Exception e) {
-        	log.warn("Error during twitter api call; returning partial collection: " + e.getMessage());
+        	log.warn("Error during twitter api call: " + e.getMessage());
         }
 		return all;
 	}
 
 	
 	@Override
-	public Status getTwitById(long twitterId) {
-		log.info("Getting tweet: " + twitterId);
-        Api api = new Api.Builder().username(username).password(password).build();
-		return api.showStatus(twitterId).build().get();
+	public Twit getTwitById(long statusId) {
+		log.info("Getting tweet: " + statusId);
+		Twitter receiver = new TwitterFactory().getInstance(username, password);
+		try {
+			Status status = receiver.showStatus(statusId);
+			if (status != null) {
+				return new Twit(status);
+			}
+		} catch (TwitterException e) {
+			log.warn("Error during twitter api call: " + e.getMessage());
+		}
+		return null;
 	}
 
 

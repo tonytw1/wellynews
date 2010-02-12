@@ -6,7 +6,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.unto.twitter.TwitterProtos.Status;
 import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -62,9 +61,8 @@ public class IndexRebuildController extends BaseMultiActionController {
 		List<Twit> allLocalTwits = resourceDAO.getAllTweets();
 		for (Twit twit : allLocalTwits) {
 			if (twit.getDate() == null) {
-				Status status = twitterService.getTwitById(twit.getTwitterid());
+				Twit status = twitterService.getTwitById(twit.getTwitterid());
 				if (status != null) {
-					twit.setDate(new Twit(status).getDate());
 					resourceDAO.saveTweet(twit);
 					log.info("Tweet date for '" + twit.getText() + "' updated to: " + twit.getDate());
 				
@@ -75,5 +73,4 @@ public class IndexRebuildController extends BaseMultiActionController {
 		}
 	}
 
-    
 }

@@ -3,15 +3,15 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
-import net.unto.twitter.TwitterProtos.Status;
+import twitter4j.Status;
+
 
 public class Twit {
 	
 	private int id;
-	private Long twitterid;	
+	private Long twitterid;
+	private long inReplyToStatusId;
 	private String text;
 	private String author;
 	private String profileImage;	// TODO split off
@@ -20,16 +20,14 @@ public class Twit {
 
 	public Twit() {		
 	}
-
 	
-	public Twit(Status status) {	
+	public Twit(Status status) {
 		this.twitterid = status.getId();
+		this.inReplyToStatusId = status.getInReplyToStatusId();
 		this.text = status.getText();
 		this.author = status.getUser().getScreenName();
-		this.profileImage = status.getUser().getProfile().getImageUrl();
-				
-		DateTimeFormatter parser = DateTimeFormat.forPattern("E MMM dd HH:mm:ss Z YYYY");
-		DateTime time = parser.parseDateTime(status.getCreatedAt());
+		this.profileImage = status.getUser().getProfileImageURL().toExternalForm();	
+		DateTime time = new DateTime(status.getCreatedAt());
 		this.date = time.toDate();
 	}
 
@@ -99,10 +97,15 @@ public class Twit {
 	public void setDate(Date date) {
 		this.date = date;
 	}
+
 	
-	
-	
-		
+	public long getInReplyToStatusId() {
+		return inReplyToStatusId;
+	}
+
+	public void setInReplyToStatusId(long inReplyToStatusId) {
+		this.inReplyToStatusId = inReplyToStatusId;
+	}
 	
 	// TODO equals needs to look at TwitterID - set that as hibernate id?
 	
