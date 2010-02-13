@@ -13,7 +13,21 @@
 <h2>$heading</h2>
 
 
-#parse("includes/main_content.vm")
+<ul>
+#set($letter = "")
+#foreach ($feed in $main_content) 
+	#set($current = $feed.name.substring(0, 1).toUpperCase())
+	#if ($current != $letter)
+		#set($letter = $current)		
+		</ul>
+		<h4>$current.toUpperCase()</h4>
+		<ul>
+	#end
+	<li><a href="$urlBuilder.getFeedUrl($feed)">$feed.name</a></li>
+#end
+</ul>
+
+
 </div>
 
 <div class="right">
