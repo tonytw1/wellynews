@@ -385,10 +385,10 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
 		
         sessionFactory.getCurrentSession().saveOrUpdate(resource);
         sessionFactory.getCurrentSession().flush();
-        //if (resource.getType().equals("F")) {
+        if (resource.getType().equals("F")) {
             // TODO can this be done for just the publisher only?
-         //   sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
-       // }
+        	sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
+        }
      
         // TODO for related tags, can we be abit more subtle than this?
         // Clear related tags query.

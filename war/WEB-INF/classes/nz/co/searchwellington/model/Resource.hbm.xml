@@ -111,7 +111,7 @@
 			</set>
 
 			<set name="feeds" inverse="true" 
-				cascade="all,delete-orphan">
+				cascade="all,all-delete-orphan">
 						<cache usage="read-write" />
 				
 				<key column="feed_publisher" />
