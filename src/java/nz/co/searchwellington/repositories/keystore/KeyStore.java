@@ -35,15 +35,19 @@ public class KeyStore {
 
 	
 	public synchronized void put(String id, String content) {
-		connect();
-		if (content != null && db != null) {
-			log.info("Setting snapshot for key: " + id);
+		try {
 			connect();
-			db.put(id, content);			
-		} else {
-			log.warn("Content is null for id; removing: " + id);
-			this.evict(id);
-		}		
+			if (content != null && db != null) {
+				log.info("Setting snapshot for key: " + id);
+				connect();
+				db.put(id, content);			
+			} else {
+				log.warn("Content is null for id; removing: " + id);
+				this.evict(id);
+			}
+		} catch (Exception e) {
+			log.warn("Keystore expection; not put: " + e.getMessage());
+		}
 	}
 
 	public void evict(String id) {
