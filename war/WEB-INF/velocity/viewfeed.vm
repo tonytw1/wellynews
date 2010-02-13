@@ -38,7 +38,12 @@
 				<p>This feed is provided by screen scraping a third parties site.</p>
 			#end		
 		#else
-			<p>This feed is provided by a third party.</p>
+		
+			#if($feed.publisher) 
+				<p>This feed is published by the <a href="$urlBuilder.getPublisherUrl($feed.publisher)">$feed.publisher.name</a>.</p>
+			#else
+				<p>This feed is provided by a third party.</p>
+			#end
 		#end
 		
 		<p>To subscribe to this feed, enter the following location into your feed reader.</p>
