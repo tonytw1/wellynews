@@ -19,7 +19,7 @@
 			#end
 				
 			#if ($item.publisher)
-				<li class="publisher">$item.publisher.name</li>
+				<li class="publisher"><a href="$urlBuilder.getPublisherUrl($item.publisher)">$item.publisher.name</a></li>
 			#end
 			
 			#if ($item.type == "S" && $item.suggestion.feed.publisher)
