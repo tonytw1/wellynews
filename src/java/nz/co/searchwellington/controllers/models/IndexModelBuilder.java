@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +12,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,11 +26,13 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	ContentRetrievalService contentRetrievalService;
 	RssUrlBuilder rssUrlBuilder;
 	LoggedInUserFilter loggedInUserFilter;
+	UrlBuilder urlBuilder;
 	
-	public IndexModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter) {
+	public IndexModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.loggedInUserFilter = loggedInUserFilter;
+		this.urlBuilder = urlBuilder;
 	}
 
 	@Override
@@ -42,7 +46,14 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			log.info("Building justin page model");
 			ModelAndView mv = new ModelAndView();		
 			final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS);                
-			mv.addObject("main_content", latestNewsitems);			
+			mv.addObject("main_content", latestNewsitems);
+			
+			List<ArchiveLink> archiveMonths = contentRetrievalService.getArchiveMonths();
+			mv.addObject("archive_links", archiveMonths);
+			if (monthOfLastItem(latestNewsitems) != null) {
+				mv.addObject("main_content_moreurl", makeArchiveUrl(monthOfLastItem(latestNewsitems),  archiveMonths));
+			}
+			
 			setRss(mv, rssUrlBuilder.getBaseRssTitke(), rssUrlBuilder.getBaseRssUrl());
 			return mv;
 		}
@@ -56,10 +67,43 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateSecondaryJustin(mv);
 		populateGeocoded(mv);
 		populateFeatured(mv);
-		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());
+		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());		
+	}
+	
+	
+	
+	private Date monthOfLastItem(List<Resource> latestNewsitems) {
+		if (latestNewsitems.size() > 0) {
+			Resource lastNewsitem = latestNewsitems
+					.get(latestNewsitems.size() - 1);
+			if (lastNewsitem.getDate() != null) {
+				Date lastDate = lastNewsitem.getDate();
+				return lastDate;
+			}
+		}
+		return null;
+	}
 
-		// TODO Archive counts
-		mv.addObject("archive_links", contentRetrievalService.getArchiveMonths());
+	
+	 public String makeArchiveUrl(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {    	
+	    	ArchiveLink archiveLink = getArchiveLinkForDate(dateOfLastNewsitem, archiveMonths);
+	    	if (archiveLink != null) {
+	    		return urlBuilder.getArchiveLinkUrl(archiveLink);
+	    	}
+	    	return null;
+	 }
+	 
+	 
+	    
+	private ArchiveLink getArchiveLinkForDate(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {
+		for (ArchiveLink monthLink : archiveMonths) {
+			boolean monthMatches = monthLink.getMonth().getMonth() == dateOfLastNewsitem
+					.getMonth() && monthLink.getMonth().getYear() == dateOfLastNewsitem.getYear();
+			if (monthMatches) {
+				return monthLink;
+			}
+		}
+		return null;
 	}
 	
 	

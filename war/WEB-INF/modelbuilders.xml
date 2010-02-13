@@ -6,6 +6,7 @@
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="urlBuilder" />		
 	</bean>
 	
 	<bean id="feedsModelBuilder" class="nz.co.searchwellington.controllers.models.FeedsModelBuilder">

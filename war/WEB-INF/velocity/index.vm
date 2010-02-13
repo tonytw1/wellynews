@@ -29,8 +29,7 @@
 			#if ($commented_newsitems)	
 				#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
 			#end
-
-			#set($main_content_moreurl = $urlBuilder.getArchiveUrl())
+			
 			#parse("includes/main_content.vm")
 		</div>
 
