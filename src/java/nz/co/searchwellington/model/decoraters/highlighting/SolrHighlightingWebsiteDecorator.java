@@ -52,6 +52,12 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 	public void addTag(Tag tag) {
 		website.addTag(tag);
 	}
+	
+	
+
+	public void clearTags() {
+		website.clearTags();
+	}
 
 	public Set<CalendarFeed> getCalendars() {
 		return website.getCalendars();

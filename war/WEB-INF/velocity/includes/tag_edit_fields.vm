@@ -1,6 +1,7 @@
 	#if ($tag_select) 
 		<label for="tags">Tags: </label>
 	   	$tag_select	
+	   	<input type="hidden" name="has_tag_select" value="1" />
 	#end
 	<br />	
 

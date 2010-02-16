@@ -134,15 +134,10 @@ public class SubmissionProcessingService {
     
     
     
-    @SuppressWarnings("unchecked")
 	public void processTags(HttpServletRequest request, Resource editResource) {
-        if (request.getAttribute("tags") != null) {        	
-            List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
-            Set<Tag> tags = new HashSet<Tag>(requestTagsList);
-            log.info("Found " + tags.size() + " tags on the request");
-            editResource.setTags(tags);            
-        }
-        
+    	if (request.getAttribute("has_tag_select") != null) {
+    		processTagSelect(request, editResource);    		
+    	}
         if (request.getParameter("additional_tags") != null) {
             processAdditionalTags(request, editResource);                   
         } else {
@@ -150,6 +145,20 @@ public class SubmissionProcessingService {
         }    
         trimTags(editResource, 4);               
     }
+
+
+	@SuppressWarnings("unchecked")
+	private void processTagSelect(HttpServletRequest request,
+			Resource editResource) {
+		if (request.getAttribute("tags") != null) {        	
+			List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
+			Set<Tag> tags = new HashSet<Tag>(requestTagsList);
+			log.info("Found " + tags.size() + " tags on the request");
+			editResource.setTags(tags);            
+		} else {
+			editResource.clearTags();
+		}
+	}
     
 
     public void processPublisher(HttpServletRequest request, Resource editResource) {

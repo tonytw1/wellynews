@@ -60,7 +60,10 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public CommentFeed getCommentFeed() {
 		return newsitem.getCommentFeed();
 	}
-
+	
+	public void clearTags() {
+		newsitem.clearTags();		
+	}
 
 	public List<Comment> getComments() {		
 		List<Comment> highlightedComments = new ArrayList<Comment>();		

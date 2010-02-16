@@ -97,9 +97,12 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
             tags.add(tag);
         }        
     }
-    
-    
-    public SyndEntry getRssItem() {
+	
+	public void clearTags() {
+		tags.clear();
+	}
+	
+	public SyndEntry getRssItem() {
         SyndEntry entry = new SyndEntryImpl();      
         entry.setTitle(stripIllegalCharacters(name));
         entry.setLink(url);
