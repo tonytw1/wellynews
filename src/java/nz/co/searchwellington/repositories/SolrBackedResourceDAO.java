@@ -4,10 +4,12 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.lang.Long;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
@@ -15,6 +17,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
@@ -386,8 +389,41 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	
 	
-	
-	
+	public Map<String, Integer> getArchiveStatistics(boolean showBroken) {
+
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken)
+				.toQuery();
+		SolrServer solr;
+		try {
+			solr = new CommonsHttpSolrServer(solrUrl);
+
+			query.addFacetField("type");
+			query.setFacetMinCount(1);
+
+			QueryResponse response = solr.query(query);
+			FacetField facetField = response.getFacetField("type");
+			if (facetField != null && facetField.getValues() != null) {
+				log.info("Found facet field: " + facetField);
+				Map<String, Integer> typeCounts = new HashMap<String, Integer>();
+				List<Count> values = facetField.getValues();
+				for (Count count : values) {
+					String type = (String) count.getName();
+					final Long typeCount = count.getCount();
+					typeCounts.put(type, typeCount.intValue());
+				}
+				return typeCounts;
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SolrServerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		log.warn("returning null");
+		return null;
+
+	}
 	
 	
 

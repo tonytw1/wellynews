@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import nz.co.searchwellington.model.ArchiveLink;
@@ -146,5 +147,6 @@ public interface ResourceRepository {
 	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken);
 	public List<Resource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean showBroken, Tag tag);
 	public List<Resource> getAllFeeds(boolean shouldShowBroken);
+	public Map<String, Integer> getArchiveStatistics(boolean shouldShowBroken);
     
 }

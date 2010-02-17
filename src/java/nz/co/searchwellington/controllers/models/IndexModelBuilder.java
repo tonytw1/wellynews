@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -68,10 +69,20 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateGeocoded(mv);
 		populateFeatured(mv);
 		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());		
+		populateArchiveStatistics(mv);
 	}
 	
 	
 	
+	private void populateArchiveStatistics(ModelAndView mv) {
+		Map<String, Integer> archiveStatistics = contentRetrievalService.getArchiveStatistics();
+		if (archiveStatistics != null) {
+			mv.addObject("site_count",  archiveStatistics.get("W"));
+			mv.addObject("newsitem_count",  archiveStatistics.get("N"));
+			mv.addObject("feed_count", archiveStatistics.get("F"));
+		}
+	}
+
 	private Date monthOfLastItem(List<Resource> latestNewsitems) {
 		if (latestNewsitems.size() > 0) {
 			Resource lastNewsitem = latestNewsitems

@@ -1,7 +1,9 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.model.ArchiveLink;
@@ -158,6 +160,10 @@ public class ContentRetrievalService {
 
 	public List<ArchiveLink> getArchiveMonths() {
 		return resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken());
+	}
+
+	public Map<String, Integer> getArchiveStatistics() {
+		return resourceDAO.getArchiveStatistics(showBrokenDecisionService.shouldShowBroken());
 	}
 	
 }

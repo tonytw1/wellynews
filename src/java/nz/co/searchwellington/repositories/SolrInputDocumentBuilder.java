@@ -89,8 +89,8 @@ public class SolrInputDocumentBuilder {
 
 	private Website getIndexPublisherForResource(Resource resource) {
 		Website publisher = null;
-		if (resource.getType().equals("N")){
-			publisher = ((Newsitem) resource).getPublisher();
+		if (resource.getType().equals("N") || resource.getType().equals("F")){
+			publisher = ((PublishedResource) resource).getPublisher();
 		}
 		return publisher;
 	}
