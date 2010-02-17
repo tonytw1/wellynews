@@ -64,5 +64,6 @@ public interface Resource {
 
 	public boolean isHeld();
 	public void setHeld(boolean held);
+	public void clearTags();
 	
 }
