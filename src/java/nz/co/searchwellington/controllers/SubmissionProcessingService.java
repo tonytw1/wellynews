@@ -135,7 +135,7 @@ public class SubmissionProcessingService {
     
     
 	public void processTags(HttpServletRequest request, Resource editResource) {
-    	if (request.getAttribute("has_tag_select") != null) {
+    	if (request.getParameter("has_tag_select") != null) {
     		processTagSelect(request, editResource);    		
     	}
         if (request.getParameter("additional_tags") != null) {
