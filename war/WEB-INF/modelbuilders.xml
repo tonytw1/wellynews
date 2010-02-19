@@ -10,7 +10,8 @@
 	</bean>
 	
 	<bean id="feedsModelBuilder" class="nz.co.searchwellington.controllers.models.FeedsModelBuilder">
-		<constructor-arg ref="contentRetrievalService" />	
+		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="suggestedFeeditemsService" />	
 	</bean>
 
 	<bean id="publisherModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherModelBuilder">

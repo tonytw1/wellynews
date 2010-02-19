@@ -3,6 +3,7 @@
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -12,10 +13,12 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	Logger log = Logger.getLogger(FeedsModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
+	private SuggestedFeeditemsService suggestedFeeditemsService;
 	
 	
-	public FeedsModelBuilder(ContentRetrievalService contentRetrievalService) {		
+	public FeedsModelBuilder(ContentRetrievalService contentRetrievalService, SuggestedFeeditemsService suggestedFeeditemsService) {		
 		this.contentRetrievalService = contentRetrievalService;
+		this.suggestedFeeditemsService = suggestedFeeditemsService;
 	}
 	
 
@@ -40,7 +43,8 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	}
 
 	
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6));
 	}
       
 }
