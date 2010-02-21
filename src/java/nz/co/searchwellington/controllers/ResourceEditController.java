@@ -382,6 +382,7 @@ public class ResourceEditController extends BaseMultiActionController {
             submissionProcessingService.processTitle(request, editResource);
             submissionProcessingService.processGeocode(request, editResource);
             submissionProcessingService.processDate(request, editResource);
+            submissionProcessingService.processHeld(request, editResource);
             submissionProcessingService.processEmbargoDate(request, editResource);
             submissionProcessingService.processDescription(request, editResource);
             submissionProcessingService.processTags(request, editResource);            
@@ -412,6 +413,7 @@ public class ResourceEditController extends BaseMultiActionController {
                      
             boolean isPublicSubmission = loggedInUser == null;
             if (isPublicSubmission) {
+            	log.info("This is a public submission; marking as held");
             	editResource.setHeld(true);
             }
             

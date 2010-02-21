@@ -28,6 +28,7 @@ public class SolrQueryBuilder {
 		if (!showBroken) {
 			sb.append(" +httpStatus:200");
 			sb.append(" -embargoedUntil:[NOW TO *]");
+			sb.append(" -held:true");
 		}
 		return this;
 	}

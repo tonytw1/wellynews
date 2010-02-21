@@ -133,6 +133,17 @@ public class SubmissionProcessingService {
     }
     
     
+    public void processHeld (HttpServletRequest request, Resource editResource) {
+    	if (request.getParameter("has_held") != null) {
+    		if (request.getParameter("held") != null) {
+    			editResource.setHeld(true);
+    			return;
+    		}
+    		editResource.setHeld(false);
+    	}
+    	return;
+    }
+    
     
 	public void processTags(HttpServletRequest request, Resource editResource) {
     	if (request.getParameter("has_tag_select") != null) {

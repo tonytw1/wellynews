@@ -168,7 +168,10 @@
 				
 				
 					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
-						<li>Http Status: $item.httpStatus</li>
+						<li>Http Status: $item.httpStatus</li>						
+						#if ($item.isHeld()) 
+							<li>Held</li>
+						#end
 					#end
 					
 					#if ($editPermissionService.canEdit($item) && $item.commentFeed)
