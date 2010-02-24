@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -21,13 +22,15 @@ public class BrowseController extends BaseMultiActionController {
 
     private UrlBuilder urlBuilder;
     private ShowBrokenDecisionService showBrokenDecisionService;
+	private ContentRetrievalService contentRetrievalService;
  
-	public BrowseController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, UrlBuilder urlBuilder, ShowBrokenDecisionService showBrokenDecisionService) {       
+	public BrowseController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, UrlBuilder urlBuilder, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {       
 		this.resourceDAO = resourceDAO;     
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.urlBuilder = urlBuilder;
         this.showBrokenDecisionService = showBrokenDecisionService;
+        this.contentRetrievalService = contentRetrievalService;
 	}
 	
 	
@@ -77,7 +80,7 @@ public class BrowseController extends BaseMultiActionController {
         if (request.getAttribute("month") != null) {
             Date month = (Date) request.getAttribute("month");
             mv.addObject("archive_month", new ArchiveLink(month, 0));
-            final List<Resource> newsitemsForMonth = resourceDAO.getNewsitemsForMonth(month, showBrokenDecisionService.shouldShowBroken());            
+            final List<Resource> newsitemsForMonth = contentRetrievalService.getNewsitemsForMonth(month);            
             mv.addObject("main_content", newsitemsForMonth);
 			populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
             mv.addObject("used_tags_description", "Most used tags during this month.");

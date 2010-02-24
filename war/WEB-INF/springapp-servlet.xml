@@ -95,6 +95,7 @@
 		<constructor-arg ref="configDAO" />		
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="showBrokenDecisionService" />
+		<constructor-arg ref="contentRetrievalService" />
 			
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

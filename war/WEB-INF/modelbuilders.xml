@@ -50,13 +50,13 @@
 	</bean>
 	
 	<bean id="justinModelBuilder" class="nz.co.searchwellington.controllers.models.JustinModelBuilder">
-		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />		
 	</bean>
 	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
-		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="rssUrlBuilder" />	
 	</bean>

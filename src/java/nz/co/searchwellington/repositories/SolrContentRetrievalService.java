@@ -1,9 +1,13 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.Date;
 import java.util.List;
+
+import org.apache.ecs.xhtml.map;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 
 public class SolrContentRetrievalService {
 
@@ -39,6 +43,30 @@ public class SolrContentRetrievalService {
 
 	public int getTaggedNewitemsCount(Tag tag, boolean shouldShowBroken) {
 		return solrResourceDAO.getTaggedNewitemsCount(tag, shouldShowBroken);
-	}	
+	}
+
+	public List<Resource> getTaggedFeeds(Tag tag, boolean shouldShowBroken) {
+		return solrResourceDAO.getTaggedFeeds(tag, shouldShowBroken);
+	}
+
+	public int getCommentedNewsitemsCount(boolean shouldShowBroken) {
+		return solrResourceDAO.getCommentedNewsitemsCount(shouldShowBroken);
+	}
+
+	public int getPublisherNewsitemsCount(Website publisher, boolean shouldShowBroken) {
+		return solrResourceDAO.getPublisherNewsitemsCount(publisher, shouldShowBroken);
+	}
+
+	public List<Resource> getNewsitemsForMonth(Date month, boolean shouldShowBroken) {
+		return solrResourceDAO.getNewsitemsForMonth(month, shouldShowBroken);
+	}
+
+	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean shouldShowBroken, int maxNewsitems, int startIndex) {
+		return solrResourceDAO.getCommentedNewsitemsForTag(tag, shouldShowBroken, maxNewsitems, startIndex);
+	}
+
+	public List<Resource> getLatestWebsites(int maxItems, boolean shouldShowBroken) {
+	    return solrResourceDAO.getLatestWebsites(maxItems, shouldShowBroken);
+	}
 
 }

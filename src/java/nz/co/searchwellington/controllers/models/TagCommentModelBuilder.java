@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -17,18 +18,18 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		
 	Logger log = Logger.getLogger(TagCommentModelBuilder.class);
     	
-	private ResourceRepository resourceDAO;
+	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
 
-	
-	public TagCommentModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
-		this.resourceDAO = resourceDAO;
+		
+	public TagCommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {		
+		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
 	}
 
-	
+
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -60,10 +61,10 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		mv.addObject("description", tag.getDisplayName() + " comment");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));
 				
-	    final List<Resource> allCommentedForTag = resourceDAO.getCommentedNewsitemsForTag(tag, showBroken, MAX_NEWSITEMS, startIndex);	   
+	    final List<Resource> allCommentedForTag = contentRetrievalService.getCommentedNewsitemsForTag(tag, MAX_NEWSITEMS, startIndex);	   
 		mv.addObject("main_content", allCommentedForTag);
 		
-		int count = resourceDAO.getCommentedNewsitemsForTagCount(tag, showBroken);
+		int count = contentRetrievalService.getCommentedNewsitemsForTagCount(tag);
 		mv.addObject("main_content_total", count);
 		
 		if (allCommentedForTag.size() > 0) {

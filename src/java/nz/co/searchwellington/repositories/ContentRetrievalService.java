@@ -80,7 +80,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getTaggedFeeds(Tag tag) {
-		return resourceDAO.getTaggedFeeds(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getTaggedFeeds(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems) {
@@ -96,7 +96,7 @@ public class ContentRetrievalService {
 	}
 
 	public int getCommentedNewsitemsCount() {
-		return resourceDAO.getCommentedNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getCommentedNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Tag> getCommentedTags() {
@@ -108,7 +108,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getLatestWebsites(int maxItems) {
-		return resourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<TagContentCount> getKeywordSearchFacets(String keywords) {
@@ -152,7 +152,7 @@ public class ContentRetrievalService {
 	}
 
 	public int getPublisherNewsitemsCount(Website publisher) {
-		return resourceDAO.getPublisherNewsitemsCount(publisher, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getPublisherNewsitemsCount(publisher, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, int startIndex) {
@@ -169,6 +169,14 @@ public class ContentRetrievalService {
 
 	public Map<String, Integer> getArchiveStatistics() {
 		return resourceDAO.getArchiveStatistics(showBrokenDecisionService.shouldShowBroken());
+	}
+
+	public List<Resource> getCommentedNewsitemsForTag(Tag tag, int maxNewsitems, int startIndex) {
+		return solrContentRetrievalService.getCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems, startIndex);
+	}
+
+	public List<Resource> getNewsitemsForMonth(Date month) {
+		return solrContentRetrievalService.getNewsitemsForMonth(month, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 }

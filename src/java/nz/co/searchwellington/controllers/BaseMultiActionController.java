@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
@@ -31,7 +32,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected UrlStack urlStack;
     protected ConfigRepository configDAO;
     protected LoggedInUserFilter loggedInUserFilter;
-    
+    protected ContentRetrievalService contentRetrievalService;
     
     final protected void setRss(ModelAndView mv, String url) {
         mv.addObject("rss_url", url);
@@ -51,7 +52,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     
     final protected void populateSecondaryLatestNewsitems(ModelAndView mv, boolean showBroken) {            
         final int numberOfItems = 5;
-        final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(numberOfItems, showBroken);        
+        final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(numberOfItems);        
         mv.addObject("latest_newsitems", latestNewsitems);
         mv.addObject("latest_newsitems_moreurl", "index#newslog");
     }

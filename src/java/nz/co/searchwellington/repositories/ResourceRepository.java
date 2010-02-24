@@ -25,23 +25,14 @@ public interface ResourceRepository {
 
     public Tag createNewTag();
     public Resource loadResourceById(int resourceID);
- 
-    
+     
     public boolean isResourceWithUrl(String url);
     public Resource loadResourceByUrl(String url);
 
-    public List<Resource> getLatestNewsitems(int maxItems, boolean showBroken);
     public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken); 
     public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex);
     public List <Feed> getPublisherFeeds(Website publisher);
     public List <Watchlist> getPublisherWatchlist(Website publisher);
-
-    public List <Resource> getNewsitemsForMonth(Date month, boolean showBroken);
-
-
-
-    public List <Resource> getLatestWebsites(int maxNumberOfItems, boolean showBroken);
-
     
     public void saveResource(Resource resource);
         
@@ -112,13 +103,9 @@ public interface ResourceRepository {
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems);
 	public Feed loadFeedByUrlWords(String string);
-	public int getPublisherNewsitemsCount(Website publisher, boolean showBroken);
-	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken);
-
+	
 	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex);
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex);
-	public int getCommentedNewsitemsCount(boolean showBroken);	
-	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken);
 	
 	public List<Resource> getTwitterMentionedNewsitems(int maxItems);
 	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -19,17 +20,20 @@ import com.sun.syndication.io.FeedException;
 public class TagController extends BaseMultiActionController {
    
     private ContentModelBuilderService contentModelBuilder;
+    private ContentRetrievalService contentRetrievalService;
 
 
     public TagController(ResourceRepository resourceDAO,    	
     		LoggedInUserFilter loggedInUserFilter,
     		UrlStack urlStack,  		   		
-    		ContentModelBuilderService contentModelBuilder
+    		ContentModelBuilderService contentModelBuilder,
+    		ContentRetrievalService contentRetrievalService
     		) {
         this.resourceDAO = resourceDAO;      
         this.loggedInUserFilter = loggedInUserFilter;
         this.urlStack = urlStack;               
-        this.contentModelBuilder = contentModelBuilder;        
+        this.contentModelBuilder = contentModelBuilder;
+        this.contentRetrievalService = contentRetrievalService;
     }
     
     
@@ -47,10 +51,10 @@ public class TagController extends BaseMultiActionController {
 		return null;
     }
 
-	
+	// TODO this should be in model builders
     private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
-		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());		
-        final List<Resource> latestNewsitems = resourceDAO.getLatestNewsitems(5, showBroken);
+		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(5);
         mv.addObject("latest_newsitems", latestNewsitems);
 	}
     
