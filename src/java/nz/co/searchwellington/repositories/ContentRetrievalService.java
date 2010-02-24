@@ -20,21 +20,26 @@ import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 public class ContentRetrievalService {
 
 	private ResourceRepository resourceDAO;
+	private SolrContentRetrievalService solrContentRetrievalService;
 	private KeywordSearchService keywordSearchService;
 	private ShowBrokenDecisionService showBrokenDecisionService;
-	
+		
 
-	public ContentRetrievalService(ResourceRepository resourceDAO, KeywordSearchService keywordSearchService, ShowBrokenDecisionService showBrokenDecisionService) {
+	public ContentRetrievalService(ResourceRepository resourceDAO,
+			SolrContentRetrievalService solrContentRetrievalService,
+			KeywordSearchService keywordSearchService,
+			ShowBrokenDecisionService showBrokenDecisionService) {
 		this.resourceDAO = resourceDAO;
-        this.keywordSearchService = keywordSearchService;
+		this.solrContentRetrievalService = solrContentRetrievalService;
+		this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
 	}
 
 	public List<Resource> getAllWatchlists() {
-		return resourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<Resource> getGeocoded(int maxItems) {
+	public List<Resource> getGeocoded(int maxItems) {		
 		return resourceDAO.getAllValidGeocoded(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
@@ -67,7 +72,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getTagWatchlist(Tag tag) {
-		return resourceDAO.getTagWatchlist(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getTagWatchlist(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public Date getLastLiveTimeForTag(Tag tag) {

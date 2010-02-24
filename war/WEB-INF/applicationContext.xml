@@ -176,9 +176,17 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="solrFacetLoader" />		
 		<constructor-arg ref="resourceDAO" />		
 	</bean>
+	
+	
+	
+	<bean id="solrContentRetrievalService" class="nz.co.searchwellington.repositories.SolrContentRetrievalService">
+		<constructor-arg ref="solrResourceDAO" />		
+	</bean>
+	
 		
 	<bean id="contentRetrievalService" class="nz.co.searchwellington.repositories.ContentRetrievalService">
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="solrContentRetrievalService" />
 		<constructor-arg ref="keywordSearchService" />
 		<constructor-arg ref="showBrokenDecisionService" />		
 	</bean>
