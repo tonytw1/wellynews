@@ -5,7 +5,7 @@ import java.util.List;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -19,17 +19,16 @@ public class GoogleSitemapService {
     
     private static final int MAX_NEWSITEMS = 30;	// TODO duplicated - move to a paginator class
 
-	Logger log = Logger.getLogger(GoogleSitemapService.class);
-    
-    
+	Logger log = Logger.getLogger(GoogleSitemapService.class);    
     private static final String NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9";
-    private ResourceRepository resourceDAO;
+    
+    private ContentRetrievalService contentRetrivalService;
     private DateFormatter dateFormatter;
     private UrlBuilder urlBuilder;
     
 
-    public GoogleSitemapService(ResourceRepository resourceDAO, DateFormatter dateFormatter, UrlBuilder urlBuilder) {        
-        this.resourceDAO = resourceDAO;
+    public GoogleSitemapService(ContentRetrievalService contentRetrivalService, DateFormatter dateFormatter, UrlBuilder urlBuilder) {        
+        this.contentRetrivalService = contentRetrivalService;
         this.dateFormatter = dateFormatter;
         this.urlBuilder = urlBuilder;
     }
@@ -50,14 +49,14 @@ public class GoogleSitemapService {
         
         final String url = urlBuilder.getTagUrl(tag);     
         String lastmod = null;        
-        Date lastUpdated = resourceDAO.getLastLiveTimeForTag(tag);
+        Date lastUpdated = contentRetrivalService.getLastLiveTimeForTag(tag);
         if (lastUpdated != null) {
         	lastmod = dateFormatter.formatW3CDate(lastUpdated);
         }        
         addUrlElement(root, url, lastmod);
         
         
-        int tagNewsitemCount = resourceDAO.getTaggedNewitemsCount(tag, false);
+        int tagNewsitemCount = contentRetrivalService.getTaggedNewitemsCount(tag);
         for (int i = 2; ((i -1)  * MAX_NEWSITEMS) <= tagNewsitemCount; i =i + 1) {
         	 addUrlElement(root, url + "?page=" + i, null);	
         }

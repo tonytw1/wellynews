@@ -52,23 +52,23 @@ public class ContentRetrievalService {
 	}
 
 	public int getTaggedNewitemsCount(Tag tag) {
-		return resourceDAO.getTaggedNewitemsCount(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getTaggedNewitemsCount(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getTaggedNewsitems(Tag tag, int startIndex, int maxNewsitems) {
-		return resourceDAO.getTaggedNewsitems(tag, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
+		return solrContentRetrievalService.getTaggedNewsitems(tag, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
 	}
 
 	public List<Resource> getTaggedWebsites(Tag tag, int maxItems) {
-		return resourceDAO.getTaggedWebsites(tag, showBrokenDecisionService.shouldShowBroken(), maxItems);
+		return solrContentRetrievalService.getTaggedWebsites(tag, showBrokenDecisionService.shouldShowBroken(), maxItems);
 	}
 	
 	public int getCommentedNewsitemsForTagCount(Tag tag) {
-		return resourceDAO.getCommentedNewsitemsForTagCount(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getCommentedNewsitemsForTagCount(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, int maxItems) {
-		return resourceDAO.getRecentCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken(), maxItems);
+		return solrContentRetrievalService.getRecentCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken(), maxItems);
 	}
 
 	public List<Resource> getTagWatchlist(Tag tag) {
@@ -137,8 +137,8 @@ public class ContentRetrievalService {
 
 	public List<Resource> getFeaturedSites() {
 		final Tag featuredTag = resourceDAO.loadTagByName("featured");
-		if (featuredTag != null) {         
-			return resourceDAO.getTaggedWebsites(featuredTag,  showBrokenDecisionService.shouldShowBroken(), 10);
+		if (featuredTag != null) {
+			return solrContentRetrievalService.getTaggedWebsites(featuredTag,  showBrokenDecisionService.shouldShowBroken(), 10);
 		}
 		return null;
 	}

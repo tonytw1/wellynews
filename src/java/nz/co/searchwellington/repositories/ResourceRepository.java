@@ -67,7 +67,6 @@ public interface ResourceRepository {
     
   
     public List<Resource> getTaggedResources(Tag tag, int max_newsitems);
-    public List<Resource> getTaggedWebsites(Tag tag, boolean showBroken, int max_newsitems);
     public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites);        
     public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems);
     public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int max_secondary_items);
@@ -93,7 +92,6 @@ public interface ResourceRepository {
     public CommentFeed createNewCommentFeed(String discoveredUrl);
 	public void saveCommentFeed(CommentFeed commentFeed);
 	
-    public int getTaggedNewitemsCount(Tag tag, boolean showBroken);;    
     public List<Newsitem> getRecentUntaggedNewsitems();   
     public Date getNewslogLastChanged();
     public int getWebsiteCount(boolean showBroken);
@@ -119,7 +117,6 @@ public interface ResourceRepository {
 
 	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex);
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex);
-	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems);
 	public int getCommentedNewsitemsCount(boolean showBroken);	
 	public int getCommentedNewsitemsForTagCount(Tag tag, boolean showBroken);
 	

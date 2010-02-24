@@ -114,9 +114,6 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 
 	
-	
-	
-	@Override
 	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {
 		log.info("Getting recent commented newsitem count");
 		// TODO duplication - with what?

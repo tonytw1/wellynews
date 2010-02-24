@@ -93,7 +93,7 @@ public class IndexController extends BaseMultiActionController {
         mv.addObject("current_time", Calendar.getInstance().getTime());
         
         populateNewslogLastUpdated(mv);        
-        populateFeatured(mv, loggedInUser);               
+        //populateFeatured(mv, loggedInUser);               
         populateUntaggedNewsitem(mv, loggedInUser);     
         populateEvents(mv);
         
@@ -120,13 +120,13 @@ public class IndexController extends BaseMultiActionController {
     
 
 
-    @SuppressWarnings("unchecked")
-    private void populateFeatured(ModelAndView mv, User loggedInUser) throws IOException {
-        final Tag featuredTag = resourceDAO.loadTagByName("featured");
-        if (featuredTag != null) {         
-            mv.getModel().put("featured", resourceDAO.getTaggedWebsites(featuredTag, false, 10));
-        }
-    }
+ //   @SuppressWarnings("unchecked")
+   // private void populateFeatured(ModelAndView mv, User loggedInUser) throws IOException {
+     //   final Tag featuredTag = resourceDAO.loadTagByName("featured");
+      //  if (featuredTag != null) {         
+       //     mv.getModel().put("featured", resourceDAO.getTaggedWebsites(featuredTag, false, 10));
+       // }
+   // }
 
 
     private void populateCommentedNewsitems(ModelAndView mv, boolean showBroken) { 
