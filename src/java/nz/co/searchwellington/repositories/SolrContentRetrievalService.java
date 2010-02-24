@@ -69,4 +69,8 @@ public class SolrContentRetrievalService {
 	    return solrResourceDAO.getLatestWebsites(maxItems, shouldShowBroken);
 	}
 
+	public List<Resource> getLatestNewsitems(int maxItems, boolean shouldShowBroken) {
+		return solrResourceDAO.getLatestNewsitems(maxItems, shouldShowBroken);
+	}
+
 }

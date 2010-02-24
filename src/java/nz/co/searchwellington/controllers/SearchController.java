@@ -25,7 +25,6 @@ public class SearchController extends BaseMultiActionController {
     
 	private RequestFilter requestFilter;
 	private ShowBrokenDecisionService showBrokenDecisionService;
-	private ContentRetrievalService contentRetrievalService;
 	
     public SearchController(ResourceRepository resourceDAO, UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {    
 		this.resourceDAO = resourceDAO;

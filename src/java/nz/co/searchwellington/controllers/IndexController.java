@@ -82,7 +82,7 @@ public class IndexController extends BaseMultiActionController {
         //populateCommentedNewsitems(mv, showBroken);
         
         List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(showBroken);
-		populateArchiveLinks(mv, showBroken, archiveMonths);
+	//	populateArchiveLinks(mv, showBroken, archiveMonths);
     //    if (monthOfLastItem(latestNewsitems) != null) {
      //       mv.getModel().put("main_content_moreurl", makeArchiveUrl(monthOfLastItem(latestNewsitems), archiveMonths ));
      //   }

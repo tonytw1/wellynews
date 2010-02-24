@@ -104,7 +104,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getLatestNewsitems(int maxItems) {
-		return resourceDAO.getLatestNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getLatestNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getLatestWebsites(int maxItems) {

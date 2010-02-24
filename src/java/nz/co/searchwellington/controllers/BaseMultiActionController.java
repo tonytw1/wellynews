@@ -32,7 +32,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected UrlStack urlStack;
     protected ConfigRepository configDAO;
     protected LoggedInUserFilter loggedInUserFilter;
-    protected ContentRetrievalService contentRetrievalService;
+    protected ContentRetrievalService contentRetrievalService;	// TODO only needed on frontend controllers.
     
     final protected void setRss(ModelAndView mv, String url) {
         mv.addObject("rss_url", url);
@@ -57,23 +57,10 @@ public abstract class BaseMultiActionController extends MultiActionController {
         mv.addObject("latest_newsitems_moreurl", "index#newslog");
     }
     
+
+
+
   
-    final protected void populateArchiveLinks(ModelAndView mv, boolean showBroken, List<ArchiveLink> archiveMonths) {                        
-        final int MAX_BACK_ISSUES = 6;
-        if (archiveMonths.size() <= MAX_BACK_ISSUES) {
-            mv.addObject("archive_links", archiveMonths);
-        } else {
-            mv.addObject("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
-        }
-        populateContentCounts(mv, showBroken);
-    }
-
-
-    private void populateContentCounts(ModelAndView mv, boolean showBroken) {      
-        mv.addObject("site_count",  resourceDAO.getWebsiteCount(showBroken));
-        mv.addObject("newsitem_count",  resourceDAO.getNewsitemCount(showBroken));
-        mv.addObject("comment_count",  resourceDAO.getCommentCount());
-    }
     
 
 

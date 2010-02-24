@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.views.RssView;
 
@@ -22,17 +23,19 @@ public class RssController extends MultiActionController {
     
     private static final int MAX_RSS_ITEMS = 30;
     private SiteInformation siteInformation;
-    private ResourceRepository resourceDAO;
+    private ResourceRepository resourceDAO;	// TODO remove
     private RssUrlBuilder rssUrlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
+	private ContentRetrievalService contentRetrievalService;
 
     
        
-    public RssController(SiteInformation siteInformation, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService) {
+    public RssController(SiteInformation siteInformation, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService) {
         this.siteInformation = siteInformation;
         this.resourceDAO = resourceDAO;
         this.rssUrlBuilder = rssUrlBuilder;
         this.contentModelBuilderService = contentModelBuilderService;
+        this.contentRetrievalService = contentRetrievalService;
     }
     
     
@@ -63,7 +66,7 @@ public class RssController extends MultiActionController {
 		model.put("heading", siteInformation.getAreaname() + " Newslog");
 		model.put("link", siteInformation.getUrl());
         model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");
-        model.put("main_content", resourceDAO.getLatestNewsitems(MAX_RSS_ITEMS, false));
+        model.put("main_content", contentRetrievalService.getLatestNewsitems(MAX_RSS_ITEMS));
         
         RssView rssView = new RssView(siteInformation);
         return new ModelAndView(rssView, model);        

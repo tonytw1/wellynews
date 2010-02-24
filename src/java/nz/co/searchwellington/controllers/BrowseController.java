@@ -153,4 +153,16 @@ public class BrowseController extends BaseMultiActionController {
         populateArchiveLinks(mv, showBrokenDecisionService.shouldShowBroken(), resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken()));        
     }
 	
+    
+    private void populateArchiveLinks(ModelAndView mv, boolean showBroken, List<ArchiveLink> archiveMonths) {                        
+        final int MAX_BACK_ISSUES = 6;
+        if (archiveMonths.size() <= MAX_BACK_ISSUES) {
+            mv.addObject("archive_links", archiveMonths);
+        } else {
+            mv.addObject("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
+        }
+        mv.addObject("site_count",  resourceDAO.getWebsiteCount(showBroken));
+		mv.addObject("newsitem_count",  resourceDAO.getNewsitemCount(showBroken));
+		mv.addObject("comment_count",  resourceDAO.getCommentCount());
+    }
 }

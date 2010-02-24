@@ -31,7 +31,6 @@ public class SimplePageController extends BaseMultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private ShowBrokenDecisionService showBrokenDecisionService;
-	private ContentRetrievalService contentRetrievalService;
     
     
     public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, 
@@ -86,7 +85,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "The Wellynews API");
 
         mv.addObject("feeds", resourceDAO.getAllFeedsByName());
-        mv.addObject("publishers", contentRetrievalService.getAllPublishersWithNewsitemCounts(true));
+        mv.addObject("publishers", contentRetrievalService.getAllPublishersWithNewsitemCounts(true));	// TODO needs to include publishers with only feeds
         mv.addObject("api_tags", contentRetrievalService.getTopLevelTags());
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());        
         mv.setViewName("api");
@@ -153,7 +152,7 @@ public class SimplePageController extends BaseMultiActionController {
       
         mv.addObject("heading", "Latest Updates");
         // TODO this should show resources order by last live time. - the the last update query won't have to interate ethier.
-        mv.addObject("main_content", resourceDAO.getLatestNewsitems(20, false));
+        mv.addObject("main_content", contentRetrievalService.getLatestNewsitems(20));
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
         populateNewslogLastUpdated(mv);
 
