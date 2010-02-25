@@ -206,7 +206,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateLatestTwitters(mv, showBrokenDecisionService.shouldShowBroken());        
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
         
-        mv.addObject("main_content", resourceDAO.getTwitterMentionedNewsitems(MAX_NEWSITEMS));
+        mv.addObject("main_content", contentRetrievalService.getRecentedTwitteredNewsitems(MAX_NEWSITEMS));
         
         populateCommonLocal(mv);
         mv.setViewName("twitter");

@@ -262,21 +262,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     	return tagDAO.getTopLevelTags();
     }
     
-   
-    @SuppressWarnings("unchecked")
-    public List<Resource> getTwitterMentionedNewsitems(int maxItems) {
-    	 return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
-    	 	setMaxResults(maxItems).
-         	add(Restrictions.isNotEmpty("reTwits")).
-         	addOrder(Order.desc("date")).         
-         	setCacheable(true).
-         	list();
-    }
-    
-    
-    
-
-
     
     @SuppressWarnings("unchecked")
     public List<Resource> getRecentlyChangedWatchlistItems() {       

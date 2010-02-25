@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -15,20 +15,21 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	Logger log = Logger.getLogger(TagGeotaggedModelBuilder.class);
+	static Logger log = Logger.getLogger(TagGeotaggedModelBuilder.class);
     	
-	private ResourceRepository resourceDAO;
+	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
 
-	
-	public TagGeotaggedModelBuilder(ResourceRepository resourceDAO, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
-		this.resourceDAO = resourceDAO;
+	public TagGeotaggedModelBuilder(
+			ContentRetrievalService contentRetrievalService,
+			UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
+		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
 	}
 
-	
+
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -56,7 +57,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		mv.addObject("heading", tag.getDisplayName() + " geotagged");        		
 		mv.addObject("description", "Geotagged " + tag.getDisplayName() + " newsitems");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));		
-	    final List<Resource> allGeotaggedForTag = resourceDAO.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, showBroken);
+	    final List<Resource> allGeotaggedForTag = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
 		mv.addObject("main_content", allGeotaggedForTag);
 		if (allGeotaggedForTag.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag));

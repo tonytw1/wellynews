@@ -62,7 +62,7 @@
 	</bean>
 	
 	<bean id="TagGeotaggedModelBuilder" class="nz.co.searchwellington.controllers.models.TagGeotaggedModelBuilder">
-		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="rssUrlBuilder" />
 	</bean>

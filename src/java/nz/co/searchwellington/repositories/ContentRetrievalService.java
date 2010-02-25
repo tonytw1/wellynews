@@ -71,7 +71,7 @@ public class ContentRetrievalService {
 	}
 	
 	public Date getLastLiveTimeForTag(Tag tag) {
-		return resourceDAO.getLastLiveTimeForTag(tag);
+		return solrContentRetrievalService.getLastLiveTimeForTag(tag);
 	}
 
 	public List<Resource> getTaggedFeeds(Tag tag) {

@@ -126,6 +126,10 @@ public class SolrContentRetrievalService {
 
 	public List<Resource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean shouldShowBroken, Tag tag) {
 		return solrResourceDAO.getRecentTwitteredNewsitemsForTag(maxItems, shouldShowBroken, tag);
+	}
+
+	public Date getLastLiveTimeForTag(Tag tag) {
+		return solrResourceDAO.getLastLiveTimeForTag(tag);
 	};
 	
 }

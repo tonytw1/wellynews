@@ -69,15 +69,12 @@ public interface ResourceRepository {
     public CalendarFeed createNewCalendarFeed(String url);
     public List<Newsitem> getLatestTwitteredNewsitems(int numberOfItems, boolean showBroken);
     
-    public Date getLastLiveTimeForTag(Tag tag);
 	public List<Resource> getAllValidGeocoded(int max_events_to_show_on_front, boolean showBroken);
     public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxNumber, boolean showBroken);
-	public List<Resource> getResourcesWithTag(Tag tag);
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems);
 	public Feed loadFeedByUrlWords(String string);
 	
-	public List<Resource> getTwitterMentionedNewsitems(int maxItems);
 	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
 	
 	public Resource loadResourceByUniqueUrl(String url);
@@ -92,11 +89,8 @@ public interface ResourceRepository {
 	public Twit loadTweetByTwitterId(Long id);
 	public void saveTweet(Twit twit);
 	
-	
-	public int getCommentCount();
-	public List<Newsitem> getNewsitemsForFeed(Feed feed);
-	
-	@SuppressWarnings("unchecked")
+	public List<Resource> getResourcesWithTag(Tag tag);
+	public List<Newsitem> getNewsitemsForFeed(Feed feed);	
 	public List<Resource> getAllWatchlists();
     
 }
