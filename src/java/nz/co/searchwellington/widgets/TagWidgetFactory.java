@@ -4,7 +4,10 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
+
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
 
@@ -13,21 +16,22 @@ import org.apache.ecs.html.Select;
 public class TagWidgetFactory {
     
     
+    private TagDAO tagDAO;
     private ResourceRepository resourceDAO;
     
-   
-    public TagWidgetFactory(ResourceRepository resourceDAO) {
-        this.resourceDAO = resourceDAO;
-    }
+     
+	public TagWidgetFactory(TagDAO tagDAO, ResourceRepository resourceDAO) {
+		this.tagDAO = tagDAO;
+		this.resourceDAO = resourceDAO;
+	}
 
 
-
-    // TODO migrate to use names, not ids.
+	// TODO migrate to use names, not ids.
     public String createMultipleTagSelect(Set<Tag> selectedTags) {
         Select tagSelect= new Select("tags");
         tagSelect.setMultiple(true);
             
-        for (Tag tag : resourceDAO.getAllTags()) {
+        for (Tag tag : tagDAO.getAllTags()) {
             Option option = new Option(Integer.toString(tag.getId()));
             option.setFilterState(true);
             option.addElement(tag.getDisplayName().toLowerCase());
@@ -62,7 +66,7 @@ public class TagWidgetFactory {
         }
         tagSelect.addElement(noParentOption);
         
-        for (Tag tag : resourceDAO.getAllTags()) {
+        for (Tag tag : tagDAO.getAllTags()) {
             final boolean tagIsNotExcluded = !tagsToExclude.contains(tag);
             if (tagIsNotExcluded) {
                 Option option = new Option(tag.getName());

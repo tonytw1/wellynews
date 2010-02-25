@@ -150,8 +150,8 @@ public class BrowseController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")
     private void populateLocalCommon(HttpServletRequest request, ModelAndView mv) {
         urlStack.setUrlStack(request);
-        mv.getModel().put("top_level_tags", contentRetrievalService.getTopLevelTags());        
-        populateArchiveLinks(mv, showBrokenDecisionService.shouldShowBroken(), resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken()));        
+        mv.getModel().put("top_level_tags", contentRetrievalService.getTopLevelTags());
+        populateArchiveLinks(mv, showBrokenDecisionService.shouldShowBroken(), contentRetrievalService.getArchiveMonths());
     }
 	
     

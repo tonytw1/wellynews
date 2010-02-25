@@ -87,9 +87,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
     	<constructor-arg ref="contentRetrievalService"/>	
     </bean>
     
-     <bean id="tagWidgetFactory"
-    	class="nz.co.searchwellington.widgets.TagWidgetFactory">
-    	<constructor-arg ref="resourceDAO"/>	
+     <bean id="tagWidgetFactory" class="nz.co.searchwellington.widgets.TagWidgetFactory">
+     	<constructor-arg ref="tagDAO" />
+    	<constructor-arg ref="resourceDAO" />	
     </bean>
     
        <bean id="acceptanceWidgetFactory" class="nz.co.searchwellington.widgets.AcceptanceWidgetFactory" />    		
@@ -294,7 +294,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
  		<constructor-arg ref="resourceDAO" /> 		
 	</bean>	
 	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">   
- 		<constructor-arg ref="resourceDAO" /> 		
+ 		<constructor-arg ref="tagDAO" /> 		
 	</bean>
 	<bean id="autoTaggingService" class="nz.co.searchwellington.tagging.AutoTaggingService"> 
 		<constructor-arg ref="impliedTagService" />
@@ -316,6 +316,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="dateFormatter" />
 		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="tagDAO" />
 	</bean>
 	
 	<bean id="robotExclusionService" class="nz.co.searchwellington.utils.RobotExclusionService" >

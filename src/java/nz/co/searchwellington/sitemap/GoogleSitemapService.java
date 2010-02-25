@@ -6,6 +6,7 @@ import java.util.List;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -25,20 +26,22 @@ public class GoogleSitemapService {
     private ContentRetrievalService contentRetrivalService;
     private DateFormatter dateFormatter;
     private UrlBuilder urlBuilder;
+    private TagDAO tagDAO;
     
 
-    public GoogleSitemapService(ContentRetrievalService contentRetrivalService, DateFormatter dateFormatter, UrlBuilder urlBuilder) {        
+    public GoogleSitemapService(ContentRetrievalService contentRetrivalService, DateFormatter dateFormatter, UrlBuilder urlBuilder, TagDAO tagDAO) {        
         this.contentRetrivalService = contentRetrivalService;
         this.dateFormatter = dateFormatter;
         this.urlBuilder = urlBuilder;
+        this.tagDAO = tagDAO;
     }
     
     
-    public String render(List<Tag> tags, String siteLocation) {
+    public String render(String siteLocation) {
         Element urlset = DocumentHelper.createElement("urlset");
         urlset.addNamespace("sitemap", NAMESPACE);
         Document document = DocumentHelper.createDocument(urlset);        
-        for (Tag tag : tags) {
+        for (Tag tag : tagDAO.getAllTags()) {
             addTagUrl(urlset, tag, siteLocation);
         }
         return document.asXML();

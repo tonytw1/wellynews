@@ -15,6 +15,7 @@ import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -31,11 +32,12 @@ public class SimplePageController extends BaseMultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private ShowBrokenDecisionService showBrokenDecisionService;
+	private TagDAO tagDAO;
     
     
     public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, 
     		SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedRepository, 
-    		ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {
+    		ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
         this.resourceDAO = resourceDAO;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
@@ -44,6 +46,7 @@ public class SimplePageController extends BaseMultiActionController {
         this.discoveredFeedRepository = discoveredFeedRepository;
         this.showBrokenDecisionService = showBrokenDecisionService;
         this.contentRetrievalService = contentRetrievalService;
+        this.tagDAO = tagDAO;
     }
     
        
@@ -69,7 +72,8 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "Archive");
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
         
-        List<ArchiveLink> archiveMonths = resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken());
+        // TODO populate stats and dedupe as well.
+        List<ArchiveLink> archiveMonths = contentRetrievalService.getArchiveMonths();
         mv.addObject("archiveLinks", archiveMonths);
                 
         mv.setViewName("archiveIndex");
@@ -84,7 +88,7 @@ public class SimplePageController extends BaseMultiActionController {
            
         mv.addObject("heading", "The Wellynews API");
 
-        mv.addObject("feeds", resourceDAO.getAllFeedsByName());
+        mv.addObject("feeds", contentRetrievalService.getAllFeeds());
         mv.addObject("publishers", contentRetrievalService.getAllPublishersWithNewsitemCounts(true));	// TODO needs to include publishers with only feeds
         mv.addObject("api_tags", contentRetrievalService.getTopLevelTags());
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());        
@@ -169,7 +173,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
      
         mv.addObject("heading", "All Tags");        
-        mv.addObject("tags", resourceDAO.getAllTags());
+        mv.addObject("tags", tagDAO.getAllTags());
                 
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
         

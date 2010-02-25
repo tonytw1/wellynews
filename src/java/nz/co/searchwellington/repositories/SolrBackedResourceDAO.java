@@ -40,7 +40,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 // TODO date order needs to suborder by id.
-public class SolrBackedResourceDAO extends HibernateResourceDAO implements ResourceRepository {
+public class SolrBackedResourceDAO extends HibernateResourceDAO {
 
     private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
 
@@ -73,18 +73,8 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		solrQueryService.deleteResourceFromIndex(resource.getId());
 		super.deleteResource(resource);
 	}
-
-	
-	public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems) {    	
-    	Set<Tag> tags = new HashSet<Tag>();
-    	tags.add(tag);
-    	return getTaggedNewsitems(tags, showBroken, startIndex, maxItems);
-	}
-    
-	
-	
        
-	@Override
+	
 	public List<Resource> getAllFeeds(boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(showBroken).maxItems(500).toQuery();
 		setTitleSortOrder(query);
@@ -189,7 +179,6 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	
 	
 	
-	@Override
 	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").
 			showBroken(showBroken).
@@ -202,7 +191,6 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 	
 	
-	@Override
 	public List<Resource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean showBroken, Tag tag) {
 		SolrQuery query = new SolrQueryBuilder().type("N").
 			showBroken(showBroken).
@@ -359,7 +347,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 	
 
-	private List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
+	public List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
 		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);		
 		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);;
@@ -388,15 +376,9 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 
 	
-	public int getNewsitemCount(boolean showBroken) {
-		return getQueryCount(new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery());
-	}
+
 
 	
-	public int getWebsiteCount(boolean showBroken) {
-		return getQueryCount(new SolrQueryBuilder().type("W").showBroken(showBroken).toQuery());
-	}
-
 	
 	public List<Resource> getLatestNewsitems(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).maxItems(maxItems).toQuery();
@@ -559,5 +541,5 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	private void setTitleSortOrder(SolrQuery query) {
 		query.setSortField("titleSort", ORDER.asc);
 	}
-		  
+	
 }

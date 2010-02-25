@@ -77,17 +77,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
 	
 	
-	
-
-
-	@SuppressWarnings("unchecked")
-    final public List<Feed> getAllFeedsByName() {
-    	  return sessionFactory.getCurrentSession().createCriteria(Feed.class).      
-          addOrder(Order.asc("name")).
-          setCacheable(true).
-          list();
-	}
-
 
 	@SuppressWarnings("unchecked")
     final public List<Feed> getFeedsToRead() {
@@ -121,8 +110,15 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
     }
     
     
+    @SuppressWarnings("unchecked")
+    final public List<Resource> getAllWatchlists() {
+        return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).       
+        addOrder(Order.asc("name")).
+        setCacheable(true).
+        list();
+    }
     
-        
+    
     @SuppressWarnings("unchecked")
     // TODO add discovered timestamp and order by that.
     final public List<DiscoveredFeed> getAllDiscoveredFeeds() {

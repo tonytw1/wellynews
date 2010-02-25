@@ -2,15 +2,13 @@ package nz.co.searchwellington.repositories;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import org.apache.ecs.xhtml.map;
-
-import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
-import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
 public class SolrContentRetrievalService {
@@ -19,6 +17,10 @@ public class SolrContentRetrievalService {
 		
 	public SolrContentRetrievalService(SolrBackedResourceDAO solrResourceDAO) {
 		this.solrResourceDAO = solrResourceDAO;
+	}
+	
+	public List<Resource> getAllFeeds(boolean shouldShowBroken) {
+		return solrResourceDAO.getAllFeeds(shouldShowBroken);
 	}
 
 	public List<Resource> getAllWatchlists(boolean shouldShowBroken) {
@@ -29,12 +31,8 @@ public class SolrContentRetrievalService {
 		return solrResourceDAO.getTagWatchlist(tag, shouldShowBroken);
 	}
 
-	public List<Resource> getTaggedNewsitems(Tag tag, boolean shouldShowBroken, int startIndex, int maxItems) {
-		return solrResourceDAO.getTaggedNewsitems(tag, shouldShowBroken, startIndex, maxItems);
-	}
-
-	public List<Resource> getTaggedWebsites(Tag tag, boolean shouldShowBroken, int maxItems) {
-		return solrResourceDAO.getTaggedWebsites(tag, shouldShowBroken, maxItems);	
+	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean shouldShowBroken, int maxItems) {
+		return solrResourceDAO.getTaggedWebsites(tags, shouldShowBroken, maxItems);	
 	}
 
 	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, boolean shouldShowBroken, int maxItems) {
@@ -97,4 +95,37 @@ public class SolrContentRetrievalService {
 		return solrResourceDAO.getAllPublishers(shouldShowBroken, mustHaveNewsitems);
 	}
 
+	public List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean shouldShowBroken, int startIndex, int maxItems) {
+		return solrResourceDAO.getTaggedNewsitems(tags, shouldShowBroken, startIndex, maxItems);
+		
+	}
+
+	public List<Tag> getGeotaggedTags(boolean shouldShowBroken) {
+		return solrResourceDAO.getGeotaggedTags(shouldShowBroken);
+	}
+
+	public List<Tag> getCommentedTags(boolean shouldShowBroken) {
+		return solrResourceDAO.getCommentedTags(shouldShowBroken);
+	}
+
+	public List<ArchiveLink> getArchiveMonths(boolean shouldShowBroken) {
+		return solrResourceDAO.getArchiveMonths(shouldShowBroken);
+	}
+
+	public List<Resource> getCommentedNewsitems(int maxItems, boolean shouldShowBroken, boolean hasComments, int startIndex) {
+		return solrResourceDAO.getCommentedNewsitems(maxItems, shouldShowBroken, hasComments, startIndex);
+	}
+
+	public Map<String, Integer> getArchiveStatistics(boolean shouldShowBroken) {
+		return solrResourceDAO.getArchiveStatistics(shouldShowBroken);
+	}
+
+	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean shouldShowBroken) {
+		return solrResourceDAO.getRecentTwitteredNewsitems(maxItems, shouldShowBroken);
+	}
+
+	public List<Resource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean shouldShowBroken, Tag tag) {
+		return solrResourceDAO.getRecentTwitteredNewsitemsForTag(maxItems, shouldShowBroken, tag);
+	};
+	
 }

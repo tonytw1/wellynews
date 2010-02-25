@@ -6,23 +6,24 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 
 public class TagHintAutoTagger {
 
-	Logger log = Logger.getLogger(TagHintAutoTagger.class);
-	private ResourceRepository resourceDAO;
+	static Logger log = Logger.getLogger(TagHintAutoTagger.class);
 
-	public TagHintAutoTagger(ResourceRepository resourceDAO) {
-		this.resourceDAO = resourceDAO;
+	private TagDAO tagDAO;
+
+	public TagHintAutoTagger(TagDAO tagDAO) {
+		this.tagDAO = tagDAO;
 	}
 
 	public Set<Tag> suggestTags(Resource resource) {
 		Set<Tag> suggestedTags = new HashSet<Tag>();
 
-		List<Tag> tags = resourceDAO.getAllTags();
+		List<Tag> tags = tagDAO.getAllTags();
 		for (Tag tag : tags) {
 			String tagHints = tag.getAutotagHints();
 			if (tagHints != null && !tagHints.trim().equals("")) {

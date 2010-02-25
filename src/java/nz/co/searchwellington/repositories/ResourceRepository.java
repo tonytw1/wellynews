@@ -2,16 +2,12 @@ package nz.co.searchwellington.repositories;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
@@ -28,6 +24,7 @@ public interface ResourceRepository {
      
     public boolean isResourceWithUrl(String url);
     public Resource loadResourceByUrl(String url);    
+    public void deleteResource(Resource resource);
         
     public Tag createNewTag();
     public Website createNewWebsite();
@@ -36,27 +33,18 @@ public interface ResourceRepository {
     public Watchlist createNewWatchlist();
 
     public List<Feed> getAllFeeds();
-	public List<Feed> getAllFeedsByName();
     public List<Feed> getFeedsToRead();
     
     public List<Resource> getAllCalendarFeeds();
     public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken);
-    public List<Resource> getAllWatchlists(boolean showBroken);
     
     // TODO move to tagDAO - probably already a delegate
     public Tag loadTagById(int tagID);
     public Tag loadTagByName(String tagname);
     public void saveTag(Tag editTag);   
-    public List <Tag> getAllTags();
+
     public List<Tag> getTopLevelTags();
     public void deleteTag(Tag tag);
-     
-    public List<Resource> getTaggedResources(Tag tag, int max_newsitems);
-    public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites);        
-    public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems);
-    public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int max_secondary_items);
-    
-    public void deleteResource(Resource resource);
     
     public List<Resource> getNotCheckedSince(Date date, int maxItems);
     public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems);
@@ -76,13 +64,7 @@ public interface ResourceRepository {
 	
     public List<Newsitem> getRecentUntaggedNewsitems();   
     public Date getNewslogLastChanged();
-    public int getWebsiteCount(boolean showBroken);
-    public int getNewsitemCount(boolean showBroken);
-    
-    public List<Tag> getCommentedTags(boolean showBroken); 
-    public List<Tag> getGeotaggedTags(boolean showBroken);	
-    
-    public List<ArchiveLink> getArchiveMonths(boolean showBroken);
+        
     public List<Integer> getAllResourceIds();
     public CalendarFeed createNewCalendarFeed(String url);
     public List<Newsitem> getLatestTwitteredNewsitems(int numberOfItems, boolean showBroken);
@@ -94,9 +76,6 @@ public interface ResourceRepository {
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems);
 	public Feed loadFeedByUrlWords(String string);
-	
-	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex);
-	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex);
 	
 	public List<Resource> getTwitterMentionedNewsitems(int maxItems);
 	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
@@ -114,13 +93,10 @@ public interface ResourceRepository {
 	public void saveTweet(Twit twit);
 	
 	
-	
-	
 	public int getCommentCount();
 	public List<Newsitem> getNewsitemsForFeed(Feed feed);
-	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken);
-	public List<Resource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean showBroken, Tag tag);
-	public List<Resource> getAllFeeds(boolean shouldShowBroken);
-	public Map<String, Integer> getArchiveStatistics(boolean shouldShowBroken);
+	
+	@SuppressWarnings("unchecked")
+	public List<Resource> getAllWatchlists();
     
 }

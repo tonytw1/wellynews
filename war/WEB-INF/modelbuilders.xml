@@ -68,7 +68,7 @@
 	</bean>
 
 	<bean id="TagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.TagCombinerModelBuilder">
-		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="contentRetrievalService" />		
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />

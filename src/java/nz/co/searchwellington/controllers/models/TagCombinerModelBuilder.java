@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -16,20 +17,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	private ResourceRepository resourceDAO;	
+	private ContentRetrievalService contentRetrievalService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	
-	
-	public TagCombinerModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {		
-		this.resourceDAO = resourceDAO;		
+	public TagCombinerModelBuilder(ContentRetrievalService contentRetrievalService,
+			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
+			RelatedTagsService relatedTagsService) {
+		super();
+		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
-		this.relatedTagsService = relatedTagsService;		
+		this.relatedTagsService = relatedTagsService;
 	}
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {		
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -68,8 +71,8 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("description", "Items tagged with " + firstTag.getDisplayName() +  " and " + secondTag.getDisplayName() + ".");
 		mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
 		
-		final List<Resource> taggedWebsites = resourceDAO.getTaggedWebsites(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);  
-		final List<Resource> taggedNewsitems = resourceDAO.getTaggedNewsitems(new HashSet<Tag>(tags), showBroken, MAX_WEBSITES);
+		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), MAX_WEBSITES);  
+		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(new HashSet<Tag>(tags), MAX_WEBSITES);
 		
 		mv.addObject("main_content", taggedNewsitems);	
 		mv.addObject("websites", taggedWebsites);

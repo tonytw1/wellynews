@@ -84,6 +84,5 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
 	public Resource loadResourceByUniqueUrl(String url) {
 		return null;
 	}
-
     
 }
