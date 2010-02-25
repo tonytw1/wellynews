@@ -107,7 +107,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "Broken sites");
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
              
-        List<Resource> wrappedCalendars = resourceDAO.getBrokenSites();        
+        List<Resource> wrappedCalendars = contentRetrievalService.getBrokenSites();        
         mv.addObject("main_content", wrappedCalendars);
         mv.setViewName("browse");
         return mv;
@@ -232,8 +232,7 @@ public class SimplePageController extends BaseMultiActionController {
     
     
     private void populateLatestTwitters(ModelAndView mv, boolean showBroken) throws IOException {       
-        final List<Newsitem> latestNewsitems = resourceDAO.getLatestTwitteredNewsitems(MAX_TWITTERS_TO_SHOW, showBroken);        
-        mv.addObject("latest_twitters", latestNewsitems);  
+        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems(MAX_TWITTERS_TO_SHOW));  
     }
     
 }

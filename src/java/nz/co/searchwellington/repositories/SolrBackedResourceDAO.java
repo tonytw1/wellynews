@@ -21,7 +21,6 @@ import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNews
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
-import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
@@ -34,46 +33,33 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
-import org.hibernate.SessionFactory;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 // TODO date order needs to suborder by id.
-public class SolrBackedResourceDAO extends HibernateResourceDAO {
+public class SolrBackedResourceDAO {
 
     private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
 
-	Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
+	static Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
     
     private SolrQueryService solrQueryService;
+    private ResourceRepository resourceDAO;
+    private TagDAO tagDAO;
+    
     private String solrUrl;
-	
-    public SolrBackedResourceDAO(SessionFactory sessionFactory, UrlBuilder urlBuilder, SolrQueryService solrQueryService, TagDAO tagDAO, TweetDAO tweetDAO) {
-		super(sessionFactory, tagDAO, tweetDAO);
+
+    
+	public SolrBackedResourceDAO(SolrQueryService solrQueryService, ResourceRepository resourceDAO, TagDAO tagDAO) {		
 		this.solrQueryService = solrQueryService;
+		this.resourceDAO = resourceDAO;
+		this.tagDAO = tagDAO;
 	}
 
 	public void setSolrUrl(String solrUrl) {
 		this.solrUrl = solrUrl;
 	}
-
-
-	@Override
-	public void saveResource(Resource resource) {
-		log.info("Updating solr index entire for: " + resource);
-		super.saveResource(resource);
-		solrQueryService.updateIndexForResource(resource);		
-	}
-	
-	
-	@Override
-	public void deleteResource(Resource resource) {		
-		log.info("Deleting from solr index entire for: " + resource);
-		solrQueryService.deleteResourceFromIndex(resource.getId());
-		super.deleteResource(resource);
-	}
-       
 	
 	public List<Resource> getAllFeeds(boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(showBroken).maxItems(500).toQuery();
@@ -157,6 +143,13 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO {
 		log.info("Getting watchlist for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();
 		setTitleSortOrder(query);
+		return getQueryResults(query);
+	}
+	
+	
+	public List<Resource> getLatestWebsites(int maxItems, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
+		setTitleSortOrder(query);	// TODO ordering by live time
 		return getQueryResults(query);
 	}
 	
@@ -286,7 +279,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO {
 					List<Count> values = facetField.getValues();			
 					for (Count count : values) {
 						final int relatedPublisherId = Integer.parseInt(count.getName());
-						Website relatedPublisher = (Website) this.loadResourceById(relatedPublisherId);				
+						Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);				
 						final Long relatedItemCount = count.getCount();
 						publishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));
 					}
@@ -453,7 +446,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO {
 		} catch (SolrServerException e) {
 			log.error(e);
 		}
-		return loadTagsById(tagIds);
+		return tagDAO.loadTagsById(tagIds);
 	}
 	
 	
@@ -463,7 +456,7 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO {
 		return getQueryResults(query);
 	}
 	
-
+	
 	public List<Tag> getGeotaggedTags(boolean showBroken) {
 		List<Integer> tagIds = new ArrayList<Integer>();
 		try {
@@ -489,14 +482,14 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO {
 		} catch (SolrServerException e) {
 			log.error(e);
 		}
-		return loadTagsById(tagIds);
+		return tagDAO.loadTagsById(tagIds);
 	}
 
 	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
 		SolrDocumentList solrResults = response.getResults();
 		for (SolrDocument result : solrResults) {
 			final Integer resourceId = (Integer) result.getFieldValue("id");
-			Resource resource = this.loadResourceById(resourceId);			
+			Resource resource = resourceDAO.loadResourceById(resourceId);			
 			if (resource != null) {
 				if (response.getHighlighting() != null) {
 					Map<String, List<String>> map = response.getHighlighting().get(resourceId.toString());
@@ -541,5 +534,5 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO {
 	private void setTitleSortOrder(SolrQuery query) {
 		query.setSortField("titleSort", ORDER.asc);
 	}
-	
+
 }

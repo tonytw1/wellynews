@@ -36,7 +36,6 @@ public interface ResourceRepository {
     public List<Feed> getFeedsToRead();
     
     public List<Resource> getAllCalendarFeeds();
-    public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken);
     
     // TODO move to tagDAO - probably already a delegate
     public Tag loadTagById(int tagID);
@@ -69,10 +68,7 @@ public interface ResourceRepository {
     public CalendarFeed createNewCalendarFeed(String url);
     public List<Newsitem> getLatestTwitteredNewsitems(int numberOfItems, boolean showBroken);
     
-	public List<Resource> getAllValidGeocoded(int max_events_to_show_on_front, boolean showBroken);
-    public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxNumber, boolean showBroken);
 	public Website getPublisherByUrlWords(String publisherUrlWords);
-	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems);
 	public Feed loadFeedByUrlWords(String string);
 	
 	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
@@ -83,7 +79,6 @@ public interface ResourceRepository {
 	public List<Resource> getOwnedBy(User loggedInUser, int maxItems);
 	public TwitteredNewsitem createNewTwitteredNewsitem(Twit twit);	
 	public List<Resource> getNewsitemsMatchingStem(String stem);
-	public List<Resource> getBrokenSites();
 	
 	public List<Twit> getAllTweets();
 	public Twit loadTweetByTwitterId(Long id);

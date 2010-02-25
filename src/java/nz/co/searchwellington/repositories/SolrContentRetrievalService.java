@@ -130,6 +130,22 @@ public class SolrContentRetrievalService {
 
 	public Date getLastLiveTimeForTag(Tag tag) {
 		return solrResourceDAO.getLastLiveTimeForTag(tag);
-	};
+	}
+
+	public List<Resource> getAllValidGeocoded(int maxItems, boolean shouldShowBroken) {
+		return solrResourceDAO.getAllValidGeocoded(maxItems, shouldShowBroken);
+	}
+
+	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems, boolean shouldShowBroken) {
+		return solrResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, shouldShowBroken);
+	}
+
+	public List<Resource> getBrokenSites() {
+		return solrResourceDAO.getBrokenSites();
+	}
+
+	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean shouldShowBroken, int maxItems) {
+		return solrResourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, shouldShowBroken, maxItems);
+	}
 	
 }

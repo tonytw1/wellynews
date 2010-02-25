@@ -22,7 +22,7 @@
 	</bean>
 
 	<bean id="publisherTagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherTagCombinerModelBuilder">
-		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="relatedTagsService" />

@@ -10,29 +10,33 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
-
-Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 	
-	private ResourceRepository resourceDAO;
+	static Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
+	
+	private ContentRetrievalService contentRetrievalService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	
-	public PublisherTagCombinerModelBuilder(ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService) {		
-		this.resourceDAO = resourceDAO;
+	
+	public PublisherTagCombinerModelBuilder(
+			ContentRetrievalService contentRetrievalService,
+			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
+			RelatedTagsService relatedTagsService) {
+		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 	}
-	
-	
+
+
 	public boolean isValid(HttpServletRequest request) {
 		Tag tag = (Tag) request.getAttribute("tag");
 		Website publisher = (Website) request.getAttribute("publisher"); 
@@ -70,7 +74,7 @@ Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 
 	// TODO needs pagination
 	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) {		
-		final List<Resource> publisherNewsitems = resourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBroken, MAX_NEWSITEMS);
+		final List<Resource> publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS);
 		mv.addObject("main_content", publisherNewsitems);		
 		if (publisherNewsitems.size() > 0) {            
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));

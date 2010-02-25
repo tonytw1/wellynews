@@ -39,7 +39,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getGeocoded(int maxItems) {		
-		return resourceDAO.getAllValidGeocoded(maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getAllValidGeocoded(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getAllPublishers(boolean mustHaveNewsitems) {	// TODO publishers can also have feeds
@@ -79,7 +79,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems) {
-		return resourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrContentRetrievalService.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Tag> getGeotaggedTags() {
@@ -193,6 +193,14 @@ public class ContentRetrievalService {
 		Set<Tag> tags = new HashSet<Tag>();
 		tags.add(tag);
 		return solrContentRetrievalService.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
+	}
+
+	public List<Resource> getBrokenSites() {
+		return solrContentRetrievalService.getBrokenSites();	
+	}
+
+	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, int maxNewsitems) {
+		return solrContentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems);
 	}
 	
 }

@@ -28,7 +28,7 @@ import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
 
 
-public abstract class HibernateResourceDAO extends AbsractResourceDAO implements ResourceRepository {
+public class HibernateResourceDAO extends AbsractResourceDAO implements ResourceRepository {
 
     SessionFactory sessionFactory;
     private TagDAO tagDAO;
@@ -248,11 +248,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         return tagDAO.getAllTags();      
     }
     
-   
-    public List<Tag> loadTagsById(List<Integer> tagIds) {
-		return tagDAO.loadTagsById(tagIds);		
-	}
-
     public void saveTag(Tag editTag) {
         tagDAO.saveTag(editTag);
     }
@@ -389,17 +384,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         sessionFactory.getCurrentSession().flush();
     }
 
-
-
- 
-    
-    @SuppressWarnings("unchecked")
-    public List<Newsitem> getLatestTwitteredNewsitems(int number, boolean showBroken) {        
-        return criteriaForLatestNewsitems(number, showBroken).
-        add(Expression.isNotNull("submittingTwit")).
-        setCacheable(true).list();    
-    }
-    
     private Criteria criteriaForLatestNewsitems(int number, boolean showBroken) {
         Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
             addOrder(Order.desc("date")).
@@ -410,23 +394,6 @@ public abstract class HibernateResourceDAO extends AbsractResourceDAO implements
         }
         return criteria;
     }
-    
-    
-    @SuppressWarnings("unchecked")
-    public List<Resource> getLatestWebsites(int maxNumberOfItems, boolean showBroken) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Website.class).addOrder( Order.desc("date"));
-        if (!showBroken) {
-            criteria.add(Expression.eq("httpStatus", 200));
-        }
-        return criteria.setCacheable(true).
-        setMaxResults(maxNumberOfItems).
-        list();
-    }
-
-    
-   
-     
-  
     
     
     @SuppressWarnings("unchecked")
