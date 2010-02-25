@@ -12,7 +12,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.WebsiteImpl;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
-import nz.co.searchwellington.repositories.TechnoratiDAO;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 import nz.co.searchwellington.utils.RobotsAwareHttpFetcher;
@@ -28,7 +27,6 @@ public class LinkCheckerNewTest extends TestCase {
     private CommentFeedReader commentFeedReader = mock(CommentFeedReader.class);
 	private CommentFeedDetectorService commentFeedDetector = mock(CommentFeedDetectorService.class);
 	private SnapshotDAO snapshotDAO = mock(SnapshotDAO.class);
-    private TechnoratiDAO technoratiDAO = mock(TechnoratiDAO.class);
 	private HttpFetcher httpFetcher = mock(RobotsAwareHttpFetcher.class);
 	private LinkExtractor linkExtractor = mock(CompositeLinkExtractor.class);
 

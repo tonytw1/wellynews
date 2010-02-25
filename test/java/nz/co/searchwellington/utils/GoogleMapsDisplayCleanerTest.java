@@ -6,16 +6,15 @@ import java.util.List;
 
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 
 public class GoogleMapsDisplayCleanerTest extends TestCase {
 
-    Geocode here = new GeocodeImpl("here", 1, 1);
-    Geocode there = new GeocodeImpl("there", 2, 2);
-    Geocode alsoHere = new GeocodeImpl("here", 1, 1);
+    Geocode here = new Geocode("here", 1, 1);
+    Geocode there = new Geocode("there", 2, 2);
+    Geocode alsoHere = new Geocode("here", 1, 1);
     
     List<Resource> geocoded; 
     Resource firstNewsitem;

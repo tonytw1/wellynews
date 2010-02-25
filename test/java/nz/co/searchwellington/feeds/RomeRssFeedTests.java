@@ -3,11 +3,11 @@ package nz.co.searchwellington.feeds;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.GeocodeImpl;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.RssFeedable;
@@ -35,7 +35,7 @@ public class RomeRssFeedTests extends TestCase {
 	public void testShouldRenderGeocodeInRss() throws Exception { 
 		Newsitem newsitem = new NewsitemImpl();
 		newsitem.setName("test item");		
-		Geocode geocode = new GeocodeImpl("119 Farringdon Road, London");
+		Geocode geocode = new Geocode("119 Farringdon Road, London");
         geocode.setLatitude(3);
         geocode.setLongitude(45);
 		newsitem.setGeocode(geocode);
@@ -53,7 +53,7 @@ public class RomeRssFeedTests extends TestCase {
 	
 	private Document createOutputAndParseBackDocument(Newsitem newsitem, List<Newsitem> content) throws DocumentException {
 		List<RssFeedable> rssContent = new ArrayList<RssFeedable>();
-		rssContent.addAll(content);
+		rssContent.addAll((Collection<? extends RssFeedable>) content);
 		RomeRssFeed feed = new RomeRssFeed("a", "b", "c", rssContent);
 		String output = feed.outputAsXml();
         Document document = parse(output);

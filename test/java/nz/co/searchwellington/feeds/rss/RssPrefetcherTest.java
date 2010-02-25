@@ -8,25 +8,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
+import nz.co.searchwellington.feeds.FeedNewsitemCache;
+import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.repositories.ResourceRepository;
-
-import com.sun.syndication.feed.synd.SyndFeed;
 
 public class RssPrefetcherTest extends TestCase {
 	
 	List<Feed> feeds;
 	
 	ResourceRepository resourceDAO = mock(ResourceRepository.class);
-	RssHttpFetcher rssHttpFetcher = mock(RssHttpFetcher.class);
-	RssCache rssCache = mock(RssCache.class);
+	LiveRssfeedNewsitemService rssHttpFetcher = mock(LiveRssfeedNewsitemService.class);
+	FeedNewsitemCache rssCache = mock(FeedNewsitemCache.class);
 	
 	RssNewsitemPrefetcher prefetcher;
 	
 	@Override
 	protected void setUp() throws Exception {
-		 prefetcher = new RssNewsitemPrefetcher(resourceDAO, rssHttpFetcher, rssCache);
+		 prefetcher = new RssNewsitemPrefetcher(resourceDAO, rssHttpFetcher, rssCache, null, null);			
 		 Feed firstFeed = new FeedImpl();
 		 firstFeed.setUrl("http://testdata/rss/1");		
 		 Feed secondFeed = new FeedImpl();
@@ -42,19 +42,5 @@ public class RssPrefetcherTest extends TestCase {
 		prefetcher.run();
 		verify(resourceDAO).getAllFeeds();
 	}
-	
-	public void testShouldFetchEachFeed() throws Exception {		
-		prefetcher.run();		
-		verify(rssHttpFetcher).httpFetch("http://testdata/rss/1");
-		verify(rssHttpFetcher).httpFetch("http://testdata/rss/2");
-	}
-	
-	public void testShouldPutSuccessfulLoaedFeedsIntoTheCache() throws Exception {
-		SyndFeed firstSyndFeed = mock(SyndFeed.class);		
-		stub(rssHttpFetcher.httpFetch("http://testdata/rss/1")).toReturn(firstSyndFeed);
-		stub(rssHttpFetcher.httpFetch("http://testdata/rss/2")).toReturn(null);		
-		prefetcher.run();	
-		verify(rssCache).putFeedIntoCache("http://testdata/rss/1", firstSyndFeed);
-	}
-	
+		
 }

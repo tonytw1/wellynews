@@ -4,7 +4,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
-
 import nz.co.searchwellington.controllers.ContentUpdateService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
@@ -37,7 +36,7 @@ public class ApiControllerTest extends TestCase {
 	
 	
 	public void testShouldAcceptFeedItemByUrl() throws Exception {	
-		ApiController controller = new ApiController(resourceDAO, requestFilter, loggedInUserFilter, supressionService, rssNewsitemService, contentUpdateService);
+		ApiController controller = new ApiController(resourceDAO, requestFilter, loggedInUserFilter, supressionService, rssNewsitemService, contentUpdateService, null, null);
 		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -46,7 +45,7 @@ public class ApiControllerTest extends TestCase {
 		stub(rssNewsitemService.getFeedNewsitemByUrl("http://test/233")).toReturn(acceptedNewsitem);
 		controller.accept(request, response);
 		
-		verify(contentUpdateService).update(acceptedNewsitem, loggedInUserFilter.getLoggedInUser(), request, false, false);		
+		verify(contentUpdateService).update(acceptedNewsitem, loggedInUserFilter.getLoggedInUser(), request);		
 	}
-
+	
 }
