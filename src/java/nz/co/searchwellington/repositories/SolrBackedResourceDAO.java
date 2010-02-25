@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.lang.Long;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
@@ -17,7 +16,6 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
@@ -223,7 +221,20 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 		return getQueryResults(query);
 	}
 	
-
+	
+	public List<Resource> getPublisherFeeds(Website publisher, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("F").publisher(publisher).toQuery();			
+		setTitleSortOrder(query);
+		return getQueryResults(query);
+	}
+	
+	public List<Resource> getPublisherWatchlist(Website publisher, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("L").publisher(publisher).toQuery();			
+		setTitleSortOrder(query);
+		return getQueryResults(query);
+	}
+	
+	
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {	
 		SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);			
 		setDateDescendingOrder(query);;
@@ -261,7 +272,17 @@ public class SolrBackedResourceDAO extends HibernateResourceDAO implements Resou
 	}
 
 	
-	public List<PublisherContentCount> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems) {		
+	// TODO this one is abit odd -should be it's own solr query to include feeds and watchlists in the defination of 'publisher';
+	public List<Resource> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
+		List <Resource> publishers = new ArrayList<Resource>();
+		for (PublisherContentCount publisherCount : this.getAllPublishersWithNewsitemCounts(shouldShowBroken, mustHaveNewsitems)) {
+			publishers.add(publisherCount.getPublisher());
+		}
+		return publishers;
+	}
+	
+	
+	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean showBroken, boolean mustHaveNewsitems) {		
 			SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();
 			query.addFacetField("publisher");
 			query.setFacetMinCount(1);

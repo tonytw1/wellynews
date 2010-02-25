@@ -1,19 +1,16 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.model.ArchiveLink;
-import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
@@ -43,8 +40,12 @@ public class ContentRetrievalService {
 		return resourceDAO.getAllValidGeocoded(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
+	public List<Resource> getAllPublishers(boolean mustHaveNewsitems) {	// TODO publishers can also have feeds
+		return solrContentRetrievalService.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), mustHaveNewsitems);
+	}
+	
 	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean mustHaveNewsitems) {
-		return resourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), mustHaveNewsitems);
+		return solrContentRetrievalService.getAllPublishersWithNewsitemCounts(showBrokenDecisionService.shouldShowBroken(), mustHaveNewsitems);
 	}
 
 	public List<Tag> getTopLevelTags() {
@@ -147,8 +148,8 @@ public class ContentRetrievalService {
 		return resourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<Feed> getPublisherFeeds(Website publisher) {
-		return resourceDAO.getPublisherFeeds(publisher);	// TODO show broken
+	public List<Resource> getPublisherFeeds(Website publisher) {
+		return solrContentRetrievalService.getPublisherFeeds(publisher, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public int getPublisherNewsitemsCount(Website publisher) {
@@ -156,11 +157,11 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, int startIndex) {
-		return resourceDAO.getPublisherNewsitems(publisher, maxItems, showBrokenDecisionService.shouldShowBroken(), startIndex);
+		return solrContentRetrievalService.getPublisherNewsitems(publisher, maxItems, showBrokenDecisionService.shouldShowBroken(), startIndex);
 	}
 
-	public List<Watchlist> getPublisherWatchlist(Website publisher) {
-		return resourceDAO.getPublisherWatchlist(publisher); // TODO show broken
+	public List<Resource> getPublisherWatchlist(Website publisher) {
+		return solrContentRetrievalService.getPublisherWatchlist(publisher, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<ArchiveLink> getArchiveMonths() {

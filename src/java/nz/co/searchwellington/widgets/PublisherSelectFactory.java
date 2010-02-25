@@ -7,7 +7,7 @@ import java.util.List;
 
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ecs.html.Option;
@@ -23,12 +23,11 @@ public class PublisherSelectFactory {
     final int MAXIMUM_TITLE_LENGTH = 45;
 
     
-    private ResourceRepository resourceDAO;
+    private ContentRetrievalService contentRetrievalService;
     
-    
-        
-    public PublisherSelectFactory(ResourceRepository resourceDAO) {
-        this.resourceDAO = resourceDAO;
+            
+    public PublisherSelectFactory(ContentRetrievalService resourceDAO) {
+        this.contentRetrievalService = resourceDAO;
     }
 
     
@@ -74,7 +73,7 @@ public class PublisherSelectFactory {
         log.info("Creating publisher options; showBroken: " + showBroken + "; publishedOnly: " + publishedOnly);
         List<Option> options = new ArrayList<Option>();
         
-        for (PublisherContentCount publisherSummary : resourceDAO.getAllPublishers(showBroken, publishedOnly)) {
+        for (PublisherContentCount publisherSummary : contentRetrievalService.getAllPublishersWithNewsitemCounts(publishedOnly)) {
         	Website publisher = publisherSummary.getPublisher();
             if (publisher.getUrlWords() != null) {
             	Option nextOption = new Option(publisher.getUrlWords());            	         

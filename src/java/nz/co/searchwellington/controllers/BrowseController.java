@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,7 +26,7 @@ public class BrowseController extends BaseMultiActionController {
 	private ContentRetrievalService contentRetrievalService;
  
 	public BrowseController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, UrlBuilder urlBuilder, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {       
-		this.resourceDAO = resourceDAO;     
+		this.resourceDAO = resourceDAO;     // TODO not used
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.urlBuilder = urlBuilder;
@@ -85,7 +86,7 @@ public class BrowseController extends BaseMultiActionController {
 			populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
             mv.addObject("used_tags_description", "Most used tags during this month.");
             
-            List<ArchiveLink> archiveLinks = resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken());
+            List<ArchiveLink> archiveLinks = contentRetrievalService.getArchiveMonths();
             populateNextAndPreviousLinks(mv, month, archiveLinks);
             
             populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
@@ -134,14 +135,14 @@ public class BrowseController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")  
     private void populatePublisherFeeds(ModelAndView mv, Website publisher) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Feeds");
-        mv.getModel().put("main_content", resourceDAO.getPublisherFeeds(publisher));
+        mv.getModel().put("main_content", contentRetrievalService.getPublisherFeeds(publisher));
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
     }
 
     @SuppressWarnings("unchecked")
     private void populatePublisherWatchlist(ModelAndView mv, Website publisher) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Watchlist items");
-        mv.getModel().put("main_content",resourceDAO.getPublisherWatchlist(publisher));
+        mv.getModel().put("main_content",contentRetrievalService.getPublisherWatchlist(publisher));
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());        
     }
     
@@ -149,7 +150,7 @@ public class BrowseController extends BaseMultiActionController {
     @SuppressWarnings("unchecked")
     private void populateLocalCommon(HttpServletRequest request, ModelAndView mv) {
         urlStack.setUrlStack(request);
-        mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());        
+        mv.getModel().put("top_level_tags", contentRetrievalService.getTopLevelTags());        
         populateArchiveLinks(mv, showBrokenDecisionService.shouldShowBroken(), resourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken()));        
     }
 	
@@ -160,9 +161,20 @@ public class BrowseController extends BaseMultiActionController {
             mv.addObject("archive_links", archiveMonths);
         } else {
             mv.addObject("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
-        }
-        mv.addObject("site_count",  resourceDAO.getWebsiteCount(showBroken));
-		mv.addObject("newsitem_count",  resourceDAO.getNewsitemCount(showBroken));
-		mv.addObject("comment_count",  resourceDAO.getCommentCount());
+        }        
+        populateArchiveStatistics(mv);
     }
+    
+    // TODO duplicated with index model builder
+    private void populateArchiveStatistics(ModelAndView mv) {
+		Map<String, Integer> archiveStatistics = contentRetrievalService.getArchiveStatistics();
+		if (archiveStatistics != null) {
+			mv.addObject("site_count",  archiveStatistics.get("W"));
+			mv.addObject("newsitem_count",  archiveStatistics.get("N"));
+			mv.addObject("feed_count", archiveStatistics.get("F"));
+		}
+	}
+
+    
+    
 }

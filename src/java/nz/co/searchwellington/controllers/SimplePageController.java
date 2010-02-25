@@ -184,7 +184,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
                 
         mv.addObject("heading", "All Publishers");    
-        mv.addObject("publishers", resourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), true));
+        mv.addObject("publishers", contentRetrievalService.getAllPublishers(true));
         
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
         mv.setViewName("publishers");

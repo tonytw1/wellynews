@@ -5,8 +5,12 @@ import java.util.List;
 
 import org.apache.ecs.xhtml.map;
 
+import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
+import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
 public class SolrContentRetrievalService {
@@ -52,7 +56,11 @@ public class SolrContentRetrievalService {
 	public int getCommentedNewsitemsCount(boolean shouldShowBroken) {
 		return solrResourceDAO.getCommentedNewsitemsCount(shouldShowBroken);
 	}
-
+	
+	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean shouldShowBroken, int startIndex) {
+		return solrResourceDAO.getPublisherNewsitems(publisher, maxItems, shouldShowBroken, startIndex);
+	}
+	
 	public int getPublisherNewsitemsCount(Website publisher, boolean shouldShowBroken) {
 		return solrResourceDAO.getPublisherNewsitemsCount(publisher, shouldShowBroken);
 	}
@@ -71,6 +79,22 @@ public class SolrContentRetrievalService {
 
 	public List<Resource> getLatestNewsitems(int maxItems, boolean shouldShowBroken) {
 		return solrResourceDAO.getLatestNewsitems(maxItems, shouldShowBroken);
+	}
+
+	public List<Resource> getPublisherFeeds(Website publisher, boolean shouldShowBroken) {
+		return solrResourceDAO.getPublisherFeeds(publisher, shouldShowBroken);
+	}
+
+	public List<Resource> getPublisherWatchlist(Website publisher, boolean shouldShowBroken) {
+		return solrResourceDAO.getPublisherWatchlist(publisher, shouldShowBroken);
+	}
+
+	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean shouldShowBroken, boolean mustHaveNewsitems) {
+		return solrResourceDAO.getAllPublishersWithNewsitemCounts(shouldShowBroken, mustHaveNewsitems);
+	}
+
+	public List<Resource> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
+		return solrResourceDAO.getAllPublishers(shouldShowBroken, mustHaveNewsitems);
 	}
 
 }

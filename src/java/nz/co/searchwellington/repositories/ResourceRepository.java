@@ -23,19 +23,13 @@ import nz.co.searchwellington.model.Website;
 
 public interface ResourceRepository {
 
-    public Tag createNewTag();
     public Resource loadResourceById(int resourceID);
+    public void saveResource(Resource resource);
      
     public boolean isResourceWithUrl(String url);
-    public Resource loadResourceByUrl(String url);
-
-    public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken); 
-    public List<Resource> getPublisherNewsitems(Website publisher, int MaxNumberOfItems, boolean showBroken, int startIndex);
-    public List <Feed> getPublisherFeeds(Website publisher);
-    public List <Watchlist> getPublisherWatchlist(Website publisher);
-    
-    public void saveResource(Resource resource);
+    public Resource loadResourceByUrl(String url);    
         
+    public Tag createNewTag();
     public Website createNewWebsite();
     public Newsitem createNewNewsitem();
     public Feed createNewFeed();
@@ -49,29 +43,26 @@ public interface ResourceRepository {
     public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken);
     public List<Resource> getAllWatchlists(boolean showBroken);
     
-    
+    // TODO move to tagDAO - probably already a delegate
     public Tag loadTagById(int tagID);
     public Tag loadTagByName(String tagname);
     public void saveTag(Tag editTag);   
     public List <Tag> getAllTags();
     public List<Tag> getTopLevelTags();
-    
-  
+    public void deleteTag(Tag tag);
+     
     public List<Resource> getTaggedResources(Tag tag, int max_newsitems);
     public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int max_websites);        
     public List<Resource> getTaggedNewsitems(Tag tag, boolean showBroken, int startIndex, int maxItems);
     public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int max_secondary_items);
-
     
     public void deleteResource(Resource resource);
-    public void deleteTag(Tag tag);
     
     public List<Resource> getNotCheckedSince(Date date, int maxItems);
     public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems);
     
     public List<CommentFeed> getCommentFeedsToCheck(int maxItems);
     
-    public List<PublisherContentCount> getAllPublishers(boolean showBroken, boolean mustHaveNewsitems);
     public List<Tag> getTagsMatchingKeywords(String keywords);
     public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken);
     public List<Resource> getRecentlyChangedWatchlistItems();

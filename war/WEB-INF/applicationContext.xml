@@ -84,7 +84,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
     <bean id="publisherSelectFactory"
     	class="nz.co.searchwellington.widgets.PublisherSelectFactory">
-    	<constructor-arg ref="resourceDAO"/>	
+    	<constructor-arg ref="contentRetrievalService"/>	
     </bean>
     
      <bean id="tagWidgetFactory"
