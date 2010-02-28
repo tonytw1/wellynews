@@ -13,13 +13,13 @@
 	
 		<h5><a href="$itemUrl">$escape.html($item.name)</a></h5>
 							
-		<ul>		
+		<ul>
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "TNI" || $item.type == "S") && $dateFormatter)
 				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
 			#end
 				
-			#if ($item.publisher)
-				<li class="publisher"><a href="$urlBuilder.getPublisherUrl($item.publisher)">$item.publisher.name</a></li>
+			#if ($item.publisherName)
+				<li class="publisher">$item.publisherName</li>
 			#end
 			
 			#if ($item.type == "S" && $item.suggestion.feed.publisher)

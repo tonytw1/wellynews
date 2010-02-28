@@ -23,7 +23,6 @@ public class BrowseController extends BaseMultiActionController {
 
     private UrlBuilder urlBuilder;
     private ShowBrokenDecisionService showBrokenDecisionService;
-	private ContentRetrievalService contentRetrievalService;
  
 	public BrowseController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, UrlBuilder urlBuilder, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {       
 		this.resourceDAO = resourceDAO;     // TODO not used

@@ -32,6 +32,7 @@ public class SolrInputDocumentBuilder {
 		SolrInputDocument inputDocument = new SolrInputDocument();
 		inputDocument.addField("id", resource.getId());
 		inputDocument.addField("title", resource.getName());
+		inputDocument.addField("url", resource.getUrl());
 		inputDocument.addField("type", resource.getType());
 		inputDocument.addField("httpStatus", resource.getHttpStatus());
 		inputDocument.addField("description", resource.getDescription());
@@ -76,6 +77,7 @@ public class SolrInputDocumentBuilder {
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
 			inputDocument.addField("publisher", publisher.getId());
+			inputDocument.addField("publisherName", publisher.getName());
 		}
 		
 		// TODO not sure this is in the right place; should be under content update service.

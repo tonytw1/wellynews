@@ -12,5 +12,14 @@ public abstract class PublishedResourceImpl extends ResourceImpl implements Publ
         this.publisher = publisher;
     }
 
+	public String getPublisherName() {
+		if (publisher != null) {
+			return publisher.getName();
+		}
+		return null;
+	}
+    
+    
+
 
 }

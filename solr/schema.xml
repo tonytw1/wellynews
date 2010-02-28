@@ -280,6 +280,7 @@
 
    <field name="title" type="text" indexed="true" stored="true"/>
    <field name="titleSort" type="string" indexed="true" stored="false"/>
+   <field name="url" type="text" indexed="false" stored="true"/>
 
    <field name="description" type="text" indexed="true" stored="true"/>
    <field name="bodytext" type="text" indexed="true" stored="true"/>
@@ -294,7 +295,8 @@
    
    
    <field name="tags" type="integer" indexed="true" stored="true" required="false" multiValued="true" /> 
-   <field name="publisher" type="integer" indexed="true" stored="true" required="false" /> 
+   <field name="publisher" type="integer" indexed="true" stored="true" required="false" />
+   <field name="publisherName" type="text" indexed="false" stored="true" required="false" />
    <field name="httpStatus" type="integer" indexed="true" stored="true" required="false" /> 
 
    <field name="commented" type="integer" indexed="true" stored="true" required="false" />

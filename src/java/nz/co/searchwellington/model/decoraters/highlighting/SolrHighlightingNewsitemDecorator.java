@@ -45,7 +45,13 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		return newsitem.getDescription();
 	}
     
-    public List<String> getBodytext() {    	
+    
+    
+    public String getPublisherName() {
+		return newsitem.getPublisherName();
+	}
+
+	public List<String> getBodytext() {    	
     	if (map.containsKey("bodytext")) {
 			return map.get("bodytext");
 		}

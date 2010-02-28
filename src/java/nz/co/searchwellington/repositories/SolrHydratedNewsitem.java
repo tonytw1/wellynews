@@ -4,8 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
@@ -18,24 +16,34 @@ import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
+import com.sun.syndication.feed.synd.SyndEntry;
+
 public class SolrHydratedNewsitem implements Newsitem {
 	
 	String headline;
 	String description;
 	String url;
-	
+	String publisherName;
+	Date date;
 	
 
-	public SolrHydratedNewsitem(String headline, String description, String url) {
+	public SolrHydratedNewsitem(String headline, String description, String url, String publisherName, Date date) {
 		this.headline = headline;
 		this.description = description;
 		this.url = url;
+		this.publisherName = publisherName;
+		this.date  = date;
 	}
 
 	@Override
 	public void addReTwit(Twit retwit) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
+	}
+
+	
+	
+	public String getPublisherName() {
+		return publisherName;
 	}
 
 	@Override
@@ -94,8 +102,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 
 	@Override
 	public Date getDate() {
-		// TODO Auto-generated method stub
-		return null;
+		return date;
 	}
 
 	@Override
@@ -188,8 +195,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 
 	@Override
 	public String getType() {
-		// TODO Auto-generated method stub
-		return null;
+		return "N";
 	}
 
 	@Override
