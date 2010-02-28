@@ -31,7 +31,8 @@ public abstract class BaseMultiActionController extends MultiActionController {
     protected UrlStack urlStack;
     protected ConfigRepository configDAO;
     protected LoggedInUserFilter loggedInUserFilter;
-    protected ContentRetrievalService contentRetrievalService;	// TODO only needed on frontend controllers.
+    protected ContentRetrievalService contentRetrievalService;
+    
     
     final protected void setRss(ModelAndView mv, String url) {
         mv.addObject("rss_url", url);
@@ -45,7 +46,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
    
     // TODO migrate all inlines to use this.
     final protected void populateCommonLocal(ModelAndView mv) {      
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());      
+        mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());      
     }
     
     

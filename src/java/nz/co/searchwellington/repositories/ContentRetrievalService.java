@@ -22,16 +22,18 @@ public class ContentRetrievalService {
 	private SolrContentRetrievalService solrContentRetrievalService;
 	private KeywordSearchService keywordSearchService;
 	private ShowBrokenDecisionService showBrokenDecisionService;
+	private TagDAO tagDAO;
 		
 
 	public ContentRetrievalService(ResourceRepository resourceDAO,
 			SolrContentRetrievalService solrContentRetrievalService,
 			KeywordSearchService keywordSearchService,
-			ShowBrokenDecisionService showBrokenDecisionService) {
+			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO) {
 		this.resourceDAO = resourceDAO;
 		this.solrContentRetrievalService = solrContentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
+		this.tagDAO = tagDAO;
 	}
 
 	public List<Resource> getAllWatchlists() {
@@ -51,7 +53,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Tag> getTopLevelTags() {
-		return resourceDAO.getTopLevelTags();
+		return tagDAO.getTopLevelTags();
 	}
 
 	public int getTaggedNewitemsCount(Tag tag) {

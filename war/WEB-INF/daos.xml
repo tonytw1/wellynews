@@ -20,10 +20,15 @@
 		
 	<bean id="solrKeywordQueryBuilder" class="nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder" />
 	
+	<bean id="solrResourceHydrator" class="nz.co.searchwellington.repositories.SolrResourceHydrator">
+		<constructor-arg ref="resourceDAO" />
+	</bean>
+		
 	<bean id="solrResourceDAO" class="nz.co.searchwellington.repositories.SolrBackedResourceDAO">
  		<constructor-arg ref="solrQueryService" />
  		<constructor-arg ref="resourceDAO" />
  		<constructor-arg ref="tagDAO" />
+ 		<constructor-arg ref="solrResourceHydrator" />
  		<property name="solrUrl" value="${solr.url}" />
 	</bean>
 	

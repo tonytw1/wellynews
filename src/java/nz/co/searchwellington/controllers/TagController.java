@@ -11,6 +11,7 @@ import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -21,19 +22,21 @@ public class TagController extends BaseMultiActionController {
    
     private ContentModelBuilderService contentModelBuilder;
     private ContentRetrievalService contentRetrievalService;
+    private TagDAO tagDAO;
 
 
     public TagController(ResourceRepository resourceDAO,    	
     		LoggedInUserFilter loggedInUserFilter,
     		UrlStack urlStack,  		   		
     		ContentModelBuilderService contentModelBuilder,
-    		ContentRetrievalService contentRetrievalService
+    		ContentRetrievalService contentRetrievalService, TagDAO tagDAO
     		) {
         this.resourceDAO = resourceDAO;      
         this.loggedInUserFilter = loggedInUserFilter;
         this.urlStack = urlStack;               
         this.contentModelBuilder = contentModelBuilder;
         this.contentRetrievalService = contentRetrievalService;
+        this.tagDAO = tagDAO;
     }
     
     
@@ -53,7 +56,7 @@ public class TagController extends BaseMultiActionController {
 
 	// TODO this should be in model builders
     private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
-		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(5);
         mv.addObject("latest_newsitems", latestNewsitems);
 	}

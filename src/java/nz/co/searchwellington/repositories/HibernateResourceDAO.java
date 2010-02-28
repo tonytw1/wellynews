@@ -59,7 +59,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
 		return tagDAO.createNewTag();
 	}
 
-
+    // TODO hup to CRS
 	public List<String> getPublisherNamesByStartingLetters(String q) {
          Session session = sessionFactory.getCurrentSession();
          List<String> rows = session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
@@ -98,18 +98,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
     
     
-    
-    
-    
-    @SuppressWarnings("unchecked")
-    final public List<Resource> getAllWebsites() {
-        return sessionFactory.getCurrentSession().createCriteria(Website.class).       
-        addOrder(Order.asc("name")). 
-        setCacheable(true).
-        list();
-    }
-    
-    
     @SuppressWarnings("unchecked")
     final public List<Resource> getAllWatchlists() {
         return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).       
@@ -129,24 +117,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
     
     
-    
-    
-    @SuppressWarnings("unchecked")
-    final public List<Feed> getPublisherFeeds(Website publisher) {             
-        return sessionFactory.getCurrentSession().createCriteria(Feed.class).
-        add(Restrictions.eq("publisher", publisher)).
-        addOrder(Order.asc("name")).
-        list();
-    }
-  
-    @SuppressWarnings("unchecked")  
-    final public List<Watchlist> getPublisherWatchlist(Website publisher) {    
-        return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).
-                add(Restrictions.eq("publisher", publisher)).
-                addOrder(Order.asc("name")).
-                list();
-    }
-    
+
     
     @SuppressWarnings("unchecked")
 	@Override
@@ -238,25 +209,10 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
 
     
-    @SuppressWarnings("unchecked")
-    public List<Resource> getAllResources() {
-        return sessionFactory.getCurrentSession().createCriteria(Resource.class).list();   
-    }
-
-
-    public List<Tag> getAllTags() {        
-        return tagDAO.getAllTags();      
-    }
-    
     public void saveTag(Tag editTag) {
         tagDAO.saveTag(editTag);
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Tag> getTopLevelTags() {
-    	return tagDAO.getTopLevelTags();
-    }
-    
     
     @SuppressWarnings("unchecked")
     public List<Resource> getRecentlyChangedWatchlistItems() {       

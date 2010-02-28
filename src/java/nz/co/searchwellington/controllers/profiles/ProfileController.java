@@ -7,6 +7,7 @@ import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -23,18 +24,17 @@ public class ProfileController extends BaseMultiActionController {
     private LoggedInUserFilter loggerInUserFilter;
     private ResourceRepository resourceDAO;
 	private UrlBuilder urlBuilder;
+	private TagDAO tagDAO;
         
     
-	
-
 	public ProfileController(UserRepository userDAO,
 			LoggedInUserFilter loggerInUserFilter,
-			ResourceRepository resourceDAO, UrlBuilder urlBuilder) {
-	
+			ResourceRepository resourceDAO, UrlBuilder urlBuilder, TagDAO tagDAO) {
 		this.userDAO = userDAO;
 		this.loggerInUserFilter = loggerInUserFilter;
 		this.resourceDAO = resourceDAO;
 		this.urlBuilder = urlBuilder;
+		this.tagDAO = tagDAO;
 	}
 
 
@@ -43,7 +43,7 @@ public class ProfileController extends BaseMultiActionController {
 	@Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("editProfile");    
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Editing your profile");
 
         User loggedInUser = loggerInUserFilter.getLoggedInUser();
@@ -86,7 +86,7 @@ public class ProfileController extends BaseMultiActionController {
 			  if (loggedInUser.getProfilename() == null) {
 				  ModelAndView mv = new ModelAndView();
 				  mv.addObject("heading", "User profile");
-				  mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+				  mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
 				  
 				  mv.addObject("user", loggedInUser);
 				  mv.addObject("submitted", resourceDAO.getOwnedBy(loggedInUser, MAX_NEWSITEMS));
@@ -116,7 +116,7 @@ public class ProfileController extends BaseMultiActionController {
 	        		}
 				
 	        		mv.addObject("heading", "User profile");
-	        		mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+	        		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
 	        		
 	        		log.info("Put user onto model: " + user.getUsername());
 	        		mv.addObject("profileuser", user);

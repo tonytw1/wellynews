@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
@@ -29,17 +30,19 @@ public class TagEditController extends MultiActionController {
     private AdminRequestFilter requestFilter;
     private TagWidgetFactory tagWidgetFactory;
     private UrlStack urlStack;
+    private TagDAO tagDAO;
 
     
     public TagEditController() {       
     }
 
 
-    public TagEditController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack) {
+    public TagEditController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack, TagDAO tagDAO) {
         this.resourceDAO = resourceDAO;
         this.requestFilter = requestFilter;
         this.tagWidgetFactory = tagWidgetFactory;
         this.urlStack = urlStack;
+        this.tagDAO = tagDAO;
         
     }
     
@@ -47,7 +50,7 @@ public class TagEditController extends MultiActionController {
     @Transactional
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitTag");    
-        modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());
         modelAndView.addObject("heading", "Submitting a Tag");
 
         Tag editTag = resourceDAO.createNewTag();
@@ -61,7 +64,7 @@ public class TagEditController extends MultiActionController {
     @Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView("editTag");   
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Editing a Tag");
 
         Tag editTag = null;
@@ -82,7 +85,7 @@ public class TagEditController extends MultiActionController {
     @Transactional
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
         ModelAndView mv = new ModelAndView("deleteTag"); 
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Editing a Tag");
         
         Tag tag = null;
@@ -164,7 +167,7 @@ public class TagEditController extends MultiActionController {
         resourceDAO.saveTag(editTag);
         
         modelAndView.addObject("tag", editTag);
-        modelAndView.addObject("top_level_tags", resourceDAO.getTopLevelTags());    
+        modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());    
         return modelAndView;
     }
 

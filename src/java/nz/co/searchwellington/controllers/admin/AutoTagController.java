@@ -11,6 +11,7 @@ import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
@@ -24,13 +25,15 @@ public class AutoTagController extends BaseMultiActionController {
     private AdminRequestFilter requestFilter;
     private ImpliedTagService autoTagService;
 	private KeywordSearchService keywordSearchService;
+	private TagDAO tagDAO;
     
-	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService) {      
+	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
         this.urlStack = urlStack;
         this.autoTagService = autoTagService;
         this.keywordSearchService = keywordSearchService;
+        this.tagDAO = tagDAO;
 	}
 
 
@@ -39,7 +42,7 @@ public class AutoTagController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();        
         mv.setViewName("autoTagPrompt");
         
-        mv.getModel().put("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.getModel().put("top_level_tags", tagDAO.getTopLevelTags());
         mv.getModel().put("heading", "Autotagging");
         
         requestFilter.loadAttributesOntoRequest(request);
@@ -62,7 +65,7 @@ public class AutoTagController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         mv.setViewName("autoTagApply");
         
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Autotagging");
         
         requestFilter.loadAttributesOntoRequest(request);

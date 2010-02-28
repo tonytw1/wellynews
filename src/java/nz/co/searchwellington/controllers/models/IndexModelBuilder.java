@@ -44,7 +44,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
-			log.info("Building justin page model");
+			log.info("Building index page model");
 			ModelAndView mv = new ModelAndView();		
 			final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS);                
 			mv.addObject("main_content", latestNewsitems);
@@ -128,7 +128,8 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
         mv.addObject("featured", contentRetrievalService.getFeaturedSites());
     }
 	
-	 private void populateCommentedNewsitems(ModelAndView mv) {
+	// TODO is this doing the minimal amount of hydration?
+	private void populateCommentedNewsitems(ModelAndView mv) {
 		final List<Resource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(MAX_NUMBER_OF_COMMENTED_TO_SHOW, 0);
 		if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
 			mv.addObject("commented_newsitems", recentCommentedNewsitems);

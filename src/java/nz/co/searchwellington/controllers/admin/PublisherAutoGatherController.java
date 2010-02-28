@@ -12,10 +12,9 @@ import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.tagging.ImpliedTagService;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,13 +24,13 @@ public class PublisherAutoGatherController extends BaseMultiActionController {
     Logger log = Logger.getLogger(PublisherAutoGatherController.class);
     
     private AdminRequestFilter requestFilter;
-    private ImpliedTagService autoTagService;
+    private TagDAO tagDAO;
     
-	public PublisherAutoGatherController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService) {      
+	public PublisherAutoGatherController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, TagDAO tagDAO) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
         this.urlStack = urlStack;
-        this.autoTagService = autoTagService;
+        this.tagDAO = tagDAO;
 	}
 
 
@@ -40,7 +39,7 @@ public class PublisherAutoGatherController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         
         mv.setViewName("autoGatherPrompt");       
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Auto Gathering");
         
         requestFilter.loadAttributesOntoRequest(request);
@@ -65,7 +64,7 @@ public class PublisherAutoGatherController extends BaseMultiActionController {
 	public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         mv.setViewName("autoGatherApply");      
-        mv.addObject("top_level_tags", resourceDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Auto Gathering");
         
         requestFilter.loadAttributesOntoRequest(request);

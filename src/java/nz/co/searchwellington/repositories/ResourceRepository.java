@@ -42,7 +42,6 @@ public interface ResourceRepository {
     public Tag loadTagByName(String tagname);
     public void saveTag(Tag editTag);   
 
-    public List<Tag> getTopLevelTags();
     public void deleteTag(Tag tag);
     
     public List<Resource> getNotCheckedSince(Date date, int maxItems);
@@ -66,7 +65,6 @@ public interface ResourceRepository {
         
     public List<Integer> getAllResourceIds();
     public CalendarFeed createNewCalendarFeed(String url);
-    public List<Newsitem> getLatestTwitteredNewsitems(int numberOfItems, boolean showBroken);
     
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public Feed loadFeedByUrlWords(String string);

@@ -275,36 +275,7 @@
 	</bean>
 			
 			
-	<bean id="viewCalendarController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="viewCalendarControllerTarget" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
-	
-	
-	
-	<bean id="viewCalendarControllerTarget" class="nz.co.searchwellington.controllers.ViewCalendarController">
-		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="requestFilter" />	
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="calendarFeedDAO" />
-		<constructor-arg ref="eventsDAO" />
-		<constructor-arg ref="loggedInUserFilter" />
-		
-	
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>									
-						<prop key="/viewcalendar/">viewcalendar</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>
-	</bean>
+
 	
 	
 	
@@ -366,6 +337,7 @@
 		<constructor-arg ref="urlStack" />		
 		<constructor-arg ref="contentModelBuilder" />
 		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="tagDAO" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -481,6 +453,7 @@
 		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="tagDAO" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -514,6 +487,7 @@
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="tagDAO" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -534,7 +508,7 @@
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="adminRequestFilter" />	
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="impliedTagService" />
+		<constructor-arg ref="tagDAO" />		
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -556,7 +530,7 @@
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="impliedTagService" />
 		<constructor-arg ref="keywordSearchService" />
-				
+		<constructor-arg ref="tagDAO" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -676,7 +650,6 @@
 				
 				<prop key="/search">searchController</prop>
 				
-				<prop key="/viewcalendar">viewCalendarController</prop>
 								
 				<prop key="/admin/feed/decache">viewfeedController</prop>	
 				<prop key="/admin/feed/read">viewfeedController</prop>

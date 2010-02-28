@@ -7,7 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 public abstract class AbstractModelBuilder {
 	
 	protected static final int MAX_NUMBER_OF_GEOTAGGED_TO_SHOW = 30;
-	protected static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 500;
+	protected static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 30;
 	protected static final int MAX_WEBSITES = 500;
 	
 	
