@@ -31,10 +31,10 @@ public class ContentModelBuilderService {
 				logger.debug("Using " + modelBuilder);
 				ModelAndView mv = modelBuilder.populateContentModel(request, showBroken);
 				
-				if (mv != null) {
-					// TODO should not do this for rss or json requests
+				boolean requestIsRssOrJson = request.getPathInfo().endsWith("/rss") || request.getPathInfo().endsWith("/json");
+				if (mv != null && !requestIsRssOrJson) {
 					modelBuilder.populateExtraModelConent(request, showBroken, mv);
-				}				
+				}
 				return mv;
 			}
 		}
