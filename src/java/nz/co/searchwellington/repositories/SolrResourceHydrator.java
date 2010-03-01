@@ -24,6 +24,7 @@ public class SolrResourceHydrator {
 		if (result.getFieldValue("type").equals("N")) {
 			log.info("Solr hydrating");
 			Resource item = new SolrHydratedNewsitem(
+					resourceId,
 					(String) result.getFieldValue("title"), 
 					(String) result.getFieldValue("description"),
 					(String) result.getFieldValue("url"),

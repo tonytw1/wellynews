@@ -18,6 +18,7 @@ import nz.co.searchwellington.model.Website;
 
 public class SolrHydratedNewsitem implements Newsitem {
 	
+	int id;
 	String headline;
 	String description;
 	String url;
@@ -25,7 +26,8 @@ public class SolrHydratedNewsitem implements Newsitem {
 	Date date;
 	
 
-	public SolrHydratedNewsitem(String headline, String description, String url, String publisherName, Date date) {
+	public SolrHydratedNewsitem(Integer resourceId, String headline, String description, String url, String publisherName, Date date) {
+		this.id = id;
 		this.headline = headline;
 		this.description = description;
 		this.url = url;
@@ -134,8 +136,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 
 	@Override
 	public int getId() {
-		// TODO Auto-generated method stub
-		return 0;
+		return id;
 	}
 
 	@Override
