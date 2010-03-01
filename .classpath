@@ -2,10 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="test/java"/>
 	<classpathentry kind="src" path="src/java"/>
-	<classpathentry kind="src" path="functional-test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
-	<classpathentry kind="lib" path="/Users/tony/workspace/spring-searchwellington/lib/buildtime/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/home/tmccrae/git/wellynews/lib/buildtime/servlet-api.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spring.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jmock-1.1.0.jar"/>
@@ -48,7 +47,6 @@
 	<classpathentry kind="lib" path="lib/buildtime/jaxen-1.1-beta-6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/georss-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/buildtime/mockito-all-1.6.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/rome-1.0RC2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/rome-fetcher-1.0RC2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/slf4j-api-1.5.2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/log4j-1.2.15.jar"/>
@@ -57,11 +55,10 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jrobotx-0.1.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/openid4java-0.9.5.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/mediarss-0.2.1.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/java-twitter-0.9-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Users/tony/git/wellynews/war/WEB-INF/lib/apache-solr-core-1.4.0.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/apache-solr-solrj-1.4.0.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/jredis-core-all-a.0-SNAPSHOT-jar-with-dependencies.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/tokyotyrant-0.10.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/netty-3.1.5.GA.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/rome-1.0.jar" sourcepath="/home/tmccrae/Download/rome-1.0-sources.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/twitter4j-core-2.1.1-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
