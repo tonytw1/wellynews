@@ -308,13 +308,16 @@
 			</bean>
 		</property>		
 	</bean>
-		
+	
+	<bean id="rssItemMaker" class="nz.co.searchwellington.views.RssItemMaker" />
+	
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="rssUrlBuilder" />		
 		<constructor-arg ref="contentModelBuilder" />
 		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="rssItemMaker" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

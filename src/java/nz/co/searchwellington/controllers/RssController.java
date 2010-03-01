@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.views.RssItemMaker;
 import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;
@@ -27,15 +28,17 @@ public class RssController extends MultiActionController {
     private RssUrlBuilder rssUrlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
 	private ContentRetrievalService contentRetrievalService;
+	private RssItemMaker rssItemMaker;
 
     
        
-    public RssController(SiteInformation siteInformation, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService) {
+    public RssController(SiteInformation siteInformation, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
         this.siteInformation = siteInformation;
         this.resourceDAO = resourceDAO;
         this.rssUrlBuilder = rssUrlBuilder;
         this.contentModelBuilderService = contentModelBuilderService;
         this.contentRetrievalService = contentRetrievalService;
+        this.rssItemMaker = rssItemMaker;
     }
     
     
@@ -43,7 +46,7 @@ public class RssController extends MultiActionController {
     	log.info("Building content rss");    	  
          ModelAndView mv = contentModelBuilderService.populateContentModel(request);
          if (mv != null) {
-        	 mv.setView(new RssView(siteInformation));
+        	 mv.setView(new RssView(siteInformation, rssItemMaker));
         	 return mv;
          }
          response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -68,11 +71,11 @@ public class RssController extends MultiActionController {
         model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");
         model.put("main_content", contentRetrievalService.getLatestNewsitems(MAX_RSS_ITEMS));
         
-        RssView rssView = new RssView(siteInformation);
+        RssView rssView = new RssView(siteInformation, rssItemMaker);
         return new ModelAndView(rssView, model);        
     }
     
-    
+    // TODO move to a model builder
     public ModelAndView watchlistRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	HashMap <String, Object> model = new HashMap <String, Object>();     
     	model.put("heading", rssUrlBuilder.getTitleForWatchlist());
@@ -80,8 +83,8 @@ public class RssController extends MultiActionController {
     	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
     	model.put("main_content", resourceDAO.getRecentlyChangedWatchlistItems());
     	
-        RssView rssView = new RssView(siteInformation);        
-        return new ModelAndView(rssView, model);        
+        RssView rssView = new RssView(siteInformation, rssItemMaker);
+        return new ModelAndView(rssView, model);
     }
     
 	private ModelAndView redirectToFeedburnerMainFeed() {

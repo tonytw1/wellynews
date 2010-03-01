@@ -2,11 +2,7 @@ package nz.co.searchwellington.views;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-
-import nz.co.searchwellington.model.RssFeedable;
 
 import org.apache.log4j.Logger;
 
@@ -23,14 +19,13 @@ public class RomeRssFeed {
     private String title;
     private String linkUrl;
     private String description;
-    private List<RssFeedable> contents;
-
+    private List<SyndEntry> entries;
     
-    public RomeRssFeed(String title, String linkUrl, String description, List<RssFeedable> contents) {
+    public RomeRssFeed(String title, String linkUrl, String description, List<SyndEntry> entries) {
         this.title = title;
-        this.contents = contents;
         this.description = description;
-        this.linkUrl = linkUrl;      
+        this.linkUrl = linkUrl;
+        this.entries = entries;
     }
 
        
@@ -41,23 +36,7 @@ public class RomeRssFeed {
         feed.setFeedType("rss_2.0");
         feed.setLink(linkUrl);
         feed.setDescription(description);
-        feed.setEncoding("UTF-8");
-
-        List<SyndEntry> entries = new ArrayList<SyndEntry>();
-
-        if (contents.size() > 0) {
-            Iterator<RssFeedable> iterator = contents.iterator();
-            while (iterator.hasNext()) {
-                RssFeedable selectedResource = (RssFeedable) iterator.next();
-
-                SyndEntry entry = selectedResource.getRssItem();
-                entries.add(entry);
-            }
-            
-        } else {
-            log.warn("RSS Collection is empty");
-        }
-
+        feed.setEncoding("UTF-8");      
         feed.setEntries(entries);
 
         StringWriter writer = new StringWriter();
