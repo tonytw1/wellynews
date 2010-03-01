@@ -40,7 +40,7 @@
 		#else
 		
 			#if($feed.publisher) 
-				<p>This feed is published by the <a href="$urlBuilder.getPublisherUrl($feed.publisher)">$feed.publisher.name</a>.</p>
+				<p>This feed is published by: <a href="$urlBuilder.getPublisherUrl($feed.publisher)">$feed.publisher.name</a>.</p>
 			#else
 				<p>This feed is provided by a third party.</p>
 			#end
