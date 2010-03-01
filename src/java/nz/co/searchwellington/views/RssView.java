@@ -10,11 +10,15 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.servlet.View;
 
 import com.sun.syndication.feed.synd.SyndEntry;
 
 public class RssView implements View {
+	
+	static Logger log = Logger.getLogger(RssView.class);
+
 
 	private SiteInformation siteInformation;
 	private RssItemMaker rssItemMaker;	
@@ -36,7 +40,12 @@ public class RssView implements View {
     	List <Resource> content =  (List <Resource>) model.get("main_content");
     	List<SyndEntry> entires = new ArrayList<SyndEntry>();
     	for (Resource item : content) {
-			entires.add(rssItemMaker.makeRssItem(item));
+			SyndEntry rssItem = rssItemMaker.makeRssItem(item);
+			if (rssItem != null) {
+				entires.add(rssItem);
+			} else {
+				log.warn("Could not convert resource to rss item: " + item.getName());
+			}
 		}
     			
 		RomeRssFeed outputFeed = new RomeRssFeed(rssFeedTitle, (String) model.get("link"), (String) model.get("description"), entires);
