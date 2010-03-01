@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;
+import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
 
@@ -20,15 +21,18 @@ public class ContentDeletionService {
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ResourceRepository resourceDAO;
 	private SnapshotDAO snapshotDAO;
+	private SolrQueryService solrQueryService;
 	
 
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			ResourceRepository resourceDAO, SnapshotDAO snapshotDAO) {		
+			ResourceRepository resourceDAO, SnapshotDAO snapshotDAO,
+			SolrQueryService solrQueryService) {		
 		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
 		this.snapshotDAO = snapshotDAO;
+		this.solrQueryService = solrQueryService;
 	}
 
 
@@ -49,7 +53,8 @@ public class ContentDeletionService {
 			}
 		}
 		snapshotDAO.evict(editResource.getUrl());
-		resourceDAO.deleteResource(editResource);
+		solrQueryService.deleteResourceFromIndex(editResource.getId());
+		resourceDAO.deleteResource(editResource);	
 	}
 
 

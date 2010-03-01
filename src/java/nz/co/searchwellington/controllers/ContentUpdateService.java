@@ -1,3 +1,4 @@
+
 package nz.co.searchwellington.controllers;
 
 import javax.servlet.http.HttpServletRequest;
@@ -8,6 +9,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
+import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 public class ContentUpdateService {
 
@@ -15,14 +17,17 @@ public class ContentUpdateService {
 	private SuggestionDAO suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
 	private Notifier notifier;
-
+	private SolrQueryService solrQueryService;
 
 	
-	public ContentUpdateService(ResourceRepository resourceDAO, SuggestionDAO suggestionsDAO, LinkCheckerQueue linkCheckerQueue, Notifier notifier) {		
+	public ContentUpdateService(ResourceRepository resourceDAO,
+			SuggestionDAO suggestionsDAO, LinkCheckerQueue linkCheckerQueue,
+			Notifier notifier, SolrQueryService solrQueryService) {
 		this.resourceDAO = resourceDAO;
 		this.suggestionsDAO = suggestionsDAO;
 		this.linkCheckerQueue = linkCheckerQueue;
 		this.notifier = notifier;
+		this.solrQueryService = solrQueryService;
 	}
 
 	
@@ -40,7 +45,7 @@ public class ContentUpdateService {
 		}
 		
 		update(resource, needsLinkCheck);				
-		if ((newSubmission && !loggedInUser.isAdmin())) {			
+		if ((newSubmission && (loggedInUser == null || !loggedInUser.isAdmin()))) {
 			 notifier.sendSubmissionNotification("New submission", resource);
 		}
 	}
@@ -48,6 +53,7 @@ public class ContentUpdateService {
 	
 	public void update(Resource resource, boolean needsLinkCheck) {
 		resourceDAO.saveResource(resource);
+		solrQueryService.updateIndexForResource(resource);
 		if (resource.getType().equals("N")) {
 			suggestionsDAO.removeSuggestion(resource.getUrl());
 		}

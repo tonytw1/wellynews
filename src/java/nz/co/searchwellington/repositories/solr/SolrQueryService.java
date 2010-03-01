@@ -20,6 +20,8 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrInputDocument;
 
+
+// TODO does this really needs to new up a new Solr connection for every query?
 public class SolrQueryService {
 	
 	Logger log = Logger.getLogger(SolrQueryService.class);
@@ -67,7 +69,7 @@ public class SolrQueryService {
 			updateRequest.deleteById(Integer.toString(id));							
 			updateRequest.process(solr);
 			solr.commit();
-			solr.optimize();
+			//solr.optimize();
 			
 		} catch (MalformedURLException e) {
 			log.error(e);	

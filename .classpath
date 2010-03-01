@@ -4,7 +4,7 @@
 	<classpathentry kind="src" path="src/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3.8.1"/>
-	<classpathentry kind="lib" path="/home/tmccrae/git/wellynews/lib/buildtime/servlet-api.jar"/>
+	<classpathentry kind="lib" path="/Users/tony/git/wellynews/lib/buildtime/servlet-api.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spring.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jmock-1.1.0.jar"/>
