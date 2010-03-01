@@ -4,14 +4,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Set;
 
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 
-
-public abstract class ResourceImpl implements Resource, RssFeedable {
+public abstract class ResourceImpl implements Resource {
 
     protected int id;
     protected String name;
@@ -101,23 +96,7 @@ public abstract class ResourceImpl implements Resource, RssFeedable {
 	public void clearTags() {
 		tags.clear();
 	}
-	
-	public SyndEntry getRssItem() {
-        SyndEntry entry = new SyndEntryImpl();      
-        entry.setTitle(stripIllegalCharacters(name));
-        entry.setLink(url);
-
-        SyndContent description = new SyndContentImpl();
-        description.setType("text/plain");
-        description.setValue(stripIllegalCharacters(this.description));
-        entry.setDescription(description);
-        return entry;
-    }
-        
-    private String stripIllegalCharacters(String input) {
-		return input.replaceAll("[^\\u0020-\\uFFFF]", "");
-	}
-    
+	           
 	public Date getLastScanned() {
         return lastScanned;
     }

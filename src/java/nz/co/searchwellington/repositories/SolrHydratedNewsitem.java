@@ -16,8 +16,6 @@ import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-
 public class SolrHydratedNewsitem implements Newsitem {
 	
 	String headline;
@@ -174,13 +172,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public SyndEntry getRssItem() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public Set<Tag> getTags() {
 		// TODO Auto-generated method stub

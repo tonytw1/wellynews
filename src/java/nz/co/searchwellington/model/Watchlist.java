@@ -27,18 +27,5 @@ public class Watchlist extends PublishedResourceImpl {
     public String getType() {
         return "L";
     }
-
     
-    public SyndEntry getRssItem() {
-        SyndEntry entry = super.getRssItem();        
-        if (getLastChanged() != null) {
-            // TODO this is abit odd; suggests RSS should not be on the model.
-            DateFormatter dateFormatter = new DateFormatter();
-            entry.setTitle(name + " - " + dateFormatter.formatDate(getLastChanged(), "d MMM yyyy"));
-        }
-        return entry;
-    }
-
-    
-        
 }

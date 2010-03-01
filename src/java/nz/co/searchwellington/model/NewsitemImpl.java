@@ -42,27 +42,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         return "N";
     }
     
-         
-    @SuppressWarnings("unchecked")
-	@Override
-    public SyndEntry getRssItem() {
-        SyndEntry rssItem = super.getRssItem();
-        rssItem.setPublishedDate(this.getDate());
-        if (this.getPublisher() != null) {
-        	rssItem.setAuthor(this.getPublisher().getName());
-        }
-        final Geocode geocode = this.getGeocode();
-        if (geocode != null && geocode.isValid()) {            
-        	GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();     
-        	geoRSSModule.setLatitude(geocode.getLatitude());
-        	geoRSSModule.setLongitude(geocode.getLongitude());
-        	rssItem.getModules().add(geoRSSModule);            
-        }
-        return rssItem;
-    }
     
-    
-   
     public List<Comment> getComments() {
     	List<Comment> comments = new ArrayList<Comment>();
     	if (getCommentFeed() != null) {

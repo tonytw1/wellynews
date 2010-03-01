@@ -15,8 +15,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-
 public class SolrHighlightingWebsiteDecorator implements Website {
 
 	private Website website;
@@ -108,11 +106,7 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 	public void getRemoveTag(Tag tag) {
 		website.getRemoveTag(tag);
 	}
-
-	public SyndEntry getRssItem() {
-		return website.getRssItem();
-	}
-
+	
 	public Set<Tag> getTags() {
 		return website.getTags();
 	}

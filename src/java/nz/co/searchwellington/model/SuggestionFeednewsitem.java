@@ -6,7 +6,7 @@ import java.util.HashSet;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 
-public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable, Resource {
+public class SuggestionFeednewsitem extends ResourceImpl implements Resource {
 
 	private Suggestion suggestion;
 	
@@ -28,15 +28,7 @@ public class SuggestionFeednewsitem extends ResourceImpl implements RssFeedable,
 		return suggestion.getUrl();
 	}
 		
-	@Override
-	public SyndEntry getRssItem() {
-		SyndEntry entry = new SyndEntryImpl();      
-		entry.setTitle(this.name);
-		entry.setLink(this.getUrl());
-		entry.setTitle(this.name);
-		entry.setPublishedDate(this.date);
-		return entry;
-	}
+	
 
 	public Suggestion getSuggestion() {
 		return suggestion;

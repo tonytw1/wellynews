@@ -18,8 +18,6 @@ import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-
 public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	
 	private Newsitem newsitem;
@@ -141,12 +139,6 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public void getRemoveTag(Tag tag) {
 		newsitem.getRemoveTag(tag);
 	}
-
-
-	public SyndEntry getRssItem() {
-		return newsitem.getRssItem();
-	}
-
 
 	public Set<Tag> getTags() {
 		return newsitem.getTags();

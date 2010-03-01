@@ -3,8 +3,6 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 import java.util.Set;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-
 // TODO can we get an EditableResource into the tree somewhere, to put all write methods onto?
 public interface Resource {
        
@@ -18,10 +16,7 @@ public interface Resource {
     public void setUrl(String url);
   
     public String getDescription();
-    
-  
-    public SyndEntry getRssItem();
-    
+        
     public String getType();
     
     public Date getDate();

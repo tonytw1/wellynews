@@ -8,7 +8,7 @@ import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 
-public class Tag implements RssFeedable {
+public class Tag {
     
     int id;
     String name;
