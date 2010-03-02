@@ -4,11 +4,9 @@
 <beans>
 
 	<bean id="simplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
-		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="showBrokenDecisionService" />
 		<constructor-arg ref="contentRetrievalService" />

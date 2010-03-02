@@ -13,12 +13,13 @@ import nz.co.searchwellington.urls.UrlBuilder;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.sun.syndication.io.FeedException;
 
 // TODO move to admin.
-public class AdminFeedController {
+public class AdminFeedController extends MultiActionController {
     
     Logger log = Logger.getLogger(AdminFeedController.class);
     

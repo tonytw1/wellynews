@@ -82,7 +82,7 @@ public class ResourceEditController extends BaseMultiActionController {
         this.contentDeletionService = contentDeletionService;
         this.resourceDAO = resourceDAO;
         this.snapBodyExtractor = snapBodyExtractor;
-        this.anonUserService = anonUserService;
+        this.anonUserService = anonUserService;        
     }
    
     
