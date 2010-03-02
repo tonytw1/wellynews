@@ -5,9 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.TwitteredNewsitem;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -21,19 +20,23 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	
 	Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
     	
-	private ResourceRepository resourceDAO;
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private TwitterNewsitemBuilderService twitterNewsitemBuilder;
+	private ContentRetrievalService contentRetrievalService;
 
 	
-	public SuggestionsModelBuilder(ResourceRepository resourceDAO, SuggestedFeeditemsService suggestedFeeditemsService, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, TwitterNewsitemBuilderService twitterNewsitemBuilder) {
-		this.resourceDAO = resourceDAO;
+	public SuggestionsModelBuilder(
+			SuggestedFeeditemsService suggestedFeeditemsService,
+			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
+			TwitterNewsitemBuilderService twitterNewsitemBuilder,
+			ContentRetrievalService contentRetrievalService) {
 		this.suggestedFeeditemsService = suggestedFeeditemsService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.twitterNewsitemBuilder = twitterNewsitemBuilder;
+		this.contentRetrievalService = contentRetrievalService;
 	}
 	
 
@@ -71,9 +74,8 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	public void populateSecondaryFeeds(ModelAndView mv) {      
         mv.addObject("righthand_heading", "Local Feeds");                
         mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
-        final List<Feed> allFeeds = resourceDAO.getAllFeeds();
-        if (allFeeds.size() > 0) {
-            mv.addObject("righthand_content", allFeeds);       
+        if (contentRetrievalService.getAllFeeds().size() > 0) {
+            mv.addObject("righthand_content", contentRetrievalService.getAllFeeds());       
         }
     }
 	
