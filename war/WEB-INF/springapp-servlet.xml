@@ -27,7 +27,6 @@
 						<prop key="/publishers">publishers</prop>
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
-						<prop key="/watchlist">watchlist</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -319,9 +318,8 @@
 				<property name="mappings">
 					<props>
 						<prop key="/rss">mainRss</prop>
-						<prop key="/watchlist/rss">watchlistRss</prop>
-						<prop key="/*/rss">contentRss</prop>						
-						<prop key="/*/*/rss">contentRss</prop>																
+						<prop key="/*/rss">contentRss</prop>
+						<prop key="/*/*/rss">contentRss</prop>
 					</props>
 				</property>
 			</bean>		
@@ -620,7 +618,6 @@
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/tags">simplePageController</prop>
 				<prop key="/twitter">simplePageController</prop>				
-				<prop key="/watchlist">simplePageController</prop>
 				            	
             	<prop key="/archive/**">browseController</prop>            	
             	<prop key="/browse">browseController</prop>
@@ -709,8 +706,9 @@
 				<prop key="/index">tagController</prop>				
 				<prop key="/comment">tagController</prop>
 				<prop key="/geotagged">tagController</prop>            	
-            	<prop key="/justin">tagController</prop>				
-					
+            	<prop key="/justin">tagController</prop>
+            	<prop key="/watchlist">tagController</prop>
+            						
 				<prop key="/openid/login">openIDLoginController</prop>	
 				<prop key="/openid/callback">openIDLoginController</prop>
 									

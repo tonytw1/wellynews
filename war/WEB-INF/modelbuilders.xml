@@ -55,6 +55,12 @@
 		<constructor-arg ref="urlBuilder" />		
 	</bean>
 	
+	<bean id="watchlistModelBuilder" class="nz.co.searchwellington.controllers.models.WatchlistModelBuilder">
+		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="urlBuilder" />		
+	</bean>
+	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="urlBuilder" />
@@ -97,7 +103,8 @@
 				<ref bean="indexModelBuilder" />
 				<ref bean="feedsModelBuilder" />
 				<ref bean="suggestionsModelBuilder" />
-				<ref bean="justinModelBuilder" />		
+				<ref bean="justinModelBuilder" />
+				<ref bean="watchlistModelBuilder" />		
 				<ref bean="commentModelBuilder" />
 				<ref bean="geotaggedModelBuilder" />
 				<ref bean="viewfeedModelBuilder" />

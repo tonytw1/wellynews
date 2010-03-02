@@ -71,19 +71,7 @@ public class RssController extends MultiActionController {
         RssView rssView = new RssView(siteInformation, rssItemMaker);
         return new ModelAndView(rssView, model);        
     }
-    
-    // TODO move to a model builder
-    public ModelAndView watchlistRss(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	HashMap <String, Object> model = new HashMap <String, Object>();     
-    	model.put("heading", rssUrlBuilder.getTitleForWatchlist());
-    	model.put("link", siteInformation.getUrl());
-    	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
-    	model.put("main_content", contentRetrievalService.getRecentlyChangedWatchlistItems());
-    	
-        RssView rssView = new RssView(siteInformation, rssItemMaker);
-        return new ModelAndView(rssView, model);
-    }
-    
+        
 	private ModelAndView redirectToFeedburnerMainFeed() {
 		View redirectView = new RedirectView(siteInformation.getFeedburnerUrl());
 		return new ModelAndView(redirectView);		

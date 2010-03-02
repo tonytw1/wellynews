@@ -121,5 +121,9 @@ public class UrlBuilder {
 	public String getProfileUrl(User user) {
 		return siteInformation.getUrl() + "/profile/" + user.getProfilename();
 	}
+
+	public String getWatchlistUrl() {
+		return siteInformation.getUrl() + "/watchlist";
+	}
 	
 }

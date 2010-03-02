@@ -173,24 +173,6 @@ public class SimplePageController extends BaseMultiActionController {
         mv.setViewName("twitter");
         return mv;
     }
-
-
-	
-    public ModelAndView watchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        urlStack.setUrlStack(request);
-        populateCommonLocal(mv);
-        
-        mv.addObject("heading", "News Watchlist");
-        mv.addObject("main_content", contentRetrievalService.getAllWatchlists());	// TODO limit
-
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
-
-        setRss(mv, rssUrlBuilder.getRssTitleForWatchlist(), rssUrlBuilder.getRssUrlForWatchlist());
-        mv.setViewName("watchlist");
-        return mv;
-    }
-    
     
     private void populateLatestTwitters(ModelAndView mv, boolean showBroken) throws IOException {       
         mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems(MAX_TWITTERS_TO_SHOW));  
