@@ -14,7 +14,7 @@
 
 <ul>
 #set($letter = "")
-#foreach ($publisherSummary in $publishers) 
+#foreach ($publisher in $publishers) 
 	#set($publisher = $publisherSummary.publisher)
 	#set($current = $publisher.name.substring(0, 1).toUpperCase())
 	#if ($current != $letter)

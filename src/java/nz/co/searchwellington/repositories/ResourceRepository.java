@@ -51,7 +51,6 @@ public interface ResourceRepository {
     
     public List<Tag> getTagsMatchingKeywords(String keywords);
     public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken);
-    public List<Resource> getRecentlyChangedWatchlistItems();
     public List<DiscoveredFeed> getAllDiscoveredFeeds();
     public DiscoveredFeed loadDiscoveredFeedByUrl(String discoveredUrl);
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed);

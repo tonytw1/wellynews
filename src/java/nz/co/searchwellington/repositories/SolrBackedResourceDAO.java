@@ -37,7 +37,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-// TODO date order needs to suborder by id.
 public class SolrBackedResourceDAO {
 
     private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
@@ -151,11 +150,12 @@ public class SolrBackedResourceDAO {
 	
 	public List<Resource> getLatestWebsites(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
-		setTitleSortOrder(query);	// TODO ordering by live time
+		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	
 	
+
 	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken) {
 		log.info("Getting feeds for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("F").showBroken(showBroken).toQuery();
@@ -266,7 +266,7 @@ public class SolrBackedResourceDAO {
 	
 	
 	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean showBroken, boolean mustHaveNewsitems) {		
-			SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();
+			SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).toQuery();
 			query.addFacetField("publisher");
 			query.setFacetMinCount(1);
 			query.setFacetSort(false);
@@ -281,9 +281,13 @@ public class SolrBackedResourceDAO {
 					List<Count> values = facetField.getValues();			
 					for (Count count : values) {
 						final int relatedPublisherId = Integer.parseInt(count.getName());
-						Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);				
-						final Long relatedItemCount = count.getCount();
-						publishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));
+						Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);
+						if (relatedPublisher != null) {
+							final Long relatedItemCount = count.getCount();
+							publishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));
+						} else {
+							log.warn("Could not find website object for publisher id: " + relatedPublisherId);
+						}
 					}
 				}
 			}

@@ -171,7 +171,8 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     
     
     @SuppressWarnings("unchecked")
-    public List<Resource> getNewsitemsMatchingStem(String stem) {    
+    // TODO migrate to a solr call
+    public List<Resource> getNewsitemsMatchingStem(String stem) {
         return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list();        
     }
     
@@ -214,17 +215,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
 
     
-    @SuppressWarnings("unchecked")
-    public List<Resource> getRecentlyChangedWatchlistItems() {       
-        return sessionFactory.getCurrentSession().createCriteria(Watchlist.class)
-            .add(Restrictions.sqlRestriction(" last_changed > DATE_SUB(now(), INTERVAL 7 DAY) "))
-            .addOrder(Order.desc("lastChanged"))
-            .setCacheable(true).
-            list();        
-    }
-
-
-	public int getCommentCount() {
+    public int getCommentCount() {
         // TODO implement show broken logic if the parent newsitem is broken
         return ((Long) sessionFactory.getCurrentSession().
         		iterate("select count(*) from Comment").

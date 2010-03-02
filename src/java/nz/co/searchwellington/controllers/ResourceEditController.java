@@ -25,6 +25,7 @@ import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -65,7 +66,7 @@ public class ResourceEditController extends BaseMultiActionController {
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService) {       
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService) {       
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;
@@ -83,6 +84,7 @@ public class ResourceEditController extends BaseMultiActionController {
         this.resourceDAO = resourceDAO;
         this.snapBodyExtractor = snapBodyExtractor;
         this.anonUserService = anonUserService;
+        this.contentRetrievalService = contentRetrievalService;
     }
    
     

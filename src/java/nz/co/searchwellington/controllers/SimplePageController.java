@@ -13,7 +13,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -28,19 +27,17 @@ public class SimplePageController extends BaseMultiActionController {
     
     
     private SiteInformation siteInformation;
-    private RssUrlBuilder rssUrlBuilder;
 	private DiscoveredFeedRepository discoveredFeedRepository;
     private ShowBrokenDecisionService showBrokenDecisionService;
 	private TagDAO tagDAO;
     
     
     public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, 
-    		SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedRepository, 
+    		SiteInformation siteInformation, DiscoveredFeedRepository discoveredFeedRepository, 
     		ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;        
-        this.rssUrlBuilder = rssUrlBuilder;
         this.discoveredFeedRepository = discoveredFeedRepository;
         this.showBrokenDecisionService = showBrokenDecisionService;
         this.contentRetrievalService = contentRetrievalService;
@@ -147,9 +144,9 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
-                
-        mv.addObject("heading", "All Publishers");    
-        mv.addObject("publishers", contentRetrievalService.getAllPublishers(true));
+        
+        mv.addObject("heading", "All Publishers");
+        mv.addObject("publishers", contentRetrievalService.getAllPublishers());
         
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
         mv.setViewName("publishers");

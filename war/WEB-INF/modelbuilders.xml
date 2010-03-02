@@ -84,17 +84,17 @@
 		<constructor-arg ref="relatedTagsService" />
 	</bean>
 	
-	<bean id="viewfeedModelBuilder" class="nz.co.searchwellington.controllers.models.ViewFeedModelBuilder">
-		<constructor-arg ref="resourceDAO" />		
+	<bean id="viewfeedModelBuilder" class="nz.co.searchwellington.controllers.models.ViewFeedModelBuilder">	
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="contentRetrievalService" />
 	</bean>
 			
 	<bean id="suggestionsModelBuilder" class="nz.co.searchwellington.controllers.models.SuggestionsModelBuilder">
-		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="suggestedFeeditemsService" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="twitterNewsitemBuilderService" />		
+		<constructor-arg ref="twitterNewsitemBuilderService" />
+		<constructor-arg ref="contentRetrievalService" />		
 	</bean>
 	
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >

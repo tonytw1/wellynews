@@ -1,6 +1,8 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -24,15 +26,16 @@ public class SolrHydratedNewsitem implements Newsitem {
 	String url;
 	String publisherName;
 	Date date;
-	
+	Set<Tag> tags;
 
-	public SolrHydratedNewsitem(Integer resourceId, String headline, String description, String url, String publisherName, Date date) {
+	public SolrHydratedNewsitem(Integer id, String headline, String description, String url, String publisherName, Date date) {
 		this.id = id;
 		this.headline = headline;
 		this.description = description;
 		this.url = url;
 		this.publisherName = publisherName;
 		this.date  = date;
+		this.tags = new HashSet<Tag>();
 	}
 
 	@Override
@@ -90,7 +93,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 
 	@Override
 	public void addTag(Tag tag) {
-		// TODO Auto-generated method stub
+		tags.add(tag);
 		
 	}
 
@@ -176,10 +179,9 @@ public class SolrHydratedNewsitem implements Newsitem {
 	
 	@Override
 	public Set<Tag> getTags() {
-		// TODO Auto-generated method stub
-		return null;
+		return tags;
 	}
-
+	
 	@Override
 	public int getTechnoratiCount() {
 		// TODO Auto-generated method stub
