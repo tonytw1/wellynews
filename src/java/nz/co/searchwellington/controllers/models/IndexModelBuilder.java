@@ -10,7 +10,6 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -128,15 +127,15 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
         mv.addObject("featured", contentRetrievalService.getFeaturedSites());
     }
 	
-	// TODO is this doing the minimal amount of hydration?
+
 	private void populateCommentedNewsitems(ModelAndView mv) {
-		final List<Resource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(MAX_NUMBER_OF_COMMENTED_TO_SHOW, 0);
+		final List<Resource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0);
 		if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
 			mv.addObject("commented_newsitems", recentCommentedNewsitems);
 		} else {
 			mv.addObject("commented_newsitems", recentCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW));
+			mv.addObject("commented_newsitems_moreurl", "comment");
 		}
-		mv.addObject("commented_newsitems_moreurl", "comment");
 	}
 	
 	

@@ -9,6 +9,10 @@
 		<constructor-arg ref="urlBuilder" />		
 	</bean>
 	
+	<bean id="archiveModelBuilder" class="nz.co.searchwellington.controllers.models.ArchiveModelBuilder">
+		<constructor-arg ref="contentRetrievalService" />		
+	</bean>
+		
 	<bean id="feedsModelBuilder" class="nz.co.searchwellington.controllers.models.FeedsModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="suggestedFeeditemsService" />	
@@ -84,9 +88,7 @@
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 	</bean>
-	
-	
-		
+			
 	<bean id="suggestionsModelBuilder" class="nz.co.searchwellington.controllers.models.SuggestionsModelBuilder">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="suggestedFeeditemsService" />
@@ -95,12 +97,12 @@
 		<constructor-arg ref="twitterNewsitemBuilderService" />		
 	</bean>
 	
-
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg>
-			<list>
+			<list>				
 				<ref bean="indexModelBuilder" />
+				<ref bean="archiveModelBuilder" />
 				<ref bean="feedsModelBuilder" />
 				<ref bean="suggestionsModelBuilder" />
 				<ref bean="justinModelBuilder" />
@@ -118,7 +120,4 @@
 		</constructor-arg>
 	</bean>
 
-
-	
-				
 </beans>
