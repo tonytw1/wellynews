@@ -144,9 +144,9 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
-                
-        mv.addObject("heading", "All Publishers");    
-        mv.addObject("publishers", contentRetrievalService.getAllPublishers(true));
+        
+        mv.addObject("heading", "All Publishers");
+        mv.addObject("publishers", contentRetrievalService.getAllPublishers());
         
         populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
         mv.setViewName("publishers");

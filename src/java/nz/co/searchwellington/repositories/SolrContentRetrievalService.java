@@ -91,8 +91,8 @@ public class SolrContentRetrievalService {
 		return solrResourceDAO.getAllPublishersWithNewsitemCounts(shouldShowBroken, mustHaveNewsitems);
 	}
 
-	public List<Resource> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
-		return solrResourceDAO.getAllPublishers(shouldShowBroken, mustHaveNewsitems);
+	public List<Resource> getAllPublishers(boolean shouldShowBroken) {
+		return solrResourceDAO.getAllPublishers(shouldShowBroken, false);
 	}
 
 	public List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean shouldShowBroken, int startIndex, int maxItems) {

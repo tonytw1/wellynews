@@ -44,8 +44,8 @@ public class ContentRetrievalService {
 		return solrContentRetrievalService.getAllValidGeocoded(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<Resource> getAllPublishers(boolean mustHaveNewsitems) {	// TODO publishers can also have feeds
-		return solrContentRetrievalService.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), mustHaveNewsitems);
+	public List<Resource> getAllPublishers() {
+		return solrContentRetrievalService.getAllPublishers(showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean mustHaveNewsitems) {

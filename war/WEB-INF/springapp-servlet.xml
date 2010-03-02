@@ -385,6 +385,7 @@
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="snapshotBodyExtractor" />
 		<constructor-arg ref="anonUserService" />
+		<constructor-arg ref="contentRetrievalService" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
