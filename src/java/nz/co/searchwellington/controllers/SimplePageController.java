@@ -34,10 +34,9 @@ public class SimplePageController extends BaseMultiActionController {
 	private TagDAO tagDAO;
     
     
-    public SimplePageController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, 
+    public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, 
     		SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, DiscoveredFeedRepository discoveredFeedRepository, 
     		ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
-        this.resourceDAO = resourceDAO;
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;        
@@ -112,25 +111,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
 
-    
-    
-        
-    public ModelAndView calendars(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        urlStack.setUrlStack(request);
-        populateCommonLocal(mv);
-        
-        mv.addObject("heading", "Calendar Feeds");
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
-             
-        List<Resource> wrappedCalendars = resourceDAO.getAllCalendarFeeds();        
-        mv.addObject("main_content", wrappedCalendars);        
-        mv.setViewName("calendars");        
-        return mv;
-    }
-    
-     
-       
+         
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         populateCommonLocal(mv);
@@ -146,26 +127,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
 
-                
-    public ModelAndView lastUpdated(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        populateCommonLocal(mv);
-
-        urlStack.setUrlStack(request);
-      
-        mv.addObject("heading", "Latest Updates");
-        // TODO this should show resources order by last live time. - the the last update query won't have to interate ethier.
-        mv.addObject("main_content", contentRetrievalService.getLatestNewsitems(20));
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
-        populateNewslogLastUpdated(mv);
-
-        mv.setViewName("lastupdated");
-        return mv;
-    }
     
-    
-    
-
     public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);

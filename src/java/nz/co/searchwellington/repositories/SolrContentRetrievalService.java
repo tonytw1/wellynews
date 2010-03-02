@@ -147,5 +147,10 @@ public class SolrContentRetrievalService {
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean shouldShowBroken, int maxItems) {
 		return solrResourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, shouldShowBroken, maxItems);
 	}
+
+	// TODO needs maxitems
+	public List<Resource> getRecentlyChangedWatchlistItems(boolean shouldShowBroken) {
+		return solrResourceDAO.getAllWatchlists(shouldShowBroken); 
+	}
 	
 }

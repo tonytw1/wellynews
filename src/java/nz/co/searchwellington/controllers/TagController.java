@@ -13,35 +13,34 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
+import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sun.syndication.io.FeedException;
 
 
-public class TagController extends BaseMultiActionController {
+public class TagController {
+	
+    static Logger log = Logger.getLogger(TagController.class);
    
     private ContentModelBuilderService contentModelBuilder;
     private ContentRetrievalService contentRetrievalService;
     private TagDAO tagDAO;
+    private UrlStack urlStack;
 
 
-    public TagController(ResourceRepository resourceDAO,    	
-    		LoggedInUserFilter loggedInUserFilter,
-    		UrlStack urlStack,  		   		
-    		ContentModelBuilderService contentModelBuilder,
-    		ContentRetrievalService contentRetrievalService, TagDAO tagDAO
-    		) {
-        this.resourceDAO = resourceDAO;      
-        this.loggedInUserFilter = loggedInUserFilter;
-        this.urlStack = urlStack;               
-        this.contentModelBuilder = contentModelBuilder;
-        this.contentRetrievalService = contentRetrievalService;
-        this.tagDAO = tagDAO;
-    }
+    public TagController(UrlStack urlStack,
+			ContentModelBuilderService contentModelBuilder,
+			ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
+		this.urlStack = urlStack;
+		this.contentModelBuilder = contentModelBuilder;
+		this.contentRetrievalService = contentRetrievalService;
+		this.tagDAO = tagDAO;
+	}
     
     
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-        logger.info("Starting normal content");                                  
+        log.info("Starting normal content");                                  
         boolean showBroken = false;
         
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);

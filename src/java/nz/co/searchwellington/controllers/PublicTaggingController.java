@@ -23,6 +23,7 @@ public class PublicTaggingController extends BaseMultiActionController {
     private TagWidgetFactory tagWidgetFactory;
     private Notifier notifier;
 	private SubmissionProcessingService submissionProcessingService;
+	private ResourceRepository resourceDAO;
 
     
     public PublicTaggingController(ResourceRepository resourceDAO,           
@@ -60,9 +61,6 @@ public class PublicTaggingController extends BaseMultiActionController {
     }
 
 
-    
-    
-      
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {                
         ModelAndView mv = new ModelAndView("publicTagged");   
         populateCommonLocal(mv);        
@@ -74,13 +72,9 @@ public class PublicTaggingController extends BaseMultiActionController {
             resourceDAO.saveResource(editResource);           
             notifier.sendTaggingNotification("Public Tagging", editResource);            
             mv.addObject("resource", editResource);    
-        }
-        
+        }        
         return mv;
     }
 
-
-
-    
 
 }

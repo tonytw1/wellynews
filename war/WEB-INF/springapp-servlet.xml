@@ -69,7 +69,6 @@
 
 
 	<bean id="browseController" class="nz.co.searchwellington.controllers.BrowseController">
-		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />		
 		<constructor-arg ref="urlBuilder" />
@@ -212,7 +211,6 @@
 	
 
 	<bean id="searchController" class="nz.co.searchwellington.controllers.SearchController">
-		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="configDAO" />
@@ -253,14 +251,12 @@
 	
 
 	<bean id="viewfeedController" class="nz.co.searchwellington.controllers.admin.AdminFeedController">
-		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="adminRequestFilter" />
-		<constructor-arg ref="loggedInUserFilter" />	
-		<constructor-arg ref="supressionDAO" />
-		<constructor-arg ref="configDAO" />	
 		<constructor-arg ref="feedReaderRunner" />
 		<constructor-arg ref="rssPrefetcher" />
 		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="editPermissionService" />
+		
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -313,7 +309,6 @@
 	
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="rssUrlBuilder" />		
 		<constructor-arg ref="contentModelBuilder" />
 		<constructor-arg ref="contentRetrievalService" />
@@ -334,9 +329,7 @@
 	</bean>
 	
 	
-	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="loggedInUserFilter" />
+	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">	
 		<constructor-arg ref="urlStack" />		
 		<constructor-arg ref="contentModelBuilder" />
 		<constructor-arg ref="contentRetrievalService" />
@@ -616,7 +609,6 @@
 				<prop key="/api">simplePageController</prop>
             	<prop key="/archive">simplePageController</prop>
             	<prop key="/broken">simplePageController</prop>
-            	<prop key="/calendars">simplePageController</prop>            	
            		<prop key="/feeds/discovered">simplePageController</prop>           	
 				<prop key="/lastupdated">simplePageController</prop>
 									

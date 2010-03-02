@@ -58,6 +58,7 @@ public class ResourceEditController extends BaseMultiActionController {
 	private ContentDeletionService contentDeletionService;
     private SnapshotBodyExtractor snapBodyExtractor;
     private AnonUserService anonUserService;
+    private ResourceRepository resourceDAO;
     
     public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory,

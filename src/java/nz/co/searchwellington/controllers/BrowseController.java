@@ -13,7 +13,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -24,8 +23,7 @@ public class BrowseController extends BaseMultiActionController {
     private UrlBuilder urlBuilder;
     private ShowBrokenDecisionService showBrokenDecisionService;
  
-	public BrowseController(ResourceRepository resourceDAO, UrlStack urlStack, ConfigRepository configDAO, UrlBuilder urlBuilder, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {       
-		this.resourceDAO = resourceDAO;     // TODO not used
+	public BrowseController(UrlStack urlStack, ConfigRepository configDAO, UrlBuilder urlBuilder, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {       
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.urlBuilder = urlBuilder;

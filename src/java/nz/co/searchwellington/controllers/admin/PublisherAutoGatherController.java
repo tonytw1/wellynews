@@ -21,10 +21,11 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class PublisherAutoGatherController extends BaseMultiActionController {
 
-    Logger log = Logger.getLogger(PublisherAutoGatherController.class);
+    static Logger log = Logger.getLogger(PublisherAutoGatherController.class);
     
     private AdminRequestFilter requestFilter;
     private TagDAO tagDAO;
+    private ResourceRepository resourceDAO;
     
 	public PublisherAutoGatherController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, TagDAO tagDAO) {      
 		this.resourceDAO = resourceDAO;        

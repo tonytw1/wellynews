@@ -23,6 +23,7 @@ public class LinkCheckerController extends BaseMultiActionController {
     
     private LinkCheckerQueue queue;
     private AdminRequestFilter requestFilter;
+    private ResourceRepository resourceDAO;
 
      
     public LinkCheckerController(AdminRequestFilter requestFilter, LinkCheckerQueue queue, UrlStack urlStack, ResourceRepository resourceDAO) {

@@ -22,6 +22,7 @@ public class IndexRebuildController extends BaseMultiActionController {
     
 	private SolrIndexRebuildService solrIndexRebuildService;
 	private TwitterService twitterService;
+	private ResourceRepository resourceDAO;
          
     public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService, TwitterService twitterService, ResourceRepository resourceDAO) {       
         this.solrIndexRebuildService = solrIndexRebuildService;

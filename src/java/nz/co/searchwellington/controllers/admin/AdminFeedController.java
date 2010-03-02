@@ -5,17 +5,9 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.BaseMultiActionController;
-import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.controllers.UrlStack;
-import nz.co.searchwellington.feeds.FeedReader;
 import nz.co.searchwellington.feeds.FeedReaderRunner;
-import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -26,29 +18,27 @@ import org.springframework.web.servlet.view.RedirectView;
 import com.sun.syndication.io.FeedException;
 
 // TODO move to admin.
-public class AdminFeedController extends BaseMultiActionController {
+public class AdminFeedController {
     
     Logger log = Logger.getLogger(AdminFeedController.class);
     
     private AdminRequestFilter requestFilter;
-    private LoggedInUserFilter loggedInUserFilter;
-    private SupressionRepository supressionDAO;
     private FeedReaderRunner feedReaderRunner;    
 	private RssNewsitemPrefetcher rssPrefetcher;
     private UrlBuilder urlBuilder;
+    private EditPermissionService permissionService;
     
     
-    public AdminFeedController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter,  LoggedInUserFilter loggedInUserFilter, SupressionRepository supressionDAO, 
-    		ConfigRepository configDAO, FeedReaderRunner feedReaderRunner, RssNewsitemPrefetcher rssPrefetcher, UrlBuilder urlBuilder) {
-        this.resourceDAO = resourceDAO;
-        this.requestFilter = requestFilter;
-        this.loggedInUserFilter = loggedInUserFilter;       
-        this.supressionDAO = supressionDAO;
-        this.configDAO = configDAO;        
-        this.feedReaderRunner = feedReaderRunner;
-        this.rssPrefetcher = rssPrefetcher;
-        this.urlBuilder = urlBuilder;       
-    }
+    public AdminFeedController(AdminRequestFilter requestFilter,
+			FeedReaderRunner feedReaderRunner,
+			RssNewsitemPrefetcher rssPrefetcher, UrlBuilder urlBuilder,
+			EditPermissionService permissionService) {
+		this.requestFilter = requestFilter;
+		this.feedReaderRunner = feedReaderRunner;
+		this.rssPrefetcher = rssPrefetcher;
+		this.urlBuilder = urlBuilder;
+		this.permissionService = permissionService;
+	}
 
     
     @Transactional   
@@ -57,8 +47,14 @@ public class AdminFeedController extends BaseMultiActionController {
         Feed feed = null;
         if (request.getAttribute("feedAttribute") != null) {
             feed = (Feed) request.getAttribute("feedAttribute");
+            
+            if (!permissionService.canDecache(feed)) {
+            	log.warn("Not allowed to decache this feed"); // TODO return http auth error
+            	return null;            	
+            }
+                        
             log.info("Decaching feed: " + feed.getName());
-            decacheFeed(feed);
+            rssPrefetcher.decacheAndLoad(feed);
         } else {
             log.info("No feed seen on request; nothing to decache.");            
         }        
@@ -72,6 +68,12 @@ public class AdminFeedController extends BaseMultiActionController {
         Feed feed = null;
         if (request.getAttribute("feedAttribute") != null) {
             feed = (Feed) request.getAttribute("feedAttribute");
+            
+            if (!permissionService.canRead(feed)) {
+            	log.warn("Not allowed to read this feed"); // TODO return http auth error
+            	return null; 	
+            }
+            
             log.info("Reading feed: " + feed.getName());           
             feedReaderRunner.readSingleFeed(feed);
             
@@ -79,13 +81,6 @@ public class AdminFeedController extends BaseMultiActionController {
             log.info("No feed seen on request; nothing to reread.");
         }        
         return new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)));   
-    }
-    
-    
-   
-    
-    private void decacheFeed(Feed feed) {
-    	rssPrefetcher.decacheAndLoad(feed);
     }
     
 }

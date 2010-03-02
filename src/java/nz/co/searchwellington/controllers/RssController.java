@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.views.RssItemMaker;
 import nz.co.searchwellington.views.RssView;
 
@@ -24,7 +23,6 @@ public class RssController extends MultiActionController {
     
     private static final int MAX_RSS_ITEMS = 30;
     private SiteInformation siteInformation;
-    private ResourceRepository resourceDAO;	// TODO remove
     private RssUrlBuilder rssUrlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
 	private ContentRetrievalService contentRetrievalService;
@@ -32,9 +30,8 @@ public class RssController extends MultiActionController {
 
     
        
-    public RssController(SiteInformation siteInformation, ResourceRepository resourceDAO, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
+    public RssController(SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
         this.siteInformation = siteInformation;
-        this.resourceDAO = resourceDAO;
         this.rssUrlBuilder = rssUrlBuilder;
         this.contentModelBuilderService = contentModelBuilderService;
         this.contentRetrievalService = contentRetrievalService;
@@ -81,7 +78,7 @@ public class RssController extends MultiActionController {
     	model.put("heading", rssUrlBuilder.getTitleForWatchlist());
     	model.put("link", siteInformation.getUrl());
     	model.put("description","Recently updated " + siteInformation.getAreaname() + " related news pages.");          
-    	model.put("main_content", resourceDAO.getRecentlyChangedWatchlistItems());
+    	model.put("main_content", contentRetrievalService.getRecentlyChangedWatchlistItems());
     	
         RssView rssView = new RssView(siteInformation, rssItemMaker);
         return new ModelAndView(rssView, model);

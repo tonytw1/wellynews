@@ -26,6 +26,7 @@ public class AutoTagController extends BaseMultiActionController {
     private ImpliedTagService autoTagService;
 	private KeywordSearchService keywordSearchService;
 	private TagDAO tagDAO;
+	private ResourceRepository resourceDAO;
     
 	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO) {      
 		this.resourceDAO = resourceDAO;        

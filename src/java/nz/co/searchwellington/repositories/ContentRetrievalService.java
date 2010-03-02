@@ -204,5 +204,9 @@ public class ContentRetrievalService {
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, int maxNewsitems) {
 		return solrContentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems);
 	}
+
+	public List<Resource> getRecentlyChangedWatchlistItems() {
+		return solrContentRetrievalService.getRecentlyChangedWatchlistItems(showBrokenDecisionService.shouldShowBroken());
+	}
 	
 }
