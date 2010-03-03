@@ -25,7 +25,7 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 
 	
 	public boolean isValid(HttpServletRequest request) {
-		return request.getPathInfo().matches("^/archive/*/*");
+		return request.getPathInfo().matches("^/archive/.*?/.*?$");
 	}
 
 	

@@ -20,7 +20,7 @@ public class ContentModelBuilderService {
 	}
 
 	public ModelAndView populateContentModel(HttpServletRequest request) {
-		logger.debug("Building content model");
+		logger.info("Building content model");
 		boolean showBroken = false;	
 		if (loggedInUserFilter.getLoggedInUser() != null) {
 			showBroken = true;
@@ -38,6 +38,7 @@ public class ContentModelBuilderService {
 				return mv;
 			}
 		}
+		logger.info("No matching model builders found for path: " + request.getPathInfo());
         return null;
 	}
 	
