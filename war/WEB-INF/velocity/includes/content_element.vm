@@ -4,9 +4,7 @@
 #end
 	
 	<li>		
-		
-	
-		
+				
 		#if ($item.image) 
 			<img src="$item.image.url" align="right" vspace="10">
 		#end	
@@ -44,12 +42,11 @@
 					<li class="bodytext">$escape.html($snippet)</li>
 				#end
 			#end
-							
+					
 			#if ($item.type == ('F'))				
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
-				#end
-				
+				#end				
 				#if ($editPermissionService.canEdit($item))
 					#if ($item.acceptancePolicy)
 						<li class="acceptance">$item.acceptancePolicy</li>
@@ -57,16 +54,15 @@
 																	
 					#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
 						<ul>
-							#foreach($error in $item.acceptanceErrors) 
-								<li>$error</li>
-							#end
+						#foreach($error in $item.acceptanceErrors)
+							<li>$error</li>
+						#end
 						</ul>
 					#end
-				#end			
-				
+				#end				
 			#end
-				
 			
+						
 			#if ($item.type == 'W') 
 				#set ($newsitemCount = $publisherNewsitemCountService.getNewsitemCount($item))
 				#if ($newsitemCount> 0) 
@@ -80,22 +76,19 @@
 						#set ($feed = $item.feeds.iterator().next())					
 						<li><a href="$urlBuilder.getFeedUrl($feed)">1 feed</a></li>
 					#else
-						<li><a href="$site_information.url/$item.urlWords/feeds">#showItemCount($item.feeds.size() "feed")</a></li>
+						<li><a href="$urlBuilder.publisherUrl($item)">#showItemCount($item.feeds.size() "feed")</a></li>
 					#end
 				#end
-				
-					
+			#end
 								
-				#end
-								
-				#if ($item.tags && $item.tags.size() > 0)
-					<li class="tagged" rel="noindex">Tagged as:</li>
-					#foreach ($tag in $item.tags)
-						#if (!$tag.hidden)
-							<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
-						#end
+			#if ($item.tags && $item.tags.size() > 0)
+				<li class="tagged" rel="noindex">Tagged as:</li>
+				#foreach ($tag in $item.tags)
+					#if (!$tag.hidden)
+						<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
 					#end
 				#end
+			#end
 				
 								
 				#if ($item.comments && $item.comments.size() > 0) 
@@ -156,43 +149,42 @@
 					<li>Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
 				#end
 				
-					#if ($item.type == "N" && $item.reTwits.size() > 0)
-						<ul>
-							#foreach ($twit in $item.reTwits) 
-						
-								#parse("includes/twittermessage.vm")
-											
-                         	#end
-						</ul>					
+				#if ($item.type == "N" && $item.reTwits.size() > 0)
+					<ul>
+					#foreach ($twit in $item.reTwits) 
+						#parse("includes/twittermessage.vm")
 					#end
+					</ul>					
+				#end
 				
 				
-					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
-						<li>Http Status: $item.httpStatus</li>						
-						#if ($item.isHeld()) 
-							<li>Held</li>
-						#end
+				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
+					<li>Http Status: $item.httpStatus</li>						
+					#if ($item.isHeld()) 
+						<li>Held</li>
 					#end
+				#end
+				
 					
-					#if ($editPermissionService.canEdit($item) && $item.commentFeed)
-						<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
-					#end
+				#if ($editPermissionService.canEdit($item) && $item.commentFeed)
+					<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
+				#end
 				
-					#if ($editPermissionService.canEdit($item) && ($item.type != "FNI") && ($item.type != "TNI"))
-						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
-					#end
-					#if ($editPermissionService.canDelete($item) && ($item.type != "FNI") && ($item.type != "TNI"))
-						<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>
-					#end
-					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
-						<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
-					#end
-					#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
-						<li class="admin"><a href="$adminUrlBuilder.getViewSnapshotUrl($item)">view snapshot</a></li>
-					#end
-								
-				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))			
-					
+				#if ($editPermissionService.canEdit($item) && ($item.type != "FNI") && ($item.type != "TNI"))
+					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
+				#end
+				#if ($editPermissionService.canDelete($item) && ($item.type != "FNI") && ($item.type != "TNI"))
+					<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>
+				#end
+				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
+					<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
+				#end
+				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
+					<li class="admin"><a href="$adminUrlBuilder.getViewSnapshotUrl($item)">view snapshot</a></li>
+				#end
+				
+				
+				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
 					#if ($item.localCopy) 
 						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.getLocalCopy())">edit local copy</a></li>
 					#else
@@ -218,7 +210,4 @@
 				#end
 		</ul>				
 	</li>
-	<br clear="all">				
-			
-				
-				
+	<br clear="all">

@@ -129,17 +129,7 @@ public class RequestFilter {
             request.setAttribute("publisher", publisher);
         }
         
-        
-        if (request.getPathInfo().matches("^/archive/.*/.*$")) {            
-            Date monthFromPath = getArchiveDateFromPath(request.getPathInfo());
-            if (monthFromPath != null) {
-            	request.setAttribute("month", monthFromPath);
-            	log.info("Setting archive month to: " + monthFromPath);
-            }
-            return;
-        }
                 
-        
 		if (request.getPathInfo().matches("^/feed/.*$")) {			
 			String feedUrlWords = request.getPathInfo().split("/")[2];			
         	Resource feed = resourceDAO.loadFeedByUrlWords(feedUrlWords);
@@ -281,25 +271,6 @@ public class RequestFilter {
     }
     
     
-    public Date getArchiveDateFromPath(String path) {
-        // TODO this method can probably be written in alot less lines, with regexs and a matches check.
-        if (path.startsWith("/archive/")) {
-            String[] fields = path.split("/");
-            if (fields.length == 4) {
-                String archiveMonthString = fields[2] + " " + fields[3];
-                SimpleDateFormat df = new SimpleDateFormat("yyyy MMM");              
-                try {
-                    Date month = df.parse(archiveMonthString);
-                    return month;
-                } catch (ParseException e) {
-                    throw (new IllegalArgumentException(e.getMessage()));
-                }
-            }
-        }
-        return null;
-    }
-    
-
     protected String getPublisherUrlWordsFromPath(String pathInfo) {     
         Pattern pattern = Pattern.compile("^/(.*)/(calendars|feeds|watchlist)$");
         Matcher matcher = pattern.matcher(pathInfo);

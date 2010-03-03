@@ -75,10 +75,7 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
-						<prop key="/archive/*/*">archive</prop>
-						<prop key="/browse">publisherContent</prop>
-						<prop key="/*/feeds">publisherFeeds</prop>				
-						<prop key="/*/watchlist">publisherWatchlist</prop>
+						<prop key="/archive/*/*">archive</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -616,12 +613,9 @@
 				<prop key="/tags">simplePageController</prop>
 				<prop key="/twitter">simplePageController</prop>				
 				            	
-            	<prop key="/archive/**">browseController</prop>            	
+            	<prop key="/archive/**">tagController</prop>
             	<prop key="/browse">browseController</prop>
-            	<prop key="/*/calendars">browseController</prop>
-            	<prop key="/*/feeds">browseController</prop>            	
-            	<prop key="/*/watchlist">browseController</prop>
-            	
+            	            	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
             	<prop key="/ajax/publishers">publishersAjaxController</prop>

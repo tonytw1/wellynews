@@ -3,9 +3,11 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.apache.log4j.Logger;
@@ -36,7 +38,7 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 	            
 				ModelAndView mv = new ModelAndView();				
 				mv.addObject("heading", "ARCHIVE");	// TODO month name        		
-				mv.addObject("description", "The most recently submitted website listings.");
+				mv.addObject("description", "Archived newsitems for the month of TODO"); // TODO
 				
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsForMonth(month));
 				mv.setViewName("archivePage");
@@ -49,6 +51,34 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
 	}
+	
+	
+	
+
+    @SuppressWarnings("unchecked")
+    private void populateNextAndPreviousLinks(ModelAndView mv, Date month, List<ArchiveLink> archiveLinks) {
+        ArchiveLink selected = null;
+        for (ArchiveLink link : archiveLinks) {            
+            if (link.getMonth().equals(month)) {
+                selected = link;
+            }                
+        }
+        
+        if (selected != null) {
+            // TODO push selected onto the model.            
+            final int indexOf = archiveLinks.indexOf(selected);                
+            if (indexOf < archiveLinks.size()-1) {
+                ArchiveLink previous = archiveLinks.get(indexOf+1);
+                mv.getModel().put("next_page", previous);
+    //            mv.getModel().put("main_content_moreurl", urlBuilder.getArchiveLinkUrl(previous));
+            }
+            if (indexOf > 0) {
+                ArchiveLink next = archiveLinks.get(indexOf-1);
+                mv.getModel().put("previous_page", next);
+            }                
+        }
+    }
+    
 	
 	
 	// TODO duplicated from RequestFilter
