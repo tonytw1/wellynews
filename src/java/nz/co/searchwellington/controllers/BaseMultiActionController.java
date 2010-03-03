@@ -62,13 +62,5 @@ public abstract class BaseMultiActionController extends MultiActionController {
             mv.addObject("righthand_content", allFeeds);             
         } 
     }
-
-        
-    @SuppressWarnings("unchecked")
-    protected void populateAds(HttpServletRequest request, ModelAndView mv, boolean showBroken) {
-        if (!showBroken) {
-            mv.getModel().put("show_ads", "1");
-        }
-    }
     
 }

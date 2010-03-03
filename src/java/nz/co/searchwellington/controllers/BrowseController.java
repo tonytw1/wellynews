@@ -80,13 +80,13 @@ public class BrowseController extends BaseMultiActionController {
             mv.addObject("archive_month", new ArchiveLink(month, 0));
             final List<Resource> newsitemsForMonth = contentRetrievalService.getNewsitemsForMonth(month);            
             mv.addObject("main_content", newsitemsForMonth);
-			populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+			populateSecondaryLatestNewsitems(mv);
             mv.addObject("used_tags_description", "Most used tags during this month.");
             
             List<ArchiveLink> archiveLinks = contentRetrievalService.getArchiveMonths();
             populateNextAndPreviousLinks(mv, month, archiveLinks);
             
-            populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+            populateSecondaryLatestNewsitems(mv);
             mv.setViewName("archivePage");
             return mv;
         }
@@ -125,7 +125,7 @@ public class BrowseController extends BaseMultiActionController {
     private void populatePublisherCalendars(ModelAndView mv, Website publisher) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Calendars");       
         mv.getModel().put("main_content", publisher.getCalendars());
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        populateSecondaryLatestNewsitems(mv);
     }
     
 
@@ -133,14 +133,14 @@ public class BrowseController extends BaseMultiActionController {
     private void populatePublisherFeeds(ModelAndView mv, Website publisher) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Feeds");
         mv.getModel().put("main_content", contentRetrievalService.getPublisherFeeds(publisher));
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        populateSecondaryLatestNewsitems(mv);
     }
 
     @SuppressWarnings("unchecked")
     private void populatePublisherWatchlist(ModelAndView mv, Website publisher) throws IOException {
         mv.getModel().put("heading", publisher.getName() + " Watchlist items");
         mv.getModel().put("main_content",contentRetrievalService.getPublisherWatchlist(publisher));
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());        
+        populateSecondaryLatestNewsitems(mv);        
     }
     
     
