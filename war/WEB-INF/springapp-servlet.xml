@@ -64,23 +64,7 @@
 
 
 
-	<bean id="browseController" class="nz.co.searchwellington.controllers.BrowseController">
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="configDAO" />		
-		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="showBrokenDecisionService" />
-		<constructor-arg ref="contentRetrievalService" />
-			
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/archive/*/*">archive</prop>						
-					</props>
-				</property>
-			</bean>		
-		</property>		
-	</bean>
+	
 	
 	
 	
@@ -330,7 +314,8 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/*">normal</prop>						
+						<prop key="/*">normal</prop>
+						<prop key="/archive/*/*">normal</prop>
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
 						<prop key="/feed/*">normal</prop>
@@ -613,8 +598,7 @@
 				<prop key="/tags">simplePageController</prop>
 				<prop key="/twitter">simplePageController</prop>				
 				            	
-            	<prop key="/archive/**">tagController</prop>
-            	<prop key="/browse">browseController</prop>
+            	<prop key="/archive/*/*">tagController</prop>
             	            	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
