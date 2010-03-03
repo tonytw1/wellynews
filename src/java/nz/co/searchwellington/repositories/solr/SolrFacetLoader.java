@@ -17,8 +17,9 @@ public class SolrFacetLoader {
 	private ResourceRepository resourceDAO;
 	private TagDAO tagDAO;
 	
-	public SolrFacetLoader(ResourceRepository resourceDAO) {		
+	public SolrFacetLoader(ResourceRepository resourceDAO, TagDAO tagDAO) {		
 		this.resourceDAO = resourceDAO;
+		this.tagDAO = tagDAO;
 	}
 
 
