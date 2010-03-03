@@ -183,12 +183,6 @@ public class SolrHydratedNewsitem implements Newsitem {
 	}
 	
 	@Override
-	public int getTechnoratiCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public String getType() {
 		return "N";
 	}
@@ -290,12 +284,6 @@ public class SolrHydratedNewsitem implements Newsitem {
 
 	@Override
 	public void setTags(Set<Tag> tags) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setTechnoratiCount(int technoratiCount) {
 		// TODO Auto-generated method stub
 		
 	}

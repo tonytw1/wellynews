@@ -111,10 +111,6 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 		return website.getTags();
 	}
 
-	public int getTechnoratiCount() {
-		return website.getTechnoratiCount();
-	}
-
 	public String getType() {
 		return website.getType();
 	}
@@ -187,10 +183,6 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 
 	public void setTags(Set<Tag> tags) {
 		website.setTags(tags);
-	}
-
-	public void setTechnoratiCount(int technoratiCount) {
-		website.setTechnoratiCount(technoratiCount);
 	}
 
 	public void setUrl(String url) {

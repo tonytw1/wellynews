@@ -29,8 +29,7 @@ public abstract class ResourceImpl implements Resource {
     protected String urlWords;
     
     protected Set<DiscoveredFeed> discoveredFeeds;
-    
-    protected int technoratiCount;
+      
     protected Geocode geocode;
 
     protected User owner;
@@ -140,14 +139,7 @@ public abstract class ResourceImpl implements Resource {
 	public void setEmbargoedUntil(Date embargoedUntil) {
 		this.embargoedUntil = embargoedUntil;
 	}
-    
-	public int getTechnoratiCount() {		// TODO Depricated
-		return technoratiCount;
-	}
-	public void setTechnoratiCount(int technoratiCount) {
-		this.technoratiCount = technoratiCount;
-	}
-	
+  	
 	public Geocode getGeocode() {
 		return geocode;
 	}

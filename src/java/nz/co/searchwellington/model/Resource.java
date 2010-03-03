@@ -45,9 +45,6 @@ public interface Resource {
 	public Date getEmbargoedUntil();
 	public void setEmbargoedUntil(Date embargoedUntil);
     
-	public int getTechnoratiCount();
-	public void setTechnoratiCount(int technoratiCount);
-
 	public Geocode getGeocode();
 	public void setGeocode(Geocode geocode);
 	public void getRemoveTag(Tag tag);

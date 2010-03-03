@@ -143,12 +143,6 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public Set<Tag> getTags() {
 		return newsitem.getTags();
 	}
-
-
-	public int getTechnoratiCount() {
-		return newsitem.getTechnoratiCount();
-	}
-
 	
 	public String getType() {
 		return newsitem.getType();
@@ -224,12 +218,6 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		newsitem.setTags(tags);
 	}
 
-
-	public void setTechnoratiCount(int technoratiCount) {
-		newsitem.setTechnoratiCount(technoratiCount);
-	}
-
-	
 	public void setUrl(String url) {
 		newsitem.setUrl(url);
 	}
