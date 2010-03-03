@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
@@ -33,7 +34,7 @@ public class SolrResourceHydrator {
 			item.setDescription((String) result.getFieldValue("description"));
 			item.setUrl((String) result.getFieldValue("url"));
 			item.setDate((Date) result.getFieldValue("date"));
-			
+			item.setTags(new HashSet<Tag>());
 			hydrateTags(result, item);
 			return item;
 		}
