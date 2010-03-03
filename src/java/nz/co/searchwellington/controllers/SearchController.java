@@ -23,13 +23,11 @@ public class SearchController extends BaseMultiActionController {
 	Logger log = Logger.getLogger(SearchController.class);
     
 	private RequestFilter requestFilter;
-	private ShowBrokenDecisionService showBrokenDecisionService;
 	
-    public SearchController(UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService) {    
+    public SearchController(UrlStack urlStack, RequestFilter requestFilter, ConfigRepository configDAO, ContentRetrievalService contentRetrievalService) {    
         this.urlStack = urlStack;
         this.requestFilter = requestFilter;
         this.configDAO = configDAO;
-        this.showBrokenDecisionService = showBrokenDecisionService;
         this.contentRetrievalService = contentRetrievalService;
 	}
 
@@ -40,10 +38,6 @@ public class SearchController extends BaseMultiActionController {
         
         requestFilter.loadAttributesOntoRequest(request);	// TODO should be on filter
 
-                
-        boolean showBroken = showBrokenDecisionService.shouldShowBroken();
-        populateAds(request, mv, showBroken);
-     
         String keywords = null;
         if (request.getParameter("keywords") != null) {
             keywords = request.getParameter("keywords");
