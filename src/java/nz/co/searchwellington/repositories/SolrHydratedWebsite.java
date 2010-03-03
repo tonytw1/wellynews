@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
@@ -14,81 +15,25 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
 import org.apache.commons.collections.set.ListOrderedSet;
 
-public class SolrHydratedNewsitem implements Newsitem {
+public class SolrHydratedWebsite implements Website {
 	
 	int id;
 	String headline;
 	String description;
 	String url;
-	String publisherName;
-	Date date;
 	Set<Tag> tags;
 
-	public SolrHydratedNewsitem(Integer id, String headline, String description, String url, String publisherName, Date date) {
+	public SolrHydratedWebsite(Integer id, String headline, String description, String url) {
 		this.id = id;
 		this.headline = headline;
 		this.description = description;
 		this.url = url;
-		this.publisherName = publisherName;
-		this.date  = date;
 		this.tags = new ListOrderedSet();
-	}
-
-	@Override
-	public void addReTwit(Twit retwit) {
-		// TODO Auto-generated method stub		
-	}
-
-	
-	
-	public String getPublisherName() {
-		return publisherName;
-	}
-
-	@Override
-	public Feed getFeed() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Image getImage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Set<Twit> getReTwits() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setFeed(Feed feed) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setImage(Image image) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Website getPublisher() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setPublisher(Website publisher) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -103,10 +48,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 		
 	}
 
-	@Override
-	public Date getDate() {
-		return date;
-	}
+	
 
 	@Override
 	public String getDescription() {
@@ -312,34 +254,42 @@ public class SolrHydratedNewsitem implements Newsitem {
 		
 	}
 
+	
+
 	@Override
-	public Twit getSubmittingTwit() {
+	public Set<CalendarFeed> getCalendars() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setSubmittingTwit(Twit submittingTwit) {
+	public Set<Feed> getFeeds() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Newsitem> getNewsitems() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Set<Watchlist> getWatchlist() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setCalendars(Set<CalendarFeed> calendars) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public CommentFeed getCommentFeed() {
+	public Date getDate() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public List<Comment> getComments() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setCommentFeed(CommentFeed commentFeed) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	

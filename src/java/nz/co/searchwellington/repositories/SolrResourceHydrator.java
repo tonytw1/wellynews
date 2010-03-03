@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -25,7 +26,7 @@ public class SolrResourceHydrator {
 	public Resource hydrateResource(SolrDocument result) {
 		final Integer resourceId = (Integer) result.getFieldValue("id");				
 		if (result.getFieldValue("type").equals("N")) {
-			log.info("Solr hydrating");
+			log.info("Solr hydrating newsitem");
 			
 			Resource item = new SolrHydratedNewsitem(
 					resourceId,
@@ -34,6 +35,20 @@ public class SolrResourceHydrator {
 					(String) result.getFieldValue("url"),
 					(String) result.getFieldValue("publisherName"),
 					(Date) result.getFieldValue("date")
+					);
+			
+			hydrateTags(result, item);
+			return item;
+		}
+				
+		if (result.getFieldValue("type").equals("W")) {
+			log.info("Solr hydrating website");
+			
+			Resource item = new SolrHydratedWebsite(
+					resourceId,
+					(String) result.getFieldValue("title"), 
+					(String) result.getFieldValue("description"),
+					(String) result.getFieldValue("url")					
 					);
 			
 			hydrateTags(result, item);
@@ -53,8 +68,11 @@ public class SolrResourceHydrator {
 		Collection<Object> tagIds = result.getFieldValues("tags");
 		if (tagIds != null){
 			for (Object tagId : tagIds) {
-				log.warn(tagId);
-				item.addTag(tagDAO.loadTagById((Integer) tagId));
+				Tag tag = tagDAO.loadTagById((Integer) tagId);
+				if (tag != null) {
+					log.info(tag.getName());
+					item.addTag(tag);
+				}
 			}
 		}
 	}
