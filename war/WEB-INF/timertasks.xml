@@ -112,7 +112,6 @@
 
 <bean id="flickrJobTarget" class="nz.co.searchwellington.jobs.FlickrJob">
 	<constructor-arg ref="flickrDAO" />
-	<constructor-arg ref="resourceDAO" />
 	<constructor-arg ref="configDAO" />
 	<constructor-arg ref="tagDAO" />
 </bean>

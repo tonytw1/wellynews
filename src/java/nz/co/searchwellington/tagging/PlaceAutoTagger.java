@@ -5,7 +5,7 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 
@@ -15,16 +15,16 @@ public class PlaceAutoTagger {
     
     final String PLACES_TAG_NAME = "places";
         
-    private ResourceRepository resourceDAO;
+    private TagDAO tagDAO;
     
-    public PlaceAutoTagger(ResourceRepository resourceDAO) {
-        this.resourceDAO = resourceDAO;       
+    public PlaceAutoTagger(TagDAO tagDAO) {
+        this.tagDAO = tagDAO;
     }
     
     public Set<Tag> suggestTags(Resource resource) {         
     	Set<Tag> suggestedTags = new HashSet<Tag>();
     	
-        Tag placesTag = resourceDAO.loadTagByName(PLACES_TAG_NAME);
+        Tag placesTag = tagDAO.loadTagByName(PLACES_TAG_NAME);
         if (placesTag != null) {            
             for (Tag placeTag : placesTag.getChildren()) {                          
                 if (checkForMatchingTag(resource, placeTag)) {
@@ -35,8 +35,7 @@ public class PlaceAutoTagger {
         } else {
             log.warn("Could not find places tag.");
         }
-        return suggestedTags;
-        
+        return suggestedTags;        
     }
 
     private boolean checkForMatchingTag(Resource resource, Tag tag) {

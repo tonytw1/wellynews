@@ -361,12 +361,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
 
 
-    public void deleteTag(Tag tag) {
-        sessionFactory.getCurrentSession().delete(tag);
-        sessionFactory.getCurrentSession().flush();
-    }
-
-
     public List<Tag> getTagsMatchingKeywords(String keywords) {
         throw(new UnsupportedOperationException());
     }

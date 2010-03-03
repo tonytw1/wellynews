@@ -8,14 +8,14 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 
 public class SolrFacetLoader {
 
-	
 	private ResourceRepository resourceDAO;
-
+	private TagDAO tagDAO;
 	
 	public SolrFacetLoader(ResourceRepository resourceDAO) {		
 		this.resourceDAO = resourceDAO;
@@ -27,7 +27,7 @@ public class SolrFacetLoader {
     	if (values != null) {
     		for (Count count : values) {
     			final int relatedTagId = Integer.parseInt(count.getName());
-    			Tag relatedTag = resourceDAO.loadTagById(relatedTagId);    			
+    			Tag relatedTag = tagDAO.loadTagById(relatedTagId);    			
 				final Long relatedItemCount = count.getCount();
 				relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));				
 			}

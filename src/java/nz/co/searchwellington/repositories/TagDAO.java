@@ -72,5 +72,11 @@ public class TagDAO {
 		 sessionFactory.evictCollection("nz.co.searchwellington.model.Tag.children");
 		 // TODO solr index needs updating if a tag moves to a new parent.
 	 }
+	 
+
+	 public void deleteTag(Tag tag) {
+		 sessionFactory.getCurrentSession().delete(tag);
+		 sessionFactory.getCurrentSession().flush();
+	 }
 	
 }

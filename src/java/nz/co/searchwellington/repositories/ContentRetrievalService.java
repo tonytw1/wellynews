@@ -133,7 +133,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getFeaturedSites() {
-		final Tag featuredTag = resourceDAO.loadTagByName("featured");
+		final Tag featuredTag = tagDAO.loadTagByName("featured");
 		if (featuredTag != null) {
 			return this.getTaggedWebsites(featuredTag, 10);
 		}

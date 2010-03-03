@@ -14,7 +14,7 @@ public class SolrResourceHydrator {
 	static Logger log = Logger.getLogger(SolrResourceHydrator.class);
 	    
 	private ResourceRepository resourceDAO;
-	private TagDAO tagDAO;
+	private TagDAO tagDAO;	// TODO could remove this by hydrating tag fields from resource
 	
        	
 	public SolrResourceHydrator(ResourceRepository resourceDAO, TagDAO tagDAO) {
@@ -35,10 +35,12 @@ public class SolrResourceHydrator {
 					(Date) result.getFieldValue("date")
 					);
 			
-			Collection<Object> tagIds = result.getFieldValues("tags");			
-			for (Object tagId : tagIds) {
-				log.warn(tagId);
-				item.addTag(tagDAO.loadTagById((Integer) tagId));
+			Collection<Object> tagIds = result.getFieldValues("tags");
+			if (tagIds != null){
+				for (Object tagId : tagIds) {
+					log.warn(tagId);
+					item.addTag(tagDAO.loadTagById((Integer) tagId));
+				}
 			}
 			return item;
 		}

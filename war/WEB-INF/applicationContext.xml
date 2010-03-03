@@ -244,16 +244,16 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			
 	<bean id="requestFilter" class="nz.co.searchwellington.filters.RequestFilter" scope="request">
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="googleSearchTermExtractor" />
 		<aop:scoped-proxy/>
 	</bean>
 		
 	<bean id="adminRequestFilter" class="nz.co.searchwellington.controllers.admin.AdminRequestFilter">
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="tagDAO" />
 	</bean>
-	
-	
-	
+		
 	<bean id="publisherGuessingService" class="nz.co.searchwellington.repositories.PublisherGuessingService">
 		<constructor-arg ref="resourceDAO" />
 	</bean>
@@ -292,7 +292,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		
 	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService" />	
 	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
- 		<constructor-arg ref="resourceDAO" /> 		
+ 		<constructor-arg ref="tagDAO" /> 		
 	</bean>	
 	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">   
  		<constructor-arg ref="tagDAO" /> 		

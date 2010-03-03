@@ -17,6 +17,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 
@@ -27,14 +28,17 @@ public class RequestFilter {
 	Logger log = Logger.getLogger(RequestFilter.class);
     
     protected ResourceRepository resourceDAO;
+    protected TagDAO tagDAO;
+    
     private GoogleSearchTermExtractor searchTermExtractor;
     private Resource anonResource;
 
     public RequestFilter() {         
     }
     
-    public RequestFilter(ResourceRepository resourceDAO, GoogleSearchTermExtractor searchTermExtractor) {
+    public RequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO, GoogleSearchTermExtractor searchTermExtractor) {
         this.resourceDAO = resourceDAO;
+        this.tagDAO = tagDAO;
         this.searchTermExtractor = searchTermExtractor;
         this.anonResource = null;
     }
@@ -77,7 +81,7 @@ public class RequestFilter {
     			String tagIdString = tagIds[i];
     			int tagID = Integer.parseInt(tagIdString);
     			if (tagID > 0) {          
-    				Tag tag = resourceDAO.loadTagById(tagID);
+    				Tag tag = tagDAO.loadTagById(tagID);
     				if (tag != null) {
     					tags.add(tag);
     				} else {
@@ -114,7 +118,7 @@ public class RequestFilter {
     	// Used by the rssfeeds index page?
         if (request.getParameter("tag") != null) {
             String tagName = request.getParameter("tag");            
-            Tag tag = resourceDAO.loadTagByName(tagName);             
+            Tag tag = tagDAO.loadTagByName(tagName);             
                request.setAttribute("tag", tag);            
         }
         
@@ -163,7 +167,7 @@ public class RequestFilter {
         	log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'");        	
         	// righthand side is always a tag;
         	// Left could be a publisher or a tag.
-        	Tag rightHandTag = resourceDAO.loadTagByName(right);        	
+        	Tag rightHandTag = tagDAO.loadTagByName(right);        	
         	if (rightHandTag != null) {
 	        	Website publisher = resourceDAO.getPublisherByUrlWords(left);
 	        	log.debug("Right matches tag: " + rightHandTag.getName());
@@ -174,7 +178,7 @@ public class RequestFilter {
 	        		return;
 	        		
 	        	} else {
-	        		Tag leftHandTag = resourceDAO.loadTagByName(left);
+	        		Tag leftHandTag = tagDAO.loadTagByName(left);
 	        		if (leftHandTag != null) {
 	        			log.debug("Left matches tag: " + leftHandTag.getName());
 	        			log.info("Setting tags '" + leftHandTag.getName() + "', '" + rightHandTag.getName() + "'");
@@ -200,7 +204,7 @@ public class RequestFilter {
 	        	log.debug("'" + match + "' matches content");
 		        	
 	        	log.debug("Looking for tag '" + match + "'");	        	
-	        	Tag tag = resourceDAO.loadTagByName(match);
+	        	Tag tag = tagDAO.loadTagByName(match);
 		        if (tag != null) {
 		        	log.info("Setting tag: " + tag.getName());
 		        	request.setAttribute("tag", tag);	// TODO deprecate

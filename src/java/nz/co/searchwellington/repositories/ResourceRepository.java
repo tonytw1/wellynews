@@ -37,13 +37,6 @@ public interface ResourceRepository {
     
     public List<Resource> getAllCalendarFeeds();
     
-    // TODO move to tagDAO - probably already a delegate
-    public Tag loadTagById(int tagID);
-    public Tag loadTagByName(String tagname);
-    public void saveTag(Tag editTag);   
-
-    public void deleteTag(Tag tag);
-    
     public List<Resource> getNotCheckedSince(Date date, int maxItems);
     public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems);
     

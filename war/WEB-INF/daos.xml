@@ -50,6 +50,7 @@
 		
 	<bean id="solrFacetLoader" class="nz.co.searchwellington.repositories.solr.SolrFacetLoader">
 	 	<constructor-arg ref="resourceDAO" />
+	 	<constructor-arg ref="taoDAO" />
 	</bean>
 		
 	<bean id="relatedTagsService" class="nz.co.searchwellington.controllers.RelatedTagsService">

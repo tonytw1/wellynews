@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -24,10 +25,12 @@ public class AdminRequestFilter {
     
 
 	private ResourceRepository resourceDAO;
+	private TagDAO tagDAO;
 	
 	
-	public AdminRequestFilter(ResourceRepository resourceDAO) {		
+	public AdminRequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO) {		
 		this.resourceDAO = resourceDAO;
+		this.tagDAO = tagDAO;
 	}
 
 
@@ -35,7 +38,7 @@ public class AdminRequestFilter {
 		log.info("Looking for tag parameter");
 		if (request.getParameter("tag") != null) {
 			String tagName = request.getParameter("tag");
-			Tag tag = resourceDAO.loadTagByName(tagName);
+			Tag tag = tagDAO.loadTagByName(tagName);
 			if (tag != null) {
 	           	request.setAttribute("tag", tag);
 			}
@@ -113,7 +116,7 @@ public class AdminRequestFilter {
 				String tagIdString = tagIds[i];
 				int tagID = Integer.parseInt(tagIdString);
 				if (tagID > 0) {          
-					Tag tag = resourceDAO.loadTagById(tagID);
+					Tag tag = tagDAO.loadTagById(tagID);
 					if (tag != null) {
 						tags.add(tag);
 					} else {
@@ -160,7 +163,7 @@ public class AdminRequestFilter {
 		
         if (request.getParameter("parent") != null) {
             String tagName = request.getParameter("parent");
-            Tag tag = resourceDAO.loadTagByName(tagName);
+            Tag tag = tagDAO.loadTagByName(tagName);
             if (tag != null) {
             	log.info("Found parent tag: " + tag.getName());
             	request.setAttribute("parent_tag", tag);
@@ -173,7 +176,7 @@ public class AdminRequestFilter {
         Matcher matcher = pattern.matcher(request.getPathInfo());
         if (matcher.matches()) {
         	final String tagname = matcher.group(1);
-	        Tag tag = resourceDAO.loadTagByName(tagname);
+	        Tag tag = tagDAO.loadTagByName(tagname);
 	        if (tag != null) {
 	        	request.setAttribute("tag", tag);
 	        }	        

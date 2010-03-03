@@ -107,7 +107,7 @@ public class TagEditController extends MultiActionController {
                 tag.getParent().getChildren().remove(tag);
             }
             log.info("Deleting tag " + tag.getName());
-            resourceDAO.deleteTag(tag);
+            tagDAO.deleteTag(tag);
             
             urlStack.setUrlStack(request, "/index");
         }              
@@ -164,7 +164,7 @@ public class TagEditController extends MultiActionController {
         
         
         // TODO validate.
-        resourceDAO.saveTag(editTag);
+        tagDAO.saveTag(editTag);
         
         modelAndView.addObject("tag", editTag);
         modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());    

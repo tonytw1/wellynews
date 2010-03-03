@@ -1,10 +1,9 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
@@ -35,7 +34,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 		this.url = url;
 		this.publisherName = publisherName;
 		this.date  = date;
-		this.tags = new HashSet<Tag>();
+		this.tags = new TreeSet<Tag>();
 	}
 
 	@Override
