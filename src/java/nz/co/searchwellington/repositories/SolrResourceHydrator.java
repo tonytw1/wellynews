@@ -26,6 +26,7 @@ public class SolrResourceHydrator {
 		final Integer resourceId = (Integer) result.getFieldValue("id");				
 		if (result.getFieldValue("type").equals("N")) {
 			log.info("Solr hydrating");
+			
 			Resource item = new SolrHydratedNewsitem(
 					resourceId,
 					(String) result.getFieldValue("title"), 
@@ -35,13 +36,7 @@ public class SolrResourceHydrator {
 					(Date) result.getFieldValue("date")
 					);
 			
-			Collection<Object> tagIds = result.getFieldValues("tags");
-			if (tagIds != null){
-				for (Object tagId : tagIds) {
-					log.warn(tagId);
-					item.addTag(tagDAO.loadTagById((Integer) tagId));
-				}
-			}
+			hydrateTags(result, item);
 			return item;
 		}
 		
@@ -52,6 +47,16 @@ public class SolrResourceHydrator {
 		return resource;
 		
 		
+	}
+
+	private void hydrateTags(SolrDocument result, Resource item) {
+		Collection<Object> tagIds = result.getFieldValues("tags");
+		if (tagIds != null){
+			for (Object tagId : tagIds) {
+				log.warn(tagId);
+				item.addTag(tagDAO.loadTagById((Integer) tagId));
+			}
+		}
 	}
 
 }

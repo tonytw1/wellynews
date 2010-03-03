@@ -10,7 +10,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -91,8 +90,8 @@ public class SearchController extends BaseMultiActionController {
          
             mv.getModel().put("search_keywords", keywords);
            
-            populateSecondaryLatestNewsitems(mv, showBroken);
-          
+            populateSecondaryLatestNewsitems(mv);
+            
             if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                 log.debug("Using single column layout.");
                 mv.setViewName("searchOneType");

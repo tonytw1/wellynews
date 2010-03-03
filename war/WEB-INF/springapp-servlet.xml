@@ -8,7 +8,6 @@
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="discoveredFeedRespository" />
-		<constructor-arg ref="showBrokenDecisionService" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="tagDAO" />
 										

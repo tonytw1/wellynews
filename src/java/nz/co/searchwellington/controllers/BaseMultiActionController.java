@@ -46,7 +46,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     }
     
     
-    final protected void populateSecondaryLatestNewsitems(ModelAndView mv, boolean showBroken) {            
+    final protected void populateSecondaryLatestNewsitems(ModelAndView mv) {            
         final int numberOfItems = 5;
         final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(numberOfItems);        
         mv.addObject("latest_newsitems", latestNewsitems);

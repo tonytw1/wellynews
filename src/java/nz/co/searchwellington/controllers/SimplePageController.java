@@ -28,18 +28,16 @@ public class SimplePageController extends BaseMultiActionController {
     
     private SiteInformation siteInformation;
 	private DiscoveredFeedRepository discoveredFeedRepository;
-    private ShowBrokenDecisionService showBrokenDecisionService;
 	private TagDAO tagDAO;
     
     
     public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, 
     		SiteInformation siteInformation, DiscoveredFeedRepository discoveredFeedRepository, 
-    		ShowBrokenDecisionService showBrokenDecisionService, ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
+    		ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;        
-        this.discoveredFeedRepository = discoveredFeedRepository;
-        this.showBrokenDecisionService = showBrokenDecisionService;
+        this.discoveredFeedRepository = discoveredFeedRepository;      
         this.contentRetrievalService = contentRetrievalService;
         this.tagDAO = tagDAO;
     }
@@ -51,7 +49,7 @@ public class SimplePageController extends BaseMultiActionController {
                     
         populateCommonLocal(mv);             
         mv.addObject("heading", "About");        
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        populateSecondaryLatestNewsitems(mv);
         
         mv.setViewName("about");                     
         return mv;
@@ -65,7 +63,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);        
    
         mv.addObject("heading", "Archive");
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        populateSecondaryLatestNewsitems(mv);
         
         // TODO populate stats and dedupe as well.
         List<ArchiveLink> archiveMonths = contentRetrievalService.getArchiveMonths();
@@ -86,7 +84,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("feeds", contentRetrievalService.getAllFeeds());
         mv.addObject("publishers", contentRetrievalService.getAllPublishersWithNewsitemCounts(true));	// TODO needs to include publishers with only feeds
         mv.addObject("api_tags", contentRetrievalService.getTopLevelTags());
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());        
+        populateSecondaryLatestNewsitems(mv);        
         mv.setViewName("api");
         return mv;      
     }
@@ -100,7 +98,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
         
         mv.addObject("heading", "Broken sites");
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        populateSecondaryLatestNewsitems(mv);
              
         List<Resource> wrappedCalendars = contentRetrievalService.getBrokenSites();        
         mv.addObject("main_content", wrappedCalendars);
@@ -116,7 +114,7 @@ public class SimplePageController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
 
         mv.addObject("heading", "Discovered Feeds");
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        populateSecondaryLatestNewsitems(mv);
         
         List<DiscoveredFeed> nonCommentFeeds = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds();        
 		mv.addObject("discovered_feeds", nonCommentFeeds);        
@@ -133,7 +131,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "All Tags");        
         mv.addObject("tags", tagDAO.getAllTags());
                 
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
+        populateSecondaryLatestNewsitems(mv);       
         
         mv.setViewName("tags");
         return mv;
@@ -148,7 +146,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "All Publishers");
         mv.addObject("publishers", contentRetrievalService.getAllPublishers());
         
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());       
+        populateSecondaryLatestNewsitems(mv);       
         mv.setViewName("publishers");
         return mv;
     }
@@ -161,8 +159,8 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("twitterUsername", siteInformation.getTwitterUsername());
         mv.addObject("heading",  "Following the " + siteInformation.getAreaname() + " newslog on Twitter");
 
-        populateLatestTwitters(mv, showBrokenDecisionService.shouldShowBroken());        
-        populateSecondaryLatestNewsitems(mv, showBrokenDecisionService.shouldShowBroken());
+        populateLatestTwitters(mv);        
+        populateSecondaryLatestNewsitems(mv);
         
         mv.addObject("main_content", contentRetrievalService.getRecentedTwitteredNewsitems(MAX_NEWSITEMS));
         
@@ -171,7 +169,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
-    private void populateLatestTwitters(ModelAndView mv, boolean showBroken) throws IOException {       
+    private void populateLatestTwitters(ModelAndView mv) {       
         mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems(MAX_TWITTERS_TO_SHOW));  
     }
     
