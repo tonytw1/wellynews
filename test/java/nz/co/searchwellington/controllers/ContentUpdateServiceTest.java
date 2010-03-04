@@ -8,6 +8,7 @@ import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;

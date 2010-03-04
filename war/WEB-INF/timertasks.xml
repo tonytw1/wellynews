@@ -128,8 +128,8 @@
 <bean id="twitterListenerJobTarget" class="nz.co.searchwellington.jobs.TwitterListenerJob">
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />
-		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="contentUpdateService" />
 </bean>
 
 <bean id="twitterListenerJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">

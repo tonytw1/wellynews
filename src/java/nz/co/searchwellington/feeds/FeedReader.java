@@ -4,13 +4,13 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.searchwellington.controllers.ContentUpdateService;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -40,8 +40,7 @@ public class FeedReader {
     public FeedReader() {        
     }
     
-    
-    
+        
     public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AutoTaggingService autoTagger, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO, ContentUpdateService contentUpdateService) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
@@ -84,11 +83,10 @@ public class FeedReader {
         }
         
         feed.setLastRead(Calendar.getInstance().getTime());        
-        resourceDAO.saveResource(feed); //TODO this works from @Transaction on timer task, but not severlet
-        log.info("Done processing feed.");
+        contentUpdateService.update(feed, false);
+		log.info("Done processing feed.");
         return;
     }
-
 
 
 	private void processFeedItems(Feed feed, List<FeedNewsitem> feedNewsitems) {
@@ -132,9 +130,6 @@ public class FeedReader {
         contentUpdateService.update(resource, true);
     }
 
-
-	
-    
     
 	private void flattenLoudCapsInTitle(Resource resource) {
 		String flattenedTitle = UrlFilters.lowerCappedSentence(resource.getName());           
@@ -143,7 +138,6 @@ public class FeedReader {
             log.info("Flatten capitalised sentence to '" + flattenedTitle + "'");
         }
 	}
-
 
 
     private void tagAcceptedFeedItem(Resource resource, Set<Tag> feedTags) {       

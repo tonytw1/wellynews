@@ -4,6 +4,7 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.TwitterMention;
+import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
@@ -14,27 +15,31 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class TwitterListenerJob {
 
-    Logger log = Logger.getLogger(TwitterListenerJob.class);
+    static Logger log = Logger.getLogger(TwitterListenerJob.class);
     
     private TwitterService twitterService;
     private TwitterNewsitemBuilderService newsitemBuilder;
-    private ResourceRepository resourceDAO;
     private ConfigRepository configDAO;
+    private ContentUpdateService contentUpdateService;
     
     
     public TwitterListenerJob() {
     }
 
-    public TwitterListenerJob(TwitterService twitterService, TwitterNewsitemBuilderService newsitemBuilder, 
-    		ResourceRepository resourceDAO, ConfigRepository configDAO) {
-        this.twitterService = twitterService;
-        this.newsitemBuilder = newsitemBuilder;
-        this.resourceDAO = resourceDAO;
-        this.configDAO= configDAO;
-    }
+    
+    public TwitterListenerJob(TwitterService twitterService,
+			TwitterNewsitemBuilderService newsitemBuilder,
+			ConfigRepository configDAO,
+			ContentUpdateService contentUpdateService) {
+		super();
+		this.twitterService = twitterService;
+		this.newsitemBuilder = newsitemBuilder;
+		this.configDAO = configDAO;
+		this.contentUpdateService = contentUpdateService;
+	}
 
     
-    @Transactional
+	@Transactional
     public void run() {
         if (!configDAO.isTwitterListenerEnabled()) {
         	log.info("Twitter listener is not enabled");
@@ -58,7 +63,7 @@ public class TwitterListenerJob {
 			if (isMentionRT && !newsitem.getReTwits().contains(reTwit.getTwit())) {				
 				log.info("Adding new RT to newsitem: " + reTwit.getTwit().getText());
 				newsitem.addReTwit(reTwit.getTwit());
-				resourceDAO.saveResource(newsitem);				
+				contentUpdateService.update(newsitem, false);
 			}
 		}
 	}

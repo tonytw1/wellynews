@@ -2,7 +2,6 @@ package nz.co.searchwellington.modification;
 
 import java.util.List;
 
-import nz.co.searchwellington.controllers.ContentUpdateService;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;

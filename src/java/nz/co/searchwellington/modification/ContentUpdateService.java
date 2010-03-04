@@ -1,5 +1,5 @@
 
-package nz.co.searchwellington.controllers;
+package nz.co.searchwellington.modification;
 
 import javax.servlet.http.HttpServletRequest;
 

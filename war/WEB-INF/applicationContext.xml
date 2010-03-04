@@ -67,17 +67,18 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 
 	<bean id="commentFeedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="commentFeedReaderTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
-<bean id="commentFeedReaderTarget" class="nz.co.searchwellington.feeds.CommentFeedReader">
-	<constructor-arg ref="resourceDAO" />
-	<constructor-arg ref="commentFeedService" />
-</bean>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="commentFeedReaderTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
 
+	<bean id="commentFeedReaderTarget" class="nz.co.searchwellington.feeds.CommentFeedReader">
+		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="commentFeedService" />
+		<constructor-arg ref="contentUpdateService" />
+	</bean>
 
 	<bean name="commentFeedReaderJob" class="nz.co.searchwellington.jobs.CommentFeedReaderJob">
 		<constructor-arg ref="commentFeedReader" />
@@ -348,7 +349,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	
-	<bean id="contentUpdateService"  class="nz.co.searchwellington.controllers.ContentUpdateService">
+	<bean id="contentUpdateService"  class="nz.co.searchwellington.modification.ContentUpdateService">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="suggestionDAO" />	
 		<constructor-arg ref="linkCheckerQueue" />		

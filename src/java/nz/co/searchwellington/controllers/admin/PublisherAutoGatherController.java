@@ -8,35 +8,38 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.BaseMultiActionController;
-import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-public class PublisherAutoGatherController extends BaseMultiActionController {
+public class PublisherAutoGatherController extends MultiActionController {
 
     static Logger log = Logger.getLogger(PublisherAutoGatherController.class);
     
     private AdminRequestFilter requestFilter;
     private TagDAO tagDAO;
     private ResourceRepository resourceDAO;
+    private ContentUpdateService contentUpdateService;
+
     
-	public PublisherAutoGatherController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, TagDAO tagDAO) {      
-		this.resourceDAO = resourceDAO;        
-        this.requestFilter = requestFilter;       
-        this.urlStack = urlStack;
-        this.tagDAO = tagDAO;
+    public PublisherAutoGatherController(AdminRequestFilter requestFilter,
+			TagDAO tagDAO, ResourceRepository resourceDAO,
+			ContentUpdateService contentUpdateService) {
+		this.requestFilter = requestFilter;
+		this.tagDAO = tagDAO;
+		this.resourceDAO = resourceDAO;
+		this.contentUpdateService = contentUpdateService;
 	}
 
-
-	
-    public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
+    
+	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         
         mv.setViewName("autoGatherPrompt");       
@@ -58,8 +61,6 @@ public class PublisherAutoGatherController extends BaseMultiActionController {
         }
         return mv;
     }
-
-
 
 
 	public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {        
@@ -84,7 +85,7 @@ public class PublisherAutoGatherController extends BaseMultiActionController {
                 if (resource.getType().equals("N")) {
                 	log.info("Applying publisher " + publisher.getName() + " to:" + resource.getName());
                 	((Newsitem) resource).setPublisher(publisher);
-                	resourceDAO.saveResource(resource);
+                	contentUpdateService.update(resource, false);
                 	resourcesAutoTagged.add(resource);
                 }
             }

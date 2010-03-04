@@ -476,13 +476,12 @@
 		</property>
 	</bean>
 	
-	
-	
+		
 	<bean id="autoGatherController" class="nz.co.searchwellington.controllers.admin.PublisherAutoGatherController">
-		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="adminRequestFilter" />	
-		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="tagDAO" />		
+		<constructor-arg ref="resourceDAO" />		
+		<constructor-arg ref="contentUpdateService" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -496,7 +495,6 @@
 		</property>
 	</bean>
 	
-
 	
 	<bean id="autoTagController" class="nz.co.searchwellington.controllers.admin.AutoTagController">
 		<constructor-arg ref="resourceDAO" />		

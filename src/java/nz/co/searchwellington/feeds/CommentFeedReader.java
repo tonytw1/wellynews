@@ -7,6 +7,7 @@ import java.util.List;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
+import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
@@ -19,23 +20,26 @@ public class CommentFeedReader {
     
     private static final int MAX_COMMENT_FEEDS_TO_LOAD = 30;
 
-    Logger log = Logger.getLogger(CommentFeedReader.class);
+    static Logger log = Logger.getLogger(CommentFeedReader.class);
     
     private ResourceRepository resourceDAO;   
     private CommentFeedService commentFeedService;
+    private ContentUpdateService contentUpdateService;
     
     
     public CommentFeedReader() {        
     }
     
-    
-    public CommentFeedReader(ResourceRepository resourceDAO, CommentFeedService commentFeedService) {    
-        this.resourceDAO = resourceDAO;        
-        this.commentFeedService = commentFeedService;
-    }
+    public CommentFeedReader(ResourceRepository resourceDAO,
+			CommentFeedService commentFeedService,
+			ContentUpdateService contentUpdateService) {
+		this.resourceDAO = resourceDAO;
+		this.commentFeedService = commentFeedService;
+		this.contentUpdateService = contentUpdateService;
+	}
 
-     
-    @Transactional
+    
+	@Transactional
     public void loadComments() throws FeedException, IOException {      
         log.info("Starting loading Comments.");      
         List<CommentFeed> commentFeedsToRead = resourceDAO.getCommentFeedsToCheck(MAX_COMMENT_FEEDS_TO_LOAD);      
@@ -78,7 +82,7 @@ public class CommentFeedReader {
         commentFeed.getComments().addAll(loadedComments);
         commentFeed.setLastRead(Calendar.getInstance().getTime());
         if (commentFeed.getNewsitem() != null) {
-        	resourceDAO.saveResource(commentFeed.getNewsitem());
+        	contentUpdateService.update(commentFeed.getNewsitem(), false);
         }        
     }
     

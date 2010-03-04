@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import nz.co.searchwellington.linkchecking.LinkCheckerProcessor;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.utils.HttpFetchResult;

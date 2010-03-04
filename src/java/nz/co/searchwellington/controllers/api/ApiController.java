@@ -6,7 +6,6 @@ import java.io.UnsupportedEncodingException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.ContentUpdateService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
@@ -17,6 +16,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -137,7 +137,7 @@ public class ApiController extends MultiActionController {
          		Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
          		if (resource != null) {
          			log.info("Changed url of resource '" + resource.getName() + " from '" + resourceUrl + "'to resource: " + resource.getUrl());
-         			resourceDAO.saveResource(resource);
+         			contentUpdateService.update(resource, true);
          			mv.setViewName("apiResponseOK");
          			return mv;
          			
@@ -189,7 +189,7 @@ public class ApiController extends MultiActionController {
         		if (resource != null) {
         			resource.addTag(tag);
         			log.info("Applied tag: " + tag.getDisplayName() + " to resource: " + resource.getName());
-        			resourceDAO.saveResource(resource);
+        			contentUpdateService.update(resource, false);
         			mv.setViewName("apiResponseOK");
         			return mv;
         			
