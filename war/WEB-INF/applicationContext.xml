@@ -60,11 +60,13 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="suggestionDAO" />
 	</bean>
 
+	<bean id="tagModificationService" class="nz.co.searchwellington.modification.TagModificationService">
+		<constructor-arg ref="tagDAO" />	
+		<constructor-arg ref="resourceDAO" />	
+		<constructor-arg ref="contentUpdateService" />	
+	</bean>
 
-
-
-
-<bean id="commentFeedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+	<bean id="commentFeedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 	<property name="transactionManager" ref="transactionManager" />
 	<property name="target" ref="commentFeedReaderTarget" />
 	<property name="transactionAttributeSource">

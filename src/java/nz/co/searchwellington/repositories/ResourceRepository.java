@@ -26,7 +26,6 @@ public interface ResourceRepository {
     public Resource loadResourceByUrl(String url);    
     public void deleteResource(Resource resource);
         
-    public Tag createNewTag();
     public Website createNewWebsite();
     public Newsitem createNewNewsitem();
     public Feed createNewFeed();

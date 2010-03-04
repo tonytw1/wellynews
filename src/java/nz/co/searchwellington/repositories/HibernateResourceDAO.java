@@ -53,12 +53,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
        
     }
     
-    
-    @Override
-	public Tag createNewTag() {
-		return tagDAO.createNewTag();
-	}
-
     // TODO hup to CRS
 	public List<String> getPublisherNamesByStartingLetters(String q) {
          Session session = sessionFactory.getCurrentSession();

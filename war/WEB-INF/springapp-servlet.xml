@@ -423,11 +423,11 @@
 	
 	
 	<bean id="tagEditControllerTarget" class="nz.co.searchwellington.controllers.admin.TagEditController">
-		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="tagDAO" />
+		<constructor-arg ref="tagModificationService" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

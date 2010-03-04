@@ -2,16 +2,14 @@ package nz.co.searchwellington.controllers.admin;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.modification.TagModificationService;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -26,24 +24,22 @@ public class TagEditController extends MultiActionController {
     Logger log = Logger.getLogger(TagEditController.class);
 
 
-    private ResourceRepository resourceDAO;
     private AdminRequestFilter requestFilter;
     private TagWidgetFactory tagWidgetFactory;
     private UrlStack urlStack;
     private TagDAO tagDAO;
-
+    private TagModificationService tagModifcationService;
     
     public TagEditController() {       
     }
 
 
-    public TagEditController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack, TagDAO tagDAO) {
-        this.resourceDAO = resourceDAO;
+    public TagEditController(AdminRequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack, TagDAO tagDAO, TagModificationService tagModifcationService) {
         this.requestFilter = requestFilter;
         this.tagWidgetFactory = tagWidgetFactory;
         this.urlStack = urlStack;
         this.tagDAO = tagDAO;
-        
+        this.tagModifcationService = tagModifcationService;      
     }
     
     
@@ -53,7 +49,7 @@ public class TagEditController extends MultiActionController {
         modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());
         modelAndView.addObject("heading", "Submitting a Tag");
 
-        Tag editTag = resourceDAO.createNewTag();
+        Tag editTag = tagDAO.createNewTag();
 
         modelAndView.addObject("tag", editTag);
         modelAndView.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent(), new HashSet<Tag>()).toString());
@@ -93,29 +89,14 @@ public class TagEditController extends MultiActionController {
            
         if (request.getAttribute("tag") != null) {
             tag = (Tag) request.getAttribute("tag");         
-            mv.addObject("tag", tag);
-            
-            List<Resource> taggedResources = resourceDAO.getResourcesWithTag(tag);
-            log.info("Tag to be deleted has " + taggedResources.size() + " resources.");
-            for (Resource resource : taggedResources) {            	
-            	log.info("Removing tag from: " + resource.getName());
-                resource.getRemoveTag(tag);
-                resourceDAO.saveResource(resource);
-            }
-                    
-            if (tag.getParent() != null) {
-                tag.getParent().getChildren().remove(tag);
-            }
-            log.info("Deleting tag " + tag.getName());
-            tagDAO.deleteTag(tag);
-            
+            mv.addObject("tag", tag);            
+            tagModifcationService.deleteTag(tag);            
             urlStack.setUrlStack(request, "/index");
         }              
         return mv;
     }
     
     
-
     @Transactional(propagation=Propagation.REQUIRED)
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
         
@@ -130,7 +111,7 @@ public class TagEditController extends MultiActionController {
             log.info("Found tag " + editTag.getName() + " on request.");
         } else {
             log.info("No tag seen on request; creating a new instance.");
-            editTag = resourceDAO.createNewTag();
+            editTag = tagDAO.createNewTag();
         }
         
         editTag.setName(request.getParameter("name"));
@@ -149,20 +130,22 @@ public class TagEditController extends MultiActionController {
         readImageFieldFromRequest(editTag, request);
              
         final Tag parentTag = (Tag) request.getAttribute("parent_tag");      
-        if (parentTag != null) {
-            final boolean newParentIsOneOfOurChildren = editTag.getChildren().contains(parentTag);
-            if (!newParentIsOneOfOurChildren) {
-                log.info("Setting parent tag to: " + parentTag.getName()); 
-                editTag.setParent(parentTag);
-            } else {
-                log.warn("Not setting parent to one of our current children; this would be a circular reference");
-            }
-        } else {
-            log.info("Making top level tag; setting parent to null.");
-            editTag.setParent(null);
+        if (parentTag != null) {        	
+        	
+        	boolean parentTagHasChanged = parentTag != editTag.getParent();
+        	if (parentTagHasChanged) {
+        		final boolean newParentIsOneOfOurChildren = editTag.getChildren().contains(parentTag);
+        		if (!newParentIsOneOfOurChildren) {
+        			tagModifcationService.updateTagParent(editTag, parentTag);        			
+        		} else {
+        			log.warn("Not setting parent to one of our current children; this would be a circular reference");
+        		}
+        	} else {
+        		log.info("Making top level tag; setting parent to null.");
+        		editTag.setParent(null);
+        	}
         }
-        
-        
+       
         // TODO validate.
         tagDAO.saveTag(editTag);
         
