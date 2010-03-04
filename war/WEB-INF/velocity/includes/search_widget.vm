@@ -4,9 +4,8 @@
  		#if ($search_keywords) value="$search_keywords" #end />
 
 		<input type="submit" value="Search" />
-		<br />
 		#if ($tag && $tags.size() == 1 && !$publisher)
-	   		<input type="checkbox" name="tag" value="$tag.name" CHECKED>Just $tag.displayName	   		
+	   		<input type="checkbox" name="tag" value="$tag.name">Just $tag.displayName	   		
    		#end
    		   		
    	<!--

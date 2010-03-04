@@ -147,7 +147,7 @@
 					<li>Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a></li>
 				#end
 				
-				#if ($item.type == "N" && $item.reTwits.size() > 0)
+				#if ($item.type == "N" && $item.reTwits && $item.reTwits.size() > 0)
 					<ul>
 					#foreach ($twit in $item.reTwits) 
 						#parse("includes/twittermessage.vm")

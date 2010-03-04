@@ -25,9 +25,12 @@ public class SolrResourceHydrator {
 	}
 
 	public Resource hydrateResource(SolrDocument result) {
-		final Integer resourceId = (Integer) result.getFieldValue("id");				
-		if (result.getFieldValue("type").equals("N")) {
-			log.info("Solr hydrating newsitem");
+		final Integer resourceId = (Integer) result.getFieldValue("id");
+		
+		boolean solrHydrate = false;
+
+		if (result.getFieldValue("type").equals("N") && solrHydrate) {
+			log.debug("Solr hydrating newsitem");
 			
 			Resource item = new SolrHydratedNewsitemImpl((String) result.getFieldValue("publisherName"));
 			item.setName((String) result.getFieldValue("title"));
@@ -43,7 +46,7 @@ public class SolrResourceHydrator {
 		if (resource == null) {
 			log.warn("Resource #" + resourceId + " was null onload from database");
 		}
-		return resource;		
+		return resource;
 	}
 
 	private void hydrateTags(SolrDocument result, Resource item) {
@@ -51,8 +54,7 @@ public class SolrResourceHydrator {
 		if (tagIds != null){
 			for (Object tagId : tagIds) {
 				Tag tag = tagDAO.loadTagById((Integer) tagId);
-				if (tag != null) {
-					log.info(tag.getName());
+				if (tag != null) {					
 					item.addTag(tag);
 				}
 			}
