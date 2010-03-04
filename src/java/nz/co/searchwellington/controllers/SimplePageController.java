@@ -90,8 +90,18 @@ public class SimplePageController extends BaseMultiActionController {
     }
 
     
-    
-    
+    public ModelAndView rssfeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        ModelAndView mv = new ModelAndView();
+        urlStack.setUrlStack(request);
+        populateCommonLocal(mv);
+           
+        mv.addObject("heading", "RSS feeds");
+        
+        populateSecondaryLatestNewsitems(mv);        
+        mv.setViewName("rssfeeds");
+        return mv;      
+    }
+        
     public ModelAndView broken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);

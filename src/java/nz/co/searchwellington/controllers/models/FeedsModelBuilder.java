@@ -36,7 +36,7 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 			mv.addObject("link", "TODO");	// TODO
 			
 			mv.addObject("main_content", contentRetrievalService.getAllFeeds());
-			mv.setViewName("rssfeeds");
+			mv.setViewName("feeds");
 			return mv;
 		}
 		return null;

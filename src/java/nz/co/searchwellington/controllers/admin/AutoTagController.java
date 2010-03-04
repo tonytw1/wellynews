@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
+import nz.co.searchwellington.controllers.ContentUpdateService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -22,33 +23,34 @@ public class AutoTagController extends BaseMultiActionController {
 
     Logger log = Logger.getLogger(AutoTagController.class);
     
+    private ResourceRepository resourceDAO;
     private AdminRequestFilter requestFilter;
     private ImpliedTagService autoTagService;
 	private KeywordSearchService keywordSearchService;
+	private ContentUpdateService contentUpateService;
 	private TagDAO tagDAO;
-	private ResourceRepository resourceDAO;
     
-	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO) {      
+	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
         this.urlStack = urlStack;
         this.autoTagService = autoTagService;
         this.keywordSearchService = keywordSearchService;
         this.tagDAO = tagDAO;
+        this.contentUpateService = contentUpateService;
 	}
 
 
-	@SuppressWarnings("unchecked")
-    public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
+	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();        
         mv.setViewName("autoTagPrompt");
         
-        mv.getModel().put("top_level_tags", tagDAO.getTopLevelTags());
-        mv.getModel().put("heading", "Autotagging");
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+        mv.addObject("heading", "Autotagging");
         
         requestFilter.loadAttributesOntoRequest(request);
         Tag tag = (Tag) request.getAttribute("tag");
-        mv.getModel().put("tag", tag);
+        mv.addObject("tag", tag);
         if (tag != null) {            
         	List<Resource> resourcesToAutoTag = new ArrayList<Resource>();      
             for (Resource resource : getPossibleAutotagResources(tag)) {
@@ -84,7 +86,7 @@ public class AutoTagController extends BaseMultiActionController {
                 if (!autoTagService.alreadyHasTag(resource, editTag)) {
                 	resource.addTag(editTag);
                 }
-                resourceDAO.saveResource(resource);
+                contentUpateService.update(resource, false);
                 resourcesAutoTagged.add(resource);
             }        
             mv.addObject("resources_to_tag", resourcesAutoTagged);
@@ -98,6 +100,5 @@ public class AutoTagController extends BaseMultiActionController {
     	resources.addAll(keywordSearchService.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true, null));
     	return resources;    	
 	}
-    
-    
+        
 }

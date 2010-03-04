@@ -1,52 +1,51 @@
 #parse("includes/header.vm")
 
-
 <div class="page">
 #parse("includes/topbar.vm")
+
+
 
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
 
 
+
+
+
 <div class="main">
+
 <h2>$heading</h2>
 
-
-<ul>
-#set($letter = "")
-#foreach ($feed in $main_content) 
-	#set($current = $feed.name.substring(0, 1).toUpperCase())
-	#if ($current != $letter)
-		#set($letter = $current)		
-		</ul>
-		<h4>$current.toUpperCase()</h4>
-		<ul>
-	#end
-	<li><a href="$urlBuilder.getFeedUrl($feed)">$feed.name</a></li>
-#end
-</ul>
-
-
 </div>
+
+
+
+
+
+
+
+
+
+
+
 
 <div class="right">
 
 #parse("includes/login.vm")
 
+
+
 <div class="box">
-#parse("includes/righthand_content.vm")
+#parse("includes/latest_newsitems.vm")
+
+<br clear="all"/>
+
 </div>
-
-#parse("includes/suggestions.vm")
-
-#parse("includes/discovered_feeds.vm")
-
 
 
 </div>
 
 </div>
-
 
 #parse("includes/footer.vm")
