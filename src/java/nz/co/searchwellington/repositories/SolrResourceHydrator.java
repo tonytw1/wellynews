@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 
-import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.SolrHydratedNewsitemImpl;
 import nz.co.searchwellington.model.Tag;
 
 import org.apache.log4j.Logger;
@@ -29,7 +29,7 @@ public class SolrResourceHydrator {
 		if (result.getFieldValue("type").equals("N")) {
 			log.info("Solr hydrating newsitem");
 			
-			Resource item = new NewsitemImpl();
+			Resource item = new SolrHydratedNewsitemImpl((String) result.getFieldValue("publisherName"));
 			item.setName((String) result.getFieldValue("title"));
 			item.setDescription((String) result.getFieldValue("description"));
 			item.setUrl((String) result.getFieldValue("url"));

@@ -4,7 +4,8 @@
 	
 	<bean id="linkCheckerTarget" class="nz.co.searchwellington.controllers.LinkChecker" >
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="snapshotDAO" />	
+		<constructor-arg ref="snapshotDAO" />
+		<constructor-arg ref="contentUpdateService" />
 		<constructor-arg ref="httpFetcher" />
 		<constructor-arg>
 			<list>

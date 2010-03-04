@@ -23,7 +23,8 @@ public class LinkChecker {
        
     private ResourceRepository resourceDAO;
 	private SnapshotDAO snapshotDAO;
-	private HttpFetcher httpFetcher;    
+	private ContentUpdateService contentUpdateService;
+	private HttpFetcher httpFetcher;
     private LinkCheckerProcessor[] processers;
 
 	
@@ -31,9 +32,10 @@ public class LinkChecker {
     }
 	
 	
-	public LinkChecker(ResourceRepository resourceDAO, SnapshotDAO snapshotDAO, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
+	public LinkChecker(ResourceRepository resourceDAO, SnapshotDAO snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
 		this.resourceDAO = resourceDAO;
 		this.snapshotDAO = snapshotDAO;
+		this.contentUpdateService = contentUpdateService;
 		this.httpFetcher = httpFetcher;
 		this.processers = processers;
 	}
@@ -58,7 +60,7 @@ public class LinkChecker {
 			log.debug("Saving resource and updating snapshot");
 			checkResource.setLastScanned(new DateTime().toDate());
 			snapshotDAO.setSnapshotContentForUrl(checkResource.getUrl(), pageContent);
-			resourceDAO.saveResource(checkResource);
+			contentUpdateService.update(checkResource, false);
 			
         } else {
         	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database");
