@@ -4,9 +4,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
@@ -35,11 +37,11 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 			Date month = getArchiveDateFromPath(request.getPathInfo());
 			if (month != null) {
 	            log.info("Archive month is: " + month);
+	            final String monthLabel = new DateFormatter().formatDate(month, DateFormatter.MONTH_YEAR_FORMAT);
 	            
 				ModelAndView mv = new ModelAndView();				
-				mv.addObject("heading", "ARCHIVE");	// TODO month name        		
-				mv.addObject("description", "Archived newsitems for the month of TODO"); // TODO
-				
+				mv.addObject("heading", monthLabel);				
+				mv.addObject("description", "Archived newsitems for the month of " + monthLabel);				
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsForMonth(month));
 				mv.setViewName("archivePage");
 				return mv;
@@ -49,13 +51,38 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 	}
 
 	
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		Date month = getArchiveDateFromPath(request.getPathInfo());
+        List<ArchiveLink> archiveLinks = contentRetrievalService.getArchiveMonths();
+		populateNextAndPreviousLinks(mv, month, archiveLinks);
+		populateArchiveLinks(mv, archiveLinks);
 	}
 	
 	
+	// TODO almost certainly duplicated
+	private void populateArchiveLinks(ModelAndView mv, List<ArchiveLink> archiveMonths) {                        
+        final int MAX_BACK_ISSUES = 6;
+        if (archiveMonths.size() <= MAX_BACK_ISSUES) {
+            mv.addObject("archive_links", archiveMonths);
+        } else {
+        	
+            mv.addObject("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
+        }        
+        populateArchiveStatistics(mv);
+    }
 	
-
-    @SuppressWarnings("unchecked")
+	
+	// TODO duplicated with index model builder
+    private void populateArchiveStatistics(ModelAndView mv) {
+		Map<String, Integer> archiveStatistics = contentRetrievalService.getArchiveStatistics();
+		if (archiveStatistics != null) {
+			mv.addObject("site_count",  archiveStatistics.get("W"));
+			mv.addObject("newsitem_count",  archiveStatistics.get("N"));
+			mv.addObject("feed_count", archiveStatistics.get("F"));
+		}
+	}
+	
+	
     private void populateNextAndPreviousLinks(ModelAndView mv, Date month, List<ArchiveLink> archiveLinks) {
         ArchiveLink selected = null;
         for (ArchiveLink link : archiveLinks) {            
@@ -65,24 +92,20 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
         }
         
         if (selected != null) {
-            // TODO push selected onto the model.            
             final int indexOf = archiveLinks.indexOf(selected);                
             if (indexOf < archiveLinks.size()-1) {
                 ArchiveLink previous = archiveLinks.get(indexOf+1);
-                mv.getModel().put("next_page", previous);
-    //            mv.getModel().put("main_content_moreurl", urlBuilder.getArchiveLinkUrl(previous));
+                mv.addObject("next_page", previous);                
             }
             if (indexOf > 0) {
                 ArchiveLink next = archiveLinks.get(indexOf-1);
-                mv.getModel().put("previous_page", next);
+                mv.addObject("previous_page", next);
             }                
         }
     }
     
-	
-	
-	// TODO duplicated from RequestFilter
-	private Date getArchiveDateFromPath(String path) {
+
+    private Date getArchiveDateFromPath(String path) {
 		// TODO this method can probably be written in alot less lines, with regexs and a matches check.
 		if (path.startsWith("/archive/")) {
 			String[] fields = path.split("/");
