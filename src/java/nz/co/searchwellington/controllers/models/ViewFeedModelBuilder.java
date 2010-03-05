@@ -68,7 +68,7 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 	public void populateSecondaryFeeds(ModelAndView mv) {      
         mv.addObject("righthand_heading", "Local Feeds");                
         mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
-        final List<Resource> allFeeds = contentRetrievalService.getAllFeeds();
+        final List<Resource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();
         if (allFeeds.size() > 0) {
             mv.addObject("righthand_content", allFeeds);       
         }

@@ -144,6 +144,10 @@ public class ContentRetrievalService {
 		return solrContentRetrievalService.getAllFeeds(showBrokenDecisionService.shouldShowBroken());
 	}
 
+	public List<Resource> getAllFeedsOrderByLatestItemDate() {
+		return solrContentRetrievalService.getAllFeedsOrderByLatestItemDate(showBrokenDecisionService.shouldShowBroken());
+	}
+	
 	public List<Resource> getPublisherFeeds(Website publisher) {
 		return solrContentRetrievalService.getPublisherFeeds(publisher, showBrokenDecisionService.shouldShowBroken());
 	}

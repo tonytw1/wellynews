@@ -62,9 +62,14 @@ public class SolrBackedResourceDAO {
 		this.solrUrl = solrUrl;
 	}
 	
-	public List<Resource> getAllFeeds(boolean showBroken) {
+	public List<Resource> getAllFeeds(boolean showBroken, boolean orderByLatestItemDate) {
 		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(showBroken).maxItems(500).toQuery();
-		setTitleSortOrder(query);
+		
+		if (orderByLatestItemDate) {
+			setFeedLatestItemOrder(query);
+		} else {
+			setTitleSortOrder(query);
+		}
     	return getQueryResults(query);
 	}
 
@@ -543,6 +548,10 @@ public class SolrBackedResourceDAO {
 
 	private void setTitleSortOrder(SolrQuery query) {
 		query.setSortField("titleSort", ORDER.asc);
+	}
+	
+	private void setFeedLatestItemOrder(SolrQuery query) {
+		query.setSortField("feedLatestItemDate", ORDER.desc);
 	}
 
 }

@@ -20,7 +20,11 @@ public class SolrContentRetrievalService {
 	}
 	
 	public List<Resource> getAllFeeds(boolean shouldShowBroken) {
-		return solrResourceDAO.getAllFeeds(shouldShowBroken);
+		return solrResourceDAO.getAllFeeds(shouldShowBroken, false);
+	}
+	
+	public List<Resource> getAllFeedsOrderByLatestItemDate(boolean shouldShowBroken) {
+		return solrResourceDAO.getAllFeeds(shouldShowBroken, true);
 	}
 
 	public List<Resource> getAllWatchlists(boolean shouldShowBroken) {

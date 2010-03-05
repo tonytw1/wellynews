@@ -1,7 +1,10 @@
  package nz.co.searchwellington.controllers.models;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 
@@ -44,7 +47,19 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		populateSecondaryFeeds(mv);
 		mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6));
 	}
+	
+	
+	// TODO duplication with BaseM'E'C
+	public void populateSecondaryFeeds(ModelAndView mv) {      
+        mv.addObject("righthand_heading", "Local Feeds");                
+        mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
+        final List<Resource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();
+        if (allFeeds.size() > 0) {
+            mv.addObject("righthand_content", allFeeds);       
+        }
+    }
       
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Comment;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -21,6 +22,7 @@ public class SolrInputDocumentBuilder {
 	
 	private SnapshotBodyExtractor snapshotBodyExtractor;
 	private TaggingReturnsOfficerService taggingReturnsService;
+
 	
 	
 	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor, TaggingReturnsOfficerService taggingReturnsService) {
@@ -64,6 +66,13 @@ public class SolrInputDocumentBuilder {
 			
 			inputDocument.addField("twitterCount", newsitem.getReTwits().size());			
 		}
+		
+		
+		if (resource.getType().equals("F")) {
+			inputDocument.addField("feedLatestItemDate", ((Feed) resource).getLatestItemDate());			
+		}
+		
+		
 		
 		if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
 			inputDocument.addField("geotagged", true);
