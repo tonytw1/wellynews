@@ -3,6 +3,7 @@
 
 <beans>
 
+
 	<bean id="simplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
@@ -367,7 +368,8 @@
 		<constructor-arg ref="snapshotBodyExtractor" />
 		<constructor-arg ref="anonUserService" />
 		<constructor-arg ref="contentRetrievalService" />
-		
+		<constructor-arg ref="taggingReturnsOfficerService" />
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -383,7 +385,9 @@
 						
 						<prop key="/edit/accept">accept</prop>
 						<prop key="/edit/twitteraccept">twitteraccept</prop>
-							<prop key="/edit/viewsnapshot">viewSnapshot</prop>		
+						
+						<prop key="/edit/viewsnapshot">viewSnapshot</prop>	
+						<prop key="/edit/tagging">tagging</prop>
 					</props>
 				</property>
 			</bean>		
@@ -637,6 +641,7 @@
 				<prop key="/edit/twitteraccept">editController</prop>
 			
 				<prop key="/edit/viewsnapshot">editController</prop>
+				<prop key="/edit/tagging">editController</prop>
 				
 				<prop key="/tagging/tag">publicTaggingController</prop>
 				<prop key="/tagging/save">publicTaggingController</prop>

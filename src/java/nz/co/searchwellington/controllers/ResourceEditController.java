@@ -34,7 +34,7 @@ import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
-
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -61,13 +61,14 @@ public class ResourceEditController extends BaseMultiActionController {
     private SnapshotBodyExtractor snapBodyExtractor;
     private AnonUserService anonUserService;
     private ResourceRepository resourceDAO;
+	private TaggingReturnsOfficerService taggingReturnsOfficerService;
     
     public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService) {       
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService) {       
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;
@@ -86,6 +87,7 @@ public class ResourceEditController extends BaseMultiActionController {
         this.snapBodyExtractor = snapBodyExtractor;
         this.anonUserService = anonUserService;
         this.contentRetrievalService = contentRetrievalService;
+        this.taggingReturnsOfficerService = taggingReturnsOfficerService;
     }
    
     
@@ -116,6 +118,27 @@ public class ResourceEditController extends BaseMultiActionController {
        
     	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   	
     }
+    
+    
+    
+    @Transactional
+    public ModelAndView tagging(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
+    	adminRequestFilter.loadAttributesOntoRequest(request);    	
+    	
+    	Resource editResource = (Resource) request.getAttribute("resource");    	
+    	if (request.getAttribute("resource") != null) {    		
+    		ModelAndView mv = new ModelAndView("taggingVotes");
+    		populateCommonLocal(mv);
+    		mv.addObject("heading", "Tagging votes");
+    		
+            mv.addObject("resource", editResource);
+            mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(editResource));      
+            return mv;
+        }
+       
+    	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   	
+    }
+    
     
     
     

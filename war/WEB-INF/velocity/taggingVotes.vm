@@ -1,0 +1,29 @@
+#parse("includes/header.vm")
+
+<div class="page">
+	#parse("includes/topbar.vm")
+
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
+
+	<div class="main">
+		<h2>Tagging Votes</h2>
+		
+		<p>$resource.name</p>
+			
+		<ul>
+		#foreach($vote in $votes)
+			<li>
+				<ul>
+					<li>$vote.tag.name</li>
+					<li>$vote.voter.name</li>
+				</ul>
+		#end
+		</ul>
+		
+	</div>	
+
+</div>
+
+#parse("includes/footer.vm")

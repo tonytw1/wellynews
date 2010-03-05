@@ -50,7 +50,7 @@ public class TaggingReturnsOfficerService {
 		            
 		            votes.add(new TaggingVote(publisherTag, new PublishersTagsVoter(), 100));		            		     		            
 		            for (Tag publishersAncestor : publisherTag.getAncestors()) {
-		    				votes.add(new TaggingVote(publishersAncestor, new AncestorTagVoter(), 100));
+		    				votes.add(new TaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter(), 100));
 		            }
 		        }
 		    }
