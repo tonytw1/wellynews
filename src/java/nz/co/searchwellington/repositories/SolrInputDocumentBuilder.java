@@ -1,8 +1,6 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
@@ -12,6 +10,7 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
@@ -21,10 +20,12 @@ public class SolrInputDocumentBuilder {
 	Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
 	
 	private SnapshotBodyExtractor snapshotBodyExtractor;
+	private TaggingReturnsOfficerService taggingReturnsService;
 	
 	
-	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor) {
+	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor, TaggingReturnsOfficerService taggingReturnsService) {
 		this.snapshotBodyExtractor = snapshotBodyExtractor;
+		this.taggingReturnsService = taggingReturnsService;
 	}
 
 
@@ -70,7 +71,7 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("geotagged", false);
 		}
 		
-		for(Tag tag: getIndexTagsForResource(resource)) {
+		for(Tag tag: taggingReturnsService.getIndexTagsForResource(resource)) {
 			inputDocument.addField("tags", tag.getId());
 		}
 				
@@ -99,30 +100,6 @@ public class SolrInputDocumentBuilder {
 	}
 
 	
-	private Set<Tag> getIndexTagsForResource(Resource resource) {	
-		Set <Tag> indexTags = new HashSet<Tag>();
-		indexTags.addAll(resource.getTags());
-		
-		final boolean shouldAppearOnPublisherAndParentTagPages = 
-		    resource.getType().equals("L") || resource.getType().equals("N")
-		    || resource.getType().equals("C") || resource.getType().equals("F");
-				
-		if (shouldAppearOnPublisherAndParentTagPages) {            
-		    Set <Tag> existingTags = new HashSet<Tag>(indexTags);
-		    for (Tag tag : existingTags) {
-		        indexTags.addAll(tag.getAncestors());
-		    }
-		    
-		    if (((PublishedResource) resource).getPublisher() != null) {              
-		        for (Tag publisherTag : ((PublishedResource) resource).getPublisher().getTags()) {                
-		            log.debug("Adding publisher tag " + publisherTag.getName() + " to record.");
-		            indexTags.add(publisherTag);
-		            indexTags.addAll(publisherTag.getAncestors());
-		        }
-		    }
-		}
-		
-		return indexTags;
-	}
+	
 
 }
