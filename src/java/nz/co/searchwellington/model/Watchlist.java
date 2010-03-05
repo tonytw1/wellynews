@@ -2,10 +2,6 @@ package nz.co.searchwellington.model;
 
 import java.util.Set;
 
-import nz.co.searchwellington.dates.DateFormatter;
-
-import com.sun.syndication.feed.synd.SyndEntry;
-
 
 public class Watchlist extends PublishedResourceImpl {
     

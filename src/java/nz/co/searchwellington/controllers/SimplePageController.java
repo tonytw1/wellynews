@@ -21,25 +21,24 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class SimplePageController extends BaseMultiActionController {
     
-    private static final int MAX_TWITTERS_TO_SHOW = 12;
-
 	Logger log = Logger.getLogger(SimplePageController.class);
-    
-    
+        
     private SiteInformation siteInformation;
 	private DiscoveredFeedRepository discoveredFeedRepository;
 	private TagDAO tagDAO;
-    
+	private RssUrlBuilder rssUrlBuilder;
+	
     
     public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, 
     		SiteInformation siteInformation, DiscoveredFeedRepository discoveredFeedRepository, 
-    		ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
+    		ContentRetrievalService contentRetrievalService, TagDAO tagDAO, RssUrlBuilder rssUrlBuilder) {
         this.urlStack = urlStack;
         this.configDAO = configDAO;
         this.siteInformation = siteInformation;        
         this.discoveredFeedRepository = discoveredFeedRepository;      
         this.contentRetrievalService = contentRetrievalService;
         this.tagDAO = tagDAO;
+        this.rssUrlBuilder = rssUrlBuilder;
     }
     
        
@@ -96,11 +95,20 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
            
         mv.addObject("heading", "RSS feeds");
-        
+        setRss(mv, rssUrlBuilder.getBaseRssTitke(), rssUrlBuilder.getBaseRssUrl());
+
+        mv.addObject("feedable_tags", contentRetrievalService.getTopLevelTags());
+		
         populateSecondaryLatestNewsitems(mv);        
         mv.setViewName("rssfeeds");
         return mv;      
     }
+    
+    // TODO duplicated from AMB
+    protected void setRss(ModelAndView mv, String title, String url) {
+		mv.addObject("rss_title", title);
+		mv.addObject("rss_url", url);
+	}
         
     public ModelAndView broken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
@@ -172,7 +180,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateLatestTwitters(mv);        
         populateSecondaryLatestNewsitems(mv);
         
-        mv.addObject("main_content", contentRetrievalService.getRecentedTwitteredNewsitems(MAX_NEWSITEMS));
+        mv.addObject("main_content", contentRetrievalService.getRecentedTwitteredNewsitems());
         
         populateCommonLocal(mv);
         mv.setViewName("twitter");
@@ -180,7 +188,7 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
     private void populateLatestTwitters(ModelAndView mv) {       
-        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems(MAX_TWITTERS_TO_SHOW));  
+        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems());  
     }
     
 }

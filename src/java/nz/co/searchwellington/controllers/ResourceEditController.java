@@ -202,9 +202,7 @@ public class ResourceEditController extends BaseMultiActionController {
             		publisherSelectFactory.createPublisherSelectWithNoCounts(newsitem.getPublisher(), 
             		userIsLoggedIn).toString()); // TODO select still in use? should be the autocomplete field now.
             modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
-        }
-        
-        populateSecondaryFeeds(modelAndView, loggedInUser);
+        }        
         return modelAndView;
     }
 
@@ -343,9 +341,8 @@ public class ResourceEditController extends BaseMultiActionController {
         modelAndView.addObject("heading", "Resource Deleted");
         
         adminRequestFilter.loadAttributesOntoRequest(request);    
-        Resource editResource = (Resource) request.getAttribute("resource");    
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-
+        Resource editResource = (Resource) request.getAttribute("resource");
+        
 		if (editResource != null && editPermissionService.canDelete(editResource)) {
             modelAndView.addObject("resource", editResource);
             editResource = (Resource) request.getAttribute("resource");            

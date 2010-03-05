@@ -3,9 +3,6 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 import java.util.HashSet;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-
 public class SuggestionFeednewsitem extends ResourceImpl implements Resource {
 
 	private Suggestion suggestion;

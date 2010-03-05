@@ -17,6 +17,26 @@
 
 <h2>$heading</h2>
 
+<p>The Newslog is available as an <a href="http://news.bbc.co.uk/1/hi/help/3223484.stm">RSS feed</a>.</p>
+<p>To subscribe, load the following location into your feed reader:</p>
+<ul>
+	<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
+</ul>
+
+
+<p>The latest newsitems for individual tags are also available as RSS feeds. 
+Some of these feeds are shown below.</p>
+
+<ul>
+#foreach ($tag in $feedable_tags) 
+	<li>#rssIcon($rssUrlBuilder.getRssUrlForTag($tag) '') $tag.displayName - <code>$rssUrlBuilder.getRssUrlForTag($tag)</code></li>
+#end
+</ul>
+
+<p>A complete description of all other
+available feeds is provided in the <a href="/api">API instructions</a>.</p>
+
+
 </div>
 
 

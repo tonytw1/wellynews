@@ -17,6 +17,11 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
 public class ContentRetrievalService {
+	
+	
+    final protected int MAX_NEWSITEMS_TO_SHOW = 10;
+
+    
 
 	private ResourceRepository resourceDAO;
 	private SolrContentRetrievalService solrContentRetrievalService;
@@ -120,8 +125,8 @@ public class ContentRetrievalService {
 		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
 	}
 	
-	public List<Resource> getRecentedTwitteredNewsitems(int maxItems) {
-		return solrContentRetrievalService.getRecentTwitteredNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
+	public List<Resource> getRecentedTwitteredNewsitems() {
+		return solrContentRetrievalService.getRecentTwitteredNewsitems(MAX_NEWSITEMS_TO_SHOW, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getRecentedTwitteredNewsitemsForTag(int maxItems, Tag tag) {

@@ -24,6 +24,8 @@ public class PublicTaggingController extends BaseMultiActionController {
     private Notifier notifier;
 	private SubmissionProcessingService submissionProcessingService;
 	private ResourceRepository resourceDAO;
+    private AnonUserService anonUserService;
+
 
     
     public PublicTaggingController(ResourceRepository resourceDAO,           

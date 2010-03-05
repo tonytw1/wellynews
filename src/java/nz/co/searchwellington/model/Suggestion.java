@@ -2,9 +2,6 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
-
 public class Suggestion {
 	
 	protected int id;

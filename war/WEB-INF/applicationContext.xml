@@ -145,6 +145,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<entry key="columnSplitter" value-ref="columnSplitter" />
 				<entry key="chartBuilder" value-ref="chartBuilder" />
 				<entry key="urlBuilder" value-ref="urlBuilder" />
+				<entry key="rssUrlBuilder" value-ref="rssUrlBuilder" />				
 				<entry key="adminUrlBuilder" value-ref="adminUrlBuilder" />
 				<entry key="contentDeduper" value-ref="contentDeduper" />
 				<entry key="editPermissionService" value-ref="editPermissionService" />
