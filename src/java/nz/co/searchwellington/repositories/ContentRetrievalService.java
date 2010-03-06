@@ -1,11 +1,13 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.PublisherContentCount;
@@ -28,17 +30,19 @@ public class ContentRetrievalService {
 	private KeywordSearchService keywordSearchService;
 	private ShowBrokenDecisionService showBrokenDecisionService;
 	private TagDAO tagDAO;
+	private RelatedTagsService relatedTagsService;
 		
 
 	public ContentRetrievalService(ResourceRepository resourceDAO,
 			SolrContentRetrievalService solrContentRetrievalService,
 			KeywordSearchService keywordSearchService,
-			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO) {
+			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO, RelatedTagsService relatedTagsService) {
 		this.resourceDAO = resourceDAO;
 		this.solrContentRetrievalService = solrContentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
 		this.tagDAO = tagDAO;
+		this.relatedTagsService = relatedTagsService;
 	}
 
 	public List<Resource> getAllWatchlists() {
@@ -216,6 +220,14 @@ public class ContentRetrievalService {
 
 	public List<Resource> getRecentlyChangedWatchlistItems() {
 		return solrContentRetrievalService.getRecentlyChangedWatchlistItems(showBrokenDecisionService.shouldShowBroken());
+	}
+
+	public List<Tag> getFeedworthyTags() {
+		List<Tag> feedworthy = new ArrayList<Tag>();
+		for (TagContentCount tagContentCount : relatedTagsService.getFeedworthyTags(showBrokenDecisionService.shouldShowBroken())) {
+			feedworthy.add(tagContentCount.getTag());
+		}		
+		return feedworthy;
 	}
 	
 }

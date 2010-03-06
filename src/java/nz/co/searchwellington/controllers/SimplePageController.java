@@ -97,7 +97,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "RSS feeds");
         setRss(mv, rssUrlBuilder.getBaseRssTitke(), rssUrlBuilder.getBaseRssUrl());
 
-        mv.addObject("feedable_tags", contentRetrievalService.getTopLevelTags());
+        mv.addObject("feedable_tags", contentRetrievalService.getFeedworthyTags());
 		
         populateSecondaryLatestNewsitems(mv);        
         mv.setViewName("rssfeeds");

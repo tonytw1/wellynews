@@ -24,8 +24,9 @@
 </ul>
 
 
-<p>The latest newsitems for individual tags are also available as RSS feeds. 
-Some of these feeds are shown below.</p>
+<p>The latest newsitems for individual tags are also available as RSS feeds.</p>
+
+<p>Some of these feeds are shown below:</p>
 
 <ul>
 #foreach ($tag in $feedable_tags) 
@@ -58,7 +59,6 @@ available feeds is provided in the <a href="/api">API instructions</a>.</p>
 
 <div class="box">
 #parse("includes/latest_newsitems.vm")
-
 <br clear="all"/>
 
 </div>
