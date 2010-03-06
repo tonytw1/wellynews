@@ -222,7 +222,7 @@ public class ContentRetrievalService {
 		return solrContentRetrievalService.getRecentlyChangedWatchlistItems(showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<Tag> getFeedworthyTags() {
+	public List<Tag> getFeedworthyTags() {	// TODO exclude hidden tags
 		List<Tag> feedworthy = new ArrayList<Tag>();
 		for (TagContentCount tagContentCount : relatedTagsService.getFeedworthyTags(showBrokenDecisionService.shouldShowBroken())) {
 			feedworthy.add(tagContentCount.getTag());

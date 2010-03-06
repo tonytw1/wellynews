@@ -27,5 +27,7 @@ public interface User {
 	public void setBio(String bio);
 	public String getApikey();
 	public void setApikey(String apikey);
+	
+	public boolean isUnlinkedAnonAccount();
        
 }

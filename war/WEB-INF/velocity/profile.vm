@@ -23,23 +23,8 @@
 	
 	#if ($user)
 	
-	
-		#if (!$user.profilename) 
-			<p>You are signed in but have not set a profile name. Your profile name is used to identifiy you and credit your submissions.</p>
-
-			<form action="profile/save" method="POST"> 			
-				<fieldset>						
-					<label for="profilename">Choose a profilename:</label>
-					<input name="profilename" value="" />											
-					<input type="submit" value="Set profile name" />					
-				</fieldset>
-				
-				<p>Profile names may contain letters and numbers only. ie. johnsmith</p>
-								
-			</form>
+		#if ($user.isUnlinkedAnonAccount()) 
 		
-		#elseif (!$user.username)
-					
 			<p>You are using a temporary anonomous user profile to post your submissions.</p>
 			<p>Access to this profile will cease when you close your browser.</p> 
 			
@@ -57,46 +42,60 @@
 			<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a>, 
 			<a href="$site_information.url/openid/login?openid_claimed_identity=flickr.com">Flickr</a>		
 			or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> account as an OpenID.
-			
-			
-			
-		#else
-			
-			<ul>
-				<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
-			</ul>
+		
+		#else 
+		
+			#if (!$user.profilename) 
+				<p>You are signed in but have not set a profile name. Your profile name is used to identifiy you and credit your submissions.</p>
+
+				<form action="profile/save" method="POST"> 			
+					<fieldset>						
+						<label for="profilename">Choose a profilename:</label>
+						<input name="profilename" value="" />											
+						<input type="submit" value="Set profile name" />					
+					</fieldset>
 				
-			<p>Your name: 
-			#if ($user.name)
-				$user.name
+					<p>Profile names may contain letters and numbers only. ie. johnsmith</p>
+									
+				</form>
+							
 			#else
-				not set
-			#end	
-			</p>
-						
-			<p>Your blog or website: 
-			#if ($user.url)
-				<a href="$user.url">$user.url</a>
-			#else 
-				not set
-			#end	
-			</p>
 			
-			<p>Your bio: 
-			#if ($user.bio)
-				$user.bio
-			#else
-				not set
+				<ul>
+					<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
+				</ul>
+				
+				<p>Your name: 
+				#if ($user.name)
+					$user.name
+				#else
+					not set
+				#end	
+				</p>
+						
+				<p>Your blog or website: 
+				#if ($user.url)
+					<a href="$user.url">$user.url</a>
+				#else 
+					not set
+				#end	
+				</p>
+			
+				<p>Your bio: 
+				#if ($user.bio)
+					$user.bio
+				#else
+					not set
+				#end
+				</p>						
 			#end
-			</p>
 			
-						
+			#if ($user.username) 
+				<p>Your profile is linked to the OpenID: $user.username</p>
+			#end
+		
 		#end
 		
-		#if ($user.username) 
-			<p>Your profile is linked to the OpenID: $user.username</p>
-		#end
-
 				
 		<h3>Your submissions</h3>
 		

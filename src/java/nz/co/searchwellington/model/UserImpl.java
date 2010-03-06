@@ -46,7 +46,10 @@ public class UserImpl implements User {
     }
 
     
-    
+	@Override
+	public boolean isUnlinkedAnonAccount() {
+		return username == null;
+	}
 
 	public String getProfilename() {
 		return profilename;
