@@ -58,7 +58,7 @@ public class ContentUpdateService {
 	}
 	
 	
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
 	public void update(Resource resource, boolean needsLinkCheck) {
 		resourceDAO.saveResource(resource);
 		solrQueryService.updateIndexForResource(resource);

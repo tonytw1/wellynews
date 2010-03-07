@@ -41,7 +41,8 @@ public class LinkChecker {
 		this.processers = processers;
 	}
 
-
+	
+	@Transactional
     public void scanResource(int checkResourceId) {
         Resource checkResource = resourceDAO.loadResourceById(checkResourceId);         
         if (checkResource != null) {
