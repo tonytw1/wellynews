@@ -91,10 +91,6 @@ public class SolrContentRetrievalService {
 		return solrResourceDAO.getPublisherWatchlist(publisher, shouldShowBroken);
 	}
 
-	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean shouldShowBroken, boolean mustHaveNewsitems) {
-		return solrResourceDAO.getAllPublishersWithNewsitemCounts(shouldShowBroken, mustHaveNewsitems);
-	}
-
 	public List<Resource> getAllPublishers(boolean shouldShowBroken) {
 		return solrResourceDAO.getAllPublishers(shouldShowBroken, false);
 	}

@@ -354,7 +354,6 @@
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="adminRequestFilter" />	
 		<constructor-arg ref="tagWidgetFactory" />
-		<constructor-arg ref="publisherSelectFactory" />
 		<constructor-arg ref="autoTaggingService" />
 		<constructor-arg ref="acceptanceWidgetFactory" />
 		<constructor-arg ref="rssPrefetcher" />

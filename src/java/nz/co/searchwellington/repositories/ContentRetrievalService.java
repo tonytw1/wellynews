@@ -61,10 +61,6 @@ public class ContentRetrievalService {
 		return solrContentRetrievalService.getAllPublishers(showBrokenDecisionService.shouldShowBroken());
 	}
 	
-	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean mustHaveNewsitems) {
-		return solrContentRetrievalService.getAllPublishersWithNewsitemCounts(showBrokenDecisionService.shouldShowBroken(), mustHaveNewsitems);
-	}
-
 	public List<Tag> getTopLevelTags() {
 		return tagDAO.getTopLevelTags();
 	}

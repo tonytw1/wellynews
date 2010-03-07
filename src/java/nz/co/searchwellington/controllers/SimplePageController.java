@@ -81,11 +81,11 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "The Wellynews API");
 
         mv.addObject("feeds", contentRetrievalService.getAllFeeds());
-        mv.addObject("publishers", contentRetrievalService.getAllPublishersWithNewsitemCounts(true));	// TODO needs to include publishers with only feeds
+        mv.addObject("publishers", contentRetrievalService.getAllPublishers());
         mv.addObject("api_tags", contentRetrievalService.getTopLevelTags());
-        populateSecondaryLatestNewsitems(mv);        
+        populateSecondaryLatestNewsitems(mv);
         mv.setViewName("api");
-        return mv;      
+        return mv;
     }
 
     

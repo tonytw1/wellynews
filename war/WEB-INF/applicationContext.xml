@@ -86,12 +86,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="commentFeedReader" />
 	</bean>
 
-
-    <bean id="publisherSelectFactory"
-    	class="nz.co.searchwellington.widgets.PublisherSelectFactory">
-    	<constructor-arg ref="contentRetrievalService"/>	
-    </bean>
-    
      <bean id="tagWidgetFactory" class="nz.co.searchwellington.widgets.TagWidgetFactory">
      	<constructor-arg ref="tagDAO" />
     	<constructor-arg ref="resourceDAO" />	

@@ -50,7 +50,12 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
-	
+
+	public SolrQueryBuilder allPublishedTypes() {
+		sb.append(" +type:[F TO N]");		
+		return this;
+	}
+		
 	public SolrQueryBuilder tags(Set<Tag> tags) {
 		for (Tag tag : tags) {
 			this.tag(tag);
@@ -115,5 +120,5 @@ public class SolrQueryBuilder {
 		sb.append(" +twitterCount:[" + count + " TO *]");
 		return this;
 	}
-	
+
 }

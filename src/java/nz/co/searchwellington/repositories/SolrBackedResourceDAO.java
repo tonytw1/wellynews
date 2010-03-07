@@ -260,18 +260,18 @@ public class SolrBackedResourceDAO {
 	}
 
 	
-	// TODO this one is abit odd -should be it's own solr query to include feeds and watchlists in the defination of 'publisher';
+	
 	public List<Resource> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
 		List <Resource> publishers = new ArrayList<Resource>();
-		for (PublisherContentCount publisherCount : this.getAllPublishersWithNewsitemCounts(shouldShowBroken, mustHaveNewsitems)) {
+		for (PublisherContentCount publisherCount : this.getAllPublishersWithContentCounts(shouldShowBroken, mustHaveNewsitems)) {
 			publishers.add(publisherCount.getPublisher());
 		}
-		return publishers;
+		return publishers;		
 	}
 	
-	
-	public List<PublisherContentCount> getAllPublishersWithNewsitemCounts(boolean showBroken, boolean mustHaveNewsitems) {		
-			SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).toQuery();
+	// TODO nothing actually uses the counts; only using the sorting functionaility - could remove
+	private List<PublisherContentCount> getAllPublishersWithContentCounts(boolean showBroken, boolean mustHaveNewsitems) {		
+			SolrQuery query = new SolrQueryBuilder().allPublishedTypes().showBroken(showBroken).toQuery();
 			query.addFacetField("publisher");
 			query.setFacetMinCount(1);
 			query.setFacetSort(false);

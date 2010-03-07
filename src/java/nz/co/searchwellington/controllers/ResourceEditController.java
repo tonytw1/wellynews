@@ -32,7 +32,6 @@ import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
-import nz.co.searchwellington.widgets.PublisherSelectFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import org.apache.log4j.Logger;
@@ -49,7 +48,6 @@ public class ResourceEditController extends BaseMultiActionController {
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
     private TagWidgetFactory tagWidgetFactory;
-    private PublisherSelectFactory publisherSelectFactory;   
     private AutoTaggingService autoTagger;
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
     private RssNewsitemPrefetcher rssPrefetcher;
@@ -64,7 +62,7 @@ public class ResourceEditController extends BaseMultiActionController {
 	private TaggingReturnsOfficerService taggingReturnsOfficerService;
     
     public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
-            TagWidgetFactory tagWidgetFactory, PublisherSelectFactory publisherSelectFactory,
+            TagWidgetFactory tagWidgetFactory,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
@@ -72,7 +70,6 @@ public class ResourceEditController extends BaseMultiActionController {
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;
-        this.publisherSelectFactory = publisherSelectFactory;
         this.autoTagger = autoTagger;
         this.acceptanceWidgetFactory = acceptanceWidgetFactory;
         this.rssPrefetcher = rssPrefetcher;
@@ -196,13 +193,11 @@ public class ResourceEditController extends BaseMultiActionController {
             	final Date today = Calendar.getInstance().getTime();
             	newsitem.setDate(today);
             }
-                    
-            modelAndView.addObject("resource", newsitem); 
-            modelAndView.addObject("publisher_select",
-            		publisherSelectFactory.createPublisherSelectWithNoCounts(newsitem.getPublisher(), 
-            		userIsLoggedIn).toString()); // TODO select still in use? should be the autocomplete field now.
+            
+            modelAndView.addObject("resource", newsitem);
+            modelAndView.addObject("publisher_select", "1");
             modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
-        }        
+        }
         return modelAndView;
     }
 
@@ -506,7 +501,7 @@ public class ResourceEditController extends BaseMultiActionController {
    
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         boolean userIsLoggedIn = loggedInUser != null;       
-        modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(null, userIsLoggedIn).toString());
+        modelAndView.addObject("publisher_select", "1");
         
         if (userIsLoggedIn) {
             // TODO duplication - also - what does this do?
@@ -517,12 +512,8 @@ public class ResourceEditController extends BaseMultiActionController {
     
     protected void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) throws IOException {
         boolean isPublishedResource = editResource instanceof PublishedResource;  
-        if (isPublishedResource) {
-            Website publisher = null;
-            if (((PublishedResource) editResource).getPublisher() != null ) {
-                publisher = ((PublishedResource) editResource).getPublisher();              
-            }
-            modelAndView.addObject("publisher_select", publisherSelectFactory.createPublisherSelectWithNoCounts(publisher, userIsLoggedIn).toString());   
+        if (isPublishedResource) {            
+            modelAndView.addObject("publisher_select", "1");   
         } else {
             log.info("Edit resource is not a publisher resource.");
         }
