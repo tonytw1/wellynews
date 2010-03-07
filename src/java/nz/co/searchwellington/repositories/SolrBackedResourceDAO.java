@@ -394,7 +394,7 @@ public class SolrBackedResourceDAO {
 	
 	
 	public Map<String, Integer> getArchiveStatistics(boolean showBroken) { // TODO fails is admin user is logged in - because you can't facet on a null query
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).toQuery();
+		SolrQuery query = new SolrQueryBuilder().allContentTypes().showBroken(showBroken).maxItems(0).toQuery();
 		SolrServer solr;
 		try {
 			solr = new CommonsHttpSolrServer(solrUrl);

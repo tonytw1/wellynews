@@ -45,6 +45,12 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
+	public SolrQueryBuilder allContentTypes() {
+		sb.append(" +type:[F TO W]");		
+		return this;
+	}
+	
+	
 	public SolrQueryBuilder tags(Set<Tag> tags) {
 		for (Tag tag : tags) {
 			this.tag(tag);
