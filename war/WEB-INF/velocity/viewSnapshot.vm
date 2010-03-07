@@ -8,12 +8,12 @@
 	</div>
 
 	<div class="main">
-		<h2>Editing a Resource</h2>
+		<h2>Resource snapshot</h2>
 
 		#if ($resource)
 			
 			<hr>
-			$body
+			!$body
 			<hr>
 	#else
 		<p>There was a problem loading this resource for editing. You may 
