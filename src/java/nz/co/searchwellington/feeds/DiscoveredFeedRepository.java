@@ -20,7 +20,7 @@ public class DiscoveredFeedRepository {
 	}
 
 
-	public List<DiscoveredFeed> getAllNonCommentDiscoveredFeeds() {
+	public List<DiscoveredFeed> getAllNonCommentDiscoveredFeeds() {	// TODO this is fantasically expensive - move to the index?
 		List<DiscoveredFeed> allDiscoveredFeeds = resourceDAO.getAllDiscoveredFeeds();
         List<DiscoveredFeed> nonCommentFeeds = new ArrayList<DiscoveredFeed>();        
         for (DiscoveredFeed discoveredFeed : allDiscoveredFeeds) {

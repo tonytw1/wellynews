@@ -9,7 +9,9 @@ import java.util.Set;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
+import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -31,18 +33,20 @@ public class ContentRetrievalService {
 	private ShowBrokenDecisionService showBrokenDecisionService;
 	private TagDAO tagDAO;
 	private RelatedTagsService relatedTagsService;
+	private DiscoveredFeedRepository discoveredFeedsDAO;
 		
 
 	public ContentRetrievalService(ResourceRepository resourceDAO,
 			SolrContentRetrievalService solrContentRetrievalService,
 			KeywordSearchService keywordSearchService,
-			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO, RelatedTagsService relatedTagsService) {
+			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO, RelatedTagsService relatedTagsService, DiscoveredFeedRepository discoveredFeedsDAO) {
 		this.resourceDAO = resourceDAO;
 		this.solrContentRetrievalService = solrContentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
 		this.tagDAO = tagDAO;
 		this.relatedTagsService = relatedTagsService;
+		this.discoveredFeedsDAO = discoveredFeedsDAO;
 	}
 
 	public List<Resource> getAllWatchlists() {
@@ -222,12 +226,16 @@ public class ContentRetrievalService {
 		return solrContentRetrievalService.getRecentlyChangedWatchlistItems(showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<Tag> getFeedworthyTags() {	// TODO exclude hidden tags
+	public List<Tag> getFeedworthyTags() {
 		List<Tag> feedworthy = new ArrayList<Tag>();
 		for (TagContentCount tagContentCount : relatedTagsService.getFeedworthyTags(showBrokenDecisionService.shouldShowBroken())) {
 			feedworthy.add(tagContentCount.getTag());
 		}		
 		return feedworthy;
+	}
+
+	public List<DiscoveredFeed> getDiscoveredFeeds() {
+		return discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds();
 	}
 	
 }

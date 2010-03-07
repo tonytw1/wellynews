@@ -197,6 +197,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="showBrokenDecisionService" />
 		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="relatedTagsService" />
+		<constructor-arg ref="discoveredFeedRespository" />
 	</bean>
 	
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">

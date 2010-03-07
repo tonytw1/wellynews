@@ -49,6 +49,7 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		populateSecondaryFeeds(mv);
 		mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6));
+		mv.addObject("discovered_feeds", contentRetrievalService.getDiscoveredFeeds());
 	}
 	
 	
