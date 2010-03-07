@@ -53,7 +53,6 @@ public class FeedReader {
     }
 
     
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processFeed(int feedId) {
     	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
     	

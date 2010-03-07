@@ -3,6 +3,9 @@ package nz.co.searchwellington.modification;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
@@ -31,6 +34,10 @@ public class ContentUpdateService {
 	}
 
 	
+	public ContentUpdateService() {
+	}
+
+	
 	public void update(Resource resource, User loggedInUser, HttpServletRequest request) {				
 		boolean resourceUrlHasChanged = false;
 		boolean newSubmission = resource.getId() == 0;
@@ -49,8 +56,9 @@ public class ContentUpdateService {
 			 notifier.sendSubmissionNotification("New submission", resource);
 		}
 	}
-
 	
+	
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void update(Resource resource, boolean needsLinkCheck) {
 		resourceDAO.saveResource(resource);
 		solrQueryService.updateIndexForResource(resource);

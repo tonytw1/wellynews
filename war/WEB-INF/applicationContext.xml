@@ -348,7 +348,16 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	
-	<bean id="contentUpdateService"  class="nz.co.searchwellington.modification.ContentUpdateService">
+	<bean id="contentUpdateService" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="contentUpdateServiceTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	
+	<bean id="contentUpdateServiceTarget"  class="nz.co.searchwellington.modification.ContentUpdateService">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="suggestionDAO" />	
 		<constructor-arg ref="linkCheckerQueue" />		
