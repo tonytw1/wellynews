@@ -42,7 +42,6 @@ public class LinkChecker {
 	}
 
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void scanResource(int checkResourceId) {
         Resource checkResource = resourceDAO.loadResourceById(checkResourceId);         
         if (checkResource != null) {
