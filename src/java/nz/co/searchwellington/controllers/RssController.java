@@ -21,18 +21,16 @@ public class RssController extends MultiActionController {
 	
 	Logger log = Logger.getLogger(RssController.class);
     
-    private static final int MAX_RSS_ITEMS = 30;
+    private static final int MAX_RSS_ITEMS = 30;	// TODO move this knowledge towards the CRS
     private SiteInformation siteInformation;
-    private RssUrlBuilder rssUrlBuilder;
 	private ContentModelBuilderService contentModelBuilderService;
 	private ContentRetrievalService contentRetrievalService;
 	private RssItemMaker rssItemMaker;
 
     
        
-    public RssController(SiteInformation siteInformation, RssUrlBuilder rssUrlBuilder, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
+    public RssController(SiteInformation siteInformation, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
         this.siteInformation = siteInformation;
-        this.rssUrlBuilder = rssUrlBuilder;
         this.contentModelBuilderService = contentModelBuilderService;
         this.contentRetrievalService = contentRetrievalService;
         this.rssItemMaker = rssItemMaker;
@@ -51,8 +49,7 @@ public class RssController extends MultiActionController {
     }
         
        
-    public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception { 
-    	
+    public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    	
     	if (siteInformation.getFeedburnerUrl() != null && !siteInformation.getFeedburnerUrl().trim().equals("")) {    		
     		final String userAgent = request.getHeader("User-Agent");
     		boolean clientIsFeedburner = userAgent != null && userAgent.startsWith("FeedBurner");

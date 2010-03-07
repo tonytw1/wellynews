@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.SuggestionFeednewsitem;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 

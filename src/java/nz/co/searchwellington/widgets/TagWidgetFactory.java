@@ -4,7 +4,6 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 

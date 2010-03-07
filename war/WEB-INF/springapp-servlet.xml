@@ -73,7 +73,6 @@
 	
 	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
 		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="requestFilter" />
 	</bean>
 	
 	
@@ -288,7 +287,6 @@
 	
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="rssUrlBuilder" />		
 		<constructor-arg ref="contentModelBuilder" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssItemMaker" />

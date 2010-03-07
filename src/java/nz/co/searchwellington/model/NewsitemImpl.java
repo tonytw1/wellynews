@@ -5,10 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.sun.syndication.feed.module.georss.GeoRSSModule;
-import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-
 
 public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
          

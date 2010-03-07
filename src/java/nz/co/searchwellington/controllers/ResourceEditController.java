@@ -24,16 +24,16 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
-import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -165,15 +165,11 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     
-    @Transactional
+    @Transactional	//TODO needs auth
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {        
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
         populateCommonLocal(modelAndView);
-        modelAndView.addObject("heading", "Accepting a submission");
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();
-        boolean userIsLoggedIn = loggedInUser != null;
-        
+        modelAndView.addObject("heading", "Accepting a submission");        
         adminRequestFilter.loadAttributesOntoRequest(request);
         
         Newsitem newsitem = null;

@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 
@@ -21,16 +20,13 @@ public class ClickThroughController implements Controller {
     Logger log = Logger.getLogger(ClickThroughController.class);
     
     private SiteInformation siteInformation;
-    private RequestFilter requestFilter;
 
     
-    public ClickThroughController(SiteInformation siteInformation, RequestFilter requestFilter) {
+    public ClickThroughController(SiteInformation siteInformation) {
         this.siteInformation = siteInformation;
-        this.requestFilter = requestFilter;
     }
     
     
-    @SuppressWarnings("unchecked")
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();        
         String redirectUrl = null;

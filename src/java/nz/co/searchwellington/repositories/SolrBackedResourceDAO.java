@@ -234,7 +234,7 @@ public class SolrBackedResourceDAO {
 
 	public List<ArchiveLink> getArchiveMonths(boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();
-		query.addFacetField("month");
+		query.addFacetField("month");	// TODO can't solr create this facet automagically from the date field?
 		query.setFacetMinCount(1);
 		query.setFacetSort(false);
 		query.setFacetLimit(1000);
