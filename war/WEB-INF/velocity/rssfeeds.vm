@@ -30,7 +30,10 @@
 
 <ul>
 #foreach ($tag in $feedable_tags) 
-	<li>#rssIcon($rssUrlBuilder.getRssUrlForTag($tag) '') $tag.displayName - <code>$rssUrlBuilder.getRssUrlForTag($tag)</code></li>
+	#if ($tag.isHidden()) 
+	#else 
+		<li>#rssIcon($rssUrlBuilder.getRssUrlForTag($tag) '') $tag.displayName - <code>$rssUrlBuilder.getRssUrlForTag($tag)</code></li>
+	#end
 #end
 </ul>
 
