@@ -345,7 +345,7 @@ public class SolrBackedResourceDAO {
 	}
 		
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken, int startIndex) {
-		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).maxItems(maxItems).startIndex(startIndex).toQuery();
+		SolrQuery query = new SolrQueryBuilder().type("N").publisher(publisher).showBroken(showBroken).maxItems(maxItems).startIndex(startIndex).toQuery();
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
@@ -393,10 +393,8 @@ public class SolrBackedResourceDAO {
 	
 	
 	
-	public Map<String, Integer> getArchiveStatistics(boolean showBroken) {
-
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken)
-				.toQuery();
+	public Map<String, Integer> getArchiveStatistics(boolean showBroken) { // TODO fails is admin user is logged in - because you can't facet on a null query
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).toQuery();
 		SolrServer solr;
 		try {
 			solr = new CommonsHttpSolrServer(solrUrl);
