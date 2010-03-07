@@ -8,6 +8,7 @@ import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
@@ -76,5 +77,6 @@ public interface ResourceRepository {
 	public List<Resource> getResourcesWithTag(Tag tag);
 	public List<Newsitem> getNewsitemsForFeed(Feed feed);	
 	public List<Resource> getAllWatchlists();
+	public List<PublishedResource> getNewsitemsForPublishers(Website publisher);
     
 }

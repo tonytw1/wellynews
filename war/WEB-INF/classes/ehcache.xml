@@ -109,14 +109,7 @@
         timeToLiveSeconds="7200"
 		overflowToDisk="false"
 		/>
-
-	<cache name="nz.co.searchwellington.model.WebsiteImpl.newsitems"
-		maxElementsInMemory="500"
-		timeToIdleSeconds="7200"
-        timeToLiveSeconds="7200"
-		overflowToDisk="false"
-		/>
-
+		
 	<cache name="nz.co.searchwellington.model.WebsiteImpl.feeds"
 		maxElementsInMemory="500"
 		timeToIdleSeconds="7200"

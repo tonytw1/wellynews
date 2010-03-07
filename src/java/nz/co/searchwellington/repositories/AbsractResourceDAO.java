@@ -41,7 +41,6 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     public Website createNewWebsite() {
         return new WebsiteImpl( 0, "", "", Calendar.getInstance().getTime(), 
                                 "", 
-                                new HashSet <Newsitem> (), 
                                 new HashSet <Feed>(), new HashSet<Watchlist>(), 
                                 new HashSet<Tag>(),
                                 new HashSet <DiscoveredFeed>(),

@@ -256,11 +256,6 @@ public class SolrHydratedWebsite implements Website {
 		return null;
 	}
 
-	@Override
-	public Set<Newsitem> getNewsitems() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Set<Watchlist> getWatchlist() {

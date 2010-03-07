@@ -5,8 +5,6 @@ import java.util.Set;
 
 public interface Website extends Resource {
 	
-    public Set <Newsitem> getNewsitems();
-
     public Set<Feed> getFeeds();
  
     public Set<Watchlist> getWatchlist();

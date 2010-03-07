@@ -6,11 +6,7 @@ import java.util.Set;
 
 
 public class WebsiteImpl extends ResourceImpl implements Website {
-
-    
-
    
-    Set <Newsitem> newsitems;
     Set <Feed> feeds;
     Set <Watchlist> watchlist;
     Set <CalendarFeed> calendars;
@@ -20,14 +16,13 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     public WebsiteImpl() {        
     }
     
-	public WebsiteImpl(int id, String name, String url, Date date, String description, Set <Newsitem> newsitems, Set<Feed> feed, Set<Watchlist> watchlist, Set<Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Set<CalendarFeed> calendars) {
+	public WebsiteImpl(int id, String name, String url, Date date, String description, Set<Feed> feed, Set<Watchlist> watchlist, Set<Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Set<CalendarFeed> calendars) {
         this.id = id;
 		this.name = name;
         this.url = url;
         this.date = date;
         this.description = description;
         
-        this.newsitems = newsitems;
         this.feeds = feed;
         this.watchlist = watchlist;
         this.calendars = calendars;
@@ -37,17 +32,6 @@ public class WebsiteImpl extends ResourceImpl implements Website {
         this.discoveredFeeds = discoveredFeeds;
 	}
 	
-   
-	
-
-    public Set <Newsitem> getNewsitems() {
-        return newsitems;
-    }
-    
-    public void setNewsitems(Set<Newsitem> newsitems) {
-        this.newsitems = newsitems;
-    }
-
     public Set<Feed> getFeeds() {
         return feeds;
     }

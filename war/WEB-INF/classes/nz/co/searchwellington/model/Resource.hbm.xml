@@ -93,18 +93,7 @@
     	<subclass name="nz.co.searchwellington.model.WebsiteImpl"
 			proxy="nz.co.searchwellington.model.Website"
 			discriminator-value="W">
-
-
-			<set name="newsitems" inverse="true" 
-					cascade="all,all-delete-orphan">
-				<cache usage="read-write" />
-				
-				<key column="publisher" />
-				
-				<one-to-many
-					class="nz.co.searchwellington.model.NewsitemImpl" />
-			</set>
-
+			
 			<set name="feeds" inverse="true" 
 				cascade="all,all-delete-orphan">
 						<cache usage="read-write" />

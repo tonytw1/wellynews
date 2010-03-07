@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.ResourceImpl;
 import nz.co.searchwellington.model.Tag;
@@ -121,8 +122,21 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     		addOrder(Order.desc("date")).
     		list();
     }
-	
 
+    
+    
+    
+    
+    
+    @SuppressWarnings("unchecked")
+	@Override
+	public List<PublishedResource> getNewsitemsForPublishers(Website publisher) {
+    	return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
+		add(Restrictions.eq("publisher", publisher)).
+		list();
+	}
+
+    
 	@SuppressWarnings("unchecked")  
     final public List<Resource> getOwnedBy(User owner, int maxItems) {    
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).

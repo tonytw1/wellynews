@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
@@ -71,9 +72,9 @@ public class ContentDeletionService {
 		
 	private void removePublisherFromPublishersContent(Resource editResource) {
     	Website publisher = (Website) editResource;
-    	for (Newsitem newsitem : publisher.getNewsitems()) {
-    		newsitem.setPublisher(null);
-    		resourceDAO.saveResource(newsitem);					
+    	for (PublishedResource published : resourceDAO.getNewsitemsForPublishers(publisher)) {
+    		published.setPublisher(null);
+    		resourceDAO.saveResource(publisher);					
     	}
     	for (Feed feed : publisher.getFeeds()) {
     		feed.setPublisher(null);

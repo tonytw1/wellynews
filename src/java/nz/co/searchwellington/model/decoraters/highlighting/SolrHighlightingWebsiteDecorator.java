@@ -98,11 +98,6 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 		return website.getLiveTime();
 	}
 
-
-	public Set<Newsitem> getNewsitems() {
-		return website.getNewsitems();
-	}
-
 	public void getRemoveTag(Tag tag) {
 		website.getRemoveTag(tag);
 	}
