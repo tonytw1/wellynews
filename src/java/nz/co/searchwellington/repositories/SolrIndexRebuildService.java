@@ -45,18 +45,22 @@ public class SolrIndexRebuildService {
 	}
 
 
-	public boolean buildIndex() {
+	public boolean buildIndex(boolean deleteAll) {
 		if (running) {
 			log.warn("The index builder is already running; cannot start another process");
 			return false;
 		}
-		
+				
 		running = true;
 		List<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
 		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
 	
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			if (deleteAll) {
+				log.info("Deleting all existing records");
+				this.deleteAllFromIndex(solr);
+			}
 			if (resourceIdsToIndex.size() > 0) {
 				reindexResources(resourceIdsToIndex, solr);
 				running = false;

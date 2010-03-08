@@ -1,7 +1,5 @@
 <h2>Rebuilding Lucene Index</h2>
 
-<p>Index Path: $index_path</p>
-
 <p>$message</p>
 
 <hr>

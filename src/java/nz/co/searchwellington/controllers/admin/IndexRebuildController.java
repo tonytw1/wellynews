@@ -33,8 +33,14 @@ public class IndexRebuildController extends BaseMultiActionController {
     
     public ModelAndView build(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();                
-        mv.setViewName("luceneIndexBuilder");    
-        if (solrIndexRebuildService.buildIndex()) {
+        mv.setViewName("luceneIndexBuilder");
+                
+        boolean deleteAll = false;
+		if (request.getParameter("delete") != null) {
+			deleteAll = true;
+		}
+        
+        if (solrIndexRebuildService.buildIndex(deleteAll)) {
         	mv.addObject("message", "Created new index");
         } else {
         	mv.addObject("message", "Index rebuild failed");
