@@ -1,8 +1,8 @@
 package nz.co.searchwellington.jobs;
 
+import nz.co.searchwellington.flickr.FlickrApiService;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.FlickrDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -12,13 +12,13 @@ public class FlickrJob {
 
     Logger log = Logger.getLogger(FlickrJob.class);
 
-    private FlickrDAO flickrDAO;
+    private FlickrApiService flickrDAO;
     private ConfigRepository configDAO;
     private TagDAO tagDAO;
     
     public FlickrJob() {}
     
-    public FlickrJob(FlickrDAO flickrDAO, ConfigRepository configDAO, TagDAO tagDAO) {
+    public FlickrJob(FlickrApiService flickrDAO, ConfigRepository configDAO, TagDAO tagDAO) {
         this.flickrDAO = flickrDAO;
         this.configDAO = configDAO;
         this.tagDAO = tagDAO;
