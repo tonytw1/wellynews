@@ -22,15 +22,9 @@
 #if ($publisher) 
 	<h2><a href="$publisher.url">$heading</a></h2>
 	
-	#if ($publisher.tags && $publisher.tags.size() > 0)
-		<li class="tagged" rel="noindex">Tagged as:</li>
-		#foreach ($tag in $publisher.tags)
-			#if (!$tag.hidden)
-				<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
-			#end
-		#end
-	#end
-	
+	#set($page_content = $publisher) 
+	#parse("includes/page_content_tags.vm")
+		
 	#if ($publisher.description)
 		<p>$publisher.description</p>
 	#end

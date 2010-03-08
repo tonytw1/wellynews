@@ -12,6 +12,9 @@
 	<div class="main">
 		<h2><a href="${site_information.url}/feeds">Feeds</a> / $heading</h2>
 
+		#set($page_content = $feed) 
+		#parse("includes/page_content_tags.vm")
+		
 		<ul>
 			#if ($editPermissionService.canEdit($feed)) 
 				<li class="admin"><a href="${site_information.url}/edit/edit?resource=$feed.id">Edit</a></li>
