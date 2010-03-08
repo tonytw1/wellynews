@@ -7,6 +7,7 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
+import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;

@@ -372,7 +372,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	
-	<bean id="contentDeletionService" class="nz.co.searchwellington.controllers.ContentDeletionService">
+	<bean id="contentDeletionService" class="nz.co.searchwellington.modification.ContentDeletionService">
 		<constructor-arg ref="suppressionService" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="resourceDAO" />

@@ -12,7 +12,6 @@ import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
