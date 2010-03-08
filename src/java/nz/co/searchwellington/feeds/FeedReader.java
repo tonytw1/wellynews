@@ -138,8 +138,8 @@ public class FeedReader {
         }
 	}
 
-
-    private void tagAcceptedFeedItem(Resource resource, Set<Tag> feedTags) {       
+	
+    private void tagAcceptedFeedItem(Resource resource, Set<Tag> feedTags) {       // TODO this should move to run time vote tagging.
         for (Tag tag : feedTags) {
             resource.addTag(tag);
         }

@@ -32,18 +32,15 @@ import org.joda.time.DateTime;
 public class HibernateResourceDAO extends AbsractResourceDAO implements ResourceRepository {
 
     SessionFactory sessionFactory;
-    private TagDAO tagDAO;
     private TweetDAO tweetDAO;
+
     
     public HibernateResourceDAO() {
     }
     
     
-    
-    
-    public HibernateResourceDAO(SessionFactory sessionFactory, TagDAO tagDAO, TweetDAO twitterDAO) {     
+    public HibernateResourceDAO(SessionFactory sessionFactory, TweetDAO twitterDAO) {     
         this.sessionFactory = sessionFactory;
-        this.tagDAO = tagDAO;
         this.tweetDAO = twitterDAO;
     }
     
@@ -55,6 +52,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         return session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list();        
        
     }
+    
     
     // TODO hup to CRS
 	public List<String> getPublisherNamesByStartingLetters(String q) {
@@ -74,7 +72,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
 	
 	
-
 	@SuppressWarnings("unchecked")
     final public List<Feed> getFeedsToRead() {
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).
@@ -84,8 +81,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         list();
     }
     
-    
-    
+        
     @SuppressWarnings("unchecked")
     final public List<Resource> getAllCalendarFeeds() {
         return sessionFactory.getCurrentSession().createCriteria(CalendarFeed.class).       
@@ -114,8 +110,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
     
     
-
-    
     @SuppressWarnings("unchecked")
 	@Override
 	public List<Newsitem> getNewsitemsForFeed(Feed feed) {
@@ -125,10 +119,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     		list();
     }
 
-    
-    
-    
-    
     
     @SuppressWarnings("unchecked")
 	@Override
@@ -149,11 +139,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
                 list();
     }
     
-    
-    
-   
-    
-    
+       
     @SuppressWarnings("unchecked")
     public List<Newsitem> getRecentUntaggedNewsitems() {
         return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
@@ -163,7 +149,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
                 setMaxResults(12).
                 setCacheable(true).list();        
     }
-
+    
     
     @SuppressWarnings("unchecked")
     public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken) {
@@ -176,20 +162,14 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         return allPublishers;
     }
     
-    
-    
-    
-    
+        
     @SuppressWarnings("unchecked")
     // TODO migrate to a solr call
     public List<Resource> getNewsitemsMatchingStem(String stem) {
         return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list();        
     }
     
-    
-    
-    
-   
+       
     @SuppressWarnings("unchecked")
     public List<Resource> getNotCheckedSince(Date oneMonthAgo, int maxItems) {     
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).
@@ -197,9 +177,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         setMaxResults(maxItems).list();       
     }
     
-    
         
-    
     @Override
 	public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems) {
     	   return sessionFactory.getCurrentSession().createCriteria(Resource.class).
@@ -219,12 +197,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         list();
     }
 
-    
-    public void saveTag(Tag editTag) {
-        tagDAO.saveTag(editTag);
-    }
-
-    
+	
     public int getCommentCount() {
         // TODO implement show broken logic if the parent newsitem is broken
         return ((Long) sessionFactory.getCurrentSession().
@@ -232,13 +205,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         		next()).intValue();
     }
     
-
-    public boolean isResourceWithUrl(String url) {
-        Resource existingResource = loadResourceByUrl(url);               
-        return existingResource != null;
-    }
-
-
+    
     public Resource loadResourceById(int resourceID) {
     	return (Resource) sessionFactory.getCurrentSession().get(ResourceImpl.class, resourceID);        
     }
@@ -248,9 +215,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();        
     }
     
-    
-    
-    
+        
     @Override
 	public Resource loadNewsitemByHeadlineAndPublisherWithinLastMonth(String name, Website publisher) {	// TODO last month clause
     	 return (Resource) sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
@@ -259,32 +224,32 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     	 setMaxResults(1).uniqueResult();   
 	}
     
-    
-    
+        
 	public Website getPublisherByUrlWords(String urlWords) {
 		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();    		
 	}
 	
+	
 	public Website getPublisherByName(String name) {
 		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("name", name)).setMaxResults(1).uniqueResult();    		
 	}
-
+	
+	
 	public Feed loadFeedByUrlWords(String urlWords) {
 		return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();
 	}
         
-    final public Resource loadResourceByUniqueUrl(String url) {
+    
+	public Resource loadResourceByUniqueUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).uniqueResult();        
     }
     
-    
-    
+        
     public CommentFeed loadCommentFeedByUrl(String url) {
         return (CommentFeed) sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();  
     }
     
-    
-    
+       
     public DiscoveredFeed loadDiscoveredFeedByUrl(String url) {
         return (DiscoveredFeed) sessionFactory.getCurrentSession().createCriteria(DiscoveredFeed.class).
         add(Expression.eq("url", url)).
@@ -294,50 +259,40 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
     
     
-    public Tag loadTagById(int tagID) {
-      return tagDAO.loadTagById(tagID);
-    }
-        
-    public Tag loadTagByName(String tagName) {
-        return tagDAO.loadTagByName(tagName);
-    }
-        
-    
     public List<Twit> getAllTweets() {
 		return tweetDAO.getAllTweets();
 	}
+    
     
     public void saveTweet(Twit twit) {     
     	tweetDAO.saveTwit(twit);
     }
         
-	public Twit loadTweetByTwitterId(Long twitterId) {
+	
+    public Twit loadTweetByTwitterId(Long twitterId) {
     	 return tweetDAO.loadTweetByTwitterId(twitterId);  
 	}
 
 	
-	
-
-
-
-	public void saveResource(Resource resource) {
+    public void saveResource(Resource resource) {
 		if (resource.getType().equals("N")) {
 			if (((Newsitem) resource).getImage() != null) {
-				sessionFactory.getCurrentSession().saveOrUpdate(((Newsitem) resource).getImage());
+				sessionFactory.getCurrentSession().saveOrUpdate(
+						((Newsitem) resource).getImage());
 			}
+		}
+
+		sessionFactory.getCurrentSession().saveOrUpdate(resource);
+		sessionFactory.getCurrentSession().flush();
+		if (resource.getType().equals("F")) {
+			// TODO can this be done for just the publisher only?
+			sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
+		}
+
+		// TODO for related tags, can we be abit more subtle than this?
+		// Clear related tags query.
+		// sessionFactory.evictQueries();
 	}
-		
-        sessionFactory.getCurrentSession().saveOrUpdate(resource);
-        sessionFactory.getCurrentSession().flush();
-        if (resource.getType().equals("F")) {
-            // TODO can this be done for just the publisher only?
-        	sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
-        }
-     
-        // TODO for related tags, can we be abit more subtle than this?
-        // Clear related tags query.
-       // sessionFactory.evictQueries();
-    }
 
     
     
@@ -352,25 +307,13 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         sessionFactory.getCurrentSession().flush();
     }
 
-    private Criteria criteriaForLatestNewsitems(int number, boolean showBroken) {
-        Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
-            addOrder(Order.desc("date")).
-            addOrder(Order.desc("id")).
-            setMaxResults(number);
-        if (!showBroken) {
-            criteria.add(Expression.eq("httpStatus", 200));
-        }
-        return criteria;
-    }
-    
-    
+
     @SuppressWarnings("unchecked")
     public List<Resource> getTaggedResources(Tag tag, int max_newsitems) {
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).createCriteria("tags").add(Restrictions.eq("id", tag.getId())).list();
     }
     
-   
-            
+    
     public void deleteResource(Resource resource) {
         sessionFactory.getCurrentSession().delete(resource);       
         // flush collection caches.  
@@ -385,31 +328,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     public List<Tag> getTagsMatchingKeywords(String keywords) {
         throw(new UnsupportedOperationException());
     }
-
-
-    
-
-    
-       
-    @SuppressWarnings("unchecked")
-    public Date getNewslogLastChanged() {        
-        Criteria latestNewsitemsCriteria = criteriaForLatestNewsitems(20, false);
-        latestNewsitemsCriteria.addOrder( Order.desc("liveTime"));
-        List<Resource> currentNewsitems = latestNewsitemsCriteria.setCacheable(true).list();        
-        for (Resource resource : currentNewsitems) {           
-        	DateTime latestChange = null;
-            if (latestChange == null) {
-                latestChange = new DateTime(resource.getLastChanged());
-                log.debug("Setting last changed to: " + latestChange);
-            }
-            if (resource.getLastChanged() != null && new DateTime(resource.getLastChanged()).isAfter(latestChange)) {
-                latestChange = new DateTime(resource.getLastChanged());                
-                return latestChange.toDate();
-            }
-        }
-        return null;
-    }
-
 
     
     @SuppressWarnings("unchecked")

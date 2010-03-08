@@ -36,7 +36,6 @@
 	
 	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.HibernateResourceDAO">
  		<constructor-arg ref="sessionFactory" />
- 		<constructor-arg ref="tagDAO" />
  		<constructor-arg ref="tweetDAO" />
 	</bean>
 	

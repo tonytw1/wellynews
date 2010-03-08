@@ -11,14 +11,13 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.utils.UrlCleaner;
-import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 
 
 public class FeedAcceptanceDecider {
     
-    Logger log = Logger.getLogger(FeedAcceptanceDecider.class);
+    static Logger log = Logger.getLogger(FeedAcceptanceDecider.class);
     
     private ResourceRepository resourceDAO;
     private SupressionRepository supressionDAO;
@@ -33,8 +32,7 @@ public class FeedAcceptanceDecider {
         this.suggestionDAO = suggestionDAO;
     }
 
-    
-    
+        
     public List<String> getAcceptanceErrors(FeedNewsitem resource, String feedAcceptancePolicy) {
         List<String> acceptanceErrors = new ArrayList<String>();
         
@@ -67,7 +65,7 @@ public class FeedAcceptanceDecider {
 		
 		List<String> acceptanceErrors = new ArrayList<String>();		
 		alreadyHaveThisFeedItem(feednewsitem, acceptanceErrors);		
-		return acceptanceErrors.size() == 0;		
+		return acceptanceErrors.isEmpty();		
 	}
     
     

@@ -23,7 +23,6 @@ public interface ResourceRepository {
     public Resource loadResourceById(int resourceID);
     public void saveResource(Resource resource);
      
-    public boolean isResourceWithUrl(String url);
     public Resource loadResourceByUrl(String url);    
     public void deleteResource(Resource resource);
         
@@ -52,9 +51,8 @@ public interface ResourceRepository {
     public CommentFeed createNewCommentFeed(String discoveredUrl);
 	public void saveCommentFeed(CommentFeed commentFeed);
 	
-    public List<Newsitem> getRecentUntaggedNewsitems();   
-    public Date getNewslogLastChanged();
-        
+    public List<Newsitem> getRecentUntaggedNewsitems();
+    
     public List<Integer> getAllResourceIds();
     public CalendarFeed createNewCalendarFeed(String url);
     

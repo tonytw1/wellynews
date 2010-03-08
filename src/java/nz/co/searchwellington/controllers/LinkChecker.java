@@ -13,7 +13,6 @@ import nz.co.searchwellington.utils.HttpFetcher;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 public class LinkChecker {
