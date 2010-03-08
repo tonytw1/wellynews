@@ -78,5 +78,6 @@ public interface ResourceRepository {
 	public List<Newsitem> getNewsitemsForFeed(Feed feed);	
 	public List<Resource> getAllWatchlists();
 	public List<PublishedResource> getNewsitemsForPublishers(Website publisher);
+	public Resource loadNewsitemByHeadlineAndPublisherWithinLastMonth(String name, Website publisher);
     
 }

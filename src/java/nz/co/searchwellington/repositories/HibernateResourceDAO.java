@@ -39,6 +39,8 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
     
     
+    
+    
     public HibernateResourceDAO(SessionFactory sessionFactory, TagDAO tagDAO, TweetDAO twitterDAO) {     
         this.sessionFactory = sessionFactory;
         this.tagDAO = tagDAO;
@@ -245,6 +247,17 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     public Resource loadResourceByUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();        
     }
+    
+    
+    
+    
+    @Override
+	public Resource loadNewsitemByHeadlineAndPublisherWithinLastMonth(String name, Website publisher) {	// TODO last month clause
+    	 return (Resource) sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
+    	 add(Expression.eq("name", name)).
+    	 add(Expression.eq("publisher", publisher)).
+    	 setMaxResults(1).uniqueResult();   
+	}
     
     
     

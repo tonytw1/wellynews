@@ -11,6 +11,7 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.utils.UrlCleaner;
+import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 
@@ -34,7 +35,7 @@ public class FeedAcceptanceDecider {
 
     
     
-    public List<String> getAcceptanceErrors(Resource resource, String feedAcceptancePolicy) {
+    public List<String> getAcceptanceErrors(FeedNewsitem resource, String feedAcceptancePolicy) {
         List<String> acceptanceErrors = new ArrayList<String>();
         
         final boolean isSuppressed = supressionDAO.isSupressed(urlCleaner.cleanSubmittedItemUrl(resource.getUrl()));
@@ -50,6 +51,7 @@ public class FeedAcceptanceDecider {
         lessThanOneWeekOld(resource, feedAcceptancePolicy, acceptanceErrors);
         hasDateInTheFuture(resource, acceptanceErrors);                
         alreadyHaveThisFeedItem(resource, acceptanceErrors);
+        alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(resource, acceptanceErrors);
         
         return acceptanceErrors;        
     }
@@ -89,7 +91,15 @@ public class FeedAcceptanceDecider {
         }
     }
     
+	
+	private void alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(FeedNewsitem resource, List<String> acceptanceErrors) {
+		 if (resourceDAO.loadNewsitemByHeadlineAndPublisherWithinLastMonth(resource.getName(), resource.getPublisher()) !=  null) {
+			 log.info("A recent resource from the same publisher with the same headline '" + resource.getName() + "' already exists; not accepting.");
+	          acceptanceErrors.add("A recent resource from the same publisher with the same headline already exists; not accepting.");
+		 }
+	}
     
+	
     public void lessThanOneWeekOld(Resource newsitem, String feedAcceptancePolicy, List<String> acceptanceErrors) {      
         if (feedAcceptancePolicy != null && feedAcceptancePolicy.equals("accept_without_dates")) {
             return;                        
@@ -100,8 +110,5 @@ public class FeedAcceptanceDecider {
             acceptanceErrors.add("Item is more than one week old");            
         }
     }
-
-
-
     
 }
