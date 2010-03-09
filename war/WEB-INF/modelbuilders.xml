@@ -4,7 +4,6 @@
 
 	<bean id="archiveLinksService" class="nz.co.searchwellington.controllers.models.helpers.ArchiveLinkService">
 		<constructor-arg ref="contentRetrievalService" />
-		<constructor-arg ref="urlBuilder" />
 	</bean>
 
 	<bean id="indexModelBuilder" class="nz.co.searchwellington.controllers.models.IndexModelBuilder">

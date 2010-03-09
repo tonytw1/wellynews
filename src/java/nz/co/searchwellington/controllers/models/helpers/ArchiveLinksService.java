@@ -1,12 +1,10 @@
 package nz.co.searchwellington.controllers.models.helpers;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -14,13 +12,10 @@ public class ArchiveLinksService {
 	
 		
 	private ContentRetrievalService contentRetrievalService;
-	private UrlBuilder urlBuilder;
 	
 	
-	public ArchiveLinksService(ContentRetrievalService contentRetrievalService,
-			UrlBuilder urlBuilder) {
+	public ArchiveLinksService(ContentRetrievalService contentRetrievalService) {
 		this.contentRetrievalService = contentRetrievalService;
-		this.urlBuilder = urlBuilder;
 	}
 
 
@@ -36,15 +31,6 @@ public class ArchiveLinksService {
     }
 	
 	
-	public String makeArchiveUrl(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {    // TODO url builder should be able todo this with just the date!
-    	ArchiveLink archiveLink = getArchiveLinkForDate(dateOfLastNewsitem, archiveMonths);
-    	if (archiveLink != null) {
-    		return urlBuilder.getArchiveLinkUrl(archiveLink);
-    	}
-    	return null;
-	}
-	
-	
     private void populateArchiveStatistics(ModelAndView mv) {
 		Map<String, Integer> archiveStatistics = contentRetrievalService.getArchiveStatistics();
 		if (archiveStatistics != null) {
@@ -54,16 +40,4 @@ public class ArchiveLinksService {
 		}
 	}
 	
-    
-    private ArchiveLink getArchiveLinkForDate(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {	// TODO can't the url builder just to this?
-		for (ArchiveLink monthLink : archiveMonths) {
-			boolean monthMatches = monthLink.getMonth().getMonth() == dateOfLastNewsitem
-					.getMonth() && monthLink.getMonth().getYear() == dateOfLastNewsitem.getYear();
-			if (monthMatches) {
-				return monthLink;
-			}
-		}
-		return null;
-	}
-    
 }

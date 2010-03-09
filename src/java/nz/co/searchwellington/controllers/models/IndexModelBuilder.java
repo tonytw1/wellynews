@@ -54,9 +54,8 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			
 			Date monthOfLastItem = monthOfLastItem(latestNewsitems);
 			if (monthOfLastItem != null) {
-				mv.addObject("main_content_moreurl", archiveLinksService.makeArchiveUrl(monthOfLastItem,  contentRetrievalService.getArchiveMonths()));
-			}
-			
+				mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem));
+			}			
 			setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
 			return mv;
 		}

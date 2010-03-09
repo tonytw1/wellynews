@@ -98,14 +98,13 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/archive";
 	}
 	
-	public String getArchiveLinkUrl(ArchiveLink archiveLink) {
+	public String getArchiveLinkUrl(Date date) {
 		// TODO if this dateformatter thread safe? Replace with DateFormatter
-		Date month = archiveLink.getMonth();
 		SimpleDateFormat df = new SimpleDateFormat();
 	    df.applyPattern("yyyy");
-	    String yearString = df.format(month.getTime());
+	    String yearString = df.format(date.getTime());
 	    df.applyPattern("MMM");
-	    String monthString = df.format(month.getTime());
+	    String monthString = df.format(date.getTime());
 	    return siteInformation.getUrl() + "/archive/" + yearString + "/" + monthString.toLowerCase();		
 	}
 
