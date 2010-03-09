@@ -57,7 +57,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 				mv.addObject("main_content_moreurl", archiveLinksService.makeArchiveUrl(monthOfLastItem,  contentRetrievalService.getArchiveMonths()));
 			}
 			
-			setRss(mv, rssUrlBuilder.getBaseRssTitke(), rssUrlBuilder.getBaseRssUrl());
+			setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
 			return mv;
 		}
 		return null;

@@ -16,7 +16,7 @@ public class RssUrlBuilder {
         return siteInformation.getUrl() + "/rss";        
     }
     
-    public String getBaseRssTitke() {
+    public String getBaseRssTitle() {
     	return siteInformation.getAreaname() + " Newslog";
     }
        
