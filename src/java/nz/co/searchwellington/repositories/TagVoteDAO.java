@@ -10,7 +10,7 @@ import nz.co.searchwellington.model.User;
 public class TagVoteDAO {
 
     // TODO this is how we want to migrate to move from tags to tag votes.
-	public Set<Tag> getHandpickerTagsForThisResourceByUser(User loggedInUser, Resource resource) {
+	public Set<Tag> getHandpickedTagsForThisResourceByUser(User loggedInUser, Resource resource) {
 		return new HashSet<Tag>(); // TODO implement
 	}
 
@@ -19,8 +19,17 @@ public class TagVoteDAO {
 	}
 
 	public Set<Tag> getHandTagsForResource(Resource resource) {
+		return new HashSet<Tag>();
+	}
+
+	public void setTags(Resource editResource, Object object, Set<Tag> tags) {
 		// TODO Auto-generated method stub
-		return null;
+		
+	}
+
+	public void clearTags(Resource editResource, Object object) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

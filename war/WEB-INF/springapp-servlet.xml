@@ -336,6 +336,7 @@
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="geocodingService" />
 		<constructor-arg ref="tagDAO" />
+		<constructor-arg ref="tagVoteDAO" />		
 	</bean>
 	
 	
@@ -359,7 +360,8 @@
 		<constructor-arg ref="anonUserService" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="taggingReturnsOfficerService" />
-				
+		<constructor-arg ref="tagVoteDAO" />		
+		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -391,6 +393,7 @@
 		<constructor-arg ref="notifier" />
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="submissionProcessingService" />
+		<constructor-arg ref="tagVoteDAO" />				
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -498,7 +501,8 @@
 		<constructor-arg ref="keywordSearchService" />
 		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="contentUpdateService" />
-		
+		<constructor-arg ref="tagVoteDAO" />		
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

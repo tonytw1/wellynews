@@ -123,7 +123,7 @@ public class ResourceEditController extends BaseMultiActionController {
 
 
 	private Set<Tag> getHandpickerTagsForThisResourceByUser(User loggedInUser, Resource editResource) {
-		return tagVoteDAO.getHandpickerTagsForThisResourceByUser(loggedInUser, editResource);
+		return tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource);
 	}
     
     

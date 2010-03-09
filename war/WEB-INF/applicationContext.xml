@@ -28,7 +28,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="urls.xml" />
 	<import resource="linkchecking.xml" />
 
-	<bean id="taggingReturnsOfficerService" class=" nz.co.searchwellington.tagging.TaggingReturnsOfficerService" />
+	<bean id="taggingReturnsOfficerService" class=" nz.co.searchwellington.tagging.TaggingReturnsOfficerService" >
+		<constructor-arg ref="tagVoteDAO" />
+	</bean>
 	
 	<bean id="keystore" class="nz.co.searchwellington.repositories.keystore.KeyStore">
 		<property name="hostname" value="${keystore.hostname}" />
@@ -289,6 +291,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="notifier" class="nz.co.searchwellington.mail.Notifier">
 		<constructor-arg ref="mailSender" />
 		<constructor-arg ref="velocityEngine" />
+		<constructor-arg ref="tagVoteDAO" />
+		
 		<property name="recipient" value="${feedreader.email}" />	
 	</bean>
 		

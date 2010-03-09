@@ -53,15 +53,7 @@
 		</property>
 
 		<many-to-one name="owner" class="nz.co.searchwellington.model.UserImpl" column="owner" cascade="" />
-
-		<set name="tags" table="resource_tags" access="field">
-			<cache usage="read-write" />		
-			<key column="resource_id" />
-			<many-to-many class="nz.co.searchwellington.model.Tag" column="tag_id" order-by="name" />
-		</set>
-		
-		
-		
+				
 		<set name="discoveredFeeds" table="discovered_urls_references" >
 				<cache usage="read-write" />
 				<key column="resource_id" />				

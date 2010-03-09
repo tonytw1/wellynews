@@ -54,7 +54,7 @@ public class PublicTaggingController extends BaseMultiActionController {
             Resource editResource = (Resource) request.getAttribute("resource");        
             log.info("Loaded resource #" + editResource.getId() + " for tagging.");
             mv.addObject("resource", editResource);
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickerTagsForThisResourceByUser(loggedInUser, editResource)));
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource)));
             
             if (loggedInUser != null) {
                 mv.addObject("show_additional_tags", 1);

@@ -19,6 +19,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.TagDAO;
+import nz.co.searchwellington.repositories.TagVoteDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
@@ -41,12 +42,15 @@ public class SubmissionProcessingService {
     private UrlCleaner urlCleaner;
     private GoogleGeoCodeService geocodeService;
     private TagDAO tagDAO;
+    private TagVoteDAO tagVoteDAO;
     
         
-	protected SubmissionProcessingService(UrlCleaner urlCleaner, GoogleGeoCodeService geocodeService, TagDAO tagDAO) {
+	public SubmissionProcessingService(UrlCleaner urlCleaner, GoogleGeoCodeService geocodeService, TagDAO tagDAO, TagVoteDAO tagVoteDAO) {
 		this.urlCleaner = urlCleaner;
 		this.geocodeService = geocodeService;
 		this.tagDAO = tagDAO;
+		this.tagVoteDAO = tagVoteDAO;
+		
 	}
 
 
@@ -165,9 +169,9 @@ public class SubmissionProcessingService {
 			List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
 			Set<Tag> tags = new HashSet<Tag>(requestTagsList);
 			log.info("Found " + tags.size() + " tags on the request");
-			editResource.setTags(tags);            
+			tagVoteDAO.setTags(editResource, null, tags);
 		} else {
-			editResource.clearTags();
+			tagVoteDAO.clearTags(editResource, null);
 		}
 	}
     
@@ -202,12 +206,13 @@ public class SubmissionProcessingService {
                         Tag newTag = tagDAO.createNewTag();                                                
                         newTag.setName(field);                       
                         newTag.setDisplayName(displayName);                        
-                        tagDAO.saveTag(newTag);                                      
-                        editResource.addTag(newTag);
+                        tagDAO.saveTag(newTag);
+                        tagVoteDAO.addTag(null, newTag, editResource);
                         
                     } else {
                         log.debug("Found an existing tag in the additional list: " + existingTag.getName() + "; adding.");
-                        editResource.addTag(existingTag);                                
+                        tagVoteDAO.addTag(null, existingTag, editResource);
+                                                     
                     }
                 } else {
                     log.debug("Ignoring invalid tag name: " + field);
@@ -227,8 +232,8 @@ public class SubmissionProcessingService {
     
     
     
-    protected void trimTags(Resource editResource, int maxTags) {
-        if (editResource.getTags().size() > maxTags) {
+    protected void trimTags(Resource editResource, int maxTags) { // TODO reimplement
+   /*     if (editResource.getTags().size() > maxTags) {
             Set <Tag> tagsToKeep = new HashSet<Tag>();
             int counter = 0;
             for (Iterator<Tag> iter = editResource.getTags().iterator(); iter.hasNext();) {
@@ -239,7 +244,8 @@ public class SubmissionProcessingService {
                 }
             }
             editResource.setTags(tagsToKeep);
-        }
+    	}
+    */ 
     }
 
     protected boolean isValidTagName(String field) {

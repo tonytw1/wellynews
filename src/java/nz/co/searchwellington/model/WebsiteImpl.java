@@ -33,9 +33,12 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     public Set<Feed> getFeeds() {
         return feeds;
     }
+    
+    public void setFeeds(Set<Feed> feeds) {
+		this.feeds = feeds;
+	}
 
-
-    public Set<Watchlist> getWatchlist() {
+	public Set<Watchlist> getWatchlist() {
         return watchlist;
     }
     
