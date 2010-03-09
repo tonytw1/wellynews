@@ -177,6 +177,9 @@
 				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
 					<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
 				#end
+				#if ($editPermissionService.canCheck($item) && ($item.type == "N"))				
+					<li class="admin"><a href="$adminUrlBuilder.getTaggingVotesUrl($item)">tagging</a></li>
+				#end
 				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
 					<li class="admin"><a href="$adminUrlBuilder.getViewSnapshotUrl($item)">view snapshot</a></li>
 				#end

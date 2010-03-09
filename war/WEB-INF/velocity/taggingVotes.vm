@@ -18,6 +18,7 @@
 				<ul>
 					<li>$vote.tag.name</li>
 					<li>$vote.voter.name</li>
+					<li>$vote.weight</li>
 				</ul>
 		#end
 		</ul>

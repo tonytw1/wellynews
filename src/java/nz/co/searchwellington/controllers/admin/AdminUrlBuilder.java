@@ -42,6 +42,10 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/edit/viewsnapshot?resource=" + resource.getId();	
 	}
 	
+	public String getTaggingVotesUrl(Resource resource) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/edit/tagging?resource=" + resource.getId();	
+	}
+		
 	public String getFeedNewsitemSuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
 		return makeSuppressionUrl(feednewsitem.getUrl());
 	}	
