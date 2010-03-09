@@ -19,14 +19,13 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     public NewsitemImpl() {
     }
     
-    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Twit submittingTwit,  Set<Twit> retwits) {
+    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set<DiscoveredFeed> discoveredFeeds, Twit submittingTwit,  Set<Twit> retwits) {
         this.id = id;
         this.name = name;
         this.url = url;
         this.description = description;
         this.date = date;
         this.publisher = publisher;
-        this.tags = tags;
         this.discoveredFeeds = discoveredFeeds;
         this.submittingTwit = submittingTwit;
         this.reTwits = retwits;

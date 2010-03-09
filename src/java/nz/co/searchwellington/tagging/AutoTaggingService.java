@@ -29,7 +29,7 @@ public class AutoTaggingService {
 		suggestedTags.addAll(tagHintAutoTagger.suggestTags(resource));
 		for (Tag tag : suggestedTags) {
 			if (!impliedTagService.alreadyHasTag(resource, tag)) {
-				resource.addTag(tag);
+//				resource.addTag(tag);	TODO reimplement
 				log.info("Autotag resource '" + resource.getName() + "' with " + tag.getName());
 			}
 		}

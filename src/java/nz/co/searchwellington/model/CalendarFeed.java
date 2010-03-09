@@ -8,13 +8,12 @@ public class CalendarFeed extends PublishedResourceImpl implements PublishedReso
     }
     
     
-	public CalendarFeed(int id, String url, String name, String description, Set<Tag> tags) {
+	public CalendarFeed(int id, String url, String name, String description) {
         this.id = id;
         this.url = url;
         
         this.name = name;
         this.description = description;
-        this.tags = tags;
     }
 
     public String getType() {

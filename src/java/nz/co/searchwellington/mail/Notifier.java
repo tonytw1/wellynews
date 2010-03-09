@@ -3,6 +3,7 @@ package nz.co.searchwellington.mail;
 import java.io.StringWriter;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.TagVoteDAO;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
@@ -19,13 +20,16 @@ public class Notifier {
 
     private VelocityEngine velocityEngine;
     private MailSender mailSender;
+    private TagVoteDAO tagVoteDAO;
+    
     private String recipient;
 
     Logger log = Logger.getLogger(Notifier.class);
     
-    public Notifier(VelocityEngine velocityEngine, MailSender mailSender) {        
+    public Notifier(VelocityEngine velocityEngine, MailSender mailSender, TagVoteDAO tagVoteDAO) {        
         this.velocityEngine = velocityEngine;
         this.mailSender = mailSender;
+        this.tagVoteDAO = tagVoteDAO;
     }
     
 
@@ -72,7 +76,7 @@ public class Notifier {
             context.put("title", editResource.getName());
             context.put("url", editResource.getUrl());
             context.put("description", editResource.getDescription());
-            context.put("tags", editResource.getTags());
+            context.put("tags", tagVoteDAO.getHandTagsForResource(editResource));
             
             StringWriter sw = new StringWriter(); template.merge( context, sw );
             return sw.toString();

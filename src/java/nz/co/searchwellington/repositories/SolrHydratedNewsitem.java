@@ -26,7 +26,6 @@ public class SolrHydratedNewsitem implements Newsitem {
 	String url;
 	String publisherName;
 	Date date;
-	Set<Tag> tags;
 
 	public SolrHydratedNewsitem(Integer id, String headline, String description, String url, String publisherName, Date date) {
 		this.id = id;
@@ -34,8 +33,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 		this.description = description;
 		this.url = url;
 		this.publisherName = publisherName;
-		this.date  = date;
-		this.tags = new ListOrderedSet();
+		this.date  = date;		
 	}
 
 	@Override
@@ -90,19 +88,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void addTag(Tag tag) {
-		tags.add(tag);
-		
-	}
-
-	@Override
-	public void clearTags() {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	@Override
 	public Date getDate() {
 		return date;
@@ -169,17 +155,6 @@ public class SolrHydratedNewsitem implements Newsitem {
 	public User getOwner() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public void getRemoveTag(Tag tag) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	public Set<Tag> getTags() {
-		return tags;
 	}
 	
 	@Override
@@ -281,13 +256,7 @@ public class SolrHydratedNewsitem implements Newsitem {
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public void setTags(Set<Tag> tags) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	
 	@Override
 	public void setUrl(String url) {
 		// TODO Auto-generated method stub

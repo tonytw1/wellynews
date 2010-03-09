@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
+import nz.co.searchwellington.repositories.TagVoteDAO;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
@@ -29,8 +30,9 @@ public class AutoTagController extends BaseMultiActionController {
 	private KeywordSearchService keywordSearchService;
 	private ContentUpdateService contentUpateService;
 	private TagDAO tagDAO;
+	private TagVoteDAO tagVoteDAO;
     
-	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService) {      
+	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService, TagVoteDAO tagVoteDAO) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
         this.urlStack = urlStack;
@@ -38,6 +40,7 @@ public class AutoTagController extends BaseMultiActionController {
         this.keywordSearchService = keywordSearchService;
         this.tagDAO = tagDAO;
         this.contentUpateService = contentUpateService;
+        this.tagVoteDAO = tagVoteDAO;
 	}
 
 
@@ -72,9 +75,9 @@ public class AutoTagController extends BaseMultiActionController {
         mv.addObject("heading", "Autotagging");
         
         requestFilter.loadAttributesOntoRequest(request);
-        Tag editTag = (Tag) request.getAttribute("tag");
-        if (editTag != null) {
-            mv.addObject("tag", editTag);
+        Tag tag = (Tag) request.getAttribute("tag");
+        if (tag != null) {
+            mv.addObject("tag", tag);
             
             List<Resource> resourcesAutoTagged = new ArrayList<Resource>();            
             String[] autotaggedResourceIds = request.getParameterValues("autotag");            
@@ -82,9 +85,9 @@ public class AutoTagController extends BaseMultiActionController {
                 int resourceId = Integer.parseInt(resourceIdString);
                 Resource resource = resourceDAO.loadResourceById(resourceId);
 
-                log.info("Applying tag " + editTag.getName() + " to:" + resource.getName());
-                if (!autoTagService.alreadyHasTag(resource, editTag)) {
-                	resource.addTag(editTag);
+                log.info("Applying tag " + tag.getName() + " to:" + resource.getName());
+                if (!autoTagService.alreadyHasTag(resource, tag)) {
+                	tagVoteDAO.addTag(loggedInUserFilter.getLoggedInUser(), tag, resource);
                 }
                 contentUpateService.update(resource, false);
                 resourcesAutoTagged.add(resource);

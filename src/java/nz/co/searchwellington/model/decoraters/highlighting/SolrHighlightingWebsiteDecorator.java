@@ -47,16 +47,6 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 	}
     
     
-	public void addTag(Tag tag) {
-		website.addTag(tag);
-	}
-	
-	
-
-	public void clearTags() {
-		website.clearTags();
-	}
-
 	public Set<CalendarFeed> getCalendars() {
 		return website.getCalendars();
 	}
@@ -97,15 +87,7 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 	public Date getLiveTime() {
 		return website.getLiveTime();
 	}
-
-	public void getRemoveTag(Tag tag) {
-		website.getRemoveTag(tag);
-	}
 	
-	public Set<Tag> getTags() {
-		return website.getTags();
-	}
-
 	public String getType() {
 		return website.getType();
 	}
@@ -174,10 +156,6 @@ public class SolrHighlightingWebsiteDecorator implements Website {
 
 	public void setName(String name) {
 		website.setName(name);
-	}
-
-	public void setTags(Set<Tag> tags) {
-		website.setTags(tags);
 	}
 
 	public void setUrl(String url) {

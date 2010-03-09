@@ -1,7 +1,6 @@
 package nz.co.searchwellington.model;
 
 import java.util.Date;
-import java.util.HashSet;
 
 public class SuggestionFeednewsitem extends ResourceImpl implements Resource {
 
@@ -12,7 +11,6 @@ public class SuggestionFeednewsitem extends ResourceImpl implements Resource {
 		this.suggestion = suggestion;
 		this.name = name;
 		this.date = date;
-		this.tags = new HashSet<Tag>();		
 		this.description = description;
 	}
 	

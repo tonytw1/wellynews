@@ -11,13 +11,12 @@ public class FeedNewsitem extends NewsitemImpl {
 	private boolean isSuppressed;
 	private Image image;
 	
-    public FeedNewsitem(int id, String name, String url, String description, Date date, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds) {       
+    public FeedNewsitem(int id, String name, String url, String description, Date date, Set<DiscoveredFeed> discoveredFeeds) {       
         this.id = id;
         this.name = name;
         this.url = url;
         this.description = description;
         this.date = date;
-        this.tags = tags;
         this.discoveredFeeds = discoveredFeeds;
         this.isSuppressed = false;
     }

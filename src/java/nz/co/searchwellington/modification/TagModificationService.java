@@ -46,7 +46,7 @@ public class TagModificationService {
 		log.info("Tag to be deleted has " + taggedResources.size() + " resources.");
 		for (Resource resource : taggedResources) {            	
 			log.info("Removing tag from: " + resource.getName());
-		    resource.getRemoveTag(tag);
+		    //resource.getRemoveTag(tag);	// TODO remove hand tags instead.
 		    contentUpdateService.update(resource, false);
 		}
 	}

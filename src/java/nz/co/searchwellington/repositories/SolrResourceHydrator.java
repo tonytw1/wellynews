@@ -37,7 +37,7 @@ public class SolrResourceHydrator {
 			item.setDescription((String) result.getFieldValue("description"));
 			item.setUrl((String) result.getFieldValue("url"));
 			item.setDate((Date) result.getFieldValue("date"));
-			item.setTags(new HashSet<Tag>());
+			//item.setTags(new HashSet<Tag>());
 			hydrateTags(result, item);
 			return item;
 		}
@@ -55,7 +55,7 @@ public class SolrResourceHydrator {
 			for (Object tagId : tagIds) {
 				Tag tag = tagDAO.loadTagById((Integer) tagId);
 				if (tag != null) {					
-					item.addTag(tag);
+					//item.addTag(tag);
 				}
 			}
 		}

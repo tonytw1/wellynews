@@ -16,7 +16,7 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     public WebsiteImpl() {        
     }
     
-	public WebsiteImpl(int id, String name, String url, Date date, String description, Set<Feed> feed, Set<Watchlist> watchlist, Set<Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Set<CalendarFeed> calendars) {
+	public WebsiteImpl(int id, String name, String url, Date date, String description, Set<Feed> feed, Set<Watchlist> watchlist, Set<DiscoveredFeed> discoveredFeeds, Set<CalendarFeed> calendars) {
         this.id = id;
 		this.name = name;
         this.url = url;
@@ -27,8 +27,6 @@ public class WebsiteImpl extends ResourceImpl implements Website {
         this.watchlist = watchlist;
         this.calendars = calendars;
         
-        // TODO can these shared ones go up into the super constuctor?
-        this.tags = tags;
         this.discoveredFeeds = discoveredFeeds;
 	}
 	
@@ -40,28 +38,11 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     public Set<Watchlist> getWatchlist() {
         return watchlist;
     }
-
-
- 
     
     public String getType() {
         return "W";
      }
-
-
-
-    public Set<Tag> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<Tag> tags) {
-        this.tags = tags;
-    }
-
-    public void setFeeds(Set<Feed> feeds) {
-        this.feeds = feeds;
-    }
-
+  
     public void setWatchlist(Set<Watchlist> watchlist) {
         this.watchlist = watchlist;
     }

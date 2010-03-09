@@ -89,7 +89,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         
         // TODO This reference should really come from the resourceDAO.
         // TODO feed decision maker and feedreader and user submissions should share the same title cleaning logic
-        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle().trim(), url, description, itemDate, new HashSet<Tag>(), new HashSet<DiscoveredFeed>());
+        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle().trim(), url, description, itemDate, new HashSet<DiscoveredFeed>());
         feedItem.setImage(extractThumbnail(feed, item));
       
         log.debug("Date of loaded newsitem is: " + feedItem.getDate());

@@ -9,15 +9,22 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TaggingVote;
+import nz.co.searchwellington.repositories.TagVoteDAO;
 
 import org.apache.log4j.Logger;
 
 public class TaggingReturnsOfficerService {
-	
-	
+		
 	static Logger log = Logger.getLogger(TaggingReturnsOfficerService.class);
 
+	private TagVoteDAO tagVoteDAO;
+
 	
+	public TaggingReturnsOfficerService(TagVoteDAO tagVoteDAO) {
+		this.tagVoteDAO = tagVoteDAO;
+	}
+
+
 	public Set<Tag> getIndexTagsForResource(Resource resource) {		
 		List<TaggingVote> taggingVotes = complieTaggingVotes(resource);			
 		Set <Tag> indexTags = new HashSet<Tag>();
@@ -33,7 +40,7 @@ public class TaggingReturnsOfficerService {
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
 		List<TaggingVote> votes = new ArrayList<TaggingVote>();
 		
-		for (Tag tag : resource.getTags()) {
+		for (Tag tag : tagVoteDAO.getHandTagsForResource(resource)) {
 			votes.add(new TaggingVote(tag, new HandTaggedVoter(), 100));
 		}
 		
@@ -46,13 +53,13 @@ public class TaggingReturnsOfficerService {
 			addAncestorTagVotes(resource, votes);
 		    			
 		    if (((PublishedResource) resource).getPublisher() != null) {              
-		        for (Tag publisherTag : ((PublishedResource) resource).getPublisher().getTags()) {                
-		            
-		            votes.add(new TaggingVote(publisherTag, new PublishersTagsVoter(), 100));		            		     		            
-		            for (Tag publishersAncestor : publisherTag.getAncestors()) {
-		    				votes.add(new TaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter(), 100));
-		            }
-		        }
+//		        for (Tag publisherTag : ((PublishedResource) resource).getPublisher().getTags()) {                
+	//	            
+		//            votes.add(new TaggingVote(publisherTag, new PublishersTagsVoter(), 100));		            		     		            
+		  //          for (Tag publishersAncestor : publisherTag.getAncestors()) {
+		    //				votes.add(new TaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter(), 100));
+		      // TODO     }
+		       // }
 		    }
 		}
 		return votes;
@@ -60,7 +67,7 @@ public class TaggingReturnsOfficerService {
 
 
 	private void addAncestorTagVotes(Resource resource, List<TaggingVote> votes) {
-		for (Tag tag : resource.getTags()) {		    	
+		for (Tag tag : tagVoteDAO.getHandTagsForResource(resource)) {
 			for (Tag ancestorTag: tag.getAncestors()) {
 				votes.add(new TaggingVote(ancestorTag, new AncestorTagVoter(), 100));
 			}

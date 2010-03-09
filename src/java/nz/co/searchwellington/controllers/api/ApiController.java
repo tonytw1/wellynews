@@ -19,6 +19,7 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
+import nz.co.searchwellington.repositories.TagVoteDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -40,8 +41,9 @@ public class ApiController extends MultiActionController {
 	private ContentUpdateService contentUpdateService;
 	private SubmissionProcessingService submissionProcessingService;
 	private AutoTaggingService autoTagger;
+	private TagVoteDAO tagVoteDAO;
 	
-    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger) {		
+    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, TagVoteDAO tagVoteDAO) {		
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
@@ -50,6 +52,7 @@ public class ApiController extends MultiActionController {
 		this.contentUpdateService = contentUpdateService;
 		this.submissionProcessingService = submissionProcessingService;
 		this.autoTagger = autoTagger;
+		this.tagVoteDAO = tagVoteDAO;
 	}
     
     
@@ -187,7 +190,7 @@ public class ApiController extends MultiActionController {
         	if (resourceUrl != null && tag != null) {
         		Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
         		if (resource != null) {
-        			resource.addTag(tag);
+        			tagVoteDAO.addTag(loggedInUser, tag, resource);
         			log.info("Applied tag: " + tag.getDisplayName() + " to resource: " + resource.getName());
         			contentUpdateService.update(resource, false);
         			mv.setViewName("apiResponseOK");

@@ -24,10 +24,6 @@ public interface Resource {
     
     public void setDescription(String description);
     
-    public Set<Tag> getTags();   
-    public void setTags(Set<Tag> tags);
-    public void addTag(Tag tag);
-
     public int getHttpStatus();
     public void setHttpStatus(int httpStatus);
     public Date getLastScanned();
@@ -47,7 +43,6 @@ public interface Resource {
     
 	public Geocode getGeocode();
 	public void setGeocode(Geocode geocode);
-	public void getRemoveTag(Tag tag);
 	public String getUrlWords();
 	public void setUrlWords(String urlWords);
 	
@@ -56,6 +51,5 @@ public interface Resource {
 
 	public boolean isHeld();
 	public void setHeld(boolean held);
-	public void clearTags();
 	
 }

@@ -2,14 +2,17 @@ package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagVoteDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
@@ -25,16 +28,18 @@ public class PublicTaggingController extends BaseMultiActionController {
 	private SubmissionProcessingService submissionProcessingService;
 	private ResourceRepository resourceDAO;
     private AnonUserService anonUserService;
+	private TagVoteDAO tagVoteDAO;
 
 
     
     public PublicTaggingController(ResourceRepository resourceDAO,           
-                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter, SubmissionProcessingService submissionProcessingService) {       
+                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter, SubmissionProcessingService submissionProcessingService, TagVoteDAO tagVoteDAO) {       
         this.resourceDAO = resourceDAO;      
         this.tagWidgetFactory = tagWidgetFactory;
         this.notifier = notifier;
         this.loggedInUserFilter = loggedInUserFilter;
         this.submissionProcessingService = submissionProcessingService;
+        this.tagVoteDAO = tagVoteDAO;
     }
    
     
@@ -49,7 +54,7 @@ public class PublicTaggingController extends BaseMultiActionController {
             Resource editResource = (Resource) request.getAttribute("resource");        
             log.info("Loaded resource #" + editResource.getId() + " for tagging.");
             mv.addObject("resource", editResource);
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickerTagsForThisResourceByUser(loggedInUser, editResource)));
             
             if (loggedInUser != null) {
                 mv.addObject("show_additional_tags", 1);

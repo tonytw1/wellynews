@@ -16,14 +16,13 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
     }
     
     
-    public FeedImpl(int id, String name, String url, String description, Website publisher, String acceptancePolicy, Set<Tag> tags) {
+    public FeedImpl(int id, String name, String url, String description, Website publisher, String acceptancePolicy) {
         this.id = id;
         this.name = name;
         this.url = url;
         this.description = description;
         this.publisher = publisher;
         this.acceptancePolicy = acceptancePolicy;
-        this.tags = tags;
     }
     
     

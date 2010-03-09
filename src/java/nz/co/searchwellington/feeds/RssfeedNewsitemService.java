@@ -39,8 +39,7 @@ public abstract class RssfeedNewsitemService {
 	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem, Feed feed) {
 		// TODO why are we newing up an instance of our superclass?
 	    String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : ""; 
-		Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feedNewsitem.getPublisher(), 
-	  		new HashSet<Tag>(),
+		Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feedNewsitem.getPublisher(),
 	    		new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
 	    newsitem.setImage(feedNewsitem.getImage());		
 	    newsitem.setPublisher(feed.getPublisher());

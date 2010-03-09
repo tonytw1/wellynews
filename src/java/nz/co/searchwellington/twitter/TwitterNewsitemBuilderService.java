@@ -167,8 +167,7 @@ public class TwitterNewsitemBuilderService {
 	
 	public Newsitem makeNewsitemFromTwitteredNewsitem(TwitteredNewsitem twitteredNewsitem) {
 		// TODO constructor calls should be in the resourceDAO?
-    	Newsitem newsitem = new NewsitemImpl(0, twitteredNewsitem.getName(), twitteredNewsitem.getUrl(), twitteredNewsitem.getDescription(), twitteredNewsitem.getDate(), null, 
-    			new HashSet<Tag>(),
+    	Newsitem newsitem = new NewsitemImpl(0, twitteredNewsitem.getName(), twitteredNewsitem.getUrl(), twitteredNewsitem.getDescription(), twitteredNewsitem.getDate(), null,    		
     			new HashSet<DiscoveredFeed>(),
     			twitteredNewsitem.getTwit(),    	
     			new HashSet<Twit>()); 

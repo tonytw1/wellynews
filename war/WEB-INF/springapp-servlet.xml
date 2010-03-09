@@ -61,16 +61,7 @@
 		</property>					
 	</bean>
 	
-	
-	<bean id="tagInformationService" class="nz.co.searchwellington.tagging.TagInformationService" />
 		
-
-
-
-	
-	
-	
-	
 	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
 		<constructor-arg ref="siteInformation" />
 	</bean>
@@ -150,6 +141,7 @@
 		<constructor-arg ref="contentUpdateService" />
 		<constructor-arg ref="submissionProcessingService" />
 		<constructor-arg ref="autoTaggingService" />
+		<constructor-arg ref="tagVoteDAO" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

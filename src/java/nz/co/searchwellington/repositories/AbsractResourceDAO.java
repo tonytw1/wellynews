@@ -13,7 +13,6 @@ import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.Watchlist;
@@ -29,38 +28,34 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     
       
     public Newsitem createNewNewsitem() {         
-        return new NewsitemImpl(0, "", "", "", Calendar.getInstance().getTime(), null, new HashSet<Tag>(),
+        return new NewsitemImpl(0, "", "", "", Calendar.getInstance().getTime(), null,
                             new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
     }
     
     public TwitteredNewsitem createNewTwitteredNewsitem(Twit twit) {         
-        return new TwitteredNewsitem(0, "", "", "", Calendar.getInstance().getTime(), null, new HashSet<Tag>(),
+        return new TwitteredNewsitem(0, "", "", "", Calendar.getInstance().getTime(), null,
                             new HashSet<DiscoveredFeed>(), twit);
     }
         
     public Website createNewWebsite() {
         return new WebsiteImpl( 0, "", "", Calendar.getInstance().getTime(), 
                                 "", 
-                                new HashSet <Feed>(), new HashSet<Watchlist>(), 
-                                new HashSet<Tag>(),
+                                new HashSet <Feed>(), new HashSet<Watchlist>(),
                                 new HashSet <DiscoveredFeed>(),
                                 new HashSet <CalendarFeed>());
     }
 
     public Feed createNewFeed() {
-        return new FeedImpl(0, "", "", "", null, null, new HashSet<Tag>());
+        return new FeedImpl(0, "", "", "", null, null);
     }
     
     
     public Watchlist createNewWatchlist() {
         log.info("Creating new Watchlist.");
-        return new Watchlist(0, "", "", "", null, new HashSet<Tag>(),
-                new HashSet <DiscoveredFeed>());
+        return new Watchlist(0, "", "", "", null, new HashSet <DiscoveredFeed>());
+      
     }
 
-   
-    
-    
     
     public CommentFeed createNewCommentFeed(String commentFeedUrl) {
         CommentFeed commentFeed = new CommentFeed(0, commentFeedUrl, new ArrayList<Comment>(), null, null, new HashSet<Resource>());
@@ -69,7 +64,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
     
     
     public CalendarFeed createNewCalendarFeed(String url) {
-        CalendarFeed calendar = new CalendarFeed(0, url, "", "", new HashSet<Tag>());
+        CalendarFeed calendar = new CalendarFeed(0, url, "", "");
         return calendar;
     }
     

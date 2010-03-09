@@ -57,18 +57,12 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	}
     
     
-    public void addTag(Tag tag) {
-		newsitem.addTag(tag);
-	}
-
+   
 	public CommentFeed getCommentFeed() {
 		return newsitem.getCommentFeed();
 	}
 	
-	public void clearTags() {
-		newsitem.clearTags();		
-	}
-
+	
 	public List<Comment> getComments() {		
 		List<Comment> highlightedComments = new ArrayList<Comment>();		
     	if (map.containsKey("comment")) {
@@ -135,15 +129,6 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		return newsitem.getPublisher();
 	}
 
-
-	public void getRemoveTag(Tag tag) {
-		newsitem.getRemoveTag(tag);
-	}
-
-	public Set<Tag> getTags() {
-		return newsitem.getTags();
-	}
-	
 	public String getType() {
 		return newsitem.getType();
 	}
@@ -213,11 +198,6 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 		newsitem.setPublisher(publisher);
 	}
 
-
-	public void setTags(Set<Tag> tags) {
-		newsitem.setTags(tags);
-	}
-
 	public void setUrl(String url) {
 		newsitem.setUrl(url);
 	}
@@ -267,7 +247,6 @@ public class SolrHighlightingNewsitemDecorator implements Newsitem {
 	public void addReTwit(Twit retwit) {
 		newsitem.addReTwit(retwit);
 	}
-
 
 	public Set<Twit> getReTwits() {
 		return newsitem.getReTwits();

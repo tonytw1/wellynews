@@ -7,14 +7,13 @@ public class TwitteredNewsitem extends NewsitemImpl {
 	
 	private Twit twit;
 	
-    public TwitteredNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set <Tag> tags, Set<DiscoveredFeed> discoveredFeeds, Twit twit) {
+    public TwitteredNewsitem(int id, String name, String url, String description, Date date, Website publisher, Set<DiscoveredFeed> discoveredFeeds, Twit twit) {
         this.id = id;
         this.name = name;
         this.url = url;
         this.description = description;
         this.date = date;
-        this.publisher = publisher;
-        this.tags = tags;
+        this.publisher = publisher;       
         this.discoveredFeeds = discoveredFeeds;
         this.twit = twit;
     }
