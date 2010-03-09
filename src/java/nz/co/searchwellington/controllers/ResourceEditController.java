@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +29,7 @@ import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagVoteDAO;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
@@ -61,13 +63,14 @@ public class ResourceEditController extends BaseMultiActionController {
     private AnonUserService anonUserService;
     private ResourceRepository resourceDAO;
 	private TaggingReturnsOfficerService taggingReturnsOfficerService;
+	private TagVoteDAO tagVoteDAO;
     
     public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService) {       
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService, TagVoteDAO tagVoteDAO) {       
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;
@@ -86,6 +89,7 @@ public class ResourceEditController extends BaseMultiActionController {
         this.anonUserService = anonUserService;
         this.contentRetrievalService = contentRetrievalService;
         this.taggingReturnsOfficerService = taggingReturnsOfficerService;
+        this.tagVoteDAO = tagVoteDAO;
     }
    
     
@@ -102,7 +106,7 @@ public class ResourceEditController extends BaseMultiActionController {
     		mv.addObject("heading", "Editing a Resource");
     		
             mv.addObject("resource", editResource);
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(getHandpickerTagsForThisResourceByUser(loggedInUser, editResource)));
             mv.addObject("show_additional_tags", 1);
             
             boolean userIsLoggedIn = loggedInUser != null;
@@ -116,7 +120,11 @@ public class ResourceEditController extends BaseMultiActionController {
        
     	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   	
     }
-    
+
+
+	private Set<Tag> getHandpickerTagsForThisResourceByUser(User loggedInUser, Resource editResource) {
+		return tagVoteDAO.getHandpickerTagsForThisResourceByUser(loggedInUser, editResource);
+	}
     
     
     @Transactional
@@ -154,7 +162,7 @@ public class ResourceEditController extends BaseMultiActionController {
             mv.addObject("resource", editResource);
             mv.addObject("body", snapBodyExtractor.extractSnapshotBodyTextFor(editResource));
             
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(editResource.getTags()));
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(getHandpickerTagsForThisResourceByUser(loggedInUser, editResource)));
             mv.addObject("show_additional_tags", 1);
             
             return mv;
