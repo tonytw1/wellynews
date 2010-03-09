@@ -2,13 +2,12 @@ package nz.co.searchwellington.controllers.models;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -27,12 +26,17 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	RssUrlBuilder rssUrlBuilder;
 	LoggedInUserFilter loggedInUserFilter;
 	UrlBuilder urlBuilder;
+	ArchiveLinksService archiveLinksService;
 	
-	public IndexModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter, UrlBuilder urlBuilder) {
+	
+	public IndexModelBuilder(ContentRetrievalService contentRetrievalService,
+			RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter,
+			UrlBuilder urlBuilder, ArchiveLinksService archiveLinksService) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.urlBuilder = urlBuilder;
+		this.archiveLinksService = archiveLinksService;
 	}
 
 	@Override
@@ -48,10 +52,9 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS);                
 			mv.addObject("main_content", latestNewsitems);
 			
-			List<ArchiveLink> archiveMonths = contentRetrievalService.getArchiveMonths();
-			mv.addObject("archive_links", archiveMonths);
-			if (monthOfLastItem(latestNewsitems) != null) {
-				mv.addObject("main_content_moreurl", makeArchiveUrl(monthOfLastItem(latestNewsitems),  archiveMonths));
+			Date monthOfLastItem = monthOfLastItem(latestNewsitems);
+			if (monthOfLastItem != null) {
+				mv.addObject("main_content_moreurl", archiveLinksService.makeArchiveUrl(monthOfLastItem,  contentRetrievalService.getArchiveMonths()));
 			}
 			
 			setRss(mv, rssUrlBuilder.getBaseRssTitke(), rssUrlBuilder.getBaseRssUrl());
@@ -68,19 +71,10 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateGeocoded(mv);
 		populateFeatured(mv);
 		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());		
-		populateArchiveStatistics(mv);
+		archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths());
 	}
 	
 	
-	
-	private void populateArchiveStatistics(ModelAndView mv) {
-		Map<String, Integer> archiveStatistics = contentRetrievalService.getArchiveStatistics();
-		if (archiveStatistics != null) {
-			mv.addObject("site_count",  archiveStatistics.get("W"));
-			mv.addObject("newsitem_count",  archiveStatistics.get("N"));
-			mv.addObject("feed_count", archiveStatistics.get("F"));
-		}
-	}
 
 	private Date monthOfLastItem(List<Resource> latestNewsitems) {
 		if (latestNewsitems.size() > 0) {
@@ -94,28 +88,6 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		return null;
 	}
 
-	
-	 public String makeArchiveUrl(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {    	
-	    	ArchiveLink archiveLink = getArchiveLinkForDate(dateOfLastNewsitem, archiveMonths);
-	    	if (archiveLink != null) {
-	    		return urlBuilder.getArchiveLinkUrl(archiveLink);
-	    	}
-	    	return null;
-	 }
-	 
-	 
-	    
-	private ArchiveLink getArchiveLinkForDate(Date dateOfLastNewsitem, List<ArchiveLink> archiveMonths) {
-		for (ArchiveLink monthLink : archiveMonths) {
-			boolean monthMatches = monthLink.getMonth().getMonth() == dateOfLastNewsitem
-					.getMonth() && monthLink.getMonth().getYear() == dateOfLastNewsitem.getYear();
-			if (monthMatches) {
-				return monthLink;
-			}
-		}
-		return null;
-	}
-	
 	
 	private void populateUserOwnedResources(ModelAndView mv, User loggedInUser) {
 		 if (loggedInUser != null) {

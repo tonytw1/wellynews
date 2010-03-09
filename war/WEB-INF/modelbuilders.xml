@@ -2,15 +2,22 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+	<bean id="archiveLinksService" class="nz.co.searchwellington.controllers.models.helpers.ArchiveLinkService">
+		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="urlBuilder" />
+	</bean>
+
 	<bean id="indexModelBuilder" class="nz.co.searchwellington.controllers.models.IndexModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="urlBuilder" />		
+		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="archiveLinksService" />		
 	</bean>
 	
 	<bean id="archiveModelBuilder" class="nz.co.searchwellington.controllers.models.ArchiveModelBuilder">
-		<constructor-arg ref="contentRetrievalService" />		
+		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="archiveLinksService" />			
 	</bean>
 		
 	<bean id="feedsModelBuilder" class="nz.co.searchwellington.controllers.models.FeedsModelBuilder">

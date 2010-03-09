@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -17,15 +18,19 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	Logger log = Logger.getLogger(ArchiveModelBuilder.class);
+	static Logger log = Logger.getLogger(ArchiveModelBuilder.class);
     	
-	private ContentRetrievalService contentRetrievalService;	
-
-	public ArchiveModelBuilder(ContentRetrievalService contentRetrievalService) {		
-		this.contentRetrievalService = contentRetrievalService;
-	}
+	private ContentRetrievalService contentRetrievalService;
+	private ArchiveLinksService archiveLinksService;
 
 	
+	public ArchiveModelBuilder(ContentRetrievalService contentRetrievalService,
+			ArchiveLinksService archiveLinksService) {
+		this.contentRetrievalService = contentRetrievalService;
+		this.archiveLinksService = archiveLinksService;
+	}
+
+
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/archive/.*?/.*?$");
 	}
@@ -55,31 +60,7 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 		Date month = getArchiveDateFromPath(request.getPathInfo());
         List<ArchiveLink> archiveLinks = contentRetrievalService.getArchiveMonths();
 		populateNextAndPreviousLinks(mv, month, archiveLinks);
-		populateArchiveLinks(mv, archiveLinks);
-	}
-	
-	
-	// TODO almost certainly duplicated
-	private void populateArchiveLinks(ModelAndView mv, List<ArchiveLink> archiveMonths) {                        
-        final int MAX_BACK_ISSUES = 6;
-        if (archiveMonths.size() <= MAX_BACK_ISSUES) {
-            mv.addObject("archive_links", archiveMonths);
-        } else {
-        	
-            mv.addObject("archive_links", archiveMonths.subList(0, MAX_BACK_ISSUES));           
-        }        
-        populateArchiveStatistics(mv);
-    }
-	
-	
-	// TODO duplicated with index model builder
-    private void populateArchiveStatistics(ModelAndView mv) {
-		Map<String, Integer> archiveStatistics = contentRetrievalService.getArchiveStatistics();
-		if (archiveStatistics != null) {
-			mv.addObject("site_count",  archiveStatistics.get("W"));
-			mv.addObject("newsitem_count",  archiveStatistics.get("N"));
-			mv.addObject("feed_count", archiveStatistics.get("F"));
-		}
+		archiveLinksService.populateArchiveLinks(mv, archiveLinks);
 	}
 	
 	
