@@ -269,7 +269,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="commentFeedDetector" />
 	</bean>
 	
-	<bean id="flickrApiService" class="nz.co.searchwellington.repositories.FlickrApiService">
+	<bean id="flickrApiService" class="nz.co.searchwellington.flickr.FlickrApiService">
 		<property name="apiKey" value="${flickr.apikey}" />	
 	</bean>
 	
