@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	<bean id="archiveLinksService" class="nz.co.searchwellington.controllers.models.helpers.ArchiveLinkService">
+	<bean id="archiveLinksService" class="nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService">
 		<constructor-arg ref="contentRetrievalService" />
 	</bean>
 
