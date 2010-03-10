@@ -19,7 +19,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.TagVoteDAO;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
@@ -42,10 +42,10 @@ public class SubmissionProcessingService {
     private UrlCleaner urlCleaner;
     private GoogleGeoCodeService geocodeService;
     private TagDAO tagDAO;
-    private TagVoteDAO tagVoteDAO;
+    private HandTaggingDAO tagVoteDAO;
     
         
-	public SubmissionProcessingService(UrlCleaner urlCleaner, GoogleGeoCodeService geocodeService, TagDAO tagDAO, TagVoteDAO tagVoteDAO) {
+	public SubmissionProcessingService(UrlCleaner urlCleaner, GoogleGeoCodeService geocodeService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO) {
 		this.urlCleaner = urlCleaner;
 		this.geocodeService = geocodeService;
 		this.tagDAO = tagDAO;

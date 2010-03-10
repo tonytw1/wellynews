@@ -1,19 +1,37 @@
 package nz.co.searchwellington.model;
 
-public class HandTag {
+public class HandTagging {
 
+	int id;
 	Resource resource;
 	User user;
 	Tag tag;
 	
 	
-	public HandTag(Resource resource, User user, Tag tag) {
+	public HandTagging() {
+	}
+
+
+	public HandTagging(int id, Resource resource, User user, Tag tag) {
+		this.id = id;
 		this.resource = resource;
 		this.user = user;
 		this.tag = tag;
 	}
-	
-	
+
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+
+
+
+
 	public Resource getResource() {
 		return resource;
 	}

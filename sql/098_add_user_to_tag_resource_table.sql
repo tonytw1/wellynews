@@ -1,0 +1,1 @@
+ alter table resource_tags add column user_id int(11);

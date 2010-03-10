@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+    PUBLIC "-//Hibernate/Hibernate Mapping DTD//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+
+	<class name="nz.co.searchwellington.model.HandTagging" 
+		  proxy="nz.co.searchwellington.model.HandTagging" table="resource_tags">
+
+		<cache usage="read-write" />
+
+		<id name="id" type="integer" unsaved-value="0">
+			<column name="id" sql-type="integer" not-null="true" />
+			<generator class="native" />
+		</id>
+		
+		<many-to-one name="resource"
+			class="nz.co.searchwellington.model.ResourceImpl" column="resource_id"
+			cascade="" />
+		
+		<many-to-one name="user"
+			class="nz.co.searchwellington.model.UserImpl" column="user_id"
+			cascade="" />
+			
+		<many-to-one name="tag"
+			class="nz.co.searchwellington.model.Tag" column="tag_id"
+			cascade="" />
+			                
+	</class>
+
+</hibernate-mapping>

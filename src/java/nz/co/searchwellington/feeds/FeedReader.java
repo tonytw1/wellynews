@@ -13,7 +13,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
-import nz.co.searchwellington.repositories.TagVoteDAO;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -36,14 +36,14 @@ public class FeedReader {
     private UrlCleaner urlCleaner;
     private SuggestionDAO suggestionDAO;
     private ContentUpdateService contentUpdateService;
-    private TagVoteDAO tagVoteDAO;
+    private HandTaggingDAO tagVoteDAO;
  
     
     public FeedReader() {        
     }
     
         
-    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AutoTaggingService autoTagger, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO, ContentUpdateService contentUpdateService, TagVoteDAO tagVoteDAO) {
+    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AutoTaggingService autoTagger, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO, ContentUpdateService contentUpdateService, HandTaggingDAO tagVoteDAO) {
         this.resourceDAO = resourceDAO;
         this.rssfeedNewsitemService = rssfeedNewsitemService;
         this.autoTagger = autoTagger;

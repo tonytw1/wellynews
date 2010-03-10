@@ -3,7 +3,7 @@ package nz.co.searchwellington.mail;
 import java.io.StringWriter;
 
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.TagVoteDAO;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 
 import org.apache.log4j.Logger;
 import org.apache.velocity.Template;
@@ -20,13 +20,13 @@ public class Notifier {
 
     private VelocityEngine velocityEngine;
     private MailSender mailSender;
-    private TagVoteDAO tagVoteDAO;
+    private HandTaggingDAO tagVoteDAO;
     
     private String recipient;
 
     Logger log = Logger.getLogger(Notifier.class);
     
-    public Notifier(VelocityEngine velocityEngine, MailSender mailSender, TagVoteDAO tagVoteDAO) {        
+    public Notifier(VelocityEngine velocityEngine, MailSender mailSender, HandTaggingDAO tagVoteDAO) {        
         this.velocityEngine = velocityEngine;
         this.mailSender = mailSender;
         this.tagVoteDAO = tagVoteDAO;

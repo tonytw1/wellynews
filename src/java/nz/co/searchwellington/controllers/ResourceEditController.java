@@ -29,7 +29,7 @@ import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.TagVoteDAO;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
@@ -63,14 +63,14 @@ public class ResourceEditController extends BaseMultiActionController {
     private AnonUserService anonUserService;
     private ResourceRepository resourceDAO;
 	private TaggingReturnsOfficerService taggingReturnsOfficerService;
-	private TagVoteDAO tagVoteDAO;
+	private HandTaggingDAO tagVoteDAO;
     
     public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
             TagWidgetFactory tagWidgetFactory,
             AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
             RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
             EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService, TagVoteDAO tagVoteDAO) {       
+            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService, HandTaggingDAO tagVoteDAO) {       
         this.rssfeedNewsitemService = rssfeedNewsitemService;        
         this.adminRequestFilter = adminRequestFilter;       
         this.tagWidgetFactory = tagWidgetFactory;

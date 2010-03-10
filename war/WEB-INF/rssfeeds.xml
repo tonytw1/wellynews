@@ -44,7 +44,7 @@
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="contentUpdateService" />
-		<constructor-arg ref="tagVoteDAO" />		
+		<constructor-arg ref="handTaggingDAO" />		
 	</bean>
 	
 			

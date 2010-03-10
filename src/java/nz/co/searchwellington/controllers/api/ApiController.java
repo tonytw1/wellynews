@@ -19,7 +19,7 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
-import nz.co.searchwellington.repositories.TagVoteDAO;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -41,9 +41,9 @@ public class ApiController extends MultiActionController {
 	private ContentUpdateService contentUpdateService;
 	private SubmissionProcessingService submissionProcessingService;
 	private AutoTaggingService autoTagger;
-	private TagVoteDAO tagVoteDAO;
+	private HandTaggingDAO tagVoteDAO;
 	
-    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, TagVoteDAO tagVoteDAO) {		
+    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO) {		
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;

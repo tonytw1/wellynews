@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TaggingVote;
-import nz.co.searchwellington.repositories.TagVoteDAO;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 
 import org.apache.log4j.Logger;
 
@@ -17,10 +17,10 @@ public class TaggingReturnsOfficerService {
 		
 	static Logger log = Logger.getLogger(TaggingReturnsOfficerService.class);
 
-	private TagVoteDAO tagVoteDAO;
+	private HandTaggingDAO tagVoteDAO;
 
 	
-	public TaggingReturnsOfficerService(TagVoteDAO tagVoteDAO) {
+	public TaggingReturnsOfficerService(HandTaggingDAO tagVoteDAO) {
 		this.tagVoteDAO = tagVoteDAO;
 	}
 

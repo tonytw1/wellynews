@@ -44,7 +44,9 @@
  		<constructor-arg ref="sessionFactory" /> 		
 	</bean>
 	
-	<bean id="tagVoteDAO" class="nz.co.searchwellington.repositories.TagVoteDAO" />
+	<bean id="handTaggingDAO" class="nz.co.searchwellington.repositories.HandTaggingDAO">
+		<constructor-arg ref="sessionFactory" />
+	</bean>
 	
 	<bean id="tweetDAO" class="nz.co.searchwellington.repositories.TweetDAO">
  		<constructor-arg ref="sessionFactory" />

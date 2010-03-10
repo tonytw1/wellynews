@@ -12,7 +12,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.TagVoteDAO;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
@@ -28,12 +28,12 @@ public class PublicTaggingController extends BaseMultiActionController {
 	private SubmissionProcessingService submissionProcessingService;
 	private ResourceRepository resourceDAO;
     private AnonUserService anonUserService;
-	private TagVoteDAO tagVoteDAO;
+	private HandTaggingDAO tagVoteDAO;
 
 
     
     public PublicTaggingController(ResourceRepository resourceDAO,           
-                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter, SubmissionProcessingService submissionProcessingService, TagVoteDAO tagVoteDAO) {       
+                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter, SubmissionProcessingService submissionProcessingService, HandTaggingDAO tagVoteDAO) {       
         this.resourceDAO = resourceDAO;      
         this.tagWidgetFactory = tagWidgetFactory;
         this.notifier = notifier;
