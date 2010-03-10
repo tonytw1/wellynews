@@ -4,54 +4,72 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 
+import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 
 public class HandTaggingDAO {
-
+	
+	static Logger log = Logger.getLogger(HandTaggingDAO.class);
 	
 	SessionFactory sessionFactory;
-
 	
     public HandTaggingDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public Set<Tag> getHandpickedTagsForThisResourceByUser(User loggedInUser, Resource resource) {
-		Set<Tag>tags = new HashSet<Tag>();
-		
-		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-			add(Expression.eq("resource", resource)).	// TODO user
-			setCacheable(true).
-			list();
-				
+
+    public Set<Tag> getHandpickedTagsForThisResourceByUser(User user, Resource resource) {
+		Set<Tag>tags = new HashSet<Tag>();		
+		List<HandTagging> handTaggings = getHandTaggings(resource, user);				
 		for (HandTagging tagging : handTaggings) {
 			tags.add(tagging.getTag());
 		}
 		return tags;
 	}
 
-	public void addTag(User loggedInUser, Tag tag, Resource resource) {
-		// TODO Auto-generated method stub		
+
+	private List<HandTagging> getHandTaggings(Resource resource, User user) {
+		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
+			add(Expression.eq("resource", resource)).	// TODO user
+			setCacheable(true).
+			list();
+		return handTaggings;
 	}
 
-	public Set<Tag> getHandTagsForResource(Resource resource) {
-		return new HashSet<Tag>();
+	
+    public void addTag(User user, Tag tag, Resource resource) {
+		HandTagging existing = (HandTagging) sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
+			add(Expression.eq("resource", resource)).
+			add(Expression.eq("tag", tag)).	// TODO user
+			setCacheable(true).uniqueResult();
+
+		if (existing == null) {
+			HandTagging newTagging = new HandTagging(0, resource, user, tag);
+			log.info("Adding new hand tagging: " + newTagging);
+			sessionFactory.getCurrentSession().save(newTagging);
+		}
+		sessionFactory.getCurrentSession().flush();
 	}
 
-	public void setTags(Resource editResource, Object object, Set<Tag> tags) {
-		// TODO Auto-generated method stub
-		
+	
+    public Set<Tag> getHandTagsForResource(Resource resource) {
+		return new HashSet<Tag>();	// TODO should be answered by the Tag Return Service
+	}
+    
+    
+    public void clearTags(Resource resource, User user) {
+		for (HandTagging handTagging : this.getHandTaggings(resource, user)) {
+			sessionFactory.getCurrentSession().delete(handTagging);
+		}
+		sessionFactory.getCurrentSession().flush();
 	}
 
-	public void clearTags(Resource editResource, Object object) {
-		// TODO Auto-generated method stub
-		
-	}
-
+    
 }

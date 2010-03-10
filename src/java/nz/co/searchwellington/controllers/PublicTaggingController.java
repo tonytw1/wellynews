@@ -75,7 +75,7 @@ public class PublicTaggingController extends BaseMultiActionController {
         
         if (request.getAttribute("resource") != null) {         
            Resource editResource = (Resource) request.getAttribute("resource");
-            submissionProcessingService.processTags(request, editResource);
+            submissionProcessingService.processTags(request, editResource, null);	// TODO user
             resourceDAO.saveResource(editResource);           
             notifier.sendTaggingNotification("Public Tagging", editResource);            
             mv.addObject("resource", editResource);    

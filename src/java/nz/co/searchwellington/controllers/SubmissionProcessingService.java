@@ -149,9 +149,9 @@ public class SubmissionProcessingService {
     }
     
     
-	public void processTags(HttpServletRequest request, Resource editResource) {
+	public void processTags(HttpServletRequest request, Resource editResource, User user) {
     	if (request.getParameter("has_tag_select") != null) {
-    		processTagSelect(request, editResource);    		
+    		processTagSelect(request, editResource, user);    		
     	}
         if (request.getParameter("additional_tags") != null) {
             processAdditionalTags(request, editResource);                   
@@ -163,15 +163,18 @@ public class SubmissionProcessingService {
 
 
 	@SuppressWarnings("unchecked")
-	private void processTagSelect(HttpServletRequest request,
-			Resource editResource) {
+	private void processTagSelect(HttpServletRequest request, Resource editResource, User user) {
 		if (request.getAttribute("tags") != null) {        	
 			List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
 			Set<Tag> tags = new HashSet<Tag>(requestTagsList);
 			log.info("Found " + tags.size() + " tags on the request");
-			tagVoteDAO.setTags(editResource, null, tags);
+			tagVoteDAO.clearTags(editResource, user);
+			for (Tag tag : tags) {
+				tagVoteDAO.addTag(user, tag, editResource);				
+			}
+			
 		} else {
-			tagVoteDAO.clearTags(editResource, null);
+			tagVoteDAO.clearTags(editResource, user);
 		}
 	}
     

@@ -72,7 +72,7 @@ public class ApiController extends MultiActionController {
 	    	submissionProcessingService.processGeocode(request, resource);
 	    	submissionProcessingService.processDate(request, resource);
 	    	submissionProcessingService.processDescription(request, resource);
-	    	submissionProcessingService.processTags(request, resource);
+	    	submissionProcessingService.processTags(request, resource, loggedInUser);
 	    	submissionProcessingService.processPublisher(request, resource);
 	    	
 	    	if (resource.getType().equals("N")) {

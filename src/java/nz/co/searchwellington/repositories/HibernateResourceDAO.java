@@ -283,7 +283,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
 		}
 
 		sessionFactory.getCurrentSession().saveOrUpdate(resource);
-		sessionFactory.getCurrentSession().flush();
 		if (resource.getType().equals("F")) {
 			// TODO can this be done for just the publisher only?
 			sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");

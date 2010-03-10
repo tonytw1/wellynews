@@ -409,7 +409,6 @@ public class ResourceEditController extends BaseMultiActionController {
             submissionProcessingService.processHeld(request, editResource);
             submissionProcessingService.processEmbargoDate(request, editResource);
             submissionProcessingService.processDescription(request, editResource);
-            submissionProcessingService.processTags(request, editResource);            
             submissionProcessingService.processPublisher(request, editResource);
             
             if (editResource.getType().equals("N")) {
@@ -452,8 +451,10 @@ public class ResourceEditController extends BaseMultiActionController {
             		setUser(request, loggedInUser);
             	}
             	
+            	saveResource(request, loggedInUser, editResource);                // TODO sort out flushing
+            	submissionProcessingService.processTags(request, editResource, loggedInUser);            
             	saveResource(request, loggedInUser, editResource);                
-                
+
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
             }
