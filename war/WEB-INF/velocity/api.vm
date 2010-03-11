@@ -251,9 +251,9 @@
 		<h5><b>Available Publishers</b></h5>
 		<table>
 			<tr><td>Publisher</td><td>URL snippet</td></tr>
-			#foreach($item in $publishers)
-				<tr><td>$item.publisher.name</td>
-				<td><code>$item.publisher.urlWords</code></td></tr>
+			#foreach($publisher in $publishers)
+				<tr><td>$publisher.name</td>
+				<td><code>$publisher.urlWords</code></td></tr>
 			#end
 		</table>	
 
