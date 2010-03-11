@@ -316,7 +316,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     public void deleteResource(Resource resource) {
         sessionFactory.getCurrentSession().delete(resource);       
         // flush collection caches.  
-        sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.newsitems");
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.watchlist");
         sessionFactory.evictCollection("nz.co.searchwellington.model.DiscoveredFeed.references");
