@@ -15,6 +15,7 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
@@ -36,24 +37,28 @@ public class FeedReader {
     private UrlCleaner urlCleaner;
     private SuggestionDAO suggestionDAO;
     private ContentUpdateService contentUpdateService;
-    private HandTaggingDAO tagVoteDAO;
  
     
     public FeedReader() {        
     }
     
         
-    public FeedReader(ResourceRepository resourceDAO, RssfeedNewsitemService rssfeedNewsitemService, AutoTaggingService autoTagger, FeedAcceptanceDecider feedAcceptanceDecider, DateFormatter dateFormatter, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO, ContentUpdateService contentUpdateService, HandTaggingDAO tagVoteDAO) {
-        this.resourceDAO = resourceDAO;
-        this.rssfeedNewsitemService = rssfeedNewsitemService;
-        this.autoTagger = autoTagger;
-        this.feedAcceptanceDecider = feedAcceptanceDecider;      
-        this.dateFormatter = dateFormatter;
-        this.urlCleaner = urlCleaner;
-        this.suggestionDAO = suggestionDAO;
-        this.contentUpdateService = contentUpdateService;
-        this.tagVoteDAO = tagVoteDAO;
-    }
+    public FeedReader(ResourceRepository resourceDAO,
+			RssfeedNewsitemService rssfeedNewsitemService,
+			AutoTaggingService autoTagger,
+			FeedAcceptanceDecider feedAcceptanceDecider,
+			DateFormatter dateFormatter, UrlCleaner urlCleaner,
+			SuggestionDAO suggestionDAO,
+			ContentUpdateService contentUpdateService) {
+		this.resourceDAO = resourceDAO;
+		this.rssfeedNewsitemService = rssfeedNewsitemService;
+		this.autoTagger = autoTagger;
+		this.feedAcceptanceDecider = feedAcceptanceDecider;
+		this.dateFormatter = dateFormatter;
+		this.urlCleaner = urlCleaner;
+		this.suggestionDAO = suggestionDAO;
+		this.contentUpdateService = contentUpdateService;
+	}
 
     
     public void processFeed(int feedId) {
@@ -127,7 +132,6 @@ public class FeedReader {
             resource.setDate(new DateTime().toDate());
         }
         
-        tagAcceptedFeedItem(resource, tagVoteDAO.getHandTagsForResource(feed));
         log.info("Item body before save: " + resource.getDescription());
         contentUpdateService.update(resource, true);
     }
@@ -140,14 +144,5 @@ public class FeedReader {
             log.info("Flatten capitalised sentence to '" + flattenedTitle + "'");
         }
 	}
-
 	
-    private void tagAcceptedFeedItem(Resource resource, Set<Tag> feedTags) {       // TODO this should move to run time vote tagging.
-        for (Tag tag : feedTags) {
-            tagVoteDAO.addTag(null, tag, resource); 	// TODO this should not be a hand picked tagging - move to solr time vote from accepted feed.
-        }
-        autoTagger.autotag(resource);
-    }
-    
-    
 }

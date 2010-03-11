@@ -24,8 +24,17 @@ public class HandTaggingDAO {
 		this.sessionFactory = sessionFactory;
 	}
 
+    
+	public List<HandTagging> getHandTaggingsForResource(Resource resource) {
+		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
+			add(Expression.eq("resource", resource)).
+			setCacheable(true).
+			list();
+		return handTaggings;
+	}
+    
 
-    public Set<Tag> getHandpickedTagsForThisResourceByUser(User user, Resource resource) {
+    public Set<Tag> getHandpickedTagsForThisResourceByUser(User user, Resource resource) { // TODO stop gap measure until editor understands votes
 		Set<Tag>tags = new HashSet<Tag>();		
 		List<HandTagging> handTaggings = getHandTaggings(resource, user);				
 		for (HandTagging tagging : handTaggings) {
@@ -37,7 +46,8 @@ public class HandTaggingDAO {
 
 	private List<HandTagging> getHandTaggings(Resource resource, User user) {
 		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-			add(Expression.eq("resource", resource)).	// TODO user
+			add(Expression.eq("resource", resource)).
+			add(Expression.eq("user", user)).
 			setCacheable(true).
 			list();
 		return handTaggings;
@@ -47,7 +57,8 @@ public class HandTaggingDAO {
     public void addTag(User user, Tag tag, Resource resource) {
 		HandTagging existing = (HandTagging) sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
 			add(Expression.eq("resource", resource)).
-			add(Expression.eq("tag", tag)).	// TODO user
+			add(Expression.eq("user", user)).
+			add(Expression.eq("tag", tag)).
 			setCacheable(true).uniqueResult();
 
 		if (existing == null) {
@@ -58,11 +69,6 @@ public class HandTaggingDAO {
 		sessionFactory.getCurrentSession().flush();
 	}
 
-	
-    public Set<Tag> getHandTagsForResource(Resource resource) {
-		return new HashSet<Tag>();	// TODO should be answered by the Tag Return Service
-	}
-    
     
     public void clearTags(Resource resource, User user) {
 		for (HandTagging handTagging : this.getHandTaggings(resource, user)) {
@@ -71,5 +77,4 @@ public class HandTaggingDAO {
 		sessionFactory.getCurrentSession().flush();
 	}
 
-    
 }

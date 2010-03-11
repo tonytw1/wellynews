@@ -75,9 +75,7 @@ public class Notifier {
             
             context.put("title", editResource.getName());
             context.put("url", editResource.getUrl());
-            context.put("description", editResource.getDescription());
-            context.put("tags", tagVoteDAO.getHandTagsForResource(editResource));
-            
+            context.put("description", editResource.getDescription());            
             StringWriter sw = new StringWriter(); template.merge( context, sw );
             return sw.toString();
                         

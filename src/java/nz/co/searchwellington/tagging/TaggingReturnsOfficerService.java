@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -24,7 +26,17 @@ public class TaggingReturnsOfficerService {
 		this.tagVoteDAO = tagVoteDAO;
 	}
 
-
+		
+	public Set<Tag> getHandTagsForResource(Resource resource) {		
+		Set<Tag>tags = new HashSet<Tag>();
+		List<HandTagging> handTaggings = tagVoteDAO.getHandTaggingsForResource(resource);			
+		for (HandTagging tagging : handTaggings) {
+			tags.add(tagging.getTag());
+		}
+		return tags;		
+	}
+	
+	
 	public Set<Tag> getIndexTagsForResource(Resource resource) {		
 		List<TaggingVote> taggingVotes = complieTaggingVotes(resource);			
 		Set <Tag> indexTags = new HashSet<Tag>();
@@ -38,10 +50,9 @@ public class TaggingReturnsOfficerService {
 
 
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
-		List<TaggingVote> votes = new ArrayList<TaggingVote>();
-		
-		for (Tag tag : tagVoteDAO.getHandTagsForResource(resource)) {
-			votes.add(new TaggingVote(tag, new HandTaggedVoter(), 100));
+		List<TaggingVote> votes = new ArrayList<TaggingVote>();		
+		for (HandTagging handTagging : tagVoteDAO.getHandTaggingsForResource(resource)) {
+			votes.add(new TaggingVote(handTagging.getTag(), new HandTaggedVoter(), 100));
 		}
 		
 		final boolean shouldAppearOnPublisherAndParentTagPages = 
@@ -67,7 +78,7 @@ public class TaggingReturnsOfficerService {
 
 
 	private void addAncestorTagVotes(Resource resource, List<TaggingVote> votes) {
-		for (Tag tag : tagVoteDAO.getHandTagsForResource(resource)) {
+		for (Tag tag : this.getHandTagsForResource(resource)) {
 			for (Tag ancestorTag: tag.getAncestors()) {
 				votes.add(new TaggingVote(ancestorTag, new AncestorTagVoter(), 100));
 			}
