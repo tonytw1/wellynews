@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TaggingVote;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 
 import org.apache.log4j.Logger;
@@ -50,30 +51,41 @@ public class TaggingReturnsOfficerService {
 
 
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
-		List<TaggingVote> votes = new ArrayList<TaggingVote>();		
-		for (HandTagging handTagging : tagVoteDAO.getHandTaggingsForResource(resource)) {
-			votes.add(new TaggingVote(handTagging.getTag(), new HandTaggedVoter(), 100));
+		List<TaggingVote> votes = new ArrayList<TaggingVote>();
+		for (HandTagging handTagging : tagVoteDAO
+				.getHandTaggingsForResource(resource)) {
+			votes.add(new TaggingVote(handTagging.getTag(),
+					new HandTaggedVoter(), 100));
 		}
-		
-		final boolean shouldAppearOnPublisherAndParentTagPages = 
-		    resource.getType().equals("L") || resource.getType().equals("N")
-		    || resource.getType().equals("C") || resource.getType().equals("F");
-				
-		if (shouldAppearOnPublisherAndParentTagPages) {            
-		    
+
+		final boolean shouldAppearOnPublisherAndParentTagPages = resource
+				.getType().equals("L")
+				|| resource.getType().equals("N")
+				|| resource.getType().equals("C")
+				|| resource.getType().equals("F");
+
+		if (shouldAppearOnPublisherAndParentTagPages) {
 			addAncestorTagVotes(resource, votes);
-		    			
-		    if (((PublishedResource) resource).getPublisher() != null) {              
-//		        for (Tag publisherTag : ((PublishedResource) resource).getPublisher().getTags()) {                
-	//	            
-		//            votes.add(new TaggingVote(publisherTag, new PublishersTagsVoter(), 100));		            		     		            
-		  //          for (Tag publishersAncestor : publisherTag.getAncestors()) {
-		    //				votes.add(new TaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter(), 100));
-		      // TODO     }
-		       // }
-		    }
+			addPublisherDerviedTags(resource, votes);
 		}
 		return votes;
+	}
+
+
+	private void addPublisherDerviedTags(Resource resource,
+			List<TaggingVote> votes) {
+		if (((PublishedResource) resource).getPublisher() != null) {
+			Website publisher = ((PublishedResource) resource)
+					.getPublisher();
+			for (Tag publisherTag : this.getHandTagsForResource(publisher)) {
+				votes.add(new TaggingVote(publisherTag,
+						new PublishersTagsVoter(), 100));
+				for (Tag publishersAncestor : publisherTag.getAncestors()) {
+					votes.add(new TaggingVote(publishersAncestor,
+							new PublishersTagAncestorTagVoter(), 100));
+				}
+			}
+		}
 	}
 
 
