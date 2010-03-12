@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;
@@ -23,39 +24,44 @@ public class ContentDeletionService {
 	private ResourceRepository resourceDAO;
 	private SnapshotDAO snapshotDAO;
 	private SolrQueryService solrQueryService;
+	private HandTaggingDAO handTaggingDAO;
 	
 
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ResourceRepository resourceDAO, SnapshotDAO snapshotDAO,
-			SolrQueryService solrQueryService) {		
+			SolrQueryService solrQueryService, HandTaggingDAO handTaggingDAO) {		
 		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
 		this.snapshotDAO = snapshotDAO;
 		this.solrQueryService = solrQueryService;
+		this.handTaggingDAO = handTaggingDAO;
 	}
 
 
-	public void performDelete(Resource editResource) {
-		if (editResource.getType().equals("W")) {
-			removePublisherFromPublishersContent(editResource);            	
+	public void performDelete(Resource resource) {
+		
+		handTaggingDAO.clearTags(resource);
+		
+		if (resource.getType().equals("W")) {
+			removePublisherFromPublishersContent(resource);            	
 		}
 		
-		if (editResource.getType().equals("F")) {
-			removeFeedFromFeedNewsitems((Feed) editResource);			
-			removeRelatedFeedFromTags((Feed) editResource);
+		if (resource.getType().equals("F")) {
+			removeFeedFromFeedNewsitems((Feed) resource);			
+			removeRelatedFeedFromTags((Feed) resource);
 		}
 		
-		if (editResource.getType().equals("N")) {
-			Newsitem deletedNewsitem = (Newsitem) editResource;
+		if (resource.getType().equals("N")) {
+			Newsitem deletedNewsitem = (Newsitem) resource;
 			if (rssfeedNewsitemService.isUrlInAcceptedFeeds(deletedNewsitem.getUrl())) {
 				suppressDeletedNewsitem(deletedNewsitem);			
 			}
 		}
-		snapshotDAO.evict(editResource.getUrl());
-		solrQueryService.deleteResourceFromIndex(editResource.getId());
-		resourceDAO.deleteResource(editResource);	
+		snapshotDAO.evict(resource.getUrl());
+		solrQueryService.deleteResourceFromIndex(resource.getId());
+		resourceDAO.deleteResource(resource);
 	}
 
 
