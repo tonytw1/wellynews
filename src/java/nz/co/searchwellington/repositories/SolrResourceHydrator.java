@@ -2,8 +2,9 @@ package nz.co.searchwellington.repositories;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 
+import nz.co.searchwellington.model.FrontEndNewsitem;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SolrHydratedNewsitemImpl;
 import nz.co.searchwellington.model.Tag;
@@ -28,7 +29,6 @@ public class SolrResourceHydrator {
 		final Integer resourceId = (Integer) result.getFieldValue("id");
 		
 		boolean solrHydrate = false;
-
 		if (result.getFieldValue("type").equals("N") && solrHydrate) {
 			log.debug("Solr hydrating newsitem");
 			
@@ -37,25 +37,31 @@ public class SolrResourceHydrator {
 			item.setDescription((String) result.getFieldValue("description"));
 			item.setUrl((String) result.getFieldValue("url"));
 			item.setDate((Date) result.getFieldValue("date"));
-			//item.setTags(new HashSet<Tag>());
-			hydrateTags(result, item);
 			return item;
 		}
 		
 		Resource resource = resourceDAO.loadResourceById(resourceId);
 		if (resource == null) {
 			log.warn("Resource #" + resourceId + " was null onload from database");
+			return null;
 		}
+		
+		if (resource.getType().equals("N")) {
+			FrontEndNewsitem frontendNewsitem = new FrontEndNewsitem((Newsitem) resource);
+			hydrateTags(result, frontendNewsitem);
+			resource = frontendNewsitem;
+		}
+		
 		return resource;
 	}
 
-	private void hydrateTags(SolrDocument result, Resource item) {
-		Collection<Object> tagIds = result.getFieldValues("tags");
+	private void hydrateTags(SolrDocument result, FrontEndNewsitem item) {
+		Collection<Object> tagIds = result.getFieldValues("handTags");
 		if (tagIds != null){
 			for (Object tagId : tagIds) {
 				Tag tag = tagDAO.loadTagById((Integer) tagId);
 				if (tag != null) {					
-					//item.addTag(tag);
+					item.addTag(tag);
 				}
 			}
 		}

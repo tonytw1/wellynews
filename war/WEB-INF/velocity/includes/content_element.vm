@@ -78,7 +78,7 @@
 					#end
 				#end
 			#end
-								
+				
 			#if ($item.tags && $item.tags.size() > 0)
 				<li class="tagged" rel="noindex">Tagged as:</li>
 				#foreach ($tag in $item.tags)

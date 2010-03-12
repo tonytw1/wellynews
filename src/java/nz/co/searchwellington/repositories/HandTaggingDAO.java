@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;

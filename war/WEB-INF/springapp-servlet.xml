@@ -501,8 +501,9 @@
 		<constructor-arg ref="keywordSearchService" />
 		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="contentUpdateService" />
-		<constructor-arg ref="handTaggingDAO" />		
-				
+		<constructor-arg ref="handTaggingDAO" />
+		<constructor-arg ref="loggedInUserFilter" />
+					
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

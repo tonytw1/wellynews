@@ -61,7 +61,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
                 SyndEntry item = (SyndEntry) iter.next();
                 FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
                 feedItem.setItemNumber(itemNumber);
-                trimExcessivelyLongBodies(feedItem);
+                //trimExcessivelyLongBodies(feedItem);
                 feedNewsitems.add(feedItem);
                 itemNumber++;
             }
@@ -144,10 +144,10 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
     
 	
     private void trimExcessivelyLongBodies(Resource feedItem) {
-        boolean bodyIsToLong = feedItem.getDescription() != null && feedItem.getDescription().length() > MAXIMUM_BODY_LENGTH;
-        if (bodyIsToLong) {
-            feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
-        }
+       // boolean bodyIsToLong = feedItem.getDescription() != null && feedItem.getDescription().length() > MAXIMUM_BODY_LENGTH;
+        //if (bodyIsToLong) {
+         //   feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
+       // }
     }
     
 }

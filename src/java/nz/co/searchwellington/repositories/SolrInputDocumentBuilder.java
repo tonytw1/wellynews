@@ -83,6 +83,10 @@ public class SolrInputDocumentBuilder {
 		for(Tag tag: taggingReturnsService.getIndexTagsForResource(resource)) {
 			inputDocument.addField("tags", tag.getId());
 		}
+		
+		for(Tag tag: taggingReturnsService.getHandTagsForResource(resource)) {
+			inputDocument.addField("handTags", tag.getId());
+		}
 				
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
