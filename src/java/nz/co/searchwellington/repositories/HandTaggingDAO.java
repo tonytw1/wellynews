@@ -77,4 +77,12 @@ public class HandTaggingDAO {
 		sessionFactory.getCurrentSession().flush();
 	}
 
+
+	public void clearTags(Resource resource) {
+		for (HandTagging handTagging : this.getHandTaggingsForResource(resource)) {
+			sessionFactory.getCurrentSession().delete(handTagging);
+		}
+		sessionFactory.getCurrentSession().flush();
+	}
+
 }
