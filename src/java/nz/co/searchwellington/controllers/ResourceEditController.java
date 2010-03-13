@@ -414,17 +414,9 @@ public class ResourceEditController extends BaseMultiActionController {
             if (editResource.getType().equals("N")) {
             	submissionProcessingService.processImage(request, (Newsitem) editResource, loggedInUser);            
             }
-            
-            
-            processFeedAcceptancePolicy(request, editResource);
                         
-            // Apply the auto tagger if this submission is by a logged in user.
-            if (newSubmission && loggedInUser != null) {
-                log.info("Applying the auto tagged to new submission.");
-                autoTagger.autotag(editResource);
-            }
-            
-            
+            processFeedAcceptancePolicy(request, editResource);
+                             
             // Update urlwords.
             if (editResource.getType().equals("W") || editResource.getType().equals("F")) {
             	editResource.setUrlWords(UrlWordsGenerator.makeUrlWordsFromName(editResource.getName()));            	
@@ -452,7 +444,11 @@ public class ResourceEditController extends BaseMultiActionController {
             	}
             	
             	saveResource(request, loggedInUser, editResource);                // TODO sort out flushing
-            	submissionProcessingService.processTags(request, editResource, loggedInUser);            
+            	submissionProcessingService.processTags(request, editResource, loggedInUser);
+                if (newSubmission) {
+                    log.info("Applying the auto tagger to new submission.");
+                    autoTagger.autotag(editResource);
+                }
             	saveResource(request, loggedInUser, editResource);                
 
             } else {

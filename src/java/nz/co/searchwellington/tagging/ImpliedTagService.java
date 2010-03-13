@@ -5,13 +5,18 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 
 public class ImpliedTagService {
-	    
-   public boolean alreadyHasTag(Resource resource, Tag tag) {
-    //    boolean isNewsitemWithPublisherTag = resource.getType().equals("N") && ((Newsitem) resource).getPublisher() != null && ((Newsitem) resource).getPublisher().getTags().contains(tag);
-   //     boolean resourceAlreadyHasTag = resource.getTags().contains(tag) || isNewsitemWithPublisherTag;
-     //   return resourceAlreadyHasTag;
-    // TODO 
-	   return false;
+	   	
+	private TaggingReturnsOfficerService taggingReturnsOfficerService;
+	
+	public ImpliedTagService(TaggingReturnsOfficerService taggingReturnsOfficerService) {
+		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
+	}
+
+   
+   public boolean alreadyHasTag(Resource resource, Tag tag) {	// TODO should look at this users votes only
+	   boolean isNewsitemWhosPublisherAlreadyHasThisTag = resource.getType().equals("N") && ((Newsitem) resource).getPublisher() != null && taggingReturnsOfficerService.getHandTagsForResource(((Newsitem) resource).getPublisher()).contains(tag);
+	   boolean resourceAlreadyHasTag = taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag) || isNewsitemWhosPublisherAlreadyHasThisTag;
+	   return resourceAlreadyHasTag;
    }
 
     

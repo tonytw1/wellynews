@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.List;
+
 import nz.co.searchwellington.model.User;
 
 
@@ -10,6 +12,7 @@ public interface UserRepository {
 	public User getUserByProfileName(String profilename);
 	public User getUserByApiKey(String apiKey);
 	public int getNextAvailableAnonUserNumber();
+	public List<User> getActiveUsers();
 
 }
 

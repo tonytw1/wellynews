@@ -37,6 +37,19 @@ public class ProfileController extends BaseMultiActionController {
 		this.tagDAO = tagDAO;
 	}
 
+	
+	
+	@Transactional
+    public ModelAndView all(HttpServletRequest request, HttpServletResponse response) {
+        ModelAndView mv = new ModelAndView("profiles");    
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+        mv.addObject("heading", "Profiles");
+
+        mv.addObject("profiles", userDAO.getActiveUsers());
+
+        
+        return mv;
+    }
 
 
 
@@ -73,38 +86,10 @@ public class ProfileController extends BaseMultiActionController {
 	  }
 
 	
-	  
-
-
-
-
-	  @Transactional
-	  public ModelAndView profile(HttpServletRequest request, HttpServletResponse response) {
-		  User loggedInUser = loggerInUserFilter.getLoggedInUser();
-		  log.info("Logged in user is: " + loggedInUser);
-		  if (loggedInUser != null)	{
-			  if (loggedInUser.getProfilename() == null) {
-				  ModelAndView mv = new ModelAndView();
-				  mv.addObject("heading", "User profile");
-				  mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
-				  
-				  mv.addObject("user", loggedInUser);
-				  mv.addObject("submitted", resourceDAO.getOwnedBy(loggedInUser, MAX_NEWSITEMS));
-				  mv.setViewName("profile");
-				  return mv;
-			  } else {
-	        	 return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl(loggedInUser)));
-			  }      
-		  }
-		  response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-		  return null;
-	  }
-	    
-	  	  
 	  @Transactional
 	  public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {	        
 	        String path = request.getPathInfo();	       
-	        if (path.matches("^/profile/.*$")) {
+	        if (path.matches("^/profiles/.*$")) {
 	        	final String profilename = path.split("/")[2];	        	
 		        
 		        User user = userDAO.getUserByProfileName(profilename);

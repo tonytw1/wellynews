@@ -16,7 +16,7 @@
 <div class="main">
 
 
-	<h2>Profiles #if ($user.profilename) / $escape.html($user.profilename) #end</h2>
+	<h2><a href="$site_information.url/profiles">Profiles</a> #if ($user.profilename) / $escape.html($user.profilename) #end</h2>
 
 	
 		

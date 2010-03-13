@@ -296,7 +296,10 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="recipient" value="${feedreader.email}" />	
 	</bean>
 		
-	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService" />	
+	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService">
+		<constructor-arg ref="taggingReturnsOfficerService" />
+	</bean>
+	
 	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
  		<constructor-arg ref="tagDAO" /> 		
 	</bean>	
@@ -307,6 +310,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="impliedTagService" />
  		<constructor-arg ref="placeAutoTagger" />
  		<constructor-arg ref="tagHintAutoTagger" />
+ 		<constructor-arg ref="handTaggingDAO" />
+ 		<constructor-arg ref="userDAO" /> 		
 	</bean>
 		
 	<bean id="calendarFeedDAO" class="nz.co.searchwellington.repositories.CalendarFeedDAO" >

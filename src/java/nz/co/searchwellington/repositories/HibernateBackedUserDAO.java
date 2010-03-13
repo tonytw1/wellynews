@@ -1,11 +1,13 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.Iterator;
+import java.util.List;
 
 import nz.co.searchwellington.model.User;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Order;
 
 public class HibernateBackedUserDAO implements UserRepository {
 
@@ -19,8 +21,16 @@ public class HibernateBackedUserDAO implements UserRepository {
     public User getUser(String username) {
     	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("username", username)).uniqueResult();     
     }
-        
-    public void saveUser(User user) {     
+    
+    @SuppressWarnings("unchecked")
+	public List<User> getActiveUsers() {
+		return sessionFactory.getCurrentSession().createCriteria(User.class).
+			addOrder(Order.asc("profilename")).
+			setCacheable(true).
+			list();
+	}
+    
+	public void saveUser(User user) {     
         sessionFactory.getCurrentSession().saveOrUpdate(user);
         sessionFactory.getCurrentSession().flush();       
     }
