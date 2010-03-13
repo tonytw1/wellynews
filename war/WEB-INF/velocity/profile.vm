@@ -16,7 +16,7 @@
 <div class="main">
 
 
-	<h2>$heading #if ($user.profilename) - $user.profilename #end</h2>
+	<h2>Profiles #if ($user.profilename) / $escape.html($user.profilename) #end</h2>
 
 	
 		
@@ -67,7 +67,7 @@
 				
 				<p>Your name: 
 				#if ($user.name)
-					$user.name
+					$escape.html($user.name)
 				#else
 					not set
 				#end	
@@ -75,7 +75,7 @@
 						
 				<p>Your blog or website: 
 				#if ($user.url)
-					<a href="$user.url">$user.url</a>
+					<a href="$user.url">$escape.html($user.url)</a>
 				#else 
 					not set
 				#end	
@@ -83,7 +83,7 @@
 			
 				<p>Your bio: 
 				#if ($user.bio)
-					$user.bio
+					$escape.html($user.bio)
 				#else
 					not set
 				#end
@@ -91,7 +91,7 @@
 			#end
 			
 			#if ($user.username) 
-				<p>Your profile is linked to the OpenID: $user.username</p>
+				<p>Your profile is linked to the OpenID: $escape.html($user.username)</p>
 			#end
 		
 		#end

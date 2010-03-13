@@ -115,13 +115,8 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/openid/callback";
 	}
 	
-	
-	public String getProfileUrl() {
-		return siteInformation.getUrl() + "/profile";
-	}
-	
 	public String getProfileUrl(User user) {
-		return siteInformation.getUrl() + "/profile/" + user.getProfilename();
+		return siteInformation.getUrl() + "/profiles/" + user.getProfilename();
 	}
 
 	public String getWatchlistUrl() {

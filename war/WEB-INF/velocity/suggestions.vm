@@ -15,7 +15,7 @@
 
 <div class="main">
 
-<h2>$heading</h2>
+<h2><a href="$site_information.url/feeds">Feeds</a> / $heading</h2>
 
 
 <p>These newsitems have been seen in local feeds which may be suitable for inclusion in the newslog.

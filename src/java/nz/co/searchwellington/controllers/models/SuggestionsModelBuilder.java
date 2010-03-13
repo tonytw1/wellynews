@@ -46,12 +46,12 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
-			log.info("Building suggestions model");
+			log.info("Building feeds inbox model");
 			ModelAndView mv = new ModelAndView();
 			
 			mv.addObject("main_content", suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)); 
 			
-			mv.addObject("heading", "Feeds inbox");
+			mv.addObject("heading", "Inbox");
 			mv.addObject("link", urlBuilder.getFeedsInboxUrl());
 			mv.addObject("description","Suggested newsitems from local feeds.");  
 			

@@ -69,7 +69,7 @@ public class ProfileController extends BaseMultiActionController {
 			  
 			  userDAO.saveUser(loggedInUser);
 		  }
-		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl()));
+		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl(loggedInUser)));
 	  }
 
 	

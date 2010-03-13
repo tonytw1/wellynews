@@ -463,10 +463,9 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/profile">profile</prop>							
 						<prop key="/profile/edit">edit</prop>
 						<prop key="/profile/save">save</prop>
-						<prop key="/profile/*">view</prop>
+						<prop key="/profiles/*">view</prop>
 					</props>
 				</property>
 			</bean>
@@ -591,8 +590,7 @@
 									
 				<prop key="/profile/edit">profileController</prop>
 				<prop key="/profile/save">profileController</prop>
-				<prop key="/profile/*">profileController</prop>
-				<prop key="/profile">profileController</prop>
+				<prop key="/profiles/*">profileController</prop>
 																
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/tags">simplePageController</prop>
