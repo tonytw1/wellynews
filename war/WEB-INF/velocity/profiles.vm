@@ -16,14 +16,20 @@
 <ul>
 #set($letter = "")
 #foreach ($profile in $profiles) 
-	#set($current = $profile.profilename.substring(0, 1).toUpperCase())
-	#if ($current != $letter)
-		#set($letter = $current)		
-		</ul>
-		<h4>$current.toUpperCase()</h4>
-		<ul>
+	#if ($profile.isUnlinkedAnonAccount()) 
+	
+	#else
+		#if ($profile.profilename)  
+			#set($current = $profile.profilename.substring(0, 1).toUpperCase())
+			#if ($current != $letter)
+				#set($letter = $current)		
+				</ul>
+				<h4>$current.toUpperCase()</h4>
+				<ul>
+			#end
+			<li><a href="$urlBuilder.getProfileUrl($profile)">$profile.profilename</a></li>
+		#end
 	#end
-	<li><a href="$urlBuilder.getProfileUrl($profile)">$profile.profilename</a></li>
 #end
 </ul>
 

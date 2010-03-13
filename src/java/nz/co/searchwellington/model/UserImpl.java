@@ -48,7 +48,7 @@ public class UserImpl implements User {
     
 	@Override
 	public boolean isUnlinkedAnonAccount() {
-		return username == null;
+		return username == null && this.profilename != "autotagger";	// TODO
 	}
 
 	public String getProfilename() {

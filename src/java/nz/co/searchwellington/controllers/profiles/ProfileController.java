@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.UserRepository;
@@ -25,16 +26,18 @@ public class ProfileController extends BaseMultiActionController {
     private ResourceRepository resourceDAO;
 	private UrlBuilder urlBuilder;
 	private TagDAO tagDAO;
+	private ContentRetrievalService contentRetrievalService;
         
     
 	public ProfileController(UserRepository userDAO,
 			LoggedInUserFilter loggerInUserFilter,
-			ResourceRepository resourceDAO, UrlBuilder urlBuilder, TagDAO tagDAO) {
+			ResourceRepository resourceDAO, UrlBuilder urlBuilder, TagDAO tagDAO, ContentRetrievalService contentRetrievalService) {
 		this.userDAO = userDAO;
 		this.loggerInUserFilter = loggerInUserFilter;
 		this.resourceDAO = resourceDAO;
 		this.urlBuilder = urlBuilder;
 		this.tagDAO = tagDAO;
+		this.contentRetrievalService = contentRetrievalService;
 	}
 
 	
@@ -44,10 +47,7 @@ public class ProfileController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView("profiles");    
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Profiles");
-
-        mv.addObject("profiles", userDAO.getActiveUsers());
-
-        
+        mv.addObject("profiles", userDAO.getActiveUsers());        
         return mv;
     }
 
@@ -105,7 +105,9 @@ public class ProfileController extends BaseMultiActionController {
 	        		
 	        		log.info("Put user onto model: " + user.getUsername());
 	        		mv.addObject("profileuser", user);
-	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user, MAX_NEWSITEMS));
+	        		
+	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user, MAX_NEWSITEMS));	// TODO move to CRS
+	        		mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, MAX_NEWSITEMS));
 	        		return mv;
 	        	}
 	        }

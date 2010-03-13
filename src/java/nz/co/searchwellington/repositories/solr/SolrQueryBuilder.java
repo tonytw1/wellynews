@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.solr;
 import java.util.Set;
 
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
 import org.apache.solr.client.solrj.SolrQuery;
@@ -118,6 +119,11 @@ public class SolrQueryBuilder {
 
 	public SolrQueryBuilder twitterCount(int count) {
 		sb.append(" +twitterCount:[" + count + " TO *]");
+		return this;
+	}
+
+	public SolrQueryBuilder taggingUser(User user) {
+		sb.append(" +handTaggingUsers:" + user.getId());
 		return this;
 	}
 

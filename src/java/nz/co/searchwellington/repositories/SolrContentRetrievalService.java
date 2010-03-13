@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
 public class SolrContentRetrievalService {
@@ -151,6 +152,10 @@ public class SolrContentRetrievalService {
 	// TODO needs maxitems
 	public List<Resource> getRecentlyChangedWatchlistItems(boolean shouldShowBroken) {
 		return solrResourceDAO.getAllWatchlists(shouldShowBroken); 
+	}
+
+	public List<Resource> getHandTaggingsForUser(User user, boolean shouldShowBroken) {
+		return solrResourceDAO.getHandTaggingsForUser(user, shouldShowBroken);
 	}
 	
 }

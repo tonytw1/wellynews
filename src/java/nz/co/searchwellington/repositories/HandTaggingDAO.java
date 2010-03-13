@@ -31,8 +31,8 @@ public class HandTaggingDAO {
 			list();
 		return handTaggings;
 	}
-    
-
+	
+	
     public Set<Tag> getHandpickedTagsForThisResourceByUser(User user, Resource resource) { // TODO stop gap measure until editor understands votes
 		Set<Tag>tags = new HashSet<Tag>();		
 		List<HandTagging> handTaggings = getHandTaggings(resource, user);				

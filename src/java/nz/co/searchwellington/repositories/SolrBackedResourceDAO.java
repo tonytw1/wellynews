@@ -16,6 +16,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
 import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
@@ -149,6 +150,13 @@ public class SolrBackedResourceDAO {
 		log.info("Getting watchlist for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();
 		setTitleSortOrder(query);
+		return getQueryResults(query);
+	}
+	
+	
+	public List<Resource> getHandTaggingsForUser(User user,  boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().taggingUser(user).showBroken(showBroken).toQuery();
+		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	
@@ -551,5 +559,5 @@ public class SolrBackedResourceDAO {
 	private void setFeedLatestItemOrder(SolrQuery query) {
 		query.setSortField("feedLatestItemDate", ORDER.desc);
 	}
-
+	
 }

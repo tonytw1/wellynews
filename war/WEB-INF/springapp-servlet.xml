@@ -459,6 +459,7 @@
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="tagDAO" />
+		<constructor-arg ref="contentRetrievalService" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

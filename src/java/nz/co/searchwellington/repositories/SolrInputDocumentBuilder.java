@@ -6,6 +6,7 @@ import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -22,12 +23,13 @@ public class SolrInputDocumentBuilder {
 	
 	private SnapshotBodyExtractor snapshotBodyExtractor;
 	private TaggingReturnsOfficerService taggingReturnsService;
+	private HandTaggingDAO handTaggingDAO;
 
-	
-	
-	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor, TaggingReturnsOfficerService taggingReturnsService) {
+		
+	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor, TaggingReturnsOfficerService taggingReturnsService, HandTaggingDAO handTaggingDAO) {
 		this.snapshotBodyExtractor = snapshotBodyExtractor;
 		this.taggingReturnsService = taggingReturnsService;
+		this.handTaggingDAO = handTaggingDAO;
 	}
 
 
@@ -80,13 +82,20 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("geotagged", false);
 		}
 		
-		for(Tag tag: taggingReturnsService.getIndexTagsForResource(resource)) {
-			inputDocument.addField("tags", tag.getId());
+		for(HandTagging handTagging : handTaggingDAO.getHandTaggingsForResource(resource)) {
+			log.info("Adding tagging user: " + handTagging.getUser().getId());
+			inputDocument.addField("handTaggingUsers", handTagging.getUser().getId());	// TODO minimise?
 		}
 		
 		for(Tag tag: taggingReturnsService.getHandTagsForResource(resource)) {
 			inputDocument.addField("handTags", tag.getId());
 		}
+		
+		for(Tag tag: taggingReturnsService.getIndexTagsForResource(resource)) {
+			inputDocument.addField("tags", tag.getId());
+		}
+		
+		
 				
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {

@@ -33,12 +33,13 @@ public class ContentRetrievalService {
 	private TagDAO tagDAO;
 	private RelatedTagsService relatedTagsService;
 	private DiscoveredFeedRepository discoveredFeedsDAO;
+	private HandTaggingDAO handTaggingDAO;
 		
 
 	public ContentRetrievalService(ResourceRepository resourceDAO,
 			SolrContentRetrievalService solrContentRetrievalService,
 			KeywordSearchService keywordSearchService,
-			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO, RelatedTagsService relatedTagsService, DiscoveredFeedRepository discoveredFeedsDAO) {
+			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO, RelatedTagsService relatedTagsService, DiscoveredFeedRepository discoveredFeedsDAO, HandTaggingDAO handTaggingDAO) {
 		this.resourceDAO = resourceDAO;
 		this.solrContentRetrievalService = solrContentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
@@ -46,6 +47,7 @@ public class ContentRetrievalService {
 		this.tagDAO = tagDAO;
 		this.relatedTagsService = relatedTagsService;
 		this.discoveredFeedsDAO = discoveredFeedsDAO;
+		this.handTaggingDAO = handTaggingDAO;
 	}
 
 	public List<Resource> getAllWatchlists() {
@@ -231,6 +233,10 @@ public class ContentRetrievalService {
 
 	public List<DiscoveredFeed> getDiscoveredFeeds() {
 		return discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds();
+	}
+
+	public List<Resource> getTaggedBy(User user, int maxItems) {
+		return solrContentRetrievalService.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 }

@@ -31,22 +31,46 @@
 			<p>Bio: $profileuser.bio</p>
 		#end	
 		
-				
-		<h3>Submissions</h3>
 		
-		#if ($submitted.size() > 0) 
-			<ul class="flat_list">
-				#foreach($item in $submitted)
-					<li class="content_item">
-						<ul class="main_content_item">
-							#parse("includes/content_element.vm")
-						</ul>
-					</li>
-				#end
-			</ul>
-		#else
-			<p>This user has not made any submissions.</p>
-		#end
+		
+		<div class="tag_main_content">
+			<h3>Submissions</h3>
+		
+			#if ($submitted.size() > 0) 
+				<ul class="flat_list">
+					#foreach($item in $submitted)
+						<li class="content_item">
+							<ul class="main_content_item">
+								#parse("includes/content_element.vm")
+							</ul>
+						</li>
+					#end
+				</ul>
+			#else
+				<p>This user has not made any submissions.</p>
+			#end
+		</div>
+
+
+		<div class="tag_secondary_content">
+			<h3>Tagged</h3>
+		
+			#if ($tagged.size() > 0) 
+				<ul class="flat_list">
+					#foreach($item in $tagged)
+						<li class="content_item">
+							<ul class="main_content_item">
+								#parse("includes/content_element.vm")
+							</ul>
+						</li>
+					#end
+				</ul>
+			#else
+				<p>This user has not tagged any items.</p>
+			#end
+		</div>
+				
+		
 	#end
 
 </div>

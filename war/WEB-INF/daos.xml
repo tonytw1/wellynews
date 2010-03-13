@@ -5,6 +5,7 @@
 	<bean id="solrInputDocumentBuilder" class="nz.co.searchwellington.repositories.SolrInputDocumentBuilder" >
 		<constructor-arg ref="snapshotBodyExtractor" />
 		<constructor-arg ref="taggingReturnsOfficerService" />
+		<constructor-arg ref="handTaggingDAO" />		
 	</bean>
 	
 	<bean id="solrQueryService" class="nz.co.searchwellington.repositories.solr.SolrQueryService">

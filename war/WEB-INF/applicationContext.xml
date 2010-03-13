@@ -194,6 +194,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="relatedTagsService" />
 		<constructor-arg ref="discoveredFeedRespository" />
+		<constructor-arg ref="handTaggingDAO" />		
 	</bean>
 	
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">
