@@ -3,7 +3,7 @@ package nz.co.searchwellington.tagging;
 public class PublishersTagsVoter implements TaggingVoter {
 
 	@Override
-	public String getName() {
+	public String getVoterName() {
 		return "Publisher's tags";
 	}
 

@@ -93,6 +93,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/tagging/tag?resource=" + resource.getId();
 	}
 	
+	public String getTaggingUrl(Resource resource) {
+		return siteInformation.getUrl() + "/edit/tagging?resource=" + resource.getId();
+	}
+	
 	public String getArchiveUrl() {
 		return siteInformation.getUrl() + "/archive";
 	}

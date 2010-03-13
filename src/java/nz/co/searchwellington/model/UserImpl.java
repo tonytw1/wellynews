@@ -59,6 +59,11 @@ public class UserImpl implements User {
 		this.profilename = profilename;
 	}
 
+	@Override
+	public String getVoterName() {
+		return this.getProfilename();
+	}
+
 	public boolean isAdmin() {
 		return admin;
 	}

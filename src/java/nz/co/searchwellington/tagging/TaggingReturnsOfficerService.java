@@ -55,7 +55,7 @@ public class TaggingReturnsOfficerService {
 		for (HandTagging handTagging : tagVoteDAO
 				.getHandTaggingsForResource(resource)) {
 			votes.add(new TaggingVote(handTagging.getTag(),
-					new HandTaggedVoter(), 100));
+					handTagging.getUser(), 100));
 		}
 
 		final boolean shouldAppearOnPublisherAndParentTagPages = resource

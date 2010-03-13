@@ -1,5 +1,7 @@
 package nz.co.searchwellington.model;
 
+import nz.co.searchwellington.tagging.TaggingVoter;
+
 
 /**
  * Defines a toplevel user object which can login and out of a web application.
@@ -8,7 +10,7 @@ package nz.co.searchwellington.model;
  * @author tony
  *
  */
-public interface User {
+public interface User extends TaggingVoter {
 
     public int getId();
     public void setId(int id);
