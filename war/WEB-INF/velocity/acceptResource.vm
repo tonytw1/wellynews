@@ -30,12 +30,9 @@
 		#if ($resource.image) 			
 			<img src="$resource.image.url" align="right" vspace="10">
 		#end	
-		#if ($tag_select) 
-			<p><label for="tags">Tags: </label>
-	    	$tag_select	
-			</p>
-		#end
-				
+		
+		#parse("includes/tag_edit_fields.vm")
+						
 		<p>			
 		<label for="description">Description: </label>
 		<textarea name="description" rows="6" cols="50">$resource.description</textarea>
