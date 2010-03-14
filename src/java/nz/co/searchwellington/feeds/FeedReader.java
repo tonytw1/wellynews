@@ -60,7 +60,7 @@ public class FeedReader {
 		this.contentUpdateService = contentUpdateService;
 	}
 
-    
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processFeed(int feedId) {
     	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
     	
@@ -95,7 +95,7 @@ public class FeedReader {
         return;
     }
 
-
+    
 	private void processFeedItems(Feed feed, List<FeedNewsitem> feedNewsitems) {
 		for (FeedNewsitem feednewsitem : feedNewsitems) {
 			String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
@@ -117,7 +117,6 @@ public class FeedReader {
 	}
 
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void acceptFeedItem(FeedNewsitem feeditem, Feed feed) {
         log.info("Accepting: " + feeditem.getName());
         Newsitem resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
