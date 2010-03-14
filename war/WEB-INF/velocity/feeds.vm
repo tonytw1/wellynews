@@ -12,6 +12,9 @@
 <div class="main">
 <h2>$heading</h2>
 
+<p>$site_information.sitename aggregates links from these $site_information.areaname related feeds.</p>
+
+<p><a href="rssfeeds">RSS feeds</a> produced by $site_information.sitename are summarised <a href="rssfeeds">here</a>.</p>
 
 <ul>
 #set($letter = "")
@@ -23,7 +26,13 @@
 		<h4>$current.toUpperCase()</h4>
 		<ul>
 	#end
-	<li><a href="$urlBuilder.getFeedUrl($feed)">$feed.name</a></li>
+	<li class="feedlist">
+		<ul>
+			<li><a href="$urlBuilder.getFeedUrl($feed)">$feed.name</a></li>
+			#if ($feed.publisherName) <li class="publisher">$feed.publisherName</li> #end
+		</ul>
+	</li>
+	
 #end
 </ul>
 
