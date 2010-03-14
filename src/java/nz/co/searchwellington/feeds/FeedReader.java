@@ -31,7 +31,6 @@ public class FeedReader {
     
     private ResourceRepository resourceDAO;
     private RssfeedNewsitemService rssfeedNewsitemService;
-    private AutoTaggingService autoTagger;   
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
@@ -46,7 +45,6 @@ public class FeedReader {
     
 	public FeedReader(ResourceRepository resourceDAO,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			AutoTaggingService autoTagger,
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			DateFormatter dateFormatter, UrlCleaner urlCleaner,
 			SuggestionDAO suggestionDAO,
@@ -54,7 +52,6 @@ public class FeedReader {
 			FeedItemAcceptor feedItemAcceptor) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
-		this.autoTagger = autoTagger;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
 		this.dateFormatter = dateFormatter;
 		this.urlCleaner = urlCleaner;
@@ -106,7 +103,7 @@ public class FeedReader {
 		    
 		    if (feed.getAcceptancePolicy().startsWith("accept")) {
 		    	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
-		    	if (acceptThisItem) {		    		
+		    	if (acceptThisItem) {
 		    		feedItemAcceptor.acceptFeedItem(feednewsitem, feed);
 		    	}
 		    	

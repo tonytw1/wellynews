@@ -38,7 +38,6 @@
 	<bean id="feedReaderTarget" class="nz.co.searchwellington.feeds.FeedReader">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
-		<constructor-arg ref="autoTaggingService" />
 		<constructor-arg ref="feedAcceptanceDecider" />
 		<constructor-arg ref="dateFormatter" />
 		<constructor-arg ref="urlCleaner" />
@@ -59,6 +58,7 @@
 	
 	<bean id="feedItemAcceptorTarget" class="nz.co.searchwellington.feeds.FeedItemAcceptor">		
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="autoTaggingService" />		
 		<constructor-arg ref="contentUpdateService" />
 	</bean>
 	
