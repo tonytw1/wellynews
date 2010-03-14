@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class FeedReader {
       
-	Logger log = Logger.getLogger(FeedReader.class);
+	static Logger log = Logger.getLogger(FeedReader.class);
     
     private ResourceRepository resourceDAO;
     private RssfeedNewsitemService rssfeedNewsitemService;
@@ -37,19 +37,21 @@ public class FeedReader {
     private UrlCleaner urlCleaner;
     private SuggestionDAO suggestionDAO;
     private ContentUpdateService contentUpdateService;
+	private FeedItemAcceptor feedItemAcceptor;
  
     
     public FeedReader() {        
     }
     
-        
-    public FeedReader(ResourceRepository resourceDAO,
+    
+	public FeedReader(ResourceRepository resourceDAO,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			AutoTaggingService autoTagger,
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			DateFormatter dateFormatter, UrlCleaner urlCleaner,
 			SuggestionDAO suggestionDAO,
-			ContentUpdateService contentUpdateService) {
+			ContentUpdateService contentUpdateService,
+			FeedItemAcceptor feedItemAcceptor) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.autoTagger = autoTagger;
@@ -58,12 +60,13 @@ public class FeedReader {
 		this.urlCleaner = urlCleaner;
 		this.suggestionDAO = suggestionDAO;
 		this.contentUpdateService = contentUpdateService;
+		this.feedItemAcceptor = feedItemAcceptor;
 	}
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+	
+	
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
     public void processFeed(int feedId) {
-    	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
-    	
+    	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);    	
     	log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));               
 
     	// TODO can this move onto the enum?
@@ -103,8 +106,8 @@ public class FeedReader {
 		    
 		    if (feed.getAcceptancePolicy().startsWith("accept")) {
 		    	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
-		    	if (acceptThisItem) {                		
-		    		acceptFeedItem(feednewsitem, feed);
+		    	if (acceptThisItem) {		    		
+		    		feedItemAcceptor.acceptFeedItem(feednewsitem, feed);
 		    	}
 		    	
 		    } else {                	
@@ -114,34 +117,6 @@ public class FeedReader {
 		    	}
 		    }
 		}
-	}
-
-
-    private void acceptFeedItem(FeedNewsitem feeditem, Feed feed) {
-        log.info("Accepting: " + feeditem.getName());
-        Newsitem resource = rssfeedNewsitemService.makeNewsitemFromFeedItem(feeditem, feed);     
-        resource.setFeed(feed);
-        
-        log.info("Item body after makeNewsitemFromFeedItem: " + resource.getDescription());
-        
-        flattenLoudCapsInTitle(resource);
-        
-        if (resource.getDate() == null) {
-        	log.info("Accepting a feeditem with no date; setting date to current time");            
-            resource.setDate(new DateTime().toDate());
-        }
-        
-        log.info("Item body before save: " + resource.getDescription());
-        contentUpdateService.update(resource, true);
-    }
-
-    
-	private void flattenLoudCapsInTitle(Resource resource) {
-		String flattenedTitle = UrlFilters.lowerCappedSentence(resource.getName());           
-        if (!flattenedTitle.equals(resource.getName())) {
-        	resource.setName(flattenedTitle);
-            log.info("Flatten capitalised sentence to '" + flattenedTitle + "'");
-        }
 	}
 	
 }

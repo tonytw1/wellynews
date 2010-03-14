@@ -44,9 +44,25 @@
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="contentUpdateService" />
+		<constructor-arg ref="feedItemAcceptor" />		
 	</bean>
 	
-			
+	
+	<bean id="feedItemAcceptor" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="target" ref="feedItemAcceptorTarget" />
+		<property name="transactionAttributeSource">
+			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
+		</property>	
+	</bean>
+	
+	
+	<bean id="feedItemAcceptorTarget" class="nz.co.searchwellington.feeds.FeedItemAcceptor">		
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="contentUpdateService" />
+	</bean>
+	
+				
 	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >
 		<constructor-arg ref="cacheManager" />
 	</bean>
