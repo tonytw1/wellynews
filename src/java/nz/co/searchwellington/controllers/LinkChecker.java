@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import nz.co.searchwellington.linkchecking.LinkCheckerProcessor;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
@@ -43,24 +44,24 @@ public class LinkChecker {
 	
 	@Transactional
     public void scanResource(int checkResourceId) {
-        Resource checkResource = resourceDAO.loadResourceById(checkResourceId);         
-        if (checkResource != null) {
-	        log.info("Checking: " + checkResource.getName() + " (" + checkResource.getUrl() + ")");        
-			log.debug("Before status: " + checkResource.getHttpStatus());      
+        Resource resource = resourceDAO.loadResourceById(checkResourceId);         
+        if (resource != null) {
+	        log.info("Checking: " + resource.getName() + " (" + resource.getUrl() + ")");        
+			log.debug("Before status: " + resource.getHttpStatus());      
 			
-			final String pageContent = httpCheck(checkResource);
+			final String pageContent = httpCheck(resource);
 
 			log.info("Running linkchecking processors");
 			for (LinkCheckerProcessor processor : processers) {
 				log.info("Running processor: " + processor.getClass().toString());
-				processor.process(checkResource, pageContent);
+				processor.process(resource, pageContent);
 			}
 			log.info("Finished linkchecking");
-			
+						
 			log.debug("Saving resource and updating snapshot");
-			checkResource.setLastScanned(new DateTime().toDate());
-			snapshotDAO.setSnapshotContentForUrl(checkResource.getUrl(), pageContent);
-			contentUpdateService.update(checkResource, false);
+			resource.setLastScanned(new DateTime().toDate());
+			snapshotDAO.setSnapshotContentForUrl(resource.getUrl(), pageContent);
+			contentUpdateService.update(resource, false);
 			
         } else {
         	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database");
