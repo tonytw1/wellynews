@@ -5,7 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.HandTagging;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -51,14 +53,11 @@ public class TaggingReturnsOfficerService {
 
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
 		List<TaggingVote> votes = new ArrayList<TaggingVote>();
-		for (HandTagging handTagging : tagVoteDAO
-				.getHandTaggingsForResource(resource)) {
-			votes.add(new TaggingVote(handTagging.getTag(),
-					handTagging.getUser(), 100));
+		for (HandTagging handTagging : tagVoteDAO.getHandTaggingsForResource(resource)) {
+			votes.add(new TaggingVote(handTagging.getTag(), handTagging.getUser(), 100));
 		}
 
-		final boolean shouldAppearOnPublisherAndParentTagPages = resource
-				.getType().equals("L")
+		final boolean shouldAppearOnPublisherAndParentTagPages = resource.getType().equals("L")
 				|| resource.getType().equals("N")
 				|| resource.getType().equals("C")
 				|| resource.getType().equals("F");
@@ -67,7 +66,24 @@ public class TaggingReturnsOfficerService {
 			addAncestorTagVotes(resource, votes);
 			addPublisherDerviedTags(resource, votes);
 		}
+		
+		if (resource.getType().equals("N")) {
+			Feed acceptedFeed = ((Newsitem) resource).getFeed();
+			if (acceptedFeed != null) {
+				addAcceptedFromFeedTags(resource, this.getHandTagsForResource(acceptedFeed), votes);
+			}
+		}
+		
+		
 		return votes;
+	}
+
+
+	private void addAcceptedFromFeedTags(Resource resource, Set<Tag> feedsHandTags, List<TaggingVote> votes) {
+		for (Tag tag : feedsHandTags) {
+			votes.add(new TaggingVote(tag, new FeedsTagsTagVoter(), 100));
+		}
+		// TODO feeds tags ancestors
 	}
 
 
