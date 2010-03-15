@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -103,45 +102,57 @@ public class ResourceEditController extends BaseMultiActionController {
     
        
     @Transactional
-    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         
     	adminRequestFilter.loadAttributesOntoRequest(request);    	
+    	Resource resource = (Resource) request.getAttribute("resource");    	
+    	if (request.getAttribute("resource") == null) { 
+    		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
+    	}
+    	    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (!userIsAllowedToEdit(resource, request, loggedInUser)) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
     	
-    	Resource editResource = (Resource) request.getAttribute("resource");    	
-    	if (request.getAttribute("resource") != null && userIsAllowedToEdit(editResource, request, loggedInUser)) {    		
-    		ModelAndView mv = new ModelAndView("editResource");
-    		populateCommonLocal(mv);
-    		mv.addObject("heading", "Editing a Resource");
+    	    	
+    	ModelAndView mv = new ModelAndView("editResource");
+    	populateCommonLocal(mv);
+    	mv.addObject("heading", "Editing a Resource");
     		
-            mv.addObject("resource", editResource);
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(getHandpickerTagsForThisResourceByUser(loggedInUser, editResource)));
-            mv.addObject("show_additional_tags", 1);
+        mv.addObject("resource", resource);
+        mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource)));
+        mv.addObject("show_additional_tags", 1);
             
-            boolean userIsLoggedIn = loggedInUser != null;
-            populatePublisherField(mv, userIsLoggedIn, editResource);
+        boolean userIsLoggedIn = loggedInUser != null;
+        populatePublisherField(mv, userIsLoggedIn, resource);
                 
-            if (editResource.getType().equals("F")) {            
-            	mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect (((Feed)editResource).getAcceptancePolicy()));                   
-            }                
-            return mv;
-        }
-       
-    	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   	
+        if (resource.getType().equals("F")) {            
+        	mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect (((Feed)resource).getAcceptancePolicy()));                   
+        }               
+        return mv;        
     }
 
 
-	private Set<Tag> getHandpickerTagsForThisResourceByUser(User loggedInUser, Resource editResource) {
-		return tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource);
-	}
     
-        
-    @Transactional
+	@Transactional
     public ModelAndView viewSnapshot(HttpServletRequest request, HttpServletResponse response) {
     	
-    	adminRequestFilter.loadAttributesOntoRequest(request);    	
+		adminRequestFilter.loadAttributesOntoRequest(request);    	
+    	if (request.getAttribute("resource") == null) { 
+    		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
+    	}
+    	Resource resource = (Resource) request.getAttribute("resource");    	
+    	    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (!userIsAllowedToEdit(resource, request, loggedInUser)) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
     	
     	Resource editResource = (Resource) request.getAttribute("resource");    	
     	if (request.getAttribute("resource") != null && userIsAllowedToEdit(editResource, request, loggedInUser)) {    		
@@ -152,7 +163,7 @@ public class ResourceEditController extends BaseMultiActionController {
             mv.addObject("resource", editResource);
             mv.addObject("body", snapBodyExtractor.extractSnapshotBodyTextFor(editResource));
             
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(getHandpickerTagsForThisResourceByUser(loggedInUser, editResource)));
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource)));
             mv.addObject("show_additional_tags", 1);
             
             return mv;
@@ -163,14 +174,19 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     
-    @Transactional	//TODO needs auth
+    @Transactional
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
         response.setCharacterEncoding("UTF-8");
-
+            
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (!editPermissionService.canAcceptFeedItems(loggedInUser)) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
+    	
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Accepting a submission");        
-        adminRequestFilter.loadAttributesOntoRequest(request);
         
         Newsitem newsitem = null;
         if (request.getParameter("item") != null) {
@@ -198,27 +214,6 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
 
-
-	private Newsitem getRequestedFeedItemByFeedAndItemNumber(
-			HttpServletRequest request, Newsitem newsitem, int item) {
-		log.info("Looking for feeditem by feed and item number: " + item);
-		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
-		
-		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-		if (item > 0 && item <= feednewsItems.size()) {                    
-			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
-			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
-		}
-		return newsitem;
-	}
-    
-    
-    
-    private Newsitem getRequestedFeedItemByUrl(String url) {
-    	return rssfeedNewsitemService.getFeedNewsitemByUrl(url);    	
-    }
-    
-    
     
     @Transactional
     public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
@@ -252,10 +247,8 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
 
-    
     @Transactional
-    public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    
+    public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("submitWebsite");
         modelAndView.addObject("heading", "Submitting a Website");        
         Resource editResource = resourceDAO.createNewWebsite();
@@ -267,12 +260,9 @@ public class ResourceEditController extends BaseMultiActionController {
         return modelAndView;
     }
 
-
-
-   
     
     @Transactional
-    public ModelAndView submitNewsitem(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView submitNewsitem(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitNewsitem");
         modelAndView.addObject("heading", "Submitting a Newsitem");
         Resource editResource = resourceDAO.createNewNewsitem();
@@ -283,9 +273,8 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
 
-
     @Transactional
-    public ModelAndView submitCalendar(HttpServletRequest request, HttpServletResponse response) throws IOException {        
+    public ModelAndView submitCalendar(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView modelAndView = new ModelAndView("submitCalendar");
         modelAndView.addObject("heading", "Submitting a Calendar");
         Resource editResource = resourceDAO.createNewCalendarFeed("");
@@ -298,7 +287,7 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     @Transactional
-    public ModelAndView submitFeed(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView submitFeed(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitFeed");
         modelAndView.addObject("heading", "Submitting a Feed");
         Resource editResource = resourceDAO.createNewFeed();
@@ -312,7 +301,7 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     @Transactional
-    public ModelAndView submitWatchlist(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView submitWatchlist(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitWatchlist");
         modelAndView.addObject("heading", "Submitting a Watchlist Item");
         Resource editResource = resourceDAO.createNewWebsite();
@@ -326,7 +315,7 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     @Transactional
-    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
+    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
@@ -489,7 +478,7 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
     
-    private void populateSubmitCommonElements(HttpServletRequest request, ModelAndView modelAndView) throws IOException {
+    private void populateSubmitCommonElements(HttpServletRequest request, ModelAndView modelAndView) {
         populateCommonLocal(modelAndView);
         modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
    
@@ -504,14 +493,33 @@ public class ResourceEditController extends BaseMultiActionController {
     }
     
     
-    protected void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) throws IOException {
+
+	private Newsitem getRequestedFeedItemByFeedAndItemNumber(
+			HttpServletRequest request, Newsitem newsitem, int item) {
+		log.info("Looking for feeditem by feed and item number: " + item);
+		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
+		
+		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+		if (item > 0 && item <= feednewsItems.size()) {                    
+			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
+			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
+		}
+		return newsitem;
+	}
+    
+    
+    
+    private Newsitem getRequestedFeedItemByUrl(String url) {
+    	return rssfeedNewsitemService.getFeedNewsitemByUrl(url);    	
+    }
+    
+    protected void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) {
         boolean isPublishedResource = editResource instanceof PublishedResource;  
-        if (isPublishedResource) {            
+        if (isPublishedResource) {
             modelAndView.addObject("publisher_select", "1");   
         } else {
             log.info("Edit resource is not a publisher resource.");
         }
     }
 
-    
 }

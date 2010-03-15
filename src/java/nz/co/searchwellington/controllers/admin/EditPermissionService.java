@@ -85,5 +85,9 @@ public class EditPermissionService {
 		}
 		return false;
 	}
+
+	public boolean canAcceptFeedItems(User loggedInUser) {
+		return loggedInUser.isAdmin();
+	}
 		
 }
