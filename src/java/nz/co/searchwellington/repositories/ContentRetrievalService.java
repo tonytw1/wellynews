@@ -23,9 +23,8 @@ public class ContentRetrievalService {
 	
 	
     final protected int MAX_NEWSITEMS_TO_SHOW = 10;
-
     
-
+    
 	private ResourceRepository resourceDAO;
 	private SolrContentRetrievalService solrContentRetrievalService;
 	private KeywordSearchService keywordSearchService;
@@ -33,13 +32,14 @@ public class ContentRetrievalService {
 	private TagDAO tagDAO;
 	private RelatedTagsService relatedTagsService;
 	private DiscoveredFeedRepository discoveredFeedsDAO;
-	private HandTaggingDAO handTaggingDAO;
 		
 
 	public ContentRetrievalService(ResourceRepository resourceDAO,
 			SolrContentRetrievalService solrContentRetrievalService,
 			KeywordSearchService keywordSearchService,
-			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO, RelatedTagsService relatedTagsService, DiscoveredFeedRepository discoveredFeedsDAO, HandTaggingDAO handTaggingDAO) {
+			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO,
+			RelatedTagsService relatedTagsService,
+			DiscoveredFeedRepository discoveredFeedsDAO) {
 		this.resourceDAO = resourceDAO;
 		this.solrContentRetrievalService = solrContentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
@@ -47,9 +47,9 @@ public class ContentRetrievalService {
 		this.tagDAO = tagDAO;
 		this.relatedTagsService = relatedTagsService;
 		this.discoveredFeedsDAO = discoveredFeedsDAO;
-		this.handTaggingDAO = handTaggingDAO;
 	}
 
+	
 	public List<Resource> getAllWatchlists() {
 		return solrContentRetrievalService.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
@@ -136,10 +136,6 @@ public class ContentRetrievalService {
 
 	public List<Resource> getRecentedTwitteredNewsitemsForTag(int maxItems, Tag tag) {
 		return solrContentRetrievalService.getRecentTwitteredNewsitemsForTag(maxItems, showBrokenDecisionService.shouldShowBroken(), tag);
-	}
-
-	public List<Resource> getOwnedBy(User loggedInUser, int maxItems) {
-		return resourceDAO.getOwnedBy(loggedInUser, maxItems);
 	}
 
 	public List<Resource> getFeaturedSites() {
@@ -235,6 +231,10 @@ public class ContentRetrievalService {
 		return discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds();
 	}
 
+	public List<Resource> getOwnedBy(User loggedInUser, int maxItems) {
+		return resourceDAO.getOwnedBy(loggedInUser, maxItems);	// TODO push to solr for profile page usages.
+	}
+	
 	public List<Resource> getTaggedBy(User user, int maxItems) {
 		return solrContentRetrievalService.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken());
 	}

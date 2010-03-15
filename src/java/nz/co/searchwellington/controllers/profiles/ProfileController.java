@@ -106,7 +106,7 @@ public class ProfileController extends BaseMultiActionController {
 	        		log.info("Put user onto model: " + user.getUsername());
 	        		mv.addObject("profileuser", user);
 	        		
-	        		mv.addObject("submitted", resourceDAO.getOwnedBy(user, MAX_NEWSITEMS));	// TODO move to CRS
+	        		mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, MAX_NEWSITEMS));
 	        		mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, MAX_NEWSITEMS));
 	        		return mv;
 	        	}
@@ -122,7 +122,7 @@ public class ProfileController extends BaseMultiActionController {
 			  if (userDAO.getUserByProfileName(profilename) == null) {
 				  return true;
 			  }
-		  }		  
+		  }
 		  return false;
 	  }	
 	    

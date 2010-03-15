@@ -5,13 +5,13 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.AnonUserService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.UserImpl;
 import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
-import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
 
 import org.apache.log4j.Logger;
 import org.openid4java.consumer.ConsumerException;
@@ -31,7 +31,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class OpenIDLoginController extends MultiActionController {
 	
-	Logger log = Logger.getLogger(OpenIDLoginController.class);
+	static Logger log = Logger.getLogger(OpenIDLoginController.class);
 
 	private static final String OPENID_CLAIMED_IDENTITY_PARAMETER = "openid_claimed_identity";
 	public ConsumerManager manager;
@@ -40,17 +40,24 @@ public class OpenIDLoginController extends MultiActionController {
 	private UserRepository userDAO;
 	private LoginResourceOwnershipService loginResourceOwnershipService;
 	private LoggedInUserFilter loggedInUserFilter;
+	private AnonUserService anonUserService;
 
-    public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack, UserRepository userDAO, LoginResourceOwnershipService loginResourceOwnershipService, LoggedInUserFilter loggedInUserFilter) throws ConsumerException {
-        // instantiate a ConsumerManager object
-    	manager = new ConsumerManager();
-    	this.urlBuilder = urlBuilder;
-    	this.urlStack = urlStack;
-    	this.userDAO = userDAO;
-    	this.loginResourceOwnershipService = loginResourceOwnershipService;
-    	this.loggedInUserFilter = loggedInUserFilter;
-    }
+	
+    public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack,
+			UserRepository userDAO,
+			LoginResourceOwnershipService loginResourceOwnershipService,
+			LoggedInUserFilter loggedInUserFilter,
+			AnonUserService anonUserService) throws ConsumerException {
+		manager = new ConsumerManager();
+		this.urlBuilder = urlBuilder;
+		this.urlStack = urlStack;
+		this.userDAO = userDAO;
+		this.loginResourceOwnershipService = loginResourceOwnershipService;
+		this.loggedInUserFilter = loggedInUserFilter;
+		this.anonUserService = anonUserService;
+	}
 
+    
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO make parameter based
 		
@@ -138,7 +145,7 @@ public class OpenIDLoginController extends MultiActionController {
 				
 			} else {
 				log.warn("User was null after successful openid auth");
-			}						
+			}				
 		    return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
 		    
 		} else {
@@ -151,11 +158,13 @@ public class OpenIDLoginController extends MultiActionController {
 	
 	private User createNewUser(final String username) {
 		log.info("Creating new user with username: " + username);
-		User newUser = new UserImpl(username);
-		userDAO.saveUser(newUser);		
+		User newUser = anonUserService.createAnonUser();
+		newUser.setUsername(username);
+		userDAO.saveUser(newUser);
 		return newUser;
 	}
 
+	
 	// TODO duplicated with ResourceEditController
 	private void setUser(HttpServletRequest request, User user) {
 		request.getSession().setAttribute("user", user);		

@@ -48,7 +48,8 @@
 		<constructor-arg ref="userDAO" />
 		<constructor-arg ref="loginResourceOwnershipService" />
 		<constructor-arg ref="loggedInUserFilter" />
-				
+		<constructor-arg ref="anonUserService" />
+						
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

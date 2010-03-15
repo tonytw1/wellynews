@@ -19,7 +19,7 @@
         </property>
                 
         <property name="profilename">
-            <column name="profilename" length="255" not-null="false"/>
+            <column name="profilename" length="255" not-null="true"/>
         </property>
  
 	 	 <property name="url">
