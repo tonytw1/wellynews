@@ -1,87 +1,59 @@
 package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.mail.Notifier;
+import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.widgets.TagWidgetFactory;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 
-public class PublicTaggingController extends BaseMultiActionController {
+public class PublicTaggingController extends MultiActionController {
+	
+    static Logger log = Logger.getLogger(PublicTaggingController.class);
         
-    Logger log = Logger.getLogger(PublicTaggingController.class);
-        
-    private TagWidgetFactory tagWidgetFactory;
-    private Notifier notifier;
-	private SubmissionProcessingService submissionProcessingService;
-	private ResourceRepository resourceDAO;
-    private AnonUserService anonUserService;
-	private HandTaggingDAO tagVoteDAO;
+    private AdminRequestFilter adminRequestFilter;
+	private TaggingReturnsOfficerService taggingReturnsOfficerService;
+	private ContentRetrievalService contentRetrievalService;
+	
+	
+    public PublicTaggingController(AdminRequestFilter adminRequestFilter,
+			TaggingReturnsOfficerService taggingReturnsOfficerService, ContentRetrievalService contentRetrievalService) {
+		this.adminRequestFilter = adminRequestFilter;
+		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
+		this.contentRetrievalService = contentRetrievalService;
+	}
 
 
-    
-    public PublicTaggingController(ResourceRepository resourceDAO,           
-                TagWidgetFactory tagWidgetFactory, Notifier notifier, LoggedInUserFilter loggedInUserFilter, SubmissionProcessingService submissionProcessingService, HandTaggingDAO tagVoteDAO) {       
-        this.resourceDAO = resourceDAO;      
-        this.tagWidgetFactory = tagWidgetFactory;
-        this.notifier = notifier;
-        this.loggedInUserFilter = loggedInUserFilter;
-        this.submissionProcessingService = submissionProcessingService;
-        this.tagVoteDAO = tagVoteDAO;
-    }
-   
-    
-    
-    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView("publicTagging");    
-        populateCommonLocal(mv);
-        mv.addObject("heading", "Tagging a Resource");
-        
-        User loggedInUser = loggedInUserFilter.getLoggedInUser();                  
-        if (request.getAttribute("resource") != null) {
-            Resource editResource = (Resource) request.getAttribute("resource");        
-            log.info("Loaded resource #" + editResource.getId() + " for tagging.");
+	@Transactional
+    public ModelAndView tagging(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
+    	adminRequestFilter.loadAttributesOntoRequest(request);    	
+    	
+    	Resource editResource = (Resource) request.getAttribute("resource");    	
+    	if (request.getAttribute("resource") != null) {    		
+    		ModelAndView mv = new ModelAndView("taggingVotes");
+    		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
+    		
+    		mv.addObject("heading", "Tagging votes");    		
             mv.addObject("resource", editResource);
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource)));
+            mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(editResource));
             
-            if (loggedInUser != null) {
-                mv.addObject("show_additional_tags", 1);
-            }
-            
-        } else {
-            log.info("No resource was loaded from the request.");
+    		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
+    		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
+    		mv.addObject("latest_newsitems_moreurl", "index#newslog");
+            return mv;
         }
-             
-        return mv;
+    	
+    	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+		return null;  	
     }
-
-
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {                
-        ModelAndView mv = new ModelAndView("publicTagged");   
-        populateCommonLocal(mv);        
-        mv.addObject("heading", "Resource tagged");
-        
-        if (request.getAttribute("resource") != null) {         
-           Resource editResource = (Resource) request.getAttribute("resource");
-            submissionProcessingService.processTags(request, editResource, null);	// TODO user
-            resourceDAO.saveResource(editResource);           
-            notifier.sendTaggingNotification("Public Tagging", editResource);            
-            mv.addObject("resource", editResource);    
-        }        
-        return mv;
-    }
-
-
+    
 }

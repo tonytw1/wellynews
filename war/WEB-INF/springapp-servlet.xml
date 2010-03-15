@@ -359,7 +359,6 @@
 		<constructor-arg ref="snapshotBodyExtractor" />
 		<constructor-arg ref="anonUserService" />
 		<constructor-arg ref="contentRetrievalService" />
-		<constructor-arg ref="taggingReturnsOfficerService" />
 		<constructor-arg ref="handTaggingDAO" />		
 		
 		<property name="methodNameResolver">
@@ -379,7 +378,6 @@
 						<prop key="/edit/twitteraccept">twitteraccept</prop>
 						
 						<prop key="/edit/viewsnapshot">viewSnapshot</prop>	
-						<prop key="/edit/tagging">tagging</prop>
 					</props>
 				</property>
 			</bean>		
@@ -388,19 +386,15 @@
 	
 	
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
-		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="tagWidgetFactory" />
-		<constructor-arg ref="notifier" />
-		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="submissionProcessingService" />
-		<constructor-arg ref="handTaggingDAO" />				
-		
+		<constructor-arg ref="adminRequestFilter" />	
+		<constructor-arg ref="taggingReturnsOfficerService" />
+		<constructor-arg ref="contentRetrievalService" />
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/tagging/tag">edit</prop>
-						<prop key="/tagging/save">save</prop>						
+						<prop key="/edit/tagging">tagging</prop>
 					</props>
 				</property>
 			</bean>		
@@ -637,7 +631,7 @@
 				<prop key="/edit/twitteraccept">editController</prop>
 			
 				<prop key="/edit/viewsnapshot">editController</prop>
-				<prop key="/edit/tagging">editController</prop>
+				<prop key="/edit/tagging">publicTaggingController</prop>
 				
 				<prop key="/tagging/tag">publicTaggingController</prop>
 				<prop key="/tagging/save">publicTaggingController</prop>

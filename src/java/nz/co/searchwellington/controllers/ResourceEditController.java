@@ -28,11 +28,10 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
-import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
@@ -62,40 +61,51 @@ public class ResourceEditController extends BaseMultiActionController {
     private SnapshotBodyExtractor snapBodyExtractor;
     private AnonUserService anonUserService;
     private ResourceRepository resourceDAO;
-	private TaggingReturnsOfficerService taggingReturnsOfficerService;
 	private HandTaggingDAO tagVoteDAO;
     
-    public ResourceEditController(RssfeedNewsitemService rssfeedNewsitemService, AdminRequestFilter adminRequestFilter,
-            TagWidgetFactory tagWidgetFactory,
-            AutoTaggingService autoTagger, AcceptanceWidgetFactory acceptanceWidgetFactory,
-            RssNewsitemPrefetcher rssPrefetcher, LoggedInUserFilter loggedInUserFilter, 
-            EditPermissionService editPermissionService, UrlStack urlStack, TwitterNewsitemBuilderService twitterNewsitemBuilderService,
-            SubmissionProcessingService submissionProcessingService, ContentUpdateService contentUpdateService, ContentDeletionService contentDeletionService, ResourceRepository resourceDAO, SnapshotBodyExtractor snapBodyExtractor, AnonUserService anonUserService, ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService, HandTaggingDAO tagVoteDAO) {       
-        this.rssfeedNewsitemService = rssfeedNewsitemService;        
-        this.adminRequestFilter = adminRequestFilter;       
-        this.tagWidgetFactory = tagWidgetFactory;
-        this.autoTagger = autoTagger;
-        this.acceptanceWidgetFactory = acceptanceWidgetFactory;
-        this.rssPrefetcher = rssPrefetcher;
-        this.loggedInUserFilter = loggedInUserFilter;
-        this.editPermissionService = editPermissionService;
-        this.urlStack = urlStack;
-        this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
-        this.submissionProcessingService = submissionProcessingService;
-        this.contentUpdateService = contentUpdateService;
-        this.contentDeletionService = contentDeletionService;
-        this.resourceDAO = resourceDAO;
-        this.snapBodyExtractor = snapBodyExtractor;
-        this.anonUserService = anonUserService;
-        this.contentRetrievalService = contentRetrievalService;
-        this.taggingReturnsOfficerService = taggingReturnsOfficerService;
-        this.tagVoteDAO = tagVoteDAO;
-    }
+    public ResourceEditController(
+			RssfeedNewsitemService rssfeedNewsitemService,
+			AdminRequestFilter adminRequestFilter,
+			TagWidgetFactory tagWidgetFactory, AutoTaggingService autoTagger,
+			AcceptanceWidgetFactory acceptanceWidgetFactory,
+			RssNewsitemPrefetcher rssPrefetcher,
+			LoggedInUserFilter loggedInUserFilter,
+			EditPermissionService editPermissionService, UrlStack urlStack,
+			TwitterNewsitemBuilderService twitterNewsitemBuilderService,
+			SubmissionProcessingService submissionProcessingService,
+			ContentUpdateService contentUpdateService,
+			ContentDeletionService contentDeletionService,
+			ResourceRepository resourceDAO,
+			SnapshotBodyExtractor snapBodyExtractor,
+			AnonUserService anonUserService,
+			ContentRetrievalService contentRetrievalService,
+			HandTaggingDAO tagVoteDAO) {
+		this.rssfeedNewsitemService = rssfeedNewsitemService;
+		this.adminRequestFilter = adminRequestFilter;
+		this.tagWidgetFactory = tagWidgetFactory;
+		this.autoTagger = autoTagger;
+		this.acceptanceWidgetFactory = acceptanceWidgetFactory;
+		this.rssPrefetcher = rssPrefetcher;
+		this.loggedInUserFilter = loggedInUserFilter;
+		this.editPermissionService = editPermissionService;
+		this.urlStack = urlStack;
+		this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
+		this.submissionProcessingService = submissionProcessingService;
+		this.contentUpdateService = contentUpdateService;
+		this.contentDeletionService = contentDeletionService;
+		this.resourceDAO = resourceDAO;
+		this.snapBodyExtractor = snapBodyExtractor;
+		this.anonUserService = anonUserService;
+		this.contentRetrievalService = contentRetrievalService;
+		this.tagVoteDAO = tagVoteDAO;
+	}
    
     
        
     @Transactional
-    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
+    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("UTF-8");
+        
     	adminRequestFilter.loadAttributesOntoRequest(request);    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	
@@ -126,30 +136,10 @@ public class ResourceEditController extends BaseMultiActionController {
 		return tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource);
 	}
     
-    
+        
     @Transactional
-    public ModelAndView tagging(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
-    	adminRequestFilter.loadAttributesOntoRequest(request);    	
+    public ModelAndView viewSnapshot(HttpServletRequest request, HttpServletResponse response) {
     	
-    	Resource editResource = (Resource) request.getAttribute("resource");    	
-    	if (request.getAttribute("resource") != null) {    		
-    		ModelAndView mv = new ModelAndView("taggingVotes");
-    		populateCommonLocal(mv);
-    		mv.addObject("heading", "Tagging votes");
-    		
-            mv.addObject("resource", editResource);
-            mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(editResource));      
-            return mv;
-        }
-       
-    	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   	
-    }
-    
-    
-    
-    
-    @Transactional
-    public ModelAndView viewSnapshot(HttpServletRequest request, HttpServletResponse response) {    	
     	adminRequestFilter.loadAttributesOntoRequest(request);    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	
@@ -168,14 +158,15 @@ public class ResourceEditController extends BaseMultiActionController {
             return mv;
         }
        
-    	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));   
-
+    	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
     }
     
     
     
     @Transactional	//TODO needs auth
-    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {        
+    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
+        response.setCharacterEncoding("UTF-8");
+
         ModelAndView modelAndView = new ModelAndView("acceptResource");       
         populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Accepting a submission");        
@@ -361,8 +352,9 @@ public class ResourceEditController extends BaseMultiActionController {
     
     @Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
-	   	// TODO is this needed?
-        request.setCharacterEncoding("UTF-8");                
+        request.setCharacterEncoding("UTF-8");
+        response.setCharacterEncoding("UTF-8");
+
         ModelAndView modelAndView = new ModelAndView("savedResource");
         populateCommonLocal(modelAndView);       
         modelAndView.addObject("heading", "Resource Saved");
