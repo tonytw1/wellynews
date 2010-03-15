@@ -82,8 +82,7 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("geotagged", false);
 		}
 		
-		for(HandTagging handTagging : handTaggingDAO.getHandTaggingsForResource(resource)) {
-			log.info("Adding tagging user: " + handTagging.getUser().getId());
+		for(HandTagging handTagging : handTaggingDAO.getHandTaggingsForResource(resource)) {			
 			inputDocument.addField("handTaggingUsers", handTagging.getUser().getId());	// TODO minimise?
 		}
 		

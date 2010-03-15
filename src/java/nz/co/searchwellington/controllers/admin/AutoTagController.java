@@ -57,12 +57,7 @@ public class AutoTagController extends BaseMultiActionController {
         Tag tag = (Tag) request.getAttribute("tag");
         mv.addObject("tag", tag);
         if (tag != null) {            
-        	List<Resource> resourcesToAutoTag = new ArrayList<Resource>();      
-            for (Resource resource : getPossibleAutotagResources(tag)) {
-                if (!autoTagService.alreadyHasTag(resource, tag)) {
-                    resourcesToAutoTag.add(resource);
-                }
-            }
+        	List<Resource> resourcesToAutoTag = getPossibleAutotagResources(tag);
             mv.addObject("resources_to_tag", resourcesToAutoTag);
         }
         return mv;
@@ -101,8 +96,7 @@ public class AutoTagController extends BaseMultiActionController {
     
     
     private List<Resource> getPossibleAutotagResources(Tag editTag) {
-    	List<Resource> resources = keywordSearchService.getWebsitesMatchingKeywords(editTag.getDisplayName(), true, null);
-    	resources.addAll(keywordSearchService.getNewsitemsMatchingKeywords(editTag.getDisplayName(), true, null));
+    	List<Resource> resources = keywordSearchService.getResourcesMatchingKeywords(editTag.getDisplayName(), true);
     	return resources;    	
 	}
         

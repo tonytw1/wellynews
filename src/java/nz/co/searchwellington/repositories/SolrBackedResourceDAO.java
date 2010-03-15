@@ -12,14 +12,11 @@ import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingNewsitemDecorator;
-import nz.co.searchwellington.model.decoraters.highlighting.SolrHighlightingWebsiteDecorator;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
@@ -367,7 +364,7 @@ public class SolrBackedResourceDAO {
     }
 	
 	
-	private List<Resource> getQueryResults(SolrQuery query) {
+	public List<Resource> getQueryResults(SolrQuery query) {
 		List<Resource> results = new ArrayList<Resource>();
 		log.debug("Solr query: " + query);
 		QueryResponse response = solrQueryService.querySolr(query);
@@ -508,29 +505,11 @@ public class SolrBackedResourceDAO {
 		for (SolrDocument result : solrResults) {			
 			Resource resource = resourceHydrator.hydrateResource(result);
 			if (resource != null) {
-				if (response.getHighlighting() != null) {
-					processHighlighting(results, response, resource);
-				} else {
-					results.add(resource);
-				}
-				
-			}		
+				results.add(resource);	
+			}
 		}
 	}
 
-	
-	private void processHighlighting(List<Resource> results, QueryResponse response, Resource resource) {
-		Map<String, List<String>> map = response.getHighlighting().get(resource.getId());
-		if (resource.getType().equals("N") && !map.isEmpty()) {
-			log.debug("Highlighting: " + map);
-			results.add(new SolrHighlightingNewsitemDecorator((Newsitem) resource, map));
-		} else if (resource.getType().equals("W") && !map.isEmpty()) {
-			log.debug("Highlighting: " + map);
-			results.add(new SolrHighlightingWebsiteDecorator((Website) resource, map));
-		} else {
-			results.add(resource);
-		}
-	}
 		
 	private SolrQuery getCommentedNewsitemsQuery(boolean showBroken) {
 		return new SolrQueryBuilder().showBroken(showBroken).type("N").commented(true).toQuery();			
