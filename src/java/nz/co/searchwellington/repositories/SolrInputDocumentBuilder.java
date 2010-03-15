@@ -103,7 +103,6 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("publisherName", publisher.getName());
 		}
 		
-		// TODO not sure this is in the right place; should be under content update service.
 		final String bodyText = snapshotBodyExtractor.extractSnapshotBodyTextFor(resource);
 		if (bodyText != null) {
 			inputDocument.addField("bodytext", bodyText);
@@ -115,13 +114,10 @@ public class SolrInputDocumentBuilder {
 
 	private Website getIndexPublisherForResource(Resource resource) {
 		Website publisher = null;
-		if (resource.getType().equals("N") || resource.getType().equals("F")){
+		if (resource.getType().equals("N") || resource.getType().equals("F") || resource.getType().equals("L")) {	// TODO instance of required
 			publisher = ((PublishedResource) resource).getPublisher();
 		}
 		return publisher;
 	}
-
-	
-	
 
 }
