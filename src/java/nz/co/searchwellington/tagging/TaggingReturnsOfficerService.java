@@ -35,14 +35,13 @@ public class TaggingReturnsOfficerService {
 		for (HandTagging tagging : handTaggings) {
 			tags.add(tagging.getTag());
 		}
-		return tags;		
+		return tags;
 	}
 	
 	
 	public Set<Tag> getIndexTagsForResource(Resource resource) {		
-		List<TaggingVote> taggingVotes = complieTaggingVotes(resource);			
 		Set <Tag> indexTags = new HashSet<Tag>();
-		for (TaggingVote vote : taggingVotes) {
+		for (TaggingVote vote : complieTaggingVotes(resource)) {
 			if (!indexTags.contains(vote.getTag())) {
 				indexTags.add(vote.getTag());
 			}
@@ -73,8 +72,7 @@ public class TaggingReturnsOfficerService {
 				addAcceptedFromFeedTags(resource, this.getHandTagsForResource(acceptedFeed), votes);
 			}
 		}
-		
-		
+				
 		return votes;
 	}
 
@@ -82,22 +80,22 @@ public class TaggingReturnsOfficerService {
 	private void addAcceptedFromFeedTags(Resource resource, Set<Tag> feedsHandTags, List<TaggingVote> votes) {
 		for (Tag tag : feedsHandTags) {
 			votes.add(new TaggingVote(tag, new FeedsTagsTagVoter(), 100));
+			for (Tag feedTagAncestor : tag.getAncestors()) {
+				votes.add(new TaggingVote(feedTagAncestor, new FeedTagAncestorTagVoter(), 100));
+			}
 		}
-		// TODO feeds tags ancestors
+				
 	}
 
 
 	private void addPublisherDerviedTags(Resource resource,
 			List<TaggingVote> votes) {
 		if (((PublishedResource) resource).getPublisher() != null) {
-			Website publisher = ((PublishedResource) resource)
-					.getPublisher();
+			Website publisher = ((PublishedResource) resource).getPublisher();
 			for (Tag publisherTag : this.getHandTagsForResource(publisher)) {
-				votes.add(new TaggingVote(publisherTag,
-						new PublishersTagsVoter(), 100));
+				votes.add(new TaggingVote(publisherTag, new PublishersTagsVoter(), 100));
 				for (Tag publishersAncestor : publisherTag.getAncestors()) {
-					votes.add(new TaggingVote(publishersAncestor,
-							new PublishersTagAncestorTagVoter(), 100));
+					votes.add(new TaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter(), 100));
 				}
 			}
 		}
