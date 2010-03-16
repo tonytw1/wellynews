@@ -27,6 +27,19 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="linkextractors.xml" />
 	<import resource="urls.xml" />
 	<import resource="linkchecking.xml" />
+	<import resource="modelbuilders.xml"/>
+	
+	
+		
+	<bean id="anonUserService" class="nz.co.searchwellington.controllers.AnonUserService">
+		<constructor-arg ref="userDAO" />
+	</bean>
+	
+	<bean id="rssItemMaker" class="nz.co.searchwellington.views.RssItemMaker" />
+		
+	<bean id="loginResourceOwnershipService" class="nz.co.searchwellington.controllers.LoginResourceOwnershipService">
+		<constructor-arg ref="resourceDAO" />
+	</bean>
 
 	<bean id="taggingReturnsOfficerService" class=" nz.co.searchwellington.tagging.TaggingReturnsOfficerService" >
 		<constructor-arg ref="handTaggingDAO" />
