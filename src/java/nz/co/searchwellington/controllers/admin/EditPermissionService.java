@@ -89,5 +89,9 @@ public class EditPermissionService {
 	public boolean canAcceptFeedItems(User loggedInUser) {
 		return loggedInUser.isAdmin();
 	}
+
+	public boolean canDeleteTags(User loggedInUser) {
+		return loggedInUser.isAdmin();
+	}
 		
 }

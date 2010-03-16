@@ -6,9 +6,11 @@ import java.util.HashSet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.TagModificationService;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
@@ -21,30 +23,38 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class TagEditController extends MultiActionController {
     
-    Logger log = Logger.getLogger(TagEditController.class);
-
-
+    static Logger log = Logger.getLogger(TagEditController.class);
+    
     private AdminRequestFilter requestFilter;
     private TagWidgetFactory tagWidgetFactory;
     private UrlStack urlStack;
     private TagDAO tagDAO;
     private TagModificationService tagModifcationService;
+	private LoggedInUserFilter loggedInUserFilter;
+    private EditPermissionService editPermissionService;
     
     public TagEditController() {       
     }
 
 
-    public TagEditController(AdminRequestFilter requestFilter, TagWidgetFactory tagWidgetFactory, UrlStack urlStack, TagDAO tagDAO, TagModificationService tagModifcationService) {
-        this.requestFilter = requestFilter;
-        this.tagWidgetFactory = tagWidgetFactory;
-        this.urlStack = urlStack;
-        this.tagDAO = tagDAO;
-        this.tagModifcationService = tagModifcationService;      
-    }
+    public TagEditController(AdminRequestFilter requestFilter,
+			TagWidgetFactory tagWidgetFactory, UrlStack urlStack,
+			TagDAO tagDAO, TagModificationService tagModifcationService,
+			LoggedInUserFilter loggedInUserFilter,
+			EditPermissionService editPermissionService) {
+		this.requestFilter = requestFilter;
+		this.tagWidgetFactory = tagWidgetFactory;
+		this.urlStack = urlStack;
+		this.tagDAO = tagDAO;
+		this.tagModifcationService = tagModifcationService;
+		this.loggedInUserFilter = loggedInUserFilter;
+		this.editPermissionService = editPermissionService;
+	}
     
     
-    @Transactional
+    @Transactional // TODO auth
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {
+    	    	
         ModelAndView modelAndView = new ModelAndView("submitTag");    
         modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());
         modelAndView.addObject("heading", "Submitting a Tag");
@@ -76,23 +86,29 @@ public class TagEditController extends MultiActionController {
         return mv;
     }
     
-    
-        
+            
     @Transactional
-    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) throws IOException {    
+    public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) {	
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (!editPermissionService.canDeleteTags(loggedInUser)) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
+    	    	        
+        requestFilter.loadAttributesOntoRequest(request);           
+        if (request.getAttribute("tag") == null) {
+        	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
+        }
+        
         ModelAndView mv = new ModelAndView("deleteTag"); 
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Editing a Tag");
         
-        Tag tag = null;
-        requestFilter.loadAttributesOntoRequest(request);
-           
-        if (request.getAttribute("tag") != null) {
-            tag = (Tag) request.getAttribute("tag");         
-            mv.addObject("tag", tag);            
-            tagModifcationService.deleteTag(tag);            
-            urlStack.setUrlStack(request, "/index");
-        }              
+        Tag tag = (Tag) request.getAttribute("tag");         
+        mv.addObject("tag", tag);            
+        tagModifcationService.deleteTag(tag);            
+        urlStack.setUrlStack(request, "/index");                     
         return mv;
     }
     
