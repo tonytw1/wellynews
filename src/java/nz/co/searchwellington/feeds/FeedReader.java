@@ -2,22 +2,14 @@ package nz.co.searchwellington.feeds;
 
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
-import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.tagging.AutoTaggingService;
-import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.utils.UrlCleaner;
-import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
