@@ -154,7 +154,7 @@ public class SubmissionProcessingService {
     		processTagSelect(request, editResource, user);    		
     	}
         if (request.getParameter("additional_tags") != null) {
-            processAdditionalTags(request, editResource);                   
+            processAdditionalTags(request, editResource, user);                   
         } else {
         	log.debug("No additional tag string found.");
         }    
@@ -188,8 +188,8 @@ public class SubmissionProcessingService {
     
     
     
-    private void processAdditionalTags(HttpServletRequest request, Resource editResource) {
-        String additionalTagString = request.getParameter("additional_tags").trim();        
+    private void processAdditionalTags(HttpServletRequest request, Resource editResource, User user) {
+        String additionalTagString = request.getParameter("additional_tags").trim();
         log.debug("Found additional tag string: " + additionalTagString);
         String[] fields = additionalTagString.split(",");
         if (fields.length > 0) {
@@ -210,11 +210,11 @@ public class SubmissionProcessingService {
                         newTag.setName(field);                       
                         newTag.setDisplayName(displayName);                        
                         tagDAO.saveTag(newTag);
-                        tagVoteDAO.addTag(null, newTag, editResource);
+                        tagVoteDAO.addTag(user, newTag, editResource);
                         
                     } else {
                         log.debug("Found an existing tag in the additional list: " + existingTag.getName() + "; adding.");
-                        tagVoteDAO.addTag(null, existingTag, editResource);
+                        tagVoteDAO.addTag(user, existingTag, editResource);
                                                      
                     }
                 } else {
