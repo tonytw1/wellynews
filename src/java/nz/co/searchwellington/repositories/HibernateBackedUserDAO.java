@@ -32,7 +32,6 @@ public class HibernateBackedUserDAO implements UserRepository {
     
 	public void saveUser(User user) {     
         sessionFactory.getCurrentSession().saveOrUpdate(user);
-        sessionFactory.getCurrentSession().flush();       
     }
 
 	public User getUserByProfileName(String profilename) {

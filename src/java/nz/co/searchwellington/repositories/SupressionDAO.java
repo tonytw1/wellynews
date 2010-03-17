@@ -24,7 +24,6 @@ public class SupressionDAO implements SupressionRepository {
     	Supression suppression = createSupression(urlToSuppress);
     	if (suppression != null) {
     		sessionFactory.getCurrentSession().saveOrUpdate(suppression);
-    		sessionFactory.getCurrentSession().flush();
     		log.info("Created suppression for: " + suppression.getUrl());
     	}
     }
@@ -43,7 +42,6 @@ public class SupressionDAO implements SupressionRepository {
         Supression existingSupression = (Supression) sessionFactory.getCurrentSession().createCriteria(Supression.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();
         if (existingSupression != null) {
             sessionFactory.getCurrentSession().delete(existingSupression);
-            sessionFactory.getCurrentSession().flush();
         }
     }
 

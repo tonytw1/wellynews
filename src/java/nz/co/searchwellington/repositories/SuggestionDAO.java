@@ -31,7 +31,6 @@ public class SuggestionDAO {
 	public void addSuggestion(Suggestion suggestion) {
 		log.info("Creating suggestion for: " + suggestion.getUrl());        
 		sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
-		sessionFactory.getCurrentSession().flush();	        
 	}
 
 
@@ -68,7 +67,6 @@ public class SuggestionDAO {
 		Suggestion existingsuggestion = (Suggestion) sessionFactory.getCurrentSession().createCriteria(Suggestion.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();
 		if (existingsuggestion != null) {
 			sessionFactory.getCurrentSession().delete(existingsuggestion);
-			sessionFactory.getCurrentSession().flush();
 		}
 	}
 	

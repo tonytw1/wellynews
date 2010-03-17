@@ -32,7 +32,6 @@ public class TweetDAO {
 
 	public void saveTwit(Twit twit) {
 		sessionFactory.getCurrentSession().saveOrUpdate(twit);
-		sessionFactory.getCurrentSession().flush();
 	}
 
 }

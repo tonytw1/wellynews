@@ -36,12 +36,13 @@ import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 
-
+@Transactional
 public class ResourceEditController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ResourceEditController.class);
@@ -339,7 +340,7 @@ public class ResourceEditController extends BaseMultiActionController {
 
 
     
-    @Transactional
+	@Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
@@ -424,7 +425,6 @@ public class ResourceEditController extends BaseMultiActionController {
             		setUser(request, loggedInUser);
             	}
             	
-            	saveResource(request, loggedInUser, editResource);                // TODO sort out flushing
             	submissionProcessingService.processTags(request, editResource, loggedInUser);
                 if (newSubmission) {
                     log.info("Applying the auto tagger to new submission.");
@@ -465,7 +465,7 @@ public class ResourceEditController extends BaseMultiActionController {
 	   }
    }
 
-   	
+
 	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource) {		
 		contentUpdateService.update(editResource, loggedInUser, request);
 	}

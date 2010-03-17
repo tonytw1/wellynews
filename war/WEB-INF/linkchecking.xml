@@ -2,7 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 	
-	<bean id="linkCheckerTarget" class="nz.co.searchwellington.controllers.LinkChecker" >
+	<bean id="linkChecker" class="nz.co.searchwellington.controllers.LinkChecker" >
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="snapshotDAO" />
 		<constructor-arg ref="contentUpdateService" />
