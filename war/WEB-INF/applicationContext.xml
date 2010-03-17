@@ -6,19 +6,14 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-	
-	<bean id="requestObjectLoaderFilter" class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" >	
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="loggedInUserFilter" />	
-	</bean>
-
 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>file:conf/springapp.properties</value>
 		</property>
 	</bean>
-		
+	
+
 	<import resource="database.xml" />
 	<import resource="daos.xml" />	
 	<import resource="timertasks.xml"/>
@@ -30,7 +25,26 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="modelbuilders.xml"/>
 	
 	
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+	  	<property name="transactionInterceptor" ref="txInterceptor"/>
+	</bean>
+
+	<bean id="txInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager"/>
+	 	<property name="transactionAttributeSource">
+   			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+  		</property>
+	</bean>
+	
 		
+	<bean id="requestObjectLoaderFilter" class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" >	
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="loggedInUserFilter" />	
+	</bean>
+
+	
 	<bean id="anonUserService" class="nz.co.searchwellington.controllers.AnonUserService">
 		<constructor-arg ref="userDAO" />
 	</bean>
@@ -83,15 +97,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="contentUpdateService" />	
 	</bean>
 
-	<bean id="commentFeedReader" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="commentFeedReaderTarget" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
-
-	<bean id="commentFeedReaderTarget" class="nz.co.searchwellington.feeds.CommentFeedReader">
+	
+	<bean id="commentFeedReader" class="nz.co.searchwellington.feeds.CommentFeedReader">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedService" />
 		<constructor-arg ref="contentUpdateService" />
@@ -106,9 +113,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
     	<constructor-arg ref="resourceDAO" />	
     </bean>
     
-       <bean id="acceptanceWidgetFactory" class="nz.co.searchwellington.widgets.AcceptanceWidgetFactory" />    		
-
-
+  	<bean id="acceptanceWidgetFactory" class="nz.co.searchwellington.widgets.AcceptanceWidgetFactory" />    		
 
 	<bean id="snapshotBodyExtractor" class="nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor" >
 		<constructor-arg ref="snapshotDAO" />

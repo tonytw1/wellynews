@@ -2,18 +2,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-
-	<bean id="editController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="editControllerTarget" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
-
-
-
-	<bean id="editControllerTarget" class="nz.co.searchwellington.controllers.ResourceEditController">
+	<bean id="editController" class="nz.co.searchwellington.controllers.ResourceEditController">
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="adminRequestFilter" />	
 		<constructor-arg ref="tagWidgetFactory" />
@@ -56,17 +45,8 @@
 		</property>
 	</bean>
 
-
-	<bean id="tagEditController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="tagEditControllerTarget" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
 	
-	
-	<bean id="tagEditControllerTarget" class="nz.co.searchwellington.controllers.admin.TagEditController">
+	<bean id="tagEditController" class="nz.co.searchwellington.controllers.admin.TagEditController">
 		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="urlStack" />
