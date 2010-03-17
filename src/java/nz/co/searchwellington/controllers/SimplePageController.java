@@ -170,7 +170,13 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
      
-    public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
+    	if (!siteInformation.isTwitterEnabled()) {
+    		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
+    	}
+    	
+    	
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         
