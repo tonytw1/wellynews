@@ -19,12 +19,14 @@ public class FrontEndNewsitem implements Newsitem {
 	public List<Tag> getTags() {
 		return tags;
 	}
-
 	
 	public void addTag(Tag tag) {
 		tags.add(tag);
 	}
 
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
 	
 	public void addReTwit(Twit retwit) {
 		newsitem.addReTwit(retwit);
