@@ -1,4 +1,4 @@
-#set ($heading = "Wellington in a box")
+#set ($heading = $site_information.areaname)
 #parse("includes/header.vm")
 
 <div class="page">
