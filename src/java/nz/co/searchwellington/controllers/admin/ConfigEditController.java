@@ -4,44 +4,76 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.config.Config;
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ConfigRepository;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class ConfigEditController extends MultiActionController {
     
     private ConfigRepository configDAO;
+	private LoggedInUserFilter loggedInUserFilter;
 
-    
-    protected ConfigEditController(ConfigRepository configDAO) {     
-        this.configDAO = configDAO;        
-    }
-    
-    
-   
-    
-    @SuppressWarnings("unchecked")
-    public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {        
-        ModelAndView modelAndView = new ModelAndView("editConfig");
-        
-        modelAndView.getModel().put("heading", "Editing Configuration");      
-        modelAndView.getModel().put("stats_tracking_code", StringEscapeUtils.escapeHtml(configDAO.getStatsTracking()));
-        modelAndView.getModel().put("flickr_pool_group_id", StringEscapeUtils.escapeHtml(configDAO.getFlickrPoolGroupId()));
-        modelAndView.getModel().put("clickthrough_tracking_select", makeClickThroughSelect(configDAO.getUseClickThroughCounter()).toString());
+           
+    public ConfigEditController(ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter) {
+		this.configDAO = configDAO;
+		this.loggedInUserFilter = loggedInUserFilter;
+	}
+
+
+	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (!(loggedInUser != null && loggedInUser.isAdmin())) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
+    	    	
+        ModelAndView modelAndView = new ModelAndView("editConfig");        
+        modelAndView.addObject("heading", "Editing Configuration");      
+        modelAndView.addObject("stats_tracking_code", StringEscapeUtils.escapeHtml(configDAO.getStatsTracking()));
+        modelAndView.addObject("flickr_pool_group_id", StringEscapeUtils.escapeHtml(configDAO.getFlickrPoolGroupId()));
+        modelAndView.addObject("clickthrough_tracking_select", makeClickThroughSelect(configDAO.getUseClickThroughCounter()).toString());
         modelAndView.addObject("twitter_listener_is_enabled_select", makeTwitterEnabledSelect(configDAO.isTwitterListenerEnabled()).toString());
         return modelAndView;
     }
     
     
-  
+    
+    @Transactional
+    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (!(loggedInUser != null && loggedInUser.isAdmin())) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
+    	
+        ModelAndView modelAndView = new ModelAndView("savedConfig");
+        modelAndView.addObject("heading", "Editing Configuration");
+        
+        Config config = configDAO.getConfig();        
+        config.setStatsTracking(request.getParameter("stats_tracking_code"));
+        config.setFlickrPoolGroupId(request.getParameter("flickr_pool_group_id"));
+        
+        config.setUseClickthroughCounter(request.getParameter("use_clickthrough_tracking"));
+        
+        boolean twitterIsEnabled = false;
+        final String twitter = request.getParameter("twitter_listener_is_enabled");
+        if (twitter != null && twitter.equals("1")) {
+        	twitterIsEnabled = true;
+        }
+        config.setTwitterListenerEnabled(twitterIsEnabled);
+        
+        configDAO.saveConfig(config);
+        return modelAndView;
+    }
 
-    
-    
-    
+   
     
     private Select makeTwitterEnabledSelect(boolean selected) {
     	  Select select = new Select("twitter_listener_is_enabled");
@@ -66,8 +98,6 @@ public class ConfigEditController extends MultiActionController {
 	}
 
 
-
-
 	private Select makeClickThroughSelect(boolean selected) {
         Select select = new Select("use_clickthrough_tracking");
 
@@ -89,35 +119,5 @@ public class ConfigEditController extends MultiActionController {
         select.addElement(yesOption);
         return select;
     }
-
-
-
-
-    @SuppressWarnings("unchecked")
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
-        
-        ModelAndView modelAndView = new ModelAndView("savedConfig");
-        modelAndView.getModel().put("heading", "Configuration Saved");
-        
-        Config config = configDAO.getConfig();        
-        config.setStatsTracking(request.getParameter("stats_tracking_code"));
-        config.setFlickrPoolGroupId(request.getParameter("flickr_pool_group_id"));
-        
-        config.setUseClickthroughCounter(request.getParameter("use_clickthrough_tracking"));
-        
-        boolean twitterIsEnabled = false;
-        final String twitter = request.getParameter("twitter_listener_is_enabled");
-        if (twitter != null && twitter.equals("1")) {
-        	twitterIsEnabled = true;
-        }
-        config.setTwitterListenerEnabled(twitterIsEnabled);
-        
-        configDAO.saveConfig(config);
-        return modelAndView;
-    }
-
-   
-    
-    
 
 }

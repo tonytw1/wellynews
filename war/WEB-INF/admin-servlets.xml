@@ -140,7 +140,8 @@
 	
 		
 	<bean id="configEditController" class="nz.co.searchwellington.controllers.admin.ConfigEditController">
-		<constructor-arg ref="configDAO" />		
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="loggedInUserFilter" />		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
