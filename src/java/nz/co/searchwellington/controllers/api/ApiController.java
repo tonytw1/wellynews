@@ -24,6 +24,7 @@ import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -56,7 +57,7 @@ public class ApiController extends MultiActionController {
 	}
     
     
-    
+    @Transactional
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
     	ModelAndView mv = new ModelAndView();
     	request.setCharacterEncoding("UTF-8");
@@ -97,13 +98,9 @@ public class ApiController extends MultiActionController {
     	return mv;      
     }
     
+   
     
-    
-    
-    
-    
-    
-    // TODO no feed tags or autotagging?
+    @Transactional
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
     	ModelAndView mv = new ModelAndView();
 
@@ -128,6 +125,7 @@ public class ApiController extends MultiActionController {
     }
     
     
+    @Transactional
     public ModelAndView changeUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {    		
     	 ModelAndView mv = new ModelAndView();
          User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -178,7 +176,8 @@ public class ApiController extends MultiActionController {
     	return mv;    
 	}
     
-            
+           
+    @Transactional
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -211,7 +210,7 @@ public class ApiController extends MultiActionController {
     }
 
     
-    private boolean isAuthorised(User loggedInUser) {
+    private boolean isAuthorised(User loggedInUser) {	// TODO wants to delegate to the permissions service.
     	if (loggedInUser != null) {
     		log.info("API call user is " + loggedInUser.getName());
     	} else {
