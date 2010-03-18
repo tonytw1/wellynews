@@ -1,65 +1,36 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
 
-
-
-<div class="left">
-#parse("includes/tag_tree.vm")
-</div>
-
-
-<div class="main">
-
-<h2>$heading</h2>
-
-<p>You can now follow the <a href="index#newslog">${site_information.areaname} Newslog</a> on <a href="http://www.twitter.com">Twitter</a>.</p>
-
-<p>Our Twitter username is: 
-<code><a href="http://www.twitter.com/${site_information.twitterUsername}">@${site_information.twitterUsername}</a></code></p>
-<p>
-<br/>
-
-
-<h2>Twitter Mentions</h2>
-
-<p>These newsitems have been mentioned on Twitter. This could mean they're of interest.</p>
-
-#parse("includes/main_content.vm")
-
-
-
-</div>
-
-
-<div class="right">
-#parse("includes/login.vm")
-
-
-#if ($twitterMentioned) 
-	<div class="box">
-		#parse("includes/twitter_mentioned.vm")
+	<div class="left">
+		#parse("includes/tag_tree.vm")
 	</div>
-#end
 
 
+	<div class="main">
+		<h2>$heading</h2>
+		<p>You can now follow the <a href="index#newslog">${site_information.areaname} Newslog</a> on <a href="http://www.twitter.com">Twitter</a>.</p>
 
-<div class="box">
-#parse("includes/latest_twitters.vm")
-</div>
+		<p>Our Twitter username is: 
+		<code><a href="http://www.twitter.com/${site_information.twitterUsername}">@${site_information.twitterUsername}</a></code></p>
+		<p>
+		<br/>
+		
+		<h2>Twitter Mentions</h2>
+		<p>These newsitems have been mentioned on Twitter. This could mean they're of interest.</p>
+
+		#parse("includes/main_content.vm")
+	</div>
 
 
-
-
-
-
-
-
-
-
-
-</div>
+	<div class="right">
+		#parse("includes/login.vm")
+	
+		<div class="box">
+			#parse("includes/latest_twitters.vm")
+		</div>
+	</div>
 
 </div>
 

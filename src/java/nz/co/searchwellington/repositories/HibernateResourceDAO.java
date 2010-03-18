@@ -49,7 +49,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     
     @SuppressWarnings("unchecked")
     public List<Integer> getAllResourceIds() {
-        Set<Integer> resourceIds = new HashSet<Integer>();        
         Session session = sessionFactory.getCurrentSession();
         return session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list();        
        

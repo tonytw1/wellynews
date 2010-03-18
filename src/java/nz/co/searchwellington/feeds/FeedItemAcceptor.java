@@ -29,7 +29,6 @@ public class FeedItemAcceptor {
 	public FeedItemAcceptor(RssfeedNewsitemService rssfeedNewsitemService,
 			AutoTaggingService autoTagger,
 			ContentUpdateService contentUpdateService) {
-		super();
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.autoTagger = autoTagger;
 		this.contentUpdateService = contentUpdateService;
@@ -40,18 +39,15 @@ public class FeedItemAcceptor {
 	public void acceptFeedItem(FeedNewsitem feednewsitem, Feed feed) {
 		log.info("Accepting: " + feednewsitem.getName());
 		Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
-
 		
-        flattenLoudCapsInTitle(newsitem);
-        
+        flattenLoudCapsInTitle(newsitem);        
         if (newsitem.getDate() == null) {
         	log.info("Accepting a feeditem with no date; setting date to current time");            
         	newsitem.setDate(new DateTime().toDate());
         }
         
-        contentUpdateService.update(newsitem, true);
         autoTagger.autotag(newsitem);
-        contentUpdateService.update(newsitem, true);	// TODO duplicate save
+        contentUpdateService.update(newsitem, true);
     }
 
     
@@ -62,4 +58,5 @@ public class FeedItemAcceptor {
             log.info("Flatten capitalised sentence to '" + flattenedTitle + "'");
         }
 	}
+	
 }

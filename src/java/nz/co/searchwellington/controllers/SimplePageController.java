@@ -194,7 +194,7 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
     private void populateLatestTwitters(ModelAndView mv) {       
-        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems());  
+        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems());  	// TODO This is the incorrect content.
     }
     
 }
