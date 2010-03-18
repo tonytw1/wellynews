@@ -424,12 +424,14 @@ public class ResourceEditController extends BaseMultiActionController {
             		setUser(request, loggedInUser);
             	}
             	
+            	saveResource(request, loggedInUser, editResource);
+            	log.info("Saved resource; id is now: " + editResource.getId());
             	submissionProcessingService.processTags(request, editResource, loggedInUser);
+            	
                 if (newSubmission) {
                     log.info("Applying the auto tagger to new submission.");
                     autoTagger.autotag(editResource);
                 }
-            	saveResource(request, loggedInUser, editResource);                
 
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
