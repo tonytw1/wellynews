@@ -1,11 +1,12 @@
 #if ($tag_feeds && $tag_feeds.size() > 0)
-<div class="box">
-
-<h2>$tag.displayName Feeds</h2>
-
-#set ($righthand_content_one = $columnSplitter.left($tag_feeds))
-#set ($righthand_content_two = $columnSplitter.right($tag_feeds))
-
-#parse("includes/righthand_two_columns.vm")
-</div>
+	<h2>$tag.displayName Feeds</h2>
+	<ul class="flat_list">
+		#foreach($item in $tag_feeds)
+			<li>
+				<ul class="tag_watchlist_item">
+					#parse("includes/content_element.vm")
+				</ul>
+			</li>
+		#end
+	</ul>
 #end
