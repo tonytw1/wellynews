@@ -170,7 +170,13 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
      
-    public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
+    	if (!siteInformation.isTwitterEnabled()) {
+    		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
+    	}
+    	
+    	
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         
@@ -188,7 +194,7 @@ public class SimplePageController extends BaseMultiActionController {
     }
     
     private void populateLatestTwitters(ModelAndView mv) {       
-        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems());  
+        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems());  	// TODO This is the incorrect content.
     }
     
 }

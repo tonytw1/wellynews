@@ -41,7 +41,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 
-
+@Transactional
 public class ResourceEditController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ResourceEditController.class);
@@ -339,7 +339,7 @@ public class ResourceEditController extends BaseMultiActionController {
 
 
     
-    @Transactional
+	@Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
@@ -424,13 +424,14 @@ public class ResourceEditController extends BaseMultiActionController {
             		setUser(request, loggedInUser);
             	}
             	
-            	saveResource(request, loggedInUser, editResource);                // TODO sort out flushing
+            	saveResource(request, loggedInUser, editResource);
+            	log.info("Saved resource; id is now: " + editResource.getId());
             	submissionProcessingService.processTags(request, editResource, loggedInUser);
+            	
                 if (newSubmission) {
                     log.info("Applying the auto tagger to new submission.");
                     autoTagger.autotag(editResource);
                 }
-            	saveResource(request, loggedInUser, editResource);                
 
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
@@ -465,7 +466,7 @@ public class ResourceEditController extends BaseMultiActionController {
 	   }
    }
 
-   	
+
 	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource) {		
 		contentUpdateService.update(editResource, loggedInUser, request);
 	}

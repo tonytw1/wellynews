@@ -93,5 +93,9 @@ public class SiteInformation {
 	public void setImageRoot(String imageRoot) {
 		this.imageRoot = imageRoot;
 	}
+
+	public boolean isTwitterEnabled() {
+		return twitterUsername != null && !twitterUsername.isEmpty();
+	}
 		
 }

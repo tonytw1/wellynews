@@ -38,6 +38,7 @@ public class ContentUpdateService {
 	}
 
 	
+	@Transactional
 	public void update(Resource resource, User loggedInUser, HttpServletRequest request) {				
 		boolean resourceUrlHasChanged = false;
 		boolean newSubmission = resource.getId() == 0;

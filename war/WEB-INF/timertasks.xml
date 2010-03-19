@@ -36,14 +36,8 @@
     <property name="repeatInterval" value="60000" />
 </bean>
 
-<bean id="linkCheckerScheduler" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="linkCheckerSchedulerTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
-<bean name="linkCheckerSchedulerTarget" class="nz.co.searchwellington.jobs.LinkCheckerScheduler">
+
+<bean name="linkCheckerScheduler" class="nz.co.searchwellington.jobs.LinkCheckerScheduler">
 	<constructor-arg ref="resourceDAO" />
 	<constructor-arg ref="linkCheckerQueue" />
 </bean>
@@ -106,46 +100,22 @@
 
 <bean id="rssPrefetcherTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
     <property name="jobDetail" ref="rssPrefetcherRun" />
-    <property name="startDelay" value="10000" />
+    <property name="startDelay" value="10000000" />
     <property name="repeatInterval" value="7200000" />
 </bean>
 
-<bean id="flickrJobTarget" class="nz.co.searchwellington.jobs.FlickrJob">
+<bean id="flickrJob" class="nz.co.searchwellington.jobs.FlickrJob">
 	<constructor-arg ref="flickrApiService" />
 	<constructor-arg ref="configDAO" />
 	<constructor-arg ref="tagDAO" />
 </bean>
 
-<bean id="flickrJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="flickrJobTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
 
-
-<bean id="twitterListenerJobTarget" class="nz.co.searchwellington.jobs.TwitterListenerJob">
+<bean id="twitterListenerJob" class="nz.co.searchwellington.jobs.TwitterListenerJob">
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="twitterNewsitemBuilderService" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="contentUpdateService" />
-</bean>
-
-<bean id="twitterListenerJob" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="twitterListenerJobTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
-</bean>
-
-<bean id="linkChecker" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-	<property name="transactionManager" ref="transactionManager" />
-	<property name="target" ref="linkCheckerTarget" />
-	<property name="transactionAttributeSource">
-		<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-	</property>	
 </bean>
 
 <bean name="linkCheckerJob" class="nz.co.searchwellington.jobs.LinkCheckerJob">

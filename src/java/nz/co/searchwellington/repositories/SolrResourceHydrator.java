@@ -1,13 +1,19 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import nz.co.searchwellington.model.FrontEndNewsitem;
+import nz.co.searchwellington.model.FrontEndWebsite;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SolrHydratedNewsitemImpl;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
@@ -48,23 +54,29 @@ public class SolrResourceHydrator {
 		
 		if (resource.getType().equals("N")) {
 			FrontEndNewsitem frontendNewsitem = new FrontEndNewsitem((Newsitem) resource);
-			hydrateTags(result, frontendNewsitem);
+			frontendNewsitem.setTags(hydrateTags(result));
 			resource = frontendNewsitem;
+		} else if (resource.getType().equals("W")) {
+			FrontEndWebsite frontendWebsite = new FrontEndWebsite((Website) resource);
+			frontendWebsite.setTags(hydrateTags(result));
+			resource = frontendWebsite;
 		}
 		
 		return resource;
 	}
 
-	private void hydrateTags(SolrDocument result, FrontEndNewsitem item) {
+	private List<Tag> hydrateTags(SolrDocument result) {
+		List<Tag> tags = new ArrayList<Tag>();
 		Collection<Object> tagIds = result.getFieldValues("handTags");
 		if (tagIds != null){
 			for (Object tagId : tagIds) {
 				Tag tag = tagDAO.loadTagById((Integer) tagId);
 				if (tag != null) {					
-					item.addTag(tag);
+					tags.add(tag);
 				}
 			}
 		}
+		return tags;
 	}
 
 }

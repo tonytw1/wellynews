@@ -11,8 +11,6 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Image;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.utils.TextTrimmer;
@@ -61,7 +59,8 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
                 SyndEntry item = (SyndEntry) iter.next();
                 FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
                 feedItem.setItemNumber(itemNumber);
-                //trimExcessivelyLongBodies(feedItem);
+                
+                feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
                 feedNewsitems.add(feedItem);
                 itemNumber++;
             }
@@ -141,13 +140,5 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         
 		return StringEscapeUtils.unescapeHtml(description);
 	}
-    
-	
-    private void trimExcessivelyLongBodies(Resource feedItem) {
-       // boolean bodyIsToLong = feedItem.getDescription() != null && feedItem.getDescription().length() > MAXIMUM_BODY_LENGTH;
-        //if (bodyIsToLong) {
-         //   feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
-       // }
-    }
     
 }

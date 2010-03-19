@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.User;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.springframework.transaction.annotation.Transactional;
 
 public class HandTaggingDAO {
 	
@@ -19,7 +20,12 @@ public class HandTaggingDAO {
 	
 	SessionFactory sessionFactory;
 	
-    public HandTaggingDAO(SessionFactory sessionFactory) {
+
+	public HandTaggingDAO() {
+	}
+
+
+	public HandTaggingDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
@@ -52,7 +58,7 @@ public class HandTaggingDAO {
 		return handTaggings;
 	}
 
-	
+	@Transactional
     public void addTag(User user, Tag tag, Resource resource) {
 		HandTagging existing = (HandTagging) sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
 			add(Expression.eq("resource", resource)).
@@ -65,7 +71,6 @@ public class HandTaggingDAO {
 			log.info("Adding new hand tagging: " + newTagging);
 			sessionFactory.getCurrentSession().save(newTagging);
 		}
-		sessionFactory.getCurrentSession().flush();
 	}
 
     
@@ -73,7 +78,6 @@ public class HandTaggingDAO {
 		for (HandTagging handTagging : this.getHandTaggings(resource, user)) {
 			sessionFactory.getCurrentSession().delete(handTagging);
 		}
-		sessionFactory.getCurrentSession().flush();
 	}
 
 
@@ -81,7 +85,6 @@ public class HandTaggingDAO {
 		for (HandTagging handTagging : this.getHandTaggingsForResource(resource)) {
 			sessionFactory.getCurrentSession().delete(handTagging);
 		}
-		sessionFactory.getCurrentSession().flush();
 	}
 
 }

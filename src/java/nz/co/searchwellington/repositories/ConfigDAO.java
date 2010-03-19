@@ -28,7 +28,6 @@ public class ConfigDAO implements ConfigRepository {
     
     public void saveConfig(Config config) {
         sessionFactory.getCurrentSession().saveOrUpdate(config);        
-        sessionFactory.getCurrentSession().flush();        
     }
     
        

@@ -27,6 +27,8 @@ import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.joda.time.DateTime;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 public class HibernateResourceDAO extends AbsractResourceDAO implements ResourceRepository {
@@ -47,7 +49,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     
     @SuppressWarnings("unchecked")
     public List<Integer> getAllResourceIds() {
-        Set<Integer> resourceIds = new HashSet<Integer>();        
         Session session = sessionFactory.getCurrentSession();
         return session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list();        
        
@@ -273,7 +274,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     	 return tweetDAO.loadTweetByTwitterId(twitterId);  
 	}
 
-	
+	@Transactional
     public void saveResource(Resource resource) {
 		if (resource.getType().equals("N")) {
 			if (((Newsitem) resource).getImage() != null) {
@@ -297,13 +298,11 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(discoveredFeed);
-        sessionFactory.getCurrentSession().flush();
     }
     
     
     public void saveCommentFeed(CommentFeed commentFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(commentFeed);
-        sessionFactory.getCurrentSession().flush();
     }
 
 
@@ -319,7 +318,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.watchlist");
         sessionFactory.evictCollection("nz.co.searchwellington.model.DiscoveredFeed.references");
-        sessionFactory.getCurrentSession().flush();
     }
 
 

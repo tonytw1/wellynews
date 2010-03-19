@@ -1,4 +1,4 @@
-#set ($heading = "Wellington in a box")
+#set ($heading = $site_information.areaname)
 #parse("includes/header.vm")
 
 <div class="page">
@@ -23,7 +23,8 @@
 
 			<h2>Meanwhile...</h2>
 			<p>The $site_information.areaname Newslog is an informal roundup of the $site_information.areaname webspace.
-				The Newslog is also available as an <a href="rssfeeds">RSS feed</a>#if ($site_information.twitterUsername) or via <a href="twitter">Twitter</a>#end.
+				The Newslog is also available as an <a href="rssfeeds">RSS feed</a>
+				#if ($site_information.isTwitterEnabled()) or via <a href="twitter">Twitter</a>#end.
 			</p>
 			
 			#if ($commented_newsitems)	

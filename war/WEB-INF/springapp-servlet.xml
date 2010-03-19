@@ -3,6 +3,22 @@
 
 <beans>
 
+
+	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+	  	<property name="transactionInterceptor" ref="txInterceptor"/>
+	</bean>
+
+	<bean id="txInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+		<property name="transactionManager" ref="transactionManager"/>
+	 	<property name="transactionAttributeSource">
+   			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+  		</property>
+	</bean>
+	
+	
+	
 	<import resource="admin-servlets.xml" />
 	
 		
