@@ -36,18 +36,6 @@ public class RssController extends MultiActionController {
         this.rssItemMaker = rssItemMaker;
     }
     
-    
-	public ModelAndView contentRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    
-    	log.info("Building content rss");    	  
-         ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-         if (mv != null) {
-        	 mv.setView(new RssView(siteInformation, rssItemMaker));
-        	 return mv;
-         }
-         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-         return null;
-    }
-        
        
     public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    	
     	if (siteInformation.getFeedburnerUrl() != null && !siteInformation.getFeedburnerUrl().trim().equals("")) {    		

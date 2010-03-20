@@ -68,8 +68,20 @@
 	<bean id="watchlistModelBuilder" class="nz.co.searchwellington.controllers.models.WatchlistModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssUrlBuilder" />
-		<constructor-arg ref="urlBuilder" />		
+		<constructor-arg ref="urlBuilder" />
+		<constructor-arg ref="rssViewFactory" />
 	</bean>
+	
+	<bean id="rssViewFactory" class="nz.co.searchwellington.views.RssViewFactory" >
+		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="rssItemMaker" />		
+	</bean>
+	
+	
+	
+	
+	
+	
 	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />

@@ -45,7 +45,7 @@ public class TagController extends MultiActionController {
         
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {
-			urlStack.setUrlStack(request);
+			urlStack.setUrlStack(request);	// TODO don't do for rss and json views
 			addCommonModelElements(mv, showBroken);
 			return mv;
 		}

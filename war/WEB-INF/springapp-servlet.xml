@@ -40,7 +40,7 @@
 					</props>
 				</property>
 			</bean>		
-		</property>		
+		</property>
 	</bean>
 
 
@@ -217,9 +217,7 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/rss">mainRss</prop>
-						<prop key="/*/rss">contentRss</prop>
-						<prop key="/*/*/rss">contentRss</prop>
+						<prop key="/rss">mainRss</prop>						
 					</props>
 				</property>
 			</bean>		
@@ -447,7 +445,8 @@
 				<prop key="/geotagged">tagController</prop>            	
             	<prop key="/justin">tagController</prop>
             	<prop key="/watchlist">tagController</prop>
-            						
+           		<prop key="/watchlist/rss">tagController</prop>
+            	            	           						
 				<prop key="/openid/login">openIDLoginController</prop>	
 				<prop key="/openid/callback">openIDLoginController</prop>
 									
