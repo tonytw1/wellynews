@@ -36,7 +36,8 @@
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
 						<prop key="/feed/*">normal</prop>
-						<prop key="/feeds/inbox">normal</prop>											
+						<prop key="/feeds/inbox">normal</prop>
+						<prop key="/*/rss">normal</prop>															
 					</props>
 				</property>
 			</bean>		
@@ -367,9 +368,9 @@
             	            	
 				
 				<prop key="/rss">rssController</prop>
-				<prop key="/*/rss">rssController</prop>
-				<prop key="/*/*/rss">rssController</prop>
-				<prop key="/feeds/inbox/rss">rssController</prop>
+				<prop key="/*/rss">tagController</prop>
+				<prop key="/*/*/rss">tagController</prop>
+				<prop key="/feeds/inbox/rss">tagController</prop>
 																	
 				<prop key="*/json">jsonController</prop>
 				<prop key="/*/*/json">jsonController</prop>

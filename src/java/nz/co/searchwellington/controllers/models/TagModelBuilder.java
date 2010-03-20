@@ -19,13 +19,14 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.UrlFilters;
+import nz.co.searchwellington.views.RssViewFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	Logger log = Logger.getLogger(TagModelBuilder.class);
+	static Logger log = Logger.getLogger(TagModelBuilder.class);
     	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
@@ -34,9 +35,15 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private KeywordSearchService keywordSearchService;
+	private RssViewFactory rssViewFactory;
 	
-	 
-	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService, KeywordSearchService keywordSearchService) {
+	
+	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
+			RelatedTagsService relatedTagsService, ConfigDAO configDAO,
+			RssfeedNewsitemService rssfeedNewsitemService,
+			ContentRetrievalService contentRetrievalService,
+			KeywordSearchService keywordSearchService,
+			RssViewFactory rssViewFactory) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -44,9 +51,10 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
+		this.rssViewFactory = rssViewFactory;
 	}
-
 	
+
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -61,7 +69,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
 			int page = getPage(request);
-			return populateTagPageModelAndView(tag, showBroken, page);
+			return populateTagPageModelAndView(tag, showBroken, page, request.getPathInfo());
 		}
 		return null;
 	}
@@ -111,7 +119,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	}
  	
 	
-
     private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
         if (tag.getFlickrCount() > 0) {
             mv.addObject("flickr_count", tag.getFlickrCount());
@@ -119,7 +126,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         }
     }
 	
-	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page) {		
+    
+	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page, String path) {		
 		int startIndex = getStartIndex(page);
 		int totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
 		if (startIndex > totalNewsitemCount) {
@@ -149,16 +157,17 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		List<Resource> taggedFeeds = contentRetrievalService.getTaggedFeeds(tag);
 		mv.addObject("tag_feeds", taggedFeeds);
 
-		selectView(page, mv, taggedWebsites, taggedNewsitems, taggedWatchlists, taggedFeeds);
+		selectView(page, mv, taggedWebsites, taggedNewsitems, taggedWatchlists, taggedFeeds, path);
 		return mv;
 	}
 
 
-	
-
-
-	private void selectView(int page, ModelAndView mv, final List<Resource> taggedWebsites, final List<Resource> taggedNewsitems,
-			final List<Resource> taggedWatchlists, final List<Resource> taggedFeeds) {
+	private void selectView(int page, ModelAndView mv, final List<Resource> taggedWebsites, final List<Resource> taggedNewsitems, final List<Resource> taggedWatchlists, final List<Resource> taggedFeeds, String path) {
+		if (path.endsWith("/rss")) {
+			log.info("Selecting rss view for path: " + path);
+			mv.setView(rssViewFactory.makeView());
+			return;
+		}		
 		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !taggedWebsites.isEmpty() || taggedWebsites.isEmpty();
 		boolean isOneContentType = taggedNewsitems.isEmpty() || !hasSecondaryContent;
 		
@@ -193,7 +202,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         mv.addObject("commented_newsitems", commentedToShow);          
     }
 	
-    
     
     private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
         List<Resource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
