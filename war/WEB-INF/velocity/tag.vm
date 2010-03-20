@@ -84,6 +84,8 @@
 			#set($secondary_heading = "Related sites")
 			#set($secondary_content = $websites)
 			#parse("includes/secondary_content.vm")
+
+			#parse("includes/tag_feeds.vm")			
 	
 			#parse("includes/tag_watchlist.vm")
 		</div>
@@ -112,8 +114,6 @@
 			
 		#parse("includes/geocoded.vm")
 		
-		#parse("includes/tag_feeds.vm")	
-	
 		<div class="box">
 			#parse("includes/latest_newsitems.vm")
 			<br clear="all"/>

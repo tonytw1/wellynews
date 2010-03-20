@@ -94,9 +94,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			final String searchTerm = (String) request.getAttribute(RequestFilter.SEARCH_TERM);
 			mv.addObject("searchterm", searchTerm);
 			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, showBroken, null));
-		}
-		
-		mv.addObject("tag_feeds", contentRetrievalService.getTaggedFeeds(tag));
+		}		
 	}
 
 
@@ -145,8 +143,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		if (taggedNewsitems.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
 		}
-				
-		selectView(page, mv, taggedWebsites, taggedNewsitems);
+		
+		List<Resource> taggedWatchlists = contentRetrievalService.getTagWatchlist(tag);	// TODO, stricly speaking these are secondary loads
+		mv.addObject("tag_watchlist", taggedWatchlists);		
+		List<Resource> taggedFeeds = contentRetrievalService.getTaggedFeeds(tag);
+		mv.addObject("tag_feeds", taggedFeeds);
+
+		selectView(page, mv, taggedWebsites, taggedNewsitems, taggedWatchlists, taggedFeeds);
 		return mv;
 	}
 
@@ -154,9 +157,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 
 
-	private void selectView(int page, ModelAndView mv, final List<Resource> taggedWebsites, final List<Resource> taggedNewsitems) {
-		boolean isOneContentType = taggedNewsitems.isEmpty() || taggedWebsites.isEmpty();		
-		mv.setViewName("tag");
+	private void selectView(int page, ModelAndView mv, final List<Resource> taggedWebsites, final List<Resource> taggedNewsitems,
+			final List<Resource> taggedWatchlists, final List<Resource> taggedFeeds) {
+		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !taggedWebsites.isEmpty() || taggedWebsites.isEmpty();
+		boolean isOneContentType = taggedNewsitems.isEmpty() || !hasSecondaryContent;
+		
+			mv.setViewName("tag");
 		if (page > 0) {
 			mv.addObject("page", page);
 			mv.setViewName("tagNewsArchive");
@@ -184,8 +190,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         	mv.addObject("commented_newsitems_moreurl", urlBuilder.getTagCommentUrl(tag));
         }
                 
-        mv.addObject("commented_newsitems", commentedToShow);
-        mv.addObject("tag_watchlist", contentRetrievalService.getTagWatchlist(tag));        
+        mv.addObject("commented_newsitems", commentedToShow);          
     }
 	
     

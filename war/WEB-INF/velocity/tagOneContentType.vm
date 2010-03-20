@@ -41,9 +41,7 @@
 		#parse("includes/login.vm")
 
 		#parse("includes/flickr_group_tag.vm")
-		
-		#parse("includes/tag_feeds.vm")	
-		
+				
 		<div class="box">
 			#parse("includes/latest_newsitems.vm")
 			<br clear="all"/>
