@@ -39,11 +39,13 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		this.archiveLinksService = archiveLinksService;
 	}
 
+	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/index$");
 	}
 
+	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
@@ -74,7 +76,12 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	}
 	
 	
-
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "index";
+	}
+	
+	
 	private Date monthOfLastItem(List<Resource> latestNewsitems) {
 		if (latestNewsitems.size() > 0) {
 			Resource lastNewsitem = latestNewsitems

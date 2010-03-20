@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class JustinModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	Logger log = Logger.getLogger(JustinModelBuilder.class);
+	static Logger log = Logger.getLogger(JustinModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private RssUrlBuilder rssUrlBuilder;
@@ -26,11 +26,15 @@ public class JustinModelBuilder extends AbstractModelBuilder implements ModelBui
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 	}
-
+	
+	
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/justin(/(rss|json))?$");
 	}
-
+	
+	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building justin page model");
@@ -43,15 +47,20 @@ public class JustinModelBuilder extends AbstractModelBuilder implements ModelBui
 			mv.addObject("main_content", latestSites);
 			
 			setRss(mv, rssUrlBuilder.getRssTitleForJustin(), rssUrlBuilder.getRssUrlForJustin());
-			mv.setViewName("justin");
 			return mv;
 		}
 		return null;
 	}
 
-
+	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
 	}
 
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "justin";
+	}
 	    
 }

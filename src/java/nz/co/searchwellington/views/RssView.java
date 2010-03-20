@@ -19,7 +19,6 @@ public class RssView implements View {
 	
 	static Logger log = Logger.getLogger(RssView.class);
 
-
 	private SiteInformation siteInformation;
 	private RssItemMaker rssItemMaker;	
 	
@@ -37,7 +36,7 @@ public class RssView implements View {
     	response.setContentType("text/xml;charset=UTF-8");		
     	String rssFeedTitle = (String) model.get("heading") + " - " + siteInformation.getSitename();
 
-    	List <Resource> content =  (List <Resource>) model.get("main_content");
+    	List <Resource> content =  (List <Resource>) model.get("main_content");    	
     	List<SyndEntry> entires = new ArrayList<SyndEntry>();
     	for (Resource item : content) {
 			SyndEntry rssItem = rssItemMaker.makeRssItem(item);

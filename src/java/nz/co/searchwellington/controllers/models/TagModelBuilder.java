@@ -19,7 +19,6 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.UrlFilters;
-import nz.co.searchwellington.views.RssViewFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -35,15 +34,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private KeywordSearchService keywordSearchService;
-	private RssViewFactory rssViewFactory;
 	
 	
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService, ConfigDAO configDAO,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
-			KeywordSearchService keywordSearchService,
-			RssViewFactory rssViewFactory) {
+			KeywordSearchService keywordSearchService) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -51,10 +48,10 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
-		this.rssViewFactory = rssViewFactory;
 	}
 	
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -62,10 +59,11 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		return isSingleTagPage;
 	}
 
+	
+	@Override
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
-			log.info("Building tag page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
 			int page = getPage(request);
@@ -75,6 +73,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	}
 
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -98,14 +97,69 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateTagRelatedTwitter(mv, tag);		
 		populateRecentlyTwittered(mv, tag);
 
+		mv.addObject("tag_watchlist", contentRetrievalService.getTagWatchlist(tag));		
+		mv.addObject("tag_feeds", contentRetrievalService.getTaggedFeeds(tag));
+		
 		if (request.getAttribute(RequestFilter.SEARCH_TERM) != null) {
 			final String searchTerm = (String) request.getAttribute(RequestFilter.SEARCH_TERM);
 			mv.addObject("searchterm", searchTerm);
 			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, showBroken, null));
 		}		
 	}
+	
+	
+	@Override
+	public String getViewName(ModelAndView mv) {		
+		List<Resource> mainContent = (List<Resource>) mv.getModel().get("main_content");
+		
+		List<Resource> taggedWebsites = (List<Resource>) mv.getModel().get("websites");
+		List<Resource> tagWatchlist = (List<Resource>) mv.getModel().get("tag_watchlist");
+		List<Resource> tagFeeds = (List<Resource>) mv.getModel().get("tag_feeds");
 
+		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || tagFeeds.isEmpty();
+		boolean isOneContentType = mainContent.isEmpty() || !hasSecondaryContent;
+		
+		//	if (page > 0) {	// TODO
+		//mv.addObject("page", page);
+		//	return "tagNewsArchive";
+		//} else 
+			
+		if (isOneContentType) {
+			return "tagOneContentType";
+		}
+		return "tag";		
+	}
 
+	
+	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page, String path) {		
+		int startIndex = getStartIndex(page);
+		int totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
+		if (startIndex > totalNewsitemCount) {
+			return null;
+		}
+		
+		ModelAndView mv = new ModelAndView();				
+		mv.addObject("tag", tag);
+		mv.addObject("heading", tag.getDisplayName());        		
+		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
+		mv.addObject("link", urlBuilder.getTagUrl(tag));	
+		
+		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);
+		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
+
+		mv.addObject("main_content", taggedNewsitems);		
+		mv.addObject("websites", taggedWebsites);
+		
+		populatePagination(mv, startIndex, totalNewsitemCount);
+		
+		if (taggedNewsitems.size() > 0) {
+			 setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
+		}
+		
+		return mv;
+	}
+	
+	
 	private void populateRecentlyTwittered(ModelAndView mv, Tag tag) {
 		mv.addObject("recently_twittered", contentRetrievalService.getRecentedTwitteredNewsitemsForTag(2, tag));
 	}
@@ -126,61 +180,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         }
     }
 	
-    
-	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page, String path) {		
-		int startIndex = getStartIndex(page);
-		int totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
-		if (startIndex > totalNewsitemCount) {
-			return null;
-		}
-		
-		ModelAndView mv = new ModelAndView();				
-		mv.addObject("tag", tag);
-		mv.addObject("heading", tag.getDisplayName());        		
-		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
-		mv.addObject("link", urlBuilder.getTagUrl(tag));	
-		
-		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
-		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);
-		
-		mv.addObject("main_content", taggedNewsitems);
-		mv.addObject("websites", taggedWebsites);
-		
-		populatePagination(mv, startIndex, totalNewsitemCount);
-		
-		if (taggedNewsitems.size() > 0) {
-			 setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
-		}
-		
-		List<Resource> taggedWatchlists = contentRetrievalService.getTagWatchlist(tag);	// TODO, stricly speaking these are secondary loads
-		mv.addObject("tag_watchlist", taggedWatchlists);		
-		List<Resource> taggedFeeds = contentRetrievalService.getTaggedFeeds(tag);
-		mv.addObject("tag_feeds", taggedFeeds);
-
-		selectView(page, mv, taggedWebsites, taggedNewsitems, taggedWatchlists, taggedFeeds, path);
-		return mv;
-	}
-
-
-	private void selectView(int page, ModelAndView mv, final List<Resource> taggedWebsites, final List<Resource> taggedNewsitems, final List<Resource> taggedWatchlists, final List<Resource> taggedFeeds, String path) {
-		if (path.endsWith("/rss")) {
-			log.info("Selecting rss view for path: " + path);
-			mv.setView(rssViewFactory.makeView());
-			return;
-		}		
-		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !taggedWebsites.isEmpty() || taggedWebsites.isEmpty();
-		boolean isOneContentType = taggedNewsitems.isEmpty() || !hasSecondaryContent;
-		
-			mv.setViewName("tag");
-		if (page > 0) {
-			mv.addObject("page", page);
-			mv.setViewName("tagNewsArchive");
-		} else if (isOneContentType) {
-			mv.setViewName("tagOneContentType");
-		}
-	}
-
-	
+    	
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
         List<Resource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
 

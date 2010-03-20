@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class GeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
-	Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
+	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
@@ -26,10 +26,13 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		this.rssUrlBuilder = rssUrlBuilder;
 	}
 
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/geotagged(/(rss|json))?$");
 	}
 
+	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building geotagged page model");
@@ -42,17 +45,22 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			// TODO pagination
 			final List<Resource> geotaggedNewsitems = contentRetrievalService.getGeocoded(MAX_NEWSITEMS);
 			mv.addObject("main_content", geotaggedNewsitems);			
-			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
-			
-			// TODO rename
-			mv.setViewName("geocoded");
+			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());	
 			return mv;
 		}
 		return null;
 	}
 	
+	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());		
+	}
+
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "geocoded";
 	}
 
 }

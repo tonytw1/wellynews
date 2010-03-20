@@ -13,22 +13,25 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class CommentModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
-	Logger log = Logger.getLogger(CommentModelBuilder.class);
+	static Logger log = Logger.getLogger(CommentModelBuilder.class);
 	
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 		
 	
-
 	public CommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder) {		
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 	}
 
+	
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/comment(/(rss|json))?$");
 	}
 
+	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building comment page model");
@@ -44,17 +47,22 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 			mv.addObject("main_content", commentedNewsitms);
 			
 			int commentedCounted = contentRetrievalService.getCommentedNewsitemsCount();
-			mv.addObject("main_content_total", commentedCounted);
-			
-			mv.setViewName("commented");
+			mv.addObject("main_content_total", commentedCounted);	
 			return mv;
 		}
 		return null;
 	}
 	
-
+	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		mv.addObject("commented_tags", contentRetrievalService.getCommentedTags()); 
+	}
+
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "commented";
 	}
 
 }

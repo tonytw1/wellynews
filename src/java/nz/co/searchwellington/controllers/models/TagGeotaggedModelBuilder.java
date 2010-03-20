@@ -29,7 +29,8 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		this.rssUrlBuilder = rssUrlBuilder;
 	}
 
-
+	
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -38,7 +39,8 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		return isSingleTagPage && hasCommentPath;
 	}
 
-
+	
+	@Override
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
@@ -50,7 +52,18 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		return null;
 	}
 	
+		
+	@Override
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
+	}
+
+
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "geotagged";
+	}
 	
+
 	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken) {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
@@ -61,13 +74,8 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		mv.addObject("main_content", allGeotaggedForTag);
 		if (allGeotaggedForTag.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag));
-		}
-		mv.setViewName("geotagged");
+		}		
 		return mv;
 	}
-	
-	
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
-	}
-		
+			
 }

@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	Logger log = Logger.getLogger(FeedsModelBuilder.class);
+	static Logger log = Logger.getLogger(FeedsModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private SuggestedFeeditemsService suggestedFeeditemsService;
@@ -25,10 +25,13 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	}
 	
 
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/feeds(/(rss|json))?$");
 	}
 
+	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building feed page model");
@@ -39,17 +42,23 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 			mv.addObject("link", "TODO");	// TODO
 			
 			mv.addObject("main_content", contentRetrievalService.getAllFeeds());
-			mv.setViewName("feeds");
 			return mv;
 		}
 		return null;
 	}
 
 	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		populateSecondaryFeeds(mv);
 		mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6));
 		mv.addObject("discovered_feeds", contentRetrievalService.getDiscoveredFeeds());
+	}
+	
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "feeds";
 	}
 	
 	
@@ -62,5 +71,5 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
             mv.addObject("righthand_content", allFeeds);       
         }
     }
-      
+	
 }

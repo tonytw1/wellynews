@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
-	Logger log = Logger.getLogger(ViewFeedModelBuilder.class);
+	static Logger log = Logger.getLogger(ViewFeedModelBuilder.class);
     	
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
@@ -27,11 +27,13 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 	}
 	
 	
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getAttribute("feedAttribute") != null;
 	}
 
 	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building view feed model");
@@ -49,9 +51,7 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 		    	   log.warn("No newsitems were loaded from feed: " + feed.getName());
 		       }
 		       
-		       setRss(mv, feed.getName(), feed.getUrl());
-		       
-		       mv.setViewName("viewfeed");
+		       setRss(mv, feed.getName(), feed.getUrl());		       
 		       return mv;            
 			}
 		}
@@ -59,9 +59,17 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 	}
 
 	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		populateSecondaryFeeds(mv);
 	}
+	
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "viewfeed";
+	}
+
 	
 	
 	// TODO duplication with BaseM'E'C
@@ -73,6 +81,5 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
             mv.addObject("righthand_content", allFeeds);       
         }
     }
-
 	
 }

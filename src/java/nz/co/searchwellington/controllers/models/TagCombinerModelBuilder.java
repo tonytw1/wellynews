@@ -25,14 +25,14 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	public TagCombinerModelBuilder(ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService) {
-		super();
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 	}
 
-
+	
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {		
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -41,6 +41,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	}
 
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
@@ -51,6 +52,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	}
 	
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -58,7 +60,21 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8));
 	}
 
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	public String getViewName(ModelAndView mv) {
+		List<Resource> taggedNewsitems = (List<Resource>) mv.getModel().get("main_content");
+		List<Resource> taggedWebsites = (List<Resource>) mv.getModel().get("websites");
+		
+		boolean isOneContentType = taggedNewsitems.size() == 0 || taggedWebsites.size() == 0;
+		if (isOneContentType) {
+			return "tagCombinedOneContentType";
+		}		
+		return "tag";		
+	}
 
+	
 	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, boolean showBroken) {
 		ModelAndView mv = new ModelAndView();		
 		final Tag firstTag = tags.get(0);
@@ -80,13 +96,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		if (taggedNewsitems.size() > 0) { 
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
 		}
-
-		boolean isOneContentType = taggedNewsitems.size() == 0 || taggedWebsites.size() == 0;
-		if (isOneContentType) {
-			mv.setViewName("tagCombinedOneContentType");
-		} else {
-			mv.setViewName("tag");			
-		}
+		
 		return mv;
 	}
 	

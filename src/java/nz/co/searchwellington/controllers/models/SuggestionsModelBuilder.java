@@ -18,7 +18,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 
 	private static final int MAX_SUGGESTIONS = 50;
 	
-	Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
+	static Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
     	
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private RssUrlBuilder rssUrlBuilder;
@@ -39,11 +39,14 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 		this.contentRetrievalService = contentRetrievalService;
 	}
 	
-
+	
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/feeds/inbox(/(rss|json))?$");	
 	}
 
+	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building feeds inbox model");
@@ -55,20 +58,25 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 			mv.addObject("link", urlBuilder.getFeedsInboxUrl());
 			mv.addObject("description","Suggested newsitems from local feeds.");  
 			
-			setRss(mv, rssUrlBuilder.getTitleForSuggestions(), rssUrlBuilder.getRssUrlForFeedSuggestions());
-			mv.setViewName("suggestions");
+			setRss(mv, rssUrlBuilder.getTitleForSuggestions(), rssUrlBuilder.getRssUrlForFeedSuggestions());			
 			return mv;
 		}
 		return null;
 	}
 
 	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<TwitteredNewsitem> potentialTwitterSubmissions = twitterNewsitemBuilder.getPossibleSubmissions();
 		mv.addObject("submissions", potentialTwitterSubmissions);
 		populateSecondaryFeeds(mv);
 	}
 	
+
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "suggestions";
+	}
 	
 	// TODO duplication with BaseM'E'C
 	public void populateSecondaryFeeds(ModelAndView mv) {      

@@ -8,7 +8,6 @@ import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -16,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagCommentModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 		
-	Logger log = Logger.getLogger(TagCommentModelBuilder.class);
+	static Logger log = Logger.getLogger(TagCommentModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
@@ -29,7 +28,8 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		this.rssUrlBuilder = rssUrlBuilder;
 	}
 
-
+	
+	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -39,6 +39,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	}
 
 
+	@Override
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
@@ -53,6 +54,17 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		return null;
 	}
 	
+		
+	@Override
+	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
+	}
+
+
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "tagComment";
+	}
+	
 	
 	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken, int startIndex) {		
 		ModelAndView mv = new ModelAndView();				
@@ -60,22 +72,18 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		mv.addObject("heading", tag.getDisplayName() + " comment");        		
 		mv.addObject("description", tag.getDisplayName() + " comment");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));
-				
-	    final List<Resource> allCommentedForTag = contentRetrievalService.getCommentedNewsitemsForTag(tag, MAX_NEWSITEMS, startIndex);	   
+		
+		final List<Resource> allCommentedForTag = contentRetrievalService.getCommentedNewsitemsForTag(tag, MAX_NEWSITEMS, startIndex);	   
 		mv.addObject("main_content", allCommentedForTag);
 		
 		int count = contentRetrievalService.getCommentedNewsitemsForTagCount(tag);
 		mv.addObject("main_content_total", count);
 		
 		if (allCommentedForTag.size() > 0) {
-			 setRss(mv, rssUrlBuilder.getRssTitleForTagComment(tag), rssUrlBuilder.getRssUrlForTagComment(tag));
+			setRss(mv, rssUrlBuilder.getRssTitleForTagComment(tag), rssUrlBuilder.getRssUrlForTagComment(tag));
 		}
 		mv.setViewName("tagComment");
 		return mv;
-	}
-	
-	
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
 	}
 	
 }

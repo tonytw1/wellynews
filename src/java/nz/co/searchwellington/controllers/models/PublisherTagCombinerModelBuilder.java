@@ -36,7 +36,8 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 		this.relatedTagsService = relatedTagsService;
 	}
 
-
+	
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		Tag tag = (Tag) request.getAttribute("tag");
 		Website publisher = (Website) request.getAttribute("publisher"); 
@@ -45,6 +46,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 	}
 	
 	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			logger.info("Building publisher tag combiner page model");
@@ -55,14 +57,14 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 			mv.addObject("heading", publisher.getName() + " and " + tag.getDisplayName());
 			mv.addObject("description", "");
 			mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag));			
-			populatePublisherTagCombinerNewsitems(mv, publisher, tag, showBroken);		
-			mv.setViewName("publisherCombiner");
+			populatePublisherTagCombinerNewsitems(mv, publisher, tag, showBroken);			
 			return mv;
 		}
 		return null;
 	}
 	
 	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		Website publisher = (Website) request.getAttribute("publisher"); 
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher, showBroken);
@@ -71,6 +73,12 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 		}		
 	}
 
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "publisherCombiner";
+	}
+	
 
 	// TODO needs pagination
 	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) {		
@@ -80,5 +88,5 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));
 		}
 	}
-		
+	
 }

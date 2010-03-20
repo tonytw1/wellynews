@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	Logger logger = Logger.getLogger(PublisherModelBuilder.class);
+	static Logger logger = Logger.getLogger(PublisherModelBuilder.class);
 	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
@@ -33,7 +33,8 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		this.contentRetrievalService = contentRetrievalService;
 	}
 
-
+	
+	@Override
 	public boolean isValid(HttpServletRequest request) {
         Tag tag = (Tag) request.getAttribute("tag");
         Website publisher = (Website) request.getAttribute("publisher");   
@@ -42,6 +43,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 	
 	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {				
 		if (isValid(request)) {
 			logger.info("Building publisher page model");
@@ -53,6 +55,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 	
 	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		Website publisher = (Website) request.getAttribute("publisher");
 		
@@ -65,8 +68,14 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("related_tags", relatedTagLinks);
 		}
 	}
+	
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "publisher";
+	}
+	
 
-		
 	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken, int page) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
@@ -81,10 +90,8 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
 			mv.addObject("publisher", publisher);
 			
-			populatePagination(mv, startIndex, mainContentTotal);
-			
-		}
-		mv.setViewName("publisher");
+			populatePagination(mv, startIndex, mainContentTotal);			
+		}		
 		return mv;
 	}
 	

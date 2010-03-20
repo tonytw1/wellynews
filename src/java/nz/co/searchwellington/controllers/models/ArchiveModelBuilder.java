@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,12 +29,14 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 		this.archiveLinksService = archiveLinksService;
 	}
 
-
+	
+	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/archive/.*?/.*?$");
 	}
 
 	
+	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building archive page model");			
@@ -47,8 +48,7 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 				ModelAndView mv = new ModelAndView();				
 				mv.addObject("heading", monthLabel);				
 				mv.addObject("description", "Archived newsitems for the month of " + monthLabel);				
-				mv.addObject("main_content", contentRetrievalService.getNewsitemsForMonth(month));
-				mv.setViewName("archivePage");
+				mv.addObject("main_content", contentRetrievalService.getNewsitemsForMonth(month));				
 				return mv;
 			}
 		}
@@ -56,11 +56,18 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 	}
 
 	
+	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		Date month = getArchiveDateFromPath(request.getPathInfo());
         List<ArchiveLink> archiveLinks = contentRetrievalService.getArchiveMonths();
 		populateNextAndPreviousLinks(mv, month, archiveLinks);
 		archiveLinksService.populateArchiveLinks(mv, archiveLinks);
+	}
+	
+	
+	@Override
+	public String getViewName(ModelAndView mv) {
+		return "archivePage";
 	}
 	
 	
