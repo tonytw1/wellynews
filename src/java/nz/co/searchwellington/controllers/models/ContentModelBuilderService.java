@@ -44,9 +44,12 @@ public class ContentModelBuilderService {
 					return mv;
 				}
 				
-				modelBuilder.populateExtraModelConent(request, showBroken, mv);
-				mv.setViewName(modelBuilder.getViewName(mv));
-				return mv;
+				if (mv != null) {
+					modelBuilder.populateExtraModelConent(request, showBroken, mv);
+					mv.setViewName(modelBuilder.getViewName(mv));
+					return mv;
+				}
+				return null;				
 			}
 		}
 		logger.info("No matching model builders found for path: " + request.getPathInfo());

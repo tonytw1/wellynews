@@ -119,26 +119,27 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || tagFeeds.isEmpty();
 		boolean isOneContentType = mainContent.isEmpty() || !hasSecondaryContent;
 		
-		//	if (page > 0) {	// TODO
-		//mv.addObject("page", page);
-		//	return "tagNewsArchive";
-		//} else 
-			
-		if (isOneContentType) {
+		Integer page = (Integer) mv.getModel().get("page");
+		if (page != null && page > 0) {
+			mv.addObject("page", page);
+			return "tagNewsArchive";
+
+		} else if (isOneContentType) {
 			return "tagOneContentType";
 		}
-		return "tag";		
+		return "tag";	
 	}
 
 	
-	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page, String path) {		
+	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page, String path) {
+		ModelAndView mv = new ModelAndView();				
+		mv.addObject("page", page);
 		int startIndex = getStartIndex(page);
 		int totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
 		if (startIndex > totalNewsitemCount) {
 			return null;
 		}
 		
-		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName());        		
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
