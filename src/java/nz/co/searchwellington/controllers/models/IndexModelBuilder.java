@@ -42,7 +42,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
-		return request.getPathInfo().matches("^/index$");
+		return request.getPathInfo().matches("^/$") || request.getPathInfo().matches("^/index$");	// /index path reflects problems deploying onto the root path with tomcat.
 	}
 
 	
