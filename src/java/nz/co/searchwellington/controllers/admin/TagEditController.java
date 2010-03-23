@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.admin;
 
-import java.io.IOException;
 import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +15,6 @@ import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -113,7 +111,7 @@ public class TagEditController extends MultiActionController {
     }
     
     
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
         
         ModelAndView modelAndView = new ModelAndView("savedTag");    
@@ -163,7 +161,7 @@ public class TagEditController extends MultiActionController {
         }
        
         // TODO validate.
-        tagDAO.saveTag(editTag);
+        tagDAO.saveTag(editTag);	// TODO should go through the TMS surely?
         
         modelAndView.addObject("tag", editTag);
         modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());    

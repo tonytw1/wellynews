@@ -8,6 +8,7 @@ import nz.co.searchwellington.model.Tag;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.transaction.annotation.Transactional;
 
 public class TagDAO {
 
@@ -66,15 +67,18 @@ public class TagDAO {
 				.setCacheable(true).list();
 	}
 	
-	 public void saveTag(Tag editTag) {
+	
+	@Transactional
+	public void saveTag(Tag editTag) {
 		 sessionFactory.getCurrentSession().saveOrUpdate(editTag);
 		 sessionFactory.evictCollection("nz.co.searchwellington.model.Tag.children");
 		 // TODO solr index needs updating if a tag moves to a new parent.
 	 }
 	 
-
-	 public void deleteTag(Tag tag) {
+	
+	@Transactional
+	public void deleteTag(Tag tag) {
 		 sessionFactory.getCurrentSession().delete(tag);
-	 }
+	}
 	
 }
