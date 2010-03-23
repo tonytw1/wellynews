@@ -3,9 +3,6 @@ package nz.co.searchwellington.modification;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
@@ -13,6 +10,8 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
+
+import org.springframework.transaction.annotation.Transactional;
 
 public class ContentUpdateService {
 
