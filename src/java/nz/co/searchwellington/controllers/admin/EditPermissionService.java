@@ -87,11 +87,11 @@ public class EditPermissionService {
 	}
 
 	public boolean canAcceptFeedItems(User loggedInUser) {
-		return loggedInUser.isAdmin();
+		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 
 	public boolean canDeleteTags(User loggedInUser) {
-		return loggedInUser.isAdmin();
+		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 		
 }
