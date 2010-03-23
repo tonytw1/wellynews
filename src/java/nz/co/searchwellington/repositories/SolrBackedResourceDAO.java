@@ -38,6 +38,7 @@ import org.joda.time.format.DateTimeFormatter;
 public class SolrBackedResourceDAO {
 
     private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
+	private static final int TAG_TWITTER_OF_INTEREST_THRESHOLD = 2;
 
 	static Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
     
@@ -188,7 +189,7 @@ public class SolrBackedResourceDAO {
 		SolrQuery query = new SolrQueryBuilder().type("N").
 			showBroken(showBroken).
 			dateRange(60).
-			twitterCount(2).
+			minTwitterCount(1).
 			maxItems(maxItems).toQuery();
 	
 		setDateDescendingOrder(query);
@@ -201,7 +202,7 @@ public class SolrBackedResourceDAO {
 			showBroken(showBroken).
 			dateRange(60).
 			tag(tag).
-			twitterCount(2).
+			minTwitterCount(TAG_TWITTER_OF_INTEREST_THRESHOLD).
 			maxItems(maxItems).toQuery();
 	
 		setDateDescendingOrder(query);
