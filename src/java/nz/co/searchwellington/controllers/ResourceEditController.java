@@ -177,6 +177,7 @@ public class ResourceEditController extends BaseMultiActionController {
     @Transactional
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
         response.setCharacterEncoding("UTF-8");
+    	adminRequestFilter.loadAttributesOntoRequest(request);    	// TODO get all admin things into a common path and then make this a web.xml filter
             
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (!editPermissionService.canAcceptFeedItems(loggedInUser)) {
@@ -184,33 +185,35 @@ public class ResourceEditController extends BaseMultiActionController {
         	return null;
     	}
     	
-        ModelAndView modelAndView = new ModelAndView("acceptResource");       
-        populateCommonLocal(modelAndView);
-        modelAndView.addObject("heading", "Accepting a submission");        
-        
         Newsitem newsitem = null;
-        if (request.getParameter("item") != null) {
+        if (request.getAttribute("item") != null) {
         	int item = (Integer) request.getAttribute("item");    	  
-        	if (request.getAttribute("feedAttribute") != null) {
-        		newsitem = getRequestedFeedItemByFeedAndItemNumber(request, newsitem, item);
-        	}
-      
+        	newsitem = getRequestedFeedItemByFeedAndItemNumber(request, newsitem, item);      
+
         } else if (request.getParameter("url") != null) {
         	newsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
         }
-        
-        if (newsitem != null) {        	      
-        	boolean newsitemHasNoDate = (newsitem.getDate() == null);
-            if (newsitemHasNoDate) {
-            	final Date today = Calendar.getInstance().getTime();
-            	newsitem.setDate(today);
-            }
-            
-            modelAndView.addObject("resource", newsitem);
-            modelAndView.addObject("publisher_select", "1");
-            modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
+                
+        if (newsitem == null) {
+        	log.warn("No matching newsitem found for feed/item.");
+        	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
         }
-        return modelAndView;
+
+		ModelAndView modelAndView = new ModelAndView("acceptResource");
+		populateCommonLocal(modelAndView);
+		modelAndView.addObject("heading", "Accepting a submission");
+
+		boolean newsitemHasNoDate = (newsitem.getDate() == null);
+		if (newsitemHasNoDate) {
+			final Date today = Calendar.getInstance().getTime();
+			newsitem.setDate(today);
+		}
+
+		modelAndView.addObject("resource", newsitem);
+		modelAndView.addObject("publisher_select", "1");
+		modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
+		return modelAndView;
     }
 
 
@@ -427,7 +430,8 @@ public class ResourceEditController extends BaseMultiActionController {
             	saveResource(request, loggedInUser, editResource);
             	log.info("Saved resource; id is now: " + editResource.getId());
             	submissionProcessingService.processTags(request, editResource, loggedInUser);
-            	
+            	saveResource(request, loggedInUser, editResource); 	// TODO duplication
+
                 if (newSubmission) {
                     log.info("Applying the auto tagger to new submission.");
                     autoTagger.autotag(editResource);
@@ -495,17 +499,22 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
 
-	private Newsitem getRequestedFeedItemByFeedAndItemNumber(
-			HttpServletRequest request, Newsitem newsitem, int item) {
+	private Newsitem getRequestedFeedItemByFeedAndItemNumber(HttpServletRequest request, Newsitem newsitem, int item) {
 		log.info("Looking for feeditem by feed and item number: " + item);
-		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
 		
-		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-		if (item > 0 && item <= feednewsItems.size()) {                    
-			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
-			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
-		}
-		return newsitem;
+    	if (request.getAttribute("feedAttribute") != null) {
+    		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
+		
+    		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
+    		if (item > 0 && item <= feednewsItems.size()) {                    
+    			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
+    			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
+    		}
+    		return newsitem;
+    	}
+    	
+    	log.warn("No feed found on request object; can't load newsitem");
+    	return null;
 	}
     
     
