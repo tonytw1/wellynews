@@ -47,7 +47,7 @@ public class TagModificationService {
 		for (Resource resource : taggedResources) {            	
 			log.info("Removing tag from: " + resource.getName());
 		    //resource.getRemoveTag(tag);	// TODO remove hand tags instead.
-		    contentUpdateService.update(resource, false);
+		    contentUpdateService.update(resource);
 		}
 	}
 	

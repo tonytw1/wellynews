@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SuggestionDAO;
+import nz.co.searchwellington.repositories.SuggestionRepository;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
@@ -26,7 +26,7 @@ public class FeedReader {
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
-    private SuggestionDAO suggestionDAO;
+    private SuggestionRepository suggestionDAO;
     private ContentUpdateService contentUpdateService;
 	private FeedItemAcceptor feedItemAcceptor;
  
@@ -39,7 +39,7 @@ public class FeedReader {
 			RssfeedNewsitemService rssfeedNewsitemService,
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			DateFormatter dateFormatter, UrlCleaner urlCleaner,
-			SuggestionDAO suggestionDAO,
+			SuggestionRepository suggestionDAO,
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor) {
 		this.resourceDAO = resourceDAO;
@@ -82,7 +82,7 @@ public class FeedReader {
         }
         
         feed.setLastRead(Calendar.getInstance().getTime());        
-        contentUpdateService.update(feed, false);
+        contentUpdateService.update(feed);
 		log.info("Done processing feed.");
         return;
     }

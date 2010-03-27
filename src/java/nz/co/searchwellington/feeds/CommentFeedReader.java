@@ -82,7 +82,7 @@ public class CommentFeedReader {
         commentFeed.getComments().addAll(loadedComments);
         commentFeed.setLastRead(Calendar.getInstance().getTime());
         if (commentFeed.getNewsitem() != null) {
-        	contentUpdateService.update(commentFeed.getNewsitem(), false);
+        	contentUpdateService.update(commentFeed.getNewsitem());
         }        
     }
     

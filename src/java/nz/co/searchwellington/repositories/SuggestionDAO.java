@@ -10,24 +10,31 @@ import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.springframework.transaction.annotation.Transactional;
 
-public class SuggestionDAO {
+public class SuggestionDAO implements SuggestionRepository {
 	
-	Logger log = Logger.getLogger(SuggestionDAO.class);
+	static Logger log = Logger.getLogger(SuggestionDAO.class);
 	    
-	private SessionFactory sessionFactory;
+	SessionFactory sessionFactory;
 	    	
 	
+	public SuggestionDAO() {		
+	}
+
+
 	public SuggestionDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
 	
+	@Transactional
 	public Suggestion createSuggestion(Feed feed, String url, Date firstSeen) {
 		return new Suggestion(feed, url, firstSeen);
 	}
 	 
 	 
+	@Transactional
 	public void addSuggestion(Suggestion suggestion) {
 		log.info("Creating suggestion for: " + suggestion.getUrl());        
 		sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
@@ -63,7 +70,8 @@ public class SuggestionDAO {
 	 }
 
 	 
-	public void removeSuggestion(String url) {
+	 @Transactional
+	 public void removeSuggestion(String url) {
 		Suggestion existingsuggestion = (Suggestion) sessionFactory.getCurrentSession().createCriteria(Suggestion.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();
 		if (existingsuggestion != null) {
 			sessionFactory.getCurrentSession().delete(existingsuggestion);

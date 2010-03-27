@@ -385,6 +385,10 @@ public class ResourceEditController extends BaseMultiActionController {
         log.info("In save");
         if (editResource != null) {                      
             boolean newSubmission = editResource.getId() == 0;
+                        
+            if (newSubmission) {        // TODO is wrong place - needs to be shared with the api.
+            	editResource.setOwner(loggedInUser);
+            }
                    
             submissionProcessingService.processUrl(request, editResource);
             submissionProcessingService.processTitle(request, editResource);
@@ -472,7 +476,7 @@ public class ResourceEditController extends BaseMultiActionController {
 
 
 	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource) {		
-		contentUpdateService.update(editResource, loggedInUser, request);
+		contentUpdateService.update(editResource);
 	}
 
 	

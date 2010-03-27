@@ -11,11 +11,11 @@ import nz.co.searchwellington.model.SuggestionFeednewsitem;
 
 public class SuggestedFeeditemsService {
 
-	private SuggestionDAO suggestionDAO;
+	private SuggestionRepository suggestionDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 
 	
-	public SuggestedFeeditemsService(SuggestionDAO suggestionDAO, RssfeedNewsitemService rssfeedNewsitemService) {		
+	public SuggestedFeeditemsService(SuggestionRepository suggestionDAO, RssfeedNewsitemService rssfeedNewsitemService) {		
 		this.suggestionDAO = suggestionDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 	}

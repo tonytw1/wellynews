@@ -5,21 +5,27 @@ import nz.co.searchwellington.model.Supression;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.springframework.transaction.annotation.Transactional;
 
 
 public class SupressionDAO implements SupressionRepository {
     
-    Logger log = Logger.getLogger(SupressionDAO.class);
+    static Logger log = Logger.getLogger(SupressionDAO.class);
     
-    
+       
     private SessionFactory sessionFactory;
+   
     
-    
-    public SupressionDAO(SessionFactory sessionFactory) {
+    public SupressionDAO() {
+	}
+
+
+	public SupressionDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
     
-        
+    
+    @Transactional
     public void addSuppression(String urlToSuppress) {
     	Supression suppression = createSupression(urlToSuppress);
     	if (suppression != null) {
@@ -38,6 +44,7 @@ public class SupressionDAO implements SupressionRepository {
     }
 
 
+    @Transactional
     public void removeSupressionForUrl(String url) {
         Supression existingSupression = (Supression) sessionFactory.getCurrentSession().createCriteria(Supression.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();
         if (existingSupression != null) {
@@ -45,10 +52,13 @@ public class SupressionDAO implements SupressionRepository {
         }
     }
 
+    
+    @Transactional
     private Supression createSupression(String urlToSupress) {
     	if (urlToSupress != null) {
     		return new Supression(urlToSupress);
     	}
     	return null;
     }
+    
 }

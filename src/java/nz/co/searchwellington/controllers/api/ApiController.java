@@ -87,7 +87,7 @@ public class ApiController extends MultiActionController {
 	    	}
 	    	
 	    	log.info("Saving api submitted newsitem: " + resource.getName());
-	    	contentUpdateService.update(resource, true);
+	    	contentUpdateService.update(resource);
 	    	log.info("Id after save is: " + resource.getId());
 	    	mv.setViewName("apiResponseOK");
 	    	
@@ -115,7 +115,7 @@ public class ApiController extends MultiActionController {
     				log.info("Applying autotagging to new submission.");
     				autoTagger.autotag(newsitemToAccept);
     	            
-    				contentUpdateService.update(newsitemToAccept, loggedInUser, request);
+    				contentUpdateService.update(newsitemToAccept);
     			}
     		}
     	}
@@ -138,7 +138,7 @@ public class ApiController extends MultiActionController {
          		Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
          		if (resource != null) {
          			log.info("Changed url of resource '" + resource.getName() + " from '" + resourceUrl + "'to resource: " + resource.getUrl());
-         			contentUpdateService.update(resource, true);
+         			contentUpdateService.update(resource);
          			mv.setViewName("apiResponseOK");
          			return mv;
          			
@@ -191,7 +191,7 @@ public class ApiController extends MultiActionController {
         		if (resource != null) {
         			tagVoteDAO.addTag(loggedInUser, tag, resource);
         			log.info("Applied tag: " + tag.getDisplayName() + " to resource: " + resource.getName());
-        			contentUpdateService.update(resource, false);
+        			contentUpdateService.update(resource);
         			mv.setViewName("apiResponseOK");
         			return mv;
         			

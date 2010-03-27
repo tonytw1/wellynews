@@ -4,7 +4,6 @@ import java.io.IOException;
 
 import nz.co.searchwellington.linkchecking.LinkCheckerProcessor;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
@@ -61,7 +60,7 @@ public class LinkChecker {
 			log.debug("Saving resource and updating snapshot");
 			resource.setLastScanned(new DateTime().toDate());
 			snapshotDAO.setSnapshotContentForUrl(resource.getUrl(), pageContent);
-			contentUpdateService.update(resource, false);
+			contentUpdateService.update(resource);
 			
         } else {
         	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database");

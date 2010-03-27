@@ -46,9 +46,9 @@ public class FeedItemAcceptor {
         	newsitem.setDate(new DateTime().toDate());
         }
         
-        contentUpdateService.update(newsitem, true);
+        contentUpdateService.save(newsitem);
         autoTagger.autotag(newsitem);
-        contentUpdateService.update(newsitem, true);	// TODO duplication
+        contentUpdateService.update(newsitem);
     }
 
     

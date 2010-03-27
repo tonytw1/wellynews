@@ -11,7 +11,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionDAO;
-import nz.co.searchwellington.repositories.solr.SolrQueryService;
+import nz.co.searchwellington.repositories.solr.SolrUpdateQueue;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -22,8 +22,8 @@ public class ContentUpdateServiceTest extends TestCase {
 	private SuggestionDAO suggestionsDAO = mock(SuggestionDAO.class);
 	private LinkCheckerQueue linkCheckerQueue = mock(LinkCheckerQueue.class);
 	private Notifier notifier = mock(Notifier.class);
-	private SolrQueryService solrQueryService = mock(SolrQueryService.class);
-		
+	private SolrUpdateQueue solrUpdateQueue = mock(SolrUpdateQueue.class);
+	
 	private MockHttpServletRequest request = new MockHttpServletRequest();
 	
 	private Newsitem exitingResource = mock(Newsitem.class);
@@ -34,7 +34,7 @@ public class ContentUpdateServiceTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		service = new ContentUpdateService(resourceDAO, suggestionsDAO, linkCheckerQueue, notifier, solrQueryService);
+		service = new ContentUpdateService(resourceDAO, suggestionsDAO, linkCheckerQueue, notifier, solrUpdateQueue);
 		stub(exitingResource.getId()).toReturn(1);
 		stub(exitingResource.getType()).toReturn("N");
 		stub(exitingResource.getUrl()).toReturn("http://test/abc");
@@ -58,7 +58,7 @@ public class ContentUpdateServiceTest extends TestCase {
     
     public void testShouldUpdateTheSolrIndexOnSave() throws Exception {		
 		service.update(updatedResource, loggedInUser, request);
-		verify(solrQueryService).updateIndexForResource(updatedResource);
+		verify(solrUpdateQueue).add(updatedResource);
 	}
 		
 	

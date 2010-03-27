@@ -86,7 +86,7 @@ public class AutoTagController extends BaseMultiActionController {
                 if (!autoTagService.alreadyHasTag(resource, tag)) {
                 	tagVoteDAO.addTag(loggedInUserFilter.getLoggedInUser(), tag, resource);
                 }
-                contentUpateService.update(resource, false);
+                contentUpateService.update(resource);
                 resourcesAutoTagged.add(resource);
             }        
             mv.addObject("resources_to_tag", resourcesAutoTagged);

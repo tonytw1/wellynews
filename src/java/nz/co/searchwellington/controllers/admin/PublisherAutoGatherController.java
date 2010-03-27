@@ -72,9 +72,7 @@ public class PublisherAutoGatherController extends MultiActionController {
         requestFilter.loadAttributesOntoRequest(request);
         Website publisher = (Website) request.getAttribute("publisher");
         mv.addObject("publisher", publisher);
-        
-        
-        
+                
         if (publisher != null) {                       
             List<Resource> resourcesAutoTagged = new ArrayList<Resource>();            
             String[] autotaggedResourceIds = request.getParameterValues("autotag");            
@@ -85,7 +83,7 @@ public class PublisherAutoGatherController extends MultiActionController {
                 if (resource.getType().equals("N")) {
                 	log.info("Applying publisher " + publisher.getName() + " to:" + resource.getName());
                 	((Newsitem) resource).setPublisher(publisher);
-                	contentUpdateService.update(resource, false);
+                	contentUpdateService.update(resource);
                 	resourcesAutoTagged.add(resource);
                 }
             }

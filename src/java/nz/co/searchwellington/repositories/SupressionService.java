@@ -1,16 +1,24 @@
 package nz.co.searchwellington.repositories;
 
+import org.springframework.transaction.annotation.Transactional;
+
 
 public class SupressionService {
 
-	private SupressionDAO suppressionDAO;
-	private SuggestionDAO suggestionDAO;
+	private SupressionRepository suppressionDAO;
+	private SuggestionRepository suggestionDAO;
 	
-	public SupressionService(SupressionDAO suppressionDAO, SuggestionDAO suggestionDAO) {		
+	
+	public SupressionService() {
+	}
+
+	public SupressionService(SupressionRepository suppressionDAO, SuggestionRepository suggestionDAO) {		
 		this.suppressionDAO = suppressionDAO;
 		this.suggestionDAO = suggestionDAO;
 	}
 	
+	
+	@Transactional
 	public void suppressUrl(String urlToSupress) {		
 		if (!suppressionDAO.isSupressed(urlToSupress)) {
 			suppressionDAO.addSuppression(urlToSupress);
@@ -18,6 +26,8 @@ public class SupressionService {
 		}		
 	}
 
+	
+	@Transactional
 	public void unsupressUrl(String url) {
 		suppressionDAO.removeSupressionForUrl(url);
 	}

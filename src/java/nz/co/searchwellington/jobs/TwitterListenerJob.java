@@ -6,7 +6,6 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.twitter.TwitterService;
 
@@ -63,7 +62,7 @@ public class TwitterListenerJob {
 			if (isMentionRT && !newsitem.getReTwits().contains(reTwit.getTwit())) {				
 				log.info("Adding new RT to newsitem: " + reTwit.getTwit().getText());
 				newsitem.addReTwit(reTwit.getTwit());
-				contentUpdateService.update(newsitem, false);
+				contentUpdateService.update(newsitem);
 			}
 		}
 	}
