@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 public class StandardHttpFetcher implements HttpFetcher {
 
     Logger log = Logger.getLogger(StandardHttpFetcher.class);
-    private static final int HTTP_TIMEOUT = 10000;
+    private static final int HTTP_TIMEOUT = 20000;
     
     private String userAgent;    
     private String httpProxyHostname;
