@@ -22,7 +22,7 @@ import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 public class ContentRetrievalService {
 	
 	
-    final protected int MAX_NEWSITEMS_TO_SHOW = 10;
+    final protected int MAX_NEWSITEMS_TO_SHOW = 30;
     
     
 	private ResourceRepository resourceDAO;
