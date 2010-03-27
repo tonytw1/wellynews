@@ -37,7 +37,7 @@ public class FeedItemAcceptor {
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW) 
 	public void acceptFeedItem(FeedNewsitem feednewsitem, Feed feed) {
-		log.info("Accepting: " + feednewsitem.getName());
+		log.info("Accepting: " + feednewsitem.getName() + " (" + feednewsitem.getName() + ")");
 		Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
 		
         flattenLoudCapsInTitle(newsitem);        

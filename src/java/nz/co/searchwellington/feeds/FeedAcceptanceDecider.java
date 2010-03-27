@@ -13,6 +13,8 @@ import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 
 public class FeedAcceptanceDecider {
@@ -24,15 +26,20 @@ public class FeedAcceptanceDecider {
     private UrlCleaner urlCleaner;
 	private SuggestionDAO suggestionDAO;
  
-   
-    public FeedAcceptanceDecider(ResourceRepository resourceDAO, SupressionRepository supressionDAO, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
+	
+    public FeedAcceptanceDecider() {
+	}
+
+
+	public FeedAcceptanceDecider(ResourceRepository resourceDAO, SupressionRepository supressionDAO, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
         this.resourceDAO = resourceDAO;
         this.supressionDAO = supressionDAO;
         this.urlCleaner = urlCleaner;
         this.suggestionDAO = suggestionDAO;
     }
 
-        
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW) 
     public List<String> getAcceptanceErrors(FeedNewsitem resource, String feedAcceptancePolicy) {
         List<String> acceptanceErrors = new ArrayList<String>();
         

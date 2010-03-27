@@ -157,7 +157,7 @@ public class ApiController extends MultiActionController {
     }
 
     
-    
+    @Transactional
     public ModelAndView suppress(HttpServletRequest request, HttpServletResponse response) {
     	ModelAndView mv = new ModelAndView();	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
