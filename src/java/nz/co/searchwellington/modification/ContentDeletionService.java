@@ -40,8 +40,7 @@ public class ContentDeletionService {
 	}
 
 
-	public void performDelete(Resource resource) {
-		
+	public void performDelete(Resource resource) {		
 		handTaggingDAO.clearTags(resource);
 		
 		if (resource.getType().equals("W")) {
@@ -56,7 +55,8 @@ public class ContentDeletionService {
 		if (resource.getType().equals("N")) {
 			Newsitem deletedNewsitem = (Newsitem) resource;
 			if (rssfeedNewsitemService.isUrlInAcceptedFeeds(deletedNewsitem.getUrl())) {
-				suppressDeletedNewsitem(deletedNewsitem);			
+				log.info("Supressing deleted newsitem url as it still visible in an automatically deleted feed: " + deletedNewsitem.getUrl());
+				suppressDeletedNewsitem(deletedNewsitem);
 			}
 		}
 		snapshotDAO.evict(resource.getUrl());
