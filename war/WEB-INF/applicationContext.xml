@@ -401,6 +401,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="snapshotDAO" />
 		<constructor-arg ref="solrQueryService" />
 		<constructor-arg ref="handTaggingDAO" />		
+		<constructor-arg ref="tagDAO" />
 	</bean>
 	
 		

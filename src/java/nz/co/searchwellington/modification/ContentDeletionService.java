@@ -5,12 +5,14 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
@@ -25,18 +27,22 @@ public class ContentDeletionService {
 	private SnapshotDAO snapshotDAO;
 	private SolrQueryService solrQueryService;
 	private HandTaggingDAO handTaggingDAO;
-	
+	private TagDAO tagDAO;
 
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			ResourceRepository resourceDAO, SnapshotDAO snapshotDAO,
-			SolrQueryService solrQueryService, HandTaggingDAO handTaggingDAO) {		
+			ResourceRepository resourceDAO, 
+			SnapshotDAO snapshotDAO,
+			SolrQueryService solrQueryService, 
+			HandTaggingDAO handTaggingDAO,
+			TagDAO tagDAO) {		
 		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
 		this.snapshotDAO = snapshotDAO;
 		this.solrQueryService = solrQueryService;
 		this.handTaggingDAO = handTaggingDAO;
+		this.tagDAO = tagDAO;
 	}
 
 
@@ -65,8 +71,12 @@ public class ContentDeletionService {
 	}
 
 
-	private void removeRelatedFeedFromTags(Feed editResource) {	
-		// TODO needs to remove related feed from tags
+	private void removeRelatedFeedFromTags(Feed editResource) {
+		for (Tag tag : tagDAO.getAllTags()) {
+			if (tag.getRelatedFeed() != null && tag.getRelatedFeed().equals(editResource)) {
+				tag.setRelatedFeed(null);
+			}
+		}
 	}
 
 

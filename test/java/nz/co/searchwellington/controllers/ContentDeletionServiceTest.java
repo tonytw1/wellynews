@@ -2,15 +2,22 @@ package nz.co.searchwellington.controllers;
 
 import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.modification.ContentDeletionService;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.mockito.MockitoAnnotations;
@@ -23,9 +30,12 @@ public class ContentDeletionServiceTest extends TestCase {
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock SnapshotDAO SnapshotDAO;
 	@Mock SolrQueryService solrQueryService;
+	@Mock HandTaggingDAO handTaggingDAO;
+	@Mock TagDAO tagDAO;
 	
 	@Mock Newsitem resource;
 	@Mock Feed feed;
+	@Mock Tag tag;
 	
 	
 	ContentDeletionService service;
@@ -37,8 +47,9 @@ public class ContentDeletionServiceTest extends TestCase {
 		resource = new NewsitemImpl();
 		resource.setId(123);
 		resource.setUrl("http://blah/test");
-		service = new ContentDeletionService(supressionService, rssfeedNewsitemService, resourceDAO, SnapshotDAO, solrQueryService);
+		service = new ContentDeletionService(supressionService, rssfeedNewsitemService, resourceDAO, SnapshotDAO, solrQueryService, handTaggingDAO, tagDAO);
 	}
+	
 	
 	public void testShouldDeleteFromSolrIndex() throws Exception {
 		service.performDelete(resource);
@@ -52,7 +63,14 @@ public class ContentDeletionServiceTest extends TestCase {
 	}
 	
 	public void testShouldRemoveRelatedFeedFromTagsOnDelete() throws Exception {
-		fail();
+		stub(feed.getType()).toReturn("F");
+		stub(tag.getRelatedFeed()).toReturn(feed);		
+		List<Tag> allTags = new ArrayList<Tag>();
+		allTags.add(tag);
+		stub(tagDAO.getAllTags()).toReturn(allTags);
+		
+		service.performDelete(feed);
+		verify(tag).setRelatedFeed(null);
 	}
 
 }
