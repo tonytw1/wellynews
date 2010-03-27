@@ -109,6 +109,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	
 	@Override
+	@SuppressWarnings("unchecked")
 	public String getViewName(ModelAndView mv) {		
 		List<Resource> mainContent = (List<Resource>) mv.getModel().get("main_content");
 		
@@ -116,7 +117,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		List<Resource> tagWatchlist = (List<Resource>) mv.getModel().get("tag_watchlist");
 		List<Resource> tagFeeds = (List<Resource>) mv.getModel().get("tag_feeds");
 
-		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || tagFeeds.isEmpty();
+		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || !tagFeeds.isEmpty();		
 		boolean isOneContentType = mainContent.isEmpty() || !hasSecondaryContent;
 		
 		Integer page = (Integer) mv.getModel().get("page");
