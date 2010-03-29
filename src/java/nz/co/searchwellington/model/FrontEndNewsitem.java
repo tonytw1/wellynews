@@ -15,6 +15,31 @@ public class FrontEndNewsitem implements Newsitem {
 		this.newsitem = newsitem;
 		tags = new ArrayList<Tag>();
 	}
+	
+	
+	@Override
+	public int hashCode() {
+		return newsitem.hashCode();
+	}
+
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		FrontEndNewsitem other = (FrontEndNewsitem) obj;
+		if (newsitem == null) {
+			if (other.newsitem != null)
+				return false;
+		} else if (!newsitem.equals(other.newsitem))
+			return false;
+		return true;
+	}
+
 
 	public List<Tag> getTags() {
 		return tags;
