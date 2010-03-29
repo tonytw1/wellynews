@@ -46,7 +46,7 @@ public class FeedItemAcceptor {
         	newsitem.setDate(new DateTime().toDate());
         }
         
-        contentUpdateService.save(newsitem);
+        contentUpdateService.create(newsitem);
         autoTagger.autotag(newsitem);
         contentUpdateService.update(newsitem);
     }

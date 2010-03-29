@@ -68,12 +68,19 @@ public class ContentUpdateService {
 		solrUpdateQueue.add(resource);
 	}
 	
+	public void create(Resource resource) {
+		resource.setHttpStatus(0);
+		save(resource);		
+		linkCheckerQueue.add(resource);	
+	}
 	
-	public void save(Resource resource) {
+	private void save(Resource resource) {
 		resourceDAO.saveResource(resource);
 		if (resource.getType().equals("N")) {
 			suggestionsDAO.removeSuggestion(resource.getUrl());
 		}
 	}
+
+
 	
 }
