@@ -239,4 +239,12 @@ public class ContentRetrievalService {
 		return solrContentRetrievalService.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken());
 	}
 	
+	public List<String> getTagNamesStartingWith(String q) {
+		return tagDAO.getTagNamesStartingWith(q);
+	}
+
+	public List<String> getPublisherNamesByStartingLetters(String q) {
+		return resourceDAO.getPublisherNamesByStartingLetters(q);
+	}
+	
 }
