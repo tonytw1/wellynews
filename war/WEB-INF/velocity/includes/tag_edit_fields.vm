@@ -4,7 +4,10 @@
 	   	<input type="hidden" name="has_tag_select" value="1" />
 	#end
 	<br />	
-
+	
+	<label for="tagName">New tag: </label>
+	<input id="tagName" name="tagName" value="" />		  
+	
 	#if ($show_additional_tags) 
 		<label for"addtional_tags">Additional tags: <br />
 		Add any additional tags here (seperated by commas)</label>

@@ -18,9 +18,10 @@
   	
   	<script>
 		$(document).ready(function(){    		    			
-			$("#publisherName").autocomplete("$urlBuilder.publishersAutoCompleteUrl");			
+			$("#publisherName").autocomplete("$urlBuilder.publishersAutoCompleteUrl");
+			$("#tagName").autocomplete("$urlBuilder.tagsAutoCompleteUrl");
 		 });
-	</script>		
+	</script>
 		  		  
 #end
 

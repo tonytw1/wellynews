@@ -33,7 +33,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/ajax/publishers";
 	}
 	
-	
+	public String getTagsAutoCompleteUrl() {
+		return siteInformation.getUrl() + "/ajax/tags";
+	}
+		
 	public String getFeedUrl(Feed feed) {		
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
