@@ -365,9 +365,10 @@
             	            	
             	<prop key="/clickthrough">clickThroughController</prop>
             	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
+            	
             	<prop key="/ajax/publishers">publishersAjaxController</prop>
-            	            	
-				
+            	<prop key="/ajax/tags">tagsAjaxController</prop>
+           		
 				<prop key="/rss">rssController</prop>
 				<prop key="/*/rss">tagController</prop>
 				<prop key="/*/*/rss">tagController</prop>

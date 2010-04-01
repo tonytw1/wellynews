@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import nz.co.searchwellington.model.Tag;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
@@ -79,6 +80,15 @@ public class TagDAO {
 	@Transactional
 	public void deleteTag(Tag tag) {
 		 sessionFactory.getCurrentSession().delete(tag);
+	}
+
+	
+	
+	// TODO hup to CRS
+	public List<String> getTagNamesStartingWith(String q) {
+		  Session session = sessionFactory.getCurrentSession();
+	         List<String> rows = session.createQuery("select name from nz.co.searchwellington.model.Tag where name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
+	         return rows;
 	}
 	
 }

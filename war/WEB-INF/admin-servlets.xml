@@ -178,6 +178,9 @@
 		<constructor-arg ref="resourceDAO" />	
 	</bean>
 	
+	<bean id="tagsAjaxController" class="nz.co.searchwellington.controllers.ajax.TagAjaxController">
+		<constructor-arg ref="tagDAO" />
+	</bean>
 	
-			
+				
 </beans>
