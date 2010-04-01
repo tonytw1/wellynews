@@ -1,16 +1,22 @@
-	#if ($tag_select) 
-		<label for="tags">Tags: </label>
-	   	$tag_select	
-	   	<input type="hidden" name="has_tag_select" value="1" />
-	#end
-	<br />	
-	
-	<label for="tagName">New tag: </label>
-	<input id="tagName" name="tagName" value="" />		  
-	
-	#if ($show_additional_tags) 
-		<label for"addtional_tags">Additional tags: <br />
-		Add any additional tags here (seperated by commas)</label>
-		<input name="additional_tags">
-	#end	
+	<table border="0" class="normal">
+		<tr valign="top">
+			<td class="normal">
+				<label for="tags">Tags: </label>
+				$tag_select
+			   	<input type="hidden" name="has_tag_select" value="1" />
+			</td>
+			<td class="normal">
+				<input type="button" id="removeTags" value="Remove" />				
+			</td>
+		</tr>
+		<tr valign="top">
+			<td class="normal">
+				<label for="tagName"></label>
+				<input id="tagName" name="tagName" value="" />
+			</td>
+			<td class="normal">
+				<input type="button" id="addTag" value="Add">
+			</td>
+		</tr>
+	</table>		
 	<br />

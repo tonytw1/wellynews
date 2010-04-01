@@ -20,7 +20,21 @@
 		$(document).ready(function(){    		    			
 			$("#publisherName").autocomplete("$urlBuilder.publishersAutoCompleteUrl");
 			$("#tagName").autocomplete("$urlBuilder.tagsAutoCompleteUrl");
-		 });
+			
+			$("#addTag").click(function() {
+				var tagname = $('#tagName').val();
+				$('#tags').append('<option value="' + tagname + '">' + tagname + '</options>');
+				$('#tagName').val("");
+			});
+			
+			$("#removeTags").click(function() {
+			 	$('#tags option:selected').remove();			
+			});
+			
+			$("#editForm").submit(function() {
+				$('#tags option').attr('selected', 'selected');
+			});				 
+		 });				 
 	</script>
 		  		  
 #end

@@ -106,26 +106,26 @@ public class AdminRequestFilter {
             }
         }
         
-        
-		
+        		
 		// TODO test coverage
 		if (request.getParameter("tags") != null) {
-			String[] tagIds = request.getParameterValues("tags");
+			String[] tagNames = request.getParameterValues("tags");
+			
 			List <Tag> tags = new ArrayList <Tag>();
-			for (int i = 0; i < tagIds.length; i++) {             
-				String tagIdString = tagIds[i];
-				int tagID = Integer.parseInt(tagIdString);
-				if (tagID > 0) {          
-					Tag tag = tagDAO.loadTagById(tagID);
+			for (int i = 0; i < tagNames.length; i++) {             
+				String tagName = tagNames[i];
+				if (tagName != null) {  	// TODO cleaning        
+					Tag tag = tagDAO.loadTagByName(tagName);
 					if (tag != null) {
 						tags.add(tag);
 					} else {
-						log.warn("Could not find tag with id: " + tagID);
+						log.warn("Could not find tag with name: " + tagName);
 					}
 				} 
 			}           
 			request.setAttribute("tags", tags);
 		}
+		
 		
 		if (request.getParameter("resource") != null) {
 			String resourceParametere = request.getParameter("resource");			

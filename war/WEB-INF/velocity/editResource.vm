@@ -11,7 +11,7 @@
 		<h2>Editing a Resource</h2>
 
 		#if ($resource)
-			<form action="save" method="POST">
+			<form id="editForm" action="save" method="POST">
 				<input type="hidden" name="resource" value="$resource.id" />
 
 				<fieldset>					
