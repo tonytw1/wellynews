@@ -175,11 +175,11 @@
 	
 	
 	<bean id="publishersAjaxController" class="nz.co.searchwellington.controllers.ajax.PublisherAjaxController">
-		<constructor-arg ref="resourceDAO" />	
+		<constructor-arg ref="contentRetrievalService" />	
 	</bean>
 	
 	<bean id="tagsAjaxController" class="nz.co.searchwellington.controllers.ajax.TagAjaxController">
-		<constructor-arg ref="tagDAO" />
+		<constructor-arg ref="contentRetrievalService" />
 	</bean>
 	
 				
