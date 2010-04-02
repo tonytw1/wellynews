@@ -9,51 +9,71 @@ import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
+import org.apache.log4j.Logger;
 
 
 // TODO remove duplication.
 public class TagWidgetFactory {
     
+    static Logger log = Logger.getLogger(TagWidgetFactory.class);
     
     private TagDAO tagDAO;
     private ResourceRepository resourceDAO;
     
-     
+    
 	public TagWidgetFactory(TagDAO tagDAO, ResourceRepository resourceDAO) {
 		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;
 	}
 
 
-	// TODO migrate to use names, not ids.
     public String createMultipleTagSelect(Set<Tag> selectedTags) {
         Select tagSelect= new Select("tags");
+        tagSelect.setID("tags");
         tagSelect.setMultiple(true);
-            
-        for (Tag tag : tagDAO.getAllTags()) {
-            Option option = new Option(Integer.toString(tag.getId()));
+        
+        log.info("Selected tags are: " + selectedTags);
+        for (Tag tag : selectedTags) {
+            Option option = new Option(tag.getName());
             option.setFilterState(true);
-            option.addElement(tag.getDisplayName().toLowerCase());
-            if (selectedTags != null && selectedTags.contains(tag)) {
-                option.setSelected(true);
-            }
-            
+            option.addElement(tag.getName());
             tagSelect.addElement(option);
         }
-        
         return tagSelect.toString();
     }
     
-    
-    
-    
-    
+
+        
     public Select createTagSelect(String name, Tag selectedTag, Set<Tag> tagsToExclude) {
         return createTagSelect(name, selectedTag, tagsToExclude, "No Parent");
     }
     
     
-    public Select createTagSelect(String name, Tag selectedTag, Set<Tag> tagsToExclude, String noneSelectedText) {       
+    public Select createRelatedFeedSelect(String name, Feed relatedFeed) {
+        Select relatedFeedSelect = new Select(name);
+        Option noFeedOption = new Option("0");
+        noFeedOption.addElement("No related Feed");
+
+        if (relatedFeed == null) {
+            noFeedOption.setSelected(true);
+        }
+        relatedFeedSelect.addElement(noFeedOption);
+
+        for (Feed feed : resourceDAO.getAllFeeds()) {
+            Option option = new Option(new Integer(feed.getId()).toString());
+            option.setFilterState(true);
+            option.addElement(feed.getName());
+            if (relatedFeed != null && relatedFeed == feed) {
+                option.setSelected(true);
+            }
+            relatedFeedSelect.addElement(option);
+        }
+
+        return relatedFeedSelect;
+    }
+    
+    
+    private Select createTagSelect(String name, Tag selectedTag, Set<Tag> tagsToExclude, String noneSelectedText) {       
         Select tagSelect= new Select(name);
         tagSelect.setMultiple(false);
         
@@ -81,29 +101,5 @@ public class TagWidgetFactory {
         return tagSelect;
     }
 
-
-
-    public Select createRelatedFeedSelect(String name, Feed relatedFeed) {
-        Select relatedFeedSelect = new Select(name);
-        Option noFeedOption = new Option("0");
-        noFeedOption.addElement("No related Feed");
-
-        if (relatedFeed == null) {
-            noFeedOption.setSelected(true);
-        }
-        relatedFeedSelect.addElement(noFeedOption);
-
-        for (Feed feed : resourceDAO.getAllFeeds()) {
-            Option option = new Option(new Integer(feed.getId()).toString());
-            option.setFilterState(true);
-            option.addElement(feed.getName());
-            if (relatedFeed != null && relatedFeed == feed) {
-                option.setSelected(true);
-            }
-            relatedFeedSelect.addElement(option);
-        }
-
-        return relatedFeedSelect;
-    }
- 
+    
 }
