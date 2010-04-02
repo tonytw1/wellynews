@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -57,7 +58,13 @@ public class HandTaggingDAO {
 			list();
 		return handTaggings;
 	}
-
+	
+	
+	public List<Resource> getResourcesWithTag(Tag tag) {
+		return new ArrayList<Resource>();	// TODO implement
+	}
+	
+	
 	@Transactional
     public void addTag(User user, Tag tag, Resource resource) {
 		HandTagging existing = (HandTagging) sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
@@ -85,6 +92,12 @@ public class HandTaggingDAO {
 		for (HandTagging handTagging : this.getHandTaggingsForResource(resource)) {
 			sessionFactory.getCurrentSession().delete(handTagging);
 		}
+	}
+
+
+	public void clearTaggingsForTag(Tag tag) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

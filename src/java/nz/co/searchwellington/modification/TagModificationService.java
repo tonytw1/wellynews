@@ -4,7 +4,7 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -14,18 +14,19 @@ public class TagModificationService {
 	static Logger log = Logger.getLogger(TagModificationService.class);
 
     private TagDAO tagDAO;
-    private ResourceRepository resourceDAO;
     private ContentUpdateService contentUpdateService;
-        
+    private HandTaggingDAO handTaggingDAO;
+    
+    
 	public TagModificationService(TagDAO tagDAO,
-			ResourceRepository resourceDAO,
-			ContentUpdateService contentUpdateService) {
+			ContentUpdateService contentUpdateService,
+			HandTaggingDAO handTaggingDAO) {
 		this.tagDAO = tagDAO;
-		this.resourceDAO = resourceDAO;
 		this.contentUpdateService = contentUpdateService;
+		this.handTaggingDAO = handTaggingDAO;
 	}
-
 	
+
 	public void updateTagParent(Tag editTag, Tag parentTag) {
 		log.info("Setting parent tag to: " + parentTag.getName());	
 		editTag.setParent(parentTag);
@@ -41,13 +42,13 @@ public class TagModificationService {
 		tagDAO.deleteTag(tag);
 	}
 
+	
 	private void removeDeletedTagFromResources(Tag tag) {
-		List<Resource> taggedResources = resourceDAO.getResourcesWithTag(tag);            
+		List<Resource> taggedResources = handTaggingDAO.getResourcesWithTag(tag);
+		handTaggingDAO.clearTaggingsForTag(tag);
 		log.info("Tag to be deleted has " + taggedResources.size() + " resources.");
-		for (Resource resource : taggedResources) {            	
-			log.info("Removing tag from: " + resource.getName());
-		    //resource.getRemoveTag(tag);	// TODO remove hand tags instead.
-		    contentUpdateService.update(resource);
+		for (Resource resource : taggedResources) {
+		    contentUpdateService.update(resource);	// TODO really only needs a solr updates
 		}
 	}
 	
