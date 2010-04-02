@@ -10,7 +10,7 @@
 #if ($rss_url) 
 <link rel="alternate" type="application/rss+xml" title="$rss_title" href="$rss_url">	
 #end
-#if ($publisher_select)	
+#if ($publisher_select || $tag_select)	
 	<script type="text/javascript" src="$urlBuilder.getStaticUrl('jquery-1.3.2.js')"></script>
 	<script type="text/javascript" src="$urlBuilder.getStaticUrl('jquery.autocomplete.js')"></script>
 	
