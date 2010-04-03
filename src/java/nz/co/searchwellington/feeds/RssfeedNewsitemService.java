@@ -5,6 +5,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -13,10 +15,13 @@ import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
+import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 
 public abstract class RssfeedNewsitemService {
+
+	static Logger log = Logger.getLogger(RssfeedNewsitemService.class);
 
 	public abstract List<FeedNewsitem> getFeedNewsitems(Feed feed);
 
@@ -90,11 +95,15 @@ public abstract class RssfeedNewsitemService {
 
 	
 	public boolean isUrlInAcceptedFeeds(String url) {
+		log.info("Looking for url in accepted feeds: " + url);
 		for(Feed feed : resourceDAO.getAllFeeds()) {
-			if (feed.getAcceptancePolicy() == "accept") {
+			if (feed.getAcceptancePolicy().equals("accept") || feed.getAcceptancePolicy().equals("accept_without_dates")) {
+				log.debug("Checking feed: " + feed.getName());
 				List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
-				for (FeedNewsitem feedNewsitem : feednewsItems) {                	
-					if (feedNewsitem.getUrl().equals(url)) {					
+				for (FeedNewsitem feedNewsitem : feednewsItems) {
+					log.debug("Checking feeditem: " + feedNewsitem.getUrl());
+					if (feedNewsitem.getUrl().equals(url)) {
+						log.info("Found: " + url);
 						return true;
 					}
 				}

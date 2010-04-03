@@ -59,12 +59,16 @@ public class ContentDeletionService {
 		}
 		
 		if (resource.getType().equals("N")) {
+			log.info("Deleted item is a newsitem; checking if it's in an accepted feed.");
 			Newsitem deletedNewsitem = (Newsitem) resource;
 			if (rssfeedNewsitemService.isUrlInAcceptedFeeds(deletedNewsitem.getUrl())) {
 				log.info("Supressing deleted newsitem url as it still visible in an automatically deleted feed: " + deletedNewsitem.getUrl());
 				suppressDeletedNewsitem(deletedNewsitem);
+			} else {
+				log.info("Not found in live feeds; not supressing");
 			}
 		}
+		
 		snapshotDAO.evict(resource.getUrl());
 		solrQueryService.deleteResourceFromIndex(resource.getId());
 		resourceDAO.deleteResource(resource);
