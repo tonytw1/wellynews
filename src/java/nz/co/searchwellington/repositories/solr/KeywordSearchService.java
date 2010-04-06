@@ -6,6 +6,7 @@ import java.util.Map;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.SolrBackedResourceDAO;
 
 import org.apache.log4j.Logger;
@@ -68,6 +69,14 @@ public class KeywordSearchService {
 
 	public List<Resource> getResourcesMatchingKeywords(String keywords, boolean showBroken) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBroken, null);			
+		query.setRows(100);
+		query.setHighlight(true);
+		return solrBackedResourceDAO.getQueryResults(query);
+	}
+
+
+	public List<Resource> getResourcesMatchingKeywordsNotTaggedByUser(String keywords, boolean showBroken, User user) {
+		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQueryNotTaggedByUser(keywords, showBroken, user);			
 		query.setRows(100);
 		query.setHighlight(true);
 		return solrBackedResourceDAO.getQueryResults(query);

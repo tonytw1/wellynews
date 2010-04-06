@@ -19,7 +19,7 @@ import org.apache.solr.common.SolrInputDocument;
 
 public class SolrInputDocumentBuilder {
 	
-	Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
+	static Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
 	
 	private SnapshotBodyExtractor snapshotBodyExtractor;
 	private TaggingReturnsOfficerService taggingReturnsService;
@@ -59,8 +59,7 @@ public class SolrInputDocumentBuilder {
 				inputDocument.addField("commented", 1);
 				for (Comment comment : comments) {
 					inputDocument.addField("comment", comment.getTitle());
-				}
-				
+				}				
 				
 			} else {
 				inputDocument.addField("commented", 0);
@@ -74,8 +73,7 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("feedLatestItemDate", ((Feed) resource).getLatestItemDate());			
 		}
 		
-		
-		
+				
 		if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
 			inputDocument.addField("geotagged", true);
 		} else {
@@ -93,9 +91,8 @@ public class SolrInputDocumentBuilder {
 		for(Tag tag: taggingReturnsService.getIndexTagsForResource(resource)) {
 			inputDocument.addField("tags", tag.getId());
 		}
+	
 		
-		
-				
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
 			inputDocument.addField("publisher", publisher.getId());
