@@ -81,7 +81,11 @@ public class SolrInputDocumentBuilder {
 		}
 		
 		for(HandTagging handTagging : handTaggingDAO.getHandTaggingsForResource(resource)) {			
-			inputDocument.addField("handTaggingUsers", handTagging.getUser().getId());	// TODO minimise?
+			final int userId = handTagging.getUser().getId();
+			inputDocument.addField("handTaggingUsers", userId);	// TODO minimise?
+			
+			final String userTag = userId + ":" + handTagging.getTag().getId();
+			inputDocument.addField("handTaggingUserTags", userTag);
 		}
 		
 		for(Tag tag: taggingReturnsService.getHandTagsForResource(resource)) {

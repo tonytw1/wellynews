@@ -58,7 +58,7 @@ public class AutoTagController extends BaseMultiActionController {
         Tag tag = (Tag) request.getAttribute("tag");
         mv.addObject("tag", tag);
         if (tag != null) {            
-        	List<Resource> resourcesToAutoTag = getPossibleAutotagResources(tag, loggedInUserFilter.getLoggedInUser());
+        	List<Resource> resourcesToAutoTag = getPossibleAutotagResources(loggedInUserFilter.getLoggedInUser(), tag);
             mv.addObject("resources_to_tag", resourcesToAutoTag);
         }
         return mv;
@@ -96,11 +96,11 @@ public class AutoTagController extends BaseMultiActionController {
     }
     
     
-    private List<Resource> getPossibleAutotagResources(Tag editTag, User user) {
+    private List<Resource> getPossibleAutotagResources(User user, Tag tag) {
     	if (user != null) {    		
-    		return keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(editTag.getDisplayName(), true, user);
+    		return keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName(), true, user, tag);
     	}
-    	return keywordSearchService.getResourcesMatchingKeywords(editTag.getDisplayName(), true);
+    	return keywordSearchService.getResourcesMatchingKeywords(tag.getDisplayName(), true);
 	}
     
 }

@@ -75,8 +75,8 @@ public class KeywordSearchService {
 	}
 
 
-	public List<Resource> getResourcesMatchingKeywordsNotTaggedByUser(String keywords, boolean showBroken, User user) {
-		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQueryNotTaggedByUser(keywords, showBroken, user);			
+	public List<Resource> getResourcesMatchingKeywordsNotTaggedByUser(String keywords, boolean showBroken, User user, Tag tag) {
+		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQueryNotTaggedByUser(keywords, showBroken, tag, user);			
 		query.setRows(100);
 		query.setHighlight(true);
 		return solrBackedResourceDAO.getQueryResults(query);

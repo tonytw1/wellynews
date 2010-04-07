@@ -23,16 +23,17 @@ public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
 	}
 	
 	
-	public SolrQuery getSolrKeywordQueryNotTaggedByUser(String keywords, boolean showBroken, User user) {
-		SolrQuery query = new SolrQuery();	
+	public SolrQuery getSolrKeywordQueryNotTaggedByUser(String keywords, boolean showBroken, Tag tag, User user) {
+		SolrQuery query = new SolrQuery();
 		query.setQuery(keywords);
-		query.setQueryType("search");	
+		query.setQueryType("search");
 		if (!showBroken) {
 			query.addFilterQuery("+httpStatus:200");
 		}
 		
-		if (user != null) {
-			query.addFilterQuery("-handTaggingUsers:" + user.getId());
+		if (user != null && tag != null) {
+			final String userTag = user.getId() + ":" + tag.getId();
+			query.addFilterQuery("-handTaggingUserTags:" + userTag);
 		}
 		return query;
 	}

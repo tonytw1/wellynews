@@ -297,8 +297,10 @@
    
    	<field name="tags" type="integer" indexed="true" stored="true" required="false" multiValued="true" />
  	<field name="handTags" type="integer" indexed="false" stored="true" required="false" multiValued="true" />
-	<field name="handTaggingUsers" type="integer" indexed="true" stored="true" required="false" multiValued="true" /> 
- 	
+	
+	<field name="handTaggingUsers" type="integer" indexed="true" stored="true" required="false" multiValued="true" />
+	<field name="handTaggingUserTags" type="string" indexed="true" stored="true" required="false" multiValued="true" />
+	 	
    <field name="publisher" type="integer" indexed="true" stored="true" required="false" />
    <field name="publisherName" type="text" indexed="false" stored="true" required="false" />
    <field name="httpStatus" type="integer" indexed="true" stored="true" required="false" /> 
