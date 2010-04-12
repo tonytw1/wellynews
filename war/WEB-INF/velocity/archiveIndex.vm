@@ -27,7 +27,7 @@
 		<h4>$year</h4>
 		<ul>
 	#end
-	<li><a href="$urlBuilder.getArchiveLinkUrl($link)">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a> ($link.count)</li>	
+	<li><a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a> ($link.count)</li>	
 #end
 </ul>
 
