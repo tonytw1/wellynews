@@ -246,5 +246,10 @@ public class ContentRetrievalService {
 	public List<String> getPublisherNamesByStartingLetters(String q) {
 		return resourceDAO.getPublisherNamesByStartingLetters(q);
 	}
+
+
+	public int getOwnedByCount(User loggedInUser) {
+		return resourceDAO.getOwnedByUserCount(loggedInUser);
+	}
 	
 }

@@ -18,6 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
+	private static final int MAX_OWNED_TO_SHOW_IN_RHS = 4;
+
 	private static final int NUMBER_OF_COMMENTED_TO_SHOW = 2;
 	
 	private static Logger log = Logger.getLogger(IndexModelBuilder.class);
@@ -97,10 +99,17 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 	private void populateUserOwnedResources(ModelAndView mv, User loggedInUser) {
 		 if (loggedInUser != null) {
-			 mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, 4));
+			 final int ownedCount = contentRetrievalService.getOwnedByCount(loggedInUser);
+			 if (ownedCount > 0) {
+				 mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, MAX_OWNED_TO_SHOW_IN_RHS));
+				 if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
+					 mv.addObject("owned_moreurl", urlBuilder.getProfileUrl(loggedInUser));
+				 }
+			 }			 
 		 }
-	 }
+	}
 
+	
 	private void populateFeatured(ModelAndView mv) {
         mv.addObject("featured", contentRetrievalService.getFeaturedSites());
     }

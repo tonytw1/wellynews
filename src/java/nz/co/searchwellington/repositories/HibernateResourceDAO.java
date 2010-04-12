@@ -195,7 +195,7 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
 
 	
-    public int getCommentCount() {
+    public int getCommentCount() {	// TODO migrate to solr call?
         // TODO implement show broken logic if the parent newsitem is broken
         return ((Long) sessionFactory.getCurrentSession().
         		iterate("select count(*) from Comment").
@@ -203,7 +203,18 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
     
     
-    public Resource loadResourceById(int resourceID) {
+    
+    
+    
+    @Override
+	public int getOwnedByUserCount(User user) {
+        return ((Long) sessionFactory.getCurrentSession().
+        		iterate("select count(*) from ResourceImpl where owner = " + user.getId()).
+        		next()).intValue();
+	}
+
+
+	public Resource loadResourceById(int resourceID) {
     	return (Resource) sessionFactory.getCurrentSession().get(ResourceImpl.class, resourceID);        
     }
 

@@ -16,16 +16,11 @@
 	
 	#set ($righthand_content_one = $columnSplitter.left($owned))
 	#set ($righthand_content_two = $columnSplitter.right($owned))
+	#set ($righthand_content_moreurl  = $owned_moreurl)
 
 	#parse("includes/righthand_two_columns.vm")
-
-
-
-			
-	
-	
-	
-	
+	#set ($righthand_content_moreurl  = '')
+		
 </div>
 	
 #end

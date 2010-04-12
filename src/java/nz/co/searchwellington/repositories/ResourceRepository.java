@@ -77,5 +77,6 @@ public interface ResourceRepository {
 	public List<Resource> getAllWatchlists();
 	public List<PublishedResource> getNewsitemsForPublishers(Website publisher);
 	public Resource loadNewsitemByHeadlineAndPublisherWithinLastMonth(String name, Website publisher);
+	public int getOwnedByUserCount(User user);
     
 }

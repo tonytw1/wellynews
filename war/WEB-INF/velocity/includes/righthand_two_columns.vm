@@ -25,7 +25,7 @@
 	#end
 
 	#if ($righthand_content_moreurl && !$righthand_content_moreurl.isEmpty()) 
-		<li class="more"><a href="$site_information.url/$righthand_content_moreurl">
+		<li class="more"><a href="$righthand_content_moreurl">
 		#if ($righthand_content_two_morecount) $righthand_content_morecount #end
 		More...</a></li>
 	#end
