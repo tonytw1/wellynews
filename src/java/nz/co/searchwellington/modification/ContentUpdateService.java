@@ -67,12 +67,15 @@ public class ContentUpdateService {
 		}
 		solrUpdateQueue.add(resource);
 	}
+
 	
+	@Transactional
 	public void create(Resource resource) {
 		resource.setHttpStatus(0);
 		save(resource);		
 		linkCheckerQueue.add(resource);	
 	}
+	
 	
 	private void save(Resource resource) {
 		resourceDAO.saveResource(resource);
