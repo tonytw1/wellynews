@@ -6,13 +6,13 @@
 		<property name="userAgent"><value>${http.useragent}</value></property>
 	</bean>
 	
-		
 	<bean id="rssPrefetcher" class="nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher" >
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="liveRssfeedNewsitemService" />
 		<constructor-arg ref="feedNewsitemCache" />
 		<constructor-arg ref="feedReaderRunner" />
 		<constructor-arg ref="wallclock" />
+		<constructor-arg ref="configDAO" />		
 	</bean>
 	
 	<bean id="feedReaderRunner" class="nz.co.searchwellington.feeds.FeedReaderRunner" >

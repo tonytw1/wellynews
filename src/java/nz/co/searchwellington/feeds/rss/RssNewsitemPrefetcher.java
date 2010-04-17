@@ -8,6 +8,7 @@ import nz.co.searchwellington.feeds.FeedReaderRunner;
 import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.WallClock;
 
@@ -25,21 +26,35 @@ public class RssNewsitemPrefetcher {
 	private FeedNewsitemCache feedNewsitemCache;
 	private FeedReaderRunner feedReaderRunner;
 	private WallClock wallClock;
+	private ConfigRepository configDAO;
 	
 	public RssNewsitemPrefetcher() {		
 	}
 
-	public RssNewsitemPrefetcher(ResourceRepository resourceDAO, LiveRssfeedNewsitemService rssNewsitemService, FeedNewsitemCache feedNewsitemCache, FeedReaderRunner feedReaderRunner, WallClock wallClock) {
+	
+	public RssNewsitemPrefetcher(ResourceRepository resourceDAO,
+			LiveRssfeedNewsitemService rssNewsitemService,
+			FeedNewsitemCache feedNewsitemCache,
+			FeedReaderRunner feedReaderRunner, WallClock wallClock,
+			ConfigRepository configDAO) {
 		this.resourceDAO = resourceDAO;
 		this.rssNewsitemService = rssNewsitemService;
 		this.feedNewsitemCache = feedNewsitemCache;
 		this.feedReaderRunner = feedReaderRunner;
 		this.wallClock = wallClock;
+		this.configDAO = configDAO;
 	}
 
 	
     @Transactional
 	public void run() {
+    	
+    	boolean feedsAreEnabled = configDAO.isFeedReadingEnabled();
+    	if (!feedsAreEnabled) {
+    		log.info("Not prefetching feeds as feeds are disabled by config.");
+    		return;
+    	}
+    	
 		List<Feed> allFeeds = resourceDAO.getAllFeeds();
 		for (Feed feed : decideWhichFeedsToDecache(allFeeds)) {
 			if (feed != null) {
