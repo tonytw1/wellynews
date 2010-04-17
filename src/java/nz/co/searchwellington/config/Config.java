@@ -7,6 +7,7 @@ public class Config {
     String flickrPoolGroupId;
     String useClickthroughCounter;
     private boolean twitterListenerEnabled;
+	private boolean feedReadingEnabled;
     
     public Config() {
     }
@@ -59,4 +60,13 @@ public class Config {
 		return twitterListenerEnabled;
 	}
 
+
+	public boolean isFeedReadingEnabled() {
+		return feedReadingEnabled;
+	}
+
+	public void setFeedReadingEnabled(boolean feedReadingEnabled) {
+		this.feedReadingEnabled = feedReadingEnabled;
+	}
+	
 }

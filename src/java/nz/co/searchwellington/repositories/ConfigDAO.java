@@ -5,17 +5,20 @@ import nz.co.searchwellington.config.Config;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ConfigDAO implements ConfigRepository {
-
     
-    Logger log = Logger.getLogger(ConfigDAO.class);
+    static Logger log = Logger.getLogger(ConfigDAO.class);
     
     SessionFactory sessionFactory;
 
+    
+    public ConfigDAO() {        
+    }
 
-    public ConfigDAO(SessionFactory sessionFactory) {
-        super();
+    
+    public ConfigDAO(SessionFactory sessionFactory) {        
         this.sessionFactory = sessionFactory;
     }
     
@@ -25,12 +28,11 @@ public class ConfigDAO implements ConfigRepository {
         return config;
     }
     
-    
+    @Transactional
     public void saveConfig(Config config) {
         sessionFactory.getCurrentSession().saveOrUpdate(config);        
     }
-    
-       
+
     public String getStatsTracking() {
         Config config  = loadConfigObject();            
         if (config != null) {
@@ -43,9 +45,6 @@ public class ConfigDAO implements ConfigRepository {
     }
     
     
-   
-
-
     public String getFlickrPoolGroupId() {
         Config config  = loadConfigObject();  
         if (config != null) {
@@ -83,11 +82,18 @@ public class ConfigDAO implements ConfigRepository {
     }
     
     
+    public boolean isFeedReadingEnabled() {
+    	 Config config  = loadConfigObject();  
+         if (config != null) {
+        	 return config.isFeedReadingEnabled();
+         }
+         return false;    	
+    }
     
+        
     private Config loadConfigObject() {
         return  (Config) sessionFactory.getCurrentSession().createCriteria(Config.class).setCacheable(true).uniqueResult();
     }
-    
-    
+       
 }
 

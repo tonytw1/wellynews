@@ -14,7 +14,7 @@ import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
-import nz.co.searchwellington.repositories.ConfigDAO;
+import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -30,14 +30,15 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
-	private ConfigDAO configDAO;
+	private ConfigRepository configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private KeywordSearchService keywordSearchService;
 	
 	
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
-			RelatedTagsService relatedTagsService, ConfigDAO configDAO,
+			RelatedTagsService relatedTagsService,
+			ConfigRepository configDAO,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
 			KeywordSearchService keywordSearchService) {
