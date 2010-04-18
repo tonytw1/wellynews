@@ -43,7 +43,9 @@ public class FeedAcceptanceDecider {
     public List<String> getAcceptanceErrors(FeedNewsitem resource, String feedAcceptancePolicy) {
         List<String> acceptanceErrors = new ArrayList<String>();
         
-        final boolean isSuppressed = supressionDAO.isSupressed(urlCleaner.cleanSubmittedItemUrl(resource.getUrl()));
+        final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(resource.getUrl());
+		final boolean isSuppressed = supressionDAO.isSupressed(cleanedUrl);
+		log.info("Is feed item url '" + cleanedUrl + "' supressed: " + isSuppressed);
         if (isSuppressed) {
             acceptanceErrors.add("This item is supressed");
         }    
