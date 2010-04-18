@@ -13,17 +13,13 @@ text-align: center;
  padding-top: 0px;
 }
 
-.feedlist ul {
-margin-bottom: 12px;
-padding-top: 0px;
-}
 
 .bodytext {
-	margin-left: 10px;
-	margin-top: 8px;
-	margin-right: 10px;
-	margin-bottom: 8px;
-	font-size: 8pt;
+    margin-left: 10px;
+    margin-top: 8px;
+    margin-right: 10px;
+    margin-bottom: 8px;
+    font-size: 8pt;
 }
 
 .apiexample {
@@ -122,8 +118,8 @@ h2 {
  font-family: georgia, serif;
  font-size: 1.2em;
  font-weight; bold;
- border-top: 10px solid;
- border-color: #3bf;
+ border-top: 2px solid;
+ border-color: #ddf;
  padding-top: 6px;
  margin-top: 0px;
 }
@@ -424,18 +420,30 @@ li.publisher
 
 }
 
+
+
+
+
+
+
+
+
+
 .tagged {
 	margin-left: 0;
 	margin-right: 3;
 	display: inline;
 	}
 	
+
+
 .autotagged {
 	margin-left: 0;
 	margin-right: 3;
 	display: inline;
-	font:80% Arial, Helvetica, sans-serif;
-}
+	font: 80% Arial, Helvetica, sans-serif;
+	}
+	
 
 .tagtree {
 margin-bottom: 32px;
