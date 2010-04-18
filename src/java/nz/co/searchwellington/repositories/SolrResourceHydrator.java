@@ -66,14 +66,13 @@ public class SolrResourceHydrator {
 	}
 
 	
-	// TODO exclude hidden tags
 	private List<Tag> hydrateTags(SolrDocument result, String sourceField) {
 		List<Tag> tags = new ArrayList<Tag>();
 		Collection<Object> tagIds = result.getFieldValues(sourceField);
 		if (tagIds != null) {
 			for (Object tagId : tagIds) {
 				Tag tag = tagDAO.loadTagById((Integer) tagId);
-				if (tag != null) {					
+				if (tag != null && !tag.isHidden()) {					
 					tags.add(tag);
 				}
 			}
