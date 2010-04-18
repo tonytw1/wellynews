@@ -3,9 +3,7 @@ package nz.co.searchwellington.repositories;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import nz.co.searchwellington.model.FrontEndNewsitem;
 import nz.co.searchwellington.model.FrontEndWebsite;
@@ -54,21 +52,25 @@ public class SolrResourceHydrator {
 		
 		if (resource.getType().equals("N")) {
 			FrontEndNewsitem frontendNewsitem = new FrontEndNewsitem((Newsitem) resource);
-			frontendNewsitem.setTags(hydrateTags(result));
+			frontendNewsitem.setTags(hydrateTags(result, "tags"));
+			frontendNewsitem.setHandTags(hydrateTags(result, "handTags"));
 			resource = frontendNewsitem;
+			
 		} else if (resource.getType().equals("W")) {
 			FrontEndWebsite frontendWebsite = new FrontEndWebsite((Website) resource);
-			frontendWebsite.setTags(hydrateTags(result));
+			frontendWebsite.setTags(hydrateTags(result, "tags"));
 			resource = frontendWebsite;
 		}
 		
 		return resource;
 	}
 
-	private List<Tag> hydrateTags(SolrDocument result) {
+	
+	// TODO exclude hidden tags
+	private List<Tag> hydrateTags(SolrDocument result, String sourceField) {
 		List<Tag> tags = new ArrayList<Tag>();
-		Collection<Object> tagIds = result.getFieldValues("handTags");
-		if (tagIds != null){
+		Collection<Object> tagIds = result.getFieldValues(sourceField);
+		if (tagIds != null) {
 			for (Object tagId : tagIds) {
 				Tag tag = tagDAO.loadTagById((Integer) tagId);
 				if (tag != null) {					

@@ -10,10 +10,12 @@ public class FrontEndNewsitem implements Newsitem {
 	
 	Newsitem newsitem;
 	private List<Tag> tags;
+	private List<Tag> handTags;
 
 	public FrontEndNewsitem(Newsitem newsitem) {		
 		this.newsitem = newsitem;
 		tags = new ArrayList<Tag>();
+		handTags = new ArrayList<Tag>();		
 	}
 	
 	
@@ -51,6 +53,14 @@ public class FrontEndNewsitem implements Newsitem {
 
 	public void setTags(List<Tag> tags) {
 		this.tags = tags;
+	}
+		
+	public List<Tag> getHandTags() {
+		return handTags;
+	}
+
+	public void setHandTags(List<Tag> handTags) {
+		this.handTags = handTags;
 	}
 	
 	public void addReTwit(Twit retwit) {

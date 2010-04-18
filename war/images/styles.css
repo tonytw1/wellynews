@@ -424,21 +424,18 @@ li.publisher
 
 }
 
-
-
-
-
-
-
-
-
-
 .tagged {
 	margin-left: 0;
 	margin-right: 3;
 	display: inline;
 	}
-
+	
+.autotagged {
+	margin-left: 0;
+	margin-right: 3;
+	display: inline;
+	font:80% Arial, Helvetica, sans-serif;
+}
 
 .tagtree {
 margin-bottom: 32px;
