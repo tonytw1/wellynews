@@ -28,10 +28,13 @@
 		#end
 		></p>
 		
-		<p><label for="clickthrough">Use clickthrough tracking: </label>
+		<p><label for="clickthrough_tracking_select">Use clickthrough tracking: </label>
 		$clickthrough_tracking_select</p>
 		
-		<p><label for="clickthrough">Twitter listener enabled: </label>
+		<p><label for="feed_reading_enabled">Feed reading enabled: </label>
+		$feed_reading_enabled_select</p>
+		
+		<p><label for="twitter_listener_is_enabled_select">Twitter listener enabled: </label>
 		$twitter_listener_is_enabled_select</p>
 		
 		<input type="submit" value="Save" />		

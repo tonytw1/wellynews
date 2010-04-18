@@ -26,6 +26,10 @@
 			<column name="use_clickthrough_tracking" />
 		</property>
 		
+		<property name="FeedReadingEnabled" type="boolean">
+			<column name="feed_reading_enabled" />
+		</property>
+		
 		<property name="TwitterListenerEnabled" type="boolean">
 			<column name="twitter_listener_enabled" />
 		</property>				
