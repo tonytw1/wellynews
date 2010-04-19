@@ -166,6 +166,7 @@ public class SubmissionProcessingService {
 	private void processTagSelect(HttpServletRequest request, Resource editResource, User user) {
 		if (request.getAttribute("tags") != null) {        	
 			List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
+			log.debug("Found tags on request: " + requestTagsList);
 			Set<Tag> tags = new HashSet<Tag>(requestTagsList);
 			log.info("Found " + tags.size() + " tags on the request");
 			tagVoteDAO.clearTags(editResource, user);
@@ -174,6 +175,7 @@ public class SubmissionProcessingService {
 			}
 			
 		} else {
+			log.debug("No tags request attribute seen; clearing users tag votes");
 			tagVoteDAO.clearTags(editResource, user);
 		}
 	}

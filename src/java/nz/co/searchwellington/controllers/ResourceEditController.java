@@ -41,7 +41,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 
-@Transactional
 public class ResourceEditController extends BaseMultiActionController {
     
     Logger log = Logger.getLogger(ResourceEditController.class);

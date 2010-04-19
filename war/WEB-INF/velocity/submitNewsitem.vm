@@ -11,7 +11,7 @@
 	<div class="main">
 		<h2>Submitting a Newsitem</h2>
 		
-		<form action="$site_information.url/edit/save" method="POST">
+		<form id="editForm" action="$site_information.url/edit/save" method="POST">
 			<fieldset>
 									
 				#parse("includes/form_resource_title_and_url.vm")				
@@ -27,8 +27,7 @@
 				<br />				
 										
 				#parse("includes/tag_edit_fields.vm")
-				
-				
+								
 				#parse("includes/moderation_fields.vm")				
 				
 				<input type="hidden" name="type" value="N" />

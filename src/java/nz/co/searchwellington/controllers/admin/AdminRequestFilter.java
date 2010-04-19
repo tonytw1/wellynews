@@ -109,11 +109,12 @@ public class AdminRequestFilter {
         		
 		// TODO test coverage
 		if (request.getParameter("tags") != null) {
+			log.debug("Processing tags parameter");
 			String[] tagNames = request.getParameterValues("tags");
 			
 			List <Tag> tags = new ArrayList <Tag>();
 			for (int i = 0; i < tagNames.length; i++) {             
-				String tagName = tagNames[i];
+				String tagName = tagNames[i];				
 				if (tagName != null) {  	// TODO cleaning        
 					Tag tag = tagDAO.loadTagByName(tagName);
 					if (tag != null) {
@@ -122,8 +123,12 @@ public class AdminRequestFilter {
 						log.warn("Could not find tag with name: " + tagName);
 					}
 				} 
-			}           
+			}
+			log.debug("Setting tags request attribute to: " + tags);
 			request.setAttribute("tags", tags);
+			
+		} else {
+			log.debug("No tags parameter seen on request");
 		}
 		
 		
