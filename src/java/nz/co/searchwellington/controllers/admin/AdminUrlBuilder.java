@@ -64,5 +64,9 @@ public class AdminUrlBuilder {
 	public String getPublisherAutoGatherUrl(Resource resource) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/admin/gather?publisher=" + URLEncoder.encode(resource.getUrlWords(), "UTF-8");
 	}
+	
+	public String getAddTagUrl() throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/edit/tag/submit";
+	}
 		
 }

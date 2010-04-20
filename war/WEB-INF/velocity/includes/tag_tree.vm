@@ -1,6 +1,10 @@
 <h2>Tags</h2>
 
-
+#if ($editPermissionService.canAddTag())
+<ul>
+	<li class="admin"><a href="$adminUrlBuilder.getAddTagUrl()">Add tag</a></li>
+</ul>
+#end
 
 #macro( showNode $tagToRender )
 	#set ($class = "selected")
