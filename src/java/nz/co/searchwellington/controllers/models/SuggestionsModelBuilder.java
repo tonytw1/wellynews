@@ -1,11 +1,8 @@
  package nz.co.searchwellington.controllers.models;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
@@ -23,19 +20,16 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
-	private TwitterNewsitemBuilderService twitterNewsitemBuilder;
 	private ContentRetrievalService contentRetrievalService;
 
 	
 	public SuggestionsModelBuilder(
 			SuggestedFeeditemsService suggestedFeeditemsService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
-			TwitterNewsitemBuilderService twitterNewsitemBuilder,
 			ContentRetrievalService contentRetrievalService) {
 		this.suggestedFeeditemsService = suggestedFeeditemsService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
-		this.twitterNewsitemBuilder = twitterNewsitemBuilder;
 		this.contentRetrievalService = contentRetrievalService;
 	}
 	
@@ -67,8 +61,6 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		List<TwitteredNewsitem> potentialTwitterSubmissions = twitterNewsitemBuilder.getPossibleSubmissions();
-		mv.addObject("submissions", potentialTwitterSubmissions);
 		populateSecondaryFeeds(mv);
 	}
 	

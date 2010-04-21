@@ -104,7 +104,6 @@
 		<constructor-arg ref="suggestedFeeditemsService" />
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="twitterNewsitemBuilderService" />
 		<constructor-arg ref="contentRetrievalService" />		
 	</bean>
 	

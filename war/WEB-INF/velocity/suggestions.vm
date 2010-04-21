@@ -41,22 +41,7 @@ They will be reviewed by an real person before been accepted or discarded.</p>
 
 
 <div class="right">
-
 #parse("includes/login.vm")
-
-#if ($submissions)
-	<div class="box">
-	<h2>Twitter Inbox</h2>
-	
-	<p>These tweets could be reader submissions.</p>
-	
-	#set ($righthand_content_one = $columnSplitter.left($submissions))
-	#set ($righthand_content_two = $columnSplitter.right($submissions))
-	#parse("includes/righthand_two_columns.vm")
-	</div>
-#end
-
-
 </div>
 
 
