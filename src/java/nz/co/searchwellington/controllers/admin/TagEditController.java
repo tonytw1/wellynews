@@ -31,6 +31,7 @@ public class TagEditController extends MultiActionController {
 	private LoggedInUserFilter loggedInUserFilter;
     private EditPermissionService editPermissionService;
     
+    
     public TagEditController() {       
     }
 
@@ -50,7 +51,7 @@ public class TagEditController extends MultiActionController {
 	}
     
     
-    @Transactional // TODO auth
+    @Transactional
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {
     	    	
         ModelAndView modelAndView = new ModelAndView("submitTag");    
@@ -145,7 +146,6 @@ public class TagEditController extends MultiActionController {
              
         final Tag parentTag = (Tag) request.getAttribute("parent_tag");      
         if (parentTag != null) {        	
-        	
         	boolean parentTagHasChanged = parentTag != editTag.getParent();
         	if (parentTagHasChanged) {
         		final boolean newParentIsOneOfOurChildren = editTag.getChildren().contains(parentTag);
@@ -154,12 +154,13 @@ public class TagEditController extends MultiActionController {
         		} else {
         			log.warn("Not setting parent to one of our current children; this would be a circular reference");
         		}
-        	} else {
-        		log.info("Making top level tag; setting parent to null.");
-        		editTag.setParent(null);
         	}
+        	
+        } else {
+        	log.info("Making top level tag; setting parent to null.");
+        	editTag.setParent(null);
         }
-       
+               
         // TODO validate.
         tagDAO.saveTag(editTag);	// TODO should go through the TMS surely?
         
