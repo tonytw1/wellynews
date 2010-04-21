@@ -21,6 +21,7 @@ import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
 import org.openid4java.message.ParameterList;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
@@ -58,6 +59,7 @@ public class OpenIDLoginController extends MultiActionController {
 	}
 
     
+    @Transactional
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// TODO make parameter based
 		
@@ -92,7 +94,7 @@ public class OpenIDLoginController extends MultiActionController {
     }
 
 	
-	
+	@Transactional
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {		
 		ModelAndView mv = new ModelAndView("openid-return");
 		
