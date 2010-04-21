@@ -2,7 +2,7 @@
 #parse("includes/rss_icon_macro.vm")
 <html>
 <head>
-<title>$heading - Search ${site_information.areaname}</title>
+<title>$heading - ${site_information.sitename}</title>
 #if ($description) 
 	<meta name="description" content="$description">
 #end

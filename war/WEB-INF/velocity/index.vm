@@ -1,4 +1,4 @@
-#set ($heading = $site_information.areaname)
+#set ($heading = $site_information.tagline)
 #parse("includes/header.vm")
 
 <div class="page">

@@ -37,7 +37,11 @@ public class SiteInformation {
 	public String getSitename() {
 	    return "Search " + this.areaname;
 	}
-    
+	
+	public String getTagline() {
+		return areaname + " in a box";
+	}
+	
 	public String getUrl() {
 		return url;
 	}
