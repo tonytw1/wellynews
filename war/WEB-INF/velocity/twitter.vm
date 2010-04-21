@@ -18,7 +18,7 @@
 		<br/>
 		
 		<h2>Twitter Mentions</h2>
-		<p>These newsitems have been mentioned on Twitter. This could mean they're of interest.</p>
+		<p>These tweeted newsitems have been mentioned on Twitter. This could mean they're of interest.</p>
 
 		#parse("includes/main_content.vm")
 	</div>
@@ -28,7 +28,7 @@
 		#parse("includes/login.vm")
 	
 		<div class="box">
-			#parse("includes/latest_twitters.vm")
+			#parse("includes/latest_newsitems.vm")
 		</div>
 	</div>
 

@@ -19,10 +19,9 @@ import org.springframework.web.servlet.ModelAndView;
 public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
 	private static final int MAX_OWNED_TO_SHOW_IN_RHS = 4;
-
 	private static final int NUMBER_OF_COMMENTED_TO_SHOW = 2;
 	
-	private static Logger log = Logger.getLogger(IndexModelBuilder.class);
+	static Logger log = Logger.getLogger(IndexModelBuilder.class);
 	
 	ContentRetrievalService contentRetrievalService;
 	RssUrlBuilder rssUrlBuilder;
