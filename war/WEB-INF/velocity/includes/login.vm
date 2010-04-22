@@ -18,7 +18,7 @@
 	  		</fieldset>
 		</form>
 							
-		<p>Search Wellington uses <a href="http://openid.net/">OpenID</a> for signin. We think OpenID is a good thing; 
+		<p>$site_information.sitename uses <a href="http://openid.net/">OpenID</a> for signin. We think OpenID is a good thing; 
 		<a href="http://www.openid.co.uk/node/6">this video gives an overview of the system</a>. 
 		</p>
 				
