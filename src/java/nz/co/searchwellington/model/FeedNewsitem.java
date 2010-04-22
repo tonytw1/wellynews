@@ -19,6 +19,7 @@ public class FeedNewsitem extends NewsitemImpl {
         this.date = date;
         this.discoveredFeeds = discoveredFeeds;
         this.isSuppressed = false;
+        this.localCopy = null;
     }
 	
 	@Override
