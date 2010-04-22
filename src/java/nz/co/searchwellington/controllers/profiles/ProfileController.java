@@ -23,18 +23,19 @@ public class ProfileController extends BaseMultiActionController {
 
     private UserRepository userDAO;
     private LoggedInUserFilter loggerInUserFilter;
-    private ResourceRepository resourceDAO;
 	private UrlBuilder urlBuilder;
 	private TagDAO tagDAO;
 	private ContentRetrievalService contentRetrievalService;
         
-    
+	    
+	public ProfileController() {
+	}
+	
+	
 	public ProfileController(UserRepository userDAO,
-			LoggedInUserFilter loggerInUserFilter,
-			ResourceRepository resourceDAO, UrlBuilder urlBuilder, TagDAO tagDAO, ContentRetrievalService contentRetrievalService) {
+			LoggedInUserFilter loggerInUserFilter, UrlBuilder urlBuilder, TagDAO tagDAO, ContentRetrievalService contentRetrievalService) {
 		this.userDAO = userDAO;
 		this.loggerInUserFilter = loggerInUserFilter;
-		this.resourceDAO = resourceDAO;
 		this.urlBuilder = urlBuilder;
 		this.tagDAO = tagDAO;
 		this.contentRetrievalService = contentRetrievalService;
@@ -78,10 +79,10 @@ public class ProfileController extends BaseMultiActionController {
 			  
 			  loggedInUser.setName(request.getParameter("name"));			
 			  loggedInUser.setBio(request.getParameter("bio"));			  			  
-			  loggedInUser.setUrl(request.getParameter("url"));
-			  
+			  loggedInUser.setUrl(request.getParameter("url"));			  
 			  userDAO.saveUser(loggedInUser);
 		  }
+		  
 		  return new ModelAndView(new RedirectView(urlBuilder.getProfileUrl(loggedInUser)));
 	  }
 

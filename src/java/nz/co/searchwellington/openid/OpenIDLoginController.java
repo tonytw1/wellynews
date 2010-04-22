@@ -26,10 +26,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-/**
- * Sample Consumer (Relying Party) implementation.
- */
-
 public class OpenIDLoginController extends MultiActionController {
 	
 	static Logger log = Logger.getLogger(OpenIDLoginController.class);
@@ -44,7 +40,11 @@ public class OpenIDLoginController extends MultiActionController {
 	private AnonUserService anonUserService;
 
 	
-    public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack,
+    public OpenIDLoginController() {
+	}
+
+
+	public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack,
 			UserRepository userDAO,
 			LoginResourceOwnershipService loginResourceOwnershipService,
 			LoggedInUserFilter loggedInUserFilter,
@@ -124,9 +124,11 @@ public class OpenIDLoginController extends MultiActionController {
 			
 			User user = userDAO.getUser(username);			
 			if (user == null) {
+				
 				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
 				// No existing user for this identity.				
 				if (loggedInUser == null) {
+					log.info("Creating new user for openid username: " + username);
 					user = createNewUser(username);
 					
 				} else {
@@ -134,7 +136,8 @@ public class OpenIDLoginController extends MultiActionController {
 					log.info("Attaching verified username to user: " + username);
 					loggedInUser.setUsername(username);					
 				}
-			}
+				
+			}			
 			
 			if (user != null) {
 				log.info("Setting logged in user to: " + user.getName());				
@@ -159,10 +162,10 @@ public class OpenIDLoginController extends MultiActionController {
 
 	
 	private User createNewUser(final String username) {
-		log.info("Creating new user with username: " + username);
 		User newUser = anonUserService.createAnonUser();
 		newUser.setUsername(username);
 		userDAO.saveUser(newUser);
+		log.info("Created new user with username: " + newUser.getUsername());
 		return newUser;
 	}
 

@@ -5,6 +5,7 @@ import nz.co.searchwellington.model.UserImpl;
 import nz.co.searchwellington.repositories.UserRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 public class AnonUserService {
 
@@ -12,10 +13,15 @@ public class AnonUserService {
     
 	UserRepository userDAO;
 	
+	
+	public AnonUserService() {
+	}
+
 	public AnonUserService(UserRepository userDAO) {
 		this.userDAO = userDAO;
 	}
 
+	@Transactional
 	public User createAnonUser() {		
 		final int userNumber = userDAO.getNextAvailableAnonUserNumber();
 		

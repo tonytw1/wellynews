@@ -8,13 +8,16 @@ import nz.co.searchwellington.model.User;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.springframework.transaction.annotation.Transactional;
 
 public class HibernateBackedUserDAO implements UserRepository {
 
     private SessionFactory sessionFactory;
     
-    public HibernateBackedUserDAO(SessionFactory sessionFactory) {
-        super();
+    public HibernateBackedUserDAO() {
+    }
+    
+	public HibernateBackedUserDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
           
@@ -30,6 +33,7 @@ public class HibernateBackedUserDAO implements UserRepository {
 			list();
 	}
     
+    @Transactional
 	public void saveUser(User user) {     
         sessionFactory.getCurrentSession().saveOrUpdate(user);
     }
@@ -46,7 +50,10 @@ public class HibernateBackedUserDAO implements UserRepository {
 	public int getNextAvailableAnonUserNumber() {
 		Iterator iterate = sessionFactory.getCurrentSession().iterate("select max(id) from UserImpl");
 		if (iterate != null && iterate.hasNext()) {
-			return ((Integer) iterate.next()) + 1;
+			Integer next = (Integer) iterate.next();
+			if (next != null) {
+				return next + 1;
+			}
 		}
 		return 1;
 	}

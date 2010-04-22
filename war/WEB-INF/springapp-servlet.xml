@@ -256,20 +256,9 @@
 	</bean>
 	
 	
-		
-	<bean id="profileEditController" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="target" ref="profileController" />
-		<property name="transactionAttributeSource">
-			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
-		</property>	
-	</bean>
-	
-	
 	<bean id="profileController" class="nz.co.searchwellington.controllers.profiles.ProfileController">
 		<constructor-arg ref="userDAO" />		
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="contentRetrievalService" />
