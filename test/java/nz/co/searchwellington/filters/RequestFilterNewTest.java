@@ -12,27 +12,34 @@ import junit.framework.TestCase;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 
 
 public class RequestFilterNewTest extends TestCase {
 	
-	private ResourceRepository resourceDAO = mock(ResourceRepository.class);
+	private ResourceRepository resourceDAO = mock(ResourceRepository.class);	// TODO needs to use CRS
+	private TagDAO tagDAO = mock(TagDAO.class);
+	private GoogleSearchTermExtractor searchTermExtractor = mock(GoogleSearchTermExtractor.class);
+
 	private RequestFilter filter;
 	private Tag transportTag = mock(Tag.class);
 	private Tag soccerTag = mock(Tag.class);
 	private Website capitalTimesPublisher = mock(Website.class);
 	private Feed feed = mock(Feed.class);
 	
+	
 	@Override
 	protected void setUp() throws Exception {
-		stub(resourceDAO.loadTagByName("transport")).toReturn(transportTag);
-		stub(resourceDAO.loadTagByName("soccer")).toReturn(soccerTag);
+		stub(tagDAO.loadTagByName("transport")).toReturn(transportTag);
+		stub(tagDAO.loadTagByName("soccer")).toReturn(soccerTag);
 		stub(resourceDAO.getPublisherByUrlWords("capital-times")).toReturn(capitalTimesPublisher);
 		stub(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).toReturn(feed);
-		filter = new RequestFilter(resourceDAO);
+		filter = new RequestFilter(resourceDAO, tagDAO, searchTermExtractor);
 	}
 	
 	
@@ -83,7 +90,7 @@ public class RequestFilterNewTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport/comment");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("transport");
 		 assertEquals(transportTag, request.getAttribute("tag"));
 	 }
 	 
@@ -92,7 +99,7 @@ public class RequestFilterNewTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport/comment/rss");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");		
+		 verify(tagDAO).loadTagByName("transport");		
 	 }
 	 
 	 
@@ -131,7 +138,7 @@ public class RequestFilterNewTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport/geotagged");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("transport");
 		 assertEquals(transportTag, request.getAttribute("tag"));
 	 }
 	 	 
@@ -139,7 +146,7 @@ public class RequestFilterNewTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("transport");
 		 assertEquals(transportTag, request.getAttribute("tag"));
 	 }
 	    
@@ -147,7 +154,7 @@ public class RequestFilterNewTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport/rss");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("transport");
 		 assertEquals(transportTag, request.getAttribute("tag"));
 	 }
 	 
@@ -157,7 +164,7 @@ public class RequestFilterNewTest extends TestCase {
 		 request.setPathInfo("/capital-times+soccer");
 		 filter.loadAttributesOntoRequest(request);
 		 verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
-		 verify(resourceDAO).loadTagByName("soccer");
+		 verify(tagDAO).loadTagByName("soccer");
 		 Website publisher = (Website) request.getAttribute("publisher");
 		 Tag tag = (Tag) request.getAttribute("tag");
 		 assertEquals(capitalTimesPublisher, publisher);
@@ -170,7 +177,7 @@ public class RequestFilterNewTest extends TestCase {
 		 request.setPathInfo("/capital-times+soccer/rss");
 		 filter.loadAttributesOntoRequest(request);
 		 verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
-		 verify(resourceDAO).loadTagByName("soccer");
+		 verify(tagDAO).loadTagByName("soccer");
 		 Website publisher = (Website) request.getAttribute("publisher");
 		 Tag tag = (Tag) request.getAttribute("tag");
 		 assertEquals(capitalTimesPublisher, publisher);
@@ -182,8 +189,8 @@ public class RequestFilterNewTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport+soccer");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
-		 verify(resourceDAO).loadTagByName("soccer");		 
+		 verify(tagDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("soccer");		 
 		 List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		 assertEquals(2, tags.size());		 
 		 assertEquals(transportTag, tags.get(0));
@@ -196,8 +203,8 @@ public class RequestFilterNewTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport+soccer/json");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
-		 verify(resourceDAO).loadTagByName("soccer");		 
+		 verify(tagDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("soccer");		 
 		 List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		 assertEquals(2, tags.size());		 
 		 assertEquals(transportTag, tags.get(0));
