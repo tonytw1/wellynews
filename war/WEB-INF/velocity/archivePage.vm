@@ -23,12 +23,12 @@
 
 
 		#if ($previous_page || $next_page)
-			#if ($previous_page) 
-				<a href="$urlBuilder.getArchiveLinkUrl($previous_page)">$dateFormatter.formatDate($previous_page.month, 'MMMM yyyy')</a> 
+			#if ($previous_page) 			
+				<a href="$urlBuilder.getArchiveLinkUrl($previous_page.month)">$dateFormatter.formatDate($previous_page.month, 'MMMM yyyy')</a> 
 			#end
 			|
 			#if ($next_page) 
-				<a href="$urlBuilder.getArchiveLinkUrl($next_page)">$dateFormatter.formatDate($next_page.month, 'MMMM yyyy')</a>
+				<a href="$urlBuilder.getArchiveLinkUrl($next_page.month)">$dateFormatter.formatDate($next_page.month, 'MMMM yyyy')</a>
 			#end
 		#end
 
