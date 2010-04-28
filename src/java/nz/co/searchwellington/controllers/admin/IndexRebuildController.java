@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.BaseMultiActionController;
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.SolrIndexRebuildService;
 
 import org.apache.log4j.Logger;
@@ -17,11 +19,18 @@ public class IndexRebuildController extends BaseMultiActionController {
     
 	private SolrIndexRebuildService solrIndexRebuildService;
 	
-    public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService) {       
+    public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService, LoggedInUserFilter loggedInUserFilter) {       
         this.solrIndexRebuildService = solrIndexRebuildService;
+        this.loggedInUserFilter = loggedInUserFilter;
     }
     
     public ModelAndView build(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (loggedInUser == null || !loggedInUser.isAdmin()) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
+    	
         ModelAndView mv = new ModelAndView();                
         mv.setViewName("luceneIndexBuilder");
                 
