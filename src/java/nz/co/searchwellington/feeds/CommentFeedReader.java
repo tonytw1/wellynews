@@ -8,6 +8,7 @@ import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.modification.ContentUpdateService;
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
@@ -25,6 +26,7 @@ public class CommentFeedReader {
     private ResourceRepository resourceDAO;   
     private CommentFeedService commentFeedService;
     private ContentUpdateService contentUpdateService;
+    private ConfigDAO configDAO;
     
     
     public CommentFeedReader() {        
@@ -32,16 +34,23 @@ public class CommentFeedReader {
     
     public CommentFeedReader(ResourceRepository resourceDAO,
 			CommentFeedService commentFeedService,
-			ContentUpdateService contentUpdateService) {
+			ContentUpdateService contentUpdateService, ConfigDAO configDAO) {
 		this.resourceDAO = resourceDAO;
 		this.commentFeedService = commentFeedService;
 		this.contentUpdateService = contentUpdateService;
+		this.configDAO = configDAO;
 	}
 
     
 	@Transactional
-    public void loadComments() throws FeedException, IOException {      
-        log.info("Starting loading Comments.");      
+    public void loadComments() throws FeedException, IOException {
+		boolean feedsAreEnabled = configDAO.isFeedReadingEnabled();
+    	if (!feedsAreEnabled) {
+    		log.info("Not fetching comments as feeds are disabled by config.");
+    		return;
+    	}
+		
+        log.info("Starting loading Comments.");
         List<CommentFeed> commentFeedsToRead = resourceDAO.getCommentFeedsToCheck(MAX_COMMENT_FEEDS_TO_LOAD);      
 		log.info("Reading " + commentFeedsToRead.size() + " comment feeds.");               
         for (CommentFeed commentFeed : commentFeedsToRead) {                        

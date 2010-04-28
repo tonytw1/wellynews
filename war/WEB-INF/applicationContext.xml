@@ -102,6 +102,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedService" />
 		<constructor-arg ref="contentUpdateService" />
+		<constructor-arg ref="configDAO" />		
 	</bean>
 
 	<bean name="commentFeedReaderJob" class="nz.co.searchwellington.jobs.CommentFeedReaderJob">
