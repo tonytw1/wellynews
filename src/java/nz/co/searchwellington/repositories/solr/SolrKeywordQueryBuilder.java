@@ -32,7 +32,7 @@ public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
 		}
 		
 		if (user != null && tag != null) {
-			final String userTag = user.getId() + ":" + tag.getId();
+			final String userTag = user.getId() + "\\:" + tag.getId();
 			query.addFilterQuery("-handTaggingUserTags:" + userTag);
 		}
 		return query;

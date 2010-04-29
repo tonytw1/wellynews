@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class AutoTagController extends BaseMultiActionController {
 
-    Logger log = Logger.getLogger(AutoTagController.class);
+    static Logger log = Logger.getLogger(AutoTagController.class);
     
     private ResourceRepository resourceDAO;
     private AdminRequestFilter requestFilter;
@@ -47,51 +47,66 @@ public class AutoTagController extends BaseMultiActionController {
 	}
 
 
-	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
+	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (loggedInUser == null) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
+    	
         ModelAndView mv = new ModelAndView();        
-        mv.setViewName("autoTagPrompt");
-        
+        mv.setViewName("autoTagPrompt");        
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Autotagging");
         
         requestFilter.loadAttributesOntoRequest(request);
         Tag tag = (Tag) request.getAttribute("tag");
-        mv.addObject("tag", tag);
-        if (tag != null) {            
-        	List<Resource> resourcesToAutoTag = getPossibleAutotagResources(loggedInUserFilter.getLoggedInUser(), tag);
-            mv.addObject("resources_to_tag", resourcesToAutoTag);
+        if (tag == null) {
+        	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
         }
+                
+        mv.addObject("tag", tag);
+        List<Resource> resourcesToAutoTag = getPossibleAutotagResources(loggedInUserFilter.getLoggedInUser(), tag);
+        mv.addObject("resources_to_tag", resourcesToAutoTag);
         return mv;
     }
 
 
-    public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {        
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("autoTagApply");
-        
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
-        mv.addObject("heading", "Autotagging");
+    public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {    	
+    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	if (loggedInUser == null) {
+    		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        	return null;
+    	}
         
         requestFilter.loadAttributesOntoRequest(request);
         Tag tag = (Tag) request.getAttribute("tag");
-        if (tag != null) {
-            mv.addObject("tag", tag);
-            
-            List<Resource> resourcesAutoTagged = new ArrayList<Resource>();            
-            String[] autotaggedResourceIds = request.getParameterValues("autotag");            
-            for (String resourceIdString : autotaggedResourceIds) {
-                int resourceId = Integer.parseInt(resourceIdString);
-                Resource resource = resourceDAO.loadResourceById(resourceId);
+        if (tag == null) {
+        	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
+        }
+        
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("autoTagApply");
+        mv.addObject("heading", "Autotagging");
+        
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+        mv.addObject("tag", tag);
+        List<Resource> resourcesAutoTagged = new ArrayList<Resource>();
+        String[] autotaggedResourceIds = request.getParameterValues("autotag");
+        for (String resourceIdString : autotaggedResourceIds) {
+        	int resourceId = Integer.parseInt(resourceIdString);
+        	Resource resource = resourceDAO.loadResourceById(resourceId);
 
-                log.info("Applying tag " + tag.getName() + " to:" + resource.getName());
-                if (!autoTagService.alreadyHasTag(resource, tag)) {
-                	tagVoteDAO.addTag(loggedInUserFilter.getLoggedInUser(), tag, resource);
-                }
-                contentUpateService.update(resource);
-                resourcesAutoTagged.add(resource);
-            }        
-            mv.addObject("resources_to_tag", resourcesAutoTagged);
-        }     
+        	log.info("Applying tag " + tag.getName() + " to:" + resource.getName());
+        	if (!autoTagService.alreadyHasTag(resource, tag)) {
+                tagVoteDAO.addTag(loggedInUser, tag, resource);
+        	}
+        	contentUpateService.update(resource);
+        	resourcesAutoTagged.add(resource);
+        }        
+        mv.addObject("resources_to_tag", resourcesAutoTagged);             
         return mv;
     }
     
