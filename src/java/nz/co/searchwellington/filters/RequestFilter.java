@@ -21,8 +21,14 @@ import org.apache.log4j.Logger;
 public class RequestFilter {
 
     public static final String SEARCH_TERM = "searchterm";
+        
+    static Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
+    static Pattern combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
+    static Pattern publisherPattern = Pattern.compile("^/(.*)/(calendars|feeds|watchlist)$");
+    static Pattern autotagPattern = Pattern.compile("^/autotag/(.*)$");
 
-	Logger log = Logger.getLogger(RequestFilter.class);
+        
+	static Logger log = Logger.getLogger(RequestFilter.class);
     
     protected ResourceRepository resourceDAO;
     protected TagDAO tagDAO;
@@ -147,8 +153,7 @@ public class RequestFilter {
         }
         
         log.debug("Looking for combiner urls");        
-        Pattern pattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
-        Matcher matcher = pattern.matcher(request.getPathInfo());
+        Matcher matcher = combinerPattern.matcher(request.getPathInfo());
         if (matcher.matches()) {
         	final String left = matcher.group(1);
         	final String right = matcher.group(2);        	
@@ -181,9 +186,8 @@ public class RequestFilter {
         	return;
         } 
         
-             
+ 
         log.debug("Looking for single publisher and tag urls");
-        Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
         Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
         if (contentMatcher.matches()) {
         	final String match = contentMatcher.group(1);
@@ -210,12 +214,34 @@ public class RequestFilter {
 		        		return;
 		       		}
 		       	}
+		    
+		        return;
         	}
-	        return;
         }
         
-                
-       
+        log.debug("Looking for autotag urls");
+        Matcher autotagMatcher = autotagPattern.matcher(request.getPathInfo());
+        if (autotagMatcher.matches()) {        	
+        	final String match = autotagMatcher.group(1);        	
+        	System.out.println(match);
+        	if (!isReservedUrlWord(match)) {
+	        	log.debug("'" + match + "' matches content");
+		        	
+	        	log.debug("Looking for tag '" + match + "'");	        	
+	        	Tag tag = tagDAO.loadTagByName(match);
+		        if (tag != null) {
+		        	log.info("Setting tag: " + tag.getName());
+		        	request.setAttribute("tag", tag);	// TODO deprecate
+		        	List<Tag> tags = new ArrayList<Tag>();
+		        	tags.add(tag);
+		        	log.info("Setting tags: " + tags);
+		        	request.setAttribute("tags", tags);
+		        	return;
+		        }
+		        return;
+        	}
+        }
+        
         
         if (request.getParameter("calendarfeed") != null) {
             final int feedID = Integer.parseInt(request.getParameter("calendarfeed"));
@@ -247,6 +273,7 @@ public class RequestFilter {
     	Set<String> reservedUrlWords = new HashSet<String>();
     	reservedUrlWords.add("about");
     	reservedUrlWords.add("api");
+    	reservedUrlWords.add("autotag");
        	reservedUrlWords.add("index");
     	reservedUrlWords.add("feeds");
     	reservedUrlWords.add("comment");
@@ -270,8 +297,7 @@ public class RequestFilter {
     
     
     protected String getPublisherUrlWordsFromPath(String pathInfo) {     
-        Pattern pattern = Pattern.compile("^/(.*)/(calendars|feeds|watchlist)$");
-        Matcher matcher = pattern.matcher(pathInfo);
+        Matcher matcher = publisherPattern.matcher(pathInfo);
         if (matcher.matches()) {
         	return matcher.group(1);
         }

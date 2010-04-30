@@ -12,10 +12,8 @@ import junit.framework.TestCase;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -42,6 +40,15 @@ public class RequestFilterNewTest extends TestCase {
 		filter = new RequestFilter(resourceDAO, tagDAO, searchTermExtractor);
 	}
 	
+	
+	 
+	 public void testShouldPopulateTagForAutotagUrl() throws Exception {
+		 MockHttpServletRequest request = new MockHttpServletRequest();
+		 request.setPathInfo("/autotag/transport");
+		 filter.loadAttributesOntoRequest(request);
+		 verify(tagDAO).loadTagByName("transport");		
+	 }
+	 
 	
 	public void testShouldParsePageAttribute() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
