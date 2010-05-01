@@ -22,7 +22,7 @@ public class SolrUpdateQueue {
 
 
 	public void add(Resource resource) {
-		log.info("Adding resouce to solr update queue: " + resource.getId());
+		log.info("Adding resource to solr update queue: " + resource.getId());
 		if (!queue.contains(resource.getId())) {
 			queue.offer(resource.getId());
 			log.debug("Queue contains " + queue.size() + " items.");
@@ -39,6 +39,7 @@ public class SolrUpdateQueue {
 		 log.debug("Getting next from queue currently contains " + queue.size() + " items.");
 		 if (queue.size() > 0) {
 			 int nextId = queue.poll();
+			 log.debug("Next resource is: " + nextId);
 			 return resourceDAO.loadResourceById(nextId);
 			 
 		 } else {
