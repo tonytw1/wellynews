@@ -11,10 +11,8 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitterMention;
-import nz.co.searchwellington.model.TwitterSubmittable;
 import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
@@ -90,13 +88,8 @@ public class TwitterNewsitemBuilderService {
 					Resource referencedNewsitem = extractReferencedResourceFromMessage(message);
 					if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
 						Twit replyTwit = loadOrCreateTwit(status);
-						
-						boolean isSubmittingTwit = isSubmittingTwit((Newsitem) referencedNewsitem, replyTwit);
-						if (!isSubmittingTwit) {
-							RTs.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
-							log.info("Twit '" + replyTwit + "' is a reply to: " + referencedNewsitem);
-						}
-						
+						RTs.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
+						log.info("Twit '" + replyTwit + "' is a reply to: " + referencedNewsitem);						
 					}
 					
 				} else {
@@ -108,34 +101,14 @@ public class TwitterNewsitemBuilderService {
 				if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
 					log.info("Found RT: " + referencedNewsitem.getName() + ", " + message);
 					Twit tweet = loadOrCreateTwit(status);
-					
-					boolean isSubmittingTwit = ((TwitterSubmittable) referencedNewsitem).getSubmittingTwit() != null &&
-						((TwitterSubmittable) referencedNewsitem).getSubmittingTwit().getTwitterid().equals(tweet.getTwitterid());
-										
-					log.info("isSubmittedTwit: " + isSubmittingTwit);
-					if (!isSubmittingTwit) {					
-						RTs.add(new TwitterMention((Newsitem) referencedNewsitem, tweet));
-						
-					} else {
-						log.info("Not adding to mentions as looks like submitting tweet: " + tweet.getText());
-					}
+					RTs.add(new TwitterMention((Newsitem) referencedNewsitem, tweet));				
 				}				
 			}			
 		}
 		return RTs;
 	}
 
-
-	private boolean isSubmittingTwit(Newsitem referencedNewsitem, Twit replyTwit) {
-		log.info("Newsitems submitting twit: " + referencedNewsitem.getSubmittingTwit());
-		if (referencedNewsitem.getSubmittingTwit() != null) {
-			log.info("Newsitems submitted twit is: " + referencedNewsitem.getSubmittingTwit().getTwitterid() + ". Reply twit is " + replyTwit.getTwitterid());
-			return referencedNewsitem.getSubmittingTwit().getTwitterid().equals(replyTwit.getTwitterid());
-		}
-		return false;
-	}
-
-
+	
 	private Resource extractReferencedResourceFromMessage(String message) {
 		final String url = this.extractUrlFromMessage(message);
 		Resource referencedNewsitem = null;

@@ -2,7 +2,7 @@ package nz.co.searchwellington.model;
 
 import java.util.Set;
 
-public interface Newsitem extends PublishedResource, TwitterSubmittable, Commentable {
+public interface Newsitem extends PublishedResource, Commentable {
 
 	public Image getImage();
 

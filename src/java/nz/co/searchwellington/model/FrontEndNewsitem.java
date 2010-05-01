@@ -143,10 +143,6 @@ public class FrontEndNewsitem implements Newsitem {
 		return newsitem.getReTwits();
 	}
 
-	public Twit getSubmittingTwit() {
-		return newsitem.getSubmittingTwit();
-	}
-
 	public String getType() {
 		return newsitem.getType();
 	}
@@ -230,11 +226,7 @@ public class FrontEndNewsitem implements Newsitem {
 	public void setPublisher(Website publisher) {
 		newsitem.setPublisher(publisher);
 	}
-
-	public void setSubmittingTwit(Twit submittingTwit) {
-		newsitem.setSubmittingTwit(submittingTwit);
-	}
-
+	
 	public void setUrl(String url) {
 		newsitem.setUrl(url);
 	}
