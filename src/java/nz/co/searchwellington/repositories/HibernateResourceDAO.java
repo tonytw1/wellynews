@@ -345,14 +345,4 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     	return taggedResources.list();
 	}
 
-
-	@Override
-	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId) {		
-		Criteria criteria = sessionFactory.getCurrentSession().
-			createCriteria(Newsitem.class).
-			createAlias("submittingTwit", "st").
-			add(Restrictions.eq("st.twitterid", twitterId));		
-		return (Newsitem) criteria.uniqueResult();
-	}
-
 }

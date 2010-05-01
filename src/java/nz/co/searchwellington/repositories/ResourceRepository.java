@@ -58,9 +58,7 @@ public interface ResourceRepository {
     
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public Feed loadFeedByUrlWords(String string);
-	
-	public Newsitem loadNewsitemBySubmittingTwitterId(long twitterId);
-	
+		
 	public Resource loadResourceByUniqueUrl(String url);
 	public List<String> getPublisherNamesByStartingLetters(String q);
 	public Resource getPublisherByName(String publisherName);

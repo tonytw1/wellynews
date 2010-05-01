@@ -12,7 +12,6 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     Image image;
     Feed feed;
       
-    private Twit submittingTwit;
     private Set<Twit> reTwits;
     
     
@@ -27,7 +26,6 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.date = date;
         this.publisher = publisher;
         this.discoveredFeeds = discoveredFeeds;
-        this.submittingTwit = submittingTwit;
         this.reTwits = retwits;
         this.feed = null;
     }
@@ -63,16 +61,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 	public void setImage(Image image) {
 		this.image = image;
 	}
-
 	
-	public Twit getSubmittingTwit() {
-		return submittingTwit;
-	}
-
-	public void setSubmittingTwit(Twit submittingTwit) {
-		this.submittingTwit = submittingTwit;
-	}
-
 	public Set<Twit> getReTwits() {
 		return reTwits;
 	}

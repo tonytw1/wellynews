@@ -12,7 +12,6 @@
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="twitterNewsitemBuilderService" />
 		<constructor-arg ref="submissionProcessingService" />
 		<constructor-arg ref="contentUpdateService" />
 		<constructor-arg ref="contentDeletionService" />

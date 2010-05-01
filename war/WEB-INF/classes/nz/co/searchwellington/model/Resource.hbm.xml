@@ -130,9 +130,7 @@
 		            	      
 		    <many-to-one name="image" class="nz.co.searchwellington.model.Image" 
 				column="image_id" cascade="" />
-		            	        	        	      		            	        	
-		    <many-to-one name="submittingTwit" class="nz.co.searchwellington.model.Twit" column="submitting_twit" />
-		    
+						            	        	        	      		            	        			    
         	<set name="reTwits" table="newsitem_retwits" access="field">
 				<cache usage="read-write" />		
 				<key column="resource_id" />

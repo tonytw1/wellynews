@@ -31,7 +31,6 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
-import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -52,7 +51,6 @@ public class ResourceEditController extends BaseMultiActionController {
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
     private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
-    private TwitterNewsitemBuilderService twitterNewsitemBuilderService;
     private SubmissionProcessingService submissionProcessingService;
     private ContentUpdateService contentUpdateService;
 	private ContentDeletionService contentDeletionService;
@@ -69,7 +67,6 @@ public class ResourceEditController extends BaseMultiActionController {
 			RssNewsitemPrefetcher rssPrefetcher,
 			LoggedInUserFilter loggedInUserFilter,
 			EditPermissionService editPermissionService, UrlStack urlStack,
-			TwitterNewsitemBuilderService twitterNewsitemBuilderService,
 			SubmissionProcessingService submissionProcessingService,
 			ContentUpdateService contentUpdateService,
 			ContentDeletionService contentDeletionService,
@@ -87,7 +84,6 @@ public class ResourceEditController extends BaseMultiActionController {
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.editPermissionService = editPermissionService;
 		this.urlStack = urlStack;
-		this.twitterNewsitemBuilderService = twitterNewsitemBuilderService;
 		this.submissionProcessingService = submissionProcessingService;
 		this.contentUpdateService = contentUpdateService;
 		this.contentDeletionService = contentDeletionService;
@@ -214,41 +210,8 @@ public class ResourceEditController extends BaseMultiActionController {
 		modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
 		return modelAndView;
     }
-
-
     
-    @Transactional
-    public ModelAndView twitteraccept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
-        ModelAndView modelAndView = new ModelAndView("acceptResource");       
-        
-        adminRequestFilter.loadAttributesOntoRequest(request);
-        if (request.getAttribute("twitterId") != null) {        
-            Long twitterId = (Long) request.getAttribute("twitterId");
-            TwitteredNewsitem twittedNewsitem = twitterNewsitemBuilderService.getPossibleSubmissionByTwitterId(twitterId);
-            
-            if (twittedNewsitem != null) {
-            	log.info("Attempting to accept newsitem from twitter id: " + twitterId);
-            	final Newsitem newsitem = twitterNewsitemBuilderService.makeNewsitemFromTwitteredNewsitem(twittedNewsitem);
-            	
-            	if (newsitem != null) {            		
-            		modelAndView.addObject("resource", newsitem);
-            		
-            	} else {
-            		log.info("Could not extract a newsitem from this twit");            		
-            	}
-            	
-            } else {
-            	log.warn("Could not find twitter with id: " + twitterId);            	
-            }
-            
-        } else {
-        	log.warn("No twitted id found on request");
-        }
-        
-		return modelAndView;
-    }
-
-
+    
     @Transactional
     public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("submitWebsite");
@@ -519,8 +482,6 @@ public class ResourceEditController extends BaseMultiActionController {
     	log.warn("No feed found on request object; can't load newsitem");
     	return null;
 	}
-    
-    
     
     private Newsitem getRequestedFeedItemByUrl(String url) {
     	return rssfeedNewsitemService.getFeedNewsitemByUrl(url);    	

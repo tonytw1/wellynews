@@ -129,15 +129,7 @@
 					#end							
 					</li>
 				#end
-					
-				#if ($item.submittingTwit) 
-					<li class="twitteredby">Twittered by: <a href="http://www.twitter.com/$item.submittingTwit.author">@$item.submittingTwit.author</a></li>
-					#if ($item.submittingTwit.text) 
-						#set ($twit = $item.submittingTwit)
-						#parse("includes/twittermessage.vm")
-					#end
-				#end
-					
+				
 				#if ($item.type == "S" && $item.firstSeen) 
 					<li class="firstseen">First noticed $dateFormatter.timeSince($item.firstSeen)</li>				
 				#end
