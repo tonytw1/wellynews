@@ -66,10 +66,6 @@ public interface ResourceRepository {
 	public TwitteredNewsitem createNewTwitteredNewsitem(Twit twit);	
 	public List<Resource> getNewsitemsMatchingStem(String stem);
 	
-	public List<Twit> getAllTweets();
-	public Twit loadTweetByTwitterId(Long id);
-	public void saveTweet(Twit twit);
-	
 	public List<Resource> getResourcesWithTag(Tag tag);
 	public List<Newsitem> getNewsitemsForFeed(Feed feed);	
 	public List<Resource> getAllWatchlists();

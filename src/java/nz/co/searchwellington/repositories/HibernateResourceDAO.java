@@ -30,16 +30,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class HibernateResourceDAO extends AbsractResourceDAO implements ResourceRepository {
 
     SessionFactory sessionFactory;
-    private TweetDAO tweetDAO;
 
     
     public HibernateResourceDAO() {
     }
     
     
-    public HibernateResourceDAO(SessionFactory sessionFactory, TweetDAO twitterDAO) {     
+    public HibernateResourceDAO(SessionFactory sessionFactory) {     
         this.sessionFactory = sessionFactory;
-        this.tweetDAO = twitterDAO;
     }
     
     
@@ -267,20 +265,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     }
     
     
-    public List<Twit> getAllTweets() {
-		return tweetDAO.getAllTweets();
-	}
-    
-    
-    public void saveTweet(Twit twit) {     
-    	tweetDAO.saveTwit(twit);
-    }
-        
-	
-    public Twit loadTweetByTwitterId(Long twitterId) {
-    	 return tweetDAO.loadTweetByTwitterId(twitterId);  
-	}
-
 	@Transactional
     public void saveResource(Resource resource) {
 		if (resource.getType().equals("N")) {
