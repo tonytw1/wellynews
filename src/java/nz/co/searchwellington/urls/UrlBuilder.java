@@ -48,7 +48,11 @@ public class UrlBuilder {
 	public String getTagUrl(Tag tag) {
 		return siteInformation.getUrl() + "/" + tag.getName();
 	}
-
+	
+	
+	public String getAutoTagUrl(Tag tag) {
+		return siteInformation.getUrl() + "/autotag/" + tag.getName();
+	}
 
 	public String getTagCombinerUrl(Tag firstTag, Tag secondTag) {
 		return siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName();
