@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="resourceDAO" class="nz.co.searchwellington.repositories.HibernateResourceDAO">
+ 		<constructor-arg ref="sessionFactory" />
+ 		<constructor-arg ref="tweetDAO" />
+	</bean>
+		
+	<bean id="tagDAO" class="nz.co.searchwellington.repositories.TagDAO">
+ 		<constructor-arg ref="sessionFactory" /> 		
+	</bean>
+	
+	<bean id="handTaggingDAO" class="nz.co.searchwellington.repositories.HandTaggingDAO">
+		<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+	<bean id="tweetDAO" class="nz.co.searchwellington.repositories.TweetDAO">
+ 		<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+	<bean id="configDAO" class="nz.co.searchwellington.repositories.ConfigDAO">
+	 	<constructor-arg ref="sessionFactory" />
+	</bean>
+		
+	<bean id="userDAO" class="nz.co.searchwellington.repositories.HibernateBackedUserDAO">
+	 	<constructor-arg ref="sessionFactory" />
+	</bean>
+	
+	<bean id="supressionDAO" class="nz.co.searchwellington.repositories.SupressionDAO">
+		<constructor-arg ref="sessionFactory" />		
+	</bean>
+	
+	<bean id="suggestionDAO" class="nz.co.searchwellington.repositories.SuggestionDAO">
+		<constructor-arg ref="sessionFactory" />		
+	</bean>	
+	 
+ </beans>
