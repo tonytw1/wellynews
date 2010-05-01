@@ -74,9 +74,5 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
         discoveredFeed.setReferences(new HashSet<Resource>());
         return discoveredFeed;
     }
-
-	public Resource loadResourceByUniqueUrl(String url) {
-		return null;
-	}
     
 }
