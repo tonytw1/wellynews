@@ -1,15 +1,7 @@
 package nz.co.searchwellington.twitter;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
-import static org.mockito.Mockito.verify;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
 import nz.co.searchwellington.utils.UrlCleaner;

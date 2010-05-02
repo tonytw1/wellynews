@@ -14,7 +14,6 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Twit;
-import nz.co.searchwellington.model.TwitteredNewsitem;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
@@ -31,12 +30,7 @@ public abstract class AbsractResourceDAO implements ResourceRepository {
         return new NewsitemImpl(0, "", "", "", Calendar.getInstance().getTime(), null,
                             new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
     }
-    
-    public TwitteredNewsitem createNewTwitteredNewsitem(Twit twit) {         
-        return new TwitteredNewsitem(0, "", "", "", Calendar.getInstance().getTime(), null,
-                            new HashSet<DiscoveredFeed>(), twit);
-    }
-        
+           
     public Website createNewWebsite() {
         return new WebsiteImpl( 0, "", "", Calendar.getInstance().getTime(), 
                                 "", 

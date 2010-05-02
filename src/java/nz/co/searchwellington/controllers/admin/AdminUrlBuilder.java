@@ -56,10 +56,6 @@ public class AdminUrlBuilder {
 	public String getFeedNewsitemUnsuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/supress/unsupress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
 	}
-		
-	public String getTwitteredNewsitemAcceptUrl(TwitteredNewsitem twitteredNewsitem) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/edit/twitteraccept?twitterid=" + URLEncoder.encode(Long.toString(twitteredNewsitem.getTwit().getTwitterid()), "UTF-8");
-	}
 	
 	public String getPublisherAutoGatherUrl(Resource resource) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/admin/gather?publisher=" + URLEncoder.encode(resource.getUrlWords(), "UTF-8");

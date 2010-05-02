@@ -255,9 +255,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="twitterNewsitemBuilderService" class="nz.co.searchwellington.twitter.TwitterNewsitemBuilderService">
 		<constructor-arg ref="urlCleaner" />
-		<constructor-arg ref="publisherGuessingService" />
 		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="cachingTwitterService" />		
+		<constructor-arg ref="cachingTwitterService" />
+		<constructor-arg ref="tweetDAO" />		
 	</bean>
 	
 
