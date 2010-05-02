@@ -10,6 +10,7 @@ import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
@@ -20,6 +21,7 @@ import nz.co.searchwellington.utils.UrlFilters;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
+import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.mediarss.MediaEntryModuleImpl;
 import com.sun.syndication.feed.module.mediarss.MediaModule;
 import com.sun.syndication.feed.module.mediarss.types.MediaContent;
@@ -89,12 +91,29 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         // TODO This reference should really come from the resourceDAO.
         // TODO feed decision maker and feedreader and user submissions should share the same title cleaning logic
         FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle().trim(), url, description, itemDate, new HashSet<DiscoveredFeed>());
+        
         feedItem.setImage(extractThumbnail(feed, item));
+        feedItem.setGeocode(extractGeocode(feed, item));
       
         log.debug("Date of loaded newsitem is: " + feedItem.getDate());
         feedItem.setFeed(feed);
         return feedItem;
     }
+
+
+	private Geocode extractGeocode(Feed feed, SyndEntry item) {
+		String[] geomodules = {GeoRSSModule.GEORSS_W3CGEO_URI, GeoRSSModule.GEORSS_GEORSS_URI, GeoRSSModule.GEORSS_GML_URI};
+		for (String module : geomodules) {
+			GeoRSSModule geoModule = (GeoRSSModule) item.getModule(module);
+			if (geoModule != null) {
+				log.info("Found georss module '" + module + "' for feed: " + feed.getName());			
+				final String address = geoModule.getLatitude() + ", " + geoModule.getLongitude();
+				log.info("Location is: " + address);
+				return  new Geocode(address, geoModule.getLatitude(), geoModule.getLongitude());
+			}
+		}		
+		return null;
+	}
 
 
 	private Image extractThumbnail(Feed feed, SyndEntry item) {		

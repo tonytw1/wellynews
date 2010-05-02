@@ -142,7 +142,11 @@
 					#end
 					
 					#if ($item.geocode.isValid())
-						<a href="$site_information.url/geotagged?resource=$item.id">#parse("includes/geotag_icon.vm")</a>
+						#if ($item.id > 0) 
+							<a href="$site_information.url/geotagged?resource=$item.id">#parse("includes/geotag_icon.vm")</a>
+						#else
+							#parse("includes/geotag_icon.vm")
+						#end
 					#else
 						#parse("includes/geotag_icon.vm") 
 					#end
