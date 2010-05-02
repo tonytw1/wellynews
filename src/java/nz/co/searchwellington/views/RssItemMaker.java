@@ -48,9 +48,9 @@ public class RssItemMaker {
 		}
 		final Geocode geocode = content.getGeocode();
 		if (geocode != null && geocode.isValid()) {            
-			GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();     
-	        geoRSSModule.setLatitude(geocode.getLatitude());
-	        geoRSSModule.setLongitude(geocode.getLongitude());
+			GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();
+	        geoRSSModule.getPosition().setLatitude(geocode.getLatitude());
+	        geoRSSModule.getPosition().setLongitude(geocode.getLongitude());
 	        rssItem.getModules().add(geoRSSModule);            
 		}
 		return rssItem;

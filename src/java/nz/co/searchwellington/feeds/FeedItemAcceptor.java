@@ -2,6 +2,7 @@
 package nz.co.searchwellington.feeds;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.modification.ContentUpdateService;
@@ -39,7 +40,9 @@ public class FeedItemAcceptor {
 	public void acceptFeedItem(FeedNewsitem feednewsitem, Feed feed) {
 		log.info("Accepting: " + feednewsitem.getName() + " (" + feednewsitem.getName() + ")");
 		Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
-		
+		if (feednewsitem.getGeocode() != null) {
+			newsitem.setGeocode(new Geocode(feednewsitem.getGeocode().getAddress(), feednewsitem.getGeocode().getLatitude(), feednewsitem.getGeocode().getLongitude()));
+		}
         flattenLoudCapsInTitle(newsitem);        
         if (newsitem.getDate() == null) {
         	log.info("Accepting a feeditem with no date; setting date to current time");            

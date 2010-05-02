@@ -22,6 +22,7 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
+import com.sun.syndication.feed.module.georss.GeoRSSUtils;
 import com.sun.syndication.feed.module.mediarss.MediaEntryModuleImpl;
 import com.sun.syndication.feed.module.mediarss.MediaModule;
 import com.sun.syndication.feed.module.mediarss.types.MediaContent;
@@ -102,16 +103,13 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 
 
 	private Geocode extractGeocode(Feed feed, SyndEntry item) {
-		String[] geomodules = {GeoRSSModule.GEORSS_W3CGEO_URI, GeoRSSModule.GEORSS_GEORSS_URI, GeoRSSModule.GEORSS_GML_URI};
-		for (String module : geomodules) {
-			GeoRSSModule geoModule = (GeoRSSModule) item.getModule(module);
-			if (geoModule != null) {
-				log.info("Found georss module '" + module + "' for feed: " + feed.getName());			
-				final String address = geoModule.getLatitude() + ", " + geoModule.getLongitude();
-				log.info("Location is: " + address);
-				return  new Geocode(address, geoModule.getLatitude(), geoModule.getLongitude());
-			}
-		}		
+		GeoRSSModule geoModule = (GeoRSSModule) GeoRSSUtils.getGeoRSS(item);
+		if (geoModule != null) {
+			final String address = geoModule.getPosition().getLatitude() + ", " + geoModule.getPosition().getLongitude();
+			log.info("Location is: " + address);
+			return new Geocode(address, geoModule.getPosition().getLatitude(), geoModule.getPosition().getLongitude());
+		}
+
 		return null;
 	}
 
