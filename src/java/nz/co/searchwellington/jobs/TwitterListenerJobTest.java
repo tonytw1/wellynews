@@ -4,13 +4,13 @@ package nz.co.searchwellington.jobs;
 import junit.framework.TestCase;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
+import nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService;
 import nz.co.searchwellington.twitter.TwitterService;
 
 public class TwitterListenerJobTest extends TestCase {
 
 	private TwitterService twitterService;
-	private TwitterNewsitemBuilderService twitterNewsitemBuilder;
+	private TwitterNewsitemMentionsFinderService twitterNewsitemBuilder;
 	private ResourceRepository resourceDAO;
 	private LinkCheckerQueue linkCheckerQueue;
 

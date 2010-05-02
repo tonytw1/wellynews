@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.twitter.TwitterNewsitemBuilderService;
+import nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService;
 import nz.co.searchwellington.twitter.TwitterService;
 
 import org.apache.log4j.Logger;
@@ -17,7 +17,7 @@ public class TwitterListenerJob {
     static Logger log = Logger.getLogger(TwitterListenerJob.class);
     
     private TwitterService twitterService;
-    private TwitterNewsitemBuilderService newsitemBuilder;
+    private TwitterNewsitemMentionsFinderService twitterMentionFinder;
     private ConfigRepository configDAO;
     private ContentUpdateService contentUpdateService;
     
@@ -27,12 +27,12 @@ public class TwitterListenerJob {
 
     
     public TwitterListenerJob(TwitterService twitterService,
-			TwitterNewsitemBuilderService newsitemBuilder,
+			TwitterNewsitemMentionsFinderService twitterMentionFinder,
 			ConfigRepository configDAO,
 			ContentUpdateService contentUpdateService) {
 		super();
 		this.twitterService = twitterService;
-		this.newsitemBuilder = newsitemBuilder;
+		this.twitterMentionFinder = twitterMentionFinder;
 		this.configDAO = configDAO;
 		this.contentUpdateService = contentUpdateService;
 	}
@@ -55,7 +55,7 @@ public class TwitterListenerJob {
 
     	
 	private void fetchMentions() {
-		List<TwitterMention> newsitemMentions = newsitemBuilder.getNewsitemMentions();
+		List<TwitterMention> newsitemMentions = twitterMentionFinder.getNewsitemMentions();
 		for (TwitterMention reTwit : newsitemMentions) {
 			Newsitem newsitem = reTwit.getNewsitem();			
 			boolean isMentionRT = true;

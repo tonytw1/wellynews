@@ -6,9 +6,9 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.PublisherGuessingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 
-public class TwitterNewsitemBuilderServiceTests extends TestCase {
+public class TwitterNewsitemMentionsFinderServiceTests extends TestCase {
 
-    TwitterNewsitemBuilderService newsitemBuilder;
+    TwitterNewsitemMentionsFinderService newsitemBuilder;
     UrlCleaner urlCleaner;
     PublisherGuessingService publisherGuessingService;
     Newsitem newsitem;
@@ -41,7 +41,7 @@ public class TwitterNewsitemBuilderServiceTests extends TestCase {
 	
 	
 	public void testCanFindUrlsInMessages() throws Exception {
-		TwitterNewsitemBuilderService service = new TwitterNewsitemBuilderService(null, null, null, null);		
+		TwitterNewsitemMentionsFinderService service = new TwitterNewsitemMentionsFinderService(null, null, null, null);		
 		assertEquals("http://tinyurl/test", service.extractUrlFromMessage("http://tinyurl/test"));
 		assertEquals("http://tinyurl/test", service.extractUrlFromMessage("http://tinyurl/test "));
 		assertEquals("http://tinyurl/test", service.extractUrlFromMessage(" http://tinyurl/test"));
