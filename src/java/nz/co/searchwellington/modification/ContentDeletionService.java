@@ -16,10 +16,11 @@ import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 public class ContentDeletionService {
 	
-    private static Logger log = Logger.getLogger(ContentDeletionService.class);
+	static Logger log = Logger.getLogger(ContentDeletionService.class);
     	
 	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
@@ -29,6 +30,11 @@ public class ContentDeletionService {
 	private HandTaggingDAO handTaggingDAO;
 	private TagDAO tagDAO;
 
+	
+	public ContentDeletionService() {
+	}
+	
+	
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ResourceRepository resourceDAO, 
@@ -46,6 +52,7 @@ public class ContentDeletionService {
 	}
 
 
+	@Transactional
 	public void performDelete(Resource resource) {		
 		handTaggingDAO.clearTags(resource);
 		
