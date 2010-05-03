@@ -8,6 +8,7 @@ import nz.co.searchwellington.model.Watchlist;
 
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
+import com.sun.syndication.feed.module.georss.geometries.Position;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -49,6 +50,7 @@ public class RssItemMaker {
 		final Geocode geocode = content.getGeocode();
 		if (geocode != null && geocode.isValid()) {            
 			GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();
+			geoRSSModule.setPosition(new Position());
 	        geoRSSModule.getPosition().setLatitude(geocode.getLatitude());
 	        geoRSSModule.getPosition().setLongitude(geocode.getLongitude());
 	        rssItem.getModules().add(geoRSSModule);            
