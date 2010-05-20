@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories.solr;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import nz.co.searchwellington.model.Resource;
@@ -10,6 +12,8 @@ import org.apache.log4j.Logger;
 public class SolrUpdateQueue {
 	
     static Logger log = Logger.getLogger(SolrUpdateQueue.class);
+
+    private static final int MAX_BATCH_SIZE = 50;
 
     private ResourceRepository resourceDAO;
     private ConcurrentLinkedQueue<Integer> queue;
@@ -35,16 +39,28 @@ public class SolrUpdateQueue {
 	}
 	
 	
-	public Resource getNext() {
-		 log.debug("Getting next from queue currently contains " + queue.size() + " items.");
-		 if (queue.size() > 0) {
-			 int nextId = queue.poll();
-			 log.debug("Next resource is: " + nextId);
-			 return resourceDAO.loadResourceById(nextId);
-			 
-		 } else {
-			 return null;
-		 }
+	public synchronized List<Resource> getBatch() {
+		log.debug("Getting next from queue currently contains " + queue.size() + " items.");		
+		List<Resource> batch = new ArrayList<Resource>();
+		
+		if (!queue.isEmpty()) {
+			Object[] items = queue.toArray();
+			for (int i = 0; i < items.length; i++) {
+				if (i < MAX_BATCH_SIZE) {
+					int nextId = (Integer) items[i];
+					queue.remove(nextId);
+					log.debug("Next resource is: " + nextId);
+				 
+					Resource resource = resourceDAO.loadResourceById(nextId);
+					if (resource != null) {
+						batch.add(resource);
+					} else {
+						log.warn("Solr queued resource id was null after database load: " + nextId);
+					}
+				}
+			}
+		}		
+		return batch;		
 	}
 	
 }
