@@ -38,7 +38,8 @@
 						<prop key="/*/geotagged">normal</prop>
 						<prop key="/feed/*">normal</prop>
 						<prop key="/feeds/inbox">normal</prop>
-						<prop key="/*/rss">normal</prop>															
+						<prop key="/*/rss">normal</prop>
+						<prop key="/*/*/*/*/*">normal</prop>																					
 					</props>
 				</property>
 			</bean>		
@@ -430,6 +431,8 @@
 				<prop key="/feed/*">tagController</prop>
 								
 				<prop key="/feeds/inbox">tagController</prop>
+				
+				<prop key="/*/*/*/*/*">tagController</prop>
 				
 				<prop key="/*">tagController</prop>
 				<prop key="/index">tagController</prop>				

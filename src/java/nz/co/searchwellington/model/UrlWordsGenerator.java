@@ -19,9 +19,12 @@ public class UrlWordsGenerator {
 	
 	public static String markUrlForNewsitem(Newsitem newsitem) {
 		StringBuilder uri = new StringBuilder();		
+		if (newsitem.getPublisher() != null) {
+			uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName()));
+		}
 		DateFormatter dateFormatter = new DateFormatter();
-		uri.append(dateFormatter.formatDate(newsitem.getDate(), "yyyyy"));
-		uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "mmm"));
+		uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "yyyy"));
+		uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "MM"));
 		uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "d"));
 		uri.append("/" + makeUrlWordsFromName(newsitem.getName()));
 		return uri.toString();

@@ -14,7 +14,7 @@
 		<constructor-arg ref="archiveLinksService" />		
 	</bean>
 	
-	<bean id="newsitemPageModelBuilder" class="nz.co.searchwellington.controllers.models.NewsitemModelBuilder">
+	<bean id="newsitemPageModelBuilder" class="nz.co.searchwellington.controllers.models.NewsitemPageModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 	</bean>
 		

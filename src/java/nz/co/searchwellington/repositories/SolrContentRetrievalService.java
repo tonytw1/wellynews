@@ -160,7 +160,7 @@ public class SolrContentRetrievalService {
 	}
 
 	public Newsitem getNewsPage(String pathInfo, boolean shouldShowBroken) {
-		return solrResourceDAO.getNewspage(shouldShowBroken);
+		return solrResourceDAO.getNewspage(pathInfo, shouldShowBroken);
 	}
 	
 }

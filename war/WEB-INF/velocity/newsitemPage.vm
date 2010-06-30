@@ -10,13 +10,17 @@
 </div>
 
 
-
-
-
 <div class="main">
 
-<h2>Newsitem</h2>
-
+	<h2>Newsitem</h2>
+		
+	<ul class="flat_list">
+		<li class="content_item">
+			<ul class="main_content_item">
+				#parse("includes/content_element.vm")
+			</ul>
+		</li>
+	</ul>
 
 </div>
 

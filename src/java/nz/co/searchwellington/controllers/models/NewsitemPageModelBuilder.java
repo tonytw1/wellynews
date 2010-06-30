@@ -29,21 +29,23 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
-		return request.getPathInfo().matches("^/\\d\\d\\d\\d/\\d\\d/\\d\\d?/.*?$");
+		logger.info("Checking valid: " + request.getPathInfo());
+		return request.getPathInfo().matches("^/.*?/\\d\\d\\d\\d/\\d\\d/\\d\\d?/.*?$");
 	}
 	
 	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		logger.info("Retrieving newsitem for path: " + request.getPathInfo());
+		ModelAndView mv = new ModelAndView();				
 		Newsitem newsitem = contentRetrievalService.getNewsPage(request.getPathInfo());
-		// TODO Auto-generated method stub
+		mv.addObject("item", newsitem);
 		return null;
 	}
 
+	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		// TODO Auto-generated method stub		
 	}
 
 	

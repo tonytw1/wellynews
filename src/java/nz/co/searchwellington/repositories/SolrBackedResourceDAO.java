@@ -87,7 +87,7 @@ public class SolrBackedResourceDAO {
 	}
 	
 	
-	public Newsitem getNewspage(boolean showBroken, String pageUrl) {
+	public Newsitem getNewspage(String pageUrl, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").pageUrl(pageUrl).toQuery();			
 		List<Resource> queryResults = getQueryResults(query);
 		if (queryResults.size() == 1) {
