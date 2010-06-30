@@ -127,4 +127,9 @@ public class SolrQueryBuilder {
 		return this;
 	}
 
+	public SolrQueryBuilder pageUrl(String pageUrl) {
+		sb.append(" +pageUrl:'" + pageUrl + "'");
+		return this;
+	}
+
 }

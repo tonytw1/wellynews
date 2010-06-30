@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -156,6 +157,10 @@ public class SolrContentRetrievalService {
 
 	public List<Resource> getHandTaggingsForUser(User user, boolean shouldShowBroken) {
 		return solrResourceDAO.getHandTaggingsForUser(user, shouldShowBroken);
+	}
+
+	public Newsitem getNewsPage(String pathInfo, boolean shouldShowBroken) {
+		return solrResourceDAO.getNewspage(shouldShowBroken);
 	}
 	
 }

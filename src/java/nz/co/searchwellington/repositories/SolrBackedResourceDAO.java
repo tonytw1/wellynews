@@ -12,6 +12,7 @@ import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -83,6 +84,16 @@ public class SolrBackedResourceDAO {
     	tags.add(tag);
     	SolrQuery query = getTaggedContentSolrQuery(tags, showBroken, "N");
     	return getQueryCount(query);
+	}
+	
+	
+	public Newsitem getNewspage(boolean showBroken, String pageUrl) {
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").pageUrl(pageUrl).toQuery();			
+		List<Resource> queryResults = getQueryResults(query);
+		if (queryResults.size() == 1) {
+			return(Newsitem) queryResults.get(0);
+		}
+		return null;		
 	}
 	
 

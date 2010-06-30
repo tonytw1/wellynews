@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
@@ -53,7 +54,9 @@ public class SolrInputDocumentBuilder {
 		}
 		
 		if (resource.getType().equals("N")) {
-			Newsitem newsitem = (Newsitem) resource;
+			Newsitem newsitem = (Newsitem) resource;						
+			inputDocument.addField("pageUrl", UrlWordsGenerator.markUrlForNewsitem(newsitem));
+			
 			List<Comment> comments = newsitem.getComments();
 			if(comments.size() > 0) {
 				inputDocument.addField("commented", 1);

@@ -12,6 +12,7 @@ import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
@@ -250,6 +251,11 @@ public class ContentRetrievalService {
 
 	public int getOwnedByCount(User loggedInUser) {
 		return resourceDAO.getOwnedByUserCount(loggedInUser);
+	}
+
+
+	public Newsitem getNewsPage(String pathInfo) {
+		return solrContentRetrievalService.getNewsPage(pathInfo, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 }
