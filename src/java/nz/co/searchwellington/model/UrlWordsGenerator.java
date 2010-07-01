@@ -23,11 +23,14 @@ public class UrlWordsGenerator {
 			uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName()));
 		}
 		DateFormatter dateFormatter = new DateFormatter();
-		uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "yyyy"));
-		uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "MM"));
-		uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "d"));
-		uri.append("/" + makeUrlWordsFromName(newsitem.getName()));
-		return uri.toString();
+		if (newsitem.getDate() != null) {
+			uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "yyyy"));
+			uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "MMM").toLowerCase());
+			uri.append("/" + dateFormatter.formatDate(newsitem.getDate(), "dd"));
+			uri.append("/" + makeUrlWordsFromName(newsitem.getName()));
+			return uri.toString();
+		}
+		return null;
 	}
 	
 }

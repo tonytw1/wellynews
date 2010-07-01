@@ -30,7 +30,7 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		logger.info("Checking valid: " + request.getPathInfo());
-		return request.getPathInfo().matches("^/.*?/\\d\\d\\d\\d/\\d\\d/\\d\\d?/.*?$");
+		return request.getPathInfo().matches("^/.*?/\\d\\d\\d\\d/[a-z]{3}/\\d\\d?/.*?$");
 	}
 	
 	
@@ -39,7 +39,11 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 		logger.info("Retrieving newsitem for path: " + request.getPathInfo());
 		ModelAndView mv = new ModelAndView();				
 		Newsitem newsitem = contentRetrievalService.getNewsPage(request.getPathInfo());
-		mv.addObject("item", newsitem);
+		if (newsitem != null) {
+			logger.info("Putting newsitem onto page: " + newsitem.getName());
+			mv.addObject("item", newsitem);
+			return mv;
+		}
 		return null;
 	}
 

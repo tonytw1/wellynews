@@ -54,8 +54,9 @@ public class SolrInputDocumentBuilder {
 		}
 		
 		if (resource.getType().equals("N")) {
-			Newsitem newsitem = (Newsitem) resource;						
+			Newsitem newsitem = (Newsitem) resource;		
 			inputDocument.addField("pageUrl", UrlWordsGenerator.markUrlForNewsitem(newsitem));
+			log.info(UrlWordsGenerator.markUrlForNewsitem(newsitem));
 			
 			List<Comment> comments = newsitem.getComments();
 			if(comments.size() > 0) {

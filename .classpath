@@ -45,7 +45,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/commons-io-1.4.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/jsr173_1.0_api.jar"/>
 	<classpathentry kind="lib" path="lib/buildtime/jaxen-1.1-beta-6.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/georss-0.1.jar"/>
 	<classpathentry kind="lib" path="lib/buildtime/mockito-all-1.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/rome-fetcher-1.0RC2.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/slf4j-api-1.5.2.jar"/>
@@ -60,5 +59,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/netty-3.1.5.GA.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/rome-1.0.jar" sourcepath="/home/tmccrae/Download/rome-1.0-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/twitter4j-core-2.1.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="war/WEB-INF/lib/georss-rome-0.9.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

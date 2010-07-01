@@ -90,8 +90,9 @@ public class SolrBackedResourceDAO {
 	public Newsitem getNewspage(String pageUrl, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").pageUrl(pageUrl).toQuery();			
 		List<Resource> queryResults = getQueryResults(query);
+		log.info(queryResults.size() + " results found while searching for page url: " + pageUrl);
 		if (queryResults.size() == 1) {
-			return(Newsitem) queryResults.get(0);
+			return (Newsitem) queryResults.get(0);
 		}
 		return null;		
 	}
