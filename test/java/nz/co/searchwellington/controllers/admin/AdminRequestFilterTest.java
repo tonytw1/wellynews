@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers.admin;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.TagDAO;
 
 import org.joda.time.DateTime;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -22,13 +23,15 @@ public class AdminRequestFilterTest extends TestCase {
 	private Tag transportTag = mock(Tag.class);
 	private Feed feed = mock(Feed.class);
 	private Resource resource = mock(Resource.class);
+	private TagDAO tagDAO = mock(TagDAO.class);
+	
 	
 	@Override
 	protected void setUp() throws Exception {		 
-		stub(resourceDAO.loadTagByName("transport")).toReturn(transportTag);
-		stub(resourceDAO.loadResourceById(123)).toReturn(feed);
-		stub(resourceDAO.loadResourceById(567)).toReturn(resource);
-		filter = new AdminRequestFilter(resourceDAO);
+		when(tagDAO.loadTagByName("transport")).thenReturn(transportTag);
+		when(resourceDAO.loadResourceById(123)).thenReturn(feed);
+		when(resourceDAO.loadResourceById(567)).thenReturn(resource);
+		filter = new AdminRequestFilter(resourceDAO, tagDAO);
 	}
 
 	
@@ -67,7 +70,7 @@ public class AdminRequestFilterTest extends TestCase {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/transport");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("transport");
 		 
 		 Tag requestTag = (Tag) request.getAttribute("tag");
 		 assertNotNull(requestTag);
@@ -79,7 +82,7 @@ public class AdminRequestFilterTest extends TestCase {
 		 request.setPathInfo("/edit/tag/save");
 		 request.setParameter("tag", "transport");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadTagByName("transport");
+		 verify(tagDAO).loadTagByName("transport");
 		 
 		 Tag requestTag = (Tag) request.getAttribute("tag");
 		 assertNotNull(requestTag);

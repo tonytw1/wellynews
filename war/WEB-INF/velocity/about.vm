@@ -112,10 +112,9 @@ will in most cases provide the underlying data in the desired format. (credit - 
 
 
 <h3>Source code</h3>
-<p>The content aggregation system is a Java application which is backed onto Mysql and Apache solr.</p>
-<p>The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">github</a>.
+<p>The aggregation system is a Java application which makes use of Mysql and Apache solr. 
+The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">github</a>.
 </div>
-
 
 <div class="right">
 

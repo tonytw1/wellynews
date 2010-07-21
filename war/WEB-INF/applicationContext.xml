@@ -386,7 +386,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="suggestionDAO" />	
 		<constructor-arg ref="linkCheckerQueue" />		
-		<constructor-arg ref="notifier" />
 		<constructor-arg ref="solrUpdateQueue" />
 	</bean>
 	

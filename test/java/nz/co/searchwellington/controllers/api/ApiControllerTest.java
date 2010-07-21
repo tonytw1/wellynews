@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.api;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
@@ -32,21 +32,19 @@ public class ApiControllerTest extends TestCase {
 	User adminUser = mock(User.class);
 
 	protected void setUp() throws Exception {
-		stub(adminUser.isAdmin()).toReturn(true);
-		stub(loggedInUserFilter.getLoggedInUser()).toReturn(adminUser);
+		when(adminUser.isAdmin()).thenReturn(true);
+		when(loggedInUserFilter.getLoggedInUser()).thenReturn(adminUser);
 	}
-	
 	
 	public void testShouldAcceptFeedItemByUrl() throws Exception {	
 		ApiController controller = new ApiController(resourceDAO, requestFilter, loggedInUserFilter, supressionService, rssNewsitemService, contentUpdateService, null, autoTaggingService, null);
 		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
-				
-		request.setParameter("url", "http://test/233");
-		stub(rssNewsitemService.getFeedNewsitemByUrl("http://test/233")).toReturn(acceptedNewsitem);
-		controller.accept(request, response);
 		
+		request.setParameter("url", "http://test/233");
+		when(rssNewsitemService.getFeedNewsitemByUrl("http://test/233")).thenReturn(acceptedNewsitem);
+		controller.accept(request, response);
 		verify(contentUpdateService).update(acceptedNewsitem);		
 	}
 	

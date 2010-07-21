@@ -1,7 +1,7 @@
 package nz.co.searchwellington.htmlparsing;
 
 import java.io.File;
-import java.util.List;
+import java.util.Set;
 
 public class GoogleCalandarLinkExtractorTest extends ExtractorTestCase {
 
@@ -15,17 +15,15 @@ public class GoogleCalandarLinkExtractorTest extends ExtractorTestCase {
         assertFalse(extractor.isValid(null));
         assertFalse(extractor.isValid(""));
     }
-	
-    
-    
+	    
 	public void testShouldFindCalendarLink() throws Exception {		
 		File contentFile = new File("./test/java/nz/co/searchwellington/htmlparsing/downstage_news.htm"); 
 		StringBuffer content = loadContent(contentFile);
 		
 		LinkExtractor extractor = new GoogleCalendarLinkExtractor();
-		List<String> extractedLinks = extractor.extractLinks(content.toString());
+		Set<String> extractedLinks = extractor.extractLinks(content.toString());
 		assertEquals(1, extractedLinks.size());
-		assertEquals("http://www.google.com/calendar/render?cid=u33l192jom2msi7sppbsu5ehgc%40group.calendar.google.com", extractedLinks.get(0));
+		assertTrue(extractedLinks.contains("http://www.google.com/calendar/render?cid=u33l192jom2msi7sppbsu5ehgc%40group.calendar.google.com"));
 	}
     
 }

@@ -1,7 +1,6 @@
 
 package nz.co.searchwellington.modification;
 
-import nz.co.searchwellington.mail.Notifier;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -15,19 +14,17 @@ public class ContentUpdateService {
 	private ResourceRepository resourceDAO;
 	private SuggestionRepository suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
-	private Notifier notifier;
 	private SolrUpdateQueue solrUpdateQueue;
 
 		
 	public ContentUpdateService(ResourceRepository resourceDAO,
 			SuggestionRepository suggestionsDAO,
-			LinkCheckerQueue linkCheckerQueue, Notifier notifier,
+			LinkCheckerQueue linkCheckerQueue,
 			SolrUpdateQueue solrUpdateQueue) {
 		super();
 		this.resourceDAO = resourceDAO;
 		this.suggestionsDAO = suggestionsDAO;
 		this.linkCheckerQueue = linkCheckerQueue;
-		this.notifier = notifier;
 		this.solrUpdateQueue = solrUpdateQueue;
 	}
 
