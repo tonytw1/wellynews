@@ -5,7 +5,6 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.views.RssItemMaker;
@@ -23,15 +22,13 @@ public class RssController extends MultiActionController {
     
     private static final int MAX_RSS_ITEMS = 30;	// TODO move this knowledge towards the CRS
     private SiteInformation siteInformation;
-	private ContentModelBuilderService contentModelBuilderService;
 	private ContentRetrievalService contentRetrievalService;
 	private RssItemMaker rssItemMaker;
 
     
        
-    public RssController(SiteInformation siteInformation, ContentModelBuilderService contentModelBuilderService, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
+    public RssController(SiteInformation siteInformation, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
         this.siteInformation = siteInformation;
-        this.contentModelBuilderService = contentModelBuilderService;
         this.contentRetrievalService = contentRetrievalService;
         this.rssItemMaker = rssItemMaker;
     }

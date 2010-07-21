@@ -212,7 +212,6 @@
 	
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="contentModelBuilder" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssItemMaker" />
 		
