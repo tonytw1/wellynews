@@ -1,7 +1,6 @@
 package nz.co.searchwellington.model;
 
 import java.util.Date;
-import java.util.Set;
 
 
 

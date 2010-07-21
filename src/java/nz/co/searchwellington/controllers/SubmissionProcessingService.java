@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -18,8 +17,8 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
