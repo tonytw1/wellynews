@@ -69,7 +69,6 @@ public class RssNewsitemPrefetcher {
 	private List<Feed> decideWhichFeedsToDecache(List<Feed> allFeeds) {
 		List<Feed> feedsToDecache = new ArrayList<Feed>();
 		log.info("Deciding which feeds to decache");
-		log.info("Localtime is: " + wallClock.getLocalWallClockTime() + ". Is daytime: " + wallClock.isCurrentlyDaytime());	
 		for (Feed feed : allFeeds) {
 			log.debug("Feed '" + feed.getName() + "' was last read at: " + feed.getLastRead());
 			feedsToDecache.add(feed);
