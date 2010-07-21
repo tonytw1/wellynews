@@ -15,14 +15,6 @@
 
 <div class="main">
 
-
-
-
-
-
-
-
-
 <h2>$heading</h2>
 
 <p><i>$site_information.sitename</i> is ${site_information.areaname}'s own regional web directory.</p>
@@ -35,10 +27,6 @@ half the attraction.</p>
 
 <p>The Newslog appears daily on the front page of Search $site_information.areaname and is also available
 as an <a href="rssfeeds">RSS feed</a>.</p>
-
-
-
-
 
 
 <h3>I do not want my content indexed</h3>
@@ -55,9 +43,6 @@ Organisations can indiciate in their robots.txt that Search Wellington should no
 
 
 <o>You can also <a href="#contact">contact us directly</a> to request exclusion.</p>
-
-
-
 
 
 
@@ -109,13 +94,13 @@ settlers.
 
 <h3>Getting content out of the system</h3>
 
-<p>By running an aggregator, we're taking a slight liberty with other peoples content.
-It's therefore important we've transparent about what we're doing. To this end, our index is available in a machine readable form 
-for reuse by other members of the community.
+<p>By running an aggregator, we're taking a slight liberty with other people's content.
+It's therefore important that we've transparent about what we're doing. To this end, our index is available in a machine readable for for reuse by other members of the community.
 
 <p>ie. <a href="http://wellingtonista.com/">The Wellingtonista</a> and <a href="http://www.wcn.net.nz/">WCN</a> use our feed in to populate their Wellington news widgets.<p>
 
-<p>Our ethos is, if we use a piece of data to render one of our own pages, then generally that data should also be available as a feed</p>
+<p>Our ethos is, if we use a piece of data to render one of our own pages, then generally that data should also be available as a feed.</p>
+
 
 
 <h3>RSS and JSON feeds</h3>
@@ -126,18 +111,10 @@ will in most cases provide the underlying data in the desired format. (credit - 
 <p>The complete range of available feeds is documented in the <a href="/api">API instructions</a>.</p>
 
 
-
+<h3>Source code</h3>
+<p>The content aggregation system is a Java application which is backed onto Mysql and Apache solr.</p>
+<p>The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">github</a>.
 </div>
-
-
-
-
-
-
-
-
-
-
 
 
 <div class="right">
