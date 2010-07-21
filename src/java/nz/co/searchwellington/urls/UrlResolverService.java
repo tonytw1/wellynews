@@ -17,7 +17,7 @@ public class UrlResolverService {
 		return fullyResolveUrl(url, 0);		
 	}
 	
-	public String fullyResolveUrl(String url, int depth) {
+	private String fullyResolveUrl(String url, int depth) {
 		depth = depth + 1;
 		while (isResolvable(url) && depth < 5) {
 			String resolvedUrl = resolveSingleUrl(url);

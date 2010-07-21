@@ -8,7 +8,7 @@ public class JSONControllerTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		controller = new JSONController(null, null);
+		controller = new JSONController(null);
 	}
 	
 	public void testShouldAcceptValidCallbackName() throws Exception {
@@ -16,7 +16,7 @@ public class JSONControllerTest extends TestCase {
 	}
 	
 	public void testShouldRejectInvalidCallbackName() throws Exception {
-		JSONController controller = new JSONController(null, null);
+		JSONController controller = new JSONController(null);
 		assertFalse(controller.isValidCallbackName("callback()"));
 	}
 

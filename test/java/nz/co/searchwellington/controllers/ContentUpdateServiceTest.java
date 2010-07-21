@@ -51,25 +51,25 @@ public class ContentUpdateServiceTest extends TestCase {
 	
 	
 	public void testShouldSaveThroughTheHibernateDAO() throws Exception {		
-		service.update(updatedResource, loggedInUser, request);
+		service.update(updatedResource);
 		verify(resourceDAO).saveResource(updatedResource);
 	}
 
     
     public void testShouldUpdateTheSolrIndexOnSave() throws Exception {		
-		service.update(updatedResource, loggedInUser, request);
+		service.update(updatedResource);
 		verify(solrUpdateQueue).add(updatedResource);
 	}
 		
 	
 	public void testShouldRemoveSuggestionsForNewsitems() throws Exception {		
-		service.update(updatedResource, loggedInUser, request);
+		service.update(updatedResource);
 		verify(suggestionsDAO).removeSuggestion("http://test/123");
 	}
 	
 	
 	public void testShouldInitHttpStatusOwnerAndQueueLinkCheckForNewSubmissions() throws Exception {		
-		service.update(newResource, loggedInUser, request);
+		service.update(newResource);
 		verify(newResource).setHttpStatus(0);
 		verify(linkCheckerQueue).add(newResource);
 		verify(newResource).setOwner(loggedInUser);
@@ -77,13 +77,13 @@ public class ContentUpdateServiceTest extends TestCase {
 	
 	public void testShouldInitHttpStatusAndQueueLinkCheckWhenUrlChanges() throws Exception {	
 		stub(resourceDAO.loadResourceById(1)).toReturn(exitingResource);
-		service.update(updatedResource, loggedInUser, request);
+		service.update(updatedResource);
 		verify(updatedResource).setHttpStatus(0);
 		verify(linkCheckerQueue).add(updatedResource);
 	}
 	
 	public void testShouldSendNotificationOfNewPublicSubmissions() throws Exception {		
-		service.update(newResource, null, request);		
+		service.update(newResource);		
 		verify(notifier).sendSubmissionNotification("New submission", newResource);
 	}
 	

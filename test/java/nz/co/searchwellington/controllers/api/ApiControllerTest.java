@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
+import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -25,6 +26,7 @@ public class ApiControllerTest extends TestCase {
 	SupressionService supressionService = mock(SupressionService.class);
 	RssfeedNewsitemService rssNewsitemService = mock(RssfeedNewsitemService.class);
 	ContentUpdateService contentUpdateService = mock(ContentUpdateService.class);
+	AutoTaggingService autoTaggingService = mock(AutoTaggingService.class);
 
 	Newsitem acceptedNewsitem = mock(Newsitem.class);
 	User adminUser = mock(User.class);
@@ -36,7 +38,7 @@ public class ApiControllerTest extends TestCase {
 	
 	
 	public void testShouldAcceptFeedItemByUrl() throws Exception {	
-		ApiController controller = new ApiController(resourceDAO, requestFilter, loggedInUserFilter, supressionService, rssNewsitemService, contentUpdateService, null, null);
+		ApiController controller = new ApiController(resourceDAO, requestFilter, loggedInUserFilter, supressionService, rssNewsitemService, contentUpdateService, null, autoTaggingService, null);
 		
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -45,7 +47,7 @@ public class ApiControllerTest extends TestCase {
 		stub(rssNewsitemService.getFeedNewsitemByUrl("http://test/233")).toReturn(acceptedNewsitem);
 		controller.accept(request, response);
 		
-		verify(contentUpdateService).update(acceptedNewsitem, loggedInUserFilter.getLoggedInUser(), request);		
+		verify(contentUpdateService).update(acceptedNewsitem);		
 	}
 	
 }
