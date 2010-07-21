@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.filters.RequestFilter;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
@@ -47,6 +48,12 @@ public class EditPermissionService {
 
 	
 	public boolean canCheck(Resource resource) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return loggedInUser != null && loggedInUser.isAdmin();
+	}
+	
+	
+	public boolean canSeeLocalPage(Newsitem newsitem) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}

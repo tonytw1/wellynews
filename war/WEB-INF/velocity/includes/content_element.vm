@@ -166,16 +166,14 @@
 					#end
 					</ul>					
 				#end
-				
-				
+								
 				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
 					<li>Http Status: $item.httpStatus</li>						
 					#if ($item.isHeld()) 
 						<li>Held</li>
 					#end
 				#end
-				
-					
+									
 				#if ($editPermissionService.canEdit($item) && $item.commentFeed)
 					<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
 				#end
@@ -193,6 +191,9 @@
 					<li class="admin"><a href="$adminUrlBuilder.getViewSnapshotUrl($item)">view snapshot</a></li>
 				#end
 				
+				#if($item.type == "N" && $editPermissionService.canSeeLocalPage($item))
+					<li class="admin"><a href="$urlBuilder.getLocalPageUrl($item)">view local page</a></li>
+				#end
 				
 				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
 					#if ($item.localCopy) 
