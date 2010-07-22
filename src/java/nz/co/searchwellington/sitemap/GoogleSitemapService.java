@@ -1,7 +1,6 @@
 package nz.co.searchwellington.sitemap;
 
 import java.util.Date;
-import java.util.List;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
@@ -48,14 +47,13 @@ public class GoogleSitemapService {
     }
 
     
-    private void addTagUrl(Element root, Tag tag, String siteLocation) {      
-        
+    private void addTagUrl(Element root, Tag tag, String siteLocation) {              
         final String url = urlBuilder.getTagUrl(tag);     
         String lastmod = null;        
         Date lastUpdated = contentRetrivalService.getLastLiveTimeForTag(tag);
         if (lastUpdated != null) {
         	lastmod = dateFormatter.formatW3CDate(lastUpdated);
-        }        
+        }
         addUrlElement(root, url, lastmod);
         
         
@@ -73,10 +71,10 @@ public class GoogleSitemapService {
         Element locElement = tagElement.addElement(new QName("loc", new Namespace("sitemap", NAMESPACE)));
 		locElement.setText(url);
         
-        if (dateString != null) {
+		if (dateString != null) {
         	Element lastmod = tagElement.addElement(new QName("lastmod", new Namespace("sitemap", NAMESPACE)));
         	lastmod.setText(dateString);
-        }
+		}
 	}
 
 }

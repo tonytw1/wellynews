@@ -1,6 +1,6 @@
 package nz.co.searchwellington.sitemap;
 
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 
 import java.io.Reader;
 import java.io.StringReader;
@@ -12,7 +12,8 @@ import java.util.List;
 import junit.framework.TestCase;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.dom4j.Document;
@@ -25,9 +26,10 @@ import org.mockito.MockitoAnnotations;
 
 public class GoogleSitemapServiceTests extends TestCase {
     
-	@Mock ResourceRepository resourceDAO;
 	@Mock DateFormatter dateFormatter;
 	@Mock UrlBuilder urlBuilder;
+	@Mock ContentRetrievalService contentRetrievalService;
+	@Mock TagDAO tagDAO;
 	
 	List<Tag> tags;
 	Tag apples;
@@ -37,8 +39,7 @@ public class GoogleSitemapServiceTests extends TestCase {
 		
 	@Override
 	protected void setUp() throws Exception {
-		MockitoAnnotations.initMocks(this);
-		
+		MockitoAnnotations.initMocks(this);		
 		apples = new Tag();
 		apples.setName("apples");
 		
@@ -49,41 +50,44 @@ public class GoogleSitemapServiceTests extends TestCase {
 		tags.add(apples);
 		tags.add(bananas);  
 		
-		Date today = Calendar.getInstance().getTime();             
-		stub(dateFormatter.formatW3CDate(today)).toReturn("today");
+		when(tagDAO.getAllTags()).thenReturn(tags);
 		
-		stub(resourceDAO.getLastLiveTimeForTag(apples)).toReturn(today);
-		stub(resourceDAO.getLastLiveTimeForTag(bananas)).toReturn(null);
+		Date today = Calendar.getInstance().getTime();
+		when(dateFormatter.formatW3CDate(today)).thenReturn("today");
+		
+		when(contentRetrievalService.getLastLiveTimeForTag(apples)).thenReturn(today);
+		when(contentRetrievalService.getLastLiveTimeForTag(bananas)).thenReturn(null);
 				
-		stub(urlBuilder.getTagUrl(apples)).toReturn("http://apples");
-		stub(urlBuilder.getTagUrl(bananas)).toReturn("http://bananas");
+		when(urlBuilder.getTagUrl(apples)).thenReturn("http://apples");
+		when(urlBuilder.getTagUrl(bananas)).thenReturn("http://bananas");
 		
-		service = new GoogleSitemapService(resourceDAO, dateFormatter, urlBuilder);        
+		service = new GoogleSitemapService(contentRetrievalService, dateFormatter, urlBuilder, tagDAO);        
 	}
 	
 	
     public void testShouldRenderTagPagesWithLastModifiedTime() throws Exception {              
-        Document document = parse(service.render(tags, "http://test"));
+        final String xml = service.render("http://test");
+		Document document = parse(xml);
 
         Element urlset = (Element) document.selectSingleNode("//urlset");
         assertNotNull(urlset);
      
-        List locs = document.selectNodes( "//urlset/sitemap:url/sitemap:loc" );
+        List<?> locs = document.selectNodes( "//urlset/sitemap:url/sitemap:loc" );
         assertEquals(2, locs.size());
         
         // TODO Xpath to assert the lastmod tag has the correct text in it?
-        List lastmods = document.selectNodes( "//urlset/sitemap:url/sitemap:lastmod" );
+        List<?> lastmods = document.selectNodes( "//urlset/sitemap:url/sitemap:lastmod" );
         assertEquals(1, lastmods.size());
     }
     
     
     public void testShouldRenderTagPaginations() throws Exception {
-    	  stub(resourceDAO.getTaggedNewitemsCount(apples, false)).toReturn(65);
-    	  stub(resourceDAO.getTaggedNewitemsCount(bananas, false)).toReturn(10);
+    	  when(contentRetrievalService.getTaggedNewitemsCount(apples)).thenReturn(65);
+    	  when(contentRetrievalService.getTaggedNewitemsCount(bananas)).thenReturn(10);
           
-    	  Document document = parse(service.render(tags, "http://test"));
+    	  Document document = parse(service.render("http://test"));
     	  
-    	  List locs = document.selectNodes( "//urlset/sitemap:url/sitemap:loc" );
+    	  List<?> locs = document.selectNodes( "//urlset/sitemap:url/sitemap:loc" );
           assertEquals(4, locs.size());    	  
 	}
     
