@@ -223,7 +223,6 @@ public class RequestFilter {
         Matcher autotagMatcher = autotagPattern.matcher(request.getPathInfo());
         if (autotagMatcher.matches()) {        	
         	final String match = autotagMatcher.group(1);        	
-        	System.out.println(match);
         	if (!isReservedUrlWord(match)) {
 	        	log.debug("'" + match + "' matches content");
 		        	
