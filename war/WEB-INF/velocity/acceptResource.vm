@@ -11,7 +11,7 @@
 <div class="main">
 <h2>Accepting a Feed Item</h2>
 
-<form action="save" method="POST">
+<form id="editForm" action="save" method="POST">
 	<input name="resource" value="$resource.id" type="hidden" />
 	<input name="type" value="N" type="hidden" />	
 	<fieldset>
