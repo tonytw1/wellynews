@@ -47,6 +47,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/feeds/inbox";
 	}
 	
+	public String getFeedsUrl() {
+		return siteInformation.getUrl() + "/feeds";
+	}
+	
 	public String getTagUrl(Tag tag) {
 		return siteInformation.getUrl() + "/" + tag.getName();
 	}

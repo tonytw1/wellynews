@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,11 +18,12 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
     	
 	private ContentRetrievalService contentRetrievalService;
 	private SuggestedFeeditemsService suggestedFeeditemsService;
-	
-	
-	public FeedsModelBuilder(ContentRetrievalService contentRetrievalService, SuggestedFeeditemsService suggestedFeeditemsService) {		
+	private UrlBuilder urlBuilder;
+		
+	public FeedsModelBuilder(ContentRetrievalService contentRetrievalService, SuggestedFeeditemsService suggestedFeeditemsService, UrlBuilder urlBuilder) {		
 		this.contentRetrievalService = contentRetrievalService;
 		this.suggestedFeeditemsService = suggestedFeeditemsService;
+		this.urlBuilder = urlBuilder;
 	}
 	
 
@@ -35,12 +37,10 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building feed page model");
-			ModelAndView mv = new ModelAndView();
-			
-			mv.addObject("heading", "Feeds");        		
+			ModelAndView mv = new ModelAndView();			
+			mv.addObject("heading", "Feeds");
 			mv.addObject("description", "Incoming feeds");
-			mv.addObject("link", "TODO");	// TODO
-			
+			mv.addObject("link", urlBuilder.getFeedsUrl());
 			mv.addObject("main_content", contentRetrievalService.getAllFeeds());
 			return mv;
 		}

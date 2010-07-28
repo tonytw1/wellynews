@@ -25,7 +25,8 @@
 		
 	<bean id="feedsModelBuilder" class="nz.co.searchwellington.controllers.models.FeedsModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
-		<constructor-arg ref="suggestedFeeditemsService" />	
+		<constructor-arg ref="suggestedFeeditemsService" />
+		<constructor-arg ref="urlBuilder" />
 	</bean>
 
 	<bean id="publisherModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherModelBuilder">
