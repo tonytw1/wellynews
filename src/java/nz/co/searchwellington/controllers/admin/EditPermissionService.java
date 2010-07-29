@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -11,23 +10,20 @@ import org.apache.log4j.Logger;
 
 public class EditPermissionService {
 
-	Logger log = Logger.getLogger(EditPermissionService.class);
+	static Logger log = Logger.getLogger(EditPermissionService.class);
 	   
 	
 	private LoggedInUserFilter loggedInUserFilter;
-	private RequestFilter requestFilter;
 	
 
-	public EditPermissionService(LoggedInUserFilter loggedInUserFilter, RequestFilter requestFilter) {	
+	public EditPermissionService(LoggedInUserFilter loggedInUserFilter) {	
 		this.loggedInUserFilter = loggedInUserFilter;
-		this.requestFilter = requestFilter;
 	}
 
 	
 	public boolean canEdit(Resource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		boolean isOnRequest = requestFilter.getAnonResource() != null && requestFilter.getAnonResource().getId() == resource.getId();
-		return isAdminOrOwner(resource, loggedInUser) || isOnRequest;
+		return isAdminOrOwner(resource, loggedInUser);
 	}
 	
 	

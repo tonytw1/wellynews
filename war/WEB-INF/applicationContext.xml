@@ -75,10 +75,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				
 	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" >
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="requestFilter" />
 	</bean>
-	
-	
+		
 	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
         <property name="configLocation">
             <value>classpath:application-ehcache.xml</value>

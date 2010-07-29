@@ -28,12 +28,11 @@ public class RequestFilter {
        
 	static Logger log = Logger.getLogger(RequestFilter.class);
     
-    protected ResourceRepository resourceDAO;
-    protected TagDAO tagDAO;
+    private ResourceRepository resourceDAO;
+    private TagDAO tagDAO;
     
     private GoogleSearchTermExtractor searchTermExtractor;
-    private Resource anonResource;
-
+    
     public RequestFilter() {         
     }
     
@@ -41,30 +40,15 @@ public class RequestFilter {
         this.resourceDAO = resourceDAO;
         this.tagDAO = tagDAO;
         this.searchTermExtractor = searchTermExtractor;
-        this.anonResource = null;
     }
     
-    
-    private void loadAnonResource(HttpServletRequest request) {
-    	 Integer owned = (Integer) request.getSession().getAttribute("owned");
-         if (owned != null) {
-        	 this.anonResource = resourceDAO.loadResourceById(owned);
-         }
-    }
-    
-    
-    public Resource getAnonResource() {
-		return anonResource;
-	}
-
-    
+          
 	public void loadAttributesOntoRequest(HttpServletRequest request) {
 		log.debug("Looking for google search referrer");
 		extractGoogleReferrer(request);
 		
 		
 		log.debug("Loading attributes onto request");		
-    	loadAnonResource(request);
     	if (request.getParameter("page") != null) {
     		String pageString = request.getParameter("page");
     		try {
