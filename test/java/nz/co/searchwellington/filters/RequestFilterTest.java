@@ -110,17 +110,8 @@ public class RequestFilterTest extends TestCase {
 		 verify(resourceDAO).getPublisherByUrlWords("capital-times");
 		 assertEquals(capitalTimesPublisher, request.getAttribute("publisher"));
 	 }
+	
 	 
-	 // TODO This is suppost to be depricated isn't it?
-	 public void testShouldPopulatePublisherForPublisherWatchlistRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/capital-times/watchlist");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).getPublisherByUrlWords("capital-times");
-		 assertEquals(capitalTimesPublisher, request.getAttribute("publisher"));
-	 }
-	 
-	 	 
 	 public void testShouldPopulateTagForSingleTagGeotagRequest() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/transport/geotagged");
