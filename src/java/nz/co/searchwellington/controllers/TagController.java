@@ -11,9 +11,12 @@ import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
+import nz.co.searchwellington.views.JSONView;
+import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.sun.syndication.io.FeedException;
@@ -44,15 +47,24 @@ public class TagController extends MultiActionController {
         boolean showBroken = false;
         
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
-		if (mv != null) {
-			urlStack.setUrlStack(request);	// TODO don't do for rss and json views
-			addCommonModelElements(mv, showBroken);
+		if (mv != null) {			
+			boolean isHtmlView = isHtmlView(mv);			
+			if (isHtmlView) {
+				urlStack.setUrlStack(request);
+				addCommonModelElements(mv, showBroken);
+			}			
 			return mv;
 		}
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
     }
 
+	
+	private boolean isHtmlView(ModelAndView mv) {
+		return mv.getViewName() != null;
+	}
+	
+	
 	// TODO this should be in model builders
     private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
 		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
