@@ -2,13 +2,13 @@ package nz.co.searchwellington.tagging;
 
 import java.util.Set;
 
-import org.apache.log4j.Logger;
-
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.UserRepository;
+
+import org.apache.log4j.Logger;
 
 public class AutoTaggingService {
 	
@@ -41,13 +41,9 @@ public class AutoTaggingService {
 		Set<Tag> suggestedTags = placeAutoTagger.suggestTags(resource);
 		log.info("Suggested tags for '" + resource.getName() + "' are: " + suggestedTags.toString());
 		suggestedTags.addAll(tagHintAutoTagger.suggestTags(resource));
-		for (Tag tag : suggestedTags) {
-			if (!impliedTagService.alreadyHasTag(resource, tag)) {
-				log.info("Autotagging resource '" + resource.getName() + "' with " + tag.getName());
-				handTaggingDAO.addTag(autotaggerUser, tag, resource);
-			} else {
-				log.info("Resource already has tag '" + tag.getName() + "'; ignoring");
-			}
+
+		if (!suggestedTags.isEmpty()) {
+			handTaggingDAO.setUsersTagVotesForResource(resource, autotaggerUser, suggestedTags);
 		}
 	}
 

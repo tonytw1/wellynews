@@ -394,9 +394,8 @@ public class ResourceEditController extends BaseMultiActionController {
             	
             	saveResource(request, loggedInUser, editResource);
             	log.info("Saved resource; id is now: " + editResource.getId());
-            	submissionProcessingService.processTags(request, editResource, loggedInUser);
-            	saveResource(request, loggedInUser, editResource); 	// TODO duplication
 
+            	submissionProcessingService.processTags(request, editResource, loggedInUser);            	
                 if (newSubmission) {
                     log.info("Applying the auto tagger to new submission.");
                     autoTagger.autotag(editResource);

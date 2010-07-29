@@ -26,7 +26,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-//TODO process publisher
 public class SubmissionProcessingService {
 
 	private static final String REQUEST_TITLE_NAME = "title";
@@ -149,6 +148,7 @@ public class SubmissionProcessingService {
     
     
 	public void processTags(HttpServletRequest request, Resource editResource, User user) {
+		log.info("Processing tags");
     	if (request.getParameter("has_tag_select") != null) {
     		processTagSelect(request, editResource, user);    		
     	}
@@ -163,19 +163,17 @@ public class SubmissionProcessingService {
 
 	@SuppressWarnings("unchecked")
 	private void processTagSelect(HttpServletRequest request, Resource editResource, User user) {
+		log.info("Processing tag select");
 		if (request.getAttribute("tags") != null) {        	
 			List<Tag> requestTagsList = (List <Tag>) request.getAttribute("tags");
 			log.debug("Found tags on request: " + requestTagsList);
 			Set<Tag> tags = new HashSet<Tag>(requestTagsList);
-			log.info("Found " + tags.size() + " tags on the request");
-			tagVoteDAO.clearTags(editResource, user);
-			for (Tag tag : tags) {
-				tagVoteDAO.addTag(user, tag, editResource);				
-			}
+			log.info("Found " + tags.size() + " tags on the request");			
+			tagVoteDAO.setUsersTagVotesForResource(editResource, user, tags);			
 			
 		} else {
-			log.debug("No tags request attribute seen; clearing users tag votes");
-			tagVoteDAO.clearTags(editResource, user);
+			log.info("No tags request attribute seen; clearing users tag votes");
+			tagVoteDAO.setUsersTagVotesForResource(editResource, user, new HashSet<Tag>());
 		}
 	}
     

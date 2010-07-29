@@ -19,9 +19,8 @@ public class HandTaggingDAO {
 	
 	static Logger log = Logger.getLogger(HandTaggingDAO.class);
 	
-	SessionFactory sessionFactory;
-	
-
+	private SessionFactory sessionFactory;
+		
 	public HandTaggingDAO() {
 	}
 
@@ -50,6 +49,7 @@ public class HandTaggingDAO {
 	}
 
 
+    // TODO handTaggingDAO should be responsible for updating solr
 	private List<HandTagging> getHandTaggings(Resource resource, User user) {
 		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
 			add(Expression.eq("resource", resource)).
@@ -66,28 +66,23 @@ public class HandTaggingDAO {
 	
 	
 	@Transactional
+	public void setUsersTagVotesForResource(Resource editResource, User user, Set<Tag> tags) {
+		this.clearTags(editResource, user);
+		for (Tag tag : tags) {
+			this.addTag(user, tag, editResource);				
+		}		
+	}
+	
+	
+	@Transactional
     public void addTag(User user, Tag tag, Resource resource) {
-		HandTagging existing = (HandTagging) sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-			add(Expression.eq("resource", resource)).
-			add(Expression.eq("user", user)).
-			add(Expression.eq("tag", tag)).
-			setCacheable(true).uniqueResult();
-
-		if (existing == null) {
-			HandTagging newTagging = new HandTagging(0, resource, user, tag);
-			log.info("Adding new hand tagging: " + newTagging);
-			sessionFactory.getCurrentSession().save(newTagging);
-		}
+		Set<Tag> existingVotes = this.getHandpickedTagsForThisResourceByUser(user, resource);
+		if (!existingVotes.contains(tag)) {
+			this.addTag(user, tag, resource);
+		}		
 	}
 
     
-    public void clearTags(Resource resource, User user) {
-		for (HandTagging handTagging : this.getHandTaggings(resource, user)) {
-			sessionFactory.getCurrentSession().delete(handTagging);
-		}
-	}
-
-
 	public void clearTags(Resource resource) {
 		for (HandTagging handTagging : this.getHandTaggingsForResource(resource)) {
 			sessionFactory.getCurrentSession().delete(handTagging);
@@ -96,8 +91,14 @@ public class HandTaggingDAO {
 
 
 	public void clearTaggingsForTag(Tag tag) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
-
+	
+	
+	private void clearTags(Resource resource, User user) {
+		for (HandTagging handTagging : this.getHandTaggings(resource, user)) {
+			sessionFactory.getCurrentSession().delete(handTagging);
+		}
+	}
+	
 }
