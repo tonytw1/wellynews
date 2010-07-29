@@ -1,8 +1,7 @@
 package nz.co.searchwellington.filters;
 
-
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -33,10 +32,10 @@ public class RequestFilterTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		stub(tagDAO.loadTagByName("transport")).toReturn(transportTag);
-		stub(tagDAO.loadTagByName("soccer")).toReturn(soccerTag);
-		stub(resourceDAO.getPublisherByUrlWords("capital-times")).toReturn(capitalTimesPublisher);
-		stub(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).toReturn(feed);
+		when(tagDAO.loadTagByName("transport")).thenReturn(transportTag);
+		when(tagDAO.loadTagByName("soccer")).thenReturn(soccerTag);
+		when(resourceDAO.getPublisherByUrlWords("capital-times")).thenReturn(capitalTimesPublisher);
+		when(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).thenReturn(feed);
 		filter = new RequestFilter(resourceDAO, tagDAO, searchTermExtractor);
 	}
 	
