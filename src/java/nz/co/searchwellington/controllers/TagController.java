@@ -11,12 +11,9 @@ import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.views.JSONView;
-import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.sun.syndication.io.FeedException;
