@@ -1,37 +1,41 @@
 package nz.co.searchwellington.filters;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import junit.framework.TestCase;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-
-public class RequestFilterTest extends TestCase {
+public class RequestFilterTest {
 	
-	private ResourceRepository resourceDAO = mock(ResourceRepository.class);	// TODO needs to use CRS
-	private TagDAO tagDAO = mock(TagDAO.class);
-	private GoogleSearchTermExtractor searchTermExtractor = mock(GoogleSearchTermExtractor.class);
-
+	@Mock private ResourceRepository resourceDAO;
+	@Mock private TagDAO tagDAO;
+	@Mock private GoogleSearchTermExtractor searchTermExtractor;
+	
+	@Mock private Tag transportTag;
+	@Mock private Tag soccerTag;
+	@Mock private Website capitalTimesPublisher;
+	@Mock private Feed feed;
+		
 	private RequestFilter filter;
-	private Tag transportTag = mock(Tag.class);
-	private Tag soccerTag = mock(Tag.class);
-	private Website capitalTimesPublisher = mock(Website.class);
-	private Feed feed = mock(Feed.class);
 	
-	
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 		when(tagDAO.loadTagByName("transport")).thenReturn(transportTag);
 		when(tagDAO.loadTagByName("soccer")).thenReturn(soccerTag);
 		when(resourceDAO.getPublisherByUrlWords("capital-times")).thenReturn(capitalTimesPublisher);
@@ -40,16 +44,16 @@ public class RequestFilterTest extends TestCase {
 	}
 	
 	
-	 
-	 public void testShouldPopulateTagForAutotagUrl() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/autotag/transport");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");		
-	 }
+	@Test
+	public void shouldPopulateTagForAutotagUrl() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/autotag/transport");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");		
+	}
 	 
 	
-	public void testShouldParsePageAttribute() throws Exception {
+	public void shouldParsePageAttribute() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setPathInfo("/transport");
 		request.setParameter("page", "3");
@@ -58,8 +62,8 @@ public class RequestFilterTest extends TestCase {
 		assertEquals(3, page.intValue());
 	}
 	
-	
-	public void testShouldPopulateFeedFromRequestParameter() throws Exception {
+	@Test
+	public void shouldPopulateFeedFromRequestParameter() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/feed/tranz-metro-delays");
 		 
@@ -70,122 +74,127 @@ public class RequestFilterTest extends TestCase {
 		 verifyNoMoreInteractions(resourceDAO);		 
 	}
 		
-	
-	public void testShouldNotAttemptToResolveTagForReservedUrlWordComment() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/comment");		 
-		 filter.loadAttributesOntoRequest(request);
-		 verifyNoMoreInteractions(resourceDAO);		
+	@Test
+	public void shouldNotAttemptToResolveTagForReservedUrlWordComment() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/comment");		 
+		filter.loadAttributesOntoRequest(request);
+		verifyNoMoreInteractions(resourceDAO);		
 	}
 	
-	public void testShouldNotAttemptToResolveTagForReservedUrlWordGeotagged() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/geotagged/rss");		 
-		 filter.loadAttributesOntoRequest(request);
-		 verifyNoMoreInteractions(resourceDAO);		
+	@Test
+	public void shouldNotAttemptToResolveTagForReservedUrlWordGeotagged() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/geotagged/rss");		 
+		filter.loadAttributesOntoRequest(request);
+		verifyNoMoreInteractions(resourceDAO);		
 	}
-		
-	 public void testShouldPopulateTagForSingleTagCommentRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/transport/comment");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");
-		 assertEquals(transportTag, request.getAttribute("tag"));
-	 }
-	 
-	 
-	 public void testShouldPopulateTagForSingleTagCommentRssRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/transport/comment/rss");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");		
-	 }
-	 
-	 
-	 public void testShouldPopulatePublisherForPublisherRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/capital-times");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).getPublisherByUrlWords("capital-times");
-		 assertEquals(capitalTimesPublisher, request.getAttribute("publisher"));
-	 }
 	
+	@Test
+	public void shouldPopulateTagForSingleTagCommentRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/transport/comment");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");
+		assertEquals(transportTag, request.getAttribute("tag"));
+	}
 	 
-	 public void testShouldPopulateTagForSingleTagGeotagRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/transport/geotagged");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");
-		 assertEquals(transportTag, request.getAttribute("tag"));
-	 }
-	 	 
-	 public void testShouldPopulateTagForSingleTagRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/transport");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");
-		 assertEquals(transportTag, request.getAttribute("tag"));
-	 }
-	    
-	 public void testShouldPopulateTagForSingleTagRssRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/transport/rss");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");
-		 assertEquals(transportTag, request.getAttribute("tag"));
-	 }
+	@Test 
+	public void shouldPopulateTagForSingleTagCommentRssRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/transport/comment/rss");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");		
+	}
 	 
+	@Test
+	public void shouldPopulatePublisherForPublisherRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/capital-times");
+		filter.loadAttributesOntoRequest(request);
+		verify(resourceDAO).getPublisherByUrlWords("capital-times");
+		assertEquals(capitalTimesPublisher, request.getAttribute("publisher"));
+	}
+	
+	@Test
+	public void shouldPopulateTagForSingleTagGeotagRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/transport/geotagged");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");
+		assertEquals(transportTag, request.getAttribute("tag"));
+	}
+	
+	@Test
+	public void shouldPopulateTagForSingleTagRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/transport");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");
+		assertEquals(transportTag, request.getAttribute("tag"));
+	}
+	
+	@Test
+	public void shouldPopulateTagForSingleTagRssRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/transport/rss");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");
+		assertEquals(transportTag, request.getAttribute("tag"));
+	}
 	 
-	 public void testShouldPopulateAttributesForPublisherTagCombinerRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/capital-times+soccer");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
-		 verify(tagDAO).loadTagByName("soccer");
-		 Website publisher = (Website) request.getAttribute("publisher");
-		 Tag tag = (Tag) request.getAttribute("tag");
-		 assertEquals(capitalTimesPublisher, publisher);
-		 assertEquals(soccerTag, tag);
-	 }
+	@Test 
+	public void shouldPopulateAttributesForPublisherTagCombinerRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/capital-times+soccer");
+		filter.loadAttributesOntoRequest(request);
+		verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
+		verify(tagDAO).loadTagByName("soccer");
+		Website publisher = (Website) request.getAttribute("publisher");
+		Tag tag = (Tag) request.getAttribute("tag");
+		assertEquals(capitalTimesPublisher, publisher);
+		assertEquals(soccerTag, tag);
+	}
 
-	 
-	 public void testShouldPopulateAttributesForPublisherTagCombinerRssRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/capital-times+soccer/rss");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
-		 verify(tagDAO).loadTagByName("soccer");
-		 Website publisher = (Website) request.getAttribute("publisher");
-		 Tag tag = (Tag) request.getAttribute("tag");
-		 assertEquals(capitalTimesPublisher, publisher);
-		 assertEquals(soccerTag, tag);
-	 }
+	@Test 
+	public void shouldPopulateAttributesForPublisherTagCombinerRssRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/capital-times+soccer/rss");
+		filter.loadAttributesOntoRequest(request);
+		verify(resourceDAO).getPublisherByUrlWords("capital-times");		 
+		verify(tagDAO).loadTagByName("soccer");
+		Website publisher = (Website) request.getAttribute("publisher");
+		Tag tag = (Tag) request.getAttribute("tag");
+		assertEquals(capitalTimesPublisher, publisher);
+		assertEquals(soccerTag, tag);
+	}
 
+	@Test 
+	@SuppressWarnings("unchecked")
+	public void shouldPopulateTagsForTagCombinerRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/transport+soccer");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");
+		verify(tagDAO).loadTagByName("soccer");		 
+		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+		assertEquals(2, tags.size());		 
+		assertEquals(transportTag, tags.get(0));
+		assertEquals(soccerTag, tags.get(1));
+	}
 	 
-	 public void testShouldPopulateTagsForTagCombinerRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/transport+soccer");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");
-		 verify(tagDAO).loadTagByName("soccer");		 
-		 List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-		 assertEquals(2, tags.size());		 
-		 assertEquals(transportTag, tags.get(0));
-		 assertEquals(soccerTag, tags.get(1));
-	 }
-	 
-	 	 
-	 public void testShouldPopulateTagsForTagCombinerJSONRequest() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/transport+soccer/json");
-		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");
-		 verify(tagDAO).loadTagByName("soccer");		 
-		 List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-		 assertEquals(2, tags.size());		 
-		 assertEquals(transportTag, tags.get(0));
-		 assertEquals(soccerTag, tags.get(1));
-	 }
-	 
-	 
+	@Test 	 
+	@SuppressWarnings("unchecked")
+	public void shouldPopulateTagsForTagCombinerJSONRequest() throws Exception {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setPathInfo("/transport+soccer/json");
+		filter.loadAttributesOntoRequest(request);
+		verify(tagDAO).loadTagByName("transport");
+		verify(tagDAO).loadTagByName("soccer");		 
+		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+		assertEquals(2, tags.size());		 
+		assertEquals(transportTag, tags.get(0));
+		assertEquals(soccerTag, tags.get(1));
+	}
+	
 }
