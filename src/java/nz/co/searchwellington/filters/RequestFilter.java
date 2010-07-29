@@ -24,10 +24,8 @@ public class RequestFilter {
         
     static Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
     static Pattern combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
-    static Pattern publisherPattern = Pattern.compile("^/(.*)/(calendars|feeds|watchlist)$");
     static Pattern autotagPattern = Pattern.compile("^/autotag/(.*)$");
-
-        
+       
 	static Logger log = Logger.getLogger(RequestFilter.class);
     
     protected ResourceRepository resourceDAO;
@@ -143,15 +141,7 @@ public class RequestFilter {
         	}
         }
         
-                
-        log.debug("Looking for publiser watchlist and feeds urls");
-        final String publisherUrlWords = getPublisherUrlWordsFromPath(request.getPathInfo());
-        if (publisherUrlWords != null) {
-        	Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
-        	request.setAttribute("publisher", publisher);
-        	return;
-        }
-        
+		
         log.debug("Looking for combiner urls");        
         Matcher matcher = combinerPattern.matcher(request.getPathInfo());
         if (matcher.matches()) {
@@ -268,6 +258,7 @@ public class RequestFilter {
 	}
     
 
+    // TODO this wants to be in the spring config
 	private boolean isReservedUrlWord(String urlWord) {
     	Set<String> reservedUrlWords = new HashSet<String>();
     	reservedUrlWords.add("about");
@@ -280,29 +271,5 @@ public class RequestFilter {
     	reservedUrlWords.add("tags");
     	return reservedUrlWords.contains(urlWord);
 	}
-
-    // TODO depricated?
-	protected Integer parseResourceIDFromRequestParameter(HttpServletRequest request) {
-        Integer requestResourceID = null;        
-        if (request.getParameter("resource") != null) {       
-        	try {
-        		requestResourceID = Integer.parseInt(request.getParameter("resource"));
-        	} catch (Exception e) {
-        		return null;
-			}
-        }
-        return requestResourceID;
-    }
-    
-    
-    protected String getPublisherUrlWordsFromPath(String pathInfo) {     
-        Matcher matcher = publisherPattern.matcher(pathInfo);
-        if (matcher.matches()) {
-        	return matcher.group(1);
-        }
-        return null;
-    }
-    
-    
-    
+	
 }
