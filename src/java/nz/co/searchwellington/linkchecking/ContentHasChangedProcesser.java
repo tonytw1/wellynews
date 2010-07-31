@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.SnapshotDAO;
+import nz.co.searchwellington.utils.UrlFilters;
 
 public class ContentHasChangedProcesser implements LinkCheckerProcessor {
 
@@ -41,7 +42,8 @@ public class ContentHasChangedProcesser implements LinkCheckerProcessor {
     private boolean contentChanged(String before, String after) {
         boolean contentChanged = false;
         if (before != null && after != null) {
-            contentChanged = !after.equals(before);
+            contentChanged = !(UrlFilters.stripHtml(after).equals(UrlFilters.stripHtml(before)));
+            
         } else {
             final boolean bothAreNull = (before == null) && (after == null);           
             if (bothAreNull) {
