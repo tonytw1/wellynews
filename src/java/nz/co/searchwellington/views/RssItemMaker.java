@@ -42,8 +42,7 @@ public class RssItemMaker {
     }
 	
 	
-	public SyndEntry getNewsitemRssItem(Newsitem content) {
-		try {
+	public SyndEntry getNewsitemRssItem(Newsitem content) {		
 		SyndEntry rssItem = getDefaultRssItem(content);
 		rssItem.setPublishedDate(content.getDate());
 		if (content.getPublisherName() != null) {
@@ -63,10 +62,6 @@ public class RssItemMaker {
 	    rssItem.getModules().add(myModule);
 	    
 		return rssItem;
-		} catch (Exception e) {
-			System.out.println(e);
-		}
-		return null;
 	}
 	
 	public SyndEntry getWatchlistRssItem(Watchlist content) {
