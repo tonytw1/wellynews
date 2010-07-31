@@ -1,6 +1,7 @@
 package nz.co.searchwellington.views;
 
 import nz.co.searchwellington.dates.DateFormatter;
+import nz.co.searchwellington.feeds.rss.modules.WellynewsRssModule;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
@@ -42,6 +43,7 @@ public class RssItemMaker {
 	
 	
 	public SyndEntry getNewsitemRssItem(Newsitem content) {
+		try {
 		SyndEntry rssItem = getDefaultRssItem(content);
 		rssItem.setPublishedDate(content.getDate());
 		if (content.getPublisherName() != null) {
@@ -53,9 +55,18 @@ public class RssItemMaker {
 			geoRSSModule.setPosition(new Position());
 	        geoRSSModule.getPosition().setLatitude(geocode.getLatitude());
 	        geoRSSModule.getPosition().setLongitude(geocode.getLongitude());
-	        rssItem.getModules().add(geoRSSModule);            
+	        rssItem.getModules().add(geoRSSModule); 
 		}
+		
+	    WellynewsRssModule myModule = new WellynewsRssModule();
+	    myModule.setCommented(Boolean.toString(!content.getComments().isEmpty()));
+	    rssItem.getModules().add(myModule);
+	    
 		return rssItem;
+		} catch (Exception e) {
+			System.out.println(e);
+		}
+		return null;
 	}
 	
 	public SyndEntry getWatchlistRssItem(Watchlist content) {
