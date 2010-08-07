@@ -57,48 +57,13 @@ public class RequestFilter {
     		} catch (NumberFormatException e) {
     		}    		
     	}
+    	    	
+    	TagsParameterFilter tagsParameterFilter = new TagsParameterFilter(tagDAO);	// TODO up
+    	tagsParameterFilter.filter(request);    	
     	
-    	
-    	// TODO duplicate from admin request filter
-		if (request.getParameter("tags") != null) {
-			String[] tagNames = request.getParameterValues("tags");
-			
-			List <Tag> tags = new ArrayList <Tag>();
-			for (int i = 0; i < tagNames.length; i++) {             
-				String tagName = tagNames[i];
-				if (tagName != null) {  	// TODO cleaning        
-					Tag tag = tagDAO.loadTagByName(tagName);
-					if (tag != null) {
-						tags.add(tag);
-					} else {
-						log.warn("Could not find tag with name: " + tagName);
-					}
-				} 
-			}           
-			request.setAttribute("tags", tags);
-		}
-    	
-    	
-    	// TODO this is duplication from the admin filter.
-    	if (request.getParameter("resource") != null) {
-			String resourceParametere = request.getParameter("resource");			
-			try {
-        		final int resourceId = Integer.parseInt(resourceParametere);
-        		if (resourceId > 0) {
-        			Resource resource = resourceDAO.loadResourceById(resourceId);
-        			if (resource != null) {
-        				log.info("Found resource: " + resource.getName());
-        				request.setAttribute("resource", resource);
-        				return;
-        			}
-        		}
-        	} catch (NumberFormatException e) {
-        		log.warn("Invalid resource id given: " + resourceParametere);
-        	}
-		}
-    	
-		
-    	
+    	ResourceParameterFilter resourceParameterFilter = new ResourceParameterFilter(resourceDAO);	// TODO up
+    	resourceParameterFilter.filter(request);
+    	   	
     	
         // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
     	// Used by the rssfeeds index page?

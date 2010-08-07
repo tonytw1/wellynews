@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.filters.ResourceParameterFilter;
+import nz.co.searchwellington.filters.TagsParameterFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -106,50 +108,14 @@ public class AdminRequestFilter {
             }
         }
         
-        		
-		// TODO test coverage
-		if (request.getParameter("tags") != null) {
-			log.debug("Processing tags parameter");
-			String[] tagNames = request.getParameterValues("tags");
-			
-			List <Tag> tags = new ArrayList <Tag>();
-			for (int i = 0; i < tagNames.length; i++) {             
-				String tagName = tagNames[i];				
-				if (tagName != null) {  	// TODO cleaning        
-					Tag tag = tagDAO.loadTagByName(tagName);
-					if (tag != null) {
-						tags.add(tag);
-					} else {
-						log.warn("Could not find tag with name: " + tagName);
-					}
-				} 
-			}
-			log.debug("Setting tags request attribute to: " + tags);
-			request.setAttribute("tags", tags);
-			
-		} else {
-			log.debug("No tags parameter seen on request");
-		}
+    	
+    	TagsParameterFilter tagsParameterFilter = new TagsParameterFilter(tagDAO);	// TODO up
+    	tagsParameterFilter.filter(request); 
+		    	
+    	ResourceParameterFilter resourceParameterFilter = new ResourceParameterFilter(resourceDAO);	// TODO up
+    	resourceParameterFilter.filter(request);
 		
-		
-		if (request.getParameter("resource") != null) {
-			String resourceParametere = request.getParameter("resource");			
-			try {
-        		final int resourceId = Integer.parseInt(resourceParametere);
-        		if (resourceId > 0) {
-        			Resource resource = resourceDAO.loadResourceById(resourceId);
-        			if (resource != null) {
-        				log.info("Found resource: " + resource.getName());
-        				request.setAttribute("resource", resource);
-        				return;
-        			}
-        		}
-        	} catch (NumberFormatException e) {
-        		log.warn("Invalid resource id given: " + resourceParametere);
-        	}
-		}
-		
-		
+    	
 		if (request.getParameter("feed") != null) {
 			String feedParameter = request.getParameter("feed");			
 			try {
