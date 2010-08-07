@@ -30,7 +30,8 @@ public class RequestFilterTest {
 	@Mock private Tag soccerTag;
 	@Mock private Website capitalTimesPublisher;
 	@Mock private Feed feed;
-		
+	
+	private RequestAttributeFilter[] filters;
 	private RequestFilter filter;
 	
 	@Before
@@ -40,7 +41,7 @@ public class RequestFilterTest {
 		when(tagDAO.loadTagByName("soccer")).thenReturn(soccerTag);
 		when(resourceDAO.getPublisherByUrlWords("capital-times")).thenReturn(capitalTimesPublisher);
 		when(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).thenReturn(feed);
-		filter = new RequestFilter(resourceDAO, tagDAO, searchTermExtractor);
+		filter = new RequestFilter(resourceDAO, tagDAO, filters);
 	}
 	
 	

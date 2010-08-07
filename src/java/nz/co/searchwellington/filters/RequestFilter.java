@@ -19,8 +19,6 @@ import nz.co.searchwellington.repositories.TagDAO;
 import org.apache.log4j.Logger;
 
 public class RequestFilter {
-
-    public static final String SEARCH_TERM = "searchterm";
         
     static Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
     static Pattern combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
@@ -29,41 +27,22 @@ public class RequestFilter {
 	static Logger log = Logger.getLogger(RequestFilter.class);
     
     private ResourceRepository resourceDAO;
-    private TagDAO tagDAO;
-    
-    private GoogleSearchTermExtractor searchTermExtractor;
-    
-    public RequestFilter() {         
+    private TagDAO tagDAO;    
+	RequestAttributeFilter[] filters;
+
+	public RequestFilter() {         
     }
     
-    public RequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO, GoogleSearchTermExtractor searchTermExtractor) {
+    public RequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO, RequestAttributeFilter[] filters) {
         this.resourceDAO = resourceDAO;
         this.tagDAO = tagDAO;
-        this.searchTermExtractor = searchTermExtractor;
+        this.filters = filters;
     }
-    
-          
-	public void loadAttributesOntoRequest(HttpServletRequest request) {
-		log.debug("Looking for google search referrer");
-		extractGoogleReferrer(request);
-		
-		
-		log.debug("Loading attributes onto request");		
-    	if (request.getParameter("page") != null) {
-    		String pageString = request.getParameter("page");
-    		try {
-    			Integer page = Integer.parseInt(pageString);
-    			request.setAttribute("page", page);
-    		} catch (NumberFormatException e) {
-    		}    		
-    	}
-    	    	
-    	TagsParameterFilter tagsParameterFilter = new TagsParameterFilter(tagDAO);	// TODO up
-    	tagsParameterFilter.filter(request);    	
-    	
-    	ResourceParameterFilter resourceParameterFilter = new ResourceParameterFilter(resourceDAO);	// TODO up
-    	resourceParameterFilter.filter(request);
-    	   	
+              
+	public void loadAttributesOntoRequest(HttpServletRequest request) {    	
+    	for (RequestAttributeFilter filter : filters) {
+			filter.filter(request);
+		}
     	
         // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
     	// Used by the rssfeeds index page?
@@ -193,18 +172,7 @@ public class RequestFilter {
     }
 
     
-    private void extractGoogleReferrer(HttpServletRequest request) {
-		final String referer = request.getHeader("Referer");
-		if (referer != null) {
-			log.info("Referer is: " + referer);
-			
-			final String searchTerm = searchTermExtractor.extractSearchTerm(referer);
-			if (searchTerm != null) {
-				log.info("Referrer search term is: " + searchTerm);
-				request.setAttribute(SEARCH_TERM, searchTerm);
-			}			
-		}		
-	}
+  
     
 
     // TODO this wants to be in the spring config

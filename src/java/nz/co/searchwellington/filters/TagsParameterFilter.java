@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.TagDAO;
 
-public class TagsParameterFilter {
+public class TagsParameterFilter implements RequestAttributeFilter {
 	
 	static Logger log = Logger.getLogger(TagsParameterFilter.class);
 

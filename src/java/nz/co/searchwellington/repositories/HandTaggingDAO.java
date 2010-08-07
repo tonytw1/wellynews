@@ -77,9 +77,11 @@ public class HandTaggingDAO {
 	@Transactional
     public void addTag(User user, Tag tag, Resource resource) {
 		Set<Tag> existingVotes = this.getHandpickedTagsForThisResourceByUser(user, resource);
-		if (!existingVotes.contains(tag)) {
-			this.addTag(user, tag, resource);
-		}		
+		if (!existingVotes.contains(tag)) {			
+			HandTagging newTagging = new HandTagging(0, resource, user, tag);
+				log.info("Adding new hand tagging: " + newTagging);
+				sessionFactory.getCurrentSession().save(newTagging);
+		}
 	}
 
     

@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.filters.GoogleSearchTermExtractor;
+import nz.co.searchwellington.filters.GoogleSearchTermFilter;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -101,8 +103,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("tag_watchlist", contentRetrievalService.getTagWatchlist(tag));		
 		mv.addObject("tag_feeds", contentRetrievalService.getTaggedFeeds(tag));
 		
-		if (request.getAttribute(RequestFilter.SEARCH_TERM) != null) {
-			final String searchTerm = (String) request.getAttribute(RequestFilter.SEARCH_TERM);
+		if (request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM) != null) {
+			final String searchTerm = (String) request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM);
 			mv.addObject("searchterm", searchTerm);
 			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, showBroken, null));
 		}		

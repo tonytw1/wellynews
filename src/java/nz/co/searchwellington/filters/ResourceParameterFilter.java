@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
-public class ResourceParameterFilter {
+public class ResourceParameterFilter implements RequestAttributeFilter {
 	
 	static Logger log = Logger.getLogger(ResourceParameterFilter.class);
 	
