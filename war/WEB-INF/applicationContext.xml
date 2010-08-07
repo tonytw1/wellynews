@@ -278,7 +278,13 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				</bean>
 				<bean class="nz.co.searchwellington.filters.ResourceParameterFilter">
 					<constructor-arg ref="resoureDAO" />
-				</bean>			
+				</bean>
+				<bean class="nz.co.searchwellington.filters.TagParameterFilter">
+					<constructor-arg ref="tagDAO" />
+				</bean>
+				<bean class="nz.co.searchwellington.filters.PublisherParameterFilter">
+					<constructor-arg ref="resoureDAO" />
+				</bean>
 			</list>
 		</constructor-arg>
 		<aop:scoped-proxy/>

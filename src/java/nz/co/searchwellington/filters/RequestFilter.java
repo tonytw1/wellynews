@@ -9,7 +9,6 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -44,22 +43,8 @@ public class RequestFilter {
 			filter.filter(request);
 		}
     	
-        // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
-    	// Used by the rssfeeds index page?
-        if (request.getParameter("tag") != null) {
-            String tagName = request.getParameter("tag");            
-            Tag tag = tagDAO.loadTagByName(tagName);             
-               request.setAttribute("tag", tag);            
-        }
-        
-        
-        if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {
-            String publisherUrlWords = request.getParameter("publisher");
-            Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);          
-            request.setAttribute("publisher", publisher);
-        }
-        
-                
+    	
+    	// TODO shouldn't the model builder to this?
 		if (request.getPathInfo().matches("^/feed/.*$")) {			
 			String feedUrlWords = request.getPathInfo().split("/")[2];			
         	Resource feed = resourceDAO.loadFeedByUrlWords(feedUrlWords);
@@ -157,16 +142,6 @@ public class RequestFilter {
 		        }
 		        return;
         	}
-        }
-        
-        
-        if (request.getParameter("calendarfeed") != null) {
-            final int feedID = Integer.parseInt(request.getParameter("calendarfeed"));
-            if (feedID > 0) {
-                CalendarFeed calendarFeed = (CalendarFeed) resourceDAO.loadResourceById(feedID);
-                log.debug("Loaded calendar feed object of id: " + calendarFeed.getId() + ", type: " + calendarFeed.getType());
-                request.setAttribute("calendarfeed", calendarFeed);
-            }
         }
         
     }
