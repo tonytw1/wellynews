@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.apache.log4j.Logger;
@@ -87,16 +86,5 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 			}
 		}
 	}
-	
-	
-	// TODO duplication with BaseM'E'C
-	public void populateSecondaryFeeds(ModelAndView mv) {      
-        mv.addObject("righthand_heading", "Local Feeds");                
-        mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
-        final List<Resource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();
-        if (allFeeds.size() > 0) {
-            mv.addObject("righthand_content", allFeeds);       
-        }
-    }
 	
 }

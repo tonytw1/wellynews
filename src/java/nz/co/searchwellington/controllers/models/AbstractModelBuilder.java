@@ -1,6 +1,11 @@
 package nz.co.searchwellington.controllers.models;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
+import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -10,10 +15,10 @@ public abstract class AbstractModelBuilder {
 	protected static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW = 30;
 	protected static final int MAX_WEBSITES = 500;
 	
-	
 	protected static final int MAX_NEWSITEMS = 30;
 	protected static final int MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS = 2;
 	
+	protected ContentRetrievalService contentRetrievalService;
 	
 	protected int getPage(HttpServletRequest request) {
 		int page = 0;
@@ -47,5 +52,15 @@ public abstract class AbstractModelBuilder {
 		mv.addObject("start_index", startIndex + 1);
 		mv.addObject("end_index", endIndex);
 	}
+	
+	
+	protected final void populateSecondaryFeeds(ModelAndView mv) {      
+        mv.addObject("righthand_heading", "Local Feeds");                
+        mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
+        final List<Resource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();
+        if (allFeeds.size() > 0) {
+            mv.addObject("righthand_content", allFeeds);       
+        }
+    }
 	
 }

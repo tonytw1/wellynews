@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
-import nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -20,8 +19,6 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
-	private ContentRetrievalService contentRetrievalService;
-
 	
 	public SuggestionsModelBuilder(
 			SuggestedFeeditemsService suggestedFeeditemsService,
@@ -69,14 +66,5 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	public String getViewName(ModelAndView mv) {
 		return "suggestions";
 	}
-	
-	// TODO duplication with BaseM'E'C
-	public void populateSecondaryFeeds(ModelAndView mv) {      
-        mv.addObject("righthand_heading", "Local Feeds");                
-        mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
-        if (contentRetrievalService.getAllFeeds().size() > 0) {
-            mv.addObject("righthand_content", contentRetrievalService.getAllFeeds());       
-        }
-    }
 	
 }
