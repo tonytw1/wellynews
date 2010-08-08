@@ -18,7 +18,6 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 	
     private static Logger log = Logger.getLogger(FeedAutodiscoveryProcesser.class);
-
 	
     private ResourceRepository resourceDAO;	
 	private LinkExtractor linkExtractor;
@@ -26,9 +25,6 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 	private CommentFeedGuesserService commentFeedGuesser;
 	
 	
-	
-
-
 	public FeedAutodiscoveryProcesser(ResourceRepository resourceDAO,
 			LinkExtractor linkExtractor,
 			CommentFeedDetectorService commentFeedDetector,
@@ -39,7 +35,7 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 		this.commentFeedGuesser = commentFeedGuesser;
 	}
 
-
+	
 	public void process(Resource checkResource, String pageContent) {
 		if (checkResource.getType().equals("F")) {
 			return;
@@ -81,7 +77,7 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 	}
 	
 	
-	 // TODO merge this with the discoveredFeedUrl method.
+	// TODO merge this with the discoveredFeedUrl method.
     private void recordCommentFeed(Resource checkResource, String commentFeedUrl) {
     	log.info("Recording comment feed url for '" + checkResource.getName() + "': " + commentFeedUrl);
         // TODO can hibernate take care of this?
@@ -94,24 +90,21 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
         ((Newsitem) checkResource).setCommentFeed(commentFeed);      
     }
 
-
-
-	 private void recordDiscoveredFeedUrl(Resource checkResource, String discoveredUrl) {
-	        DiscoveredFeed discoveredFeed = resourceDAO.loadDiscoveredFeedByUrl(discoveredUrl);
-	        if (discoveredFeed == null) {
-	            log.debug("Discovered feed url was not found in the database. Creating new: " + discoveredUrl);
-	            discoveredFeed = resourceDAO.createNewDiscoveredFeed(discoveredUrl);                  
-	        }               
-	        discoveredFeed.getReferences().add(checkResource);
-	        resourceDAO.saveDiscoveredFeed(discoveredFeed);
-	    }
-	 
-	 
-	 
-	 private void addGuessedCommentFeeds(Resource checkResource) {
-	    	String commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(checkResource.getUrl());
-	        if (commentFeedUrl != null) {
-	            recordCommentFeed(checkResource, commentFeedUrl);         
-	        }
-	    }
+    private void recordDiscoveredFeedUrl(Resource checkResource, String discoveredUrl) {
+    	DiscoveredFeed discoveredFeed = resourceDAO.loadDiscoveredFeedByUrl(discoveredUrl);
+    	if (discoveredFeed == null) {
+    		log.debug("Discovered feed url was not found in the database. Creating new: " + discoveredUrl);
+    		discoveredFeed = resourceDAO.createNewDiscoveredFeed(discoveredUrl);                  
+    	}               
+	    discoveredFeed.getReferences().add(checkResource);
+	    resourceDAO.saveDiscoveredFeed(discoveredFeed);
+    }
+    
+    private void addGuessedCommentFeeds(Resource checkResource) {
+    	String commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(checkResource.getUrl());
+    	if (commentFeedUrl != null) {
+    		recordCommentFeed(checkResource, commentFeedUrl);         
+    	}
+    }
+    
 }

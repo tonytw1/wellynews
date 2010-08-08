@@ -14,7 +14,6 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
 
-// TODO is in wrong package
 public class LinkChecker {
     
     private static final int CANT_CONNECT = -1;
@@ -90,6 +89,5 @@ public class LinkChecker {
         checkResource.setHttpStatus(CANT_CONNECT);
         return null;
     }
-    
-    
+        
 }
