@@ -42,19 +42,7 @@ public class RequestFilter {
     	for (RequestAttributeFilter filter : filters) {
 			filter.filter(request);
 		}
-    	
-    	
-    	// TODO shouldn't the model builder to this?
-		if (request.getPathInfo().matches("^/feed/.*$")) {			
-			String feedUrlWords = request.getPathInfo().split("/")[2];			
-        	Resource feed = resourceDAO.loadFeedByUrlWords(feedUrlWords);
-        	if (feed != null) {
-        		request.setAttribute("feedAttribute", feed);
-        		return;
-        	}
-        }
-        
-		
+    			
         log.debug("Looking for combiner urls");        
         Matcher matcher = combinerPattern.matcher(request.getPathInfo());
         if (matcher.matches()) {

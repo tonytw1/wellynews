@@ -1,6 +1,8 @@
  package nz.co.searchwellington.controllers.models;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -13,15 +15,18 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
-public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
-	static Logger log = Logger.getLogger(ViewFeedModelBuilder.class);
-    	
+	static Logger log = Logger.getLogger(FeedModelBuilder.class);
+	
+	private static final String FEED_ATTRIBUTE = "feedAttribute";
+	static Pattern feedPattern = Pattern.compile("^/feed/(.*)$");
+	
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	
-	 
-	public ViewFeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService) {
+	
+	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 	}
@@ -29,7 +34,8 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
-		return request.getAttribute("feedAttribute") != null;
+		populateFeed(request);
+		return request.getAttribute(FEED_ATTRIBUTE) != null;
 	}
 
 	
@@ -37,22 +43,22 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			log.info("Building view feed model");
-			Feed feed = (Feed) request.getAttribute("feedAttribute");
-			if (feed != null) {                       
+			Feed feed = (Feed) request.getAttribute(FEED_ATTRIBUTE);
+			if (feed != null) {
 				ModelAndView mv = new ModelAndView();
-				mv.addObject("feed", feed);        
+				mv.addObject("feed", feed);
 				
 				List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 				rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems);
 				
-		       if (feedNewsitems != null && feedNewsitems.size() > 0) {
-		    	   mv.addObject("main_content", feedNewsitems);
-		       } else {
-		    	   log.warn("No newsitems were loaded from feed: " + feed.getName());
-		       }
-		       
-		       setRss(mv, feed.getName(), feed.getUrl());		       
-		       return mv;            
+				if (feedNewsitems != null && feedNewsitems.size() > 0) {
+					mv.addObject("main_content", feedNewsitems);
+				} else {
+					log.warn("No newsitems were loaded from feed: " + feed.getName());
+				}
+				
+				setRss(mv, feed.getName(), feed.getUrl());		       
+				return mv;
 			}
 		}
 		return null;
@@ -70,6 +76,17 @@ public class ViewFeedModelBuilder extends AbstractModelBuilder implements ModelB
 		return "viewfeed";
 	}
 
+	
+	private void populateFeed(HttpServletRequest request) {
+		Matcher feedMatcher = feedPattern.matcher(request.getPathInfo());
+		if (feedMatcher.matches()) {
+			final String feedUrlWords = feedMatcher.group(1);
+			Feed feed = contentRetrievalService.getFeedByUrlWord(feedUrlWords);
+			if (feed != null) {
+				request.setAttribute(FEED_ATTRIBUTE, feed);
+			}
+		}
+	}
 	
 	
 	// TODO duplication with BaseM'E'C

@@ -12,6 +12,7 @@ import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -150,7 +151,11 @@ public class ContentRetrievalService {
 	public List<Resource> getAllFeeds() {
 		return solrContentRetrievalService.getAllFeeds(showBrokenDecisionService.shouldShowBroken());
 	}
-
+	
+	public Feed getFeedByUrlWord(String feedUrlWords) {
+		return resourceDAO.loadFeedByUrlWords(feedUrlWords);
+	}
+	
 	public List<Resource> getAllFeedsOrderByLatestItemDate() {
 		return solrContentRetrievalService.getAllFeedsOrderByLatestItemDate(showBrokenDecisionService.shouldShowBroken());
 	}
