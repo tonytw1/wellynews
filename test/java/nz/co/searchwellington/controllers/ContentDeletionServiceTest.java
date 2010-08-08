@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers;
 
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.mockito.MockitoAnnotations;
-import org.mockito.MockitoAnnotations.Mock;
+import org.mockito.Mock;
 
 public class ContentDeletionServiceTest extends TestCase {
 		
@@ -57,17 +57,17 @@ public class ContentDeletionServiceTest extends TestCase {
 	}
 	
 	public void testShouldSuppressFeedItemsOnDelete() throws Exception {	
-		stub(rssfeedNewsitemService.isUrlInAcceptedFeeds(resource.getUrl())).toReturn(true);		
+		when(rssfeedNewsitemService.isUrlInAcceptedFeeds(resource.getUrl())).thenReturn(true);		
 		service.performDelete(resource);
 		verify(supressionService).suppressUrl(resource.getUrl());
 	}
 	
 	public void testShouldRemoveRelatedFeedFromTagsOnDelete() throws Exception {
-		stub(feed.getType()).toReturn("F");
-		stub(tag.getRelatedFeed()).toReturn(feed);		
+		when(feed.getType()).thenReturn("F");
+		when(tag.getRelatedFeed()).thenReturn(feed);		
 		List<Tag> allTags = new ArrayList<Tag>();
 		allTags.add(tag);
-		stub(tagDAO.getAllTags()).toReturn(allTags);
+		when(tagDAO.getAllTags()).thenReturn(allTags);
 		
 		service.performDelete(feed);
 		verify(tag).setRelatedFeed(null);
