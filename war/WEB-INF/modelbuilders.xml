@@ -100,7 +100,7 @@
 		<constructor-arg ref="relatedTagsService" />
 	</bean>
 	
-	<bean id="viewfeedModelBuilder" class="nz.co.searchwellington.controllers.models.ViewFeedModelBuilder">	
+	<bean id="feedModelBuilder" class="nz.co.searchwellington.controllers.models.FeedModelBuilder">	
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="contentRetrievalService" />
 	</bean>
@@ -126,7 +126,7 @@
 				<ref bean="watchlistModelBuilder" />		
 				<ref bean="commentModelBuilder" />
 				<ref bean="geotaggedModelBuilder" />
-				<ref bean="viewfeedModelBuilder" />
+				<ref bean="feedModelBuilder" />
 				<ref bean="publisherModelBuilder" />
 				<ref bean="publisherTagCombinerModelBuilder" />
 				<ref bean="TagCommentModelBuilder" />
