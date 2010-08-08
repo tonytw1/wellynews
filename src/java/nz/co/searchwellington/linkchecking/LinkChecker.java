@@ -1,8 +1,7 @@
-package nz.co.searchwellington.controllers;
+package nz.co.searchwellington.linkchecking;
 
 import java.io.IOException;
 
-import nz.co.searchwellington.linkchecking.LinkCheckerProcessor;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -15,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.springframework.transaction.annotation.Transactional;
 
+// TODO is in wrong package
 public class LinkChecker {
     
     private static final int CANT_CONNECT = -1;

@@ -1,6 +1,6 @@
 package nz.co.searchwellington.jobs;
 
-import nz.co.searchwellington.controllers.LinkChecker;
+import nz.co.searchwellington.linkchecking.LinkChecker;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 
 import org.apache.log4j.Logger;
