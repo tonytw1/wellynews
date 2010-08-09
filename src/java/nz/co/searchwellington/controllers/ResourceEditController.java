@@ -418,7 +418,6 @@ public class ResourceEditController extends BaseMultiActionController {
     
     private void setUser(HttpServletRequest request, User user) {
 		request.getSession().setAttribute("user", user);		
-		request.getSession().setAttribute("login_prompt", null);
 	}
     
     

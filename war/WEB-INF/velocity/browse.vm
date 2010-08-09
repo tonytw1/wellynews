@@ -45,7 +45,6 @@
 </div>
 
 <div class="right">
-#parse("includes/login.vm")
 
 #if($publisher && $publisher.name == 'Wellington SPCA') 
 	#parse("widgets/spca_widget.vm")

@@ -18,10 +18,6 @@
 
 
 <div class="right">
-#parse("includes/login.vm")
-
-
-
 </div>
 
 </div>

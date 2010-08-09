@@ -17,7 +17,6 @@
 </div>
 
 <div class="right">
-#parse("includes/login.vm")
 
 <div class="box">
 #parse("includes/latest_newsitems.vm")

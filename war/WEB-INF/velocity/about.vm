@@ -118,10 +118,6 @@ The source code is available for review on <a href="http://www.github.com/tonytw
 
 <div class="right">
 
-#parse("includes/login.vm")
-
-
-
 <div class="box">
 #parse("includes/latest_newsitems.vm")
 

@@ -169,7 +169,15 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
-     
+    public ModelAndView signin(HttpServletRequest request, HttpServletResponse response) {        
+        ModelAndView mv = new ModelAndView();
+        populateCommonLocal(mv);
+        
+        mv.addObject("heading", "Sign in");
+        mv.setViewName("signin");
+        return mv;
+    }
+        
     public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
     	if (!siteInformation.isTwitterEnabled()) {
     		response.setStatus(HttpServletResponse.SC_NOT_FOUND);

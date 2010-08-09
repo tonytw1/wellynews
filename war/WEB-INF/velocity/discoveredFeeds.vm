@@ -51,8 +51,6 @@ Sometimes, something interesting washes up here.</p>
 
 <div class="right">
 
-#parse("includes/login.vm")
-
 <div class="box">
 #parse("includes/latest_newsitems.vm")
 <br clear="all"/>

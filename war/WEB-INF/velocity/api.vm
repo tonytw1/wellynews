@@ -273,7 +273,6 @@
 	</div>
 
 	<div class="right">
-		#parse("includes/login.vm")
 		
 		<div class="box">
 			<h2>Usage Example</h2>

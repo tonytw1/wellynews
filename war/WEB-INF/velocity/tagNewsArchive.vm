@@ -25,7 +25,6 @@
 	</div>
 	
 	<div class="right">
-		#parse("includes/login.vm")
 	
 		#parse("includes/flickr_group_tag.vm")
 		

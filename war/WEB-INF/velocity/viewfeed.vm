@@ -64,7 +64,6 @@
 	</div>
 
 	<div class="right">
-		#parse("includes/login.vm")
 
 		<div class="box">
 			#parse("includes/righthand_content.vm")

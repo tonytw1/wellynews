@@ -56,10 +56,6 @@ available feeds is provided in the <a href="api">API instructions</a>.</p>
 
 <div class="right">
 
-#parse("includes/login.vm")
-
-
-
 <div class="box">
 #parse("includes/latest_newsitems.vm")
 <br clear="all"/>

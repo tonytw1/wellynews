@@ -55,7 +55,7 @@
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="rssUrlBuilder" />
-										
+									
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -68,6 +68,7 @@
 						<prop key="/lastupdated">lastUpdated</prop>
 						<prop key="/publishers">publishers</prop>
 						<prop key="/rssfeeds">rssfeeds</prop>
+						<prop key="/signin">signin</prop>						
 						<prop key="/tags">tags</prop>
 						<prop key="/twitter">twitter</prop>
 					</props>
@@ -110,7 +111,6 @@
 				<property name="mappings">
 					<props>					
 						<prop key="/login/logout">logout</prop>
-						<prop key="/login/prompt">prompt</prop>									
 					</props>
 				</property>
 			</bean>		
@@ -345,11 +345,11 @@
 				<prop key="/profiles/*">profileController</prop>
 																
 				<prop key="/publishers">simplePageController</prop>
-				<prop key="/tags">simplePageController</prop>
-				<prop key="/twitter">simplePageController</prop>
 				<prop key="/rssfeeds">simplePageController</prop>	
-				
-				          	
+				<prop key="/signin">simplePageController</prop>
+				<prop key="/tags">simplePageController</prop>				
+				<prop key="/twitter">simplePageController</prop>
+								          	
             	<prop key="/archive/*/*">tagController</prop>
             	            	
             	<prop key="/clickthrough">clickThroughController</prop>
@@ -404,9 +404,8 @@
 				<prop key="/admin/gather/apply">autoGatherController</prop>		
 				
 				<prop key="/cancel">cancelController</prop>
-				<prop key="/login/logout">loginController</prop>	
-				<prop key="/login/prompt">loginController</prop>
-								
+				<prop key="/login/logout">loginController</prop>
+												
 				<prop key="/openid/auth">loginController</prop>
 				<prop key="/openid/verify">loginController</prop>
 													

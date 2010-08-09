@@ -172,8 +172,7 @@ public class OpenIDLoginController extends MultiActionController {
 	
 	// TODO duplicated with ResourceEditController
 	private void setUser(HttpServletRequest request, User user) {
-		request.getSession().setAttribute("user", user);		
-		request.getSession().setAttribute("login_prompt", null);
+		request.getSession().setAttribute("user", user);	
 	}
 	
 }

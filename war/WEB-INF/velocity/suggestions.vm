@@ -41,7 +41,6 @@ They will be reviewed by an real person before been accepted or discarded.</p>
 
 
 <div class="right">
-#parse("includes/login.vm")
 </div>
 
 

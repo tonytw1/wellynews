@@ -12,7 +12,7 @@
 		</li>
 		<li><a href="$site_information.url/login/logout">logout</a></li>
 	#else
-		<li><a href="$site_information.url/login/prompt">Sign in</a></li>        		
+		<li><a href="$site_information.url/signin">Sign in</a></li>        		
 	#end
 	</ul>
 </div>
