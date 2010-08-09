@@ -8,6 +8,8 @@
 	
 	<bean id ="blogspotCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.BlogspotCommentFeedDetector" />		
 	
+	<bean id ="eyeOfTheFishCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.EyeOfTheFishCommentFeedDetector" />		
+		
 	<bean id ="tepapaBlogCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
 		<property name="regex" value="^http://blog.tepapa.govt.nz/\d{4}/\d{2}/\d{2}/.*?/feed/$" />
 	</bean>				
@@ -27,6 +29,7 @@
 			<list>
 				<ref bean="aucklandTrainsCommentFeedDetector" />
 				<ref bean="blogspotCommentFeedDetector" />
+				<ref bean="eyeOfTheFishCommentFeedDetector" />				
 				<ref bean="tepapaBlogCommentFeedDetector" />
 				<ref bean="textureCommentFeedDetector" />
 				<ref bean="wellingtonistaCommentFeedDetector" />
@@ -38,7 +41,6 @@
 	<bean id="commentFeedGuesserService" class="nz.co.searchwellington.commentfeeds.CommentFeedGuesserService">
 		<constructor-arg>
 			<list>
-				<bean class="nz.co.searchwellington.commentfeeds.guessers.EyeOfTheFishCommentFeedGuesser" />
 				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser" />
 				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressDotComCommentFeedGuesser" />
 			</list>
