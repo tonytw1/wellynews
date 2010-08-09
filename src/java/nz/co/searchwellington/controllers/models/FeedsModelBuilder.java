@@ -12,8 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	static Logger log = Logger.getLogger(FeedsModelBuilder.class);
-    	
-	private ContentRetrievalService contentRetrievalService;
+    
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private UrlBuilder urlBuilder;
 		

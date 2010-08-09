@@ -5,11 +5,11 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
-public class PublisherParmeterFilter implements RequestAttributeFilter {
+public class PublisherParameterFilter implements RequestAttributeFilter {
 
 	private ResourceRepository resourceDAO;
 	
-	public PublisherParmeterFilter(ResourceRepository resourceDAO) {
+	public PublisherParameterFilter(ResourceRepository resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}
 

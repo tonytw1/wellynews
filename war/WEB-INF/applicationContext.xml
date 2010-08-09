@@ -277,13 +277,13 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 					<constructor-arg ref="tagDAO" />
 				</bean>
 				<bean class="nz.co.searchwellington.filters.ResourceParameterFilter">
-					<constructor-arg ref="resoureDAO" />
+					<constructor-arg ref="resourceDAO" />
 				</bean>
 				<bean class="nz.co.searchwellington.filters.TagParameterFilter">
 					<constructor-arg ref="tagDAO" />
 				</bean>
 				<bean class="nz.co.searchwellington.filters.PublisherParameterFilter">
-					<constructor-arg ref="resoureDAO" />
+					<constructor-arg ref="resourceDAO" />
 				</bean>
 			</list>
 		</constructor-arg>
@@ -327,9 +327,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="notifier" class="nz.co.searchwellington.mail.Notifier">
 		<constructor-arg ref="mailSender" />
-		<constructor-arg ref="velocityEngine" />
-		<constructor-arg ref="handTaggingDAO" />
-		
+		<constructor-arg ref="velocityEngine" />		
 		<property name="recipient" value="${feedreader.email}" />	
 	</bean>
 		

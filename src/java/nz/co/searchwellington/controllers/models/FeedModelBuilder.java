@@ -22,9 +22,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	static Pattern feedPattern = Pattern.compile("^/feed/(.*)$");
 	
 	private RssfeedNewsitemService rssfeedNewsitemService;
-	private ContentRetrievalService contentRetrievalService;
-	
-	
+		
 	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
