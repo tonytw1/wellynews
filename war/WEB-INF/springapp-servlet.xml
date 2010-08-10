@@ -98,7 +98,28 @@
 		</property>					
 	</bean>
 	
+	<bean id="oauthScribeFactory" class="nz.co.searchwellington.openid.OAuthScribeFactory" />
+	
+	<bean id="twitterLoginController" class="nz.co.searchwellington.openid.TwitterLoginController">
+		<constructor-arg ref="oauthScribeFactory" />
+		<constructor-arg ref="userDAO" />
+		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="anonUserService" />
+		<constructor-arg ref="loginResourceOwnershipService" />
+		<constructor-arg ref="urlStack" />
 		
+		<property name="methodNameResolver">
+			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
+				<property name="mappings">
+					<props>														
+						<prop key="/twitter/login">login</prop>
+						<prop key="/twitter/callback">callback</prop>
+					</props>
+				</property>
+			</bean>		
+		</property>					
+	</bean>
+			
 	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
 		<constructor-arg ref="siteInformation" />
 	</bean>
@@ -405,10 +426,7 @@
 				
 				<prop key="/cancel">cancelController</prop>
 				<prop key="/login/logout">loginController</prop>
-												
-				<prop key="/openid/auth">loginController</prop>
-				<prop key="/openid/verify">loginController</prop>
-													
+																	
 				<prop key="/admin/indexbuilder">indexRebuildController</prop>
 				<prop key="/admin/refreshtweets">indexRebuildController</prop>
 								
@@ -442,7 +460,10 @@
             	            	           						
 				<prop key="/openid/login">openIDLoginController</prop>	
 				<prop key="/openid/callback">openIDLoginController</prop>
-									
+				
+				<prop key="/twitter/login">twitterLoginController</prop>
+				<prop key="/twitter/callback">twitterLoginController</prop>
+													
             </props>
         </property>
     </bean>

@@ -42,6 +42,11 @@ public class HibernateBackedUserDAO implements UserRepository {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("profilename", profilename)).uniqueResult();     	    
 	}
 	
+	@Override
+	public User getUserByTwitterName(String screenName) {
+		return getUserByProfileName(screenName);
+	}
+	
 	public User getUserByApiKey(String apiKey) {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("apikey", apiKey)).uniqueResult();     	    
 	}

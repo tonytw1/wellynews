@@ -30,7 +30,11 @@
 		    <input type="submit" class="password" value="Sign in">                        	  	
 	  	</fieldset>
 	</form>
-							
+		
+	<p>
+	Sign in using your <a href="$site_information.url/twitter/login">twitter account</a>.
+	</p>
+	
 #end
 
 </div>

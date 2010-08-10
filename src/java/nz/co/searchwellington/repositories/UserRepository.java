@@ -11,9 +11,10 @@ public interface UserRepository {
 	public void saveUser(User newUser);
 	public User getUserByProfileName(String profilename);
 	public User getUserByApiKey(String apiKey);
+	public User getUserByTwitterName(String screenName);
 	public int getNextAvailableAnonUserNumber();
 	public List<User> getActiveUsers();
-
+	
 }
 
 
