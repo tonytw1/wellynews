@@ -32,7 +32,9 @@
 	</form>
 		
 	<p>
-	Sign in using your <a href="$site_information.url/twitter/login">twitter account</a>.
+	Or sign in using your twitter account:</p>
+	<p>
+	<a href="$site_information.url/twitter/login"><img src="$urlBuilder.getImageUrl('sign-in-with-twitter-l.png')" border="0" alt="Sign in with twitter"></a>
 	</p>
 	
 #end

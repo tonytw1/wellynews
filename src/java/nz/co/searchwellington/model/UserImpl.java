@@ -8,7 +8,8 @@ import nz.co.searchwellington.model.User;
 public class UserImpl implements User {
 
     int id;
-    String username;
+    String openid;
+    Integer twitterId;
     String profilename;
     String url;
     String name;
@@ -23,32 +24,43 @@ public class UserImpl implements User {
     public UserImpl() {
     }
     
-    public UserImpl(String username) {
-    	this.username = username;
+    public UserImpl(String openid) {
+    	this.openid = openid;
 	}
-
+    
+	public UserImpl(int twitterId) {		
+		this.twitterId = twitterId;
+	}
 
 	public int getId() {
         return id;
     }
 
-
     public void setId(int id) {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public String getOpenId() {
+        return openid;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setOpenId(String openid) {
+        this.openid = openid;
     }
 
-    
+	@Override
+	public Integer getTwitterId() {
+		return twitterId;
+	}
+
+	@Override
+	public void setTwitterId(Integer twitterid) {
+		this.twitterId = twitterid;
+	}
+
 	@Override
 	public boolean isUnlinkedAnonAccount() {
-		return username == null && this.profilename != "autotagger";	// TODO
+		return openid == null && this.profilename != "autotagger";	// TODO
 	}
 
 	public String getProfilename() {

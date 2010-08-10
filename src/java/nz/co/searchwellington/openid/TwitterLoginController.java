@@ -95,23 +95,22 @@ public class TwitterLoginController extends MultiActionController {
 					Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
 					twitter4j.User twitterUser = twitterApi.verifyCredentials();
 					if (twitterUser != null) {
-						String username = twitterUser.getScreenName();
-						log.info("Twitter user is: " + username);
+						int twitterId = twitterUser.getId();
+						log.info("Twitter user is: " + twitterId);
 												
-						User user = userDAO.getUserByTwitterName(username);			
+						User user = userDAO.getUserByTwitterId(twitterId);			
 						if (user == null) {
 							
 							User loggedInUser = loggedInUserFilter.getLoggedInUser();				
 							// No existing user for this identity.				
 							if (loggedInUser == null) {
-								log.info("Creating new user for openid username: " + username);
-								user = createNewUser(username);
-								
+								log.info("Creating new user for twitter users: " + twitterId);
+								user = createNewUser(twitterId);								
 								
 							} else {
 								user = loggedInUser;
-								log.info("Attaching verified username to user: " + username);
-								loggedInUser.setUsername(username);					
+								log.info("Attaching verified twitter id to user: " + twitterId);
+								loggedInUser.setTwitterId(twitterId);				
 							}
 							
 						}			
@@ -150,14 +149,13 @@ public class TwitterLoginController extends MultiActionController {
 	}
 	
 	
-	private User createNewUser(final String username) {
+	private User createNewUser(final int twitterId) {
 		User newUser = anonUserService.createAnonUser();
-		newUser.setProfilename(username);
+		newUser.setTwitterId(twitterId);
 		userDAO.saveUser(newUser);
-		log.info("Created new user with username: " + newUser.getUsername());
+		log.info("Created new user with username: " + newUser.getOpenId());
 		return newUser;
 	}
-
 	
 	// TODO duplicated with ResourceEditController
 	private void setUser(HttpServletRequest request, User user) {

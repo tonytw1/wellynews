@@ -11,13 +11,17 @@
 		 	
         <id name="id" type="integer" unsaved-value="0" >
             <column name="id" sql-type="integer" not-null="true"/>
-                    <generator class="native"/>
+           	<generator class="native"/>
         </id>
 
-        <property name="username">
-            <column name="username" length="255" not-null="false"/>
+        <property name="openId">
+            <column name="openid" length="255" not-null="false"/>
         </property>
-                
+       
+       	<property name="twitterId">
+            <column name="twitterid" not-null="false"/>
+        </property>
+        
         <property name="profilename">
             <column name="profilename" length="255" not-null="true"/>
         </property>

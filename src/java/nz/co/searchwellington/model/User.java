@@ -2,21 +2,16 @@ package nz.co.searchwellington.model;
 
 import nz.co.searchwellington.tagging.TaggingVoter;
 
-
-/**
- * Defines a toplevel user object which can login and out of a web application.
- * Shared across multiple web applications; allows the login servlet to be reused.
- * 
- * @author tony
- *
- */
 public interface User extends TaggingVoter {
 
     public int getId();
     public void setId(int id);
     
-    public String getUsername();
-    public void setUsername(String username);
+    public String getOpenId();
+    public void setOpenId(String openID);
+    public Integer getTwitterId();
+	public void setTwitterId(Integer twitterid);
+	
 	public boolean isAdmin();
 	public void setAdmin(boolean admin);
 	public String getUrl();

@@ -90,8 +90,12 @@
 				</p>						
 			#end
 			
-			#if ($user.username) 
-				<p>Your profile is linked to the OpenID: $escape.html($user.username)</p>
+			#if ($user.openId) 
+				<p>Your profile is linked to the OpenID: $escape.html($user.openId)</p>
+			#end
+			
+			#if ($user.twitterid) 
+				<p>Your profile is linked to twitter id: $escape.html($user.twitterid)</p>
 			#end
 		
 		#end

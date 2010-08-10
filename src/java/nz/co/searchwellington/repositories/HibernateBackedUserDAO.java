@@ -21,8 +21,8 @@ public class HibernateBackedUserDAO implements UserRepository {
         this.sessionFactory = sessionFactory;
     }
           
-    public User getUser(String username) {
-    	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("username", username)).uniqueResult();     
+    public User getUserByOpenId(String openId) {
+    	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("openId", openId)).uniqueResult();     
     }
     
     @SuppressWarnings("unchecked")
@@ -43,8 +43,8 @@ public class HibernateBackedUserDAO implements UserRepository {
 	}
 	
 	@Override
-	public User getUserByTwitterName(String screenName) {
-		return getUserByProfileName(screenName);
+	public User getUserByTwitterId(int twitterId) {
+	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("twitterId", twitterId)).uniqueResult();     	    
 	}
 	
 	public User getUserByApiKey(String apiKey) {

@@ -104,7 +104,7 @@ public class ProfileController extends BaseMultiActionController {
 	        		mv.addObject("heading", "User profile");
 	        		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
 	        		
-	        		log.info("Put user onto model: " + user.getUsername());
+	        		log.info("Put user onto model: " + user.getOpenId());
 	        		mv.addObject("profileuser", user);
 	        		
 	        		mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, MAX_NEWSITEMS));

@@ -119,22 +119,22 @@ public class OpenIDLoginController extends MultiActionController {
 		// examine the verification result and extract the verified identifier
 		Identifier verified = verification.getVerifiedId();		
 		if (verified != null) {
-			final String username = verified.getIdentifier();
-			log.info("Verfied identifer: " + username);
+			final String openid = verified.getIdentifier();
+			log.info("Verfied identifer: " + openid);
 			
-			User user = userDAO.getUser(username);			
+			User user = userDAO.getUserByOpenId(openid);
 			if (user == null) {
 				
 				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
 				// No existing user for this identity.				
 				if (loggedInUser == null) {
-					log.info("Creating new user for openid username: " + username);
-					user = createNewUser(username);
+					log.info("Creating new user for openid username: " + openid);
+					user = createNewUser(openid);
 					
 				} else {
 					user = loggedInUser;
-					log.info("Attaching verified username to user: " + username);
-					loggedInUser.setUsername(username);					
+					log.info("Attaching verified username to user: " + openid);
+					loggedInUser.setOpenId(openid);					
 				}
 				
 			}			
@@ -163,9 +163,9 @@ public class OpenIDLoginController extends MultiActionController {
 	
 	private User createNewUser(final String username) {
 		User newUser = anonUserService.createAnonUser();
-		newUser.setUsername(username);
+		newUser.setOpenId(username);
 		userDAO.saveUser(newUser);
-		log.info("Created new user with username: " + newUser.getUsername());
+		log.info("Created new user with username: " + newUser.getOpenId());
 		return newUser;
 	}
 

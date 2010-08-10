@@ -1,0 +1,1 @@
+alter table user change column username openid varchar(255);
