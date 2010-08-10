@@ -63,7 +63,7 @@ public class TwitterLoginController extends MultiActionController {
 				log.info("Got request token: " + requestToken.getToken());
 				tokens.put(requestToken.getToken(), requestToken);
 				
-				final String authorizeUrl = "http://api.twitter.com/oauth/authorize?oauth_token=" + requestToken.getToken();				
+				final String authorizeUrl = "http://api.twitter.com/oauth/authenticate?oauth_token=" + requestToken.getToken();				
 				RedirectView redirectView = new RedirectView(authorizeUrl);
 				log.info("Redirecting user to: " + redirectView.getUrl());
 				return new ModelAndView(redirectView);
