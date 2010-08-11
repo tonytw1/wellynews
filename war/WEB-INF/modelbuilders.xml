@@ -16,6 +16,7 @@
 	
 	<bean id="newsitemPageModelBuilder" class="nz.co.searchwellington.controllers.models.NewsitemPageModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="taggingReturnsOfficerService" />
 	</bean>
 		
 	<bean id="archiveModelBuilder" class="nz.co.searchwellington.controllers.models.ArchiveModelBuilder">

@@ -11,8 +11,10 @@
 
 
 <div class="main">
-
-	<h2>Newsitem</h2>
+	
+	#if($item && $item.publisher)
+		<h2><a href="$item.publisher.url">$item.publisher.name</a></h2>
+	#end
 		
 	<ul class="flat_list">
 		<li class="content_item">
@@ -21,7 +23,28 @@
 			</ul>
 		</li>
 	</ul>
-
+			
+	<h2>Tagging</h2>
+	
+	#if($votes.size() > 0) 
+		<p>This item has had the following tags applied to it:</p>					
+		<ul>
+		#foreach($vote in $votes)
+			<li><a href="$urlBuilder.getTagUrl($vote.tag)">$escape.html($vote.tag.displayName.toLowerCase())</a> 
+				
+			#if($vote.voter.profilename) 
+				by <a href="$urlBuilder.getProfileUrl($vote.voter)">$escape.html($vote.voter.voterName)</a>
+			#else 
+				(automatically derived from $vote.voter.voterName.toLowerCase())		
+			#end
+			</li>	
+			#end		
+		</ul>
+		
+	#else 
+		<p>No tags have been applied to this item.</p>
+	#end
+	
 </div>
 
 

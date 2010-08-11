@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -14,10 +15,11 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 
 	
 	private ContentRetrievalService contentRetrievalService;
+	private TaggingReturnsOfficerService taggingReturnsOfficerService;
 	
-
-	public NewsitemPageModelBuilder(ContentRetrievalService contentRetrievalService) {
+	public NewsitemPageModelBuilder(ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService) {
 		this.contentRetrievalService = contentRetrievalService;
+		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
 	}
 	
 
@@ -41,7 +43,10 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 		Newsitem newsitem = contentRetrievalService.getNewsPage(request.getPathInfo());
 		if (newsitem != null) {
 			logger.info("Putting newsitem onto page: " + newsitem.getName());
+
 			mv.addObject("item", newsitem);
+            mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(newsitem));
+
 			return mv;
 		}
 		return null;

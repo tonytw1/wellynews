@@ -92,7 +92,7 @@ public class SolrBackedResourceDAO {
 		List<Resource> queryResults = getQueryResults(query);
 		log.info(queryResults.size() + " results found while searching for page url: " + pageUrl);
 		if (queryResults.size() == 1) {
-			return (Newsitem) queryResults.get(0);
+			return (Newsitem) resourceDAO.loadResourceById(queryResults.get(0).getId());
 		}
 		return null;		
 	}
