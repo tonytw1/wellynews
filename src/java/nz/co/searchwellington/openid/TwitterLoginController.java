@@ -18,7 +18,6 @@ import org.scribe.oauth.Scribe;
 import org.scribe.oauth.Token;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import twitter4j.Twitter;
@@ -26,7 +25,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.http.AccessToken;
 
-public class TwitterLoginController extends MultiActionController {
+public class TwitterLoginController extends AbstractExternalSigninController {
 
 	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
 
@@ -83,10 +82,9 @@ public class TwitterLoginController extends MultiActionController {
 	
 	@Transactional
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		
-		Integer twitterId = getTwitterIdFromCallbackRequest(request);
-				
+		Integer twitterId = (Integer) getExternalUserIdentifierFromCallbackRequest(request);
 		if (twitterId != null) {
+			
 			log.info("Twitter user is: " + twitterId);
 			User user = userDAO.getUserByTwitterId(twitterId);
 			if (user == null) {
@@ -94,27 +92,25 @@ public class TwitterLoginController extends MultiActionController {
 				// No existing user for this identity.				
 				if (loggedInUser == null) {
 					log.info("Creating new user for twitter users: " + twitterId);
-					user = createNewUser(twitterId);				
+					user = createNewUser(twitterId);
 				} else {
 					user = loggedInUser;
-					log.info("Attaching verified twitter id to user: " + twitterId);
-					loggedInUser.setTwitterId(twitterId);				
+					log.info("Attaching external identifier to current user: " + twitterId);
+					decorateUserWithExternalSigninIndenfier(loggedInUser, twitterId);
 				}
 			}
 						
-			if (user != null) {
-				log.info("Setting logged in user to: " + user.getName());				
+			if (user != null) {	// User should always be not null here, in theory
 				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
 				if (loggedInUser != null) {
 					log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
 					loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
 				}
 				setUser(request, user);
-			
+				
 			} else {
-				log.warn("User was null after successful openid auth");
-			}				
-			
+				log.warn("User was null after successful external signin");
+			}			
 			return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));						
 		}
 	
@@ -122,7 +118,8 @@ public class TwitterLoginController extends MultiActionController {
 	}
 
 
-	private Integer getTwitterIdFromCallbackRequest(HttpServletRequest request) {
+	@Override
+	protected Integer getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		Integer twitterId = null;
 		if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
 			final String token = request.getParameter("oauth_token");
@@ -168,10 +165,16 @@ public class TwitterLoginController extends MultiActionController {
 	
 	private User createNewUser(final int twitterId) {
 		User newUser = anonUserService.createAnonUser();
-		newUser.setTwitterId(twitterId);
+		decorateUserWithExternalSigninIndenfier(newUser, twitterId);
 		userDAO.saveUser(newUser);	// TODO generic
 		log.info("Created new user with username: " + newUser.getOpenId());
 		return newUser;
+	}
+
+	@Override
+	protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
+		int twitterId = (Integer) externalIdentifier;
+		user.setTwitterId(twitterId);
 	}
 	
 

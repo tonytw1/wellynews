@@ -26,10 +26,9 @@ import org.openid4java.message.MessageException;
 import org.openid4java.message.ParameterList;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class OpenIDLoginController extends MultiActionController {
+public class OpenIDLoginController extends AbstractExternalSigninController {
 	
 	static Logger log = Logger.getLogger(OpenIDLoginController.class);
 
@@ -96,9 +95,7 @@ public class OpenIDLoginController extends MultiActionController {
 	
 	@Transactional
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {		
-		
-		
-		String openid = getOpenIdFromCallbackRequest(request);		
+		String openid = (String) getExternalUserIdentifierFromCallbackRequest(request);		
 		if (openid != null) {
 			log.info("Verfied identifer: " + openid);
 			
@@ -114,7 +111,7 @@ public class OpenIDLoginController extends MultiActionController {
 				} else {
 					user = loggedInUser;
 					log.info("Attaching verified username to user: " + openid);
-					loggedInUser.setOpenId(openid);					
+					decorateUserWithExternalSigninIndenfier(loggedInUser, openid);					
 				}
 				
 			}			
@@ -141,9 +138,9 @@ public class OpenIDLoginController extends MultiActionController {
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
 	}
 
-
-	private String getOpenIdFromCallbackRequest(HttpServletRequest request)
-			throws MessageException, DiscoveryException, AssociationException {
+	
+	@Override
+	protected String getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		String openid = null;
 				
 		// extract the parameters from the authentication response
@@ -162,20 +159,30 @@ public class OpenIDLoginController extends MultiActionController {
 		}
 
 		// verify the response
-		VerificationResult verification = manager.verify(receivingURL.toString(), openidResp, discovered);
-
-		// examine the verification result and extract the verified identifier
-		Identifier verified = verification.getVerifiedId();		
-		if (verified != null) {
-			openid = verified.getIdentifier();			
+		VerificationResult verification;
+		try {
+			verification = manager.verify(receivingURL.toString(), openidResp, discovered);
+			// examine the verification result and extract the verified identifier
+			Identifier verified = verification.getVerifiedId();		
+			if (verified != null) {
+				openid = verified.getIdentifier();			
+			}
+			return openid;
+						
+		} catch (MessageException e) {
+			log.warn("OpenID error in callback: " + e.getMessage());
+		} catch (DiscoveryException e) {
+			log.warn("OpenID error in callback: " + e.getMessage());
+		} catch (AssociationException e) {
+			log.warn("OpenID error in callback: " + e.getMessage());
 		}
-		return openid;
+		return null;
 	}
 
 	
 	private User createNewUser(final String username) {
 		User newUser = anonUserService.createAnonUser();
-		newUser.setOpenId(username);
+		decorateUserWithExternalSigninIndenfier(newUser, username);
 		userDAO.saveUser(newUser);
 		log.info("Created new user with username: " + newUser.getOpenId());
 		return newUser;
@@ -185,6 +192,12 @@ public class OpenIDLoginController extends MultiActionController {
 	// TODO duplicated with ResourceEditController
 	private void setUser(HttpServletRequest request, User user) {
 		request.getSession().setAttribute("user", user);	
+	}
+
+	@Override
+	protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
+		final String openId = (String) externalIdentifier;
+		user.setOpenId(openId);
 	}
 	
 }
