@@ -22,10 +22,13 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import twitter4j.Twitter;
+import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.http.AccessToken;
 
 public class TwitterLoginController extends MultiActionController {
+
+	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
 
 	static Logger log = Logger.getLogger(TwitterLoginController.class);
 	
@@ -37,7 +40,7 @@ public class TwitterLoginController extends MultiActionController {
 	private UrlStack urlStack;
 
 	private Map<String, Token> tokens;
-
+	private Scribe scribe;
 	
 	public TwitterLoginController(OAuthScribeFactory scribeFactory,
 			UserRepository userDAO, LoggedInUserFilter loggedInUserFilter,
@@ -51,25 +54,26 @@ public class TwitterLoginController extends MultiActionController {
 		this.loginResourceOwnershipService = loginResourceOwnershipService;
 		this.urlStack = urlStack;
 		this.tokens = new HashMap<String, Token>();
+		scribe = scribeFactory.getScribe();
 	}
 	
 	
-	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Scribe scribe = scribeFactory.getScribe();
-		
+	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {		
 		try {
+			log.info("Getting request token");
 			Token requestToken = scribe.getRequestToken();
 			if (requestToken != null) {
 				log.info("Got request token: " + requestToken.getToken());
 				tokens.put(requestToken.getToken(), requestToken);
 				
-				final String authorizeUrl = "http://api.twitter.com/oauth/authenticate?oauth_token=" + requestToken.getToken();				
+				final String authorizeUrl = OAUTH_AUTHEN_URL + requestToken.getToken();				
 				RedirectView redirectView = new RedirectView(authorizeUrl);
 				log.info("Redirecting user to: " + redirectView.getUrl());
 				return new ModelAndView(redirectView);
 			}
+			
 		} catch (Exception e) {
-			log.error(e);
+			log.warn("Failed to obtain request token" + e.getMessage());
 		}
 		
 		// TODO error screen
@@ -79,89 +83,101 @@ public class TwitterLoginController extends MultiActionController {
 	
 	@Transactional
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		
+		Integer twitterId = getTwitterIdFromCallbackRequest(request);
+				
+		if (twitterId != null) {
+			log.info("Twitter user is: " + twitterId);
+			User user = userDAO.getUserByTwitterId(twitterId);
+			if (user == null) {
+				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
+				// No existing user for this identity.				
+				if (loggedInUser == null) {
+					log.info("Creating new user for twitter users: " + twitterId);
+					user = createNewUser(twitterId);				
+				} else {
+					user = loggedInUser;
+					log.info("Attaching verified twitter id to user: " + twitterId);
+					loggedInUser.setTwitterId(twitterId);				
+				}
+			}
+						
+			if (user != null) {
+				log.info("Setting logged in user to: " + user.getName());				
+				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
+				if (loggedInUser != null) {
+					log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
+					loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
+				}
+				setUser(request, user);
+			
+			} else {
+				log.warn("User was null after successful openid auth");
+			}				
+			
+			return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));						
+		}
+	
+		return null;	// TODO correct fail
+	}
+
+
+	private Integer getTwitterIdFromCallbackRequest(HttpServletRequest request) {
+		Integer twitterId = null;
 		if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
-			Scribe scribe = scribeFactory.getScribe();
 			final String token = request.getParameter("oauth_token");
 			final String verifier = request.getParameter("oauth_verifier");
 
 			log.info("Looking for request token: " + token);
 			Token requestToken = tokens.get(token);
 			if (requestToken != null) {
+				log.debug("Found stored request token: " + requestToken.getToken());
 				
+				log.debug("Exchanging for access token");
 				Token accessToken = scribe.getAccessToken(requestToken, verifier);
 				if (accessToken != null) {
-					log.info("Got access token: " + accessToken);
-				
-					Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
-					twitter4j.User twitterUser = twitterApi.verifyCredentials();
-					if (twitterUser != null) {
-						int twitterId = twitterUser.getId();
-						log.info("Twitter user is: " + twitterId);
-												
-						User user = userDAO.getUserByTwitterId(twitterId);			
-						if (user == null) {
-							
-							User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-							// No existing user for this identity.				
-							if (loggedInUser == null) {
-								log.info("Creating new user for twitter users: " + twitterId);
-								user = createNewUser(twitterId);								
-								
-							} else {
-								user = loggedInUser;
-								log.info("Attaching verified twitter id to user: " + twitterId);
-								loggedInUser.setTwitterId(twitterId);				
-							}
-							
-						}			
-						
-						if (user != null) {
-							log.info("Setting logged in user to: " + user.getName());				
-							User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-							if (loggedInUser != null) {
-								log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
-								loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
-							}
-							setUser(request, user);
-							
-						} else {
-							log.warn("User was null after successful openid auth");
-						}				
-					    return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));						
-					}
+					log.debug("Got access token: " + accessToken);
 					
+					log.debug("Using access token to lookup twitter user details");
+					Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
+					twitter4j.User twitterUser;
+					try {
+						twitterUser = twitterApi.verifyCredentials();
+						if (twitterUser != null) {
+							twitterId = twitterUser.getId();
+						} else {
+							log.warn("Failed up obtain twitter user details");
+						}
+					} catch (TwitterException e) {
+						log.warn("Failed up obtain twitter user details");
+					}
 					
 				} else {
 					log.warn("Could not get access token for: " + requestToken.getToken());
-						
-				}
-				 
-				
-				
+				}								
 			} else {
 				log.warn("Could not find request token for: " + token);
-			}
-			
+			}				
+		
 		} else {
 			log.error("oauth token or verifier missing from callback request");
 		}
-		return null;
+		return twitterId;
 	}
 	
 	
 	private User createNewUser(final int twitterId) {
 		User newUser = anonUserService.createAnonUser();
 		newUser.setTwitterId(twitterId);
-		userDAO.saveUser(newUser);
+		userDAO.saveUser(newUser);	// TODO generic
 		log.info("Created new user with username: " + newUser.getOpenId());
 		return newUser;
 	}
 	
+
 	// TODO duplicated with ResourceEditController
 	private void setUser(HttpServletRequest request, User user) {
 		request.getSession().setAttribute("user", user);	
 	}
-	
-	
 	
 }

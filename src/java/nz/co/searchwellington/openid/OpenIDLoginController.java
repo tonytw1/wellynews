@@ -14,12 +14,15 @@ import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.openid4java.association.AssociationException;
 import org.openid4java.consumer.ConsumerException;
 import org.openid4java.consumer.ConsumerManager;
 import org.openid4java.consumer.VerificationResult;
+import org.openid4java.discovery.DiscoveryException;
 import org.openid4java.discovery.DiscoveryInformation;
 import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
+import org.openid4java.message.MessageException;
 import org.openid4java.message.ParameterList;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -59,11 +62,8 @@ public class OpenIDLoginController extends MultiActionController {
 	}
 
     
-    @Transactional
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// TODO make parameter based
-		
-		if (request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER) != null) {		
+		if (request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER) != null) {
 			final String userSuppliedOpenID = request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER);		
 			try {
 				// discover the OpenID authentication server's endpoint URL
@@ -96,30 +96,10 @@ public class OpenIDLoginController extends MultiActionController {
 	
 	@Transactional
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {		
-		ModelAndView mv = new ModelAndView("openid-return");
 		
-		// extract the parameters from the authentication response
-		// (which comes in as a HTTP request from the OpenID provider)
-		ParameterList openidResp = new ParameterList(request.getParameterMap());
-
-		// retrieve the previously stored discovery information
-		DiscoveryInformation discovered = (DiscoveryInformation) request.getSession().getAttribute("discovered");
-
-		// extract the receiving URL from the HTTP request
-		StringBuffer receivingURL = request.getRequestURL();
-		String queryString = request.getQueryString();
-
-		if (queryString != null && queryString.length() > 0) {
-			receivingURL.append("?").append(request.getQueryString());
-		}
-
-		// verify the response
-		VerificationResult verification = manager.verify(receivingURL.toString(), openidResp, discovered);
-
-		// examine the verification result and extract the verified identifier
-		Identifier verified = verification.getVerifiedId();		
-		if (verified != null) {
-			final String openid = verified.getIdentifier();
+		
+		String openid = getOpenIdFromCallbackRequest(request);		
+		if (openid != null) {
 			log.info("Verfied identifer: " + openid);
 			
 			User user = userDAO.getUserByOpenId(openid);
@@ -154,10 +134,42 @@ public class OpenIDLoginController extends MultiActionController {
 		    return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
 		    
 		} else {
+			ModelAndView mv = new ModelAndView("openid-return");	// TODO over scoped
 			mv.addObject("error", "Could not verify id");			
 		}
 		
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
+	}
+
+
+	private String getOpenIdFromCallbackRequest(HttpServletRequest request)
+			throws MessageException, DiscoveryException, AssociationException {
+		String openid = null;
+				
+		// extract the parameters from the authentication response
+		// (which comes in as a HTTP request from the OpenID provider)
+		ParameterList openidResp = new ParameterList(request.getParameterMap());
+
+		// retrieve the previously stored discovery information
+		DiscoveryInformation discovered = (DiscoveryInformation) request.getSession().getAttribute("discovered");
+
+		// extract the receiving URL from the HTTP request
+		StringBuffer receivingURL = request.getRequestURL();
+		String queryString = request.getQueryString();
+
+		if (queryString != null && queryString.length() > 0) {
+			receivingURL.append("?").append(request.getQueryString());
+		}
+
+		// verify the response
+		VerificationResult verification = manager.verify(receivingURL.toString(), openidResp, discovered);
+
+		// examine the verification result and extract the verified identifier
+		Identifier verified = verification.getVerifiedId();		
+		if (verified != null) {
+			openid = verified.getIdentifier();			
+		}
+		return openid;
 	}
 
 	
