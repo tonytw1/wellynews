@@ -60,7 +60,7 @@ public class UserImpl implements User {
 
 	@Override
 	public boolean isUnlinkedAnonAccount() {
-		return openid == null && this.profilename != "autotagger";	// TODO
+		return (openid == null && twitterId == null) && this.profilename != "autotagger";	// TODO
 	}
 
 	public String getProfilename() {

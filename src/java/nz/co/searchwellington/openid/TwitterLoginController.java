@@ -74,8 +74,7 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 	
 	
 	@Override
-	protected Integer getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
-		Integer twitterId = null;
+	protected Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
 			final String token = request.getParameter("oauth_token");
 			final String verifier = request.getParameter("oauth_verifier");
@@ -93,11 +92,10 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 					
 					log.debug("Using access token to lookup twitter user details");
 					Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
-					twitter4j.User twitterUser;
 					try {
-						twitterUser = twitterApi.verifyCredentials();
+						twitter4j.User twitterUser = twitterApi.verifyCredentials();
 						if (twitterUser != null) {
-							twitterId = twitterUser.getId();
+							return twitterUser;
 						} else {
 							log.warn("Failed up obtain twitter user details");
 						}
@@ -115,21 +113,27 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 		} else {
 			log.error("oauth token or verifier missing from callback request");
 		}
-		return twitterId;
+		return null;
 	}
 	
 	
 	@Override
 	protected User getUserByExternalIdentifier(Object externalIdentifier) {
-		Integer twitterId = (Integer) externalIdentifier;
-		return userDAO.getUserByTwitterId(twitterId);
+		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
+		return userDAO.getUserByTwitterId(twitterUser.getId());
 	}
 
 		
 	@Override
 	protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
-		int twitterId = (Integer) externalIdentifier;
-		user.setTwitterId(twitterId);
+		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
+		if (user.getProfilename() == null || user.isUnlinkedAnonAccount()) {
+			final String twitterScreenName = twitterUser.getScreenName();
+			if (userDAO.getUserByProfileName(twitterScreenName) == null) {
+				user.setProfilename(twitterScreenName);
+			}
+		}
+		user.setTwitterId(twitterUser.getId());
 	}
 	
 }
