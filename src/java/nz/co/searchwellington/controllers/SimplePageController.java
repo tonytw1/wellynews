@@ -173,6 +173,7 @@ public class SimplePageController extends BaseMultiActionController {
         ModelAndView mv = new ModelAndView();
         populateCommonLocal(mv);
         
+        populateSecondaryLatestNewsitems(mv);
         mv.addObject("heading", "Sign in");
         mv.setViewName("signin");
         return mv;

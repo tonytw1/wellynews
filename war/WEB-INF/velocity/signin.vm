@@ -15,14 +15,14 @@
 
 #if (!$loggedInUserFilter.getLoggedInUser())
 		
-	<p>Sign in to have your submissions assigned to you. This will allow you to edit them in the future.</p>
-						
-	<p>Sign in using your OpenID or use your 
+	<p>Sign in to have your submissions assigned to you and generally tinker with stuff. Signing in will allow you to edit you submissions in the future.</p>
+
+	<p>Sign in using your OpenID or your 
 	<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a>, 
 	<a href="$site_information.url/openid/login?openid_claimed_identity=flickr.com">Flickr</a>		
 	or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> 
-	account to sign in via OpenID:</p>
-		
+	account (all of whom support OpenID):</p>
+	
 	<form action="$site_information.url/openid/login" method="POST"> 
  		<fieldset>	  			
 			<input 	name="openid_claimed_identity" 
@@ -46,7 +46,7 @@
 <div class="box">
 	<h2>What is OpenID?</h2>
 
-	<p>$site_information.sitename uses <a href="http://openid.net/">OpenID</a> for signin. 
+	<p>$site_information.sitename uses <a href="http://openid.net/">OpenID</a> for sign in. 
 	
 	<p>We think OpenID is a good thing,
 	as it means we don't need to create you a new account or store your login details.
