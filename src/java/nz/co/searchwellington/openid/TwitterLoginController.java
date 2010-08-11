@@ -16,7 +16,6 @@ import nz.co.searchwellington.repositories.UserRepository;
 import org.apache.log4j.Logger;
 import org.scribe.oauth.Scribe;
 import org.scribe.oauth.Token;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -32,12 +31,7 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 	static Logger log = Logger.getLogger(TwitterLoginController.class);
 	
 	private OAuthScribeFactory scribeFactory;
-	private UserRepository userDAO;
-	private LoggedInUserFilter loggedInUserFilter;
-	private AnonUserService anonUserService;
-	private LoginResourceOwnershipService loginResourceOwnershipService;
-	private UrlStack urlStack;
-
+	
 	private Map<String, Token> tokens;
 	private Scribe scribe;
 	
@@ -80,44 +74,6 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 	}
 	
 	
-	@Transactional
-	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		Integer twitterId = (Integer) getExternalUserIdentifierFromCallbackRequest(request);
-		if (twitterId != null) {
-			
-			log.info("Twitter user is: " + twitterId);
-			User user = userDAO.getUserByTwitterId(twitterId);
-			if (user == null) {
-				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-				// No existing user for this identity.				
-				if (loggedInUser == null) {
-					log.info("Creating new user for twitter users: " + twitterId);
-					user = createNewUser(twitterId);
-				} else {
-					user = loggedInUser;
-					log.info("Attaching external identifier to current user: " + twitterId);
-					decorateUserWithExternalSigninIndenfier(loggedInUser, twitterId);
-				}
-			}
-						
-			if (user != null) {	// User should always be not null here, in theory
-				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-				if (loggedInUser != null) {
-					log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
-					loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
-				}
-				setUser(request, user);
-				
-			} else {
-				log.warn("User was null after successful external signin");
-			}			
-			return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));						
-		}
-	
-		return null;	// TODO correct fail
-	}
-
-
 	@Override
 	protected Integer getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		Integer twitterId = null;
@@ -163,24 +119,17 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 	}
 	
 	
-	private User createNewUser(final int twitterId) {
-		User newUser = anonUserService.createAnonUser();
-		decorateUserWithExternalSigninIndenfier(newUser, twitterId);
-		userDAO.saveUser(newUser);	// TODO generic
-		log.info("Created new user with username: " + newUser.getOpenId());
-		return newUser;
+	@Override
+	protected User getUserByExternalIdentifier(Object externalIdentifier) {
+		Integer twitterId = (Integer) externalIdentifier;
+		return userDAO.getUserByTwitterId(twitterId);
 	}
 
+		
 	@Override
 	protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
 		int twitterId = (Integer) externalIdentifier;
 		user.setTwitterId(twitterId);
-	}
-	
-
-	// TODO duplicated with ResourceEditController
-	private void setUser(HttpServletRequest request, User user) {
-		request.getSession().setAttribute("user", user);	
 	}
 	
 }

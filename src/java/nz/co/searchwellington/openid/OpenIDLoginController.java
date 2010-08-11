@@ -24,28 +24,18 @@ import org.openid4java.discovery.Identifier;
 import org.openid4java.message.AuthRequest;
 import org.openid4java.message.MessageException;
 import org.openid4java.message.ParameterList;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 public class OpenIDLoginController extends AbstractExternalSigninController {
 	
 	static Logger log = Logger.getLogger(OpenIDLoginController.class);
-
 	private static final String OPENID_CLAIMED_IDENTITY_PARAMETER = "openid_claimed_identity";
+	
 	public ConsumerManager manager;
 	private UrlBuilder urlBuilder;
-	private UrlStack urlStack;
-	private UserRepository userDAO;
-	private LoginResourceOwnershipService loginResourceOwnershipService;
-	private LoggedInUserFilter loggedInUserFilter;
-	private AnonUserService anonUserService;
-
 	
-    public OpenIDLoginController() {
-	}
-
-
+	
 	public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack,
 			UserRepository userDAO,
 			LoginResourceOwnershipService loginResourceOwnershipService,
@@ -92,53 +82,7 @@ public class OpenIDLoginController extends AbstractExternalSigninController {
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
     }
 
-	
-	@Transactional
-	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {		
-		String openid = (String) getExternalUserIdentifierFromCallbackRequest(request);		
-		if (openid != null) {
-			log.info("Verfied identifer: " + openid);
-			
-			User user = userDAO.getUserByOpenId(openid);
-			if (user == null) {
-				
-				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-				// No existing user for this identity.				
-				if (loggedInUser == null) {
-					log.info("Creating new user for openid username: " + openid);
-					user = createNewUser(openid);
-					
-				} else {
-					user = loggedInUser;
-					log.info("Attaching verified username to user: " + openid);
-					decorateUserWithExternalSigninIndenfier(loggedInUser, openid);					
-				}
-				
-			}			
-			
-			if (user != null) {
-				log.info("Setting logged in user to: " + user.getName());				
-				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-				if (loggedInUser != null) {
-					log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
-					loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
-				}
-				setUser(request, user);
-				
-			} else {
-				log.warn("User was null after successful openid auth");
-			}				
-		    return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
-		    
-		} else {
-			ModelAndView mv = new ModelAndView("openid-return");	// TODO over scoped
-			mv.addObject("error", "Could not verify id");			
-		}
 		
-		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
-	}
-
-	
 	@Override
 	protected String getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		String openid = null;
@@ -180,24 +124,17 @@ public class OpenIDLoginController extends AbstractExternalSigninController {
 	}
 
 	
-	private User createNewUser(final String username) {
-		User newUser = anonUserService.createAnonUser();
-		decorateUserWithExternalSigninIndenfier(newUser, username);
-		userDAO.saveUser(newUser);
-		log.info("Created new user with username: " + newUser.getOpenId());
-		return newUser;
-	}
-
-	
-	// TODO duplicated with ResourceEditController
-	private void setUser(HttpServletRequest request, User user) {
-		request.getSession().setAttribute("user", user);	
-	}
-
 	@Override
 	protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
 		final String openId = (String) externalIdentifier;
 		user.setOpenId(openId);
+	}
+
+
+	@Override
+	protected User getUserByExternalIdentifier(Object externalIdentifier) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
