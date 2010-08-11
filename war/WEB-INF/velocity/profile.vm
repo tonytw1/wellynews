@@ -3,157 +3,122 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
 
-
-
-
-
 <div class="main">
 
-
 	<h2><a href="$site_information.url/profiles">Profiles</a> #if ($user.profilename) / $escape.html($user.profilename) #end</h2>
-
 	
+	#if ($user.isUnlinkedAnonAccount()) 
+		<p>You are using a temporary anonymous user profile to post your submissions.</p>
+		<p>Access to this profile will cease when you close your browser.</p> 
+			
+		<p>If you wish to retain the ability to edit your submissions in the future,  
+		you can to link this profile to an OpenID or Twitter account by signing in below.</p>
+			
+		#parse("includes/signin_form.vm")
 		
+	#else 
+		
+		#if (!$user.profilename)
+			<p>You are signed in but have not set a profile name. Your profile name is used to identify you and credit your submissions.</p>
 	
-	#if ($user)
-	
-		#if ($user.isUnlinkedAnonAccount()) 
+			<form action="profile/save" method="POST"> 			
+				<fieldset>						
+					<label for="profilename">Choose a profilename:</label>
+					<input name="profilename" value="" />											
+					<input type="submit" value="Set profile name" />					
+				</fieldset>
+					
+				<p>Profile names may contain letters and numbers only. ie. johnsmith</p>
+			</form>							
 		
-			<p>You are using a temporary anonomous user profile to post your submissions.</p>
-			<p>Access to this profile will cease when you close your browser.</p> 
-			
-			<p>If you wish to retain the ability to edit your submissions in the future,  
-			you will need to link this profile to an OpenID.</a>
-			
-			<form action="$site_information.url/openid/login" method="POST"> 
- 				<fieldset>	
-					<input name="openid_claimed_identity" style="background: #fff url('$urlBuilder.getImageUrl('openid_logo.png')') no-repeat left; padding-left: 18px">				
-		     	<input type="submit" class="password" value="Link OpenID">
-	  		</fieldset>
-			</form>
-			
-			<p>Sign in using your OpenID above, or follow one of these links to use your 
-			<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a>, 
-			<a href="$site_information.url/openid/login?openid_claimed_identity=flickr.com">Flickr</a>		
-			or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> account as an OpenID.
-		
-		#else 
-		
-			#if (!$user.profilename) 
-				<p>You are signed in but have not set a profile name. Your profile name is used to identifiy you and credit your submissions.</p>
-
-				<form action="profile/save" method="POST"> 			
-					<fieldset>						
-						<label for="profilename">Choose a profilename:</label>
-						<input name="profilename" value="" />											
-						<input type="submit" value="Set profile name" />					
-					</fieldset>
+		#else			
+			<ul>
+				<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
+			</ul>
 				
-					<p>Profile names may contain letters and numbers only. ie. johnsmith</p>
-									
-				</form>
-							
+			<p>Your name: 
+			#if ($user.name)
+				$escape.html($user.name)
 			#else
-			
-				<ul>
-					<li class="admin"><a href="$site_information.url/profile/edit">Edit</a></li>
-				</ul>
-				
-				<p>Your name: 
-				#if ($user.name)
-					$escape.html($user.name)
-				#else
-					not set
-				#end	
-				</p>
+				not set
+			#end	
+			</p>
 						
-				<p>Your blog or website: 
-				#if ($user.url)
-					<a href="$user.url">$escape.html($user.url)</a>
-				#else 
-					not set
-				#end	
-				</p>
+			<p>Your blog or website: 
+			#if ($user.url)
+				<a href="$user.url">$escape.html($user.url)</a>
+			#else 
+				not set
+			#end	
+			</p>
 			
-				<p>Your bio: 
-				#if ($user.bio)
-					$escape.html($user.bio)
-				#else
-					not set
-				#end
-				</p>						
+			<p>Your bio: 
+			#if ($user.bio)
+				$escape.html($user.bio)
+			#else
+				not set
 			#end
-			
-			#if ($user.openId) 
-				<p>Your profile is linked to the OpenID: $escape.html($user.openId)</p>
-			#end
-			
-			#if ($user.twitterId) 
-				<p>Your profile is linked to twitter id: $escape.html($user.twitterId)</p>
-			#end
-		
+			</p>						
 		#end
-		
-		
-		<div class="tag_main_content">
-			<h3>Submissions</h3>
-		
-			#if ($submitted.size() > 0) 
-				<ul class="flat_list">
-					#foreach($item in $submitted)
-						<li class="content_item">
-							<ul class="main_content_item">
-								#parse("includes/content_element.vm")
-							</ul>
-						</li>
-					#end
-				</ul>
-			#else
-				<p>This user has not made any submissions.</p>
-			#end
-		</div>
-
-		<div class="tag_secondary_content">
-			<h3>Tagged</h3>
-		
-			#if ($tagged.size() > 0) 
-				<ul class="flat_list">
-					#foreach($item in $tagged)
-						<li class="content_item">
-							<ul class="main_content_item">
-								#parse("includes/content_element.vm")
-							</ul>
-						</li>
-					#end
-				</ul>
-			#else
-				<p>This user has not tagged any items.</p>
-			#end
-		</div>
-				
+			
+		#if ($user.openId) 
+			<p>Your profile is linked to the OpenID: $escape.html($user.openId)</p>
+		#end
+			
+		#if ($user.twitterId) 
+			<p>Your profile is linked to twitter id: $user.twitterId</p>
+		#end
+					
 	#end
+		
+		
+	<div class="tag_main_content">
+		<h3>Submissions</h3>
+		
+		#if ($submitted.size() > 0) 
+			<ul class="flat_list">
+				#foreach($item in $submitted)
+					<li class="content_item">
+						<ul class="main_content_item">
+							#parse("includes/content_element.vm")
+						</ul>
+					</li>
+				#end
+			</ul>
+		#else
+			<p>You have not made any submissions.</p>
+		#end
+	</div>
 
+	<div class="tag_secondary_content">
+		<h3>Tagged</h3>
+		
+		#if ($tagged.size() > 0) 
+			<ul class="flat_list">
+				#foreach($item in $tagged)
+					<li class="content_item">
+						<ul class="main_content_item">
+							#parse("includes/content_element.vm")
+						</ul>
+					</li>
+				#end
+			</ul>
+		#else
+			<p>You have has not tagged any items.</p>
+		#end
+	</div>
+	
 </div>
-
-
-
 
 <div class="right">
-
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-
-<br clear="all"/>
-
-</div>
-
-
+	<div class="box">
+	#parse("includes/latest_newsitems.vm")
+	<br clear="all"/>
+	</div>
 </div>
 
 </div>

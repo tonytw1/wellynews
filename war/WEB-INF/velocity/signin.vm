@@ -14,29 +14,8 @@
 <h2>$heading</h2>
 
 #if (!$loggedInUserFilter.getLoggedInUser())
-
-	<p>Sign in to have your submissions assigned to you. Signing in will allow you to edit you submissions and tinker with things.</p>
-	
-	<p>Sign in using your OpenID or your 
-	<a href="$site_information.url/openid/login?openid_claimed_identity=google.com/accounts/o8/id">Google</a>, 
-	<a href="$site_information.url/openid/login?openid_claimed_identity=flickr.com">Flickr</a>		
-	or <a href="$site_information.url/openid/login?openid_claimed_identity=https://me.yahoo.com/">Yahoo</a> 
-	account (all of whom support OpenID):</p>
-	
-	<form action="$site_information.url/openid/login" method="POST"> 
- 		<fieldset>	  			
-			<input 	name="openid_claimed_identity" 
-					style="background: #fff url('$urlBuilder.getImageUrl('openid_logo.png')') no-repeat left; padding-left: 18px">
-		    <input type="submit" class="password" value="Sign in">
-	  	</fieldset>
-	</form>
-		
-	<p>
-	Or sign in using your twitter account:</p>
-	<p>
-	<a href="$site_information.url/twitter/login"><img src="$urlBuilder.getImageUrl('sign-in-with-twitter-l.png')" border="0" alt="Sign in with Twitter"></a>
-	</p>
-	
+	<p>Sign in to have your submissions assigned to you. Signing in will allow you to edit your previous submissions and tinker with things.</p>	
+	#parse("includes/signin_form.vm")	
 #end
 
 </div>

@@ -3,88 +3,70 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
-
-
-
-
 
 <div class="main">
 
 	<h2><a href="$site_information.url/profiles">Profiles</a> #if ($profileuser.profilename) / $escape.html($profileuser.profilename) #end</h2>
 	
-	#if ($profileuser)
-	
-		#if ($profileuser.name)
-			<p>Name: $profileuser.name</p>
-		#end		
+	#if ($profileuser.name)
+		<p>Name: $profileuser.name</p>
+	#end		
 		
-		#if ($profileuser.url)
-			<p>Blog or website: <a href="$profileuser.url">$profileuser.url</a></p>
-		#end		
+	#if ($profileuser.url)
+		<p>Blog or website: <a href="$profileuser.url">$profileuser.url</a></p>
+	#end		
 		
-		#if ($profileuser.bio)
-			<p>Bio: $profileuser.bio</p>
-		#end	
+	#if ($profileuser.bio)
+		<p>Bio: $profileuser.bio</p>
+	#end	
 		
-		
-		
-		<div class="tag_main_content">
-			<h3>Submissions</h3>
-		
-			#if ($submitted.size() > 0) 
-				<ul class="flat_list">
-					#foreach($item in $submitted)
-						<li class="content_item">
-							<ul class="main_content_item">
-								#parse("includes/content_element.vm")
-							</ul>
-						</li>
-					#end
-				</ul>
-			#else
-				<p>This user has not made any submissions.</p>
-			#end
-		</div>
-
-
-		<div class="tag_secondary_content">
-			<h3>Tagged</h3>
-		
-			#if ($tagged.size() > 0) 
-				<ul class="flat_list">
-					#foreach($item in $tagged)
-						<li class="content_item">
-							<ul class="main_content_item">
-								#parse("includes/content_element.vm")
-							</ul>
-						</li>
-					#end
-				</ul>
-			#else
-				<p>This user has not tagged any items.</p>
-			#end
-		</div>
 				
+	<div class="tag_main_content">
+		<h3>Submissions</h3>
 		
-	#end
+		#if ($submitted.size() > 0) 
+			<ul class="flat_list">
+				#foreach($item in $submitted)
+					<li class="content_item">
+						<ul class="main_content_item">
+							#parse("includes/content_element.vm")
+						</ul>
+					</li>
+				#end
+			</ul>
+		#else
+			<p>This user has not made any submissions.</p>
+		#end
+	</div>
 
+	<div class="tag_secondary_content">
+		<h3>Tagged</h3>
+		
+		#if ($tagged.size() > 0) 
+			<ul class="flat_list">
+				#foreach($item in $tagged)
+					<li class="content_item">
+						<ul class="main_content_item">
+							#parse("includes/content_element.vm")
+						</ul>
+					</li>
+				#end
+			</ul>
+		#else
+			<p>This user has not tagged any items.</p>
+		#end
+	</div>
+	
 </div>
 
 
-
-
 <div class="right">
-
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-
-<br clear="all"/>
-
+	<div class="box">
+	#parse("includes/latest_newsitems.vm")
+	<br clear="all"/>
 </div>
 
 
