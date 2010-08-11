@@ -62,7 +62,13 @@ public abstract class AbstractExternalSigninController extends MultiActionContro
 			}			
 			return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));						
 		}
-		return null;	// TODO correct fail
+		
+		return signinErrorView(request);
+	}
+	
+	
+	protected ModelAndView signinErrorView(HttpServletRequest request) {
+		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));	// TODO replace with something meaningful
 	}
 	
 	

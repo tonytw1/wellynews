@@ -51,6 +51,7 @@ public class OpenIDLoginController extends AbstractExternalSigninController {
 	}
 
     
+	@SuppressWarnings("unchecked")
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if (request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER) != null) {
 			final String userSuppliedOpenID = request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER);		
@@ -79,10 +80,10 @@ public class OpenIDLoginController extends AbstractExternalSigninController {
 			}
 		}
 		
-		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
+		return signinErrorView(request);
     }
 
-		
+	
 	@Override
 	protected String getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		String openid = null;

@@ -27,9 +27,9 @@ import twitter4j.http.AccessToken;
 public class TwitterLoginController extends AbstractExternalSigninController {
 
 	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
-
 	static Logger log = Logger.getLogger(TwitterLoginController.class);
 	
+	@SuppressWarnings("unused")
 	private OAuthScribeFactory scribeFactory;
 	
 	private Map<String, Token> tokens;
@@ -69,8 +69,7 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 			log.warn("Failed to obtain request token" + e.getMessage());
 		}
 		
-		// TODO error screen
-		return null;		
+		return signinErrorView(request);	
 	}
 	
 	
@@ -90,6 +89,7 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 				Token accessToken = scribe.getAccessToken(requestToken, verifier);
 				if (accessToken != null) {
 					log.debug("Got access token: " + accessToken);
+					tokens.remove(requestToken.getToken());
 					
 					log.debug("Using access token to lookup twitter user details");
 					Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
@@ -110,7 +110,7 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 				}								
 			} else {
 				log.warn("Could not find request token for: " + token);
-			}				
+			}		
 		
 		} else {
 			log.error("oauth token or verifier missing from callback request");
