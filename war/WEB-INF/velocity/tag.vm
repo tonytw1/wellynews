@@ -115,7 +115,11 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 		#if($tag.name == 'animals' || $tag.name == 'dogs') 
 			#parse("widgets/spca_widget.vm")
 		#end
-		
+				
+		#if($tag.name == 'elections2010' || $tag.name == 'election-candiates-2010') 
+			#parse("widgets/wcc_watch_poll.vm")
+		#end
+				
 		#if($tag.name == 'cats') 
 			#parse("widgets/neighbourhood_cats.vm")
 		#end
