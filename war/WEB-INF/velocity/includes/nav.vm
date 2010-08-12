@@ -9,4 +9,10 @@
 	<li><a href="$site_information.url/about">About</a></li>
 	<li><a href="$site_information.url/about#contact">Contact</a></li>
 </ul>
+<br/>
+<ul class="navtags">
+    <li><a href="$site_information.url/elections2010">Election 2010</a></li>
+    <li><a href="$site_information.url/transport">Transport</a></li>
+    <li><a href="$site_information.url/sport">Sport</a></li>
+</ul>
 </div>
