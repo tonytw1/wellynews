@@ -1,12 +1,13 @@
 package nz.co.searchwellington.views;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
+
 import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.when;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -16,18 +17,27 @@ public class ContentDataSourceTest {
 	
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock List<Resource> latestNewsitems;
+	@Mock List<Resource> publisherTagNewsitems;
 
+	ContentDataSource dataSource;
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		dataSource = new ContentDataSource(contentRetrievalService);
 	}
 	
 	@Test
-	public void testShouldProvideLatestNewsitems() throws Exception {
-		ContentDataSource dataSource = new ContentDataSource(contentRetrievalService);
+	public void shouldProvideLatestNewsitems() throws Exception {
 		when(contentRetrievalService.getLatestNewsitems(5)).thenReturn(latestNewsitems);		
 		List<Resource> result = dataSource.getLatestNewsitems();
 		assertEquals(latestNewsitems, result);
+	}
+	
+	@Test
+	public void shouldProvidePublisherTagCombinerNewsitems() throws Exception {
+		when(contentRetrievalService.getPublisherTagCombinerNewsitems("publisher", "tag", 10)).thenReturn(publisherTagNewsitems);
+		assertEquals(publisherTagNewsitems, dataSource.getPublisherTagNewsitems("publisher", "tag"));
 	}
 
 }

@@ -111,13 +111,15 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 
 	<div class="right">			
 		#parse("includes/flickr_group_tag.vm")
-		
+					
 		#if($tag.name == 'animals' || $tag.name == 'dogs') 
 			#parse("widgets/spca_widget.vm")
 		#end
 				
-		#if($tag.name == 'elections2010' || $tag.name == 'election-candiates-2010') 
+		#if($tag.name == 'elections2010' || $tag.name == 'election-candidates-2010') 
 			#parse("widgets/wcc_watch_poll.vm")
+			#parse("widgets/scoop_election_videos_widget.vm")
+			#parse("widgets/election_candidates_twitter.vm")
 		#end
 				
 		#if($tag.name == 'cats') 

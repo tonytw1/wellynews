@@ -29,7 +29,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/htmlparser.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spring-mock.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/spring-aspects.jar"/>
-	<classpathentry kind="lib" path="lib/cglib-nodep-2.1_3.jar"/>
 	<classpathentry kind="lib" path="lib/buildtime/easymockclassextension.jar"/>
 	<classpathentry kind="lib" path="lib/buildtime/easymock.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/joda-time-1.5.2.jar"/>
@@ -60,7 +59,6 @@
 	<classpathentry kind="lib" path="war/WEB-INF/lib/rome-1.0.jar" sourcepath="/home/tmccrae/Download/rome-1.0-sources.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/twitter4j-core-2.1.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/georss-rome-0.9.8.jar"/>
-	<classpathentry kind="lib" path="war/WEB-INF/lib/scribe-0.6.6.jar"/>
 	<classpathentry kind="lib" path="war/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

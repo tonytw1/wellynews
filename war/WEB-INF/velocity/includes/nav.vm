@@ -11,7 +11,7 @@
 </ul>
 <br/>
 <ul class="navtags">
-    <li><a href="$site_information.url/elections2010">Election 2010</a></li>
+    <li><a href="$site_information.url/elections2010">Elections 2010</a></li>
     <li><a href="$site_information.url/transport">Transport</a></li>
     <li><a href="$site_information.url/sport">Sport</a></li>
 </ul>

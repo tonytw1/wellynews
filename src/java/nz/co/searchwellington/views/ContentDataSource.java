@@ -17,4 +17,8 @@ public class ContentDataSource {
 		return contentRetrievalService.getLatestNewsitems(5);
 	}
 
+	public List<Resource> getPublisherTagNewsitems(String publisherUrlWords, String tagName) {
+		return contentRetrievalService.getPublisherTagCombinerNewsitems(publisherUrlWords, tagName, 10);
+	}
+
 }

@@ -220,7 +220,16 @@ public class ContentRetrievalService {
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, int maxNewsitems) {
 		return solrContentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems);
 	}
-
+	
+	public List<Resource> getPublisherTagCombinerNewsitems(String publisherUrlWords, String tagName, int maxNewsitems) {
+		Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
+		Tag tag = tagDAO.loadTagByName(tagName);
+		if (publisher != null && tag != null) {
+			return this.getPublisherTagCombinerNewsitems(publisher, tag, maxNewsitems);
+		}
+		return null;		
+	}
+	
 	public List<Resource> getRecentlyChangedWatchlistItems() {
 		return solrContentRetrievalService.getRecentlyChangedWatchlistItems(showBrokenDecisionService.shouldShowBroken());
 	}
