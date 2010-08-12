@@ -83,8 +83,6 @@ public class SearchController extends BaseMultiActionController {
                 }
          
             mv.getModel().put("search_keywords", keywords);
-           
-            populateSecondaryLatestNewsitems(mv);
             
             if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                 log.debug("Using single column layout.");

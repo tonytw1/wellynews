@@ -1,8 +1,5 @@
 package nz.co.searchwellington.controllers;
 
-import java.util.List;
-
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
@@ -32,11 +29,7 @@ public abstract class BaseMultiActionController extends MultiActionController {
     }
     
     
-    final protected void populateSecondaryLatestNewsitems(ModelAndView mv) {            
-        final int numberOfItems = 5;
-        final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(numberOfItems);        
-        mv.addObject("latest_newsitems", latestNewsitems);
-        mv.addObject("latest_newsitems_moreurl", "index#newslog");
+    final protected void populateSecondaryLatestNewsitems(ModelAndView mv) {        
     }
         
 }

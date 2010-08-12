@@ -48,8 +48,6 @@ public class SimplePageController extends BaseMultiActionController {
                     
         populateCommonLocal(mv);             
         mv.addObject("heading", "About");        
-        populateSecondaryLatestNewsitems(mv);
-        
         mv.setViewName("about");                     
         return mv;
     }
@@ -61,9 +59,7 @@ public class SimplePageController extends BaseMultiActionController {
 
         populateCommonLocal(mv);        
    
-        mv.addObject("heading", "Archive");
-        populateSecondaryLatestNewsitems(mv);
-        
+        mv.addObject("heading", "Archive");        
         // TODO populate stats and dedupe as well.
         List<ArchiveLink> archiveMonths = contentRetrievalService.getArchiveMonths();
         mv.addObject("archiveLinks", archiveMonths);
@@ -83,7 +79,6 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("feeds", contentRetrievalService.getAllFeeds());
         mv.addObject("publishers", contentRetrievalService.getAllPublishers());
         mv.addObject("api_tags", contentRetrievalService.getTopLevelTags());
-        populateSecondaryLatestNewsitems(mv);
         mv.setViewName("api");
         return mv;
     }
@@ -97,9 +92,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "RSS feeds");
         setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
 
-        mv.addObject("feedable_tags", contentRetrievalService.getFeedworthyTags());
-		
-        populateSecondaryLatestNewsitems(mv);        
+        mv.addObject("feedable_tags", contentRetrievalService.getFeedworthyTags());		
         mv.setViewName("rssfeeds");
         return mv;      
     }
@@ -115,9 +108,7 @@ public class SimplePageController extends BaseMultiActionController {
         urlStack.setUrlStack(request);
         populateCommonLocal(mv);
         
-        mv.addObject("heading", "Broken sites");
-        populateSecondaryLatestNewsitems(mv);
-             
+        mv.addObject("heading", "Broken sites");             
         List<Resource> wrappedCalendars = contentRetrievalService.getBrokenSites();        
         mv.addObject("main_content", wrappedCalendars);
         mv.setViewName("browse");
@@ -131,9 +122,7 @@ public class SimplePageController extends BaseMultiActionController {
         
         urlStack.setUrlStack(request);
 
-        mv.addObject("heading", "Discovered Feeds");
-        populateSecondaryLatestNewsitems(mv);
-        
+        mv.addObject("heading", "Discovered Feeds");        
         List<DiscoveredFeed> nonCommentFeeds = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds();        
 		mv.addObject("discovered_feeds", nonCommentFeeds);        
         mv.setViewName("discoveredFeeds");
@@ -147,10 +136,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
      
         mv.addObject("heading", "All Tags");        
-        mv.addObject("tags", tagDAO.getAllTags());
-                
-        populateSecondaryLatestNewsitems(mv);       
-        
+        mv.addObject("tags", tagDAO.getAllTags());        
         mv.setViewName("tags");
         return mv;
     }
@@ -163,17 +149,13 @@ public class SimplePageController extends BaseMultiActionController {
         
         mv.addObject("heading", "All Publishers");
         mv.addObject("publishers", contentRetrievalService.getAllPublishers());
-        
-        populateSecondaryLatestNewsitems(mv);       
         mv.setViewName("publishers");
         return mv;
     }
     
     public ModelAndView signin(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
-        populateCommonLocal(mv);
-        
-        populateSecondaryLatestNewsitems(mv);
+        populateCommonLocal(mv);        
         mv.addObject("heading", "Sign in");
         mv.setViewName("signin");
         return mv;
@@ -185,7 +167,6 @@ public class SimplePageController extends BaseMultiActionController {
         	return null;
     	}
     	
-    	
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
         
@@ -193,8 +174,6 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading",  "Following the " + siteInformation.getAreaname() + " newslog on Twitter");
 
         populateLatestTwitters(mv);        
-        populateSecondaryLatestNewsitems(mv);
-        
         mv.addObject("main_content", contentRetrievalService.getRecentedTwitteredNewsitems());
         
         populateCommonLocal(mv);

@@ -64,9 +64,7 @@ public class TagController extends MultiActionController {
 	
 	// TODO this should be in model builders
     private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
-		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
-        final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(5);
-        mv.addObject("latest_newsitems", latestNewsitems);
+		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());      
 	}
     
 }
