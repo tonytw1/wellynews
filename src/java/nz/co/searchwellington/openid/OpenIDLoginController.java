@@ -134,8 +134,8 @@ public class OpenIDLoginController extends AbstractExternalSigninController {
 
 	@Override
 	protected User getUserByExternalIdentifier(Object externalIdentifier) {
-		// TODO Auto-generated method stub
-		return null;
+		final String openId = (String) externalIdentifier;
+		return userDAO.getUserByOpenId(openId);
 	}
 	
 }
