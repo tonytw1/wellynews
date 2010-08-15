@@ -1,50 +1,40 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+	#parse("includes/topbar.vm")
 
 
 
-<div class="left">
-#parse("includes/tag_tree.vm")
-</div>
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
 
 
+	<div class="main">
 
+		<h2><a href="$site_information.url/feeds">Feeds</a> / $heading</h2>
+		
+		<p>These newsitems have been seen in local feeds which may be suitable for inclusion in the newslog.
+		They will be reviewed by an real person before been accepted or discarded.</p>
 
+		<p>Feed items from these feeds are not automatically accepted for one of the following reasons:</p>
+		<ul>
+			<li>The feed might not contain completely Wellington centeric content.</li>
+			<li>The organisation concerned may publish alot of internal interest only content.</li>
+		</ul>
 
-<div class="main">
+		#if ($main_content && $main_content.size() > 0)
+			#parse("includes/main_content.vm")
+		#else 
+			<p>There are currently no suggestions in the inbox.</p>
+		#end
+	</div>
 
-<h2><a href="$site_information.url/feeds">Feeds</a> / $heading</h2>
-
-
-<p>These newsitems have been seen in local feeds which may be suitable for inclusion in the newslog.
-They will be reviewed by an real person before been accepted or discarded.</p>
-
-<p>Feed items from these feeds are not automatically accepted for one of the following reasons:</p>
-<ul>
-	<li>The feed might not contain completely Wellington centeric content.</li>
-	<li>The organisation concerned may publish alot of internal interest only content.</li>
-</ul>
-
-
-
-#if ($main_content && $main_content.size() > 0) 
-	#parse("includes/main_content.vm")
-#else 
-	<p>There are currently no suggestions in the inbox.</p>
-#end
-
-</div>
-
-
-
-
-<div class="right">
-</div>
-
-
-</div>
+	<div class="right">		
+		<div class="box">
+			#parse("includes/latest_newsitems.vm")
+		</div>
+	</div>
 
 </div>
 
