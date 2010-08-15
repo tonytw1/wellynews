@@ -138,5 +138,9 @@ public class UrlBuilder {
 	public String getWatchlistUrl() {
 		return siteInformation.getUrl() + "/watchlist";
 	}
+
+	public String getTwitterCallbackUrl() {
+		return siteInformation.getUrl() + "/twitter/callback";
+	}
 	
 }

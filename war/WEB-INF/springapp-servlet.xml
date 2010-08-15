@@ -97,9 +97,7 @@
 			</bean>		
 		</property>					
 	</bean>
-	
-	<bean id="oauthScribeFactory" class="nz.co.searchwellington.openid.OAuthScribeFactory" />
-	
+		
 	<bean id="twitterLoginController" class="nz.co.searchwellington.openid.TwitterLoginController">
 		<constructor-arg ref="oauthScribeFactory" />
 		<constructor-arg ref="userDAO" />
