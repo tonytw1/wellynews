@@ -347,6 +347,13 @@ public class ResourceEditController extends BaseMultiActionController {
         if (editResource != null) {                      
             boolean newSubmission = editResource.getId() == 0;
                         
+            if (loggedInUser == null) {
+            	log.info("Creating new anon user for resource submission");
+            	loggedInUser = anonUserService.createAnonUser();
+            	setUser(request, loggedInUser);
+            	loggedInUserFilter.loadLoggedInUser(request);
+            }
+            
             if (newSubmission) {        // TODO is wrong place - needs to be shared with the api.
             	editResource.setOwner(loggedInUser);
             }
@@ -386,11 +393,6 @@ public class ResourceEditController extends BaseMultiActionController {
             if (okToSave) {
             	// TODO could be a collection?  			 
                 
-            	if (loggedInUser == null) {
-            		log.info("Creating new anon user for resource submission");
-            		loggedInUser = anonUserService.createAnonUser();
-            		setUser(request, loggedInUser);
-            	}
             	
             	saveResource(request, loggedInUser, editResource);
             	log.info("Saved resource; id is now: " + editResource.getId());
