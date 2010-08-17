@@ -41,9 +41,16 @@
 			#end		
 		</ul>
 		
-	#else 
+	#else
 		<p>No tags have been applied to this item.</p>
 	#end
+	
+	<p>Add tags to this items:</p>
+	<form id="editForm" action="$urlBuilder.getPublicTaggingSubmissionUrl($item)" method="POST">
+		<input type="hidden" name="resource" value="$item.id" />
+		#parse("includes/tag_edit_fields.vm")				
+		<input type="submit" value="Update tags" />
+	</form>
 	
 </div>
 

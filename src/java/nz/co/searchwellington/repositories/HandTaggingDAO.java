@@ -41,6 +41,9 @@ public class HandTaggingDAO {
 	
     public Set<Tag> getHandpickedTagsForThisResourceByUser(User user, Resource resource) { // TODO stop gap measure until editor understands votes
 		Set<Tag>tags = new HashSet<Tag>();		
+		if (user == null) {
+			return tags;
+		}
 		List<HandTagging> handTaggings = getHandTaggings(resource, user);				
 		for (HandTagging tagging : handTaggings) {
 			tags.add(tagging.getTag());

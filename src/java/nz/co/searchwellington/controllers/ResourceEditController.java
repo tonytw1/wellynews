@@ -348,10 +348,7 @@ public class ResourceEditController extends BaseMultiActionController {
             boolean newSubmission = editResource.getId() == 0;
                         
             if (loggedInUser == null) {
-            	log.info("Creating new anon user for resource submission");
-            	loggedInUser = anonUserService.createAnonUser();
-            	setUser(request, loggedInUser);
-            	loggedInUserFilter.loadLoggedInUser(request);
+            	loggedInUser = createAndSetAnonUser(request);
             }
             
             if (newSubmission) {        // TODO is wrong place - needs to be shared with the api.
@@ -415,6 +412,17 @@ public class ResourceEditController extends BaseMultiActionController {
        
         return modelAndView;
     }
+
+
+
+	private User createAndSetAnonUser(HttpServletRequest request) {
+		User loggedInUser;
+		log.info("Creating new anon user for resource submission");
+		loggedInUser = anonUserService.createAnonUser();
+		setUser(request, loggedInUser);
+		loggedInUserFilter.loadLoggedInUser(request);
+		return loggedInUser;
+	}
 
 
     

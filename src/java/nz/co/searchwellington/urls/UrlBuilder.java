@@ -105,8 +105,8 @@ public class UrlBuilder {
 	}
 	
 	
-	public String getPublicTaggingUrl(Resource resource) {
-		return siteInformation.getUrl() + "/tagging/tag?resource=" + resource.getId();
+	public String getPublicTaggingSubmissionUrl(Resource resource) {
+		return siteInformation.getUrl() + "/tagging/submit";
 	}
 	
 	public String getTaggingUrl(Newsitem newsitem) {
