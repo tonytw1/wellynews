@@ -1,4 +1,4 @@
-package nz.co.searchwellington.openid;
+package nz.co.searchwellington.signin;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,17 +20,17 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.http.AccessToken;
 
-public class TwitterLoginController implements SigninHandler {
+public class TwitterLoginHandler implements SigninHandler {
 
 	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
-	static Logger log = Logger.getLogger(TwitterLoginController.class);
+	static Logger log = Logger.getLogger(TwitterLoginHandler.class);
 	
 	private Scribe scribe;	// TODO Might not want to reuse this.
 	private UserRepository userDAO;
 	private Map<String, Token> tokens;
 	
 	
-	public TwitterLoginController(OAuthScribeFactory scribeFactory, UserRepository userDAO) {
+	public TwitterLoginHandler(OAuthScribeFactory scribeFactory, UserRepository userDAO) {
 		this.scribe = scribeFactory.getScribe();
 		this.userDAO = userDAO;
 		this.tokens = new HashMap<String, Token>();

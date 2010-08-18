@@ -1,4 +1,4 @@
-package nz.co.searchwellington.openid;
+package nz.co.searchwellington.signin;
 
 import java.util.List;
 
@@ -23,9 +23,9 @@ import org.openid4java.message.ParameterList;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class OpenIDLoginController implements SigninHandler {
+public class OpenIDLoginHandler implements SigninHandler {
 	
-	static Logger log = Logger.getLogger(OpenIDLoginController.class);
+	static Logger log = Logger.getLogger(OpenIDLoginHandler.class);
 	private static final String OPENID_CLAIMED_IDENTITY_PARAMETER = "openid_claimed_identity";
 	
 	private UrlBuilder urlBuilder;
@@ -33,7 +33,7 @@ public class OpenIDLoginController implements SigninHandler {
 	private ConsumerManager manager;
 	
 	    
-	public OpenIDLoginController(UrlBuilder urlBuilder, UserRepository userDAO) throws ConsumerException {
+	public OpenIDLoginHandler(UrlBuilder urlBuilder, UserRepository userDAO) throws ConsumerException {
 		this.urlBuilder = urlBuilder;
 		this.userDAO = userDAO;
 		manager = new ConsumerManager();

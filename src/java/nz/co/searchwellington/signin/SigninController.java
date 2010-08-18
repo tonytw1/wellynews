@@ -1,4 +1,4 @@
-package nz.co.searchwellington.openid;
+package nz.co.searchwellington.signin;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class AbstractExternalSigninController extends MultiActionController {
+public class SigninController extends MultiActionController {
 
-	static Logger log = Logger.getLogger(AbstractExternalSigninController.class);
+	static Logger log = Logger.getLogger(SigninController.class);
 	
 	protected LoggedInUserFilter loggedInUserFilter;
 	protected UserRepository userDAO;
@@ -28,7 +28,7 @@ public class AbstractExternalSigninController extends MultiActionController {
 	protected SigninHandler signinHandler;
 	
 	
-	public AbstractExternalSigninController(
+	public SigninController(
 			LoggedInUserFilter loggedInUserFilter, UserRepository userDAO,
 			AnonUserService anonUserService,
 			LoginResourceOwnershipService loginResourceOwnershipService,

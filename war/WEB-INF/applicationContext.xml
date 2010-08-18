@@ -26,7 +26,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="linkchecking.xml" />
 	<import resource="modelbuilders.xml"/>
 	
-	<bean id="oauthScribeFactory" class="nz.co.searchwellington.openid.OAuthScribeFactory">
+	<bean id="oauthScribeFactory" class="nz.co.searchwellington.signin.OAuthScribeFactory">
 		<constructor-arg ref="urlBuilder" />
 		<property name="consumerKey">
 			<value>${consumer.key}</value>

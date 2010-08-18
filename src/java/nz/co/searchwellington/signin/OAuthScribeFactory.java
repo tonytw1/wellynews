@@ -1,4 +1,4 @@
-package nz.co.searchwellington.openid;
+package nz.co.searchwellington.signin;
 
 import java.util.Properties;
 
