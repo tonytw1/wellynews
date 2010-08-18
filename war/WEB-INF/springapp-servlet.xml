@@ -17,13 +17,12 @@
   		</property>
 	</bean>
 	
-	
-	
+		
 	<import resource="admin-servlets.xml" />
 	
 		
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">	
-		<constructor-arg ref="urlStack" />		
+		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="contentModelBuilder" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="tagDAO" />		
@@ -97,15 +96,21 @@
 		</property>
 	</bean>
 	
-		
-	<bean id="openIDLoginController" class="nz.co.searchwellington.openid.OpenIDLoginController">
+	
+	
+	<bean id="openIDSigninHandler" class="nz.co.searchwellington.openid.OpenIDLoginController">
 		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="userDAO" />
-		<constructor-arg ref="loginResourceOwnershipService" />
+	</bean>
+		
+	<bean id="openIDLoginController" class="nz.co.searchwellington.openid.AbstractExternalSigninController">
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="userDAO" />
 		<constructor-arg ref="anonUserService" />
-						
+		<constructor-arg ref="loginResourceOwnershipService" />
+		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="openIDSigninHandler"/>
+								
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
@@ -117,27 +122,35 @@
 			</bean>		
 		</property>					
 	</bean>
-		
-	<bean id="twitterLoginController" class="nz.co.searchwellington.openid.TwitterLoginController">
+	
+	
+	<bean id="twitterSigninHandler" class="nz.co.searchwellington.openid.TwitterLoginController">
 		<constructor-arg ref="oauthScribeFactory" />
 		<constructor-arg ref="userDAO" />
+	</bean>
+		
+	<bean id="twitterLoginController" class="nz.co.searchwellington.openid.AbstractExternalSigninController">
 		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="userDAO" />
 		<constructor-arg ref="anonUserService" />
 		<constructor-arg ref="loginResourceOwnershipService" />
 		<constructor-arg ref="urlStack" />
+		<constructor-arg ref="twitterSigninHandler"/>
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>														
 						<prop key="/twitter/login">login</prop>
-						<prop key="/twitter/callback">callback</prop>
+						<prop key="/twitter/callback">callback</prop>						
 					</props>
 				</property>
-			</bean>		
+			</bean>	
 		</property>					
 	</bean>
-			
+	
+	
+		
 	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
 		<constructor-arg ref="siteInformation" />
 	</bean>

@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public abstract class AbstractExternalSigninController extends MultiActionController {
+public class AbstractExternalSigninController extends MultiActionController {
 
 	static Logger log = Logger.getLogger(AbstractExternalSigninController.class);
 	
@@ -25,17 +25,41 @@ public abstract class AbstractExternalSigninController extends MultiActionContro
 	protected AnonUserService anonUserService;
 	protected LoginResourceOwnershipService loginResourceOwnershipService;
 	protected UrlStack urlStack;
+	protected SigninHandler signinHandler;
 	
-	abstract protected Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request);
-	abstract protected User getUserByExternalIdentifier(Object externalIdentifier);
-	abstract protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier);
+	
+	public AbstractExternalSigninController(
+			LoggedInUserFilter loggedInUserFilter, UserRepository userDAO,
+			AnonUserService anonUserService,
+			LoginResourceOwnershipService loginResourceOwnershipService,
+			UrlStack urlStack, SigninHandler signinHandler) {
+
+		this.loggedInUserFilter = loggedInUserFilter;
+		this.userDAO = userDAO;
+		this.anonUserService = anonUserService;
+		this.loginResourceOwnershipService = loginResourceOwnershipService;
+		this.urlStack = urlStack;
+		this.signinHandler = signinHandler;
+	}
+
+	
+	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView loginView = signinHandler.getLoginView(request, response);
+		if (loginView != null) {
+			return loginView;
+		}
+		return signinErrorView(request);		
+	}
+	
+	
 	
 	@Transactional
-	final public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		final Object externalIdentifier = getExternalUserIdentifierFromCallbackRequest(request);
-		if (externalIdentifier != null) {			
+	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		final Object externalIdentifier = signinHandler.getExternalUserIdentifierFromCallbackRequest(request);
+		if (externalIdentifier != null) {
 			log.info("External user is: " + externalIdentifier.toString());
-			User user = getUserByExternalIdentifier(externalIdentifier);
+			
+			User user = signinHandler.getUserByExternalIdentifier(externalIdentifier);
 			if (user == null) {
 				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
 				// No existing user for this identity.				
@@ -45,7 +69,7 @@ public abstract class AbstractExternalSigninController extends MultiActionContro
 				} else {
 					user = loggedInUser;
 					log.info("Attaching external identifier to current user: " + externalIdentifier.toString());
-					decorateUserWithExternalSigninIndenfier(loggedInUser, externalIdentifier.toString());
+					signinHandler.decorateUserWithExternalSigninIndenfier(loggedInUser, externalIdentifier.toString());
 				}
 			}
 						
@@ -59,13 +83,13 @@ public abstract class AbstractExternalSigninController extends MultiActionContro
 				
 			} else {
 				log.warn("User was null after successful external signin");
-			}			
+			}
+			
 			return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));						
 		}
 		
 		return signinErrorView(request);
 	}
-	
 	
 	protected ModelAndView signinErrorView(HttpServletRequest request) {
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));	// TODO replace with something meaningful
@@ -74,7 +98,7 @@ public abstract class AbstractExternalSigninController extends MultiActionContro
 	
 	final protected User createNewUser(Object externalIdentifier) {
 		User newUser = anonUserService.createAnonUser();
-		decorateUserWithExternalSigninIndenfier(newUser, externalIdentifier);
+		signinHandler.decorateUserWithExternalSigninIndenfier(newUser, externalIdentifier);
 		userDAO.saveUser(newUser);
 		log.info("Created new user with external identifier: " + externalIdentifier.toString());
 		return newUser;

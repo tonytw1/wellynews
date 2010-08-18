@@ -5,10 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.AnonUserService;
-import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
-import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -27,34 +23,27 @@ import org.openid4java.message.ParameterList;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class OpenIDLoginController extends AbstractExternalSigninController {
+public class OpenIDLoginController implements SigninHandler {
 	
 	static Logger log = Logger.getLogger(OpenIDLoginController.class);
 	private static final String OPENID_CLAIMED_IDENTITY_PARAMETER = "openid_claimed_identity";
 	
-	public ConsumerManager manager;
 	private UrlBuilder urlBuilder;
+	private UserRepository userDAO;	
+	private ConsumerManager manager;
 	
-	
-	public OpenIDLoginController(UrlBuilder urlBuilder, UrlStack urlStack,
-			UserRepository userDAO,
-			LoginResourceOwnershipService loginResourceOwnershipService,
-			LoggedInUserFilter loggedInUserFilter,
-			AnonUserService anonUserService) throws ConsumerException {
-		manager = new ConsumerManager();
+	    
+	public OpenIDLoginController(UrlBuilder urlBuilder, UserRepository userDAO) throws ConsumerException {
 		this.urlBuilder = urlBuilder;
-		this.urlStack = urlStack;
 		this.userDAO = userDAO;
-		this.loginResourceOwnershipService = loginResourceOwnershipService;
-		this.loggedInUserFilter = loggedInUserFilter;
-		this.anonUserService = anonUserService;
+		manager = new ConsumerManager();
 	}
-
-    
-	@SuppressWarnings("unchecked")
-	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	
+		
+	@Override
+	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if (request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER) != null) {
-			final String userSuppliedOpenID = request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER);		
+			final String userSuppliedOpenID = request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER);
 			try {
 				// discover the OpenID authentication server's endpoint URL
 				List discoveries = manager.discover(userSuppliedOpenID);
@@ -78,14 +67,13 @@ public class OpenIDLoginController extends AbstractExternalSigninController {
 			} catch (Exception e) {
 				log.warn("Exception will processing claimed identifier: " + userSuppliedOpenID, e);
 			}
-		}
-		
-		return signinErrorView(request);
+		}		
+		return null;
     }
 
 	
 	@Override
-	protected String getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
+	public String getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		String openid = null;
 				
 		// extract the parameters from the authentication response
@@ -126,14 +114,14 @@ public class OpenIDLoginController extends AbstractExternalSigninController {
 
 	
 	@Override
-	protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
+	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
 		final String openId = (String) externalIdentifier;
 		user.setOpenId(openId);
 	}
 
 
 	@Override
-	protected User getUserByExternalIdentifier(Object externalIdentifier) {
+	public User getUserByExternalIdentifier(Object externalIdentifier) {
 		final String openId = (String) externalIdentifier;
 		return userDAO.getUserByOpenId(openId);
 	}

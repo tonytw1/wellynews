@@ -6,10 +6,6 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.AnonUserService;
-import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
-import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.UserRepository;
 
@@ -24,34 +20,25 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.http.AccessToken;
 
-public class TwitterLoginController extends AbstractExternalSigninController {
+public class TwitterLoginController implements SigninHandler {
 
 	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
 	static Logger log = Logger.getLogger(TwitterLoginController.class);
 	
-	@SuppressWarnings("unused")
-	private OAuthScribeFactory scribeFactory;
-	
+	private Scribe scribe;	// TODO Might not want to reuse this.
+	private UserRepository userDAO;
 	private Map<String, Token> tokens;
-	private Scribe scribe;
 	
-	public TwitterLoginController(OAuthScribeFactory scribeFactory,
-			UserRepository userDAO, LoggedInUserFilter loggedInUserFilter,
-			AnonUserService anonUserService,
-			LoginResourceOwnershipService loginResourceOwnershipService,
-			UrlStack urlStack) {
-		this.scribeFactory = scribeFactory;
+	
+	public TwitterLoginController(OAuthScribeFactory scribeFactory, UserRepository userDAO) {
+		this.scribe = scribeFactory.getScribe();
 		this.userDAO = userDAO;
-		this.loggedInUserFilter = loggedInUserFilter;
-		this.anonUserService = anonUserService;
-		this.loginResourceOwnershipService = loginResourceOwnershipService;
-		this.urlStack = urlStack;
 		this.tokens = new HashMap<String, Token>();
-		scribe = scribeFactory.getScribe();
 	}
-	
-	
-	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {		
+
+
+	@Override
+	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			log.info("Getting request token");
 			Token requestToken = scribe.getRequestToken();
@@ -68,13 +55,12 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 		} catch (Exception e) {
 			log.warn("Failed to obtain request token" + e.getMessage());
 		}
-		
-		return signinErrorView(request);	
+		return null;	
 	}
 	
 	
 	@Override
-	protected Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
+	public Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
 		if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
 			final String token = request.getParameter("oauth_token");
 			final String verifier = request.getParameter("oauth_verifier");
@@ -118,14 +104,14 @@ public class TwitterLoginController extends AbstractExternalSigninController {
 	
 	
 	@Override
-	protected User getUserByExternalIdentifier(Object externalIdentifier) {
+	public User getUserByExternalIdentifier(Object externalIdentifier) {
 		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
 		return userDAO.getUserByTwitterId(twitterUser.getId());
 	}
 
 		
 	@Override
-	protected void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
+	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
 		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
 		if (user.getProfilename() == null || user.isUnlinkedAnonAccount()) {
 			final String twitterScreenName = twitterUser.getScreenName();
