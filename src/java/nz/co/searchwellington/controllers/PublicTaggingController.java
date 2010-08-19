@@ -53,12 +53,9 @@ public class PublicTaggingController extends BaseMultiActionController {
 	private User createAndSetAnonUser(HttpServletRequest request) {
 		log.info("Creating new anon user for resource submission");
 		User newUser = anonUserService.createAnonUser();
-		setUser(request, newUser);
+		loggedInUserFilter.setLoggedInUser(request, newUser);
 		loggedInUserFilter.loadLoggedInUser(request);
 		return newUser;
 	}
-    
-    private void setUser(HttpServletRequest request, User user) {
-		request.getSession().setAttribute("user", user);		
-	}
+	
 }

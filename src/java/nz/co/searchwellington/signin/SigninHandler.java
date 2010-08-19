@@ -11,8 +11,8 @@ public interface SigninHandler {
 
 	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception;
 	
-	public User getUserByExternalIdentifier(Object externalIdentifier);
 	public Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request);
+	public User getUserByExternalIdentifier(Object externalIdentifier);
 	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier);
 	
 }

@@ -79,7 +79,8 @@ public class SigninController extends MultiActionController {
 					log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
 					loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
 				}
-				setUser(request, user);
+				
+				loggedInUserFilter.setLoggedInUser(request, user);
 				
 			} else {
 				log.warn("User was null after successful external signin");
@@ -103,11 +104,5 @@ public class SigninController extends MultiActionController {
 		log.info("Created new user with external identifier: " + externalIdentifier.toString());
 		return newUser;
 	}
-	
-	// TODO duplicated with ResourceEditController
-	final protected void setUser(HttpServletRequest request, User user) {
-		request.getSession().setAttribute("user", user);	
-	}
-	
 	
 }

@@ -48,5 +48,9 @@ public class LoggedInUserFilter {
 	public User getLoggedInUser() {
 		return loggedInUser;
 	}
+
+	public void setLoggedInUser(HttpServletRequest request, User user) {
+		request.getSession().setAttribute("user", user);
+	}
 	
 }

@@ -414,23 +414,17 @@ public class ResourceEditController extends BaseMultiActionController {
     }
 
 
-
+	// TODO duplicated in public tagging
 	private User createAndSetAnonUser(HttpServletRequest request) {
 		User loggedInUser;
 		log.info("Creating new anon user for resource submission");
 		loggedInUser = anonUserService.createAnonUser();
-		setUser(request, loggedInUser);
+		loggedInUserFilter.setLoggedInUser(request, loggedInUser);
 		loggedInUserFilter.loadLoggedInUser(request);
 		return loggedInUser;
 	}
 
 
-    
-    private void setUser(HttpServletRequest request, User user) {
-		request.getSession().setAttribute("user", user);		
-	}
-    
-    
    // TODO move to submission handling service.
    private void processFeedAcceptancePolicy(HttpServletRequest request, Resource editResource) {
 	   if (editResource.getType().equals("F")) {		   
