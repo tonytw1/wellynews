@@ -48,7 +48,7 @@ public class TagModificationService {
 		handTaggingDAO.clearTaggingsForTag(tag);
 		log.info("Tag to be deleted has " + taggedResources.size() + " resources.");
 		for (Resource resource : taggedResources) {
-		    contentUpdateService.update(resource);	// TODO really only needs a solr updates
+		    contentUpdateService.update(resource);	// TODO really only needs a solr update, not a full database write
 		}
 	}
 	
