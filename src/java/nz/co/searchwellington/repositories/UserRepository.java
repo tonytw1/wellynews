@@ -14,6 +14,7 @@ public interface UserRepository {
 	public User getUserByTwitterId(int twitterId);
 	public int getNextAvailableAnonUserNumber();
 	public List<User> getActiveUsers();
+	public void deleteUser(User anonUser);
 	
 }
 

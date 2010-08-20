@@ -20,6 +20,7 @@ public class LoginResourceOwnershipService {
 			resourceDAO.saveResource(resource);
 		}
 		
+		// TODO reassign tagging votes as well.		
 	}
 
 

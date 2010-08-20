@@ -62,7 +62,7 @@ public class SigninController extends MultiActionController {
 			User user = signinHandler.getUserByExternalIdentifier(externalIdentifier);
 			if (user == null) {
 				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-				// No existing user for this identity.				
+				// No existing user for this identity.
 				if (loggedInUser == null) {
 					user = createNewUser(externalIdentifier);
 					
@@ -72,20 +72,21 @@ public class SigninController extends MultiActionController {
 					signinHandler.decorateUserWithExternalSigninIndenfier(loggedInUser, externalIdentifier.toString());
 				}
 			}
-						
-			if (user != null) {	// User should always be not null here, in theory
-				User loggedInUser = loggedInUserFilter.getLoggedInUser();				
-				if (loggedInUser != null) {
-					log.info("Reassigning resource ownership from " + loggedInUser.getProfilename() + " to " + user.getProfilename());
-					loginResourceOwnershipService.reassignOwnership(loggedInUser, user);
+			
+			User alreadyLoggedInUser = loggedInUserFilter.getLoggedInUser();		
+			if (alreadyLoggedInUser != null) {
+				
+				if (alreadyLoggedInUser.isUnlinkedAnonAccount()) {	// TODO coverage
+					if (!user.equals(alreadyLoggedInUser)) {
+						log.info("Reassigning resource ownership from " + alreadyLoggedInUser.getProfilename() + " to " + user.getProfilename());
+						loginResourceOwnershipService.reassignOwnership(alreadyLoggedInUser, user);
+						userDAO.deleteUser(alreadyLoggedInUser);
+					}
 				}
 				
-				loggedInUserFilter.setLoggedInUser(request, user);
-				
-			} else {
-				log.warn("User was null after successful external signin");
 			}
-			
+				
+			loggedInUserFilter.setLoggedInUser(request, user);			
 			return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));						
 		}
 		
