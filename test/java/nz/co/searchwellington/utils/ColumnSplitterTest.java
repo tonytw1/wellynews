@@ -1,81 +1,49 @@
 package nz.co.searchwellington.utils;
 
-import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.List;
-import junit.framework.TestCase;
 
-public class ColumnSplitterTest extends TestCase {
-    
-    
+import org.junit.Test;
+
+public class ColumnSplitterTest {
+	
+	ColumnSplitter<Integer> splitter = new ColumnSplitter<Integer>();
+	
+	@Test
     public void testShouldSplitEvenNumberedLengthGroupIntoEvenColumns() throws Exception {
-        ColumnSplitter splitter = new ColumnSplitter();
-        
-        Integer[] numbers = {1, 2, 3, 4, 5, 6};
-        List<Integer> source = Arrays.asList(numbers);
-        List<Integer> lefthandSide = new ArrayList<Integer>();
-        List<Integer> righthandSide = new ArrayList<Integer>();
-        
-        splitter.splitList(source, lefthandSide, righthandSide);
-        assertEquals(3, lefthandSide.size());
-        assertEquals(3, righthandSide.size());
+        List<Integer> source = Arrays.asList(new Integer[] {1, 2, 3, 4, 5, 6});        
+        assertEquals(3, splitter.left(source).size());
+        assertEquals(3, splitter.right(source).size());
     }
 
-    public void testShouldSplitOddNumberedLengthGroupSuchThatTheLeftHandColumnIsLongest() throws Exception {
-        ColumnSplitter splitter = new ColumnSplitter();
-        
-        Integer[] numbers = {1, 2, 3, 4, 5};
-        List<Integer> source = Arrays.asList(numbers);
-        List<Integer> lefthandSide = new ArrayList<Integer>();
-        List<Integer> righthandSide = new ArrayList<Integer>();
-        
-        splitter.splitList(source, lefthandSide, righthandSide);
-        assertEquals(3, lefthandSide.size());
-        assertEquals(2, righthandSide.size());
+	@Test
+	public void testShouldSplitOddNumberedLengthGroupSuchThatTheLeftHandColumnIsLongest() throws Exception {        
+        List<Integer> source = Arrays.asList(new Integer[] {1, 2, 3, 4, 5});
+        assertEquals(3, splitter.left(source).size());
+        assertEquals(2, splitter.right(source).size());
     }
     
-    
-    
+    @Test    
     public void testShouldBehaveForEmptyList() throws Exception {
-        ColumnSplitter splitter = new ColumnSplitter();
+        List<Integer> source = Arrays.asList(new Integer[] {});        
+        assertEquals(0, splitter.left(source).size());
+        assertEquals(0, splitter.right(source).size());
+    }
         
-        Integer[] numbers = {};
-        List<Integer> source = Arrays.asList(numbers);
-        List<Integer> lefthandSide = new ArrayList<Integer>();
-        List<Integer> righthandSide = new ArrayList<Integer>();
-        
-        splitter.splitList(source, lefthandSide, righthandSide);
-        assertEquals(0, lefthandSide.size());
-        assertEquals(0, righthandSide.size());
+    @Test
+    public void testShouldBehaveForListOfOneItem() throws Exception {        
+        List<Integer> source = Arrays.asList(new Integer[] {1});     
+        assertEquals(1, splitter.left(source).size());
+        assertEquals(0, splitter.right(source).size());
     }
     
-    
-    
-    public void testShouldBehaveForListOfOneItem() throws Exception {
-        ColumnSplitter splitter = new ColumnSplitter();
-        
-        Integer[] numbers = {1};
-        List<Integer> source = Arrays.asList(numbers);
-        List<Integer> lefthandSide = new ArrayList<Integer>();
-        List<Integer> righthandSide = new ArrayList<Integer>();
-        
-        splitter.splitList(source, lefthandSide, righthandSide);
-        assertEquals(1, lefthandSide.size());
-        assertEquals(0, righthandSide.size());
+    @Test
+    public void testShouldBehaveForListOfTwoItems() throws Exception {        
+        List<Integer> source = Arrays.asList(new Integer[] {1, 2});
+        assertEquals(1, splitter.left(source).size());
+        assertEquals(1, splitter.right(source).size());
     }
     
-    public void testShouldBehaveForListOfTwoItems() throws Exception {
-        ColumnSplitter splitter = new ColumnSplitter();
-        
-        Integer[] numbers = {1, 2};
-        List<Integer> source = Arrays.asList(numbers);
-        List<Integer> lefthandSide = new ArrayList<Integer>();
-        List<Integer> righthandSide = new ArrayList<Integer>();
-        
-        splitter.splitList(source, lefthandSide, righthandSide);
-        assertEquals(1, lefthandSide.size());
-        assertEquals(1, righthandSide.size());
-    }
-    
-
 }
