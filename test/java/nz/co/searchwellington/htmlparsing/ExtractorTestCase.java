@@ -6,9 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
-import junit.framework.TestCase;
-
-public class ExtractorTestCase extends TestCase {
+public class ExtractorTestCase {
 
     final protected StringBuffer loadContent(File contentFile) throws IOException {
     	StringBuffer content = new StringBuffer();
