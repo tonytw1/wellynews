@@ -1,36 +1,48 @@
 package nz.co.searchwellington.controllers;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.views.ContentDedupingService;
 
-public class ContentDedupingServiceTest extends TestCase {
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+public class ContentDedupingServiceTest {
     
-    Newsitem firstCommentedNewsitem = new NewsitemImpl();      
-    Newsitem secondCommentedNewsitem = new NewsitemImpl();
+	@Mock Newsitem newsitem;
+    @Mock Newsitem firstCommentedNewsitem;    
+    @Mock Newsitem secondCommentedNewsitem;
+    
+    ContentDedupingService dedupingService;
+    
+    @Before
+    public void setup() {
+		MockitoAnnotations.initMocks(this);
+		dedupingService = new ContentDedupingService();
+	}
     
     
-    public void testShouldDedupeCommentedNewsitemsFromIndexPageNewsitems() throws Exception {
-      List<Resource> commentedNewsitemOnPage = new ArrayList<Resource>();
+    @Test
+    public void testShouldDedupeCommentedNewsitemsFromIndexPageNewsitems() throws Exception {            
       List<Resource> newsitemsOnPage = new ArrayList<Resource>();
-      
-      Newsitem newsitem = new NewsitemImpl();
-      
-      commentedNewsitemOnPage.add(firstCommentedNewsitem);
-      commentedNewsitemOnPage.add(secondCommentedNewsitem);
-      
       newsitemsOnPage.add(firstCommentedNewsitem);
       newsitemsOnPage.add(newsitem);
       
-      ContentDedupingService dedupingService = new ContentDedupingService();
-      dedupingService.dedupeNewsitems(newsitemsOnPage, commentedNewsitemOnPage);
+      List<Resource> commentedNewsitemOnPage = new ArrayList<Resource>();
+      commentedNewsitemOnPage.add(firstCommentedNewsitem);
+      commentedNewsitemOnPage.add(secondCommentedNewsitem);
       
-      assertFalse(newsitemsOnPage.contains(firstCommentedNewsitem));                
+      List<Resource> dedupeNewsitems = dedupingService.dedupeNewsitems(newsitemsOnPage, commentedNewsitemOnPage);      
+      assertFalse(dedupeNewsitems.contains(firstCommentedNewsitem));
+      assertTrue(dedupeNewsitems.contains(newsitem));
     }
     
 }
