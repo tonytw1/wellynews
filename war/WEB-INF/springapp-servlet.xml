@@ -123,7 +123,7 @@
 		</property>					
 	</bean>
 	
-	<bean id="oauthScribeFactory" class="nz.co.searchwellington.signin.twiiter.OAuthScribeFactory">
+	<bean id="oauthScribeFactory" class="nz.co.searchwellington.signin.twitter.OAuthScribeFactory">
 		<constructor-arg ref="urlBuilder" />
 		<property name="consumerKey">
 			<value>${consumer.key}</value>

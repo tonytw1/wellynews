@@ -24,7 +24,6 @@ public class RequestFilterTest {
 	
 	@Mock private ResourceRepository resourceDAO;
 	@Mock private TagDAO tagDAO;
-	@Mock private GoogleSearchTermExtractor searchTermExtractor;
 	
 	@Mock private Tag transportTag;
 	@Mock private Tag soccerTag;
