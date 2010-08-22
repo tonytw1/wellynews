@@ -122,17 +122,7 @@
 			</bean>		
 		</property>					
 	</bean>
-	
-	<bean id="oauthScribeFactory" class="nz.co.searchwellington.signin.twitter.OAuthScribeFactory">
-		<constructor-arg ref="urlBuilder" />
-		<property name="consumerKey">
-			<value>${consumer.key}</value>
-		</property>
-		<property name="consumerSecret">
-			<value>${consumer.secret}</value>
-		</property>
-	</bean>	
-	
+		
 	<bean id="twitterSigninHandler" class="nz.co.searchwellington.signin.twitter.TwitterLoginHandler">
 		<constructor-arg ref="oauthScribeFactory" />
 		<constructor-arg ref="userDAO" />

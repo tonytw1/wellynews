@@ -9,7 +9,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
-			<value>file:conf/springapp.properties</value>
+			<value>file:conf/searchwellington.properties</value>
 		</property>
 	</bean>
 	
@@ -40,7 +40,18 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
   		</property>
 	</bean>
 	
-		
+	
+	<bean id="oauthScribeFactory" class="nz.co.searchwellington.signin.twitter.OAuthScribeFactory">
+		<constructor-arg ref="urlBuilder" />
+		<property name="consumerKey">
+			<value>${consumer.key}</value>
+		</property>
+		<property name="consumerSecret">
+			<value>${consumer.secret}</value>
+		</property>
+	</bean>	
+	
+	
 	<bean id="requestObjectLoaderFilter" class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" >	
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />	
