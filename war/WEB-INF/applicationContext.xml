@@ -49,9 +49,21 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="consumerSecret">
 			<value>${consumer.secret}</value>
 		</property>
-	</bean>	
+	</bean>
 	
 	
+	<bean id="twitterSigninHandler" class="nz.co.searchwellington.signin.twitter.TwitterLoginHandler">
+		<constructor-arg ref="oauthScribeFactory" />
+		<constructor-arg ref="userDAO" />
+		<property name="consumerKey">
+			<value>${consumer.key}</value>
+		</property>
+		<property name="consumerSecret">
+			<value>${consumer.secret}</value>
+		</property>
+	</bean>
+	
+		
 	<bean id="requestObjectLoaderFilter" class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" >	
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />	

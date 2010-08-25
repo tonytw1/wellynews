@@ -19,6 +19,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.http.AccessToken;
 
 public class TwitterLoginHandler implements SigninHandler {
@@ -30,14 +31,24 @@ public class TwitterLoginHandler implements SigninHandler {
 	private OAuthScribeFactory scribeFactory;
 	private UserRepository userDAO;
 	private Map<String, Token> tokens;
+
+	private String consumerKey;
+	private String consumerSecret;
 	
 	public TwitterLoginHandler(OAuthScribeFactory scribeFactory, UserRepository userDAO) {
 		this.scribeFactory = scribeFactory;
 		this.userDAO = userDAO;
 		this.tokens = new HashMap<String, Token>();
 	}
-
-
+	
+	public void setConsumerKey(String consumerKey) {
+		this.consumerKey = consumerKey;
+	}
+	
+	public void setConsumerSecret(String consumerSecret) {
+		this.consumerSecret = consumerSecret;
+	}
+	
 	@Override
 	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
@@ -110,7 +121,7 @@ public class TwitterLoginHandler implements SigninHandler {
 
 		
 	@Override
-	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
+	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {		
 		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
 		if (user.getProfilename() == null || user.isUnlinkedAnonAccount()) {
 			final String twitterScreenName = twitterUser.getScreenName();
@@ -123,7 +134,9 @@ public class TwitterLoginHandler implements SigninHandler {
 	
 	
 	private twitter4j.User getTwitteUserCredentials(Token accessToken) {
-		Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
+		// TODO push twitter api building to a seperate bean
+		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
+		Twitter twitterApi = new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
 		try {
 			return twitterApi.verifyCredentials();
 		} catch (TwitterException e) {
