@@ -360,12 +360,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
  		<constructor-arg ref="handTaggingDAO" />
  		<constructor-arg ref="userDAO" /> 		
 	</bean>
-		
-	<bean id="calendarFeedDAO" class="nz.co.searchwellington.repositories.CalendarFeedDAO" >
-		<constructor-arg ref="calendarCache" />
-	</bean>
-	
-		
+			
 	<bean id="commentFeedService" class="nz.co.searchwellington.feeds.CommentFeedService">
 		<constructor-arg ref="rssHttpFetcher" />
 	</bean>
@@ -437,9 +432,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="suggestedFeeditemsService" class="nz.co.searchwellington.repositories.SuggestedFeeditemsService">
 		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />	
-	</bean>	
-	
-	<import resource="calendarfeeds.xml" />
-	
+	</bean>
 		
 </beans>

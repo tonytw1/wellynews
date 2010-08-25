@@ -49,10 +49,5 @@
 		<constructor-arg ref="keystore" />			
 		<property name="keyPrefix" value="url-snapshots::" />
 	</bean>
-
-	<bean id="eventsDAO" class="nz.co.searchwellington.repositories.EventsDAO">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="calendarFeedDAO" />
-	</bean>
-	 
+		 
  </beans>
