@@ -67,13 +67,10 @@ public class LiveTwitterService implements TwitterService {
 	}
 	
 	
-	
-
-	
 	@Override
 	public Twit getTwitById(long statusId) {
 		log.info("Getting tweet: " + statusId);
-		Twitter receiver = new TwitterFactory().getInstance(username, password);
+		Twitter receiver = new TwitterFactory().getInstance(username, password);	// TODO this needs to be migrated to Oauth
 		try {
 			Status status = receiver.showStatus(statusId);
 			if (status != null) {

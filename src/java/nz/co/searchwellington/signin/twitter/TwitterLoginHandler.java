@@ -23,16 +23,16 @@ import twitter4j.http.AccessToken;
 
 public class TwitterLoginHandler implements SigninHandler {
 
-	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
 	static Logger log = Logger.getLogger(TwitterLoginHandler.class);
 	
-	private Scribe scribe;	// TODO Might not want to reuse this.
+	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
+	
+	private OAuthScribeFactory scribeFactory;
 	private UserRepository userDAO;
 	private Map<String, Token> tokens;
 	
-	
 	public TwitterLoginHandler(OAuthScribeFactory scribeFactory, UserRepository userDAO) {
-		this.scribe = scribeFactory.getScribe();
+		this.scribeFactory = scribeFactory;
 		this.userDAO = userDAO;
 		this.tokens = new HashMap<String, Token>();
 	}
@@ -42,6 +42,7 @@ public class TwitterLoginHandler implements SigninHandler {
 	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		try {
 			log.info("Getting request token");
+			Scribe scribe = scribeFactory.getScribe();
 			Token requestToken = scribe.getRequestToken();
 			if (requestToken != null) {
 				log.info("Got request token: " + requestToken.getToken());
@@ -71,22 +72,19 @@ public class TwitterLoginHandler implements SigninHandler {
 			if (requestToken != null) {
 				log.debug("Found stored request token: " + requestToken.getToken());
 				
-				log.debug("Exchanging for access token");
+				log.debug("Exchanging for access token");				
+				Scribe scribe = scribeFactory.getScribe();
 				Token accessToken = scribe.getAccessToken(requestToken, verifier);
+				
 				if (accessToken != null) {
 					log.debug("Got access token: " + accessToken);
 					tokens.remove(requestToken.getToken());
 					
 					log.debug("Using access token to lookup twitter user details");
-					Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
-					try {
-						twitter4j.User twitterUser = twitterApi.verifyCredentials();
-						if (twitterUser != null) {
-							return twitterUser;
-						} else {
-							log.warn("Failed up obtain twitter user details");
-						}
-					} catch (TwitterException e) {
+					twitter4j.User twitterUser = getTwitteUserCredentials(accessToken);
+					if (twitterUser != null) {
+						return twitterUser;
+					} else {
 						log.warn("Failed up obtain twitter user details");
 					}
 					
@@ -121,6 +119,17 @@ public class TwitterLoginHandler implements SigninHandler {
 			}
 		}
 		user.setTwitterId(twitterUser.getId());
+	}
+	
+	
+	private twitter4j.User getTwitteUserCredentials(Token accessToken) {
+		Twitter twitterApi = new TwitterFactory().getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
+		try {
+			return twitterApi.verifyCredentials();
+		} catch (TwitterException e) {
+			log.warn("Failed up obtain twitter user details due to Twitter exception: " + e.getMessage());
+			return null;
+		}
 	}
 	
 }
