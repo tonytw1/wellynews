@@ -1,6 +1,5 @@
 package nz.co.searchwellington.model;
 
-import java.util.Set;
 
 public class CalendarFeed extends PublishedResourceImpl implements PublishedResource {
 

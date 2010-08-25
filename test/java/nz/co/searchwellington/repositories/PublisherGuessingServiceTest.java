@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.stub;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +17,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 	public void testShouldNotMatchIfNoMatchingPublishers() throws Exception {
 		List<Resource> possiblePublishers = new ArrayList<Resource>();
 		ResourceRepository resourceDAO = mock(ResourceRepository.class);
-		stub(resourceDAO.getAllPublishersMatchingStem("www.spammer.com", true)).toReturn(possiblePublishers);
+		when(resourceDAO.getAllPublishersMatchingStem("www.spammer.com", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);
 		assertEquals(null, service.guessPublisherBasedOnUrl("http://www.spammer.com"));
@@ -40,7 +40,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		possiblePublishers.add(wccMainSite);
 	
 		ResourceRepository resourceDAO = mock(ResourceRepository.class);
-		stub(resourceDAO.getAllPublishersMatchingStem("www.wellington.govt.nz", true)).toReturn(possiblePublishers);
+		when(resourceDAO.getAllPublishersMatchingStem("www.wellington.govt.nz", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);	
 		assertEquals(wccMainSite, service.guessPublisherBasedOnUrl("http://www.wellington.govt.nz/news/display-item.php?id=3542"));
@@ -55,7 +55,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		possiblePublishers.add(wellingtonista);
 		
 		ResourceRepository resourceDAO = mock(ResourceRepository.class);
-		stub(resourceDAO.getAllPublishersMatchingStem("www.wellingtonista.com", true)).toReturn(possiblePublishers);
+		when(resourceDAO.getAllPublishersMatchingStem("www.wellingtonista.com", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);	
 		assertEquals(wellingtonista, service.guessPublisherBasedOnUrl("http://www.wellingtonista.com/a-week-of-it"));
@@ -74,7 +74,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		possiblePublishers.add(hostedTwo);
 		
 		ResourceRepository resourceDAO = mock(ResourceRepository.class);
-		stub(resourceDAO.getAllPublishersMatchingStem("homepages.paradise.net.nz", true)).toReturn(possiblePublishers);
+		when(resourceDAO.getAllPublishersMatchingStem("homepages.paradise.net.nz", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);	
 		assertEquals(null, service.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/"));
