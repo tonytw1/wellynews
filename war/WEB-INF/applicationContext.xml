@@ -52,15 +52,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	
-	<bean id="twitterSigninHandler" class="nz.co.searchwellington.signin.twitter.TwitterLoginHandler">
-		<constructor-arg ref="oauthScribeFactory" />
-		<constructor-arg ref="userDAO" />
-		<property name="consumerKey">
-			<value>${consumer.key}</value>
-		</property>
-		<property name="consumerSecret">
-			<value>${consumer.secret}</value>
-		</property>
+	<bean id="twitterApiFactory" class="nz.co.searchwellington.twitter.TwitterApiFactory">
+		<property name="consumerKey" value="${consumer.key}" />
+		<property name="consumerSecret" value="${consumer.secret}" />
+		<property name="username" value="${twitter.username}" />
+		<property name="password" value="${twitter.password}" />	
 	</bean>
 	
 		
@@ -267,13 +263,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	<bean id="twitterService" class="nz.co.searchwellington.twitter.LiveTwitterService">
-		<property name="username" value="${twitter.username}" />
-		<property name="password" value="${twitter.password}" />		
+		<constructor-arg ref="twitterApiFactory" />
 	</bean>
-	
-	
-	
-	
 	
 	<bean id="twitterMentionFinder" class="nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService">
 		<constructor-arg ref="urlCleaner" />

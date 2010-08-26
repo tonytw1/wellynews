@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.signin.SigninHandler;
+import nz.co.searchwellington.twitter.TwitterApiFactory;
 
 import org.apache.log4j.Logger;
 import org.scribe.oauth.Scribe;
@@ -18,9 +19,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
-import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.http.AccessToken;
 
 public class TwitterLoginHandler implements SigninHandler {
 
@@ -30,23 +28,13 @@ public class TwitterLoginHandler implements SigninHandler {
 	
 	private OAuthScribeFactory scribeFactory;
 	private UserRepository userDAO;
+	private TwitterApiFactory twitterApiFactory;
 	private Map<String, Token> tokens;
-
-	private String consumerKey;
-	private String consumerSecret;
 	
 	public TwitterLoginHandler(OAuthScribeFactory scribeFactory, UserRepository userDAO) {
 		this.scribeFactory = scribeFactory;
 		this.userDAO = userDAO;
 		this.tokens = new HashMap<String, Token>();
-	}
-	
-	public void setConsumerKey(String consumerKey) {
-		this.consumerKey = consumerKey;
-	}
-	
-	public void setConsumerSecret(String consumerSecret) {
-		this.consumerSecret = consumerSecret;
 	}
 	
 	@Override
@@ -134,9 +122,7 @@ public class TwitterLoginHandler implements SigninHandler {
 	
 	
 	private twitter4j.User getTwitteUserCredentials(Token accessToken) {
-		// TODO push twitter api building to a seperate bean
-		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
-		Twitter twitterApi = new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(accessToken.getToken(), accessToken.getSecret()));
+		Twitter twitterApi = twitterApiFactory.getOauthedTwitterApiForAccessToken(accessToken.getToken(), accessToken.getSecret());
 		try {
 			return twitterApi.verifyCredentials();
 		} catch (TwitterException e) {

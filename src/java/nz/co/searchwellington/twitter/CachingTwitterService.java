@@ -11,37 +11,20 @@ import org.apache.log4j.Logger;
 
 public class CachingTwitterService implements TwitterService {
 	
-	Logger log = Logger.getLogger(CachingTwitterService.class);
+	static Logger log = Logger.getLogger(CachingTwitterService.class);
     
 	private static final String TWITTER_REPLIES_CACHE = "twitterreplies";
-	private static final String CACHE_KEY = "replies";
-	
+	private static final String CACHE_KEY = "replies";	
 	private static final String TWEETS_CACHE = "tweets";
-		
-
-
+	
 	private TwitterService twitterService;
 	private CacheManager manager;
+
 	
-		
 	public CachingTwitterService(TwitterService twitterService, CacheManager manager) {
 		this.twitterService = twitterService;
 		this.manager = manager;
 	}
-	
-	
-
-	@Override
-	public String getUsername() {
-		return twitterService.getUsername();
-	}
-
-	
-	@Override
-	public boolean isConfigured() {
-		return twitterService.isConfigured();
-	}
-
 	
 	@Override
 	public Twit getTwitById(long twitterId) {
@@ -62,8 +45,6 @@ public class CachingTwitterService implements TwitterService {
 		return tweet;		
 	}
 
-
-
 	@SuppressWarnings("unchecked")
 	public List<Twit> getReplies() {
 		Cache cache = manager.getCache(TWITTER_REPLIES_CACHE);		
@@ -83,6 +64,12 @@ public class CachingTwitterService implements TwitterService {
 		}
 		return fetchedResults;
 	}
+	
+	
+	@Override
+	public boolean isConfigured() {
+		return twitterService.isConfigured();
+	}
 
 	
 	private void putIntoCache(Cache cache, List<Twit> results) {	
@@ -97,9 +84,5 @@ public class CachingTwitterService implements TwitterService {
 		Element cachedResult = new Element(tweet.getId(), tweet);
 		cache.put(cachedResult);		
 	}
-
-
-
-
 	
 }

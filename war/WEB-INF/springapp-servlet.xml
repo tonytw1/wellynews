@@ -122,6 +122,13 @@
 			</bean>		
 		</property>					
 	</bean>
+	
+	<bean id="twitterSigninHandler" class="nz.co.searchwellington.signin.twitter.TwitterLoginHandler">
+		<constructor-arg ref="oauthScribeFactory" />
+		<constructor-arg ref="userDAO" />
+		<constructor-arg ref="twitterApiFactory" />
+	</bean>
+	
 			
 	<bean id="twitterLoginController" class="nz.co.searchwellington.signin.SigninController">
 		<constructor-arg ref="loggedInUserFilter" />
