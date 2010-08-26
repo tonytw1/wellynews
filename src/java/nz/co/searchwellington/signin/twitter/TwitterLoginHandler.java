@@ -31,9 +31,10 @@ public class TwitterLoginHandler implements SigninHandler {
 	private TwitterApiFactory twitterApiFactory;
 	private Map<String, Token> tokens;
 	
-	public TwitterLoginHandler(OAuthScribeFactory scribeFactory, UserRepository userDAO) {
+	public TwitterLoginHandler(OAuthScribeFactory scribeFactory, UserRepository userDAO, TwitterApiFactory twitterApiFactory) {
 		this.scribeFactory = scribeFactory;
 		this.userDAO = userDAO;
+		this.twitterApiFactory = twitterApiFactory;
 		this.tokens = new HashMap<String, Token>();
 	}
 	
