@@ -15,19 +15,20 @@ public class UrlCleaner {
 	}
 
 	public String cleanSubmittedItemUrl(String url) {
-		url = UrlFilters.trimWhiteSpace(url);
 		if (!url.isEmpty()) {
-			return filterSubmittedURL(urlResolver.resolveUrl(url));
+			url = UrlFilters.trimWhiteSpace(url);
+			url = UrlFilters.addHttpPrefixIfMissing(url);
+			return filterSubmittedURL(urlResolver.resolveUrl(url));		
 		}
 		log.warn("Called with an empty url");
 		return url;
     }
     
-    protected String filterSubmittedURL(String url) {    	
+    protected String filterSubmittedURL(String url) {
+    	url = url.trim();
     	url = UrlFilters.stripFeedburnerParams(url);    	
         url = UrlFilters.trimWhiteSpace(url);
         url = UrlFilters.stripPhpSession(url);
-        url = UrlFilters.addHttpPrefixIfMissing(url);
         log.debug("Cleaned url is: " + url);
         return url;
     }

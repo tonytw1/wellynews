@@ -38,8 +38,7 @@ public class UrlFilters {
      * Trim leading and trailing white space off a string.
      */
     public static String trimWhiteSpace(String title) {
-        String result = title.trim();
-        return result;
+        return title.trim();
     }
 
     /**
@@ -99,10 +98,8 @@ public class UrlFilters {
      * @param url
      * @return
      */
-    protected static boolean hasHttpPrefix(String url) {        
-        final boolean urlIsLongerThanPrefix = url != null && url.length() >= HTTP_PREFIX.length();
-        final boolean beginingOfUrlIsPrefix = urlIsLongerThanPrefix && url.substring(0, HTTP_PREFIX.length()).equals(HTTP_PREFIX);
-        return urlIsLongerThanPrefix && beginingOfUrlIsPrefix;
+    protected static boolean hasHttpPrefix(String url) {  
+        return url.startsWith("http://") || url.startsWith("https://");
     }
 
     /**

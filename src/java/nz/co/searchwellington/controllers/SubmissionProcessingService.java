@@ -8,6 +8,8 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.submission.SubmissionProcessor;
+import nz.co.searchwellington.controllers.submission.UrlProcessor;
 import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
@@ -69,15 +71,9 @@ public class SubmissionProcessingService {
     }
 	
 		
-	public void processUrl(HttpServletRequest req, Resource editResource) {
-		if (req.getParameter("url") != null) {
-			String url = req.getParameter("url");
-			if (url != null) {
-				url = url.trim();
-				url = UrlFilters.addHttpPrefixIfMissing(url);
-				editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
-			}
-		}
+	public void processUrl(HttpServletRequest request, Resource editResource) {		
+		SubmissionProcessor urlProcessor = new UrlProcessor(urlCleaner);	// TODO inject
+		urlProcessor.process(request, editResource);
 	}
 	
 	
