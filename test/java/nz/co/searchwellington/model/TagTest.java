@@ -1,11 +1,15 @@
 package nz.co.searchwellington.model;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.HashSet;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TagTest extends TestCase {
+public class TagTest {
     
+	@Test
     public void testIsParentOfTag() throws Exception {          
         Tag childTag = new Tag(1, "child", "Child", null, new HashSet<Tag>(), 0, false);        
         Tag grandChildTag = new Tag(2, "grandchild", "Grand Child", null, new HashSet<Tag>(), 0, false);

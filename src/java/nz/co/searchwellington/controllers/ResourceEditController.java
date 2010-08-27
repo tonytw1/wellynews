@@ -378,8 +378,8 @@ public class ResourceEditController extends BaseMultiActionController {
                       
             SpamFilter spamFilter = new SpamFilter();
             boolean isSpamUrl = spamFilter.isSpam(editResource);
-                     
-            boolean isPublicSubmission = loggedInUser == null;
+            
+            boolean isPublicSubmission = loggedInUser == null || (loggedInUser.isUnlinkedAnonAccount());
             if (isPublicSubmission) {
             	log.info("This is a public submission; marking as held");
             	editResource.setHeld(true);

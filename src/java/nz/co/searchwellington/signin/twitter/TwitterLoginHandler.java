@@ -77,7 +77,7 @@ public class TwitterLoginHandler implements SigninHandler {
 				Token accessToken = scribe.getAccessToken(requestToken, verifier);
 				
 				if (accessToken != null) {
-					log.debug("Got access token: '" + accessToken.getToken() + "', '" + accessToken.getSecret() + "'");
+					log.info("Got access token: '" + accessToken.getToken() + "', '" + accessToken.getSecret() + "'");
 					tokens.remove(requestToken.getToken());
 					log.debug("Using access token to lookup twitter user details");
 					twitter4j.User twitterUser = getTwitteUserCredentials(accessToken);
