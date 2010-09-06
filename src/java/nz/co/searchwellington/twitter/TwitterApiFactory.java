@@ -10,8 +10,8 @@ public class TwitterApiFactory {
 	private String consumerKey;
 	private String consumerSecret;
 	
-	private	String username;
-    private String password;
+	private String accessToken;
+	private String accessSecret;
 	
 	public Twitter getOauthedTwitterApiForAccessToken(String token, String secret) {
 		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
@@ -19,10 +19,12 @@ public class TwitterApiFactory {
 		return twitterApi;
 	}
 	
-	@Deprecated
-	public Twitter getHttpAuthTwitterApi() {
-    	return new TwitterFactory().getInstance(username, password);
+	public Twitter getOauthedTwitterApi() {
+		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
+		Twitter twitterApi = new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(accessToken, accessSecret));
+		return twitterApi;
 	}
+	
 	
 	public void setConsumerKey(String consumerKey) {
 		this.consumerKey = consumerKey;
@@ -31,17 +33,13 @@ public class TwitterApiFactory {
 	public void setConsumerSecret(String consumerSecret) {
 		this.consumerSecret = consumerSecret;
 	}
-	
-	public void setUsername(String username) {
-		this.username = username;
+
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
 	}
-	
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    
-	public boolean isConfigured() {
-		return this.username != null && !this.username.equals("") && this.password != null && !this.password.equals("");
+
+	public void setAccessSecret(String accessSecret) {
+		this.accessSecret = accessSecret;
 	}
 	
 }

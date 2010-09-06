@@ -55,11 +55,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="twitterApiFactory" class="nz.co.searchwellington.twitter.TwitterApiFactory">
 		<property name="consumerKey" value="${consumer.key}" />
 		<property name="consumerSecret" value="${consumer.secret}" />
-		<property name="username" value="${twitter.username}" />
-		<property name="password" value="${twitter.password}" />	
+		<property name="accessToken" value="${access.token}" />
+		<property name="accessSecret" value="${access.secret}" />				
 	</bean>
 	
-		
+	
 	<bean id="requestObjectLoaderFilter" class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" >	
 		<constructor-arg ref="requestFilter" />
 		<constructor-arg ref="loggedInUserFilter" />	

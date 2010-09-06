@@ -29,8 +29,8 @@ public class LiveTwitterService implements TwitterService {
 		log.info("Getting twitter replies from live api");
 		List<Twit> all = new ArrayList<Twit>();
 				
-        try {        	
-        	Twitter receiver = twitterApiFactory.getHttpAuthTwitterApi();
+        try {
+        	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
         	
         	for (Status status : receiver.getMentions()) {
         		all.add(new Twit(status));        		
@@ -48,7 +48,7 @@ public class LiveTwitterService implements TwitterService {
 	@Override
 	public Twit getTwitById(long statusId) {
 		log.info("Getting tweet: " + statusId);
-    	Twitter receiver = twitterApiFactory.getHttpAuthTwitterApi();
+    	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
 		try {
 			Status status = receiver.showStatus(statusId);
 			if (status != null) {
@@ -63,7 +63,7 @@ public class LiveTwitterService implements TwitterService {
 	
 	@Override
 	public boolean isConfigured() {
-		return twitterApiFactory.isConfigured();
+		return true; // TODO
 	}
 
 	
@@ -71,9 +71,9 @@ public class LiveTwitterService implements TwitterService {
 		log.info("Getting twitter retweets from live api");
 		List<Twit> all = new ArrayList<Twit>();
         try {        	
-        	Twitter receiver = twitterApiFactory.getHttpAuthTwitterApi();
+        	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
         	List<Status> retweets = receiver.getRetweetsOfMe();
-             for (Status message : retweets) {          
+             for (Status message : retweets) {
                  List<Status> messageRetweets = receiver.getRetweets(message.getId());
                  for (Status retweet : messageRetweets) {
                 	 all.add(new Twit(retweet));
