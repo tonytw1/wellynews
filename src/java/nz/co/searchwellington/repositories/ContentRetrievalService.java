@@ -23,10 +23,8 @@ import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
 public class ContentRetrievalService {
 	
-	
     final protected int MAX_NEWSITEMS_TO_SHOW = 30;
-    
-    
+        
 	private ResourceRepository resourceDAO;
 	private SolrContentRetrievalService solrContentRetrievalService;
 	private KeywordSearchService keywordSearchService;
@@ -56,10 +54,14 @@ public class ContentRetrievalService {
 		return solrContentRetrievalService.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<Resource> getGeocoded(int maxItems) {		
-		return solrContentRetrievalService.getAllValidGeocoded(maxItems, showBrokenDecisionService.shouldShowBroken());
+	public List<Resource> getGeocoded(int startIndex, int maxItems) {		
+		return solrContentRetrievalService.getValidGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
-
+	
+	public int getGeotaggedCount() {
+		return solrContentRetrievalService.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken());
+	}
+	
 	public List<Resource> getAllPublishers() {
 		return solrContentRetrievalService.getAllPublishers(showBrokenDecisionService.shouldShowBroken());
 	}

@@ -126,7 +126,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 	
 	private void populateGeocoded(ModelAndView mv) {
-        List<Resource> geocoded = contentRetrievalService.getGeocoded(MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
+        List<Resource> geocoded = contentRetrievalService.getGeocoded(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);
         }

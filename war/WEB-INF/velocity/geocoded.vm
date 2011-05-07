@@ -35,6 +35,7 @@
 #parse("includes/geocodedjs.vm")
 #parse("includes/main_content.vm")
 
+#parse("includes/geotagged_page_links.vm")
 </div>
 
 <div class="right">

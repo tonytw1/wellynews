@@ -134,10 +134,14 @@ public class SolrContentRetrievalService {
 		return solrResourceDAO.getLastLiveTimeForTag(tag);
 	}
 
-	public List<Resource> getAllValidGeocoded(int maxItems, boolean shouldShowBroken) {
-		return solrResourceDAO.getAllValidGeocoded(maxItems, shouldShowBroken);
+	public List<Resource> getValidGeotagged(int startIndex, int maxItems, boolean shouldShowBroken) {
+		return solrResourceDAO.getValidGeotagged(startIndex, maxItems, shouldShowBroken);
 	}
-
+	
+	public int getGeotaggedCount(boolean shouldShowBroken) {
+		return solrResourceDAO.getGeotaggedCount(shouldShowBroken);
+	}
+	
 	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems, boolean shouldShowBroken) {
 		return solrResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, shouldShowBroken);
 	}

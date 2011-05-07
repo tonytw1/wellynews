@@ -77,7 +77,6 @@ public class SolrBackedResourceDAO {
 		return getTaggedNewsitems(name, showBroken, 0, maxItems);
 	}
 	
-	
 	public int getTaggedNewitemsCount(Tag tag, boolean showBroken) {
 		log.info("Getting newsitem count for tag: " + tag);		
 		Set<Tag> tags = new HashSet<Tag>();
@@ -477,13 +476,17 @@ public class SolrBackedResourceDAO {
 	}
 	
 	
-	public List<Resource> getAllValidGeocoded(int maxItems, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().maxItems(maxItems).toQuery();
+	public List<Resource> getValidGeotagged(int startIndex, int maxItems, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().startIndex(startIndex).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
-	
-	
+		
+	public int getGeotaggedCount(boolean shouldShowBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().toQuery();
+		return getQueryCount(query);
+	}
+		
 	public List<Tag> getGeotaggedTags(boolean showBroken) {
 		List<Integer> tagIds = new ArrayList<Integer>();
 		try {

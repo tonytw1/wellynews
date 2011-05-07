@@ -40,12 +40,21 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			ModelAndView mv = new ModelAndView();							
 			mv.addObject("heading", "Geotagged newsitems");        		
 			mv.addObject("description", "Geotagged newsitems");
-			mv.addObject("link", urlBuilder.getGeotaggedUrl());	
-
-			// TODO pagination
-			final List<Resource> geotaggedNewsitems = contentRetrievalService.getGeocoded(MAX_NEWSITEMS);
+			mv.addObject("link", urlBuilder.getGeotaggedUrl());
+			
+			int page = getPage(request);
+			mv.addObject("page", page);
+			final int startIndex = getStartIndex(page);
+			final int totalGeotaggedCount = contentRetrievalService.getGeotaggedCount();
+			if (startIndex > totalGeotaggedCount) {
+				return null;
+			}
+			
+			final List<Resource> geotaggedNewsitems = contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS);
 			mv.addObject("main_content", geotaggedNewsitems);			
-			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());	
+			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
+			
+			populatePagination(mv, startIndex, totalGeotaggedCount);			
 			return mv;
 		}
 		return null;
