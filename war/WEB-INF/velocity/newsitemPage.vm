@@ -16,6 +16,11 @@
 		<h2><a href="$item.publisher.url">$item.publisher.name</a></h2>
 	#end
 		
+	#if($geocoded)
+		<div id="map_canvas" style="width: 520px; height: 520px"></div>
+		#parse("includes/geocodedjs.vm")
+	#end
+		
 	<ul class="flat_list">
 		<li class="content_item">
 			<ul class="main_content_item">

@@ -1,37 +1,76 @@
 package nz.co.searchwellington.controllers.models;
 
-import junit.framework.TestCase;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
-public class NewsitemPageModelBuilderTest extends TestCase {
+public class NewsitemPageModelBuilderTest {
+	
+	private static final String VALID_NEWSITEM_PAGE_PATH = "/wellington-city-council/2010/feb/01/something-about-rates";
 	
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock TaggingReturnsOfficerService taggingReturnsOfficerService;
 	@Mock TagWidgetFactory tagWidgetFactory;
 	@Mock HandTaggingDAO handTaggingDAO;
 	@Mock LoggedInUserFilter loggedInUserFilter;
-		
-	@Override
+	@Mock Newsitem geotaggedNewsitem;
+	@Mock Newsitem newsitem;
+	@Mock Geocode validGeotag;
+	
+	private MockHttpServletRequest request;	
+	private ModelBuilder builder;
+	
+	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
+		builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter);
+		request = new MockHttpServletRequest();
+		request.setPathInfo(VALID_NEWSITEM_PAGE_PATH);
 	}
 	
 	@Test
-	public void testIsValid() throws Exception {
-		ModelBuilder builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter);
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setPathInfo("/wellington-city-council/2010/feb/01/something-about-rates");
+	public void shouldAcceptValidFormatPath() throws Exception {
 		assertTrue(builder.isValid(request));
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	public void shouldPopulateGeotaggedItemsWithNewsitemIfHasValidGeotag() throws Exception {
+		when(validGeotag.isValid()).thenReturn(true);
+		when(geotaggedNewsitem.getGeocode()).thenReturn(validGeotag);
+		when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(geotaggedNewsitem);
+
+		ModelAndView mv = builder.populateContentModel(request, false);
+		
+		List<Resource> geotagged = (List<Resource>) mv.getModel().get("geocoded");
+		assertEquals(1, geotagged.size());
+		assertEquals(geotaggedNewsitem, geotagged.get(0));
+	}
+	
+	@Test
+	public void shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged() throws Exception {
+		when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(newsitem);
+		ModelAndView mv = builder.populateContentModel(request, false);
+		assertNull(mv.getModel().get("geocoded"));		
+	}
+	
 }

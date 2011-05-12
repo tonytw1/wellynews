@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models;
 
+import java.util.Arrays;
+
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
@@ -55,6 +57,9 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 			mv.addObject("heading", newsitem.getName());
             mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(newsitem));
             mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), newsitem)));
+            if (newsitem.getGeocode() != null && newsitem.getGeocode().isValid()) {
+            	mv.addObject("geocoded", Arrays.asList(newsitem));
+            }
 			return mv;
 		}
 		return null;
