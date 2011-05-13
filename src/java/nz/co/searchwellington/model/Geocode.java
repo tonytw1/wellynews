@@ -9,13 +9,11 @@ import org.apache.log4j.Logger;
 public class Geocode {
     
     private static Logger log = Logger.getLogger(Geocode.class);
-    
-    
-    int id;
-    String address;
-    double latitude;
-    double longitude;
-    
+        
+    private int id;
+    private String address;
+    private double latitude;
+    private double longitude;
     
     public Geocode() {        
     }
@@ -63,16 +61,19 @@ public class Geocode {
         return latitude != 0 && longitude != 0;
     }
   
+    // TODO These two compare methods shouldn't really be on the domain model
     public boolean isSameLocation(Geocode other) {        
-        GeoCoordinate thisPoint = new GeoCoordinate(this.getLatitude(), this.getLongitude(), new GeoAltitude(0));
-        GeoCoordinate otherPoint = new GeoCoordinate(other.getLatitude(), other.getLongitude(), new GeoAltitude(0));        
-        final double distanceBetweenInKm = GeoUtils.distanceBetweenInKm(thisPoint, otherPoint);
+        final double distanceBetweenInKm = getDistanceTo(other.getLatitude(), other.getLongitude());
         log.debug("Points " + this.getAddress() + " and " + other.getAddress() + " are " + distanceBetweenInKm + " km part");
         return distanceBetweenInKm < 0.1;
     }
     
-    
-    
-    
-    
+	public double getDistanceTo(double otherLatitude, double otherLongitude) {
+		GeoCoordinate thisPoint = new GeoCoordinate(this.getLatitude(), this.getLongitude(), new GeoAltitude(0));
+		GeoCoordinate otherPoint = new GeoCoordinate(otherLatitude, otherLongitude, new GeoAltitude(0));
+		double distanceBetweenInKm = GeoUtils.distanceBetweenInKm(thisPoint, otherPoint);
+		log.info("Distance to " + latitude + ", " + longitude + " is " + distanceBetweenInKm);
+		return distanceBetweenInKm;
+	}
+	
 }

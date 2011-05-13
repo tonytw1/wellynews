@@ -1,11 +1,8 @@
 package nz.co.searchwellington.controllers.models;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -16,6 +13,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
+	private static final String LONGITUDE = "longitude";
+	private static final String LATITUDE = "latitude";
+		
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
@@ -30,7 +30,6 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/geotagged(/(rss|json))?$");
 	}
-
 	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
@@ -42,7 +41,26 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("description", "Geotagged newsitems");
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
-			int page = getPage(request);
+			// TODO format check and push to the attribute filter
+			Long latitude = null;
+			if (request.getParameter(LATITUDE) != null) {
+				latitude = Long.parseLong(request.getParameter(LATITUDE));
+			}
+			Long longitude = null;
+			if (request.getParameter(LONGITUDE) != null) {
+				longitude = Long.parseLong(request.getParameter(LONGITUDE));
+			}
+						
+			final boolean isLocationSet = latitude != null && longitude != null;
+			if (isLocationSet) {
+				log.info("Location is set to: " + latitude + ", " + longitude);
+				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude));
+				mv.addObject("heading", "Geotagged newsitems near " + latitude + ", " + longitude);
+				// TODO Rss feed
+				return mv;
+			}
+			
+			final int page = getPage(request);
 			mv.addObject("page", page);
 			final int startIndex = getStartIndex(page);
 			final int totalGeotaggedCount = contentRetrievalService.getGeotaggedCount();
@@ -50,22 +68,19 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				return null;
 			}
 			
-			final List<Resource> geotaggedNewsitems = contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS);
-			mv.addObject("main_content", geotaggedNewsitems);			
+			mv.addObject("main_content", contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS));			
 			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
 			
-			populatePagination(mv, startIndex, totalGeotaggedCount);			
+			populatePagination(mv, startIndex, totalGeotaggedCount);
 			return mv;
 		}
 		return null;
 	}
 	
-	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());		
 	}
-
 	
 	@Override
 	public String getViewName(ModelAndView mv) {
