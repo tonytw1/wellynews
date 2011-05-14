@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.filters.LocationParameterFilter;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -13,9 +14,6 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
-	private static final String LONGITUDE = "longitude";
-	private static final String LATITUDE = "latitude";
-		
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
@@ -42,15 +40,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
 			// TODO format check and push to the attribute filter
-			Long latitude = null;
-			if (request.getParameter(LATITUDE) != null) {
-				latitude = Long.parseLong(request.getParameter(LATITUDE));
-			}
-			Long longitude = null;
-			if (request.getParameter(LONGITUDE) != null) {
-				longitude = Long.parseLong(request.getParameter(LONGITUDE));
-			}
-						
+			Double latitude = (Double) request.getAttribute(LocationParameterFilter.LATITUDE);
+			Double longitude = 	(Double) request.getAttribute(LocationParameterFilter.LONGITUDE);
+			
 			final boolean isLocationSet = latitude != null && longitude != null;
 			if (isLocationSet) {
 				log.info("Location is set to: " + latitude + ", " + longitude);

@@ -104,7 +104,7 @@ public class ContentRetrievalService {
 	}
 	
 	// TODO You might get away with this for a little while, but it needs to go into solr if at all possible - full set iteration is not good
-	public List<Resource> getGeotaggedNewsitemsNear(long latitude, long longitude) {
+	public List<Resource> getGeotaggedNewsitemsNear(double latitude, double longitude) {
 		log.info("Querying for geotagged newsitems within " + HOW_FAR_IS_CLOSE_IN_KILOMETERS + " kilometers of: " + latitude + ", " + longitude);
 		List<Resource> nearByNewsitems = new ArrayList<Resource>();
 		for (Resource newsitem : getGeocoded(0, 500)) {			
@@ -114,7 +114,7 @@ public class ContentRetrievalService {
 					nearByNewsitems.add(newsitem);
 				}				
 			} else {
-				log.info(newsitem.getName() + " has invalid geocode: " + newsitem.getGeocode());
+				log.debug(newsitem.getName() + " has invalid geocode: " + newsitem.getGeocode());
 			}
 		}
 		return nearByNewsitems;		

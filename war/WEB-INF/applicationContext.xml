@@ -300,6 +300,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<bean class="nz.co.searchwellington.filters.PublisherParameterFilter">
 					<constructor-arg ref="resourceDAO" />
 				</bean>
+				<bean class="nz.co.searchwellington.filters.LocationParameterFilter" />				
 			</list>
 		</constructor-arg>
 		<aop:scoped-proxy/>
