@@ -14,6 +14,8 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
+    private static final int HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1;
+    
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
@@ -46,7 +48,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			final boolean isLocationSet = latitude != null && longitude != null;
 			if (isLocationSet) {
 				log.info("Location is set to: " + latitude + ", " + longitude);
-				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude));
+				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
 				mv.addObject("heading", "Geotagged newsitems near " + latitude + ", " + longitude);
 				// TODO Rss feed
 				return mv;

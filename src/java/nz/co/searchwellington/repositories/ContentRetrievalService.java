@@ -27,7 +27,6 @@ public class ContentRetrievalService {
 
 	static Logger log = Logger.getLogger(ContentRetrievalService.class);
 	
-    private static final int HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1;
 	final protected int MAX_NEWSITEMS_TO_SHOW = 30;
         
 	private ResourceRepository resourceDAO;
@@ -104,13 +103,13 @@ public class ContentRetrievalService {
 	}
 	
 	// TODO You might get away with this for a little while, but it needs to go into solr if at all possible - full set iteration is not good
-	public List<Resource> getGeotaggedNewsitemsNear(double latitude, double longitude) {
-		log.info("Querying for geotagged newsitems within " + HOW_FAR_IS_CLOSE_IN_KILOMETERS + " kilometers of: " + latitude + ", " + longitude);
+	public List<Resource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius) {
+		log.info("Querying for geotagged newsitems within " + radius + " kilometers of: " + latitude + ", " + longitude);
 		List<Resource> nearByNewsitems = new ArrayList<Resource>();
 		for (Resource newsitem : getGeocoded(0, 500)) {			
 			newsitem = resourceDAO.loadResourceById(newsitem.getId());
 			if (newsitem != null && newsitem.getGeocode() != null && newsitem.getGeocode().isValid()) {
-				if (newsitem.getGeocode().getDistanceTo(latitude, longitude) < HOW_FAR_IS_CLOSE_IN_KILOMETERS) {
+				if (newsitem.getGeocode().getDistanceTo(latitude, longitude) < radius) {
 					nearByNewsitems.add(newsitem);
 				}				
 			} else {
