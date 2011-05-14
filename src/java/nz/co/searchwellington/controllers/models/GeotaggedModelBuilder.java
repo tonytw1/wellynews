@@ -51,6 +51,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
 				mv.addObject("heading", "Geotagged newsitems near " + latitude + ", " + longitude);
 				// TODO Rss feed
+				setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
 				return mv;
 			}
 			
