@@ -317,10 +317,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 	</bean>
 	
-
-	
-	
-	
 	<bean id="discoveredFeedRespository" class="nz.co.searchwellington.feeds.DiscoveredFeedRepository" >
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedDetector" />

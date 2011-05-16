@@ -10,10 +10,13 @@
 	#end
 
 	var zoom = 13;
+	
 	#if ($selected) 	
 	var centrePoint = new GLatLng($selected.getGeocode().getLatitude(), $selected.getGeocode().getLongitude());
 	zoom = 15;
-	#elseif ($geocoded.size() > 0 )    
+	#elseif ($latitude && $longitude)
+	var centrePoint = new GLatLng($latitude, $longitude);
+	#elseif ($geocoded.size() > 0 )
 	var centrePoint = new GLatLng($geocoded.get(0).getGeocode().getLatitude(), $geocoded.get(0).getGeocode().getLongitude());
 	#else
 	var centrePoint = new GLatLng(-41.19, 174.95);

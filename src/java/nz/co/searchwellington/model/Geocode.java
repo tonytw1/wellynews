@@ -72,7 +72,7 @@ public class Geocode {
 		GeoCoordinate thisPoint = new GeoCoordinate(this.getLatitude(), this.getLongitude(), new GeoAltitude(0));
 		GeoCoordinate otherPoint = new GeoCoordinate(otherLatitude, otherLongitude, new GeoAltitude(0));
 		double distanceBetweenInKm = GeoUtils.distanceBetweenInKm(thisPoint, otherPoint);
-		log.info("Distance to " + latitude + ", " + longitude + " is " + distanceBetweenInKm);
+		log.debug("Distance to " + latitude + ", " + longitude + " is " + distanceBetweenInKm);
 		return distanceBetweenInKm;
 	}
 	

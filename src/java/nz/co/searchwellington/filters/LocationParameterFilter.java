@@ -13,8 +13,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	
 	public static final String LONGITUDE = "longitude";
 	public static final String LATITUDE = "latitude";
-	
-	private static final String LOCATION = "location";
+	public static final String LOCATION = "location";
 
 	private GoogleGeoCodeService geoCodeService;
 	
@@ -28,9 +27,11 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			Geocode resolvedGeocode = new Geocode(location);
 			geoCodeService.resolveAddress(resolvedGeocode);
 			if (resolvedGeocode.isValid()) {
-				log.info("User supplied location '" + location + "' resolved to point: " + resolvedGeocode.getLatitude() + ", " + resolvedGeocode.getLongitude());
+				log.info("User supplied location '" + location + "' resolved to point: " + resolvedGeocode.getLatitude() + ", " + resolvedGeocode.getLongitude());				
+				request.setAttribute(LOCATION, location);
 				request.setAttribute(LATITUDE, resolvedGeocode.getLatitude());
 				request.setAttribute(LONGITUDE, resolvedGeocode.getLongitude());
+				
 			} else {
 				log.info("User supplied location ' + " + location + "' could not be resolved to a point; ignoring.");
 			}

@@ -9,25 +9,17 @@ import org.apache.log4j.Logger;
 
 public class GoogleGeoCodeService {
 
-    Logger log = Logger.getLogger(GoogleGeoCodeService.class);
+    private static Logger log = Logger.getLogger(GoogleGeoCodeService.class);
 
     private String apiKey;
-    
-    
+        
     public GoogleGeoCodeService() {      
     }
-
     
-    public String getApiKey() {
-        return apiKey;
-    }
-
-
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
-
-
+    
     // TODO Set scope to NZL / Welly if possible.
     public void resolveAddress(Geocode geocode) {	// TODO shouldn't know about geocode model object?
         if (geocode != null && geocode.getAddress() != null) {
@@ -47,7 +39,6 @@ public class GoogleGeoCodeService {
         } else {
             log.warn("No geocode address to resolve.");
         }
-
     }
 
 }

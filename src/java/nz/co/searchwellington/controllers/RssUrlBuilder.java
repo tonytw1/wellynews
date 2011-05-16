@@ -57,8 +57,8 @@ public class RssUrlBuilder {
         return siteInformation.getSitename() + " - News Watchlist";
     }
 
-    public String getRssTitleForGeotagged() {
-        return "Geotagged newitems";
+    public String getRssTitleForGeotagged(Double latitude, Double longitude) {
+        return "Geotagged newitems near " + latitude +  ", " + longitude;
     }
 
     public String getRssTitleForWatchlist() {
@@ -110,7 +110,19 @@ public class RssUrlBuilder {
 	}
 	
 	public String getRssUrlForGeotagged(Double latitude, Double longitude) {
-		return getRssUrlForGeotagged() + "&" + LocationParameterFilter.LATITUDE + "=" + latitude + "&" + LocationParameterFilter.LONGITUDE + "=" + longitude;
+		return getRssUrlForGeotagged() + "?" + LocationParameterFilter.LATITUDE + "=" + latitude + "&" + LocationParameterFilter.LONGITUDE + "=" + longitude;
+	}
+
+	public String getRssTitleForGeotagged(String location) {
+		return "Geotagged newsitems near " + location;
+	}
+	
+	public String getRssUrlForGeotagged(String location) {
+		return getRssUrlForGeotagged() + "?location=" + location;
+	}
+
+	public String getRssTitleForGeotagged() {
+		return "Geotagged newsitems";
 	}
 	
 }

@@ -4,15 +4,9 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
-
-
-
-
 
 <div class="main">
 
@@ -29,7 +23,6 @@
 #end
 </ul>
 #end
-
 
 <div id="map_canvas" style="width: 520px; height: 520px"></div>
 #parse("includes/geocodedjs.vm")
@@ -55,12 +48,11 @@ with location information.</p>
 <a href="http://georss.org/">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
 
 <code>
-
-        &lt;item&gt;<br/>
-          &lt;title&gt;Can you replace the Hilton?&lt;/title&gt; <br/>
-          &lt;geo:lat&gt;-41.284896&lt;/geo:lat&gt; <br/>
-          &lt;geo:long&gt;174.778531&lt;/geo:long&gt; <br/>
-        &lt;/item&gt;
+	&lt;item&gt;<br/>
+	&lt;title&gt;Can you replace the Hilton?&lt;/title&gt; <br/>
+	&lt;geo:lat&gt;-41.284896&lt;/geo:lat&gt; <br/>
+	&lt;geo:long&gt;174.778531&lt;/geo:long&gt; <br/>
+	&lt;/item&gt;
 </code>
 
 <p>A feed containing only the geotagged newsitems is also available:</p>
@@ -71,15 +63,12 @@ with location information.</p>
 <a href="http://code.google.com/apis/maps/index.html">Google Maps API</a>.</p>
 </div>
 
-
-
 <div class="box">
 #parse("includes/latest_newsitems.vm")
 
 <br clear="all"/>
 
 </div>
-
 
 </div>
 

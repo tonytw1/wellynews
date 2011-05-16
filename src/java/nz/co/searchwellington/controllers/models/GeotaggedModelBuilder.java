@@ -37,7 +37,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			log.info("Building geotagged page model");
 			
 			ModelAndView mv = new ModelAndView();							
-			mv.addObject("heading", "Geotagged newsitems");        		
+			mv.addObject("heading", "Geotagged newsitems");
 			mv.addObject("description", "Geotagged newsitems");
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
@@ -47,11 +47,24 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			
 			final boolean isLocationSet = latitude != null && longitude != null;
 			if (isLocationSet) {
+				final String location = (String) request.getAttribute(LocationParameterFilter.LOCATION);
 				log.info("Location is set to: " + latitude + ", " + longitude);
+
 				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
-				mv.addObject("heading", "Geotagged newsitems near " + latitude + ", " + longitude);
-				// TODO Rss feed
-				setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
+				
+				if (location != null) {
+					mv.addObject("heading", "Geotagged newsitesm near " + location);
+				} else {
+					mv.addObject("heading", "Geotagged newsitems near " + latitude + ", " + longitude);					
+				}
+				mv.addObject("latitude", latitude);
+				mv.addObject("longitude", longitude);
+				
+				if (location != null) {					
+					setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(location));					
+				} else {
+					setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
+				}
 				return mv;
 			}
 			
