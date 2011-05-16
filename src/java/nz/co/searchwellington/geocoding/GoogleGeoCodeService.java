@@ -29,7 +29,7 @@ public class GoogleGeoCodeService {
 
 
     // TODO Set scope to NZL / Welly if possible.
-    public void resolveAddress(Geocode geocode) {
+    public void resolveAddress(Geocode geocode) {	// TODO shouldn't know about geocode model object?
         if (geocode != null && geocode.getAddress() != null) {
             try {
                 GeoAddressStandardizer st = new GeoAddressStandardizer(apiKey);

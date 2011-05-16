@@ -58,7 +58,7 @@ public class Geocode {
     }
     
     public boolean isValid() {
-        return latitude != 0 && longitude != 0;
+        return latitude != 0 && longitude != 0;	// TODO Should be nullable
     }
   
     // TODO These two compare methods shouldn't really be on the domain model
