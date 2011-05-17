@@ -19,7 +19,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private GoogleGeoCodeService geoCodeService;
 	
 	public LocationParameterFilter(GoogleGeoCodeService geoCodeService) {
-		this.geoCodeService = geoCodeService;
+		this.geoCodeService = geoCodeService;	// TODO You want to get some caching in this (as it's expensive time wise and quota restricted).
 	}
 
 	public void filter(HttpServletRequest request) {		
