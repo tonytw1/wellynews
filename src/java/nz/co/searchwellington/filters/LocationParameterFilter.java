@@ -9,10 +9,11 @@ import org.apache.log4j.Logger;
 
 public class LocationParameterFilter implements RequestAttributeFilter {
 
-	static Logger log = Logger.getLogger(LocationParameterFilter.class);
+	private static Logger log = Logger.getLogger(LocationParameterFilter.class);
+		
+	private static final String LONGITUDE = "longitude";
+	private static final String LATITUDE = "latitude";
 	
-	public static final String LONGITUDE = "longitude";
-	public static final String LATITUDE = "latitude";
 	public static final String LOCATION = "location";
 
 	private GoogleGeoCodeService geoCodeService;
@@ -28,9 +29,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			geoCodeService.resolveAddress(resolvedGeocode);
 			if (resolvedGeocode.isValid()) {
 				log.info("User supplied location '" + location + "' resolved to point: " + resolvedGeocode.getLatitude() + ", " + resolvedGeocode.getLongitude());				
-				request.setAttribute(LOCATION, location);
-				request.setAttribute(LATITUDE, resolvedGeocode.getLatitude());
-				request.setAttribute(LONGITUDE, resolvedGeocode.getLongitude());
+				request.setAttribute(LOCATION, resolvedGeocode);			
 				
 			} else {
 				log.info("User supplied location ' + " + location + "' could not be resolved to a point; ignoring.");
@@ -38,19 +37,24 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			return;
 		}
 		
-		processDoubleParameter(request, LATITUDE);
-		processDoubleParameter(request, LONGITUDE);		
+		Double latitude = processDoubleParameter(request, LATITUDE);
+		Double longitude = processDoubleParameter(request, LONGITUDE);
+		if (latitude != null && longitude != null) {
+			// TODO Should try todo a reverse lookup to name this location.
+			Geocode specificPointGeocode = new Geocode(latitude, longitude);
+			request.setAttribute(LOCATION, specificPointGeocode);
+		}
 	}
 	
-	private void processDoubleParameter(HttpServletRequest request, String parameterName) {
+	private Double processDoubleParameter(HttpServletRequest request, String parameterName) {
 		if (request.getParameter(parameterName) != null) {
 			try {
-				request.setAttribute(parameterName, Double.parseDouble(request.getParameter(parameterName)));
-				log.info("Set location attribute '" + parameterName + "' to: " + request.getAttribute(parameterName));
+				return Double.parseDouble(request.getParameter(parameterName));
 			} catch (NumberFormatException e) {
-				log.warn("User supplied invalid " + parameterName + " value: " + request.getParameter(parameterName));
+				log.warn("User supplied invalid double " + parameterName + " value: " + request.getParameter(parameterName));
 			}
 		}
+		return null;
 	}
 
 }

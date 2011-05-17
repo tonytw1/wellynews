@@ -30,7 +30,12 @@ public class Geocode {
         this.longitude = longitude;
     }
 
-    public int getId() {
+    public Geocode(Double latitude, Double longitude) {
+    	 this.latitude = latitude;
+         this.longitude = longitude;
+    }
+
+	public int getId() {
         return id;
     }
 

@@ -20,7 +20,7 @@ public class GoogleGeoCodeService {
         this.apiKey = apiKey;
     }
     
-    // TODO Set scope to NZL / Welly if possible.
+    // TODO Set scope to NZL / Welly if possible. Get all matches and interate for the one within X miles of Te Papa?
     public void resolveAddress(Geocode geocode) {	// TODO shouldn't know about geocode model object?
         if (geocode != null && geocode.getAddress() != null) {
             try {

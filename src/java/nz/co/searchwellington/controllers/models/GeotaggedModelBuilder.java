@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -14,7 +15,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
-    private static final int HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1;
+    private static final int HOW_FAR_IS_CLOSE_IN_KILOMETERS = 2;
     
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
@@ -42,34 +43,30 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
 			// TODO format check and push to the attribute filter
-			Double latitude = (Double) request.getAttribute(LocationParameterFilter.LATITUDE);
-			Double longitude = 	(Double) request.getAttribute(LocationParameterFilter.LONGITUDE);
-			
-			final boolean isLocationSet = latitude != null && longitude != null;
+			Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);
+						
+			final boolean isLocationSet = userSuppliedLocation != null && userSuppliedLocation.isValid();
 			if (isLocationSet) {
-				final String location = (String) request.getAttribute(LocationParameterFilter.LOCATION);
+				final double latitude = userSuppliedLocation.getLatitude();
+				final double longitude = userSuppliedLocation.getLongitude();
 				log.info("Location is set to: " + latitude + ", " + longitude);
 
+				mv.addObject("latitude", latitude);
+				mv.addObject("longitude", longitude);
 				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
 				
-				if (location != null) {
-					mv.addObject("heading", "Geotagged newsitesm near " + location);
+				if (userSuppliedLocation.getAddress() != null) {
+					mv.addObject("heading", "Geotagged newsitems near " + userSuppliedLocation.getAddress());
 				} else {
 					mv.addObject("heading", "Geotagged newsitems near " + latitude + ", " + longitude);					
 				}
-				mv.addObject("latitude", latitude);
-				mv.addObject("longitude", longitude);
 				
-				if (location != null) {					
-					setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(location));					
-				} else {
-					setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
-				}
+				setRssForLocation(mv, userSuppliedLocation);
 				return mv;
 			}
 			
 			final int page = getPage(request);
-			mv.addObject("page", page);
+			mv.addObject("page", page);	// TODO pagination should work for location based pages as well
 			final int startIndex = getStartIndex(page);
 			final int totalGeotaggedCount = contentRetrievalService.getGeotaggedCount();
 			if (startIndex > totalGeotaggedCount) {
@@ -95,4 +92,14 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		return "geocoded";
 	}
 
+	private void setRssForLocation(ModelAndView mv, Geocode location) {
+		final double latitude = location.getLatitude();
+		final double longitude = location.getLongitude();
+		if (location.getAddress() != null) {		
+			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location.getAddress()), rssUrlBuilder.getRssUrlForGeotagged(location.getAddress()));					
+		} else {
+			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
+		}
+	}
+	
 }
