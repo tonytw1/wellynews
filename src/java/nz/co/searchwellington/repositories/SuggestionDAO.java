@@ -63,7 +63,7 @@ public class SuggestionDAO implements SuggestionRepository {
 	 @SuppressWarnings("unchecked")
 	 public List<Suggestion> getSuggestions(int maxResults) {
 		 return sessionFactory.getCurrentSession().createCriteria(Suggestion.class).
-	        addOrder(Order.desc("firstSeen")).
+	        addOrder(Order.desc("firstSeen")).		// TODO this ordering does not appear to be consistant
 	        setCacheable(true).
 	        setMaxResults(maxResults).
 	        list();
