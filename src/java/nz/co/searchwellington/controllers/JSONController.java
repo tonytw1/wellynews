@@ -12,19 +12,16 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class JSONController extends MultiActionController {
 
+	private static Logger log = Logger.getLogger(JSONController.class);
+
 	private static final String VALID_CALLBACK_NAME_REGEX = "[a-z|A-Z|0-9|_]+";
-
-
-	Logger log = Logger.getLogger(JSONController.class);
         
 	private ContentModelBuilderService contentModelBuilderService;
-
        
     public JSONController(ContentModelBuilderService contentModelBuilderService) {        
         this.contentModelBuilderService = contentModelBuilderService;
     }
    
-
     public ModelAndView contentJSON(HttpServletRequest request, HttpServletResponse response) throws Exception {    
 		log.info("Building content json");
 		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
@@ -43,9 +40,8 @@ public class JSONController extends MultiActionController {
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;         
     }
-
     
-	protected boolean isValidCallbackName(String callback) {
+	private boolean isValidCallbackName(String callback) {
 		return callback.matches(VALID_CALLBACK_NAME_REGEX);
 	}
     
