@@ -5,10 +5,8 @@
 
 <hibernate-mapping default-lazy="true">
 
-	<class name="nz.co.searchwellington.model.Suggestion"
-		proxy="nz.co.searchwellington.model.Suggestion" table="suggestion">
-
-	
+	<class name="nz.co.searchwellington.model.Suggestion" proxy="nz.co.searchwellington.model.Suggestion" table="suggestion">
+		
 		<cache usage="read-write" />
 
 		<id name="id" type="integer" unsaved-value="0">
