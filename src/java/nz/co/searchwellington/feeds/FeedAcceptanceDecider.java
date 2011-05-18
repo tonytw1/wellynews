@@ -98,11 +98,11 @@ public class FeedAcceptanceDecider {
         }
     }
     
-	
+	// TODO acceptance errors are really moderation votes which human voters should probably be able to overrule.
 	private void alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(FeedNewsitem resource, List<String> acceptanceErrors) {
 		 if (resourceDAO.loadNewsitemByHeadlineAndPublisherWithinLastMonth(resource.getName(), resource.getPublisher()) !=  null) {
 			 log.info("A recent resource from the same publisher with the same headline '" + resource.getName() + "' already exists; not accepting.");
-	          acceptanceErrors.add("A recent resource from the same publisher with the same headline already exists; not accepting.");
+			 acceptanceErrors.add("A recent resource from the same publisher with the same headline already exists; not accepting.");
 		 }
 	}
     
