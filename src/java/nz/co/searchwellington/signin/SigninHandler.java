@@ -13,6 +13,6 @@ public interface SigninHandler {
 	
 	public Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request);
 	public User getUserByExternalIdentifier(Object externalIdentifier);
-	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier);
+	public void decorateUserWithExternalSigninIdentifier(User user, Object externalIdentifier);
 	
 }

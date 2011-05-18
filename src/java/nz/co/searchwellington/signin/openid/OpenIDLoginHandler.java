@@ -32,15 +32,13 @@ public class OpenIDLoginHandler implements SigninHandler {
 	private UrlBuilder urlBuilder;
 	private UserRepository userDAO;	
 	private ConsumerManager manager;
-	
-	    
+		    
 	public OpenIDLoginHandler(UrlBuilder urlBuilder, UserRepository userDAO) throws ConsumerException {
 		this.urlBuilder = urlBuilder;
 		this.userDAO = userDAO;
 		manager = new ConsumerManager();
 	}
-	
-		
+			
 	@Override
 	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		if (request.getParameter(OPENID_CLAIMED_IDENTITY_PARAMETER) != null) {
@@ -112,14 +110,12 @@ public class OpenIDLoginHandler implements SigninHandler {
 		}
 		return null;
 	}
-
 	
 	@Override
-	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {
+	public void decorateUserWithExternalSigninIdentifier(User user, Object externalIdentifier) {
 		final String openId = (String) externalIdentifier;
 		user.setOpenId(openId);
 	}
-
 
 	@Override
 	public User getUserByExternalIdentifier(Object externalIdentifier) {

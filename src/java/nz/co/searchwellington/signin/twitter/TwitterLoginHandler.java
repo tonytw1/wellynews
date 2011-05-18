@@ -22,7 +22,7 @@ import twitter4j.TwitterException;
 
 public class TwitterLoginHandler implements SigninHandler {
 
-	static Logger log = Logger.getLogger(TwitterLoginHandler.class);
+	private static Logger log = Logger.getLogger(TwitterLoginHandler.class);
 	
 	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
 	
@@ -99,17 +99,15 @@ public class TwitterLoginHandler implements SigninHandler {
 		}
 		return null;
 	}
-	
-	
+		
 	@Override
 	public User getUserByExternalIdentifier(Object externalIdentifier) {
 		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
 		return userDAO.getUserByTwitterId(twitterUser.getId());
 	}
-
-		
+	
 	@Override
-	public void decorateUserWithExternalSigninIndenfier(User user, Object externalIdentifier) {		
+	public void decorateUserWithExternalSigninIdentifier(User user, Object externalIdentifier) {		
 		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
 		if (user.getProfilename() == null || user.isUnlinkedAnonAccount()) {
 			final String twitterScreenName = twitterUser.getScreenName();
@@ -119,8 +117,7 @@ public class TwitterLoginHandler implements SigninHandler {
 		}
 		user.setTwitterId(twitterUser.getId());
 	}
-	
-	
+		
 	private twitter4j.User getTwitteUserCredentials(Token accessToken) {
 		Twitter twitterApi = twitterApiFactory.getOauthedTwitterApiForAccessToken(accessToken.getToken(), accessToken.getSecret());
 		try {
