@@ -41,7 +41,7 @@ public class JSONController extends MultiActionController {
 		return null;         
     }
     
-	private boolean isValidCallbackName(String callback) {
+	protected boolean isValidCallbackName(String callback) {
 		return callback.matches(VALID_CALLBACK_NAME_REGEX);
 	}
     

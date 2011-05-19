@@ -69,7 +69,7 @@ public class SigninController extends MultiActionController {
 				} else {
 					user = loggedInUser;
 					log.info("Attaching external identifier to current user: " + externalIdentifier.toString());
-					signinHandler.decorateUserWithExternalSigninIndenfier(loggedInUser, externalIdentifier.toString());
+					signinHandler.decorateUserWithExternalSigninIdentifier(loggedInUser, externalIdentifier.toString());
 				}
 			}
 			
@@ -100,7 +100,7 @@ public class SigninController extends MultiActionController {
 	
 	final protected User createNewUser(Object externalIdentifier) {
 		User newUser = anonUserService.createAnonUser();
-		signinHandler.decorateUserWithExternalSigninIndenfier(newUser, externalIdentifier);
+		signinHandler.decorateUserWithExternalSigninIdentifier(newUser, externalIdentifier);
 		userDAO.saveUser(newUser);
 		log.info("Created new user with external identifier: " + externalIdentifier.toString());
 		return newUser;

@@ -1,0 +1,258 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>nz.co.searchwellington</groupId>
+	<artifactId>searchwellington</artifactId>
+	<packaging>war</packaging>
+	<name>Search Wellington</name>
+	<version>0.0.1-SNAPSHOT</version>
+	<description>Search Wellington application.</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.5</source>
+					<target>1.5</target>
+				</configuration>
+				<version>2.0.2</version>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency>
+			<groupId>geo.google</groupId>
+			<artifactId>geoGoogle</artifactId>
+			<version>1.5</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/geoGoogle-1.5.0.jar</systemPath>
+		</dependency>
+
+
+
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/rome-1.0.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>rome-fetcher</artifactId>
+			<version>1.0RC2</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/rome-fetcher-1.0RC2.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>geo-rss</artifactId>
+			<version>0.9.8</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/georss-rome-0.9.8.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>rome</groupId>
+			<artifactId>media-rss</artifactId>
+			<version>0.2.1</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>scribe</groupId>
+			<artifactId>scribe</artifactId>
+			<version>0.6.7-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
+		</dependency>
+
+
+		<dependency>
+			<groupId>twitter4j</groupId>
+			<artifactId>twitter4j-core</artifactId>
+			<version>2.1.3</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/twitter4j-core-2.1.3.jar</systemPath>
+		</dependency>
+
+
+		<dependency>
+			<groupId>tokyo</groupId>
+			<artifactId>tokyotyrant</artifactId>
+			<version>0.10</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/tokyotyrant-0.10.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdom</groupId>
+			<artifactId>jdom</artifactId>
+			<version>unknown</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/jdom.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>commons</groupId>
+			<artifactId>email</artifactId>
+			<version>1.0</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/commons-email-1.0.jar</systemPath>
+		</dependency>
+
+
+		<dependency>
+			<groupId>jrobotx</groupId>
+			<artifactId>jrobotx</artifactId>
+			<version>0.1</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/jrobotx-0.1.jar</systemPath>
+		</dependency>
+
+	<dependency>
+			<groupId>jrobotx</groupId>
+			<artifactId>jrobotx</artifactId>
+			<version>0.1</version>
+			<scope>system</scope>
+			<systemPath>/Users/tony/git/wellynews/war/WEB-INF/lib/jrobotx-0.1.jar</systemPath>
+		</dependency>
+
+		<dependency>
+			<groupId>com.aetrion.flickr</groupId>
+			<artifactId>flickrapi</artifactId>
+			<version>1.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.twitter4j</groupId>
+			<artifactId>twitter4j</artifactId>
+			<version>2.2.2</version>
+			<type>pom</type>
+		</dependency>
+
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.8.2</version>
+</dependency>
+
+<dependency>
+    <groupId>org.mockito</groupId>
+    <artifactId>mockito-core</artifactId>
+    <version>1.8.5</version>
+</dependency>
+
+
+
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>3.3.2.GA</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.solr</groupId>
+			<artifactId>solr-core</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>1.2.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring</artifactId>
+			<version>2.5.6.SEC02</version>
+		</dependency>
+
+		<dependency>
+			<groupId>springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>1.2.6</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.openid4java</groupId>
+			<artifactId>openid4java</artifactId>
+			<version>0.9.5</version>
+			<type>pom</type>
+		</dependency>
+
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>1.5</version>
+			<type>pom</type>
+		</dependency>
+
+<dependency>
+    <groupId>org.springframework</groupId>
+    <artifactId>spring-mock</artifactId>
+    <version>2.0.8</version>
+</dependency>
+
+		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity-tools</artifactId>
+			<version>2.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.htmlparser</groupId>
+			<artifactId>htmlparser</artifactId>
+			<version>2.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.8</version>
+			<type>jar</type>
+		</dependency>
+
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ecs</groupId>
+			<artifactId>ecs</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.5</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>
