@@ -18,7 +18,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="daos.xml" />	
 	<import resource="database-backed-daos.xml" />	
 	<import resource="daos.xml" />
-	<import resource="timertasks.xml"/>
+	
 	<import resource="rssfeeds.xml" />
 	<import resource="commentfeeds.xml" />	
 	<import resource="linkextractors.xml" />

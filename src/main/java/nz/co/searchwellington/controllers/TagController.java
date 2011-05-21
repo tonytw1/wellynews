@@ -1,13 +1,11 @@
 package nz.co.searchwellington.controllers;
 
-
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
-import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -26,7 +24,7 @@ public class TagController extends MultiActionController {
 
     public TagController(UrlStack urlStack,
 			ContentModelBuilderService contentModelBuilder,
-			ContentRetrievalService contentRetrievalService, TagDAO tagDAO) {
+			TagDAO tagDAO) {
 		this.urlStack = urlStack;
 		this.contentModelBuilder = contentModelBuilder;
 		this.tagDAO = tagDAO;
