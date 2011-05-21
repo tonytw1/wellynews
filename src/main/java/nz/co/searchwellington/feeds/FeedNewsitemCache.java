@@ -36,22 +36,17 @@ public class FeedNewsitemCache {
 
 	public void putFeedNewsitems(String url, List<FeedNewsitem> liveItems) {
 		Cache cache = manager.getCache(RSS_CACHE_NAME);
-
-		log.info("Caching feed items for url: " + url);
+		log.debug("Caching feed items for url: " + url);
 		if (cache != null && liveItems != null) {
 			Element cachedFeedElement = new Element(url, liveItems);
 			cache.put(cachedFeedElement);
 		}
 	}
 
-
 	public void decache(String feedUrl) {
 		Cache cache = manager.getCache(RSS_CACHE_NAME);
-		log.info("Decaching: " + feedUrl);
+		log.debug("Decaching: " + feedUrl);
 		cache.remove(feedUrl);		
 	}
-
-	
-	
 	
 }

@@ -50,7 +50,6 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 		this.textTrimmer = textTrimmer;
 	}
 
-
 	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
         List<FeedNewsitem> feedNewsitems = new ArrayList<FeedNewsitem>();
 
@@ -68,12 +67,10 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
                 itemNumber++;
             }
         } else {
-            log.error("Feed was null after loading attempt; returning empty list.");
+            log.warn("Feed was null after loading attempt; returning empty list.");
         }
         return feedNewsitems;
     }
-
-
 	
     private FeedNewsitem extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
         String description = null;
@@ -113,7 +110,6 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 		return null;
 	}
 
-
 	private Image extractThumbnail(Feed feed, SyndEntry item) {		
         MediaEntryModuleImpl mediaModule = (MediaEntryModuleImpl) item.getModule(MediaModule.URI);
         if (mediaModule != null) {
@@ -142,7 +138,6 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 		return null;
 	}
 	
-
 	private String getBodyFromSyndItem(SyndEntry item, String description) {
 		// TODO; what's going on here? - why two settings? Check if this API call has updated?
 		SyndContent descriptionContent = (SyndContent) item.getDescription();
