@@ -13,12 +13,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		</property>
 	</bean>
 	
-
 	<import resource="database.xml" />
 	<import resource="daos.xml" />	
 	<import resource="database-backed-daos.xml" />	
 	<import resource="daos.xml" />
-	
+		
 	<import resource="rssfeeds.xml" />
 	<import resource="commentfeeds.xml" />	
 	<import resource="linkextractors.xml" />
@@ -26,6 +25,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="linkchecking.xml" />
 	<import resource="modelbuilders.xml"/>
 	
+	<import resource="timertasks.xml" />
 		
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
