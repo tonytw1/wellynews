@@ -53,11 +53,17 @@
 		<ul>
 			<li>#parse("includes/rss_icon.vm") <code>$rss_url</code></li>
 		</ul>
-			
+					
 		#if ($main_content) 
 			<p>This feed currently contains the following newsitems:</p>
+			
+			#if($geocoded)
+				<div id="map_canvas" style="width: 520px; height: 520px"></div>
+				#parse("includes/geocodedjs.vm")
+			#end
+			
 			#parse("includes/main_content.vm")
-
+						
 		#else 
 			<p>There was a problem loading this feed. No newsitems could be displayed.</p>
 		#end

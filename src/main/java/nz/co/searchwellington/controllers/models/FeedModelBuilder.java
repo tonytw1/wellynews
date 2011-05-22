@@ -1,5 +1,6 @@
  package nz.co.searchwellington.controllers.models;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,10 +17,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
-	static Logger log = Logger.getLogger(FeedModelBuilder.class);
+	private static Logger log = Logger.getLogger(FeedModelBuilder.class);
 	
 	private static final String FEED_ATTRIBUTE = "feedAttribute";
-	static Pattern feedPattern = Pattern.compile("^/feed/(.*)$");
+	private static Pattern feedPattern = Pattern.compile("^/feed/(.*)$");
 	
 	private RssfeedNewsitemService rssfeedNewsitemService;
 		
@@ -28,13 +29,11 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 		this.contentRetrievalService = contentRetrievalService;
 	}
 	
-	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		populateFeed(request);
 		return request.getAttribute(FEED_ATTRIBUTE) != null;
 	}
-
 	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
@@ -50,6 +49,17 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 				
 				if (feedNewsitems != null && feedNewsitems.size() > 0) {
 					mv.addObject("main_content", feedNewsitems);
+					
+					List<FeedNewsitem> geotaggedFeedNewsitems = new ArrayList<FeedNewsitem>();
+					for (FeedNewsitem feedNewsitem : feedNewsitems) {
+						if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
+							geotaggedFeedNewsitems.add(feedNewsitem);
+						}
+					}
+					if (!geotaggedFeedNewsitems.isEmpty()) {
+						mv.addObject("geocoded", geotaggedFeedNewsitems);
+					}
+					
 				} else {
 					log.warn("No newsitems were loaded from feed: " + feed.getName());
 				}
@@ -60,19 +70,16 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 		}
 		return null;
 	}
-
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		populateSecondaryFeeds(mv);
 	}
-	
-	
+		
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "viewfeed";
 	}
-
 	
 	private void populateFeed(HttpServletRequest request) {
 		Matcher feedMatcher = feedPattern.matcher(request.getPathInfo());
