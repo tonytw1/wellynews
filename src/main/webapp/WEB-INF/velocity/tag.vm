@@ -2,32 +2,14 @@
 
 <div class="page">
 	#parse("includes/topbar.vm")
-
-
-	<div class="left">
 	
-	<script type="text/javascript"><!--
-google_ad_client = "pub-2231981956243741";
-/* 120x240, created 7/25/10 */
-google_ad_slot = "8502015238";
-google_ad_width = 120;
-google_ad_height = 240;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
-             
-	
-	    			
+	<div class="left">	    			
 		#parse("includes/related_tags.vm")
 		#parse("includes/related_publishers.vm")
 		#parse("includes/tag_tree.vm")
 		#parse("includes/sibling_tags.vm")
 	</div>
 	
-
-
 	<div class="main">
 	
 		<div class="yellow">	
