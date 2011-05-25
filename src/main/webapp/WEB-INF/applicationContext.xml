@@ -249,11 +249,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="dateFormatter" class="nz.co.searchwellington.dates.DateFormatter" />	
 	<bean id="columnSplitter" class="nz.co.searchwellington.utils.ColumnSplitter" />	
 	<bean id="googleMapsCleaner" class="nz.co.searchwellington.views.GoogleMapsDisplayCleaner" />
-
-	<bean id="geocodingService" class="nz.co.searchwellington.geocoding.GoogleGeoCodeService">
-		<property name="apiKey" value="${googlemaps.apikey}" />
-	</bean>
-
+	
+	<bean id="geocodingService" class="nz.co.searchwellington.geocoding.GoogleGeoCodeService" />
+	
 	<bean id="contentDeduper" class="nz.co.searchwellington.views.ContentDedupingService" />
 	
 

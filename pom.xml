@@ -40,7 +40,7 @@
 			<artifactId>geoGoogle</artifactId>
 			<version>1.5</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/geoGoogle-1.5.0.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/geoGoogle-1.5.0.jar</systemPath>
 		</dependency>
 		
 		<dependency>
@@ -54,7 +54,7 @@
 			<artifactId>rome-fetcher</artifactId>
 			<version>1.0RC2</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/rome-fetcher-1.0RC2.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/rome-fetcher-1.0RC2.jar</systemPath>
 		</dependency>
 		
 		<dependency>
@@ -62,7 +62,7 @@
 			<artifactId>geo-rss</artifactId>
 			<version>0.9.8</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/georss-rome-0.9.8.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/georss-rome-0.9.8.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -70,7 +70,7 @@
 			<artifactId>media-rss</artifactId>
 			<version>0.2.1</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -78,7 +78,7 @@
 			<artifactId>scribe</artifactId>
 			<version>0.6.7-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -98,7 +98,7 @@
 			<artifactId>tokyotyrant</artifactId>
 			<version>0.10</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
 			</systemPath>
 		</dependency><dependency>
     <groupId>org.jboss.netty</groupId>
@@ -112,7 +112,7 @@
 			<artifactId>jdom</artifactId>
 			<version>unknown</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jdom.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jdom.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -120,7 +120,7 @@
 			<artifactId>email</artifactId>
 			<version>1.0</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/commons-email-1.0.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/commons-email-1.0.jar</systemPath>
 		</dependency>
 
 
@@ -129,7 +129,7 @@
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -137,7 +137,7 @@
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
 			</systemPath>
 		</dependency>
 
@@ -310,6 +310,12 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.code.geocoder-java</groupId>
+			<artifactId>geocoder-java</artifactId>
+			<version>0.6-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 
 </project>
