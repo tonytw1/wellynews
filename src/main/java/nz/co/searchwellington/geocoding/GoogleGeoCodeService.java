@@ -15,8 +15,11 @@ import org.apache.log4j.Logger;
 
 public class GoogleGeoCodeService {
 
-    private static Logger log = Logger.getLogger(GoogleGeoCodeService.class);
-    
+	private static Logger log = Logger.getLogger(GoogleGeoCodeService.class);
+
+	private static final String REGION_RESTRICTION = "nz";
+	private static final String AREA_RESTRICTION = "Wellington";
+	
     public GoogleGeoCodeService() {      
     }
     
@@ -31,7 +34,7 @@ public class GoogleGeoCodeService {
 	private void resolveAddressOfGeocode(Geocode geocode) {
 		final Geocoder geocoder = new Geocoder();
 		final String addressString = geocode.getAddress();				
-		GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(addressString).setRegion("nz").setLanguage("en").getGeocoderRequest();
+		GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(addressString).setRegion(REGION_RESTRICTION).setLanguage("en").getGeocoderRequest();
 		GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
 		log.info("Address '" + addressString + "' resolved to: " + geocoderResponse);
 		if (geocoderResponse.getStatus().equals(GeocoderStatus.OK)) {
@@ -47,7 +50,7 @@ public class GoogleGeoCodeService {
 		final GeocoderLocationType locationType = firstMatch.getGeometry().getLocationType();
 		if (locationType.equals(GeocoderLocationType.RANGE_INTERPOLATED) || locationType.equals(GeocoderLocationType.ROOFTOP)) {
 			for (GeocoderAddressComponent addressComponent : firstMatch.getAddressComponents()) {
-				if (addressComponent.getTypes().contains("administrative_area_level_1") && addressComponent.getLongName().equals("Wellington")) {
+				if (addressComponent.getTypes().contains("administrative_area_level_1") && addressComponent.getLongName().equals(AREA_RESTRICTION)) {
 					return true;
 				}
 			}
