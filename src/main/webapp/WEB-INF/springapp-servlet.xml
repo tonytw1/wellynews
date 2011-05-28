@@ -253,6 +253,7 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
+						<prop key="/json">contentJSON</prop>					
 						<prop key="/*/json">contentJSON</prop>
 						<prop key="/*/*/json">contentJSON</prop>																	
 					</props>
@@ -390,14 +391,12 @@
 				<prop key="/*/rss">tagController</prop>
 				<prop key="/*/*/rss">tagController</prop>
 				<prop key="/feeds/inbox/rss">tagController</prop>
-																	
+									
+				<prop key="/json">jsonController</prop>									
 				<prop key="*/json">jsonController</prop>
 				<prop key="/*/*/json">jsonController</prop>
-								
-				
-				
+												
 				<prop key="/search">searchController</prop>
-				
 								
 				<prop key="/admin/feed/decache">viewfeedController</prop>	
 				<prop key="/admin/feed/read">viewfeedController</prop>

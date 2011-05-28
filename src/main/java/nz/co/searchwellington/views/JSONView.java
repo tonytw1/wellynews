@@ -18,7 +18,7 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.json.JettisonMappedXmlDriver;
 import com.thoughtworks.xstream.io.json.JsonWriter;
 
-public class JSONView  implements View {
+public class JSONView implements View {
 	
 	public String getContentType() {
 		return "text/plain";

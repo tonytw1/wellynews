@@ -44,7 +44,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		// TODO is the index path still required?
-		return request.getPathInfo().matches("^/$") || request.getPathInfo().matches("^/index$");	// /index path reflects problems deploying onto the root path with tomcat.
+		return request.getPathInfo().matches("^/$") || request.getPathInfo().matches("^/index$") || request.getPathInfo().matches("^/json$");	// /index path reflects problems deploying onto the root path with tomcat.
 	}
 
 	
