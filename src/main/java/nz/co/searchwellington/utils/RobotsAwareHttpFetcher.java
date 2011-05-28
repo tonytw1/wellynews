@@ -1,13 +1,11 @@
 package nz.co.searchwellington.utils;
 
+import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
-
 
 public class RobotsAwareHttpFetcher implements HttpFetcher {
 	
-    private static final int CANT_CRAWL = -2;
-
-	Logger log = Logger.getLogger(RobotsAwareHttpFetcher.class);
+    private Logger log = Logger.getLogger(RobotsAwareHttpFetcher.class);
 
 	private RobotExclusionService robotExclusionService;
 	private StandardHttpFetcher httpFetcher;
@@ -31,7 +29,7 @@ public class RobotsAwareHttpFetcher implements HttpFetcher {
 			return httpFetcher.httpFetch(url);
 		}
 		log.info("Url is not allowed to be crawled: " + url);
-		return new HttpFetchResult(CANT_CRAWL, null);
+		return new HttpFetchResult(HttpStatus.SC_UNAUTHORIZED, null);
 	}
 	
 }

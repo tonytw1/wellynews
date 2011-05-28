@@ -3,29 +3,30 @@ package nz.co.searchwellington.utils;
 import java.net.URL;
 
 import net.sourceforge.jrobotx.RobotExclusion;
+import net.sourceforge.jrobotx.util.URLInputStreamFactory;
 
 import org.apache.log4j.Logger;
 
 public class RobotExclusionService {
 
-	Logger log = Logger.getLogger(RobotExclusionService.class);
+	private static Logger log = Logger.getLogger(RobotExclusionService.class);
 
-	StandardHttpFetcher httpFetcher;
+	private StandardHttpFetcher httpFetcher;
 	
 	public RobotExclusionService(StandardHttpFetcher httpFetcher) {
 		this.httpFetcher = httpFetcher;
 	}
-
-
+	
 	public boolean isUrlCrawlable(String url, String userAgent) {
 		log.info("Checking if url '" + url + "' is allowed for user agent '" + userAgent + "'");
-		RobotExclusion jrobotx = new RobotExclusion(new HttpClientInputStreamFactory(httpFetcher));
+		URLInputStreamFactory robotsDotTextInputStream = new HttpFetcherUrlInputStreamFactory(httpFetcher);		
+		RobotExclusion jrobotx = new RobotExclusion(robotsDotTextInputStream);
 		try {
 			boolean isCrawlable = jrobotx.allows(new URL(url), userAgent);
 			log.info(url + "' is crawlable: " + isCrawlable);
 			return isCrawlable;
 		} catch (Exception e) {
-			log.warn(url + " caused an exception: " + e);
+			log.warn(url + " caused an exception, marking as uncrawlable until this is resolved: " + e);
 			return false;
 		}
 	}
