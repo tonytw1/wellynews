@@ -39,24 +39,9 @@ public class GoogleGeoCodeService {
 		log.info("Address '" + addressString + "' resolved to: " + geocoderResponse);
 		if (geocoderResponse.getStatus().equals(GeocoderStatus.OK)) {
 			final GeocoderResult firstMatch = geocoderResponse.getResults().get(0);
-			if (isSuitableMatchInCorrectRegion(firstMatch)) {
-				geocode.setLatitude(firstMatch.getGeometry().getLocation().getLat().doubleValue());
-				geocode.setLongitude(firstMatch.getGeometry().getLocation().getLng().doubleValue());
-			}
+			geocode.setLatitude(firstMatch.getGeometry().getLocation().getLat().doubleValue());
+			geocode.setLongitude(firstMatch.getGeometry().getLocation().getLng().doubleValue());			
 		}
 	}
 	
-	private boolean isSuitableMatchInCorrectRegion(final GeocoderResult firstMatch) {
-		final GeocoderLocationType locationType = firstMatch.getGeometry().getLocationType();
-		if (locationType.equals(GeocoderLocationType.RANGE_INTERPOLATED) || locationType.equals(GeocoderLocationType.ROOFTOP)) {
-			for (GeocoderAddressComponent addressComponent : firstMatch.getAddressComponents()) {
-				if (addressComponent.getTypes().contains("administrative_area_level_1") && addressComponent.getLongName().equals(AREA_RESTRICTION)) {
-					return true;
-				}
-			}
-			return true;
-		}
-		return false;
-	}
-    
 }
