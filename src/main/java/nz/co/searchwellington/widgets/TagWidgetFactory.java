@@ -11,28 +11,25 @@ import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
 import org.apache.log4j.Logger;
 
-
 // TODO remove duplication.
 public class TagWidgetFactory {
     
-    static Logger log = Logger.getLogger(TagWidgetFactory.class);
+    private static Logger log = Logger.getLogger(TagWidgetFactory.class);
     
     private TagDAO tagDAO;
     private ResourceRepository resourceDAO;
     
-    
-	public TagWidgetFactory(TagDAO tagDAO, ResourceRepository resourceDAO) {
+    public TagWidgetFactory(TagDAO tagDAO, ResourceRepository resourceDAO) {
 		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;
 	}
-
-
+    
     public String createMultipleTagSelect(Set<Tag> selectedTags) {
         Select tagSelect= new Select("tags");
         tagSelect.setID("tags");
         tagSelect.setMultiple(true);
         
-        log.info("Selected tags are: " + selectedTags);
+        log.debug("Selected tags are: " + selectedTags);
         for (Tag tag : selectedTags) {
             Option option = new Option(tag.getName());
             option.setFilterState(true);
@@ -42,12 +39,9 @@ public class TagWidgetFactory {
         return tagSelect.toString();
     }
     
-
-        
     public Select createTagSelect(String name, Tag selectedTag, Set<Tag> tagsToExclude) {
         return createTagSelect(name, selectedTag, tagsToExclude, "No Parent");
     }
-    
     
     public Select createRelatedFeedSelect(String name, Feed relatedFeed) {
         Select relatedFeedSelect = new Select(name);
@@ -71,8 +65,7 @@ public class TagWidgetFactory {
 
         return relatedFeedSelect;
     }
-    
-    
+        
     private Select createTagSelect(String name, Tag selectedTag, Set<Tag> tagsToExclude, String noneSelectedText) {       
         Select tagSelect= new Select(name);
         tagSelect.setMultiple(false);
@@ -101,5 +94,4 @@ public class TagWidgetFactory {
         return tagSelect;
     }
 
-    
 }
