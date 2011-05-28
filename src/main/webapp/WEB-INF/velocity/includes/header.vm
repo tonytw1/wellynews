@@ -57,7 +57,7 @@
     	    map.setCenter(new GLatLng(-41.19, 174.95), 12);        
 		#end
 	        
-        #if (!$geotags_is_small)	   	
+        #if (!$geotags_is_small)
 	        map.addControl(new GSmallMapControl());        	
         #end
       }
@@ -74,6 +74,24 @@
       	map.addOverlay(marker);
 	}
 	
+	function positionSuccess(position) {
+		if (map) {
+			location = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+			document.location.href = 'geotagged?latitude=' + position.coords.latitude + '&longitude=' + position.coords.longitude;
+      	}
+	}
+
+	function positionError(msg) {
+		alert('Could not determine your position');
+	}
+
+	function nearMe() {
+		if (navigator.geolocation) {
+  			navigator.geolocation.getCurrentPosition(positionSuccess, positionError);
+		} else {
+  			error('Position is not supported by this browser');
+		}
+	}
 </script>
 #end
 </head>

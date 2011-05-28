@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.Website;
 
 public class RssUrlBuilder {
     
-    SiteInformation siteInformation;
+    private SiteInformation siteInformation;
     
     public RssUrlBuilder(SiteInformation siteInformation) {
         this.siteInformation = siteInformation;
@@ -55,11 +55,7 @@ public class RssUrlBuilder {
     public String getTitleForWatchlist() {
         return siteInformation.getSitename() + " - News Watchlist";
     }
-
-    public String getRssTitleForGeotagged(Double latitude, Double longitude) {
-        return "Geotagged newitems near " + latitude +  ", " + longitude;
-    }
-
+    
     public String getRssTitleForWatchlist() {
         return siteInformation.getSitename() + " - News watchlist";
     }
@@ -109,12 +105,16 @@ public class RssUrlBuilder {
 	}
 	
 	public String getRssUrlForGeotagged(Double latitude, Double longitude) {
-		return getRssUrlForGeotagged() + "?" + latitude + "=" + latitude + "&" + longitude + "=" + longitude;
+		return getRssUrlForGeotagged() + "?latitude=" + latitude + "&longitude=" + longitude;
 	}
 
 	public String getRssTitleForGeotagged(String location) {
 		return "Newsitems near " + location;
 	}
+	
+    public String getRssTitleForGeotagged(Double latitude, Double longitude) {
+        return "Newitems near " + latitude +  ", " + longitude;
+    }
 	
 	public String getRssUrlForGeotagged(String location) {
 		return getRssUrlForGeotagged() + "?location=" + location;

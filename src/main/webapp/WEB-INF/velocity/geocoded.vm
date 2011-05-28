@@ -16,6 +16,10 @@
 
 <h2>$heading</h2>
 
+<form>
+	<button type="button" onClick="nearMe()">Newsitems near me</button>
+</form>
+
 #if ($geotagged_tags.size() > 0)
 <ul class="childtags">
 #foreach ($geotagged_tag in $geotagged_tags)
