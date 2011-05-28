@@ -46,7 +46,9 @@
 			#parse("widgets/scoop_election_videos_widget.vm")
 			#parse("widgets/election_candidates_twitter.vm")
 		#end
-							
+		
+		#parse("includes/geocoded.vm")
+									
 		<div class="box">
 			#parse("includes/latest_newsitems.vm")
 			<br clear="all"/>
