@@ -97,11 +97,7 @@ settlers.
 <p>By running an aggregator, we're taking a slight liberty with other people's content.
 It's therefore important that we've transparent about what we're doing. To this end, our index is available in a machine readable for for reuse by other members of the community.
 
-<p>ie. <a href="http://wellingtonista.com/">The Wellingtonista</a> and <a href="http://www.wcn.net.nz/">WCN</a> use our feed in to populate their Wellington news widgets.<p>
-
-<p>Our ethos is, if we use a piece of data to render one of our own pages, then generally that data should also be available as a feed.</p>
-
-
+<p>Our ethos is if we use a piece of data to render one of our own pages, then generally that data should also be available as a feed.</p>
 
 <h3>RSS and JSON feeds</h3>
 
@@ -110,10 +106,28 @@ will in most cases provide the underlying data in the desired format. (credit - 
 
 <p>The complete range of available feeds is documented in the <a href="/api">API instructions</a>.</p>
 
+<a name="geotagged" />
+<h3>Geotagged newsitems</h3>
+
+<p>Some of the newsitems in our feeds contain <a href="geotagged">position information</a>. This information
+makes the following possible:</p>
+
+<p>-Searching for newitems based on location<br/>
+		ie. Newsitems near Islandbay: <a href="$urlBuilder.geotaggedUrl?location=Island+Bay">$urlBuilder.geotaggedUrl?location=Island+Bay</a>
+	</p>
+	<p>-RSS feeds of newsitems near a location<br/>
+	ie. An RSS feed of newsitems near Petone Station: <a href="$urlBuilder.geotaggedUrl/rss?location=Petone+Station">$urlBuilder.geotaggedUrl/rss?location=Petone+Station</a>
+	</p>
+	
+	<p>-Newsitems near your current position (HTML5 browsers such as Firefox 4 and Safari 5 only)<br/>
+	Click the near me link on the <a href="geotagged">geotagged newsitems page</a> to experiment with this feature
+	</p>
+</ul>
+
 
 <h3>Source code</h3>
 <p>The aggregation system is a Java application which makes use of Mysql and Apache solr. 
-The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">github</a>.
+The source code is available for review on <a href="http://www.github.com/tonytw1/wellynews">Github</a>.
 </div>
 
 <div class="right">

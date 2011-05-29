@@ -18,7 +18,10 @@
 
 <br clear="all" />
 
-			<span class="yellow" onClick="nearMe()"><a name="nearMe">Near me</a></span>
+			<span class="nearMe" onClick="nearMe()">
+				#parse("includes/geotag_icon.vm")				
+				<a name="nearMe">Near me</a>
+			</span>
 
 			<form action="$site_information.url/geotagged">
 				<fieldset>				
