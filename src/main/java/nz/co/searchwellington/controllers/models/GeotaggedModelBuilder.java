@@ -56,9 +56,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
 				
 				if (userSuppliedLocation.getAddress() != null) {
-					mv.addObject("heading", "Geotagged newsitems near " + userSuppliedLocation.getAddress());
+					mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation.getAddress()));
 				} else {
-					mv.addObject("heading", "Geotagged newsitems near " + latitude + ", " + longitude);					
+					mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude));
 				}
 				
 				setRssForLocation(mv, userSuppliedLocation);
@@ -84,7 +84,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());		
+		if (request.getAttribute("location") == null) {
+			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());
+		}
 	}
 	
 	@Override

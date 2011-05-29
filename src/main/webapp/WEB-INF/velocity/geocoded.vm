@@ -16,9 +16,18 @@
 
 <h2>$heading</h2>
 
-<form>
-	<button type="button" onClick="nearMe()">Newsitems near me</button>
-</form>
+<br clear="all" />
+
+			<span class="yellow" onClick="nearMe()"><a name="nearMe">Near me</a></span>
+
+			<form action="$site_information.url/geotagged">
+				<fieldset>				
+		 			<input name="location" #if ($locationQuery) value="$locationQuery" #end />
+					<input type="submit" value="Search by location" />
+				</fieldset>
+			</form>
+		
+		
 
 #if ($geotagged_tags.size() > 0)
 <ul class="childtags">
