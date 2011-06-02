@@ -327,7 +327,7 @@ public class SolrBackedResourceDAO {
 	}
 
 	public int getPublisherNewsitemsCount(Website publisher, boolean showBroken) {
-		log.info("Getting publisher newsitem count for publisher: " + publisher);
+		log.info("Getting publisher newsitem count for publisher: " + publisher.getName());
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").publisher(publisher).toQuery();
 		return getQueryCount(query);
 	}
