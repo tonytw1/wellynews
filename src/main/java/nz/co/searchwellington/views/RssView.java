@@ -17,8 +17,8 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 public class RssView implements View {
 	
-	static Logger log = Logger.getLogger(RssView.class);
-
+	private static Logger log = Logger.getLogger(RssView.class);
+	
 	private SiteInformation siteInformation;
 	private RssItemMaker rssItemMaker;	
 	
@@ -26,14 +26,15 @@ public class RssView implements View {
 		this.siteInformation = siteInformation;
 		this.rssItemMaker = rssItemMaker;
 	}
-
+	
 	public String getContentType() {
         return "text/xml";
     }
-
+	
     @SuppressWarnings("unchecked")
 	public void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {        
     	response.setContentType("text/xml;charset=UTF-8");		
+    	response.setCharacterEncoding("UTF8");
     	String rssFeedTitle = (String) model.get("heading") + " - " + siteInformation.getSitename();
 
     	List <Resource> content =  (List <Resource>) model.get("main_content");    	
@@ -46,10 +47,10 @@ public class RssView implements View {
 				log.warn("Could not convert resource to rss item: " + item.getName());
 			}
 		}
-    			
+    	
 		RomeRssFeed outputFeed = new RomeRssFeed(rssFeedTitle, (String) model.get("link"), (String) model.get("description"), entires);
-		response.getOutputStream().print(outputFeed.outputAsXml());
-		response.getOutputStream().flush();
+		response.getWriter().print(outputFeed.outputAsXml());
+		response.getWriter().flush();
 	}
     
 }
