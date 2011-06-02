@@ -9,7 +9,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
-			<value>file:conf/searchwellington.properties</value>
+			<value>classpath:searchwellington.properties</value>
 		</property>
 	</bean>
 	
