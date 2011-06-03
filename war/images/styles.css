@@ -11,6 +11,11 @@ text-align: center;
  background-color: #ffc;
  margin-top: 0px;
  padding-top: 0px;
+}
+
+.nearMe {
+ margin-top: 0px;
+ padding-top: 0px;
  float: right;
 }
 
