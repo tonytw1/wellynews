@@ -42,10 +42,9 @@ public class JSONView implements View {
 			output.append(jsonString);
 		}
 		
-		res.getOutputStream().print(output.toString());        
+		res.getWriter().print(output.toString());        
 		res.getOutputStream().flush();		
 	}
-
 	
 	@SuppressWarnings("unchecked")
 	private String createJSONString(Map model) {
