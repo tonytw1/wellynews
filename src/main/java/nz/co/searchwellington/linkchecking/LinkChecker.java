@@ -16,20 +16,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class LinkChecker {
     
-    private static final int CANT_CONNECT = -1;
-
 	private static Logger log = Logger.getLogger(LinkChecker.class);
-       
+	
+    private static final int CANT_CONNECT = -1;
+    
     private ResourceRepository resourceDAO;
 	private SnapshotDAO snapshotDAO;
 	private ContentUpdateService contentUpdateService;
 	private HttpFetcher httpFetcher;
     private LinkCheckerProcessor[] processers;
-
-	
+    
 	public LinkChecker() {
     }
-	
 	
 	public LinkChecker(ResourceRepository resourceDAO, SnapshotDAO snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
 		this.resourceDAO = resourceDAO;
@@ -38,7 +36,6 @@ public class LinkChecker {
 		this.httpFetcher = httpFetcher;
 		this.processers = processers;
 	}
-
 	
 	@Transactional
     public void scanResource(int checkResourceId) {
@@ -65,7 +62,6 @@ public class LinkChecker {
         	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database");
         }
     }
-
 	
     private String httpCheck(Resource checkResource) {
         try {

@@ -1,4 +1,3 @@
-
 package nz.co.searchwellington.modification;
 
 import nz.co.searchwellington.model.LinkCheckerQueue;
@@ -15,8 +14,7 @@ public class ContentUpdateService {
 	private SuggestionRepository suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
 	private SolrUpdateQueue solrUpdateQueue;
-
-		
+	
 	public ContentUpdateService(ResourceRepository resourceDAO,
 			SuggestionRepository suggestionsDAO,
 			LinkCheckerQueue linkCheckerQueue,
@@ -27,11 +25,9 @@ public class ContentUpdateService {
 		this.linkCheckerQueue = linkCheckerQueue;
 		this.solrUpdateQueue = solrUpdateQueue;
 	}
-
-
+	
 	public ContentUpdateService() {
 	}
-
 	
 	@Transactional
 	public void update(Resource resource) {				
@@ -59,7 +55,6 @@ public class ContentUpdateService {
 		}
 		solrUpdateQueue.add(resource);
 	}
-
 	
 	@Transactional
 	public void create(Resource resource) {
@@ -68,14 +63,11 @@ public class ContentUpdateService {
 		linkCheckerQueue.add(resource);	
 	}
 	
-	
 	private void save(Resource resource) {
 		resourceDAO.saveResource(resource);
 		if (resource.getType().equals("N")) {
 			suggestionsDAO.removeSuggestion(resource.getUrl());
 		}
 	}
-
-
 	
 }

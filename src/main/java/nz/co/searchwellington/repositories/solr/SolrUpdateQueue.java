@@ -11,38 +11,34 @@ import org.apache.log4j.Logger;
 
 public class SolrUpdateQueue {
 	
-    static Logger log = Logger.getLogger(SolrUpdateQueue.class);
-
+	private static Logger log = Logger.getLogger(SolrUpdateQueue.class);
+	
     private static final int MAX_BATCH_SIZE = 50;
 
     private ResourceRepository resourceDAO;
+    
     private ConcurrentLinkedQueue<Integer> queue;
-
     
 	public SolrUpdateQueue(ResourceRepository resourceDAO) {
 		this.resourceDAO = resourceDAO;
         queue = new ConcurrentLinkedQueue<Integer>();
 	}
-
-
+	
 	public void add(Resource resource) {
-		log.info("Adding resource to solr update queue: " + resource.getId());
+		log.info("Adding resource to solr update queue: " + resource.getName() + "(#" + resource.getId() + ")");
 		if (!queue.contains(resource.getId())) {
-			queue.offer(resource.getId());
+ 			queue.offer(resource.getId());
 			log.debug("Queue contains " + queue.size() + " items.");
 		}
 	}
-	
-	
+
 	public boolean hasNext() {
 		return !queue.isEmpty();
 	}
 	
-	
 	public synchronized List<Resource> getBatch() {
 		log.debug("Getting next from queue currently contains " + queue.size() + " items.");		
-		List<Resource> batch = new ArrayList<Resource>();
-		
+		List<Resource> batch = new ArrayList<Resource>();		
 		if (!queue.isEmpty()) {
 			Object[] items = queue.toArray();
 			for (int i = 0; i < items.length; i++) {

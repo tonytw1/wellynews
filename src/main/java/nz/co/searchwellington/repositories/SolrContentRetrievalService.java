@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
+// TODO This whole class looks like abit of a waste of time?
 public class SolrContentRetrievalService {
 
 	private SolrBackedResourceDAO solrResourceDAO;

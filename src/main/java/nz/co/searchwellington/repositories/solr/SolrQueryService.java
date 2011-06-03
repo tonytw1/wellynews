@@ -24,7 +24,7 @@ import org.apache.solr.common.SolrInputDocument;
 // TODO does this really needs to new up a new Solr connection for every query?
 public class SolrQueryService {
 	
-	Logger log = Logger.getLogger(SolrQueryService.class);
+	private static Logger log = Logger.getLogger(SolrQueryService.class);
 
 	private String solrUrl;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
@@ -33,6 +33,9 @@ public class SolrQueryService {
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
 	}
 
+	public void setSolrUrl(String solrUrl) {
+		this.solrUrl = solrUrl;
+	}
 	
 	public QueryResponse querySolr(SolrQuery query) {
 		SolrServer solr;
@@ -85,26 +88,14 @@ public class SolrQueryService {
 			for (Resource resource : resources) {
 				UpdateRequest updateRequest = getUpdateRequest(resource);
 				updateRequest.process(solr);			
-			}	
+			}
 			solr.commit();			
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error(e);
 		} catch (SolrServerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e);
 		}
 	}
-	
-		
-	public String getSolrUrl() {
-		return solrUrl;
-	}
-	
-	
-	public void setSolrUrl(String solrUrl) {
-		this.solrUrl = solrUrl;
-	}
-	
 	
 	private UpdateRequest getUpdateRequest(Resource resource) {
 		UpdateRequest updateRequest = new UpdateRequest();
