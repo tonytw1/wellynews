@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 
@@ -19,14 +20,15 @@ public class RssView implements View {
 	
 	private static Logger log = Logger.getLogger(RssView.class);
 	
-	private SiteInformation siteInformation;
-	private RssItemMaker rssItemMaker;	
+	private RssItemMaker rssItemMaker;
+	private RssUrlBuilder rssUrlBuilder;
 	
-	public RssView(SiteInformation siteInformation, RssItemMaker rssItemMaker) {
-		this.siteInformation = siteInformation;
+	public RssView(RssItemMaker rssItemMaker, RssUrlBuilder rssUrlBuilder) {
 		this.rssItemMaker = rssItemMaker;
+		this.rssUrlBuilder = rssUrlBuilder;
 	}
 	
+	@Override
 	public String getContentType() {
         return "text/xml";
     }
@@ -35,10 +37,18 @@ public class RssView implements View {
 	public void render(Map model, HttpServletRequest request, HttpServletResponse response) throws Exception {        
     	response.setContentType("text/xml;charset=UTF-8");		
     	response.setCharacterEncoding("UTF8");
-    	String rssFeedTitle = (String) model.get("heading") + " - " + siteInformation.getSitename();
+    	
+    	final String rssFeedTitle = rssUrlBuilder.getRssHeadingForGivenHeading((String) model.get("heading"));
+    	final List <Resource> content =  (List <Resource>) model.get("main_content");
+    	
+    	RomeRssFeed outputFeed = new RomeRssFeed(rssFeedTitle, (String) model.get("link"), (String) model.get("description"), makeRssEntiresForContent(content));
 
-    	List <Resource> content =  (List <Resource>) model.get("main_content");    	
-    	List<SyndEntry> entires = new ArrayList<SyndEntry>();
+    	response.getWriter().print(outputFeed.outputAsXml());
+		response.getWriter().flush();
+	}
+    
+	private List<SyndEntry> makeRssEntiresForContent(List<Resource> content) {
+		List<SyndEntry> entires = new ArrayList<SyndEntry>();
     	for (Resource item : content) {
 			SyndEntry rssItem = rssItemMaker.makeRssItem(item);
 			if (rssItem != null) {
@@ -47,10 +57,7 @@ public class RssView implements View {
 				log.warn("Could not convert resource to rss item: " + item.getName());
 			}
 		}
-    	
-		RomeRssFeed outputFeed = new RomeRssFeed(rssFeedTitle, (String) model.get("link"), (String) model.get("description"), entires);
-		response.getWriter().print(outputFeed.outputAsXml());
-		response.getWriter().flush();
+		return entires;
 	}
     
 }

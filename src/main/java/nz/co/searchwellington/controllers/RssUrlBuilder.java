@@ -124,4 +124,8 @@ public class RssUrlBuilder {
 		return "Geotagged newsitems";
 	}
 	
+	public String getRssHeadingForGivenHeading(String heading) {
+		return heading + " - " + siteInformation.getSitename();
+	}
+		
 }

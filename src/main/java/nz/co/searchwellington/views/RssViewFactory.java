@@ -1,21 +1,21 @@
 package nz.co.searchwellington.views;
 
-import org.springframework.web.servlet.View;
+import nz.co.searchwellington.controllers.RssUrlBuilder;
 
-import nz.co.searchwellington.model.SiteInformation;
+import org.springframework.web.servlet.View;
 
 public class RssViewFactory {
 	
-	private SiteInformation siteInformation;
 	private RssItemMaker rssItemMaker;
+	private RssUrlBuilder rssUrlBuilder;
 
-	public RssViewFactory(SiteInformation siteInformation, RssItemMaker rssItemMaker) {
-		this.siteInformation = siteInformation;
+	public RssViewFactory(RssItemMaker rssItemMaker, RssUrlBuilder rssUrlBuilder) {
 		this.rssItemMaker = rssItemMaker;
+		this.rssUrlBuilder = rssUrlBuilder;
 	}
 
 	public View makeView() {
-		return new RssView(siteInformation, rssItemMaker);
+		return new RssView(rssItemMaker, rssUrlBuilder);
 	}
 	
 }

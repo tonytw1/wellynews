@@ -81,8 +81,8 @@
 	</bean>
 	
 	<bean id="rssViewFactory" class="nz.co.searchwellington.views.RssViewFactory" >
-		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="rssItemMaker" />		
+		<constructor-arg ref="rssItemMaker" />
+		<constructor-arg ref="rssUrlBuilder" />
 	</bean>
 	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
