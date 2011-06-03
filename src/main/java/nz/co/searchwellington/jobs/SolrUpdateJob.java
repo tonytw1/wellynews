@@ -11,22 +11,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class SolrUpdateJob {
 	
-	static Logger log = Logger.getLogger(SolrUpdateJob.class);
-		
+	private static Logger log = Logger.getLogger(SolrUpdateJob.class);
+	
 	private SolrUpdateQueue solrUpdateQueue;
 	private SolrQueryService solrQueryService;
-	
-		
+			
 	public SolrUpdateJob() {
 	}
-
-
-	public SolrUpdateJob(SolrUpdateQueue solrUpdateQueue,
-			SolrQueryService solrQueryService) {
+	
+	public SolrUpdateJob(SolrUpdateQueue solrUpdateQueue, SolrQueryService solrQueryService) {
 		this.solrUpdateQueue = solrUpdateQueue;
 		this.solrQueryService = solrQueryService;
 	}
-	
 	
 	@Transactional
     public void run() {
