@@ -38,11 +38,14 @@ import org.joda.time.format.DateTimeFormatter;
 
 public class SolrBackedResourceDAO {
 
-    private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
+	private static Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
+	
+	private static final int MAXIMUM_FEEDS = 500;
+	private static final int MAXIMUM_ARCHIVE_MONTHS = 1000;	
+    private static final int MAXIMUM_PUBLISHERS_FACET_LIMIT = 2000;
+	private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
 	private static final int TAG_TWITTER_OF_INTEREST_THRESHOLD = 2;
-
-	static Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
-    
+	
     private SolrQueryService solrQueryService;
     private ResourceRepository resourceDAO;
     private TagDAO tagDAO;
@@ -62,7 +65,7 @@ public class SolrBackedResourceDAO {
 	}
 	
 	public List<Resource> getAllFeeds(boolean showBroken, boolean orderByLatestItemDate) {
-		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(showBroken).maxItems(500).toQuery();
+		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(showBroken).maxItems(MAXIMUM_FEEDS).toQuery();
 		
 		if (orderByLatestItemDate) {
 			setFeedLatestItemOrder(query);
@@ -233,7 +236,7 @@ public class SolrBackedResourceDAO {
 		query.addFacetField("month");	// TODO can't solr create this facet automagically from the date field?
 		query.setFacetMinCount(1);
 		query.setFacetSort(false);
-		query.setFacetLimit(1000);
+		query.setFacetLimit(MAXIMUM_ARCHIVE_MONTHS);
 			
 		List<ArchiveLink> archiveLinks = new ArrayList<ArchiveLink>();
 		QueryResponse response = solrQueryService.querySolr(query);
@@ -260,38 +263,7 @@ public class SolrBackedResourceDAO {
 		for (PublisherContentCount publisherCount : this.getAllPublishersWithContentCounts(shouldShowBroken, mustHaveNewsitems)) {
 			publishers.add(publisherCount.getPublisher());
 		}
-		return publishers;		
-	}
-	
-	// TODO nothing actually uses the counts; only using the sorting functionaility - could remove
-	private List<PublisherContentCount> getAllPublishersWithContentCounts(boolean showBroken, boolean mustHaveNewsitems) {		
-			SolrQuery query = new SolrQueryBuilder().allPublishedTypes().showBroken(showBroken).toQuery();
-			query.addFacetField("publisher");
-			query.setFacetMinCount(1);
-			query.setFacetSort(false);
-			query.setFacetLimit(2000);
-			
-			List<PublisherContentCount> publishers = new ArrayList<PublisherContentCount>();
-			QueryResponse response = solrQueryService.querySolr(query);
-			if (response != null) {
-				FacetField facetField = response.getFacetField("publisher");
-				if (facetField != null && facetField.getValues() != null) {
-					log.debug("Found facet field: " + facetField);
-					List<Count> values = facetField.getValues();			
-					for (Count count : values) {
-						final int relatedPublisherId = Integer.parseInt(count.getName());
-						Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);
-						if (relatedPublisher != null) {
-							final Long relatedItemCount = count.getCount();
-							publishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));
-						} else {
-							log.warn("Could not find website object for publisher id: " + relatedPublisherId);
-						}
-					}
-				}
-			}
-			Collections.sort(publishers);
-			return publishers;
+		return publishers;
 	}
 	
 	public List<Resource> getNewsitemsForMonth(Date month, boolean showBroken) {	
@@ -458,7 +430,38 @@ public class SolrBackedResourceDAO {
 		}
 		return tagDAO.loadTagsById(tagIds);
 	}
-
+	
+	// TODO nothing actually uses the counts; only using the sorting functionaility - could remove
+	private List<PublisherContentCount> getAllPublishersWithContentCounts(boolean showBroken, boolean mustHaveNewsitems) {		
+		SolrQuery query = new SolrQueryBuilder().allPublishedTypes().showBroken(showBroken).toQuery();
+		query.addFacetField("publisher");
+		query.setFacetMinCount(1);
+		query.setFacetSort(false);
+		query.setFacetLimit(MAXIMUM_PUBLISHERS_FACET_LIMIT);
+			
+		List<PublisherContentCount> publishers = new ArrayList<PublisherContentCount>();
+		QueryResponse response = solrQueryService.querySolr(query);
+		if (response != null) {
+			FacetField facetField = response.getFacetField("publisher");
+			if (facetField != null && facetField.getValues() != null) {
+				log.debug("Found facet field: " + facetField);
+				List<Count> values = facetField.getValues();			
+				for (Count count : values) {
+					final int relatedPublisherId = Integer.parseInt(count.getName());
+					Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);
+					if (relatedPublisher != null) {
+						final Long relatedItemCount = count.getCount();
+						publishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));
+					} else {
+						log.warn("Could not find website object for publisher id: " + relatedPublisherId);
+					}
+				}
+			}
+		}
+		Collections.sort(publishers);
+		return publishers;
+	}
+	
 	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
 		SolrDocumentList solrResults = response.getResults();
 	
@@ -482,8 +485,7 @@ public class SolrBackedResourceDAO {
 	private SolrQuery getCommentedNewsitemsQuery(boolean showBroken) {
 		return new SolrQueryBuilder().showBroken(showBroken).type("N").commented(true).toQuery();			
 	}
-	
-	
+		
 	private SolrQuery getCommentedNewsitemsForTagQuery(Tag tag, boolean showBroken) {
 		return new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).commented(true).toQuery();
 	}
@@ -492,13 +494,11 @@ public class SolrBackedResourceDAO {
 		return new SolrQueryBuilder().tags(tags).showBroken(showBroken).type(type).toQuery();		
 	}
 	
-
 	private void setDateDescendingOrder(SolrQuery query) {
 		query.setSortField("date", ORDER.desc);
 		query.addSortField("id", ORDER.desc);
 	}
 	
-
 	private void setTitleSortOrder(SolrQuery query) {
 		query.setSortField("titleSort", ORDER.asc);
 	}
