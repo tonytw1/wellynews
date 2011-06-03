@@ -10,31 +10,26 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class ContentModelBuilderService {
 
-	static Logger logger = Logger.getLogger(ContentModelBuilderService.class);
+	private static Logger logger = Logger.getLogger(ContentModelBuilderService.class);
 		
 	private LoggedInUserFilter loggedInUserFilter;
 	private RssViewFactory rssViewFactory;
 	private ModelBuilder[] modelBuilders;
 	
-	
-	public ContentModelBuilderService(LoggedInUserFilter loggedInUserFilter,
-			RssViewFactory rssViewFactory, ModelBuilder[] modelBuilders) {
+	public ContentModelBuilderService(LoggedInUserFilter loggedInUserFilter, RssViewFactory rssViewFactory, ModelBuilder[] modelBuilders) {
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.rssViewFactory = rssViewFactory;
 		this.modelBuilders = modelBuilders;
 	}
-
-
+	
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		logger.info("Building content model");
-		boolean showBroken = false;	
-		if (loggedInUserFilter.getLoggedInUser() != null) {
-			showBroken = true;
-		}
 		for (int i = 0; i < modelBuilders.length; i++) {
 			ModelBuilder modelBuilder = modelBuilders[i];
 			if (modelBuilder.isValid(request)) {
 				logger.debug("Using " + modelBuilder);
+				
+				final boolean showBroken = shouldShowBrokenResources();								
 				ModelAndView mv = modelBuilder.populateContentModel(request, showBroken);
 				
 				final String path = request.getPathInfo();
@@ -54,6 +49,10 @@ public class ContentModelBuilderService {
 		}
 		logger.info("No matching model builders found for path: " + request.getPathInfo());
         return null;
+	}
+	
+	private boolean shouldShowBrokenResources() {
+		return loggedInUserFilter.getLoggedInUser() != null;
 	}
 	
 }
