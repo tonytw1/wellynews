@@ -51,8 +51,7 @@ public class TagController extends MultiActionController {
 		return mv.getViewName() != null;
 	}
 		
-	// TODO this should be in model builders
-    private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
+	private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
 		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());      
 	}
     
