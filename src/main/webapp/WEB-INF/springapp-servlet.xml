@@ -267,7 +267,8 @@
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssItemMaker" />
-		
+		<constructor-arg ref="rssUrlBuilder" />
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

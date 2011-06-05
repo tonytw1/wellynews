@@ -18,22 +18,22 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class RssController extends MultiActionController {
 	
-	Logger log = Logger.getLogger(RssController.class);
+	static Logger log = Logger.getLogger(RssController.class);
     
     private static final int MAX_RSS_ITEMS = 30;	// TODO move this knowledge towards the CRS
+    
     private SiteInformation siteInformation;
 	private ContentRetrievalService contentRetrievalService;
 	private RssItemMaker rssItemMaker;
-
-    
-       
-    public RssController(SiteInformation siteInformation, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker) {
+	private RssUrlBuilder rssUrlBuilder;
+	
+    public RssController(SiteInformation siteInformation, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker, RssUrlBuilder rssUrlBuilder) {
         this.siteInformation = siteInformation;
         this.contentRetrievalService = contentRetrievalService;
         this.rssItemMaker = rssItemMaker;
+        this.rssUrlBuilder = rssUrlBuilder;
     }
     
-       
     public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    	
     	if (siteInformation.getFeedburnerUrl() != null && !siteInformation.getFeedburnerUrl().trim().equals("")) {    		
     		final String userAgent = request.getHeader("User-Agent");
@@ -50,7 +50,7 @@ public class RssController extends MultiActionController {
         model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");
         model.put("main_content", contentRetrievalService.getLatestNewsitems(MAX_RSS_ITEMS));
         
-        RssView rssView = new RssView(siteInformation, rssItemMaker);
+        RssView rssView = new RssView(rssItemMaker, rssUrlBuilder);
         return new ModelAndView(rssView, model);        
     }
         
