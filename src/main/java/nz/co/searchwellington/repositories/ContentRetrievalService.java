@@ -25,49 +25,46 @@ import org.apache.log4j.Logger;
 
 public class ContentRetrievalService {
 
-	static Logger log = Logger.getLogger(ContentRetrievalService.class);
+	private static Logger log = Logger.getLogger(ContentRetrievalService.class);
 	
 	final protected int MAX_NEWSITEMS_TO_SHOW = 30;
         
 	private ResourceRepository resourceDAO;
-	private SolrContentRetrievalService solrContentRetrievalService;
 	private KeywordSearchService keywordSearchService;
 	private ShowBrokenDecisionService showBrokenDecisionService;
 	private TagDAO tagDAO;
 	private RelatedTagsService relatedTagsService;
 	private DiscoveredFeedRepository discoveredFeedsDAO;
-		
-
+	private SolrBackedResourceDAO solrBackedResourceDAO;
+	
 	public ContentRetrievalService(ResourceRepository resourceDAO,
-			SolrContentRetrievalService solrContentRetrievalService,
 			KeywordSearchService keywordSearchService,
 			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO,
 			RelatedTagsService relatedTagsService,
-			DiscoveredFeedRepository discoveredFeedsDAO) {
+			DiscoveredFeedRepository discoveredFeedsDAO, SolrBackedResourceDAO solrBackedResourceDAO) {
 		this.resourceDAO = resourceDAO;
-		this.solrContentRetrievalService = solrContentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
 		this.tagDAO = tagDAO;
 		this.relatedTagsService = relatedTagsService;
 		this.discoveredFeedsDAO = discoveredFeedsDAO;
+		this.solrBackedResourceDAO = solrBackedResourceDAO;
 	}
-
 	
 	public List<Resource> getAllWatchlists() {
-		return solrContentRetrievalService.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getGeocoded(int startIndex, int maxItems) {		
-		return solrContentRetrievalService.getValidGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getValidGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public int getGeotaggedCount() {
-		return solrContentRetrievalService.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<Resource> getAllPublishers() {
-		return solrContentRetrievalService.getAllPublishers(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), false);
 	}
 	
 	public List<Tag> getTopLevelTags() {
@@ -75,31 +72,31 @@ public class ContentRetrievalService {
 	}
 
 	public int getTaggedNewitemsCount(Tag tag) {
-		return solrContentRetrievalService.getTaggedNewitemsCount(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getTaggedNewitemsCount(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public int getCommentedNewsitemsForTagCount(Tag tag) {
-		return solrContentRetrievalService.getCommentedNewsitemsForTagCount(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getCommentedNewsitemsForTagCount(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, int maxItems) {
-		return solrContentRetrievalService.getRecentCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken(), maxItems);
+		return solrBackedResourceDAO.getRecentCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken(), maxItems);
 	}
 
 	public List<Resource> getTagWatchlist(Tag tag) {
-		return solrContentRetrievalService.getTagWatchlist(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getTagWatchlist(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public Date getLastLiveTimeForTag(Tag tag) {
-		return solrContentRetrievalService.getLastLiveTimeForTag(tag);
+		return solrBackedResourceDAO.getLastLiveTimeForTag(tag);
 	}
 
 	public List<Resource> getTaggedFeeds(Tag tag) {
-		return solrContentRetrievalService.getTaggedFeeds(tag, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getTaggedFeeds(tag, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems) {
-		return solrContentRetrievalService.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	// TODO You might get away with this for a little while, but it needs to go into solr if at all possible - full set iteration is not good
@@ -120,27 +117,27 @@ public class ContentRetrievalService {
 	}
 	
 	public List<Tag> getGeotaggedTags() {
-		return solrContentRetrievalService.getGeotaggedTags(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getGeotaggedTags(showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<Resource> getCommentedNewsitems(int maxItems, int startIndex) {
-		return solrContentRetrievalService.getCommentedNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken(), true, startIndex);
+		return solrBackedResourceDAO.getCommentedNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken(), true, startIndex);
 	}
 
 	public int getCommentedNewsitemsCount() {
-		return solrContentRetrievalService.getCommentedNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getCommentedNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Tag> getCommentedTags() {
-		return solrContentRetrievalService.getCommentedTags(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getCommentedTags(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getLatestNewsitems(int maxItems) {
-		return solrContentRetrievalService.getLatestNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getLatestNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getLatestWebsites(int maxItems) {
-		return solrContentRetrievalService.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<TagContentCount> getKeywordSearchFacets(String keywords) {
@@ -156,11 +153,11 @@ public class ContentRetrievalService {
 	}
 	
 	public List<Resource> getRecentedTwitteredNewsitems() {
-		return solrContentRetrievalService.getRecentTwitteredNewsitems(MAX_NEWSITEMS_TO_SHOW, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getRecentTwitteredNewsitems(MAX_NEWSITEMS_TO_SHOW, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getRecentedTwitteredNewsitemsForTag(int maxItems, Tag tag) {
-		return solrContentRetrievalService.getRecentTwitteredNewsitemsForTag(maxItems, showBrokenDecisionService.shouldShowBroken(), tag);
+		return solrBackedResourceDAO.getRecentTwitteredNewsitemsForTag(maxItems, showBrokenDecisionService.shouldShowBroken(), tag);
 	}
 
 	public List<Resource> getFeaturedSites() {
@@ -172,7 +169,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Resource> getAllFeeds() {
-		return solrContentRetrievalService.getAllFeeds(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken(), false);
 	}
 	
 	public Feed getFeedByUrlWord(String feedUrlWords) {
@@ -180,68 +177,68 @@ public class ContentRetrievalService {
 	}
 	
 	public List<Resource> getAllFeedsOrderByLatestItemDate() {
-		return solrContentRetrievalService.getAllFeedsOrderByLatestItemDate(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken(), true);
 	}
 	
 	public List<Resource> getPublisherFeeds(Website publisher) {
-		return solrContentRetrievalService.getPublisherFeeds(publisher, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getPublisherFeeds(publisher, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public int getPublisherNewsitemsCount(Website publisher) {
-		return solrContentRetrievalService.getPublisherNewsitemsCount(publisher, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getPublisherNewsitemsCount(publisher, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, int startIndex) {
-		return solrContentRetrievalService.getPublisherNewsitems(publisher, maxItems, showBrokenDecisionService.shouldShowBroken(), startIndex);
+		return solrBackedResourceDAO.getPublisherNewsitems(publisher, maxItems, showBrokenDecisionService.shouldShowBroken(), startIndex);
 	}
 
 	public List<Resource> getPublisherWatchlist(Website publisher) {
-		return solrContentRetrievalService.getPublisherWatchlist(publisher, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getPublisherWatchlist(publisher, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<ArchiveLink> getArchiveMonths() {
-		return solrContentRetrievalService.getArchiveMonths(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public Map<String, Integer> getArchiveStatistics() {
-		return solrContentRetrievalService.getArchiveStatistics(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getArchiveStatistics(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getCommentedNewsitemsForTag(Tag tag, int maxNewsitems, int startIndex) {
-		return solrContentRetrievalService.getCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems, startIndex);
+		return solrBackedResourceDAO.getCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems, startIndex);
 	}
 
 	public List<Resource> getNewsitemsForMonth(Date month) {
-		return solrContentRetrievalService.getNewsitemsForMonth(month, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getNewsitemsForMonth(month, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Resource> getTaggedWebsites(HashSet<Tag> tags, int maxItems) {
-		return solrContentRetrievalService.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
+		return solrBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
 	}
 
 	public List<Resource> getTaggedNewsitems(HashSet<Tag> tags, int maxItems) {
-		return solrContentRetrievalService.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken(), 0, maxItems);
+		return solrBackedResourceDAO.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken(), 0, maxItems);
 	}
 	
 	public List<Resource> getTaggedNewsitems(Tag tag, int startIndex, int maxNewsitems) {
 		Set<Tag> tags = new HashSet<Tag>();
 		tags.add(tag);
-		return solrContentRetrievalService.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
+		return solrBackedResourceDAO.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
 	}
 	
 	
 	public List<Resource> getTaggedWebsites(Tag tag, int maxItems) {
 		Set<Tag> tags = new HashSet<Tag>();
 		tags.add(tag);
-		return solrContentRetrievalService.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
+		return solrBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
 	}
 
 	public List<Resource> getBrokenSites() {
-		return solrContentRetrievalService.getBrokenSites();	
+		return solrBackedResourceDAO.getBrokenSites();	
 	}
 
 	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, int maxNewsitems) {
-		return solrContentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems);
+		return solrBackedResourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken(), maxNewsitems);
 	}
 	
 	public List<Resource> getPublisherTagCombinerNewsitems(String publisherUrlWords, String tagName, int maxNewsitems) {
@@ -254,7 +251,7 @@ public class ContentRetrievalService {
 	}
 	
 	public List<Resource> getRecentlyChangedWatchlistItems() {
-		return solrContentRetrievalService.getRecentlyChangedWatchlistItems(showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<Tag> getFeedworthyTags() {
@@ -274,7 +271,7 @@ public class ContentRetrievalService {
 	}
 	
 	public List<Resource> getTaggedBy(User user, int maxItems) {
-		return solrContentRetrievalService.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<String> getTagNamesStartingWith(String q) {
@@ -292,7 +289,7 @@ public class ContentRetrievalService {
 
 
 	public Newsitem getNewsPage(String pathInfo) {
-		return solrContentRetrievalService.getNewsPage(pathInfo, showBrokenDecisionService.shouldShowBroken());
+		return solrBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 }
