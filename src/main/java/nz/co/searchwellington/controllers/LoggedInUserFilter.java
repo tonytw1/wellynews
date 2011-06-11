@@ -9,9 +9,8 @@ import org.apache.log4j.Logger;
 
 public class LoggedInUserFilter {
 	
+	private static Logger log = Logger.getLogger(LoggedInUserFilter.class);
 	
-	Logger log = Logger.getLogger(LoggedInUserFilter.class);
-	   	
 	private User loggedInUser;
 	private UserRepository userDAO;
 		
@@ -29,19 +28,21 @@ public class LoggedInUserFilter {
 			log.debug("Looking for an user by api key: " + apiKey);
 			User user = userDAO.getUserByApiKey(apiKey);
 			if (user != null) {
+				log.info("Found user by api key: " + user.getName());
+
 				this.loggedInUser = user;
 				return;
 			}
 		}
 		
-		log.info("Looking for logged in user in session");
+		log.debug("Looking for logged in user in session");
 		if (request.getSession().getAttribute("user") != null) {
 			User sessionUser =  (User) request.getSession().getAttribute("user");
-			log.debug("Found user on session: " + sessionUser);
+			log.info("Found user on session: " + sessionUser.getName());
 			this.loggedInUser = sessionUser;
 			return;
 		}
-				
+		
 		this.loggedInUser = null;
 	}
 

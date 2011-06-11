@@ -18,16 +18,16 @@ import org.apache.log4j.Logger;
 
 public class RequestFilter {
         
-    static Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
-    static Pattern combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
-    static Pattern autotagPattern = Pattern.compile("^/autotag/(.*)$");
-       
-	static Logger log = Logger.getLogger(RequestFilter.class);
-    
+	private static Logger log = Logger.getLogger(RequestFilter.class);
+	
+	private static Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
+	private static Pattern combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
+	private static Pattern autotagPattern = Pattern.compile("^/autotag/(.*)$");
+	    
     private ResourceRepository resourceDAO;
     private TagDAO tagDAO;    
 	RequestAttributeFilter[] filters;
-
+	
 	public RequestFilter() {         
     }
     
