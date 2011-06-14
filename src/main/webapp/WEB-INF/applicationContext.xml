@@ -24,9 +24,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="urls.xml" />
 	<import resource="linkchecking.xml" />
 	<import resource="modelbuilders.xml"/>
-	
-	<import resource="timertasks.xml" />
-		
+			
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
 	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">

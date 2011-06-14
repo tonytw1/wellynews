@@ -167,12 +167,6 @@
 </dependency>
 
 <dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-log4j12</artifactId>
-    <version>1.6.1</version>
-</dependency>
-
-<dependency>
     <groupId>commons-dbcp</groupId>
     <artifactId>commons-dbcp</artifactId>
     <version>1.4</version>
@@ -193,7 +187,7 @@
 		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-core</artifactId>
-			<version>1.4.0</version>
+			<version>3.2.0</version>
 		</dependency>
 
 		<dependency>
