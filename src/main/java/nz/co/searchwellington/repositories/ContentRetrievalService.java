@@ -282,11 +282,9 @@ public class ContentRetrievalService {
 		return resourceDAO.getPublisherNamesByStartingLetters(q);
 	}
 
-
 	public int getOwnedByCount(User loggedInUser) {
 		return resourceDAO.getOwnedByUserCount(loggedInUser);
 	}
-
 
 	public Newsitem getNewsPage(String pathInfo) {
 		return solrBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken());

@@ -29,8 +29,7 @@ public class LoggedInUserFilter {
 			User user = userDAO.getUserByApiKey(apiKey);
 			if (user != null) {
 				log.info("Found user by api key: " + user.getName());
-
-				this.loggedInUser = user;
+				loggedInUser = user;
 				return;
 			}
 		}
@@ -39,13 +38,13 @@ public class LoggedInUserFilter {
 		if (request.getSession().getAttribute("user") != null) {
 			User sessionUser =  (User) request.getSession().getAttribute("user");
 			log.info("Found user on session: " + sessionUser.getName());
-			this.loggedInUser = sessionUser;
+			loggedInUser = sessionUser;
 			return;
 		}
 		
-		this.loggedInUser = null;
+		loggedInUser = null;
 	}
-
+	
 	public User getLoggedInUser() {
 		return loggedInUser;
 	}
