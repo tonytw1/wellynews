@@ -32,7 +32,7 @@ import com.sun.syndication.io.FeedException;
 
 public class ApiController extends MultiActionController {
 
-	Logger log = Logger.getLogger(ApiController.class);
+	private static Logger log = Logger.getLogger(ApiController.class);
 	
 	private ResourceRepository resourceDAO;
 	private AdminRequestFilter requestFilter;
@@ -55,7 +55,6 @@ public class ApiController extends MultiActionController {
 		this.autoTagger = autoTagger;
 		this.tagVoteDAO = tagVoteDAO;
 	}
-    
     
     @Transactional
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
@@ -98,8 +97,6 @@ public class ApiController extends MultiActionController {
     	return mv;      
     }
     
-   
-    
     @Transactional
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
     	ModelAndView mv = new ModelAndView();
@@ -123,7 +120,6 @@ public class ApiController extends MultiActionController {
  		mv.setViewName("apiResponseERROR");
 		return mv;
     }
-    
     
     @Transactional
     public ModelAndView changeUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {    		
@@ -155,7 +151,6 @@ public class ApiController extends MultiActionController {
  		mv.setViewName("apiResponseERROR");
  		return mv;    	
     }
-
     
     @Transactional
     public ModelAndView suppress(HttpServletRequest request, HttpServletResponse response) {
@@ -176,7 +171,6 @@ public class ApiController extends MultiActionController {
     	return mv;    
 	}
     
-           
     @Transactional
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
@@ -208,7 +202,6 @@ public class ApiController extends MultiActionController {
 		mv.setViewName("apiResponseERROR");
         return mv; 		
     }
-
     
     private boolean isAuthorised(User loggedInUser) {	// TODO wants to delegate to the permissions service.
     	if (loggedInUser != null) {
