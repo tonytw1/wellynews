@@ -18,27 +18,29 @@ import com.sun.syndication.feed.synd.SyndFeed;
 
 public class CommentFeedService {
     
-    public final Logger log = Logger.getLogger(CommentFeedService.class);
+    public final static Logger log = Logger.getLogger(CommentFeedService.class);
     
-    RssHttpFetcher rssHttpFetcher;
+    private RssHttpFetcher rssHttpFetcher;
         
     public CommentFeedService(RssHttpFetcher rssHttpFetcher) {       
         this.rssHttpFetcher = rssHttpFetcher;
     }
-
     
-    
-    public List<Comment> loadComments(CommentFeed commentFeed) {      
-        List<Comment> comments = new ArrayList<Comment>();
-        
+    public List<Comment> loadComments(CommentFeed commentFeed) {
+    	List<Comment> comments = new ArrayList<Comment>();
+    	if (commentFeed.getNewsitem() == null) {
+    		log.warn("Comment feed has no associated newsitems; no point in loading comments: " + commentFeed.getUrl());
+    		return comments;
+    	}
+    	
+        log.info("Loading comments from comment feed for newsitem: " + commentFeed.getNewsitem().getName());
         SyndFeed syndfeed = rssHttpFetcher.httpFetch(commentFeed.getUrl());
         if (syndfeed != null) {            
-            log.info("Comment feed is of type: " + syndfeed.getFeedType());
-            
+            log.debug("Comment feed is of type: " + syndfeed.getFeedType());            
             List entires = syndfeed.getEntries();
             for (Iterator iter = entires.iterator(); iter.hasNext();) {
                 SyndEntry item = (SyndEntry) iter.next();
-                Comment comment = extractCommentFeedEntire(item);
+                Comment comment = new Comment(extractCommentBody(item));
                 comments.add(comment);
             }
             
@@ -49,42 +51,28 @@ public class CommentFeedService {
         log.info("Loaded " + comments.size() + " comments.");
         return comments;        
     }
-
    
-    private Comment extractCommentFeedEntire(SyndEntry item) {
-        Comment comment = new Comment();
-        String title = item.getTitle();
-        comment.setTitle(title);
-                
+    private String extractCommentBody(SyndEntry item) {
+		String commentBody = item.getTitle();
+		
         if (item.getDescription() != null) {
         	String description = item.getDescription().getValue();
         	if (description != null && !description.equals("")) {
-        		comment.setTitle(stripAndTrimContent(description));
+        		commentBody = stripHtmlFromCommentItem(description);
         	}
         }
                 
         List<SyndContent> contents = item.getContents();        
         for (SyndContent content : contents) {
             if (content.getType().equals("html")) {            	
-                comment.setTitle(stripAndTrimContent(content.getValue()));
+                commentBody = stripHtmlFromCommentItem(content.getValue());
             }
         }
+        return commentBody;
+	}
 
-        return comment;
-    }
-
-
-	private String stripAndTrimContent(String contentValue) {
-		String body = UrlFilters.stripHtml(StringEscapeUtils.unescapeHtml(contentValue));
-		if (!body.isEmpty()) {
-			int clip = body.length();
-			if (body.length() > 255) {
-				clip = 255;
-			}                
-			String finalValue = body.substring(0, clip-1);
-			return finalValue;
-		}
-		return body;
+	private String stripHtmlFromCommentItem(String contentValue) {
+		return UrlFilters.stripHtml(StringEscapeUtils.unescapeHtml(contentValue));
 	}
     
 }

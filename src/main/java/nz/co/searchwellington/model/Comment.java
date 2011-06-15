@@ -2,13 +2,17 @@ package nz.co.searchwellington.model;
 
 public class Comment {
 
-    int id;
-    String title;
-   
+    private int id;
+    private String title;
+    
     public Comment() {
     }
     
-    public int getId() {
+    public Comment(String title) {
+		this.title = title;
+	}
+
+	public int getId() {
         return id;
     }
     public void setId(int id) {
@@ -20,6 +24,5 @@ public class Comment {
     public void setTitle(String title) {
         this.title = title;
     }
-    
     
 }
