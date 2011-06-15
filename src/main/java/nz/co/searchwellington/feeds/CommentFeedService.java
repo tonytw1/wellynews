@@ -45,7 +45,7 @@ public class CommentFeedService {
             }
             
         } else {
-            log.error("Comment feed was null after loading attempt.");
+            log.warn("Comment feed was null after loading attempt.");
         }
        
         log.info("Loaded " + comments.size() + " comments.");
