@@ -159,12 +159,13 @@
 			<version>1.8.5</version>
 		</dependency>
 
-
+<!-- 
 <dependency>
     <groupId>org.slf4j</groupId>
     <artifactId>slf4j-api</artifactId>
     <version>1.6.1</version>
 </dependency>
+ -->
 
 <dependency>
     <groupId>commons-dbcp</groupId>
@@ -173,11 +174,11 @@
 </dependency>
 
 		<dependency>
-		    <groupId>org.quartz-scheduler</groupId>
-		    <artifactId>quartz</artifactId>
-		    <version>1.8.5</version>
+    		<groupId>org.quartz-scheduler</groupId>
+    		<artifactId>quartz</artifactId>
+    		<version>1.8.5</version>
 		</dependency>
-
+		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
