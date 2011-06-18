@@ -317,9 +317,9 @@
         When each document was indexed.
      -->
    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
-
-   
-
+	
+	<field name="position" type="LatLon" indexed="true" stored="true" multiValed="false" />
+	
    <!-- uncomment the following to ignore any fields that don't already match an existing 
         field name or dynamic field, rather than reporting them as an error. 
         alternately, change the type="ignored" to some other type e.g. "text" if you want 

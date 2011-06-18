@@ -21,6 +21,7 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
+import org.apache.ecs.xhtml.body;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -397,7 +398,13 @@ public class SolrBackedResourceDAO {
 		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
-		
+	
+	public List<Resource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius, boolean showBroken, int maxItems) {
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).geotagged().near(latitude, longitude, radius).maxItems(maxItems).toQuery();
+		setDateDescendingOrder(query);;
+		return getQueryResults(query);
+	}
+	
 	public int getGeotaggedCount(boolean shouldShowBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().toQuery();
 		return getQueryCount(query);
@@ -493,7 +500,7 @@ public class SolrBackedResourceDAO {
 	private SolrQuery getTaggedContentSolrQuery(Set<Tag> tags, boolean showBroken, String type) {			
 		return new SolrQueryBuilder().tags(tags).showBroken(showBroken).type(type).toQuery();		
 	}
-	
+		
 	private void setDateDescendingOrder(SolrQuery query) {
 		query.setSortField("date", ORDER.desc);
 		query.addSortField("id", ORDER.desc);

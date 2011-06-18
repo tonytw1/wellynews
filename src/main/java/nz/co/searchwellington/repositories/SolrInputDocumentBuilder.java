@@ -6,6 +6,7 @@ import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -20,20 +21,18 @@ import org.apache.solr.common.SolrInputDocument;
 
 public class SolrInputDocumentBuilder {
 	
-	static Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
+	private static Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
 	
 	private SnapshotBodyExtractor snapshotBodyExtractor;
 	private TaggingReturnsOfficerService taggingReturnsService;
 	private HandTaggingDAO handTaggingDAO;
-
-		
+	
 	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor, TaggingReturnsOfficerService taggingReturnsService, HandTaggingDAO handTaggingDAO) {
 		this.snapshotBodyExtractor = snapshotBodyExtractor;
 		this.taggingReturnsService = taggingReturnsService;
 		this.handTaggingDAO = handTaggingDAO;
 	}
-
-
+	
 	public SolrInputDocument buildResouceInputDocument(Resource resource) {
 		SolrInputDocument inputDocument = new SolrInputDocument();
 		inputDocument.addField("id", resource.getId());
@@ -77,9 +76,11 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("feedLatestItemDate", ((Feed) resource).getLatestItemDate());			
 		}
 		
-				
-		if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
+		final Geocode geocode = resource.getGeocode();
+		if (geocode != null && geocode.isValid()) {
 			inputDocument.addField("geotagged", true);
+			inputDocument.addField("addres", geocode.getAddress());
+			inputDocument.addField("location", geocode.getLatitude() + "," + geocode.getLongitude());
 		} else {
 			inputDocument.addField("geotagged", false);
 		}

@@ -21,11 +21,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
-import org.apache.log4j.Logger;
-
 public class ContentRetrievalService {
-
-	private static Logger log = Logger.getLogger(ContentRetrievalService.class);
 	
 	final protected int MAX_NEWSITEMS_TO_SHOW = 30;
         
@@ -99,21 +95,8 @@ public class ContentRetrievalService {
 		return solrBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
-	// TODO You might get away with this for a little while, but it needs to go into solr if at all possible - full set iteration is not good
 	public List<Resource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius) {
-		log.info("Querying for geotagged newsitems within " + radius + " kilometers of: " + latitude + ", " + longitude);
-		List<Resource> nearByNewsitems = new ArrayList<Resource>();
-		for (Resource newsitem : getGeocoded(0, 500)) {			
-			newsitem = resourceDAO.loadResourceById(newsitem.getId());
-			if (newsitem != null && newsitem.getGeocode() != null && newsitem.getGeocode().isValid()) {
-				if (newsitem.getGeocode().getDistanceTo(latitude, longitude) < radius) {
-					nearByNewsitems.add(newsitem);
-				}				
-			} else {
-				log.debug(newsitem.getName() + " has invalid geocode: " + newsitem.getGeocode());
-			}
-		}
-		return nearByNewsitems;		
+		return solrBackedResourceDAO.getGeotaggedNewsitemsNear(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken(), MAX_NEWSITEMS_TO_SHOW);
 	}
 	
 	public List<Tag> getGeotaggedTags() {

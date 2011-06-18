@@ -106,6 +106,12 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
+	public SolrQueryBuilder near(double latitude, double longitude, int distance) {
+		// pt=45.15,-93.85&d=5	
+		sb.append(" +position=" + latitude + "," + longitude + "&" + distance);
+		return this;
+	}
+	
 	public SolrQuery toQuery() {
 		SolrQuery query = new SolrQuery(sb.toString().trim());
 		if (startIndex != null) {
