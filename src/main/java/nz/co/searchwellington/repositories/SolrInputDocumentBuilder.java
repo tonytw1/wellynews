@@ -61,8 +61,10 @@ public class SolrInputDocumentBuilder {
 			if(comments.size() > 0) {
 				inputDocument.addField("commented", 1);
 				for (Comment comment : comments) {
-					inputDocument.addField("comment", comment.getTitle());
-				}				
+					if (comment != null) {
+						inputDocument.addField("comment", comment.getTitle());
+					}
+				}
 				
 			} else {
 				inputDocument.addField("commented", 0);
@@ -79,8 +81,8 @@ public class SolrInputDocumentBuilder {
 		final Geocode geocode = resource.getGeocode();
 		if (geocode != null && geocode.isValid()) {
 			inputDocument.addField("geotagged", true);
-			inputDocument.addField("addres", geocode.getAddress());
-			inputDocument.addField("location", geocode.getLatitude() + "," + geocode.getLongitude());
+			inputDocument.addField("address", geocode.getAddress());
+			inputDocument.addField("position", geocode.getLatitude() + "," + geocode.getLongitude());
 		} else {
 			inputDocument.addField("geotagged", false);
 		}

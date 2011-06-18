@@ -21,7 +21,6 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
-import org.apache.ecs.xhtml.body;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -400,8 +399,7 @@ public class SolrBackedResourceDAO {
 	}
 	
 	public List<Resource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius, boolean showBroken, int maxItems) {
-		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).geotagged().near(latitude, longitude, radius).maxItems(maxItems).toQuery();
-		setDateDescendingOrder(query);;
+		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, maxItems);
 		return getQueryResults(query);
 	}
 	

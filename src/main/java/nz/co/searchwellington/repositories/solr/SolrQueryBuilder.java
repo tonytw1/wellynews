@@ -106,12 +106,6 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
-	public SolrQueryBuilder near(double latitude, double longitude, int distance) {
-		// pt=45.15,-93.85&d=5	
-		sb.append(" +position=" + latitude + "," + longitude + "&" + distance);
-		return this;
-	}
-	
 	public SolrQuery toQuery() {
 		SolrQuery query = new SolrQuery(sb.toString().trim());
 		if (startIndex != null) {
@@ -122,7 +116,16 @@ public class SolrQueryBuilder {
 		}		
 		return query;		
 	}
-
+	
+	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, int radius, boolean showBroken, int maxItems) {		
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).geotagged().maxItems(maxItems).toQuery();
+		query.setFilterQueries("{!geofilt}");
+		query.setParam("sfield", "position");
+		query.setParam("pt", latitude + "," + longitude);
+		query.setParam("d", Integer.toString(radius));			
+		return query;		
+	}
+	
 	public SolrQueryBuilder minTwitterCount(int count) {
 		sb.append(" +twitterCount:[" + count + " TO *]");
 		return this;
@@ -137,5 +140,5 @@ public class SolrQueryBuilder {
 		sb.append(" +pageUrl:'" + pageUrl + "'");
 		return this;
 	}
-
+	
 }
