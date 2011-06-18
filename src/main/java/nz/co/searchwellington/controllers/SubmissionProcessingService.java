@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.submission.SubmissionProcessor;
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
-import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
+import nz.co.searchwellington.geocoding.GeoCodeService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
@@ -40,12 +40,12 @@ public class SubmissionProcessingService {
     
     
     private UrlCleaner urlCleaner;
-    private GoogleGeoCodeService geocodeService;
+    private GeoCodeService geocodeService;
     private TagDAO tagDAO;
     private HandTaggingDAO tagVoteDAO;
     
         
-	public SubmissionProcessingService(UrlCleaner urlCleaner, GoogleGeoCodeService geocodeService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO) {
+	public SubmissionProcessingService(UrlCleaner urlCleaner, GeoCodeService geocodeService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO) {
 		this.urlCleaner = urlCleaner;
 		this.geocodeService = geocodeService;
 		this.tagDAO = tagDAO;
@@ -93,13 +93,12 @@ public class SubmissionProcessingService {
 	        address = UrlFilters.trimWhiteSpace(address);
 	        address = UrlFilters.stripHtml(address);
 	        if (address != null && !address.trim().equals("")) {
-	            Geocode geocode = new Geocode(address);
-	            log.info("Setting geocode to: " + geocode.getAddress());                
-	
-	            log.info("Attempting to resolve geocode: '" + geocode.getAddress() + "'");
-	            geocodeService.resolveAddress(geocode);
-	            
-	            editResource.setGeocode(geocode);
+	            Geocode resolvedGeocode = geocodeService.resolveAddress(address);
+	            if (resolvedGeocode != null) {
+	            	editResource.setGeocode(resolvedGeocode);
+	            } else {
+	            	editResource.setGeocode(new Geocode(address));
+	            }
 	            return;
 	        }
 		}

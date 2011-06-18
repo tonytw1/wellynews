@@ -2,7 +2,7 @@ package nz.co.searchwellington.filters;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.geocoding.GoogleGeoCodeService;
+import nz.co.searchwellington.geocoding.GeoCodeService;
 import nz.co.searchwellington.model.Geocode;
 
 import org.apache.log4j.Logger;
@@ -16,9 +16,9 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	
 	public static final String LOCATION = "location";
 
-	private GoogleGeoCodeService geoCodeService;
+	private GeoCodeService geoCodeService;
 	
-	public LocationParameterFilter(GoogleGeoCodeService geoCodeService) {
+	public LocationParameterFilter(GeoCodeService geoCodeService) {
 		this.geoCodeService = geoCodeService;	// TODO You want to get some caching in this (as it's expensive time wise and quota restricted).
 	}
 
@@ -26,9 +26,8 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		if(request.getParameter(LOCATION) != null) {
 			final String location = request.getParameter(LOCATION);
 			request.setAttribute("locationQuery", location);
-			Geocode resolvedGeocode = new Geocode(location);
-			geoCodeService.resolveAddress(resolvedGeocode);
-			if (resolvedGeocode.isValid()) {
+			Geocode resolvedGeocode = geoCodeService.resolveAddress(location);
+			if (resolvedGeocode != null && resolvedGeocode.isValid()) {
 				log.info("User supplied location '" + location + "' resolved to point: " + resolvedGeocode.getLatitude() + ", " + resolvedGeocode.getLongitude());				
 				request.setAttribute(LOCATION, resolvedGeocode);
 				

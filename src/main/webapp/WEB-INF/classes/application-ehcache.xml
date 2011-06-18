@@ -10,6 +10,14 @@
         overflowToDisk="false"
         />
         
+   	<cache name="geocodes"
+        maxElementsInMemory="500"
+        eternal="false"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
+        overflowToDisk="false"
+        />
+        
     <cache name="tweets"
         maxElementsInMemory="500"
         eternal="false"

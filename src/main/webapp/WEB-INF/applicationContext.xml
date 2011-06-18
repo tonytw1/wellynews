@@ -244,8 +244,12 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="columnSplitter" class="nz.co.searchwellington.utils.ColumnSplitter" />	
 	<bean id="googleMapsCleaner" class="nz.co.searchwellington.views.GoogleMapsDisplayCleaner" />
 	
-	<bean id="geocodingService" class="nz.co.searchwellington.geocoding.GoogleGeoCodeService" />
-	
+	<bean id="googleGeocodingService" class="nz.co.searchwellington.geocoding.GoogleGeoCodeService" />
+	<bean id="geocodingService" class="nz.co.searchwellington.geocoding.CachingGeocodeService">
+		<constructor-arg ref="googleGeocodingService" />
+		<constructor-arg ref="cacheManager" />
+	</bean>
+		
 	<bean id="contentDeduper" class="nz.co.searchwellington.views.ContentDedupingService" />
 	
 
