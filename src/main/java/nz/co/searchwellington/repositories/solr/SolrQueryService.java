@@ -20,38 +20,28 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrInputDocument;
 
-
-// TODO does this really needs to new up a new Solr connection for every query?
 public class SolrQueryService {
 	
 	private static Logger log = Logger.getLogger(SolrQueryService.class);
 
-	private String solrUrl;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
+	private SolrServer solr;
 	
-	public SolrQueryService(SolrInputDocumentBuilder solrInputDocumentBuilder) {
+	public SolrQueryService(SolrInputDocumentBuilder solrInputDocumentBuilder, SolrServer solr) {
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
-	}
-
-	public void setSolrUrl(String solrUrl) {
-		this.solrUrl = solrUrl;
+		this.solr = solr;
 	}
 	
 	public QueryResponse querySolr(SolrQuery query) {
-		SolrServer solr;
-		try {
-			solr = new CommonsHttpSolrServer(solrUrl);		
+		try {		
 			QueryResponse response = solr.query(query);
-			return response;
-		} catch (MalformedURLException e) {
-			log.error(e);	
+			return response;		
 		} catch (SolrServerException e) {
 			log.error(e);	
 		}
 		return null;
 	}
-	
-	
+		
 	public Map<String, List<Count>> getFacetQueryResults(SolrQuery query) {
 		Map<String, List<Count>> results = new HashMap<String, List<Count>>();
 		QueryResponse response = querySolr(query);
@@ -66,7 +56,6 @@ public class SolrQueryService {
 	
 	public void deleteResourceFromIndex(int id) {		
 		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);		
 			UpdateRequest updateRequest = new UpdateRequest();
 			updateRequest.deleteById(Integer.toString(id));							
 			updateRequest.process(solr);
@@ -84,7 +73,6 @@ public class SolrQueryService {
 	
 	public void updateIndexForResources(List<Resource> resources) {
 		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
 			for (Resource resource : resources) {
 				UpdateRequest updateRequest = getUpdateRequest(resource);
 				updateRequest.process(solr);			

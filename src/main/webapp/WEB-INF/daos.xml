@@ -8,12 +8,15 @@
 		<constructor-arg ref="handTaggingDAO" />		
 	</bean>
 	
+	<bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
+		<constructor-arg value="${solr.url}" />
+	</bean>
+		
 	<bean id="solrQueryService" class="nz.co.searchwellington.repositories.solr.SolrQueryService">
 		<constructor-arg ref="solrInputDocumentBuilder" />
-		<property name="solrUrl" value="${solr.url}" />
+		<constructor-arg ref="solrServer" />
 	</bean>
-	
-		
+			
 	<bean id="solrIndexRebuildService" class="nz.co.searchwellington.repositories.SolrIndexRebuildService">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="solrInputDocumentBuilder" />
