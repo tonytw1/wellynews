@@ -148,10 +148,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
 		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);
+		
+		// TODO Websites should be considered secondary content!
 		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
-
-		mv.addObject("main_content", taggedNewsitems);		
 		mv.addObject("websites", taggedWebsites);
+		
+		mv.addObject("main_content", taggedNewsitems);		
 		
 		populatePagination(mv, startIndex, totalNewsitemCount);
 		

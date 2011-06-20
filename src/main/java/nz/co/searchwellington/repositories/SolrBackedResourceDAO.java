@@ -49,11 +49,11 @@ public class SolrBackedResourceDAO {
     private SolrQueryService solrQueryService;
     private ResourceRepository resourceDAO;
     private TagDAO tagDAO;
-    private SolrResourceHydrator resourceHydrator;
+    private ResourceHydrator resourceHydrator;
     
     private String solrUrl;
     
-	public SolrBackedResourceDAO(SolrQueryService solrQueryService, ResourceRepository resourceDAO, TagDAO tagDAO, SolrResourceHydrator resourceHydrator) {		
+	public SolrBackedResourceDAO(SolrQueryService solrQueryService, ResourceRepository resourceDAO, TagDAO tagDAO, ResourceHydrator resourceHydrator) {		
 		this.solrQueryService = solrQueryService;
 		this.resourceDAO = resourceDAO;
 		this.tagDAO = tagDAO;
@@ -92,7 +92,7 @@ public class SolrBackedResourceDAO {
 		List<Resource> queryResults = getQueryResults(query);
 		log.info(queryResults.size() + " results found while searching for page url: " + pageUrl);
 		if (queryResults.size() == 1) {
-			return (Newsitem) resourceDAO.loadResourceById(queryResults.get(0).getId());
+			return (Newsitem) queryResults.get(0);
 		}
 		return null;		
 	}

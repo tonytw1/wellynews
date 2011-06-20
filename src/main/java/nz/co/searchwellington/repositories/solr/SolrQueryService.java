@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -52,7 +51,6 @@ public class SolrQueryService {
 		}
 		return results;
 	}
-
 	
 	public void deleteResourceFromIndex(int id) {		
 		try {
@@ -69,7 +67,6 @@ public class SolrQueryService {
 			log.error(e);	
 		}		
 	}
-	
 	
 	public void updateIndexForResources(List<Resource> resources) {
 		try {

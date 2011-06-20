@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model;
 
-
+@Deprecated
 public class SolrHydratedNewsitemImpl extends NewsitemImpl {
 
 	private String explictPublisherName;
