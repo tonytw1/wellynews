@@ -8,6 +8,7 @@ import java.util.List;
 import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.model.FrontEndNewsitem;
 import nz.co.searchwellington.model.FrontEndWebsite;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SolrHydratedNewsitemImpl;
@@ -19,10 +20,10 @@ import nz.co.searchwellington.model.WebsiteImpl;
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
 
-public class SolrResourceHydrator implements ResourceHydrator {
+import com.google.code.geocoder.model.GeoAddress;
 
-	private static Logger log = Logger.getLogger(SolrResourceHydrator.class);
-	    
+public class SolrResourceHydrator implements ResourceHydrator {
+	
 	private TagDAO tagDAO;	// TODO could remove this by hydrating tag fields from resource
 	
 	public SolrResourceHydrator(TagDAO tagDAO) {
@@ -50,16 +51,19 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			item = new Watchlist();
 		}
 		
-		if (item != null) {
-			
+		if (item != null) {			
 			item.setId(resourceId);
 			item.setName((String) result.getFieldValue("title"));
 			item.setDescription((String) result.getFieldValue("description"));
 			item.setUrl((String) result.getFieldValue("url"));
 			item.setDate((Date) result.getFieldValue("date"));
-		
 			
 			if (item.getType().equals("N")) {
+				if (result.getFieldValue("geotagged") != null) {
+					Geocode geocode = new Geocode((String) result.getFieldValue("address"));
+					item.setGeocode(geocode);					
+				}
+				
 				FrontEndNewsitem frontendNewsitem = new FrontEndNewsitem((Newsitem) item);
 				frontendNewsitem.setTags(hydrateTags(result, "tags"));
 				frontendNewsitem.setHandTags(hydrateTags(result, "handTags"));
