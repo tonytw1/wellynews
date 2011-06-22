@@ -5,6 +5,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
+import java.net.URL;
 import java.util.Set;
 
 import org.junit.Test;
@@ -23,8 +24,9 @@ public class GoogleCalandarLinkExtractorTest extends ExtractorTestCase {
     }
 	    
     @Test
-	public void shouldFindCalendarLink() throws Exception {		
-		File contentFile = new File("./test/java/nz/co/searchwellington/htmlparsing/downstage_news.htm"); 
+	public void shouldFindCalendarLink() throws Exception {
+    	URL resource = this.getClass().getClassLoader().getResource("downstage_news.htm");
+		File contentFile = new File(resource.getFile()); 
 		StringBuffer content = loadContent(contentFile);
 		
 		LinkExtractor extractor = new GoogleCalendarLinkExtractor();
