@@ -1,6 +1,5 @@
  package nz.co.searchwellington.controllers.models;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,25 +43,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 				ModelAndView mv = new ModelAndView();
 				mv.addObject("feed", feed);
 				
-				List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
-				rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems);
-				
-				if (feedNewsitems != null && feedNewsitems.size() > 0) {
-					mv.addObject("main_content", feedNewsitems);
-					
-					List<FeedNewsitem> geotaggedFeedNewsitems = new ArrayList<FeedNewsitem>();
-					for (FeedNewsitem feedNewsitem : feedNewsitems) {
-						if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
-							geotaggedFeedNewsitems.add(feedNewsitem);
-						}
-					}
-					if (!geotaggedFeedNewsitems.isEmpty()) {
-						mv.addObject("geocoded", geotaggedFeedNewsitems);
-					}
-					
-				} else {
-					log.warn("No newsitems were loaded from feed: " + feed.getName());
-				}
+				populateFeedItems(mv, feed);
 				
 				setRss(mv, feed.getName(), feed.getUrl());		       
 				return mv;
@@ -73,9 +54,10 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+		populateGeotaggedFeedItems(mv);
 		populateSecondaryFeeds(mv);
 	}
-		
+	
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "viewfeed";
@@ -90,6 +72,19 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 				request.setAttribute(FEED_ATTRIBUTE, feed);
 			}
 		}
+	}
+	
+	private void populateFeedItems(ModelAndView mv, Feed feed) {
+		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);		
+		if (feedNewsitems != null && feedNewsitems.size() > 0) {
+			mv.addObject("main_content", rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems));
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void populateGeotaggedFeedItems(ModelAndView mv) {
+		List<FeedNewsitem> mainContent = (List<FeedNewsitem>) mv.getModel().get("main_content");
+		mv.addObject("geocoded", rssfeedNewsitemService.extractGeotaggedFeeditems(mainContent));
 	}
 	
 }

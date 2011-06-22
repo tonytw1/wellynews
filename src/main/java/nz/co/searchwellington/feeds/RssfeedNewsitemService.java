@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -77,20 +78,34 @@ public abstract class RssfeedNewsitemService {
 		return null;
 	}
 	
-	
-	public void addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+	public List<FeedNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+		List<FeedNewsitem> decoratedFeednewsitems = new ArrayList<FeedNewsitem>();
 		for (FeedNewsitem feedNewsitem : feedNewsitems) {
 			if (feedNewsitem.getUrl() != null) {
-				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());
+				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());	// TODO expensive?
 				if (localCopy != null) {
 					feedNewsitem.setLocalCopy(localCopy);
-				}				
+				}
 				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
 				feedNewsitem.setSuppressed(isSuppressed);						
 			}
+			decoratedFeednewsitems.add(feedNewsitem);
 		}
+		return decoratedFeednewsitems;
 	}
-
+	
+	public List<FeedNewsitem> extractGeotaggedFeeditems(List<FeedNewsitem> feedNewsitems) {
+		List<FeedNewsitem> geotaggedFeedNewsitems = new ArrayList<FeedNewsitem>();
+		for (FeedNewsitem feedNewsitem : feedNewsitems) {
+			if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
+				geotaggedFeedNewsitems.add(feedNewsitem);
+			}
+		}
+		if (!geotaggedFeedNewsitems.isEmpty()) {
+			return geotaggedFeedNewsitems;
+		}
+		return null;
+	}
 	
 	public boolean isUrlInAcceptedFeeds(String url) {
 		log.info("Looking for url in accepted feeds: " + url);

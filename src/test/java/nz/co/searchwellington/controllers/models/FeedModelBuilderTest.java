@@ -23,8 +23,10 @@ public class FeedModelBuilderTest {
 	
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock ContentRetrievalService contentRetrievalService;
-	@Mock Feed someOnesFeed;
+	@Mock Feed feed;
 	@Mock List<FeedNewsitem> feedNewsitems;
+	@Mock List<FeedNewsitem> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
+	@Mock List<FeedNewsitem> geotaggedFeedNewsitems;
 	
 	MockHttpServletRequest request;
 	ModelBuilder modelBuilder;
@@ -32,8 +34,9 @@ public class FeedModelBuilderTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);		
-		when(contentRetrievalService.getFeedByUrlWord("someonesfeed")).thenReturn(someOnesFeed);
-		when(rssfeedNewsitemService.getFeedNewsitems(someOnesFeed)).thenReturn(feedNewsitems);
+		when(contentRetrievalService.getFeedByUrlWord("someonesfeed")).thenReturn(feed);
+		when(rssfeedNewsitemService.getFeedNewsitems(feed)).thenReturn(feedNewsitems);
+		when(rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation);
 		when(feedNewsitems.size()).thenReturn(10);
 		request = new MockHttpServletRequest();
 		request.setPathInfo("/feed/someonesfeed");
@@ -50,14 +53,21 @@ public class FeedModelBuilderTest {
 	public void shouldPopulateFeedFromUrlWordsOnRequestPath() throws Exception {
 		ModelAndView mv = modelBuilder.populateContentModel(request, false);
 		verify(contentRetrievalService).getFeedByUrlWord("someonesfeed");
-		assertEquals(someOnesFeed, mv.getModel().get("feed"));
+		assertEquals(feed, mv.getModel().get("feed"));
 	}
 	
 	@Test
-	public void shouldPopulateMainContentWithFeedItemsDecoratedWithSuppressionInformation() throws Exception {		
+	public void shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation() throws Exception {		
 		ModelAndView mv = modelBuilder.populateContentModel(request, false);
-		verify(rssfeedNewsitemService).addSupressionAndLocalCopyInformation(feedNewsitems);
-		assertEquals(feedNewsitems, mv.getModel().get("main_content"));
+		assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation, mv.getModel().get("main_content"));
 	}
 
+	@Test
+	public void shouldPushGeotaggedFeeditemsOntoTheModelSeperately() throws Exception {
+		when(rssfeedNewsitemService.extractGeotaggedFeeditems(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)).thenReturn(geotaggedFeedNewsitems);		
+		ModelAndView mv = modelBuilder.populateContentModel(request, false);
+		modelBuilder.populateExtraModelConent(request, false, mv);
+		assertEquals(geotaggedFeedNewsitems, mv.getModel().get("geocoded"));
+	}
+	
 }
