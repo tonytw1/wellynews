@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.model.FrontEndNewsitem;
 import nz.co.searchwellington.model.FrontEndWebsite;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Watchlist;
 
 import org.apache.solr.common.SolrDocument;
@@ -22,6 +23,7 @@ public class SolrResourceHydratorTest {
 	private static final int ID = 123;
 	private static final String HEADLINE = "Test article";
 	private static final Object URL = "http://localhost/somewhere";
+	private static final int HTTP_STATUS = 200;
 	private static final Date DATE = new DateTime().toDate();
 	private static final String DESCRIPTION = "Description";
 	private static final String PUBLISHER_NAME = "A Publisher";
@@ -39,19 +41,15 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void canHydrateNewsitem() throws Exception {	
 		SolrDocument solrRow = buildSolrRecord("N");
+		solrRow.setField("publisherName", PUBLISHER_NAME);
 		solrRow.setField("geotagged", true);
 		solrRow.setField("address", ADDRESS);
 		solrRow.setField("position", "51,-0.1");
 		
 		FrontEndNewsitem hydratedNewsitem = (FrontEndNewsitem) solrResourceHydrator.hydrateResource(solrRow);
 
-		assertEquals(123, hydratedNewsitem.getId());
-		assertEquals(HEADLINE, hydratedNewsitem.getName());
-		assertEquals(URL, hydratedNewsitem.getUrl());
-		assertEquals(DATE, hydratedNewsitem.getDate());		
-		assertEquals(DESCRIPTION, hydratedNewsitem.getDescription());
-		assertEquals(PUBLISHER_NAME, hydratedNewsitem.getPublisherName());
-		
+		assertBaseFields(hydratedNewsitem);
+		assertEquals(PUBLISHER_NAME, hydratedNewsitem.getPublisherName());		
 		assertNotNull(hydratedNewsitem.getGeocode());
 		assertEquals(ADDRESS, hydratedNewsitem.getGeocode().getAddress());
 	}
@@ -62,52 +60,50 @@ public class SolrResourceHydratorTest {
 		
 		FrontEndWebsite hydratedWebsite = (FrontEndWebsite) solrResourceHydrator.hydrateResource(solrRow);
 		
-		assertEquals(123, hydratedWebsite.getId());
-		assertEquals(HEADLINE, hydratedWebsite.getName());
-		assertEquals(URL, hydratedWebsite.getUrl());
-		assertEquals(DESCRIPTION, hydratedWebsite.getDescription());
-		assertEquals(DATE, hydratedWebsite.getDate());
+		assertBaseFields(hydratedWebsite);
 	}
 	
 	@Test
 	public void canHydrateWatchlistItem() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("L");
-		
+		solrRow.setField("publisherName", PUBLISHER_NAME);
 		Watchlist hydratedWatchlist = (Watchlist) solrResourceHydrator.hydrateResource(solrRow);
 
-		assertEquals(123, hydratedWatchlist.getId());
-		assertEquals(HEADLINE, hydratedWatchlist.getName());
-		assertEquals(URL, hydratedWatchlist.getUrl());
-		assertEquals(DESCRIPTION, hydratedWatchlist.getDescription());
-		assertEquals(DATE, hydratedWatchlist.getDate());
+		assertBaseFields(hydratedWatchlist);
 		assertEquals(PUBLISHER_NAME, hydratedWatchlist.getPublisherName());
-
 	}
 	
 	@Test
 	public void testCanHydrateFeed() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("F");
+		solrRow.setField("publisherName", PUBLISHER_NAME);
+		
 		Feed hydratedFeed = (FeedImpl) solrResourceHydrator.hydrateResource(solrRow);
 		
-		assertEquals(123, hydratedFeed.getId());
-		assertEquals(HEADLINE, hydratedFeed.getName());
-		assertEquals(URL, hydratedFeed.getUrl());
-		assertEquals(DESCRIPTION, hydratedFeed.getDescription());
-		assertEquals(DATE, hydratedFeed.getDate());
+		assertBaseFields(hydratedFeed);
 		assertEquals(PUBLISHER_NAME, hydratedFeed.getPublisherName());
-
 	}
 	
+	// TODO could be replaced with a call to the real solr row builder?
 	private SolrDocument buildSolrRecord(String type) {
 		SolrDocument solrRow = new SolrDocument();
 		solrRow.setField("id", Integer.toString(ID));
 		solrRow.setField("type", type);
 		solrRow.setField("title", HEADLINE);
 		solrRow.setField("url", URL);
+		solrRow.setField("httpStatus", HTTP_STATUS);
 		solrRow.setField("description", DESCRIPTION);
 		solrRow.setField("date", DATE);
-		solrRow.setField("publisherName", PUBLISHER_NAME);
 		return solrRow;
+	}
+	
+	private void assertBaseFields(Resource hydratedResource) {
+		assertEquals(123, hydratedResource.getId());
+		assertEquals(HEADLINE, hydratedResource.getName());
+		assertEquals(URL, hydratedResource.getUrl());
+		assertEquals(HTTP_STATUS, hydratedResource.getHttpStatus());
+		assertEquals(DATE, hydratedResource.getDate());		
+		assertEquals(DESCRIPTION, hydratedResource.getDescription());
 	}
 	
 }
