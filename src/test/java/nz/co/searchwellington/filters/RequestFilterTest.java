@@ -1,7 +1,6 @@
 package nz.co.searchwellington.filters;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -30,7 +29,7 @@ public class RequestFilterTest {
 	@Mock private Website capitalTimesPublisher;
 	@Mock private Feed feed;
 	
-	private RequestAttributeFilter[] filters;
+	private RequestAttributeFilter[] filters = {};
 	private RequestFilter filter;
 	
 	@Before
@@ -43,6 +42,10 @@ public class RequestFilterTest {
 		filter = new RequestFilter(resourceDAO, tagDAO, filters);
 	}
 	
+	@Test
+	public void shouldDelegateToAllFiltersInFilterList() throws Exception {
+		//TODO implement
+	}
 	
 	@Test
 	public void shouldPopulateTagForAutotagUrl() throws Exception {
@@ -62,18 +65,6 @@ public class RequestFilterTest {
 		assertEquals(3, page.intValue());
 	}
 	
-	@Test
-	public void shouldPopulateFeedFromRequestParameter() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
-		 request.setPathInfo("/feed/tranz-metro-delays");
-		 
-		 filter.loadAttributesOntoRequest(request);
-		 verify(resourceDAO).loadFeedByUrlWords("tranz-metro-delays");
-		 assertNotNull(request.getAttribute("feedAttribute"));
-		 assertEquals(feed, request.getAttribute("feedAttribute"));
-		 verifyNoMoreInteractions(resourceDAO);		 
-	}
-		
 	@Test
 	public void shouldNotAttemptToResolveTagForReservedUrlWordComment() throws Exception {
 		MockHttpServletRequest request = new MockHttpServletRequest();
