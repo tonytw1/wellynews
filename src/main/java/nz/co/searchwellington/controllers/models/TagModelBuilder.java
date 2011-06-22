@@ -25,7 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	static Logger log = Logger.getLogger(TagModelBuilder.class);
+	private static Logger log = Logger.getLogger(TagModelBuilder.class);
     	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
@@ -34,7 +34,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private KeywordSearchService keywordSearchService;
-	
 	
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService,
@@ -51,7 +50,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.keywordSearchService = keywordSearchService;
 	}
 	
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
@@ -59,7 +57,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		boolean isSingleTagPage = tags != null && tags.size() == 1;
 		return isSingleTagPage;
 	}
-
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -72,14 +69,16 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 		return null;
 	}
-
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
-
+		
+		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
+		mv.addObject("websites", taggedWebsites);
+		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8);
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
@@ -108,7 +107,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}		
 	}
 	
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public String getViewName(ModelAndView mv) {		
@@ -118,9 +116,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		List<Resource> tagWatchlist = (List<Resource>) mv.getModel().get("tag_watchlist");
 		List<Resource> tagFeeds = (List<Resource>) mv.getModel().get("tag_feeds");
 
-		boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || !tagFeeds.isEmpty();		
-		boolean isOneContentType = mainContent.isEmpty() || !hasSecondaryContent;
-		
+		final boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || !tagFeeds.isEmpty();		
+		final boolean isOneContentType = mainContent.isEmpty() || !hasSecondaryContent;		
 		Integer page = (Integer) mv.getModel().get("page");
 		if (page != null && page > 0) {
 			mv.addObject("page", page);
@@ -131,11 +128,11 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 		return "tag";	
 	}
-
 	
 	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page, String path) {
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("page", page);
+		
 		int startIndex = getStartIndex(page);
 		int totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
 		if (startIndex > totalNewsitemCount) {
@@ -147,12 +144,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
-		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);
-		
-		// TODO Websites should be considered secondary content!
-		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
-		mv.addObject("websites", taggedWebsites);
-		
+		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);		
 		mv.addObject("main_content", taggedNewsitems);		
 		
 		populatePagination(mv, startIndex, totalNewsitemCount);
@@ -164,28 +156,24 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		return mv;
 	}
 	
-	
 	private void populateRecentlyTwittered(ModelAndView mv, Tag tag) {
 		mv.addObject("recently_twittered", contentRetrievalService.getRecentedTwitteredNewsitemsForTag(2, tag));
 	}
-
-
+	
 	private void populateTagRelatedTwitter(ModelAndView mv, Tag tag) {
 		if (tag.getRelatedTwitter() != null && !tag.getRelatedTwitter().equals("")) {
 			log.info("Setting related twitter to: " + tag.getRelatedTwitter());
 			mv.addObject("twitterUsername", tag.getRelatedTwitter());
 		}
 	}
- 	
-	
+ 		
     private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
         if (tag.getFlickrCount() > 0) {
             mv.addObject("flickr_count", tag.getFlickrCount());
             mv.addObject("escaped_flickr_group_id", UrlFilters.encode(configDAO.getFlickrPoolGroupId()));
         }
     }
-	
-    	
+    
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
         List<Resource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
 
@@ -206,8 +194,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
                 
         mv.addObject("commented_newsitems", commentedToShow);          
     }
-	
-    
+	    
     private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
         List<Resource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
@@ -215,17 +202,15 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
             mv.addObject("geocoded", geocoded);
         }
     }
-	
-    
+	    
     private void populateRelatedFeed(ModelAndView mv, Tag tag) {       
         Feed relatedFeed = tag.getRelatedFeed();
         if (relatedFeed != null) {
             log.info("Related feed is: " + relatedFeed.getName());
             mv.addObject("related_feed", relatedFeed);
             
-            List<FeedNewsitem> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);
-            rssfeedNewsitemService.addSupressionAndLocalCopyInformation(relatedFeedItems);
-            mv.addObject("related_feed_items", relatedFeedItems);
+            List<FeedNewsitem> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);            
+            mv.addObject("related_feed_items", rssfeedNewsitemService.addSupressionAndLocalCopyInformation(relatedFeedItems));
             
         } else {
             log.debug("No related feed.");
