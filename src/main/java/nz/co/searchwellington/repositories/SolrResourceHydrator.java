@@ -5,22 +5,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import nz.co.searchwellington.model.FeedImpl;
-import nz.co.searchwellington.model.FrontEndNewsitem;
-import nz.co.searchwellington.model.FrontEndWebsite;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.SolrHydratedNewsitemImpl;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Watchlist;
-import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.WebsiteImpl;
+import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
+import nz.co.searchwellington.model.frontend.FrontendResource;
+import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
 
-import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrDocument;
-
-import com.google.code.geocoder.model.GeoAddress;
 
 public class SolrResourceHydrator implements ResourceHydrator {
 	
@@ -30,25 +21,31 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		this.tagDAO = tagDAO;
 	}
 	
-	// TODO perf test to see if just loading from db is faster?	
-	public Resource hydrateResource(SolrDocument result) {
+	public FrontendResource hydrateResource(SolrDocument result) {
 		final int resourceId = Integer.parseInt((String) result.getFieldValue("id"));
 		
-		Resource item = null;
+		FrontendResourceImpl item = null;
 		final String type = (String) result.getFieldValue("type");
 		if (type.equals("N")) {			
-			item = new SolrHydratedNewsitemImpl((String) result.getFieldValue("publisherName"));			
+			FrontendNewsitemImpl newsitem = new FrontendNewsitemImpl();
+			newsitem.setPublisherName((String) result.getFieldValue("publisherName"));			
+			if ((Boolean) result.getFirstValue("geotagged")) {
+				Geocode geocode = new Geocode();			
+				geocode.setAddress((String) result.getFieldValue("address"));
+				newsitem.setGeocode(geocode);
+			}			
+			item = newsitem;			
 		}
 		
 		if (type.equals("W")) {
-			item = new WebsiteImpl();
+			item = new FrontendResourceImpl();
 		}
 		
 		if (type.equals("F")) {
-			item = new FeedImpl();
+			item = new FrontendResourceImpl();
 		}
 		if (type.equals("L")) {
-			item = new Watchlist();
+			item = new FrontendResourceImpl();
 		}
 		
 		if (item != null) {			
@@ -56,24 +53,8 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			item.setName((String) result.getFieldValue("title"));
 			item.setDescription((String) result.getFieldValue("description"));
 			item.setUrl((String) result.getFieldValue("url"));
+			item.setHttpStatus((int) ((Integer) result.getFieldValue("httpStatus")));
 			item.setDate((Date) result.getFieldValue("date"));
-			
-			if (item.getType().equals("N")) {
-				if (result.getFieldValue("geotagged") != null) {
-					Geocode geocode = new Geocode((String) result.getFieldValue("address"));
-					item.setGeocode(geocode);					
-				}
-				
-				FrontEndNewsitem frontendNewsitem = new FrontEndNewsitem((Newsitem) item);
-				frontendNewsitem.setTags(hydrateTags(result, "tags"));
-				frontendNewsitem.setHandTags(hydrateTags(result, "handTags"));
-				item = frontendNewsitem;
-				
-			} else if (item.getType().equals("W")) {
-				FrontEndWebsite frontendWebsite = new FrontEndWebsite((Website) item);
-				frontendWebsite.setTags(hydrateTags(result, "tags"));
-				item = frontendWebsite;
-			}
 			return item;
 		}
 		

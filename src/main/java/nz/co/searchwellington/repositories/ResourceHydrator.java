@@ -1,11 +1,11 @@
 package nz.co.searchwellington.repositories;
 
-import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.solr.common.SolrDocument;
 
 public interface ResourceHydrator {
 
-	public Resource hydrateResource(SolrDocument result);
+	public FrontendResource hydrateResource(SolrDocument result);
 
 }
