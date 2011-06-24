@@ -1,14 +1,19 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 import nz.co.searchwellington.model.CalendarFeed;
+import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.ResourceImpl;
@@ -17,6 +22,7 @@ import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.WebsiteImpl;
 
 import org.hibernate.Criteria;
 import org.hibernate.Session;
@@ -26,8 +32,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.transaction.annotation.Transactional;
 
-
-public class HibernateResourceDAO extends AbsractResourceDAO implements ResourceRepository {
+public class HibernateResourceDAO implements ResourceRepository {
 
     SessionFactory sessionFactory;
 
@@ -40,6 +45,47 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
         this.sessionFactory = sessionFactory;
     }
     
+    public Newsitem createNewNewsitem() {         
+        return new NewsitemImpl(0, "", "", "", Calendar.getInstance().getTime(), null,
+                            new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
+    }
+           
+    public Website createNewWebsite() {
+        return new WebsiteImpl( 0, "", "", Calendar.getInstance().getTime(), 
+                                "", 
+                                new HashSet <Feed>(), new HashSet<Watchlist>(),
+                                new HashSet <DiscoveredFeed>(),
+                                new HashSet <CalendarFeed>());
+    }
+
+    public Feed createNewFeed() {
+        return new FeedImpl(0, "", "", "", null, null);
+    }
+    
+    
+    public Watchlist createNewWatchlist() {
+        return new Watchlist(0, "", "", "", null, new HashSet <DiscoveredFeed>());
+      
+    }
+
+    
+    public CommentFeed createNewCommentFeed(String commentFeedUrl) {
+        CommentFeed commentFeed = new CommentFeed(0, commentFeedUrl, new ArrayList<Comment>(), null, null, new HashSet<Resource>());
+        return commentFeed;
+    }
+    
+    
+    public CalendarFeed createNewCalendarFeed(String url) {
+        CalendarFeed calendar = new CalendarFeed(0, url, "", "");
+        return calendar;
+    }
+    
+    public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl) {
+        DiscoveredFeed discoveredFeed = new DiscoveredFeed();
+        discoveredFeed.setUrl(discoveredUrl);
+        discoveredFeed.setReferences(new HashSet<Resource>());
+        return discoveredFeed;
+    }
     
     @SuppressWarnings("unchecked")
     public List<Integer> getAllResourceIds() {
@@ -319,7 +365,6 @@ public class HibernateResourceDAO extends AbsractResourceDAO implements Resource
     
     @SuppressWarnings("unchecked")
 	public List<Resource> getResourcesWithTag(Tag tag) {
-    	log.info(tag.getName());
     	Criteria taggedResources = sessionFactory.getCurrentSession().createCriteria(Resource.class).
     		addOrder(Order.desc("date")).
     		addOrder(Order.desc("id")).
