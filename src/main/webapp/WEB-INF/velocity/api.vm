@@ -10,11 +10,11 @@
 
 	<div class="main">
 		<h2>$heading</h2>
-
-		
+				
 		<ul>
 			<li class="tagged"><a href="#gettingstarted">Getting started</a> | </li>
 			<li class="tagged"><a href="#newsitemqueries">Newsitem queries</a> | </li>
+			<li class="tagged"><a href="#geotagged">Geotagging | </li>
 			<li class="tagged"><a href="#rsstojson">RSS to JSON mirroring</a> | </li>
 			<li class="tagged"><a href="#contact">Contact</a></li>
 		</ul>	
@@ -214,6 +214,19 @@
 		<p>Your callback function name may contain letters, numbers and underscores only.</p>
 
 
+		<a name="geotagging">
+		<h2>Geotagging</h2>
+		
+		<p> Where applicable, geotags are also embedded in our RSS feeds using the
+		<a href="http://georss.org/">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
+		<code>
+	        &lt;item&gt;<br/>
+	          &lt;title&gt;Can you replace the Hilton?&lt;/title&gt; <br/>
+	          &lt;geo:lat&gt;-41.284896&lt;/geo:lat&gt; <br/>
+	          &lt;geo:long&gt;174.778531&lt;/geo:long&gt; <br/>
+	        &lt;/item&gt;
+		</code>
+	
 		<a name="rsstojson"></a>	
 		<h2>RSS to JSON feed mirroring</h2>
 
