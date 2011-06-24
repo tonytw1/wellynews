@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
@@ -109,8 +110,7 @@ public class SimplePageController extends BaseMultiActionController {
         populateCommonLocal(mv);
         
         mv.addObject("heading", "Broken sites");             
-        List<Resource> wrappedCalendars = contentRetrievalService.getBrokenSites();        
-        mv.addObject("main_content", wrappedCalendars);
+        mv.addObject("main_content", contentRetrievalService.getBrokenSites());
         mv.setViewName("browse");
         return mv;
     }

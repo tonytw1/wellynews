@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -57,7 +58,7 @@ public abstract class AbstractModelBuilder {
 	protected final void populateSecondaryFeeds(ModelAndView mv) {      
         mv.addObject("righthand_heading", "Local Feeds");                
         mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
-        final List<Resource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();
+        final List<FrontendResource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();
         if (allFeeds.size() > 0) {
             mv.addObject("righthand_content", allFeeds);       
         }

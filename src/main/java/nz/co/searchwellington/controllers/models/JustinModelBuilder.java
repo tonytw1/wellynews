@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -43,7 +44,7 @@ public class JustinModelBuilder extends AbstractModelBuilder implements ModelBui
 			mv.addObject("description", "The most recently submitted website listings.");
 			mv.addObject("link", urlBuilder.getJustinUrl());
 			
-			final List<Resource> latestSites = contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS);
+			final List<FrontendResource> latestSites = contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS);
 			mv.addObject("main_content", latestSites);
 			
 			setRss(mv, rssUrlBuilder.getRssTitleForJustin(), rssUrlBuilder.getRssUrlForJustin());

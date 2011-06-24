@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -70,7 +71,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		mv.addObject("heading", tag.getDisplayName() + " geotagged");        		
 		mv.addObject("description", "Geotagged " + tag.getDisplayName() + " newsitems");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));		
-	    final List<Resource> allGeotaggedForTag = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
+	    final List<FrontendResource> allGeotaggedForTag = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
 		mv.addObject("main_content", allGeotaggedForTag);
 		if (allGeotaggedForTag.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag));

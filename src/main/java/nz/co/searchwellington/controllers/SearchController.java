@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.filters.RequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
@@ -57,8 +58,8 @@ public class SearchController extends BaseMultiActionController {
                 
                 mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords));
                 
-                final List<Resource> matchingSites = contentRetrievalService.getWebsitesMatchingKeywords(keywords, tag);
-                final List<Resource> matchingNewsitems = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag);
+                final List<FrontendResource> matchingSites = contentRetrievalService.getWebsitesMatchingKeywords(keywords, tag);
+                final List<FrontendResource> matchingNewsitems = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag);
                                                 
                 if (matchingSites.size() ==0 || matchingNewsitems.size() == 0) {
                     // TODO what do you done if there are no matches for a search?

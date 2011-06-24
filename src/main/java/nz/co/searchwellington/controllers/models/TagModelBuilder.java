@@ -14,6 +14,7 @@ import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
@@ -76,7 +77,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
 		
-		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
+		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
 		mv.addObject("websites", taggedWebsites);
 		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8);
@@ -144,7 +145,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
-		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);		
+		final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);		
 		mv.addObject("main_content", taggedNewsitems);		
 		
 		populatePagination(mv, startIndex, totalNewsitemCount);
@@ -175,12 +176,11 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     }
     
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
-        List<Resource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
-
-        List<Resource>commentedToShow;
+        List<FrontendResource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
+        List<FrontendResource> commentedToShow;
         if (recentCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
-            commentedToShow = recentCommentedNewsitems;            
-
+            commentedToShow = recentCommentedNewsitems;
+            
         } else {
             commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);
         }
@@ -196,7 +196,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     }
 	    
     private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
-        List<Resource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
+        List<FrontendResource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);

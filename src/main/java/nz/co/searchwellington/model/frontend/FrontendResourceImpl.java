@@ -11,6 +11,9 @@ public class FrontendResourceImpl implements FrontendResource {
     
     private Date date;
     private String description;
+    
+    private Date liveTime;
+    
 	public int getId() {
 		return id;
 	}
@@ -46,6 +49,13 @@ public class FrontendResourceImpl implements FrontendResource {
 	}
 	public void setDescription(String description) {
 		this.description = description;
+	}
+	
+	public Date getLiveTime() {
+		return liveTime;
+	}
+	public void setLiveTime(Date liveTime) {
+		this.liveTime = liveTime;
 	}
 
 }

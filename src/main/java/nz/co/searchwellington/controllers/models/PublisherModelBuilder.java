@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -85,7 +86,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		int startIndex = getStartIndex(page);
 		final int mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);
 		if (mainContentTotal > 0) {			
-			final List<Resource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex);		
+			final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex);		
 			mv.addObject("main_content", publisherNewsitems);
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
 			mv.addObject("publisher", publisher);

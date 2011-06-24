@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -43,7 +44,7 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 						
 			int page = getPage(request);
 			int startIndex = getStartIndex(page);
-			final List<Resource> commentedNewsitms = contentRetrievalService.getCommentedNewsitems(MAX_NEWSITEMS, startIndex);
+			final List<FrontendResource> commentedNewsitms = contentRetrievalService.getCommentedNewsitems(MAX_NEWSITEMS, startIndex);
 			mv.addObject("main_content", commentedNewsitms);
 			
 			int commentedCounted = contentRetrievalService.getCommentedNewsitemsCount();

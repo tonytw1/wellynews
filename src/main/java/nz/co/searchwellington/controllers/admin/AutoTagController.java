@@ -12,10 +12,11 @@ import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.modification.ContentUpdateService;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
@@ -67,8 +68,7 @@ public class AutoTagController extends BaseMultiActionController {
         }
                 
         mv.addObject("tag", tag);
-        List<Resource> resourcesToAutoTag = getPossibleAutotagResources(loggedInUserFilter.getLoggedInUser(), tag);
-        mv.addObject("resources_to_tag", resourcesToAutoTag);
+        mv.addObject("resources_to_tag", getPossibleAutotagResources(loggedInUserFilter.getLoggedInUser(), tag));
         return mv;
     }
 
@@ -110,8 +110,7 @@ public class AutoTagController extends BaseMultiActionController {
         return mv;
     }
     
-    
-    private List<Resource> getPossibleAutotagResources(User user, Tag tag) {
+    private List<FrontendResource> getPossibleAutotagResources(User user, Tag tag) {
     	if (user != null) {    		
     		return keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName(), true, user, tag);
     	}

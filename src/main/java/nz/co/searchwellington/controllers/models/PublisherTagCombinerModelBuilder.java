@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -82,7 +83,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 
 	// TODO needs pagination
 	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) {		
-		final List<Resource> publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS);
+		final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS);
 		mv.addObject("main_content", publisherNewsitems);		
 		if (publisherNewsitems.size() > 0) {            
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));

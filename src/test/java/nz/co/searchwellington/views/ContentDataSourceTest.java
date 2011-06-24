@@ -5,7 +5,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.junit.Before;
@@ -16,8 +16,8 @@ import org.mockito.MockitoAnnotations;
 public class ContentDataSourceTest {
 	
 	@Mock ContentRetrievalService contentRetrievalService;
-	@Mock List<Resource> latestNewsitems;
-	@Mock List<Resource> publisherTagNewsitems;
+	@Mock List<FrontendResource> latestNewsitems;
+	@Mock List<FrontendResource> publisherTagNewsitems;
 
 	ContentDataSource dataSource;
 	
@@ -30,7 +30,7 @@ public class ContentDataSourceTest {
 	@Test
 	public void shouldProvideLatestNewsitems() throws Exception {
 		when(contentRetrievalService.getLatestNewsitems(5)).thenReturn(latestNewsitems);		
-		List<Resource> result = dataSource.getLatestNewsitems();
+		List<FrontendResource> result = dataSource.getLatestNewsitems();
 		assertEquals(latestNewsitems, result);
 	}
 	

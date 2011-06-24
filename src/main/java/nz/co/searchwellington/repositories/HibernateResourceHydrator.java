@@ -1,6 +1,6 @@
 package nz.co.searchwellington.repositories;
 
-import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.solr.common.SolrDocument;
 
@@ -13,9 +13,9 @@ public class HibernateResourceHydrator implements ResourceHydrator {
 	}
 
 	@Override
-	public Resource hydrateResource(SolrDocument result) {
+	public FrontendResource hydrateResource(SolrDocument result) {
 		final int resourceId = Integer.parseInt((String) result.getFieldValue("id"));
-		return resourceDAO.loadResourceById(resourceId);		
+		return resourceDAO.loadResourceById(resourceId);
 	}
 	
 }

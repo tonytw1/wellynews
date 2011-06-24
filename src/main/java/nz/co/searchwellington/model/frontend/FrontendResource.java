@@ -10,5 +10,6 @@ public interface FrontendResource {
 	public int getHttpStatus();
 	public Date getDate();
 	public String getDescription();
+	public Date getLiveTime();
 	
 }

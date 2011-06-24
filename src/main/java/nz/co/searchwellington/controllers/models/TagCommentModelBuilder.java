@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -73,7 +74,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		mv.addObject("description", tag.getDisplayName() + " comment");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));
 		
-		final List<Resource> allCommentedForTag = contentRetrievalService.getCommentedNewsitemsForTag(tag, MAX_NEWSITEMS, startIndex);	   
+		final List<FrontendResource> allCommentedForTag = contentRetrievalService.getCommentedNewsitemsForTag(tag, MAX_NEWSITEMS, startIndex);	   
 		mv.addObject("main_content", allCommentedForTag);
 		
 		int count = contentRetrievalService.getCommentedNewsitemsForTagCount(tag);

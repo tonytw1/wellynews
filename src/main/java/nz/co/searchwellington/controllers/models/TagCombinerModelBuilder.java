@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -86,8 +87,8 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("description", "Items tagged with " + firstTag.getDisplayName() +  " and " + secondTag.getDisplayName() + ".");
 		mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
 		
-		final List<Resource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), MAX_WEBSITES);  
-		final List<Resource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(new HashSet<Tag>(tags), MAX_WEBSITES);
+		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), MAX_WEBSITES);  
+		final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(new HashSet<Tag>(tags), MAX_WEBSITES);
 		
 		mv.addObject("main_content", taggedNewsitems);	
 		mv.addObject("websites", taggedWebsites);

@@ -3,9 +3,11 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 import java.util.Set;
 
+import nz.co.searchwellington.model.frontend.FrontendResource;
+
 // TODO can we get an EditableResource into the tree somewhere, to put all write methods onto?
-public interface Resource {
-       
+public interface Resource extends FrontendResource {
+	
     public int getId();
     public void setId(int id);
     

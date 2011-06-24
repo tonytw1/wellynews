@@ -10,6 +10,7 @@ import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -52,7 +53,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			ModelAndView mv = new ModelAndView();		
-			final List<Resource> latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS);                
+			final List<FrontendResource> latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS);                
 			mv.addObject("main_content", latestNewsitems);
 			
 			Date monthOfLastItem = monthOfLastItem(latestNewsitems);
@@ -83,10 +84,9 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	}
 	
 	
-	private Date monthOfLastItem(List<Resource> latestNewsitems) {
+	private Date monthOfLastItem(List<FrontendResource> latestNewsitems) {
 		if (latestNewsitems.size() > 0) {
-			Resource lastNewsitem = latestNewsitems
-					.get(latestNewsitems.size() - 1);
+			FrontendResource lastNewsitem = latestNewsitems.get(latestNewsitems.size() - 1);
 			if (lastNewsitem.getDate() != null) {
 				Date lastDate = lastNewsitem.getDate();
 				return lastDate;
@@ -115,7 +115,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 
 	private void populateCommentedNewsitems(ModelAndView mv) {
-		final List<Resource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0);
+		final List<FrontendResource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0);
 		if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
 			mv.addObject("commented_newsitems", recentCommentedNewsitems);
 		} else {
@@ -126,7 +126,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 	
 	private void populateGeocoded(ModelAndView mv) {
-        List<Resource> geocoded = contentRetrievalService.getGeocoded(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
+        List<FrontendResource> geocoded = contentRetrievalService.getGeocoded(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);
         }

@@ -18,6 +18,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
@@ -64,7 +65,7 @@ public class SolrBackedResourceDAO {
 		this.solrUrl = solrUrl;
 	}
 	
-	public List<Resource> getAllFeeds(boolean showBroken, boolean orderByLatestItemDate) {
+	public List<FrontendResource> getAllFeeds(boolean showBroken, boolean orderByLatestItemDate) {
 		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(showBroken).maxItems(MAXIMUM_FEEDS).toQuery();
 		
 		if (orderByLatestItemDate) {
@@ -75,7 +76,7 @@ public class SolrBackedResourceDAO {
     	return getQueryResults(query);
 	}
 
-	public List<Resource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int maxItems) {
+	public List<FrontendResource> getTaggedNewsitems(Set<Tag> name, boolean showBroken, int maxItems) {
 		return getTaggedNewsitems(name, showBroken, 0, maxItems);
 	}
 	
@@ -89,7 +90,7 @@ public class SolrBackedResourceDAO {
 		
 	public Newsitem getNewspage(String pageUrl, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").pageUrl(pageUrl).toQuery();			
-		List<Resource> queryResults = getQueryResults(query);
+		List<FrontendResource> queryResults = getQueryResults(query);
 		log.info(queryResults.size() + " results found while searching for page url: " + pageUrl);
 		if (queryResults.size() == 1) {
 			return (Newsitem) queryResults.get(0);
@@ -103,7 +104,7 @@ public class SolrBackedResourceDAO {
 		return getQueryCount(query);
 	}
 	
-	public List<Resource> getRecentCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {
+	public List<FrontendResource> getRecentCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems) {
 		log.info("Getting recent commented newsitem count");
 		// TODO duplication - with what?
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).dateRange(14).commented(true).toQuery();					
@@ -118,20 +119,20 @@ public class SolrBackedResourceDAO {
 		return getQueryCount(query);	
 	}
 	
-	public List<Resource> getTaggedWebsites(Tag tag, boolean showBroken, int maxItems) {		
+	public List<FrontendResource> getTaggedWebsites(Tag tag, boolean showBroken, int maxItems) {		
 		Set<Tag> tags = new HashSet<Tag>();
 		tags.add(tag);
 		return getTaggedWebsites(tags, showBroken, maxItems);
 	}
 	
-	public List<Resource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems, boolean showBroken) {
+	public List<FrontendResource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems, boolean showBroken) {
 		log.info("Getting geotagged newsitems for tag: " + tag );
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("N").geotagged().showBroken(showBroken).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
+	public List<FrontendResource> getTaggedWebsites(Set<Tag> tags, boolean showBroken, int maxItems) {
 		log.info("Getting websites for tags: " + tags );
 		SolrQuery query = new SolrQueryBuilder().tags(tags).type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
 		setTitleSortOrder(query);
@@ -141,40 +142,40 @@ public class SolrBackedResourceDAO {
 	public Date getLastLiveTimeForTag(Tag tag) {
 		SolrQuery latestItemForTagQuery = new SolrQueryBuilder().tag(tag).showBroken(false).maxItems(1).toQuery();
 		latestItemForTagQuery.setSortField("lastLive", ORDER.desc);
-		List<Resource> resources = getQueryResults(latestItemForTagQuery);
+		List<FrontendResource> resources = getQueryResults(latestItemForTagQuery);
 		if (resources.size() == 1) {
-			return resources.get(0).getLiveTime();
-		}				
+			return resources.get(0).getLiveTime();	// TODO Do this as a specific API call, so that this doesn't have to be exposed on the frontend resource model
+		}
 		return null;
 	}
 	
-	public List<Resource> getTagWatchlist(Tag tag, boolean showBroken) {
+	public List<FrontendResource> getTagWatchlist(Tag tag, boolean showBroken) {
 		log.info("Getting watchlist for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("L").showBroken(showBroken).toQuery();
 		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getHandTaggingsForUser(User user,  boolean showBroken) {
+	public List<FrontendResource> getHandTaggingsForUser(User user,  boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().taggingUser(user).showBroken(showBroken).toQuery();
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getLatestWebsites(int maxItems, boolean showBroken) {
+	public List<FrontendResource> getLatestWebsites(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("W").showBroken(showBroken).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getTaggedFeeds(Tag tag, boolean showBroken) {
+	public List<FrontendResource> getTaggedFeeds(Tag tag, boolean showBroken) {
 		log.info("Getting feeds for tag: " + tag);
 		SolrQuery query = new SolrQueryBuilder().tag(tag).type("F").showBroken(showBroken).toQuery();
 		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex) {	
+	public List<FrontendResource> getCommentedNewsitems(int maxItems, boolean showBroken, boolean hasComments, int startIndex) {	
 		SolrQuery query = getCommentedNewsitemsQuery(showBroken);
 		setDateDescendingOrder(query);;
 		query.setRows(maxItems);
@@ -182,7 +183,7 @@ public class SolrBackedResourceDAO {
 		return getQueryResults(query);		    	
 	}
 	
-	public List<Resource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken) {
+	public List<FrontendResource> getRecentTwitteredNewsitems(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").
 			showBroken(showBroken).
 			dateRange(60).
@@ -193,7 +194,7 @@ public class SolrBackedResourceDAO {
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean showBroken, Tag tag) {
+	public List<FrontendResource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean showBroken, Tag tag) {
 		SolrQuery query = new SolrQueryBuilder().type("N").
 			showBroken(showBroken).
 			dateRange(60).
@@ -205,25 +206,25 @@ public class SolrBackedResourceDAO {
 		return getQueryResults(query);
 	}
 
-	public List<Resource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems) {
+	public List<FrontendResource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean showBroken, int maxItems) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").tag(tag).maxItems(maxItems).publisher(publisher).toQuery();			
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 		
-	public List<Resource> getPublisherFeeds(Website publisher, boolean showBroken) {
+	public List<FrontendResource> getPublisherFeeds(Website publisher, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("F").publisher(publisher).toQuery();			
 		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getPublisherWatchlist(Website publisher, boolean showBroken) {
+	public List<FrontendResource> getPublisherWatchlist(Website publisher, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("L").publisher(publisher).toQuery();			
 		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {	
+	public List<FrontendResource> getCommentedNewsitemsForTag(Tag tag, boolean showBroken, int maxItems, int startIndex) {	
 		SolrQuery query = getCommentedNewsitemsForTagQuery(tag, showBroken);			
 		setDateDescendingOrder(query);;
 		query.setStart(startIndex);
@@ -258,15 +259,15 @@ public class SolrBackedResourceDAO {
 		return archiveLinks;
 	}
 	
-	public List<Resource> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
-		List <Resource> publishers = new ArrayList<Resource>();
+	public List<FrontendResource> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
+		List <FrontendResource> publishers = new ArrayList<FrontendResource>();
 		for (PublisherContentCount publisherCount : this.getAllPublishersWithContentCounts(shouldShowBroken, mustHaveNewsitems)) {
 			publishers.add(publisherCount.getPublisher());
 		}
 		return publishers;
 	}
 	
-	public List<Resource> getNewsitemsForMonth(Date month, boolean showBroken) {	
+	public List<FrontendResource> getNewsitemsForMonth(Date month, boolean showBroken) {	
 		final String monthString = new DateFormatter().formatDate(month, DateFormatter.MONTH_FACET);
 		SolrQuery query = new SolrQueryBuilder().month(monthString).type("N").showBroken(showBroken).toQuery();
 		setDateDescendingOrder(query);;
@@ -281,53 +282,52 @@ public class SolrBackedResourceDAO {
 	}
 	
 	// TODO need a paginating method
-	public List<Resource> getAllWatchlists(boolean showBroken) {
+	public List<FrontendResource> getAllWatchlists(boolean showBroken) {
 		// TODO make this limit to things which changed in the last week.
 		SolrQuery query = new SolrQueryBuilder().type("L").maxItems(255).showBroken(showBroken).toQuery();
 		query.setSortField("lastChanged", ORDER.desc);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getBrokenSites() {
+	public List<FrontendResource> getBrokenSites() {
 		SolrQuery query = new SolrQueryBuilder().type("W").maxItems(255).isBroken().toQuery();
 		query.setSortField("titleSort", ORDER.asc);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getCalendarFeedsForTag(Tag tag, boolean showBroken) {
+	public List<FrontendResource> getCalendarFeedsForTag(Tag tag, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("C").showBroken(showBroken).toQuery();
 		setTitleSortOrder(query);
 		return getQueryResults(query);
 	}
 
-	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken) {
+	public List<FrontendResource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken) {
 		return getPublisherNewsitems(publisher, maxItems, showBroken, 0);
 	}
 		
-	public List<Resource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken, int startIndex) {
+	public List<FrontendResource> getPublisherNewsitems(Website publisher, int maxItems, boolean showBroken, int startIndex) {
 		SolrQuery query = new SolrQueryBuilder().type("N").publisher(publisher).showBroken(showBroken).maxItems(maxItems).startIndex(startIndex).toQuery();
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
+	public List<FrontendResource> getTaggedNewsitems(Set<Tag> tags, boolean showBroken, int startIndex, int maxItems) {
 		log.info("Getting newsitems for tags: " + tags + " startIndex: " + startIndex + " maxItems: " + maxItems);		
 		SolrQuery query = new SolrQueryBuilder().type("N").tags(tags).showBroken(showBroken).startIndex(startIndex).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);;
     	return getQueryResults(query);
     }
 		
-	public List<Resource> getQueryResults(SolrQuery query) {
-		List<Resource> results = new ArrayList<Resource>();
+	public List<FrontendResource> getQueryResults(SolrQuery query) {
 		log.debug("Solr query: " + query);
 		QueryResponse response = solrQueryService.querySolr(query);
 		if (response != null) {
-			loadResourcesFromSolrResults(results, response);			
+			return loadResourcesFromSolrResults(response);			
 		}
-		return results;
+		return null;
 	}
 	
-	public List<Resource> getLatestNewsitems(int maxItems, boolean showBroken) {
+	public List<FrontendResource> getLatestNewsitems(int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
@@ -392,13 +392,13 @@ public class SolrBackedResourceDAO {
 		return tagDAO.loadTagsById(tagIds);
 	}
 	
-	public List<Resource> getValidGeotagged(int startIndex, int maxItems, boolean showBroken) {
+	public List<FrontendResource> getValidGeotagged(int startIndex, int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().startIndex(startIndex).maxItems(maxItems).toQuery();
 		setDateDescendingOrder(query);;
 		return getQueryResults(query);
 	}
 	
-	public List<Resource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius, boolean showBroken, int maxItems) {
+	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius, boolean showBroken, int maxItems) {
 		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, maxItems);
 		return getQueryResults(query);
 	}
@@ -467,15 +467,16 @@ public class SolrBackedResourceDAO {
 		return publishers;
 	}
 	
-	private void loadResourcesFromSolrResults(List<Resource> results, QueryResponse response) {
+	private List<FrontendResource> loadResourcesFromSolrResults(QueryResponse response) {
+		List<FrontendResource> results = new ArrayList<FrontendResource>();
 		SolrDocumentList solrResults = response.getResults();
-	
-		for (SolrDocument result : solrResults) {			
-			Resource resource = resourceHydrator.hydrateResource(result);
+		for (SolrDocument result : solrResults) {
+			FrontendResource resource = resourceHydrator.hydrateResource(result);
 			if (resource != null) {
 				results.add(resource);	
 			}
 		}
+		return results;
 	}
 
 	private int getQueryCount(SolrQuery query) {
