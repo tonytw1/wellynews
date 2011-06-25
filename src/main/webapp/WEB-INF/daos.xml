@@ -13,7 +13,6 @@
 	</bean>
 		
 	<bean id="solrQueryService" class="nz.co.searchwellington.repositories.solr.SolrQueryService">
-		<constructor-arg ref="solrInputDocumentBuilder" />
 		<constructor-arg ref="solrServer" />
 	</bean>
 			

@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
-
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
@@ -23,11 +20,9 @@ public class SolrQueryService {
 	
 	private static Logger log = Logger.getLogger(SolrQueryService.class);
 
-	private SolrInputDocumentBuilder solrInputDocumentBuilder;
 	private SolrServer solr;
 	
-	public SolrQueryService(SolrInputDocumentBuilder solrInputDocumentBuilder, SolrServer solr) {
-		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
+	public SolrQueryService(SolrServer solr) {
 		this.solr = solr;
 	}
 	
@@ -68,9 +63,9 @@ public class SolrQueryService {
 		}		
 	}
 	
-	public void updateIndexForResources(List<Resource> resources) {
+	public void updateIndexForResources(List<SolrInputDocument> resources) {
 		try {
-			for (Resource resource : resources) {
+			for (SolrInputDocument resource : resources) {
 				UpdateRequest updateRequest = getUpdateRequest(resource);
 				updateRequest.process(solr);			
 			}
@@ -82,10 +77,9 @@ public class SolrQueryService {
 		}
 	}
 	
-	private UpdateRequest getUpdateRequest(Resource resource) {
+	private UpdateRequest getUpdateRequest(SolrInputDocument resource) {
 		UpdateRequest updateRequest = new UpdateRequest();
-		SolrInputDocument inputDocument = solrInputDocumentBuilder.buildResouceInputDocument(resource);
-		updateRequest.add(inputDocument);
+		updateRequest.add(resource);
 		return updateRequest;
 	}
 	

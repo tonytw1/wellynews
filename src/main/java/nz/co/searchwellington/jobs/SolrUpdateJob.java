@@ -7,6 +7,7 @@ import nz.co.searchwellington.repositories.solr.SolrQueryService;
 import nz.co.searchwellington.repositories.solr.SolrUpdateQueue;
 
 import org.apache.log4j.Logger;
+import org.apache.solr.common.SolrInputDocument;
 import org.springframework.transaction.annotation.Transactional;
 
 public class SolrUpdateJob {
@@ -28,7 +29,7 @@ public class SolrUpdateJob {
     public void run() {
     	log.info("Running solr index update");    	
     	while (solrUpdateQueue.hasNext()) {
-    		List<Resource> resources = solrUpdateQueue.getBatch();    	
+    		List<SolrInputDocument> resources = solrUpdateQueue.getBatch();    	
     		if (!resources.isEmpty()) {
     			log.info("Passing " + resources.size() + " items to solr");
     			solrQueryService.updateIndexForResources(resources);

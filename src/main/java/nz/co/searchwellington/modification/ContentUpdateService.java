@@ -3,6 +3,7 @@ package nz.co.searchwellington.modification;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
 import nz.co.searchwellington.repositories.SuggestionRepository;
 import nz.co.searchwellington.repositories.solr.SolrUpdateQueue;
 
@@ -13,19 +14,21 @@ public class ContentUpdateService {
 	private ResourceRepository resourceDAO;
 	private SuggestionRepository suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
+	private SolrInputDocumentBuilder solrInputDocumentBuilder;
 	private SolrUpdateQueue solrUpdateQueue;
 	
 	public ContentUpdateService(ResourceRepository resourceDAO,
 			SuggestionRepository suggestionsDAO,
 			LinkCheckerQueue linkCheckerQueue,
+			SolrInputDocumentBuilder solrInputDocumentBuilder,
 			SolrUpdateQueue solrUpdateQueue) {
-		super();
 		this.resourceDAO = resourceDAO;
 		this.suggestionsDAO = suggestionsDAO;
 		this.linkCheckerQueue = linkCheckerQueue;
+		this.solrInputDocumentBuilder = solrInputDocumentBuilder;	// TODO Push into solrUpdateQueue
 		this.solrUpdateQueue = solrUpdateQueue;
 	}
-	
+
 	public ContentUpdateService() {
 	}
 	
@@ -53,7 +56,7 @@ public class ContentUpdateService {
 			resource.setHttpStatus(0);
 			linkCheckerQueue.add(resource);
 		}
-		solrUpdateQueue.add(resource);
+		solrUpdateQueue.add(solrInputDocumentBuilder.buildResouceInputDocument(resource));
 	}
 	
 	@Transactional
