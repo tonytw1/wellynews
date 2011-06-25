@@ -397,16 +397,19 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	<bean id="solrUpdateQueue" class="nz.co.searchwellington.repositories.solr.SolrUpdateQueue" />
+
+	<bean id="frontendCotntentUpdater" class="nz.co.searchwellington.repositories.FrontendContentUpdater">
+		<constructor-arg ref="solrUpdateQueue" />
+		<constructor-arg ref="solrInputDocumentBuilder" />			
+	</bean>
 			
 	<bean id="contentUpdateService"  class="nz.co.searchwellington.modification.ContentUpdateService">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="suggestionDAO" />	
-		<constructor-arg ref="linkCheckerQueue" />		
-		<constructor-arg ref="solrInputDocumentBuilder" />
-		<constructor-arg ref="solrUpdateQueue" />
+		<constructor-arg ref="linkCheckerQueue" />
+		<constructor-arg ref="frontendCotntentUpdater" />
 	</bean>
-	
-		
+			
 	<bean id="suppressionService" class="nz.co.searchwellington.repositories.SupressionService">
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="suggestionDAO" />		
