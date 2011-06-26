@@ -357,7 +357,7 @@ public class ResourceEditController extends BaseMultiActionController {
                    
             submissionProcessingService.processUrl(request, editResource);
             submissionProcessingService.processTitle(request, editResource);
-            submissionProcessingService.processGeocode(request, editResource);
+            editResource.setGeocode(submissionProcessingService.processGeocode(request));
             submissionProcessingService.processDate(request, editResource);
             submissionProcessingService.processHeld(request, editResource);
             submissionProcessingService.processEmbargoDate(request, editResource);

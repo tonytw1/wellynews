@@ -10,25 +10,25 @@ import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 public class Tag {
     
-    int id;
-    String name;
-    String displayName;
-    Tag parent;
-    Set <Tag> children;
-    boolean hidden;
+	private int id;
+	private String name;
+	private String displayName;
+	private Tag parent;
+	private Set <Tag> children;
+	private boolean hidden;
     
-    int flickrCount;    
-    String mainImage;
-    String secondaryImage;
-   
-    Feed relatedFeed;
-    String relatedTwitter;
+	private int flickrCount;
+	private String mainImage;
+	private String secondaryImage;
+	
+	private Feed relatedFeed;
+	private String relatedTwitter;
     private String autotagHints;
-        
+    private Geocode geocode;
+            
     public Tag() {        
     }
-    
-    
+        
     public Tag(int id, String name, String displayName, Tag parent, Set <Tag> children, int flickrCount, boolean hidden) {  
         this.id = id;
         this.name = name;
@@ -160,7 +160,7 @@ public class Tag {
 		this.hidden = hidden;
 	}
 
-
+	@Deprecated
 	public SyndEntry getRssItem() {
 	        SyndEntry entry = new SyndEntryImpl();      
 	        entry.setTitle(displayName);
@@ -171,6 +171,14 @@ public class Tag {
 	        description.setValue(name);
 	        entry.setDescription(description);
 	        return entry;
-	 }
-        
+	}
+
+	public Geocode getGeocode() {
+		return geocode;
+	}
+
+	public void setGeocode(Geocode geocode) {
+		this.geocode = geocode;
+	}
+	
 }

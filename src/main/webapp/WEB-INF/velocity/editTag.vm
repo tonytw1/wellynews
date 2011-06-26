@@ -24,6 +24,10 @@
 					<input name="displayName" value="$tag.displayName" />
 					<br />
 					
+					<label for="geocode">Geocode: </label>
+					<input name="geocode" #if($tag.geocode) value="$tag.geocode.address" #end />
+					<br />
+					
 					#if ($tag_select) 
 						<label for="parent">Parent Tag: </label>
 				    	$tag_select	

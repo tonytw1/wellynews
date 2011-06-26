@@ -77,11 +77,9 @@
    		<property name="embargoedUntil" type="timestamp">
         		<column name="embargoed_until"/>
         </property>
-        
-        <many-to-one name="geocode" class="nz.co.searchwellington.model.Geocode" column="geocode_id" 
-        	cascade="all" />
-		    
-        
+                
+        <many-to-one name="geocode" class="nz.co.searchwellington.model.Geocode" column="geocode_id" cascade="all" />
+                
     	<subclass name="nz.co.searchwellington.model.WebsiteImpl"
 			proxy="nz.co.searchwellington.model.Website"
 			discriminator-value="W">

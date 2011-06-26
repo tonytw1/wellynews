@@ -5,13 +5,10 @@
 
 <hibernate-mapping>
 
-	<class name="nz.co.searchwellington.model.Tag"
-		proxy="nz.co.searchwellington.model.Tag" table="tag">
-
+	<class name="nz.co.searchwellington.model.Tag" proxy="nz.co.searchwellington.model.Tag" table="tag">
 	
 		<cache usage="read-write" />
-
-
+		
 		<id name="id" type="integer" unsaved-value="0">
 			<column name="id" sql-type="integer" not-null="true" />
 			<generator class="native" />
@@ -45,11 +42,8 @@
 			<column name="secondary_image" length="255" not-null="false" />
 		</property>
 		
-		<many-to-one name="parent"
-			class="nz.co.searchwellington.model.Tag" column="parent"
-			cascade="" />
-
-
+		<many-to-one name="parent" class="nz.co.searchwellington.model.Tag" column="parent" cascade="" />
+		
 		<set name="children" inverse="true"
 			cascade="all,all-delete-orphan" 
 			order-by="name">
@@ -65,7 +59,9 @@
         <property name="autotagHints">
 			<column name="autotag_hints" length="255" not-null="false" />
 		</property>
-                
+        
+     	<many-to-one name="geocode" class="nz.co.searchwellington.model.Geocode" column="geocode_id" cascade="all" />
+     	                
 	</class>
 
 </hibernate-mapping>

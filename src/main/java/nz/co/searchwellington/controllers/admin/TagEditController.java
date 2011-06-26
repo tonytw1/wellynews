@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
@@ -21,7 +22,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class TagEditController extends MultiActionController {
     
-    static Logger log = Logger.getLogger(TagEditController.class);
+    private static Logger log = Logger.getLogger(TagEditController.class);
     
     private AdminRequestFilter requestFilter;
     private TagWidgetFactory tagWidgetFactory;
@@ -30,17 +31,18 @@ public class TagEditController extends MultiActionController {
     private TagModificationService tagModifcationService;
 	private LoggedInUserFilter loggedInUserFilter;
     private EditPermissionService editPermissionService;
-    
+    private SubmissionProcessingService submissionProcessingService;
     
     public TagEditController() {       
     }
-
-
+    
     public TagEditController(AdminRequestFilter requestFilter,
 			TagWidgetFactory tagWidgetFactory, UrlStack urlStack,
 			TagDAO tagDAO, TagModificationService tagModifcationService,
 			LoggedInUserFilter loggedInUserFilter,
-			EditPermissionService editPermissionService) {
+			EditPermissionService editPermissionService,
+			SubmissionProcessingService submissionProcessingService) {
+		super();
 		this.requestFilter = requestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
 		this.urlStack = urlStack;
@@ -48,10 +50,10 @@ public class TagEditController extends MultiActionController {
 		this.tagModifcationService = tagModifcationService;
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.editPermissionService = editPermissionService;
+		this.submissionProcessingService = submissionProcessingService;
 	}
     
-    
-    @Transactional
+	@Transactional
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {
     	    	
         ModelAndView modelAndView = new ModelAndView("submitTag");    
@@ -64,8 +66,7 @@ public class TagEditController extends MultiActionController {
         modelAndView.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent(), new HashSet<Tag>()).toString());
         return modelAndView;
     }
-    
-    
+        
     @Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView("editTag");   
@@ -84,8 +85,7 @@ public class TagEditController extends MultiActionController {
         
         return mv;
     }
-    
-            
+                
     @Transactional
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) {	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -111,10 +111,8 @@ public class TagEditController extends MultiActionController {
         return mv;
     }
     
-    
     @Transactional
-    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
-        
+    public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView modelAndView = new ModelAndView("savedTag");    
         modelAndView.addObject("heading", "Tag Saved");
 
@@ -131,6 +129,8 @@ public class TagEditController extends MultiActionController {
         
         editTag.setName(request.getParameter("name"));
         editTag.setDisplayName(request.getParameter("displayName"));
+        
+        editTag.setGeocode(submissionProcessingService.processGeocode(request));
         
         populateRelatedTwitter(request, editTag);        
         populateAutotagHints(request, editTag);
@@ -188,8 +188,7 @@ public class TagEditController extends MultiActionController {
         	editTag.setRelatedTwitter(null);
         }
 	}
-    
-    
+        
     private void readImageFieldFromRequest(Tag editTag, HttpServletRequest request) {
         String mainImage = request.getParameter("main_image");
         String secondaryImage = request.getParameter("secondary_image");

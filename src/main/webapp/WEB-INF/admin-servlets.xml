@@ -43,8 +43,7 @@
 			</bean>		
 		</property>
 	</bean>
-
-	
+		
 	<bean id="tagEditController" class="nz.co.searchwellington.controllers.admin.TagEditController">
 		<constructor-arg ref="adminRequestFilter" />
 		<constructor-arg ref="tagWidgetFactory" />
@@ -53,7 +52,8 @@
 		<constructor-arg ref="tagModificationService" />
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="loggedInUserFilter" />
-		
+		<constructor-arg ref="submissionProcessingService" />
+				
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

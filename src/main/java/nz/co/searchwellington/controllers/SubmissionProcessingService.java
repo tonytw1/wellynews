@@ -81,10 +81,8 @@ public class SubmissionProcessingService {
 		Image image = (Image) request.getAttribute("image");
     	editResource.setImage(image);
     }
-
-
-
-	public void processGeocode(HttpServletRequest req, Resource editResource) {      
+	
+	public Geocode processGeocode(HttpServletRequest req) {      
 		log.info("Starting processing of geocode.");
 		if (req.getParameter(REQUEST_GEOCODE_NAME) != null) {           
 
@@ -95,18 +93,15 @@ public class SubmissionProcessingService {
 	        if (address != null && !address.trim().equals("")) {
 	            Geocode resolvedGeocode = geocodeService.resolveAddress(address);
 	            if (resolvedGeocode != null) {
-	            	editResource.setGeocode(resolvedGeocode);
+	            	return resolvedGeocode;
 	            } else {
-	            	editResource.setGeocode(new Geocode(address));
-	            }
-	            return;
+	            	return new Geocode(address);
+	            }	            
 	        }
 		}
-		editResource.setGeocode(null);
+		return null;
 	}
-
-
-
+	
 	public void processDate(HttpServletRequest request, Resource editResource) {
         editResource.setDate((Date) request.getAttribute(REQUEST_DATE_NAME));
         if (editResource.getDate() == null && editResource.getId() == 0) {

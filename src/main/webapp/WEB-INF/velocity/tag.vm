@@ -50,6 +50,10 @@
 			#parse("includes/tag_admin_links.vm")	
 			#parse("includes/child_tags.vm")
 		#end
+		
+		#if ($tag.geocode)
+			$tag.geocode.latitude , $tag.geocode.longitude
+		#end
 
 		#parse("includes/search_widget.vm")
 			

@@ -69,7 +69,7 @@ public class ApiController extends MultiActionController {
 	        submissionProcessingService.processUrl(request, resource);	         
 	    	submissionProcessingService.processTitle(request, resource);
 	    	log.info("Calling geocode");
-	    	submissionProcessingService.processGeocode(request, resource);
+	    	resource.setGeocode(submissionProcessingService.processGeocode(request));
 	    	submissionProcessingService.processDate(request, resource);
 	    	submissionProcessingService.processDescription(request, resource);
 	    	submissionProcessingService.processTags(request, resource, loggedInUser);
