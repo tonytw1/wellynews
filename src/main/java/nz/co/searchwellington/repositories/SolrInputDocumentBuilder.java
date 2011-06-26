@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories;
 
 import java.util.List;
+import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
@@ -78,14 +79,6 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("feedLatestItemDate", ((Feed) resource).getLatestItemDate());			
 		}
 		
-		final Geocode geocode = resource.getGeocode();
-		if (geocode != null && geocode.isValid()) {
-			inputDocument.addField("geotagged", true);
-			inputDocument.addField("address", geocode.getAddress());
-			inputDocument.addField("position", geocode.getLatitude() + "," + geocode.getLongitude());
-		} else {
-			inputDocument.addField("geotagged", false);
-		}
 		
 		for(HandTagging handTagging : handTaggingDAO.getHandTaggingsForResource(resource)) {			
 			final int userId = handTagging.getUser().getId();
@@ -99,10 +92,12 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("handTags", tag.getId());
 		}
 		
-		for(Tag tag: taggingReturnsService.getIndexTagsForResource(resource)) {
+		final Set<Tag> indexTagsForResource = taggingReturnsService.getIndexTagsForResource(resource);
+		for(Tag tag: indexTagsForResource) {
 			inputDocument.addField("tags", tag.getId());
 		}
 	
+		processGeotags(resource, indexTagsForResource, inputDocument);
 		
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
@@ -117,8 +112,7 @@ public class SolrInputDocumentBuilder {
 		
 		return inputDocument;
 	}
-
-
+	
 	private Website getIndexPublisherForResource(Resource resource) {
 		Website publisher = null;
 		if (resource.getType().equals("N") || resource.getType().equals("F") || resource.getType().equals("L")) {	// TODO instance of required
@@ -126,5 +120,32 @@ public class SolrInputDocumentBuilder {
 		}
 		return publisher;
 	}
-
+	
+	private void processGeotags(Resource resource, Set<Tag> indexTagsForResource, SolrInputDocument inputDocument) {
+		Geocode geocode = resource.getGeocode();
+		if (!(geocode != null && geocode.isValid())) {
+			geocode = getGeotagFromFirstResourceTagWithLocation(indexTagsForResource);
+		}		
+		applyGeotagToIndexDocument(inputDocument, geocode);		
+	}
+	
+	private Geocode getGeotagFromFirstResourceTagWithLocation(Set<Tag> indexTagsForResource) {
+		for (Tag tag : indexTagsForResource) {
+			if (tag.getGeocode() != null && tag.getGeocode().isValid()) {
+				return tag.getGeocode();
+			}
+		}
+		return null;
+	}
+	
+	private void applyGeotagToIndexDocument(SolrInputDocument inputDocument, final Geocode geocode) {
+		if (geocode != null && geocode.isValid()) {
+			inputDocument.addField("geotagged", true);
+			inputDocument.addField("address", geocode.getAddress());
+			inputDocument.addField("position", geocode.getLatitude() + "," + geocode.getLongitude());
+		} else {
+			inputDocument.addField("geotagged", false);
+		}		
+	}
+	
 }
