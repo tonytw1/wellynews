@@ -154,25 +154,11 @@ public class Tag {
 	 public boolean isHidden() {
 		 return hidden;
 	}
-
-
+	 
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
 	}
-
-	@Deprecated
-	public SyndEntry getRssItem() {
-	        SyndEntry entry = new SyndEntryImpl();      
-	        entry.setTitle(displayName);
-	        entry.setLink(name);
-	        
-	        SyndContent description = new SyndContentImpl();
-	        description.setType("text/plain");
-	        description.setValue(name);
-	        entry.setDescription(description);
-	        return entry;
-	}
-
+	
 	public Geocode getGeocode() {
 		return geocode;
 	}
