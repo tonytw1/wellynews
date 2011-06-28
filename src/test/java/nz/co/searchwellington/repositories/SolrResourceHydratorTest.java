@@ -5,11 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
-import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedImpl;
-import nz.co.searchwellington.model.FrontEndWebsite;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
@@ -84,7 +79,6 @@ public class SolrResourceHydratorTest {
 		assertBaseFields(hydratedFeed);
 		//assertEquals(PUBLISHER_NAME, hydratedFeed.getPublisherName());
 	}
-	
 	
 	// TODO could be replaced with a call to the real solr row builder?
 	private SolrDocument buildSolrRecord(String type) {

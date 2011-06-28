@@ -1,9 +1,9 @@
 package nz.co.searchwellington.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
-
-
 
 public abstract class ResourceImpl implements Resource {
 
@@ -142,5 +142,17 @@ public abstract class ResourceImpl implements Resource {
 	public void setHeld(boolean held) {
 		this.held = held;
 	}
-			
+	
+	@Override
+	public List<Tag> getTags() {
+		// TODO Auto-generated method stub
+		return new ArrayList<Tag>();
+	}
+	
+	@Override
+	public List<Tag> getHandTags() {
+		// TODO Auto-generated method stub
+		return new ArrayList<Tag>();
+	}
+	
 }

@@ -5,7 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class FrontEndWebsite implements Website {
+import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
+
+public class FrontEndWebsite extends FrontendResourceImpl implements Website {
 
 	Website website;
 	private List<Tag> tags;

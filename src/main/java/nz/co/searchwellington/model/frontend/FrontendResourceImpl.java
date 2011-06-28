@@ -1,19 +1,22 @@
 package nz.co.searchwellington.model.frontend;
 
 import java.util.Date;
+import java.util.List;
+
+import nz.co.searchwellington.model.Tag;
 
 public class FrontendResourceImpl implements FrontendResource {
 	
     private int id;
     private String name;
     private String url;
-    private int httpStatus;
-    
+    private int httpStatus;    
     private Date date;
-    private String description;
-    
+    private String description;    
     private Date liveTime;
-    
+    private List<Tag> tags;
+    private List<Tag> handTags;
+        
 	public int getId() {
 		return id;
 	}
@@ -49,13 +52,24 @@ public class FrontendResourceImpl implements FrontendResource {
 	}
 	public void setDescription(String description) {
 		this.description = description;
-	}
-	
+	}	
 	public Date getLiveTime() {
 		return liveTime;
 	}
 	public void setLiveTime(Date liveTime) {
 		this.liveTime = liveTime;
 	}
-
+	public List<Tag> getTags() {
+		return tags;
+	}
+	public void setTags(List<Tag> tags) {
+		this.tags = tags;
+	}
+	public List<Tag> getHandTags() {
+		return handTags;
+	}
+	public void setHandTags(List<Tag> handTags) {
+		this.handTags = handTags;
+	}
+	
 }

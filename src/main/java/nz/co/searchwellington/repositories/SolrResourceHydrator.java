@@ -55,6 +55,8 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			item.setUrl((String) result.getFieldValue("url"));
 			item.setHttpStatus((int) ((Integer) result.getFieldValue("httpStatus")));
 			item.setDate((Date) result.getFieldValue("date"));
+			item.setTags(hydrateTags(result, "tags"));
+			item.setHandTags(hydrateTags(result, "handTags"));
 			return item;
 		}
 		
