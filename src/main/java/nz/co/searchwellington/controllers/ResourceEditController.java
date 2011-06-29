@@ -475,7 +475,7 @@ public class ResourceEditController extends BaseMultiActionController {
     		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
     		if (item > 0 && item <= feednewsItems.size()) {                    
     			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
-    			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
+    			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem);
     		}
     		return newsitem;
     	}

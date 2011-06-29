@@ -11,7 +11,8 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     CommentFeed commentFeed;	// TODO should be visible on the interface
     Image image;
     Feed feed;
-      
+    Date accepted;
+    
     private Set<Twit> reTwits;
     
     
@@ -77,5 +78,13 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 	public void setFeed(Feed feed) {
 		this.feed = feed;
 	}
-	  
+
+	public Date getAccepted() {
+		return accepted;
+	}
+
+	public void setAccepted(Date accepted) {
+		this.accepted = accepted;
+	}
+	
 }

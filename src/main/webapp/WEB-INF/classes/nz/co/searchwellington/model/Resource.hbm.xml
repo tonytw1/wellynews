@@ -134,9 +134,11 @@
 				<key column="resource_id" />
 				<many-to-many class="nz.co.searchwellington.model.Twit" column="twit_id" order-by="date" />
 			</set>
-        		
+			
+			<property name="accepted" type="timestamp">
+        		<column name="accepted"/>
+        	</property>        	        		
 		</subclass>
-
 
 		<subclass name="nz.co.searchwellington.model.Watchlist"	discriminator-value="L">
 			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="watchlist_publisher" cascade="" />

@@ -1,6 +1,5 @@
-
 package nz.co.searchwellington.feeds;
-import nz.co.searchwellington.model.Feed;
+
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
@@ -16,17 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class FeedItemAcceptor {
 	
-	static Logger log = Logger.getLogger(FeedItemAcceptor.class);
+	private static Logger log = Logger.getLogger(FeedItemAcceptor.class);
 
 	private RssfeedNewsitemService rssfeedNewsitemService;
     private AutoTaggingService autoTagger;   
     private ContentUpdateService contentUpdateService;
-
-            
+    
 	public FeedItemAcceptor() {
 	}
-
-
+	
 	public FeedItemAcceptor(RssfeedNewsitemService rssfeedNewsitemService,
 			AutoTaggingService autoTagger,
 			ContentUpdateService contentUpdateService) {
@@ -34,28 +31,29 @@ public class FeedItemAcceptor {
 		this.autoTagger = autoTagger;
 		this.contentUpdateService = contentUpdateService;
 	}
-
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW) 
-	public void acceptFeedItem(FeedNewsitem feednewsitem, Feed feed) {
+	public void acceptFeedItem(FeedNewsitem feednewsitem) {
 		log.info("Accepting: " + feednewsitem.getName() + " (" + feednewsitem.getName() + ")");
-		Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed);
+		Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem);
 		if (feednewsitem.getGeocode() != null) {
 			newsitem.setGeocode(new Geocode(feednewsitem.getGeocode().getAddress(), feednewsitem.getGeocode().getLatitude(), feednewsitem.getGeocode().getLongitude()));
 		}
-        flattenLoudCapsInTitle(newsitem);        
+        
+		flattenLoudCapsInTitle(newsitem);        
         if (newsitem.getDate() == null) {
         	log.info("Accepting a feeditem with no date; setting date to current time");            
         	newsitem.setDate(new DateTime().toDate());
         }
+        newsitem.setAccepted(new DateTime().toDate());
         
         contentUpdateService.create(newsitem);
         autoTagger.autotag(newsitem);
         contentUpdateService.update(newsitem);
     }
 
-    
-	private void flattenLoudCapsInTitle(Resource resource) {
+    // TODO Push to service for testing.
+	private void flattenLoudCapsInTitle(Resource resource) {		
 		String flattenedTitle = UrlFilters.lowerCappedSentence(resource.getName());           
         if (!flattenedTitle.equals(resource.getName())) {
         	resource.setName(flattenedTitle);

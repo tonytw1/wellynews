@@ -93,10 +93,10 @@ public class FeedReader {
 			String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
 			feednewsitem.setUrl(cleanSubmittedItemUrl);
 		    
-		    if (feed.getAcceptancePolicy().startsWith("accept")) {
+		    if (feed.getAcceptancePolicy().startsWith("accept")) {	// TODO push feed up to match the name on this method.
 		    	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
 		    	if (acceptThisItem) {
-		    		feedItemAcceptor.acceptFeedItem(feednewsitem, feed);
+		    		feedItemAcceptor.acceptFeedItem(feednewsitem);
 		    	}
 		    	
 		    } else {                	

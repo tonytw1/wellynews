@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model;
 
+import java.util.Date;
 import java.util.Set;
 
 public interface Newsitem extends PublishedResource, Commentable {
@@ -13,5 +14,9 @@ public interface Newsitem extends PublishedResource, Commentable {
 	
 	public Feed getFeed();
 	public void setFeed(Feed feed);
+
+	public Date getAccepted();
+
+	public void setAccepted(Date accepted);
 	
 }

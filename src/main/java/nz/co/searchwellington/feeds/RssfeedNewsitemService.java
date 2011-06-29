@@ -40,17 +40,16 @@ public abstract class RssfeedNewsitemService {
 	}
 	
 	// TODO merge with addSuppressAndLocalCopyInformation?
-	public final Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem, Feed feed) {
+	public Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem) {
 		// TODO why are we newing up an instance of our superclass?
 	    String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : ""; 
 		Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feedNewsitem.getPublisher(),
 	    		new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
-	    newsitem.setImage(feedNewsitem.getImage());		
-	    newsitem.setPublisher(feed.getPublisher());
-        newsitem.setFeed(feed);
+	    newsitem.setImage(feedNewsitem.getImage());
+	    newsitem.setFeed(feedNewsitem.getFeed());
+	    newsitem.setPublisher(feedNewsitem.getFeed().getPublisher());	    
 	    return newsitem;
 	}
-	
 	
 	// TODO should return a FeedNewsitem
 	public Newsitem getFeedNewsitemByUrl(String url) {
@@ -58,7 +57,7 @@ public abstract class RssfeedNewsitemService {
 			List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
 			for (FeedNewsitem feedNewsitem : feednewsItems) {                	
 				if (feedNewsitem.getUrl().equals(url)) {					
-					return this.makeNewsitemFromFeedItem(feedNewsitem, feed);					
+					return this.makeNewsitemFromFeedItem(feedNewsitem);					
 				}
 			}
 		}
