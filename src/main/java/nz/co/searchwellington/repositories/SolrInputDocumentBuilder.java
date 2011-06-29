@@ -7,7 +7,6 @@ import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -15,6 +14,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.solr.indexing.SolrGeotagHandler;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.log4j.Logger;
@@ -97,7 +97,7 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField("tags", tag.getId());
 		}
 	
-		processGeotags(resource, indexTagsForResource, inputDocument);
+		inputDocument = new SolrGeotagHandler().processGeotags(resource, indexTagsForResource, inputDocument);
 		
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
@@ -119,36 +119,6 @@ public class SolrInputDocumentBuilder {
 			publisher = ((PublishedResource) resource).getPublisher();
 		}
 		return publisher;
-	}
-	
-	private void processGeotags(Resource resource, Set<Tag> indexTagsForResource, SolrInputDocument inputDocument) {
-		Geocode geocode = resource.getGeocode();
-		if (geocode != null && geocode.isValid()) {
-			applyGeotagToIndexDocument(inputDocument, geocode);
-		} else {
-			applyGeotagToIndexDocument(inputDocument, getGeotagFromFirstResourceTagWithLocation(indexTagsForResource));			
-		}
-	}
-	
-	private Geocode getGeotagFromFirstResourceTagWithLocation(Set<Tag> indexTagsForResource) {
-		for (Tag tag : indexTagsForResource) {
-			if (tag.getGeocode() != null && tag.getGeocode().isValid()) {
-				log.info("Found subsitute geotag for resource on resource index tag: " + tag.getName());
-				return tag.getGeocode();
-			}
-		}
-		return null;
-	}
-	
-	private void applyGeotagToIndexDocument(SolrInputDocument inputDocument, final Geocode geocode) {
-		if (geocode != null && geocode.isValid()) {
-			log.info("Appling geotag '" + geocode.getAddress() + "' to resource");
-			inputDocument.addField("geotagged", true);
-			inputDocument.addField("address", geocode.getAddress());
-			inputDocument.addField("position", geocode.getLatitude() + "," + geocode.getLongitude());
-		} else {
-			inputDocument.addField("geotagged", false);
-		}		
 	}
 	
 }
