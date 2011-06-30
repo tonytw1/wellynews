@@ -19,7 +19,8 @@
 		<constructor-arg ref="snapshotBodyExtractor" />
 		<constructor-arg ref="anonUserService" />
 		<constructor-arg ref="contentRetrievalService" />
-		<constructor-arg ref="handTaggingDAO" />		
+		<constructor-arg ref="handTaggingDAO" />
+		<constructor-arg ref="feedItemAcceptor" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">

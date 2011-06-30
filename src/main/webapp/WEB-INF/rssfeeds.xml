@@ -19,7 +19,6 @@
 		<constructor-arg ref="feedReader" />		
 	</bean>
 	
-		
 	<bean id="feedReader" class="nz.co.searchwellington.feeds.FeedReader">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
@@ -28,17 +27,14 @@
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="contentUpdateService" />
-		<constructor-arg ref="feedItemAcceptor" />		
-	</bean>
-	
-		
-	<bean id="feedItemAcceptor" class="nz.co.searchwellington.feeds.FeedItemAcceptor">		
-		<constructor-arg ref="cachingRssfeedNewsitemService" />
+		<constructor-arg ref="feedItemAcceptor" />
 		<constructor-arg ref="autoTaggingService" />		
-		<constructor-arg ref="contentUpdateService" />
 	</bean>
-	
-				
+			
+	<bean id="feedItemAcceptor" class="nz.co.searchwellington.feeds.FeedItemAcceptor">		
+		<constructor-arg ref="cachingRssfeedNewsitemService" />	
+	</bean>
+					
 	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >
 		<constructor-arg ref="cacheManager" />
 	</bean>

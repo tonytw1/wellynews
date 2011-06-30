@@ -84,7 +84,9 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	@SuppressWarnings("unchecked")
 	private void populateGeotaggedFeedItems(ModelAndView mv) {
 		List<FeedNewsitem> mainContent = (List<FeedNewsitem>) mv.getModel().get("main_content");
-		mv.addObject("geocoded", rssfeedNewsitemService.extractGeotaggedFeeditems(mainContent));
+		if (mainContent != null) {
+			mv.addObject("geocoded", rssfeedNewsitemService.extractGeotaggedFeeditems(mainContent));
+		}
 	}
 	
 }

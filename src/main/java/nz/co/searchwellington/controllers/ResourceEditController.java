@@ -2,8 +2,6 @@ package nz.co.searchwellington.controllers;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -12,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
+import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
@@ -38,10 +37,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-
 public class ResourceEditController extends BaseMultiActionController {
     
-    Logger log = Logger.getLogger(ResourceEditController.class);
+   private Logger log = Logger.getLogger(ResourceEditController.class);
            
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
@@ -57,6 +55,7 @@ public class ResourceEditController extends BaseMultiActionController {
     private AnonUserService anonUserService;
     private ResourceRepository resourceDAO;
 	private HandTaggingDAO tagVoteDAO;
+	private FeedItemAcceptor feedItemAcceptor;
     
     public ResourceEditController(
 			RssfeedNewsitemService rssfeedNewsitemService,
@@ -73,7 +72,7 @@ public class ResourceEditController extends BaseMultiActionController {
 			SnapshotBodyExtractor snapBodyExtractor,
 			AnonUserService anonUserService,
 			ContentRetrievalService contentRetrievalService,
-			HandTaggingDAO tagVoteDAO) {
+			HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -91,6 +90,7 @@ public class ResourceEditController extends BaseMultiActionController {
 		this.anonUserService = anonUserService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.tagVoteDAO = tagVoteDAO;
+		this.feedItemAcceptor = feedItemAcceptor;
 	}
    
     
@@ -180,32 +180,26 @@ public class ResourceEditController extends BaseMultiActionController {
         	return null;
     	}
     	
-        Newsitem newsitem = null;
+        FeedNewsitem feedNewsitem = null;
         if (request.getAttribute("item") != null) {
-        	int item = (Integer) request.getAttribute("item");    	  
-        	newsitem = getRequestedFeedItemByFeedAndItemNumber(request, newsitem, item);      
-
+        	int item = (Integer) request.getAttribute("item");
+        	feedNewsitem = getRequestedFeedItemByFeedAndItemNumber(request, item);
+        	
         } else if (request.getParameter("url") != null) {
-        	newsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
+        	feedNewsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
         }
                 
-        if (newsitem == null) {
+        if (feedNewsitem == null) {
         	log.warn("No matching newsitem found for feed/item.");
         	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         	return null;
         }
-
+        
+        Newsitem acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, feedNewsitem);
 		ModelAndView modelAndView = new ModelAndView("acceptResource");
 		populateCommonLocal(modelAndView);
 		modelAndView.addObject("heading", "Accepting a submission");
-
-		boolean newsitemHasNoDate = (newsitem.getDate() == null);
-		if (newsitemHasNoDate) {
-			final Date today = Calendar.getInstance().getTime();
-			newsitem.setDate(today);
-		}
-
-		modelAndView.addObject("resource", newsitem);
+		modelAndView.addObject("resource", acceptedNewsitem);
 		modelAndView.addObject("publisher_select", "1");
 		modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
 		return modelAndView;
@@ -467,25 +461,23 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
 
-	private Newsitem getRequestedFeedItemByFeedAndItemNumber(HttpServletRequest request, Newsitem newsitem, int item) {
-		log.info("Looking for feeditem by feed and item number: " + item);
-		
+	private FeedNewsitem getRequestedFeedItemByFeedAndItemNumber(HttpServletRequest request, int item) {
+		log.info("Looking for feeditem by feed and item number: " + item);		
     	if (request.getAttribute("feedAttribute") != null) {
-    		Feed feed = (Feed) request.getAttribute("feedAttribute");   	     	  
-		
+    		Feed feed = (Feed) request.getAttribute("feedAttribute");		
     		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
     		if (item > 0 && item <= feednewsItems.size()) {                    
-    			FeedNewsitem feednewsitem = feednewsItems.get(item-1);
-    			newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem);
+    			return feednewsItems.get(item-1);
     		}
-    		return newsitem;
     	}
     	
     	log.warn("No feed found on request object; can't load newsitem");
     	return null;
 	}
     
-    private Newsitem getRequestedFeedItemByUrl(String url) {
+	
+	// TODO Inline
+    private FeedNewsitem getRequestedFeedItemByUrl(String url) {
     	return rssfeedNewsitemService.getFeedNewsitemByUrl(url);    	
     }
     

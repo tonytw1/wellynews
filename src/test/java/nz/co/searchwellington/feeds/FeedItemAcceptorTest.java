@@ -7,8 +7,6 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,8 +17,6 @@ import org.mockito.MockitoAnnotations;
 public class FeedItemAcceptorTest {
 
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
-	@Mock AutoTaggingService autoTagger;   
-	@Mock ContentUpdateService contentUpdateService;
 	
 	@Mock FeedNewsitem feednewsitem;
 	@Mock Feed feed;
@@ -38,7 +34,7 @@ public class FeedItemAcceptorTest {
 		Mockito.when(feed.getPublisher()).thenReturn(publisher);
 		Mockito.when(newsitem.getName()).thenReturn("HEADLINE");
 		Mockito.when(rssfeedNewsitemService.makeNewsitemFromFeedItem(Mockito.any(FeedNewsitem.class))).thenReturn(newsitem);
-		feedItemAcceptor = new FeedItemAcceptor(rssfeedNewsitemService, autoTagger, contentUpdateService);
+		feedItemAcceptor = new FeedItemAcceptor(rssfeedNewsitemService);
 	}
 	
 	@Test

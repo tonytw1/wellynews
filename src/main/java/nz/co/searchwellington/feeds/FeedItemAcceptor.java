@@ -5,36 +5,25 @@ import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 public class FeedItemAcceptor {
 	
 	private static Logger log = Logger.getLogger(FeedItemAcceptor.class);
 
 	private RssfeedNewsitemService rssfeedNewsitemService;
-    private AutoTaggingService autoTagger;   
-    private ContentUpdateService contentUpdateService;
     
 	public FeedItemAcceptor() {
 	}
 	
-	public FeedItemAcceptor(RssfeedNewsitemService rssfeedNewsitemService,
-			AutoTaggingService autoTagger,
-			ContentUpdateService contentUpdateService) {
+	public FeedItemAcceptor(RssfeedNewsitemService rssfeedNewsitemService) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
-		this.autoTagger = autoTagger;
-		this.contentUpdateService = contentUpdateService;
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW) 
-	public void acceptFeedItem(User user, FeedNewsitem feednewsitem) {
+	public Newsitem acceptFeedItem(User user, FeedNewsitem feednewsitem) {
 		log.info("Accepting: " + feednewsitem.getName() + " (" + feednewsitem.getName() + ")");
 		Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feednewsitem);
 		if (feednewsitem.getGeocode() != null) {
@@ -49,12 +38,9 @@ public class FeedItemAcceptor {
         
         newsitem.setAccepted(new DateTime().toDate());
         newsitem.setAcceptedBy(user);
-        
-        contentUpdateService.create(newsitem);
-        autoTagger.autotag(newsitem);
-        contentUpdateService.update(newsitem);
+        return newsitem;
     }
-
+	
     // TODO Push to service for testing.
 	private void flattenLoudCapsInTitle(Resource resource) {		
 		String flattenedTitle = UrlFilters.lowerCappedSentence(resource.getName());           

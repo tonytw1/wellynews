@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 
 public abstract class RssfeedNewsitemService {
 
-	static Logger log = Logger.getLogger(RssfeedNewsitemService.class);
+	private static Logger log = Logger.getLogger(RssfeedNewsitemService.class);
 
 	public abstract List<FeedNewsitem> getFeedNewsitems(Feed feed);
 
@@ -51,13 +51,12 @@ public abstract class RssfeedNewsitemService {
 	    return newsitem;
 	}
 	
-	// TODO should return a FeedNewsitem
-	public Newsitem getFeedNewsitemByUrl(String url) {
+	public FeedNewsitem getFeedNewsitemByUrl(String url) {
 		for(Feed feed : resourceDAO.getAllFeeds()) {
 			List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
 			for (FeedNewsitem feedNewsitem : feednewsItems) {                	
 				if (feedNewsitem.getUrl().equals(url)) {					
-					return this.makeNewsitemFromFeedItem(feedNewsitem);					
+					return feedNewsitem;
 				}
 			}
 		}
