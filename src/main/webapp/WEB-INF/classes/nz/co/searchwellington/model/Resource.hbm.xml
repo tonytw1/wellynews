@@ -137,7 +137,9 @@
 			
 			<property name="accepted" type="timestamp">
         		<column name="accepted"/>
-        	</property>        	        		
+        	</property>
+        	
+       		<many-to-one name="acceptedBy" class="nz.co.searchwellington.model.UserImpl" column="accepted_by" cascade="" />       		        	
 		</subclass>
 
 		<subclass name="nz.co.searchwellington.model.Watchlist"	discriminator-value="L">

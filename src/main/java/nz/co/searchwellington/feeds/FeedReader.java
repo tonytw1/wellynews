@@ -6,6 +6,7 @@ import java.util.List;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionRepository;
@@ -96,7 +97,8 @@ public class FeedReader {
 		    if (feed.getAcceptancePolicy().startsWith("accept")) {	// TODO push feed up to match the name on this method.
 		    	boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
 		    	if (acceptThisItem) {
-		    		feedItemAcceptor.acceptFeedItem(feednewsitem);
+		    		User feedReaderUser = null;	// TODO
+					feedItemAcceptor.acceptFeedItem(feedReaderUser, feednewsitem);
 		    	}
 		    	
 		    } else {                	

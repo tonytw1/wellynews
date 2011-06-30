@@ -18,5 +18,7 @@ public interface Newsitem extends PublishedResource, Commentable {
 	public Date getAccepted();
 
 	public void setAccepted(Date accepted);
+
+	public void setAcceptedBy(User user);
 	
 }

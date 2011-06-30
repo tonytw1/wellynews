@@ -5,16 +5,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-
 public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
          
     CommentFeed commentFeed;	// TODO should be visible on the interface
     Image image;
     Feed feed;
     Date accepted;
+    User acceptedBy;
     
     private Set<Twit> reTwits;
-    
     
     public NewsitemImpl() {
     }
@@ -30,8 +29,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.reTwits = retwits;
         this.feed = null;
     }
-
- 
+    
     public String getType() {
         return "N";
     }
@@ -52,9 +50,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     public void setCommentFeed(CommentFeed commentFeed) {
         this.commentFeed = commentFeed;
     }
-
     
-
 	public Image getImage() {
 		return image;
 	}
@@ -85,6 +81,14 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 
 	public void setAccepted(Date accepted) {
 		this.accepted = accepted;
+	}
+
+	public User getAcceptedBy() {
+		return acceptedBy;
+	}
+
+	public void setAcceptedBy(User acceptedBy) {
+		this.acceptedBy = acceptedBy;
 	}
 	
 }

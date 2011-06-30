@@ -5,6 +5,7 @@ import java.sql.Date;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -28,6 +29,7 @@ public class FeedItemAcceptorTest {
 	@Mock Website publisher;
 	
 	private FeedItemAcceptor feedItemAcceptor;
+	private User user;
 	
 	@Before
 	public void setup() {
@@ -41,13 +43,19 @@ public class FeedItemAcceptorTest {
 	
 	@Test
 	public void shouldSetAcceptedTimeWhenAccepting() throws Exception {
-		feedItemAcceptor.acceptFeedItem(feednewsitem);
+		feedItemAcceptor.acceptFeedItem(user, feednewsitem);
 		Mockito.verify(newsitem).setAccepted(Mockito.any(Date.class));
 	}
 	
 	@Test
+	public void shouldSetAcceptedByUserWhenAccepting() throws Exception {
+		feedItemAcceptor.acceptFeedItem(user, feednewsitem);
+		Mockito.verify(newsitem).setAcceptedBy(user);
+	}
+	
+	@Test
 	public void shouldFlattenLoudHeadlinesWhenAccepting() throws Exception {		
-		feedItemAcceptor.acceptFeedItem(feednewsitem);
+		feedItemAcceptor.acceptFeedItem(user, feednewsitem);
 		Mockito.verify(newsitem).setName("Headline");
 	}
 	

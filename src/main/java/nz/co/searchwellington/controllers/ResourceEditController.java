@@ -169,6 +169,7 @@ public class ResourceEditController extends BaseMultiActionController {
     
     
     @Transactional
+    // TODO should be a straight delegation to the feed acceptor?
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
         response.setCharacterEncoding("UTF-8");
     	adminRequestFilter.loadAttributesOntoRequest(request);    	// TODO get all admin things into a common path and then make this a web.xml filter
