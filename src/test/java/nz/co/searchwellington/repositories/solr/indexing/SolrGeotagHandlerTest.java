@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.common.SolrInputField;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,6 +27,7 @@ public class SolrGeotagHandlerTest {
 	
 	private SolrGeotagHandler solrGeotagHandler;
 	private Geocode somewhere;
+	private Geocode place;
 	
 	@Before
 	public void setup() {
@@ -33,6 +35,7 @@ public class SolrGeotagHandlerTest {
 		solrGeotagHandler = new SolrGeotagHandler();
 		indexTagsForResource = new HashSet<Tag>();
 		somewhere = new Geocode("Somewhere", 1, 2);
+		place = new Geocode("A Place", 3, 4);
 	}
 	
 	@Test
@@ -51,18 +54,21 @@ public class SolrGeotagHandlerTest {
 		
 		assertTrue((Boolean) inputDocument.getFieldValue("geotagged"));
 		assertEquals("Somewhere", inputDocument.getFieldValue("address"));
-		//assertEquals(1, inputDocument.getFieldValue("position_0_coordinate"));
-		//assertEquals(2, inputDocument.getFieldValue("position_1_coordinate"));
+		SolrInputField positionField = inputDocument.getField("position");
+		assertEquals("1.0,2.0", positionField.getFirstValue());		
 	}
 	
 	@Test
 	public void shouldFallBackToUsingTagGeotagsIfTheResourceIsNoTagged() throws Exception {
 		SolrInputDocument inputDocument = new SolrInputDocument();
-		Mockito.when(placeTag.getGeocode()).thenReturn(somewhere);
+		Mockito.when(placeTag.getGeocode()).thenReturn(place);
 		indexTagsForResource.add(placeTag);
 		
 		solrGeotagHandler.processGeotags(resource, indexTagsForResource, inputDocument);
 		assertTrue((Boolean) inputDocument.getFieldValue("geotagged"));
+		assertEquals("A Place", inputDocument.getFieldValue("address"));
+		SolrInputField positionField = inputDocument.getField("position");
+		assertEquals("3.0,4.0", positionField.getFirstValue());
 	}
 	
 }
