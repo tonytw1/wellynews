@@ -1,4 +1,3 @@
-#set($latest_newsitems = $contentDataSource.latestNewsitems)
 #if ($latest_newsitems && $latest_newsitems.size() > 0)
 	<h2>Latest Newsitems</h2>
 	<p>The lastest Newslog Items.</p>

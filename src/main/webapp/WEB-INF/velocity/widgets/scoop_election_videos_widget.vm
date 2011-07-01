@@ -1,4 +1,3 @@
-#set($latest_newsitems = $contentDataSource.getPublisherTagNewsitems('wellington-scoop', 'video'))
 #if ($latest_newsitems && $latest_newsitems.size() > 0)
 	<div class="box">
 		<h2>Wellington Scoop Interviews</h2>

@@ -152,10 +152,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="solrQueryService" />
 	</bean>
 				
-	<bean id="contentDataSource"  class="nz.co.searchwellington.views.ContentDataSource" >
-		<constructor-arg ref="contentRetrievalService" />
-	</bean>	
-			
 	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
    		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
 	 </bean>
@@ -190,7 +186,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<entry key="loggedInUserFilter" value-ref="loggedInUserFilter" />
 				<entry key="publisherNewsitemCountService"  value-ref="publisherNewsitemCountService" />
 				<entry key="googleMapCleaner" value-ref="googleMapsCleaner" />
-				<entry key="contentDataSource" value-ref="contentDataSource" />
 			</map>
 		</property> 
 	</bean>
