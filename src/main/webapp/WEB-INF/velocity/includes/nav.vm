@@ -1,7 +1,7 @@
 <div class="nav">
 <ul>
-	<li><b><a href="${site_information.url}/index">Search $site_information.areaname</a></b></li>
-	<li><a href="$site_information.url/index#submit">Submit</a></li>
+	<li><b><a href="${urlBuilder.homeUrl}">Search $site_information.areaname</a></b></li>
+	<li><a href="${urlBuilder.homeUrl}#submit">Submit</a></li>
 	<li><a href="$site_information.url/feeds">Feeds</a></li>
 	<li><a href="$site_information.url/tags">Tags</a></li>
 	<li><a href="$site_information.url/publishers">Publishers</a></li>

@@ -39,7 +39,7 @@
 We'd like to help you put these infront of interested people.</p>
 
 If you can tell us the location of a page containing these newsitems,
-we can include them in the <a href="${site_information.url}/index#newslog">${site_information.areaname} newslog</a>.
+we can include them in the <a href="${urlBuilder.homeUrl}#newslog">${site_information.areaname} newslog</a>.
 </p>
 
 
