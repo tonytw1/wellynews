@@ -346,8 +346,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">   
  		<constructor-arg ref="tagDAO" /> 		
 	</bean>
+	
 	<bean id="autoTaggingService" class="nz.co.searchwellington.tagging.AutoTaggingService"> 
-		<constructor-arg ref="impliedTagService" />
  		<constructor-arg ref="placeAutoTagger" />
  		<constructor-arg ref="tagHintAutoTagger" />
  		<constructor-arg ref="handTaggingDAO" />

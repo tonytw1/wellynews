@@ -16,20 +16,17 @@ public class AutoTaggingService {
 	
 	private static final String AUTOTAGGER_PROFILE_NAME = "autotagger";
    
-	private ImpliedTagService impliedTagService;
 	private PlaceAutoTagger placeAutoTagger;
 	private TagHintAutoTagger tagHintAutoTagger;
 	private HandTaggingDAO handTaggingDAO;
 	private UserRepository userDAO;
 	
-	public AutoTaggingService(ImpliedTagService impliedTagService, PlaceAutoTagger placeAutoTagger, TagHintAutoTagger tagHintAutoTagger, HandTaggingDAO handTaggingDAO, UserRepository userDAO) {
-		this.impliedTagService = impliedTagService;
+	public AutoTaggingService(PlaceAutoTagger placeAutoTagger, TagHintAutoTagger tagHintAutoTagger, HandTaggingDAO handTaggingDAO, UserRepository userDAO) {
 		this.placeAutoTagger = placeAutoTagger;
 		this.tagHintAutoTagger = tagHintAutoTagger;
 		this.handTaggingDAO = handTaggingDAO;
 		this.userDAO = userDAO;
 	}
-
 	
 	public void autotag(Resource resource) {
 		User autotaggerUser = userDAO.getUserByProfileName(AUTOTAGGER_PROFILE_NAME);
