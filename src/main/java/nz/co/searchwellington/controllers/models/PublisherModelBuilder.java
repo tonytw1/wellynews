@@ -1,15 +1,16 @@
 package nz.co.searchwellington.controllers.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -19,13 +20,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	static Logger logger = Logger.getLogger(PublisherModelBuilder.class);
+	private static Logger logger = Logger.getLogger(PublisherModelBuilder.class);
 	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	private ContentRetrievalService contentRetrievalService;
-
 	
 	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService) {		
 		this.rssUrlBuilder = rssUrlBuilder;
@@ -33,7 +33,6 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		this.relatedTagsService = relatedTagsService;
 		this.contentRetrievalService = contentRetrievalService;
 	}
-
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
@@ -42,8 +41,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
         boolean isPublisherPage = publisher != null && tag == null;
         return isPublisherPage;
 	}
-	
-	
+		
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {				
 		if (isValid(request)) {
@@ -54,15 +52,15 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		}
 		return null;
 	}
-	
-	
+		
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		Website publisher = (Website) request.getAttribute("publisher");
 		
 		mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher));
 		mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher));
-
+	
+		populateGeotaggedItems(mv);
 		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher, showBroken);
 		if (relatedTagLinks.size() > 0) {
@@ -70,13 +68,11 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		}
 	}
 	
-	
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "publisher";
 	}
 	
-
 	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken, int page) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
@@ -94,6 +90,23 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 			populatePagination(mv, startIndex, mainContentTotal);			
 		}		
 		return mv;
+	}
+	
+	@SuppressWarnings("unchecked")
+	// TODO duplication with feed model builder
+	private void populateGeotaggedItems(ModelAndView mv) {
+		List<FrontendNewsitem> mainContent = (List<FrontendNewsitem>) mv.getModel().get("main_content");
+		if (mainContent != null) {
+			List<FrontendNewsitem> geotaggedNewsitems = new ArrayList<FrontendNewsitem>();
+			for (FrontendNewsitem feedNewsitem : mainContent) {
+				if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
+					geotaggedNewsitems.add(feedNewsitem);
+				}
+			}
+			if (!geotaggedNewsitems.isEmpty()) {
+				mv.addObject("geocoded", geotaggedNewsitems);
+			}
+		}
 	}
 	
 }
