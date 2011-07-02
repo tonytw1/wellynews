@@ -14,7 +14,6 @@ import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
@@ -398,13 +397,13 @@ public class SolrBackedResourceDAO {
 		return getQueryResults(query);
 	}
 	
-	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius, boolean showBroken, int maxItems) {
-		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, maxItems);
+	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius, boolean showBroken, int startIndex, int maxNewsitems) {
+		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, startIndex, maxNewsitems);
 		return getQueryResults(query);
 	}
 	
 	public int getGeotaggedNewsitemsNearCount(double latitude,double longitude, int radius, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, 0);	// TODO maxitems not ideal
+		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, 0, 0);	// TODO maxitems not ideal
 		return getQueryCount(query);
 	}
 	

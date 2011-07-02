@@ -59,11 +59,10 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 						return null;
 					}
 					populatePagination(mv, startIndex, totalNearbyCount);
-
 					
 					mv.addObject("latitude", latitude);
 					mv.addObject("longitude", longitude);
-					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
+					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS, startIndex, MAX_NEWSITEMS));
 				
 					if (userSuppliedLocation.getAddress() != null) {
 						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation.getAddress()));
