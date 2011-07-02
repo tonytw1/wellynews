@@ -36,9 +36,15 @@
 
 #parse("includes/search_widget.vm")
 
+	#if($geocoded) 
+		<div id="map_canvas" style="width: 520px; height: 520px"></div>	
+		#parse("includes/geocodedjs.vm")
+		<p>	
+	#end
+
 	<div class="tag_main_content">	
-		#set($main_heading = "$publisher.getName() newsitems")				
-		#parse("includes/main_content.vm")						
+		#set($main_heading = "$publisher.getName() newsitems")
+		#parse("includes/main_content.vm")	
 		#parse("includes/publisher_page_links.vm")
 	</div>
 

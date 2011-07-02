@@ -5,8 +5,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
-         
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+
+public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, FrontendNewsitem {
+	
     CommentFeed commentFeed;	// TODO should be visible on the interface
     Image image;
     Feed feed;
