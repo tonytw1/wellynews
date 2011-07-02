@@ -100,6 +100,10 @@ public class ContentRetrievalService {
 		return solrBackedResourceDAO.getGeotaggedNewsitemsNear(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken(), MAX_NEWSITEMS_TO_SHOW);
 	}
 	
+	public int getNewsitemsNearCount(double latitude, double longitude, int radius) {
+		return solrBackedResourceDAO.getGeotaggedNewsitemsNearCount(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken());
+	}
+	
 	public List<Tag> getGeotaggedTags() {
 		return solrBackedResourceDAO.getGeotaggedTags(showBrokenDecisionService.shouldShowBroken());
 	}
