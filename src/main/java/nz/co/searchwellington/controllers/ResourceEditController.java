@@ -288,7 +288,7 @@ public class ResourceEditController extends BaseMultiActionController {
             contentDeletionService.performDelete(editResource);
             
     		if (editResource.getType().equals("F")) { 
-    			urlStack.setUrlStack(request, "/index");
+    			urlStack.setUrlStack(request, "");
     		}
         }
 		

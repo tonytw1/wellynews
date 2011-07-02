@@ -316,13 +316,11 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="flickrApiService" class="nz.co.searchwellington.flickr.FlickrApiService">
 		<property name="apiKey" value="${flickr.apikey}" />	
 	</bean>
-	
-			
+				
 	<bean id="urlStack" class="nz.co.searchwellington.controllers.UrlStack">
-	 	<constructor-arg ref="siteInformation" />
+	 	<constructor-arg ref="urlBuilder" />
 	</bean>
-	
-		
+			
 	<bean id="mailSender" class="nz.co.searchwellington.mail.MailSender">
 		<constructor-arg value="${smtp.host}" />
 		<constructor-arg value="${smtp.username}" />

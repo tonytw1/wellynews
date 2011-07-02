@@ -17,12 +17,15 @@ import nz.co.searchwellington.model.Website;
 public class UrlBuilder {
 
 	private SiteInformation siteInformation;
-
-		
+	
 	public UrlBuilder(SiteInformation siteInformation) {		
 		this.siteInformation = siteInformation;
 	}
-
+	
+	public String getHomeUrl() {
+		return siteInformation.getUrl();
+	}
+	
 	public String getImageUrl(String filename) {
 		return siteInformation.getImageRoot() + filename;
 	}

@@ -107,7 +107,7 @@ public class TagEditController extends MultiActionController {
         Tag tag = (Tag) request.getAttribute("tag");         
         mv.addObject("tag", tag);            
         tagModifcationService.deleteTag(tag);            
-        urlStack.setUrlStack(request, "/index");                     
+        urlStack.setUrlStack(request, "");                     
         return mv;
     }
     

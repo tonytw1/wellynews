@@ -2,34 +2,30 @@ package nz.co.searchwellington.controllers;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import nz.co.searchwellington.urls.UrlBuilder;
 
-import nz.co.searchwellington.model.SiteInformation;
+import org.apache.log4j.Logger;
 
 public class UrlStack {
     
-    Logger log = Logger.getLogger(UrlStack.class);
+    private Logger log = Logger.getLogger(UrlStack.class);
     
+    private UrlBuilder urlBuilder;
     
-    private SiteInformation siteInformation;
+    public UrlStack(UrlBuilder urlBuilder) {
+		this.urlBuilder = urlBuilder;
+	}
     
-   
-    public UrlStack(SiteInformation siteInformation) {
-        this.siteInformation = siteInformation;
-    }
-
-
-    public String getExitUrlFromStack(HttpServletRequest request) {
-        String url = siteInformation.getUrl() + "/index";
+	public String getExitUrlFromStack(HttpServletRequest request) {
+        String url = urlBuilder.getHomeUrl();
         final String stackUrl = (String) request.getSession().getAttribute("url");        
         if (stackUrl != null) {
             log.debug("Stack url is: " + stackUrl);
-            url = (String) siteInformation.getUrl() + stackUrl;
+            url = urlBuilder.getHomeUrl() + stackUrl;
         }
         log.debug("Exit url from stack is: " + url);
         return url;
     }
-    
     
     public void setUrlStack(HttpServletRequest request) {        
         String url = request.getPathInfo();
@@ -39,10 +35,9 @@ public class UrlStack {
         setUrlStack(request, url);
     }
 
-
 	public void setUrlStack(HttpServletRequest request, String url) {
 		request.getSession().setAttribute("url", url);
         log.debug("Put url onto the stack: " + url);
 	}
-    
+	
 }

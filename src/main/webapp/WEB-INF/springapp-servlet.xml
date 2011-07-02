@@ -148,14 +148,11 @@
 			</bean>	
 		</property>					
 	</bean>
-	
-	
-		
-	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
-		<constructor-arg ref="siteInformation" />
-	</bean>
-	
 			
+	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
+		<constructor-arg ref="urlBuilder" />
+	</bean>
+				
 	<bean id="loginController" class="nz.co.searchwellington.controllers.LoginController">	
 		<constructor-arg ref="urlStack" />	
 		<property name="methodNameResolver">

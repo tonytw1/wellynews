@@ -8,29 +8,24 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
-import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuilder {
-
+	
 	private static final int MAX_OWNED_TO_SHOW_IN_RHS = 4;
 	private static final int NUMBER_OF_COMMENTED_TO_SHOW = 2;
-	
-	static Logger log = Logger.getLogger(IndexModelBuilder.class);
-	
-	ContentRetrievalService contentRetrievalService;
-	RssUrlBuilder rssUrlBuilder;
-	LoggedInUserFilter loggedInUserFilter;
-	UrlBuilder urlBuilder;
-	ArchiveLinksService archiveLinksService;
-	
-	
+		
+	private ContentRetrievalService contentRetrievalService;
+	private RssUrlBuilder rssUrlBuilder;
+	private LoggedInUserFilter loggedInUserFilter;
+	private UrlBuilder urlBuilder;
+	private ArchiveLinksService archiveLinksService;
+		
 	public IndexModelBuilder(ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter,
 			UrlBuilder urlBuilder, ArchiveLinksService archiveLinksService) {
@@ -40,14 +35,11 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		this.urlBuilder = urlBuilder;
 		this.archiveLinksService = archiveLinksService;
 	}
-
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
-		// TODO is the index path still required?
-		return request.getPathInfo().matches("^/$") || request.getPathInfo().matches("^/index$") || request.getPathInfo().matches("^/json$");	// /index path reflects problems deploying onto the root path with tomcat.
+		return request.getPathInfo().matches("^/$") || request.getPathInfo().matches("^/json$");
 	}
-
 	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
