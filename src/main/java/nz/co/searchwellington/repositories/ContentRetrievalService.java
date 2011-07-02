@@ -96,7 +96,7 @@ public class ContentRetrievalService {
 		return solrBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
-	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius) {
+	public List<FrontendResource> getNewsitemsNear(double latitude, double longitude, int radius) {
 		return solrBackedResourceDAO.getGeotaggedNewsitemsNear(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken(), MAX_NEWSITEMS_TO_SHOW);
 	}
 	

@@ -53,7 +53,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 				mv.addObject("latitude", latitude);
 				mv.addObject("longitude", longitude);
-				mv.addObject("main_content", contentRetrievalService.getGeotaggedNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
+				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
 				
 				if (userSuppliedLocation.getAddress() != null) {
 					mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation.getAddress()));
