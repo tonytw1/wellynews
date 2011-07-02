@@ -46,10 +46,21 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			final boolean userSuppliedALocation = userSuppliedLocation != null;
 			if (userSuppliedALocation) {
 				if (userSuppliedLocation.isValid()) {
+					
 					final double latitude = userSuppliedLocation.getLatitude();
 					final double longitude = userSuppliedLocation.getLongitude();
 					log.info("Location is set to: " + latitude + ", " + longitude);
+					
+					final int page = getPage(request);
+					mv.addObject("page", page);
+					final int startIndex = getStartIndex(page);
+					final int totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS);
+					if (startIndex > totalNearbyCount) {
+						return null;
+					}
+					populatePagination(mv, startIndex, totalNearbyCount);
 
+					
 					mv.addObject("latitude", latitude);
 					mv.addObject("longitude", longitude);
 					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
@@ -66,7 +77,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			}
 			
 			final int page = getPage(request);
-			mv.addObject("page", page);	// TODO pagination should work for location based pages as well
+			mv.addObject("page", page);	// TODO push to populate pagination.
 			final int startIndex = getStartIndex(page);
 			final int totalGeotaggedCount = contentRetrievalService.getGeotaggedCount();
 			if (startIndex > totalGeotaggedCount) {

@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.models;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -23,6 +22,9 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 public class GeotaggedModelBuilderTest {
+	
+	private static final int TOTAL_GEOTAGGED_COUNT = 512;
+	private static final int LOCATION_RESULTS_COUNT = 23;
 	
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock UrlBuilder urlBuilder;
@@ -62,6 +64,16 @@ public class GeotaggedModelBuilderTest {
 	}
 	
 	@Test
+	public void geotaggedNewsitemsPageShouldHavePaginationInformation() throws Exception {
+		request.setPathInfo("/geotagged");				
+		Mockito.when(contentRetrievalService.getGeotaggedCount()).thenReturn(TOTAL_GEOTAGGED_COUNT);
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		
+		assertEquals(0, modelAndView.getModel().get("page"));
+		assertEquals(TOTAL_GEOTAGGED_COUNT, modelAndView.getModel().get("main_content_total"));
+	}
+	
+	@Test
 	public void locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent() throws Exception {
 		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, 2)).thenReturn(newsitemsNearPetoneStation);
 		request.setPathInfo("/geotagged");
@@ -70,6 +82,18 @@ public class GeotaggedModelBuilderTest {
 		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
 		
 		assertEquals(newsitemsNearPetoneStation, modelAndView.getModel().get("main_content"));
+	}
+	
+	@Test
+	public void locationSearchesShouldHavePaginationInformation() throws Exception {
+		request.setPathInfo("/geotagged");
+		Mockito.when(contentRetrievalService.getNewsitemsNearCount(1, 2, 2)).thenReturn(LOCATION_RESULTS_COUNT);
+		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
+
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		
+		assertEquals(0, modelAndView.getModel().get("page"));
+		assertEquals(LOCATION_RESULTS_COUNT, modelAndView.getModel().get("main_content_total"));
 	}
 	
 	@Test
@@ -82,5 +106,7 @@ public class GeotaggedModelBuilderTest {
 
 		assertNull(modelAndView.getModel().get("main_content"));
 	}
+	
+	
 	
 }
