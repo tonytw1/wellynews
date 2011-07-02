@@ -403,6 +403,11 @@ public class SolrBackedResourceDAO {
 		return getQueryResults(query);
 	}
 	
+	public int getGeotaggedNewsitemsNearCount(double latitude,double longitude, int radius, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, 0);	// TODO maxitems not ideal
+		return getQueryCount(query);
+	}
+	
 	public int getGeotaggedCount(boolean shouldShowBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true).geotagged().toQuery();
 		return getQueryCount(query);
