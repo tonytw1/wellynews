@@ -42,27 +42,27 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("description", "Geotagged newsitems");
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
-			// TODO format check and push to the attribute filter
-			Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);
-						
-			final boolean isLocationSet = userSuppliedLocation != null && userSuppliedLocation.isValid();
-			if (isLocationSet) {
-				final double latitude = userSuppliedLocation.getLatitude();
-				final double longitude = userSuppliedLocation.getLongitude();
-				log.info("Location is set to: " + latitude + ", " + longitude);
+			final Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);						
+			final boolean userSuppliedALocation = userSuppliedLocation != null;
+			if (userSuppliedALocation) {
+				if (userSuppliedLocation.isValid()) {
+					final double latitude = userSuppliedLocation.getLatitude();
+					final double longitude = userSuppliedLocation.getLongitude();
+					log.info("Location is set to: " + latitude + ", " + longitude);
 
-				mv.addObject("latitude", latitude);
-				mv.addObject("longitude", longitude);
-				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
+					mv.addObject("latitude", latitude);
+					mv.addObject("longitude", longitude);
+					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS));
 				
-				if (userSuppliedLocation.getAddress() != null) {
-					mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation.getAddress()));
-				} else {
-					mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude));
-				}
+					if (userSuppliedLocation.getAddress() != null) {
+						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation.getAddress()));
+					} else {
+						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude));
+					}				
+					setRssForLocation(mv, userSuppliedLocation);
 				
-				setRssForLocation(mv, userSuppliedLocation);
-				return mv;
+				}				
+				return mv;				
 			}
 			
 			final int page = getPage(request);
