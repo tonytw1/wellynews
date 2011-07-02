@@ -18,11 +18,8 @@
 
 <br clear="all" />
 
-			<span class="nearMe" onClick="nearMe()">
-				#parse("includes/geotag_icon.vm")				
-				<a name="nearMe">Near me</a>
-			</span>
-
+			#parse("includes/nearme.vm")
+			
 			<form action="$site_information.url/geotagged">
 				<fieldset>				
 		 			<input name="location" #if ($locationQuery) value="$locationQuery" #end />

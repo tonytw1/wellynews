@@ -12,6 +12,8 @@
 		<p>Search $site_information.areaname is ${site_information.areaname}'s own regional web directory;
 		it's $site_information.areaname in a box.</p>
 
+		#parse("includes/nearme.vm")
+
 		#parse("includes/search_widget.vm")
 
 		<div class="tag_main_content">
