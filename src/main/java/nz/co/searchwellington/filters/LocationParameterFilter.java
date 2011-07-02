@@ -32,7 +32,8 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 				request.setAttribute(LOCATION, resolvedGeocode);
 				
 			} else {
-				log.info("User supplied location ' + " + location + "' could not be resolved to a point; ignoring.");
+				log.info("User supplied location ' + " + location + "' could not be resolved to a point; marking as invalid");
+				request.setAttribute(LOCATION, new Geocode(location));
 			}
 			return;
 		}
