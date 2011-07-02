@@ -28,7 +28,8 @@
 		<constructor-arg ref="suggestionDAO" />
 		<constructor-arg ref="contentUpdateService" />
 		<constructor-arg ref="feedItemAcceptor" />
-		<constructor-arg ref="autoTaggingService" />		
+		<constructor-arg ref="autoTaggingService" />
+		<constructor-arg ref="userDAO" />		
 	</bean>
 			
 	<bean id="feedItemAcceptor" class="nz.co.searchwellington.feeds.FeedItemAcceptor">		

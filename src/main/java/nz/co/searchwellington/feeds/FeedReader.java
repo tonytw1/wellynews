@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionRepository;
+import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 
@@ -22,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class FeedReader {
       
 	private static Logger log = Logger.getLogger(FeedReader.class);
-    
+
+	private static final String FEED_READER_PROFILE_NAME = "feedreader";
+	    
     private ResourceRepository resourceDAO;
     private RssfeedNewsitemService rssfeedNewsitemService;
     private FeedAcceptanceDecider feedAcceptanceDecider;
@@ -32,6 +35,7 @@ public class FeedReader {
     private ContentUpdateService contentUpdateService;
 	private FeedItemAcceptor feedItemAcceptor;
     private AutoTaggingService autoTagger;
+	private UserRepository userDAO;
     
     public FeedReader() {        
     }
@@ -43,7 +47,8 @@ public class FeedReader {
 			SuggestionRepository suggestionDAO,
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor,
-			AutoTaggingService autoTagger) {
+			AutoTaggingService autoTagger,
+			UserRepository userDAO) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
@@ -53,6 +58,7 @@ public class FeedReader {
 		this.contentUpdateService = contentUpdateService;
 		this.feedItemAcceptor = feedItemAcceptor;
 		this.autoTagger= autoTagger;
+		this.userDAO = userDAO;
 	}
 		
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -81,6 +87,12 @@ public class FeedReader {
     }
 	
 	private void processFeedItems(Feed feed) {
+		User feedReaderUser = userDAO.getUserByProfileName(FEED_READER_PROFILE_NAME);
+		if (feedReaderUser == null) {
+			log.warn("Feed reader could not run as no user was found with profile name: " + FEED_READER_PROFILE_NAME);
+			return;
+		}
+		
 		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (!feedNewsitems.isEmpty()) {
 			feed.setHttpStatus(200);			
@@ -91,7 +103,6 @@ public class FeedReader {
 				if (feed.getAcceptancePolicy().startsWith("accept")) {
 					boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
 					if (acceptThisItem) {
-						User feedReaderUser = null;	// TODO
 						Newsitem newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser, feednewsitem);										   
 						contentUpdateService.create(newsitem);
 						autoTagger.autotag(newsitem);
