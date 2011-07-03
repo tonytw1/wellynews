@@ -117,7 +117,7 @@ public class SolrQueryBuilder {
 		return query;		
 	}
 	
-	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, int radius, boolean showBroken, int startIndex, int maxNewsitems) {		
+	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, int radius, boolean showBroken, int startIndex, int maxItems) {		
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).geotagged().startIndex(startIndex).maxItems(maxItems).toQuery();
 		query.setFilterQueries("{!geofilt}");
 		query.setParam("sfield", "position");
