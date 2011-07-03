@@ -48,7 +48,9 @@ public class SolrResourceHydratorTest {
 		assertEquals("N", hydratedNewsitem.getType());
 		assertEquals(PUBLISHER_NAME, hydratedNewsitem.getPublisherName());		
 		assertNotNull(hydratedNewsitem.getGeocode());
-		assertEquals(ADDRESS, hydratedNewsitem.getGeocode().getAddress());		
+		assertEquals(ADDRESS, hydratedNewsitem.getGeocode().getAddress());
+		assertEquals(51, hydratedNewsitem.getGeocode().getLatitude(), 0);
+		assertEquals(-0.1, hydratedNewsitem.getGeocode().getLongitude(), 0);
 	}
 	
 	@Test

@@ -33,6 +33,9 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			if ((Boolean) result.getFirstValue("geotagged")) {
 				Geocode geocode = new Geocode();			
 				geocode.setAddress((String) result.getFieldValue("address"));
+				String positions = (String) result.getFirstValue("position");
+				geocode.setLatitude(Double.parseDouble(positions.split(",")[0]));
+				geocode.setLongitude(Double.parseDouble(positions.split(",")[1]));
 				newsitem.setGeocode(geocode);
 			}			
 			item = newsitem;			

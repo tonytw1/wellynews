@@ -124,6 +124,4 @@ public class GeotaggedModelBuilderTest {
 		assertNull(modelAndView.getModel().get("main_content"));
 	}
 	
-	
-	
 }
