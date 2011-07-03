@@ -399,6 +399,7 @@ public class SolrBackedResourceDAO {
 	
 	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, int radius, boolean showBroken, int startIndex, int maxNewsitems) {
 		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, startIndex, maxNewsitems);
+		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 	
