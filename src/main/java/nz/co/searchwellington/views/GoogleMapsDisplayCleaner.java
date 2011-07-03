@@ -4,26 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.log4j.Logger;
 
 public class GoogleMapsDisplayCleaner {
         
-    Logger log = Logger.getLogger(GoogleMapsDisplayCleaner.class);
-        
-    public List<Resource> dedupe(List<Resource> geocoded) {
+    private static Logger log = Logger.getLogger(GoogleMapsDisplayCleaner.class);
+    
+    public List<FrontendResource> dedupe(List<FrontendResource> geocoded) {
         return dedupe(geocoded, null);
     }
 
-    public List<Resource> dedupe(List<Resource> geocoded, Resource selected) {      
+    public List<FrontendResource> dedupe(List<FrontendResource> geocoded, Resource selected) {      
         log.info("Deduping collection with " + geocoded.size() + " items");
-        List<Resource> deduped = new ArrayList<Resource>();
-        
+        List<FrontendResource> deduped = new ArrayList<FrontendResource>();
         if (selected != null && selected.getGeocode() != null) {
             deduped.add(selected);
         }
         
-        for (Resource resource : geocoded) {
+        for (FrontendResource resource : geocoded) {
             if (resource.getGeocode() != null) {
                 boolean isUnique = !listAlreadyContainsResourceWithThisLocation(deduped, resource);
                 if (isUnique) {
@@ -35,10 +35,9 @@ public class GoogleMapsDisplayCleaner {
         log.info("Returning collection with " + deduped.size() + " items");
         return deduped;
     }
-
     
-    private boolean listAlreadyContainsResourceWithThisLocation(List<Resource> deduped, Resource candidiate) {
-        for (Resource resource : deduped) {
+    private boolean listAlreadyContainsResourceWithThisLocation(List<FrontendResource> deduped, FrontendResource candidiate) {
+        for (FrontendResource resource : deduped) {
             if (resource.getGeocode().isSameLocation(candidiate.getGeocode())) {
                 log.info("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
                 return true;
@@ -46,6 +45,5 @@ public class GoogleMapsDisplayCleaner {
         }
         return false;
     }
-
-
+    
 }
