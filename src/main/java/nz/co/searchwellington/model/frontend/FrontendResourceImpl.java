@@ -3,6 +3,7 @@ package nz.co.searchwellington.model.frontend;
 import java.util.Date;
 import java.util.List;
 
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Tag;
 
 public class FrontendResourceImpl implements FrontendResource {
@@ -16,7 +17,8 @@ public class FrontendResourceImpl implements FrontendResource {
     private Date liveTime;
     private List<Tag> tags;
     private List<Tag> handTags;
-        
+    private Geocode geocode;
+	
 	public int getId() {
 		return id;
 	}
@@ -70,6 +72,13 @@ public class FrontendResourceImpl implements FrontendResource {
 	}
 	public void setHandTags(List<Tag> handTags) {
 		this.handTags = handTags;
+	}
+	public Geocode getGeocode() {
+		return geocode;
+	}
+	
+	public void setGeocode(Geocode geocode) {
+		this.geocode = geocode;
 	}
 	
 }

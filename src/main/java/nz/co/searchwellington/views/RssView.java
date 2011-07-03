@@ -8,8 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.View;
@@ -39,7 +38,7 @@ public class RssView implements View {
     	response.setCharacterEncoding("UTF8");
     	
     	final String rssFeedTitle = rssUrlBuilder.getRssHeadingForGivenHeading((String) model.get("heading"));
-    	final List <Resource> content =  (List <Resource>) model.get("main_content");
+    	final List <FrontendResource> content =  (List <FrontendResource>) model.get("main_content");
     	
     	RomeRssFeed outputFeed = new RomeRssFeed(rssFeedTitle, (String) model.get("link"), (String) model.get("description"), makeRssEntiresForContent(content));
 
@@ -47,9 +46,9 @@ public class RssView implements View {
 		response.getWriter().flush();
 	}
     
-	private List<SyndEntry> makeRssEntiresForContent(List<Resource> content) {
+	private List<SyndEntry> makeRssEntiresForContent(List<FrontendResource> content) {
 		List<SyndEntry> entires = new ArrayList<SyndEntry>();
-    	for (Resource item : content) {
+    	for (FrontendResource item : content) {
 			SyndEntry rssItem = rssItemMaker.makeRssItem(item);
 			if (rssItem != null) {
 				entires.add(rssItem);

@@ -1,11 +1,12 @@
 package nz.co.searchwellington.views;
 
 import nz.co.searchwellington.dates.DateFormatter;
-import nz.co.searchwellington.feeds.rss.modules.WellynewsRssModule;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Watchlist;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
@@ -17,19 +18,22 @@ import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 public class RssItemMaker {
 	
-	public SyndEntry makeRssItem(Resource content) {
+	public SyndEntry makeRssItem(FrontendResource content) {
 		// TODO validate - must have urls etc.
-		if (content.getType().equals("N")) {			
-			return getNewsitemRssItem((Newsitem) content);
+		//if (content.getType().equals("N")) {
+		if (content instanceof FrontendNewsitem) {
+			return getNewsitemRssItem((FrontendNewsitem) content);
 		}
-		if (content.getType().equals("L")) {			
-			return getWatchlistRssItem((Watchlist) content);
-		}
+		
+		// TODO reimplement
+		//if (content.getType().equals("L")) {			
+		//	return getWatchlistRssItem((Watchlist) content);
+		//}
 		
 		return getDefaultRssItem(content);
 	}
 	
-	private SyndEntry getDefaultRssItem(Resource content) {
+	private SyndEntry getDefaultRssItem(FrontendResource content) {
         SyndEntry entry = new SyndEntryImpl();      
         entry.setTitle(stripIllegalCharacters(content.getName()));
         entry.setLink(content.getUrl());
@@ -42,7 +46,7 @@ public class RssItemMaker {
     }
 	
 	
-	public SyndEntry getNewsitemRssItem(Newsitem content) {		
+	public SyndEntry getNewsitemRssItem(FrontendNewsitem content) {		
 		SyndEntry rssItem = getDefaultRssItem(content);
 		rssItem.setPublishedDate(content.getDate());
 		if (content.getPublisherName() != null) {
@@ -57,9 +61,10 @@ public class RssItemMaker {
 	        rssItem.getModules().add(geoRSSModule); 
 		}
 		
-	    WellynewsRssModule myModule = new WellynewsRssModule();
-	    myModule.setCommented(Boolean.toString(!content.getComments().isEmpty()));
-	    rssItem.getModules().add(myModule);
+		// TODO reimplement
+//	    WellynewsRssModule myModule = new WellynewsRssModule();
+	    //myModule.setCommented(Boolean.toString(!content.getComments().isEmpty()));
+	//    rssItem.getModules().add(myModule);
 	    
 		return rssItem;
 	}

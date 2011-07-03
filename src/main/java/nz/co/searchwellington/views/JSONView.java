@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.springframework.web.servlet.View;
 
@@ -48,9 +50,9 @@ public class JSONView implements View {
 	
 	@SuppressWarnings("unchecked")
 	private String createJSONString(Map model) {
-		List <Resource> mainContent =  (List <Resource>) model.get("main_content");
+		List <FrontendResource> mainContent =  (List <FrontendResource>) model.get("main_content");
 		List<JSONFeedItem> jsonItems = new ArrayList<JSONFeedItem>();
-		for (Resource rssFeedable : mainContent) {
+		for (FrontendResource rssFeedable : mainContent) {
 			JSONFeedItem jsonFeeditem;			
 			if (rssFeedable.getGeocode() != null && rssFeedable.getGeocode().isValid()) {
 				jsonFeeditem = new JSONFeedItem(

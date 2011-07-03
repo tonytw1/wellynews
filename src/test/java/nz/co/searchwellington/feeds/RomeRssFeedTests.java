@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.views.RomeRssFeed;
 import nz.co.searchwellington.views.RssItemMaker;
 
@@ -30,7 +31,7 @@ public class RomeRssFeedTests extends TestCase {
 	}
 		
 	public void testShouldRenderRssItem() throws Exception {
-		List<Newsitem> content = new ArrayList<Newsitem>();
+		List<FrontendNewsitem> content = new ArrayList<FrontendNewsitem>();
 		content.add(newsitem);
 		Document document = createOutputAndParseBackDocument(content);
 		
@@ -44,7 +45,7 @@ public class RomeRssFeedTests extends TestCase {
         geocode.setLongitude(45);
 		newsitem.setGeocode(geocode);
 		
-		List<Newsitem> content = new ArrayList<Newsitem>();
+		List<FrontendNewsitem> content = new ArrayList<FrontendNewsitem>();
 		content.add(newsitem);
 		Document document = createOutputAndParseBackDocument(content);
 
@@ -54,10 +55,10 @@ public class RomeRssFeedTests extends TestCase {
         assertEquals(1, items.size());
 	}
 	
-	private Document createOutputAndParseBackDocument(List<Newsitem> content) throws DocumentException {
+	private Document createOutputAndParseBackDocument(List<FrontendNewsitem> content) throws DocumentException {
 		List<SyndEntry> rssContent = new ArrayList<SyndEntry>();		
 		RssItemMaker rssItemMaker = new RssItemMaker();	// TODO this in in the wrong place implies this should be part of RssView
-		for (Newsitem newsitem: content) {
+		for (FrontendNewsitem newsitem: content) {
 			rssContent.add(rssItemMaker.getNewsitemRssItem(newsitem));
 		}
 		RomeRssFeed feed = new RomeRssFeed("a", "b", "c", rssContent);
