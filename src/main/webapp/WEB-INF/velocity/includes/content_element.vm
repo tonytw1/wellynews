@@ -82,9 +82,9 @@
 			#if ($item.type == "N" && $item.feed) 
 				<li>Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a> at #if ($item.accepted) $dateFormatter.formatDate($item.accepted, 'd MMM yyyy') #end</li>
 			#end
-				
-				
-			#if ($item.handTags)			
+			
+			#if ($item.handTags)
+						
 				#if ($item.handTags.size() > 0)
 					<li class="tagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Tagged as</a>:</li>
 					#foreach ($tag in $item.handTags)
