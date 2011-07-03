@@ -36,7 +36,11 @@ public class ContentUpdateService {
 			Resource existingResource = resourceDAO.loadResourceById(resource.getId());
 			resourceUrlHasChanged = !resource.getUrl().equals(existingResource.getUrl());			
 		}
-
+		
+		if (newSubmission || resourceUrlHasChanged) {
+			resource.setHttpStatus(0);
+		}
+		
 		boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
 		
 		//if (newSubmission) {        // TODO is wrong place	
@@ -49,7 +53,6 @@ public class ContentUpdateService {
 		//	 notifier.sendSubmissionNotification("New submission", resource);
 		//}
 		if (needsLinkCheck) {
-			resource.setHttpStatus(0);
 			linkCheckerQueue.add(resource);
 		}		
 	}
