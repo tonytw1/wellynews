@@ -9,27 +9,20 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
 
-import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
-
 public class SimplePageController extends BaseMultiActionController {
-    
-	Logger log = Logger.getLogger(SimplePageController.class);
-        
+            
     private SiteInformation siteInformation;
 	private DiscoveredFeedRepository discoveredFeedRepository;
 	private TagDAO tagDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	
-    
     public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, 
     		SiteInformation siteInformation, DiscoveredFeedRepository discoveredFeedRepository, 
     		ContentRetrievalService contentRetrievalService, TagDAO tagDAO, RssUrlBuilder rssUrlBuilder) {
@@ -41,19 +34,18 @@ public class SimplePageController extends BaseMultiActionController {
         this.tagDAO = tagDAO;
         this.rssUrlBuilder = rssUrlBuilder;
     }
-    
-       
+           
     public ModelAndView about(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
                     
         populateCommonLocal(mv);             
         mv.addObject("heading", "About");        
-        mv.setViewName("about");                     
+        mv.setViewName("about");
+        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
         return mv;
     }
-    
-    
+        
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -68,7 +60,6 @@ public class SimplePageController extends BaseMultiActionController {
         mv.setViewName("archiveIndex");
         return mv;
     }
-    
     
     public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
