@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -35,6 +36,7 @@ public class NewsitemPageModelBuilderTest {
 	@Mock Newsitem geotaggedNewsitem;
 	@Mock Newsitem newsitem;
 	@Mock Geocode validGeotag;
+	@Mock ResourceRepository resourceDAO;
 	
 	private MockHttpServletRequest request;	
 	private ModelBuilder builder;
@@ -42,7 +44,7 @@ public class NewsitemPageModelBuilderTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter);
+		builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter, resourceDAO);
 		request = new MockHttpServletRequest();
 		request.setPathInfo(VALID_NEWSITEM_PAGE_PATH);
 	}

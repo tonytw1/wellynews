@@ -19,7 +19,8 @@
 		<constructor-arg ref="taggingReturnsOfficerService" />
 		<constructor-arg ref="tagWidgetFactory" />
 		<constructor-arg ref="handTaggingDAO" />	
-		<constructor-arg ref="loggedInUserFilter" />	
+		<constructor-arg ref="loggedInUserFilter" />
+		<constructor-arg ref="resourceDAO" />
 	</bean>
 		
 	<bean id="archiveModelBuilder" class="nz.co.searchwellington.controllers.models.ArchiveModelBuilder">

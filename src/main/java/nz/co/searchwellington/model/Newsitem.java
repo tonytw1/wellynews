@@ -3,7 +3,9 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 import java.util.Set;
 
-public interface Newsitem extends PublishedResource, Commentable {
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+
+public interface Newsitem extends PublishedResource, Commentable, FrontendNewsitem {
 
 	public Image getImage();
 

@@ -1,0 +1,3 @@
+Accepted from feed: <a href="$urlBuilder.getFeedUrl($item.feed)">$item.feed.name</a> 
+#if ($item.accepted) at $dateFormatter.formatDate($item.accepted, 'd MMM yyyy') #end
+#if ($item.acceptedBy) by $item.acceptedBy.profilename #end

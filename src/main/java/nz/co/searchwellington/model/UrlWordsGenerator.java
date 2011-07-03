@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model;
 
 import nz.co.searchwellington.dates.DateFormatter;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 
 public class UrlWordsGenerator {
@@ -17,9 +18,9 @@ public class UrlWordsGenerator {
 			toLowerCase();
 	}
 	
-	public static String markUrlForNewsitem(Newsitem newsitem) {
+	public static String markUrlForNewsitem(FrontendNewsitem newsitem) {
 		StringBuilder uri = new StringBuilder();		
-		if (newsitem.getPublisher() != null) {
+		if (newsitem.getPublisherName() != null) {
 			uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName()));
 		}
 		DateFormatter dateFormatter = new DateFormatter();

@@ -6,13 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 public class UrlBuilder {
 
@@ -75,7 +75,7 @@ public class UrlBuilder {
 		}
 	}
 	
-	public String getLocalPageUrl(Newsitem newsitem) {
+	public String getLocalPageUrl(FrontendNewsitem newsitem) {
 		return siteInformation.getUrl() + UrlWordsGenerator.markUrlForNewsitem(newsitem);
 	}
 	
@@ -112,7 +112,8 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/tagging/submit";
 	}
 	
-	public String getTaggingUrl(Newsitem newsitem) {
+	@Deprecated // TODO Inline
+	public String getTaggingUrl(FrontendNewsitem newsitem) {
 		return this.getLocalPageUrl(newsitem);
 	}
 	

@@ -13,12 +13,12 @@ import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
@@ -274,7 +274,7 @@ public class ContentRetrievalService {
 		return resourceDAO.getOwnedByUserCount(loggedInUser);
 	}
 
-	public Newsitem getNewsPage(String pathInfo) {
+	public FrontendNewsitem getNewsPage(String pathInfo) {
 		return solrBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken());
 	}
 	

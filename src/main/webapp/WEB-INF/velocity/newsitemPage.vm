@@ -3,8 +3,6 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
@@ -12,10 +10,14 @@
 
 <div class="main">
 	
-	#if($item && $item.publisher)
-		<h2><a href="$item.publisher.url">$item.publisher.name</a></h2>
+	#if($item && $item.publisherName)
+		#if ($item.publisherUrl) 
+			<h2><a href="$item.publisher.url">$item.publisherName</a></h2>
+		#else
+			<h2>$item.publisherName</h2>		
+		#end
 	#end
-		
+	
 	#if($geocoded)
 		<div id="map_canvas" style="width: 520px; height: 520px"></div>
 		#parse("includes/geocodedjs.vm")
@@ -28,6 +30,10 @@
 			</ul>
 		</li>
 	</ul>
+	
+	#if ($item.type == "N" && $item.feed)
+		<p>#parse('includes/accepted_details.vm')</p>
+	#end
 			
 	<h2>Tagging</h2>
 	

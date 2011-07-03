@@ -12,11 +12,11 @@ import java.util.Set;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
@@ -87,12 +87,12 @@ public class SolrBackedResourceDAO {
     	return getQueryCount(query);
 	}
 		
-	public Newsitem getNewspage(String pageUrl, boolean showBroken) {
+	public FrontendNewsitem getNewspage(String pageUrl, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").pageUrl(pageUrl).toQuery();			
 		List<FrontendResource> queryResults = getQueryResults(query);
 		log.info(queryResults.size() + " results found while searching for page url: " + pageUrl);
 		if (queryResults.size() == 1) {
-			return (Newsitem) queryResults.get(0);
+			return (FrontendNewsitem) queryResults.get(0);
 		}
 		return null;		
 	}
