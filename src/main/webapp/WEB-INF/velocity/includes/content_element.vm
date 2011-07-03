@@ -30,9 +30,7 @@
 			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItemDate)
 				<li>Last Changed: $dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')</li>
 			#end
-			
-		
-			
+				
 			#if ($item.description) 
 				<li>$escape.html($item.description)</li>
 			#end
@@ -42,7 +40,7 @@
 					<li class="bodytext">$escape.html($snippet)</li>
 				#end
 			#end
-					
+								
 			#if ($item.type == ('F'))				
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
@@ -79,6 +77,7 @@
 				#end
 			#end
 			
+			
 			#if ($item.type == "N" && $item.feed) 
 				<li>
 				#parse('includes/accepted_details.vm')
@@ -111,116 +110,117 @@
 				#end	
 			#end
 								
-				#if ($item.comments && $item.comments.size() > 0) 
-					<li class="commented">
-					#if ($item.comments.size() > 0)
-						#if ($item.publisher)
-							<p>This <i>#stripThePrefix($item.publisher.name)</i> newsitem has #showItemCount($item.commentFeed.comments.size() "comment").</p>
-						#else
-							<p>This newsitem has #showItemCount($item.comments.size() "comment").</p>
-						#end
-						#parse("includes/comments_list.vm")						
-						#if ($item.comments.size() <= 3)
-							<p>You can add own comments <a href="$item.url">here</a>.</p>
-						#else
-							<p>You can view the remaining comments and submit your own <a href="$item.url">here</a>.</p>
-						#end
-						
+			#if ($item.comments && $item.comments.size() > 0) 
+				<li class="commented">
+				#if ($item.comments.size() > 0)
+					#if ($item.publisher)
+						<p>This <i>#stripThePrefix($item.publisher.name)</i> newsitem has #showItemCount($item.commentFeed.comments.size() "comment").</p>
 					#else
-						<p>This newsitem has comments enabled. You can add own comments <a href="$item.url">here</a>.</p>
-					#end							
+						<p>This newsitem has #showItemCount($item.comments.size() "comment").</p>
+					#end
+					#parse("includes/comments_list.vm")						
+					#if ($item.comments.size() <= 3)
+						<p>You can add own comments <a href="$item.url">here</a>.</p>
+					#else
+						<p>You can view the remaining comments and submit your own <a href="$item.url">here</a>.</p>
+					#end
+						
+				#else
+					<p>This newsitem has comments enabled. You can add own comments <a href="$item.url">here</a>.</p>
+				#end							
+				</li>
+			#end
+				
+			#if ($item.type == "S" && $item.firstSeen) 
+				<li class="firstseen">First noticed $dateFormatter.timeSince($item.firstSeen)</li>				
+			#end
+			
+			#if ($item.geocode && $item.geocode.address)
+				#if ($editPermissionService.canEdit($item)) 
+					<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >
+				#else 
 					</li>
 				#end
-				
-				#if ($item.type == "S" && $item.firstSeen) 
-					<li class="firstseen">First noticed $dateFormatter.timeSince($item.firstSeen)</li>				
-				#end
-			
-				#if ($item.geocode && $item.geocode.address)
-					#if ($editPermissionService.canEdit($item)) 
-						<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >
-					#else 
-						</li>
-					#end
 					
-					#if ($item.geocode.isValid())
-						#if ($item.id > 0) 
-							<a href="$urlBuilder.getLocalPageUrl($item)">#parse("includes/geotag_icon.vm")</a>
-						#else
-							#parse("includes/geotag_icon.vm")
-						#end
+				#if ($item.geocode.isValid())
+					#if ($item.id > 0) 
+						<a href="$urlBuilder.getLocalPageUrl($item)">#parse("includes/geotag_icon.vm")</a>
 					#else
-						#parse("includes/geotag_icon.vm") 
+						#parse("includes/geotag_icon.vm")
 					#end
+				#else
+					#parse("includes/geotag_icon.vm") 
+				#end
 					
-					$item.geocode.address</li>
-				#end
+				$item.geocode.address</li>
+			#end
 				
 				
-				#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	
-					<li>Submitted by: <a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a></li>
-				#end
+			#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	
+				<li>Submitted by: <a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a></li>
+			#end
 							
-				#if ($item.type == "N" && $item.reTwits && $item.reTwits.size() > 0)
-					<ul>
-					#foreach ($twit in $item.reTwits) 
-						#parse("includes/twittermessage.vm")
-					#end
-					</ul>					
+			
+			#if ($item.type == "N" && $item.reTwits && $item.reTwits.size() > 0)
+				<ul>
+				#foreach ($twit in $item.reTwits) 
+					#parse("includes/twittermessage.vm")
 				#end
+				</ul>					
+			#end
 								
-				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
-					<li>Http Status: $item.httpStatus</li>						
-					#if ($item.isHeld()) 
-						<li>Held</li>
-					#end
+			#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))
+				<li>Http Status: $item.httpStatus</li>						
+				#if ($item.isHeld()) 
+					<li>Held</li>
+				#end
+			#end
+									
+			#if ($editPermissionService.canEdit($item) && $item.commentFeed)
+				<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
+			#end
+				
+			#if ($editPermissionService.canEdit($item) && ($item.type != "FNI") && ($item.type != "TNI"))
+				<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
+			#end
+			#if ($editPermissionService.canDelete($item) && ($item.type != "FNI") && ($item.type != "TNI"))
+				<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>
+			#end
+			#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
+				<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
+			#end				
+			#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
+				<li class="admin"><a href="$adminUrlBuilder.getViewSnapshotUrl($item)">view snapshot</a></li>
+			#end
+				
+			#if($item.type == "N" && $editPermissionService.canSeeLocalPage($item))
+				<li class="admin"><a href="$urlBuilder.getLocalPageUrl($item)">view local page</a></li>
+			#end
+				
+			#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
+				#if ($item.localCopy) 
+					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.getLocalCopy())">edit local copy</a></li>
+				#else
+					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemAcceptUrl($item)">accept</a></li>					
 				#end
 									
-				#if ($editPermissionService.canEdit($item) && $item.commentFeed)
-					<li>Comment feed: <a href="$item.commentFeed.url">$item.commentFeed.url</li>
+				#if ($item.suppressed) 
+					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemUnsuppressUrl($item)">unsuppress</a></li>
+				#else
+					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemSuppressUrl($item)">suppress</a></li>
 				#end
+				<li>Http Status: $item.httpStatus</li>
+			#end
 				
-				#if ($editPermissionService.canEdit($item) && ($item.type != "FNI") && ($item.type != "TNI"))
-					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item)">edit</a></li>
-				#end
-				#if ($editPermissionService.canDelete($item) && ($item.type != "FNI") && ($item.type != "TNI"))
-					<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($item)">delete</a></li>
-				#end
-				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
-					<li class="admin"><a href="$adminUrlBuilder.getResourceCheckUrl($item)">check</a></li>
-				#end				
-				#if ($editPermissionService.canCheck($item) && ($item.type != "FNI") && ($item.type != "TNI"))				
-					<li class="admin"><a href="$adminUrlBuilder.getViewSnapshotUrl($item)">view snapshot</a></li>
-				#end
-				
-				#if($item.type == "N" && $editPermissionService.canSeeLocalPage($item))
-					<li class="admin"><a href="$urlBuilder.getLocalPageUrl($item)">view local page</a></li>
-				#end
-				
-				#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
-					#if ($item.localCopy) 
-						<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.getLocalCopy())">edit local copy</a></li>
-					#else
-						<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemAcceptUrl($item)">accept</a></li>					
-					#end
-									
-					#if ($item.suppressed) 
-						<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemUnsuppressUrl($item)">unsuppress</a></li>
-					#else
-						<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemSuppressUrl($item)">suppress</a></li>
-					#end
-					<li>Http Status: $item.httpStatus</li>
-				#end
-				
-									
-				#if ($editPermissionService.canEdit($item) && ($item.type == "TNI"))
-					<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
-				#end
+			#if ($editPermissionService.canEdit($item) && ($item.type == "TNI"))
+				<li class="admin"><a href="$adminUrlBuilder.getTwitteredNewsitemAcceptUrl($item)">accept</a></li>					
+			#end
 												
-				#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
-					<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($item)">accept</a></li>
-					<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($item)">ignore</a></li>
-				#end
+			#if ($editPermissionService.canEdit($item) && ($item.type == "S"))					
+				<li class="admin"><a href="$adminUrlBuilder.getSuggestionAcceptUrl($item)">accept</a></li>
+				<li class="admin"><a href="$adminUrlBuilder.getSuggestionSuppressUrl($item)">ignore</a></li>
+			#end
+			
 		</ul>				
 	</li>
 	<br clear="all">
