@@ -28,6 +28,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		final String type = (String) result.getFieldValue("type");
 		if (type.equals("N")) {			
 			FrontendNewsitemImpl newsitem = new FrontendNewsitemImpl();
+			newsitem.setType("N");
 			newsitem.setPublisherName((String) result.getFieldValue("publisherName"));			
 			if ((Boolean) result.getFirstValue("geotagged")) {
 				Geocode geocode = new Geocode();			
@@ -39,13 +40,16 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		
 		if (type.equals("W")) {
 			item = new FrontendResourceImpl();
+			item.setType("W");
 		}
 		
 		if (type.equals("F")) {
 			item = new FrontendResourceImpl();
+			item.setType("F");
 		}
 		if (type.equals("L")) {
 			item = new FrontendResourceImpl();
+			item.setType("L");
 		}
 		
 		if (item != null) {			

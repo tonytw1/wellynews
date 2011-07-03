@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Tag;
 public interface FrontendResource {
 
 	public int getId();
+	public String getType();
 	public String getName();
 	public String getUrl();
 	public int getHttpStatus();

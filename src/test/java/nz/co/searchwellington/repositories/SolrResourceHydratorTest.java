@@ -45,6 +45,7 @@ public class SolrResourceHydratorTest {
 		FrontendNewsitem hydratedNewsitem = (FrontendNewsitem) solrResourceHydrator.hydrateResource(solrRow);
 
 		assertBaseFields(hydratedNewsitem);
+		assertEquals("N", hydratedNewsitem.getType());
 		assertEquals(PUBLISHER_NAME, hydratedNewsitem.getPublisherName());		
 		assertNotNull(hydratedNewsitem.getGeocode());
 		assertEquals(ADDRESS, hydratedNewsitem.getGeocode().getAddress());		
@@ -57,6 +58,8 @@ public class SolrResourceHydratorTest {
 		FrontendResource hydratedWebsite = (FrontendResource) solrResourceHydrator.hydrateResource(solrRow);
 		
 		assertBaseFields(hydratedWebsite);
+		assertEquals("W", hydratedWebsite.getType());
+
 	}
 	
 	@Test
@@ -66,6 +69,7 @@ public class SolrResourceHydratorTest {
 		FrontendResource hydratedWatchlist = (FrontendResource) solrResourceHydrator.hydrateResource(solrRow);
 
 		assertBaseFields(hydratedWatchlist);
+		assertEquals("L", hydratedWatchlist.getType());
 		//assertEquals(PUBLISHER_NAME, hydratedWatchlist.getPublisherName());
 	}
 	
@@ -77,6 +81,7 @@ public class SolrResourceHydratorTest {
 		FrontendResource hydratedFeed = (FrontendResource) solrResourceHydrator.hydrateResource(solrRow);
 		
 		assertBaseFields(hydratedFeed);
+		assertEquals("F", hydratedFeed.getType());
 		//assertEquals(PUBLISHER_NAME, hydratedFeed.getPublisherName());
 	}
 	
