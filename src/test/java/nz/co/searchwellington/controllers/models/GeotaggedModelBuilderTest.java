@@ -24,12 +24,13 @@ import org.springframework.web.servlet.ModelAndView;
 public class GeotaggedModelBuilderTest {
 	
 	private static final int TOTAL_GEOTAGGED_COUNT = 512;
-	private static final int LOCATION_RESULTS_COUNT = 23;
+	private static final int LOCATION_RESULTS_COUNT = 33;
 	
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock UrlBuilder urlBuilder;
 	@Mock RssUrlBuilder rssUrlBuilder;
-	@Mock List<FrontendResource> newsitemsNearPetoneStation;
+	@Mock List<FrontendResource> newsitemsNearPetoneStationFirstPage;
+	@Mock List<FrontendResource> newsitemsNearPetoneStationSecondPage;
 	
 	private MockHttpServletRequest request;
 	private Geocode validLocation;
@@ -75,25 +76,41 @@ public class GeotaggedModelBuilderTest {
 	
 	@Test
 	public void locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent() throws Exception {
-		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, 2)).thenReturn(newsitemsNearPetoneStation);
+		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, 2, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
 		request.setPathInfo("/geotagged");
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		
 		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
 		
-		assertEquals(newsitemsNearPetoneStation, modelAndView.getModel().get("main_content"));
+		assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel().get("main_content"));
 	}
 	
 	@Test
-	public void locationSearchesShouldHavePaginationInformation() throws Exception {
+	public void locationSearchesShouldHavePagination() throws Exception {
 		request.setPathInfo("/geotagged");
 		Mockito.when(contentRetrievalService.getNewsitemsNearCount(1, 2, 2)).thenReturn(LOCATION_RESULTS_COUNT);
+		
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 
 		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
 		
 		assertEquals(0, modelAndView.getModel().get("page"));
 		assertEquals(LOCATION_RESULTS_COUNT, modelAndView.getModel().get("main_content_total"));
+	}
+	
+	@Test
+	public void locationSearchesShouldHaveCorrectContentOnSecondPaginationPage() throws Exception {
+		request.setPathInfo("/geotagged");
+		Mockito.when(contentRetrievalService.getNewsitemsNearCount(1, 2, 2)).thenReturn(LOCATION_RESULTS_COUNT);
+		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, 2, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage);
+
+		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
+		request.setAttribute("page", 2);
+		
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		
+		assertEquals(2, modelAndView.getModel().get("page"));
+		assertEquals(newsitemsNearPetoneStationSecondPage, modelAndView.getModel().get("main_content"));
 	}
 	
 	@Test
