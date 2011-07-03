@@ -12,6 +12,6 @@
 			#end
 		</ul>
 		
-	<p>$start_index - $end_index of $main_content_total geotagged newsitems</p>	
+	<p>$start_index - $end_index of $main_content_total near $location</p>	
 	<hr>
 #end
