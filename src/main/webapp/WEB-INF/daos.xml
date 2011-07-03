@@ -36,7 +36,7 @@
  		<constructor-arg ref="solrQueryService" />
  		<constructor-arg ref="resourceDAO" />
  		<constructor-arg ref="tagDAO" />
- 		<constructor-arg ref="hibernateResourceHydrator" />
+ 		<constructor-arg ref="solrResourceHydrator" />
  		<property name="solrUrl" value="${solr.url}" />
 	</bean>
 			
