@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.util.Date;
 
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
@@ -51,6 +52,23 @@ public class SolrResourceHydratorTest {
 		assertEquals(ADDRESS, hydratedNewsitem.getGeocode().getAddress());
 		assertEquals(51, hydratedNewsitem.getGeocode().getLatitude(), 0);
 		assertEquals(-0.1, hydratedNewsitem.getGeocode().getLongitude(), 0);
+	}
+	
+	@Test
+	public void canHyrdateNewsitemTweets() throws Exception {
+		SolrDocument solrRow = buildSolrRecord("N");
+		solrRow.setField("twitter_count", 2);
+		solrRow.addField("geotagged", false);
+		solrRow.addField("tweet_author", "tonytw1");
+		solrRow.addField("tweet_text", "Blah");
+		solrRow.addField("tweet_author", "someone");
+		solrRow.addField("tweet_text", "Rant");
+		
+		FrontendNewsitem hydratedNewsitem = (FrontendNewsitem) solrResourceHydrator.hydrateResource(solrRow);
+		assertEquals(2, hydratedNewsitem.getRetweets().size());
+		Twit firstTweet = hydratedNewsitem.getRetweets().get(0);
+		assertEquals("tonytw1", firstTweet.getAuthor());
+		assertEquals("Blah", firstTweet.getText());
 	}
 	
 	@Test

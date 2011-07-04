@@ -64,7 +64,12 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
 	public Set<Twit> getReTwits() {
 		return reTwits;
 	}
-
+	
+	@Override
+	public List<Twit> getRetweets() {
+		return new ArrayList<Twit>(reTwits);
+	}
+	
 	public void addReTwit(Twit retwit) {
 		this.reTwits.add(retwit);
 	}

@@ -30,9 +30,12 @@ public class Twit {
 		DateTime time = new DateTime(status.getCreatedAt());
 		this.date = time.toDate();
 	}
+	
+	public Twit(String author, String text) {
+		this.author = author;
+		this.text = text;
+	}
 
-	
-	
 	public int getId() {
 		return id;
 	}

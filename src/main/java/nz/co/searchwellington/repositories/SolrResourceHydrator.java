@@ -3,10 +3,12 @@ package nz.co.searchwellington.repositories;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
@@ -30,14 +32,17 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			FrontendNewsitemImpl newsitem = new FrontendNewsitemImpl();
 			newsitem.setType("N");
 			newsitem.setPublisherName((String) result.getFieldValue("publisherName"));			
+
 			if ((Boolean) result.getFirstValue("geotagged")) {
-				Geocode geocode = new Geocode();			
+				Geocode geocode = new Geocode();
 				geocode.setAddress((String) result.getFieldValue("address"));
 				String positions = (String) result.getFirstValue("position");
 				geocode.setLatitude(Double.parseDouble(positions.split(",")[0]));
 				geocode.setLongitude(Double.parseDouble(positions.split(",")[1]));
 				newsitem.setGeocode(geocode);
-			}			
+			}
+			
+			hydrateTwitterFields(result, newsitem);
 			item = newsitem;			
 		}
 		
@@ -68,6 +73,21 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		}
 		
 		return null;	
+	}
+
+	private void hydrateTwitterFields(SolrDocument result,
+			FrontendNewsitemImpl newsitem) {
+		final Integer twitterCount = (Integer) result.getFieldValue("twitter_count");
+		if (twitterCount != null && twitterCount > 0) {				
+			Iterator<Object> twitterAuthors = result.getFieldValues("tweet_author").iterator();
+			Iterator<Object> twitterText = result.getFieldValues("tweet_text").iterator();
+			List<Twit> twits = new ArrayList<Twit>();
+			for (int i = 0; i < twitterCount; i++) {
+				Twit tweet = new Twit((String) twitterAuthors.next(), (String) twitterText.next());
+				twits.add(tweet);
+			}
+			newsitem.setRetweets(twits);
+		}
 	}
 	
 	private List<Tag> hydrateTags(SolrDocument result, String sourceField) {

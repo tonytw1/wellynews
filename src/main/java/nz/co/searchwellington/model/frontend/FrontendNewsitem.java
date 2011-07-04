@@ -1,9 +1,13 @@
 package nz.co.searchwellington.model.frontend;
 
-import nz.co.searchwellington.model.Geocode;
+import java.util.List;
+
+import nz.co.searchwellington.model.Twit;
+
 
 public interface FrontendNewsitem extends FrontendResource {
 	
 	public String getPublisherName();
+	public List<Twit> getRetweets();
 
 }
