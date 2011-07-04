@@ -123,7 +123,10 @@
    <field name="comment" type="text" indexed="true" stored="true" required="false" multiValued="true" /> 
    <field name="geotagged" type="boolean" indexed="true" stored="true" required="false" /> 
 
-   <field name="twitterCount" type="integer" indexed="true" stored="true" required="false" />
+   	<field name="twitterCount" type="integer" indexed="true" stored="true" required="false" />
+ 	<field name="tweet_author" type="string" indexed="true" stored="true" multiValued="true" required="false" />
+   	<field name="tweet_text" type="string" indexed="true" stored="true" multiValued="true" required="false" />
+   
    <field name="timestamp" type="date" indexed="true" stored="true" default="NOW" multiValued="false"/>
 	
 	<field name="position" type="location" indexed="true" stored="true" multiValed="false" />
