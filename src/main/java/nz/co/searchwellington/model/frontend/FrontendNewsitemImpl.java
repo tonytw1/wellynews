@@ -8,6 +8,7 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 	
 	private String publisherName;
 	private List<Twit> retweets;
+	private String acceptedFromFeedName;
 	
 	public String getPublisherName() {
 		return publisherName;
@@ -23,6 +24,14 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 
 	public void setRetweets(List<Twit> retweets) {
 		this.retweets = retweets;
+	}
+
+	public String getAcceptedFromFeedName() {
+		return acceptedFromFeedName;
+	}
+
+	public void setAcceptedFromFeedName(String acceptedFromFeedName) {
+		this.acceptedFromFeedName = acceptedFromFeedName;
 	}
 	
 }

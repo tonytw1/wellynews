@@ -71,6 +71,10 @@ public class SolrInputDocumentBuilder {
 				inputDocument.addField("commented", 0);
 			}
 			
+			if (newsitem.getFeed() != null) {
+				inputDocument.addField("acceptedFromFeedName", newsitem.getFeed().getName());
+			}
+			
 			inputDocument.addField("twitterCount", newsitem.getReTwits().size());			
 		}
 		

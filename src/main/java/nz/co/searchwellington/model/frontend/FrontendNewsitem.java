@@ -9,5 +9,6 @@ public interface FrontendNewsitem extends FrontendResource {
 	
 	public String getPublisherName();
 	public List<Twit> getRetweets();
-
+	public String getAcceptedFromFeedName();
+	
 }

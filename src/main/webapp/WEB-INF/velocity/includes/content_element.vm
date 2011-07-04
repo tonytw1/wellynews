@@ -161,7 +161,7 @@
 			#end
 							
 			
-			#if ($item.type == "N" && $item.reTwits && $item.reTwits.size() > 0)
+			#if ($item.type == "N" && $item.retweets && $item.retweets.size() > 0)
 				<ul>
 				#foreach ($twit in $item.reTwits) 
 					#parse("includes/twittermessage.vm")

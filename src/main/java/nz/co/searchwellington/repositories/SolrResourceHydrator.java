@@ -42,6 +42,8 @@ public class SolrResourceHydrator implements ResourceHydrator {
 				newsitem.setGeocode(geocode);
 			}
 			
+			newsitem.setAcceptedFromFeedName((String) result.getFieldValue("acceptedFromFeedName"));
+			
 			hydrateTwitterFields(result, newsitem);
 			item = newsitem;			
 		}

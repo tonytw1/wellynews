@@ -36,7 +36,6 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
         return "N";
     }
     
-    
     public List<Comment> getComments() {
     	List<Comment> comments = new ArrayList<Comment>();
     	if (getCommentFeed() != null) {
@@ -96,6 +95,14 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
 
 	public void setAcceptedBy(User acceptedBy) {
 		this.acceptedBy = acceptedBy;
+	}
+
+	@Override
+	public String getAcceptedFromFeedName() {
+		if (feed != null) {
+			return feed.getName();
+		}
+		return null;
 	}
 	
 }

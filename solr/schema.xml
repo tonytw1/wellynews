@@ -108,7 +108,8 @@
    <field name="held" type="boolean" indexed="true" stored="false"/>
    
 	<field name="feedLatestItemDate" type="date" indexed="true" stored="true"/>
-   
+	<field name="acceptedFromFeedName" type="string" indexed="false" stored="true"/>
+		   
    	<field name="tags" type="integer" indexed="true" stored="true" required="false" multiValued="true" />
  	<field name="handTags" type="integer" indexed="false" stored="true" required="false" multiValued="true" />
 	
