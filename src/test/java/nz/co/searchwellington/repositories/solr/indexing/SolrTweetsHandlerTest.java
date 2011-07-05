@@ -44,6 +44,7 @@ public class SolrTweetsHandlerTest {
 		
 		solrInputDocument = solrTweetsHandler.processTweets(tweets, solrInputDocument);
 		
+		assertEquals(2, solrInputDocument.getFieldValue("twitter_count"));
 		Collection<Object> tweetUsernames = solrInputDocument.getFieldValues("tweet_author");
 		Collection<Object> tweetTexts = solrInputDocument.getFieldValues("tweet_text");
 		

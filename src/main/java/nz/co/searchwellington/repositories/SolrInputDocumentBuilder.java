@@ -15,6 +15,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.indexing.SolrGeotagHandler;
+import nz.co.searchwellington.repositories.solr.indexing.SolrTweetsHandler;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.log4j.Logger;
@@ -75,7 +76,8 @@ public class SolrInputDocumentBuilder {
 				inputDocument.addField("acceptedFromFeedName", newsitem.getFeed().getName());
 			}
 			
-			inputDocument.addField("twitterCount", newsitem.getReTwits().size());			
+			SolrTweetsHandler tweetsHandler = new SolrTweetsHandler();	//TODO inject
+			tweetsHandler.processTweets(newsitem.getRetweets(), inputDocument);			
 		}
 		
 		
