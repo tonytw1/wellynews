@@ -9,7 +9,6 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Before;
-import org.junit.Test;
 
 public class SolrQueryFunctionalTest {
 	
@@ -54,8 +53,7 @@ public class SolrQueryFunctionalTest {
 		 long endTime = System.currentTimeMillis();		
 			System.out.println(endTime - startTime);		
 	}
-
-
+	
 	private QueryResponse timeSolrCall(SolrQuery query, CommonsHttpSolrServer solr) throws SolrServerException {
 		long startTime = System.currentTimeMillis();
 		QueryResponse response = solr.query(query);

@@ -2,7 +2,6 @@ package nz.co.searchwellington.jobs;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 import nz.co.searchwellington.repositories.solr.SolrUpdateQueue;
 

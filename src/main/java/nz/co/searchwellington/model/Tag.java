@@ -1,12 +1,7 @@
 package nz.co.searchwellington.model;
 
-import java.util.Set;
 import java.util.HashSet;
-
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndContentImpl;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndEntryImpl;
+import java.util.Set;
 
 public class Tag {
     
@@ -38,8 +33,7 @@ public class Tag {
         this.hidden = hidden;
         this.relatedFeed = null;
     }
-    
-    
+        
     public int getId() {
         return id;
     }
@@ -132,7 +126,6 @@ public class Tag {
         return "Tag: " + name;
     }
 
-
 	public String getRelatedTwitter() {
 		return relatedTwitter;
 	}
@@ -141,11 +134,9 @@ public class Tag {
 		this.relatedTwitter = relatedTwitter;
 	}
 
-
 	public void setAutotagHints(String autotagHints) {
 		this.autotagHints = autotagHints;
 	}
-
 
 	public String getAutotagHints() {
 		return autotagHints;

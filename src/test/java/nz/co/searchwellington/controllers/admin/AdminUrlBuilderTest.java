@@ -52,7 +52,6 @@ public class AdminUrlBuilderTest {
 		assertEquals("http://somesite.local/edit/viewsnapshot?resource=123",adminUrlBuilder.getViewSnapshotUrl(frontendResource));
 	}
 	
-
 	@Test
 	public void canConstructAutoGatherUrlForPublisher() throws Exception {
 		assertEquals("http://somesite.local/admin/gather?publisher=my-local-sports-team", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite));

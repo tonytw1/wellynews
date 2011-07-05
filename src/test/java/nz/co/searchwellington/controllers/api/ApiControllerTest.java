@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.api;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
@@ -13,10 +12,6 @@ import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
-
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-
 
 public class ApiControllerTest extends TestCase {
 	
@@ -36,7 +31,7 @@ public class ApiControllerTest extends TestCase {
 		when(loggedInUserFilter.getLoggedInUser()).thenReturn(adminUser);
 	}
 	
-	
+	// TODO reenable
 	public void testShouldAcceptFeedItemByUrl() throws Exception {	
 		/*
 		ApiController controller = new ApiController(resourceDAO, requestFilter, loggedInUserFilter, supressionService, rssNewsitemService, contentUpdateService, null, autoTaggingService, null);

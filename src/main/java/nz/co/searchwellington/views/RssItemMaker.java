@@ -2,8 +2,6 @@ package nz.co.searchwellington.views;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
