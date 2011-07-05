@@ -28,10 +28,11 @@ public class CommentFeedService {
     
     public List<Comment> loadComments(CommentFeed commentFeed) {
     	List<Comment> comments = new ArrayList<Comment>();
-    	if (commentFeed.getNewsitem() == null) {
-    		log.warn("Comment feed has no associated newsitems; no point in loading comments: " + commentFeed.getUrl());
-    		return comments;
-    	}
+    	// TODO this stopped working around 14 june 2011
+    	//if (commentFeed.getNewsitem() == null) {
+    	//	log.warn("Comment feed has no associated newsitems; no point in loading comments: " + commentFeed.getUrl());
+    	//	return comments;
+    	//}
     	
         log.info("Loading comments from comment feed for newsitem: " + commentFeed.getNewsitem().getName());
         SyndFeed syndfeed = rssHttpFetcher.httpFetch(commentFeed.getUrl());
