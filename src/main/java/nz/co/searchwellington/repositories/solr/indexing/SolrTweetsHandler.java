@@ -9,10 +9,12 @@ import org.apache.solr.common.SolrInputDocument;
 public class SolrTweetsHandler {
 
 	public SolrInputDocument processTweets(List<Twit> tweets, SolrInputDocument inputDocument) {
+		inputDocument.addField("twitter_count", tweets.size());
 		for (Twit tweet : tweets) {
 			inputDocument.addField("tweet_author", tweet.getAuthor());
 			inputDocument.addField("tweet_text", tweet.getText());
 		}
 		return inputDocument;
 	}
+	
 }
