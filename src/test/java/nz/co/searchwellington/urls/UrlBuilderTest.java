@@ -36,14 +36,14 @@ public class UrlBuilderTest {
 	@Test
 	public void canContstructPageUrlForFrontendNewsitem() throws Exception {		
 		assertNull(frontendNewsitem.getPublisherName());		
-		assertEquals(SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getTaggingUrl(frontendNewsitem));
+		assertEquals(SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem));
 	}
 	
 	@Test
 	public void shouldPrefixPageUrlWithPublisherWordsForUrlIfNewsitemHasPublisherSet() throws Exception {
 		frontendNewsitem.setPublisherName("Local sports club");
 		assertNotNull(frontendNewsitem.getPublisherName());
-		assertEquals(SITE_URL + "/local-sports-club/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getTaggingUrl(frontendNewsitem));
+		assertEquals(SITE_URL + "/local-sports-club/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem));
 	}
 	
 }
