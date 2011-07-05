@@ -159,11 +159,10 @@
 			#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	
 				<li>Submitted by: <a href="$urlBuilder.getProfileUrl($item.owner)">$item.owner.profilename</a></li>
 			#end
-							
 			
 			#if ($item.type == "N" && $item.retweets && $item.retweets.size() > 0)
 				<ul>
-				#foreach ($twit in $item.reTwits) 
+				#foreach ($twit in $item.retweets) 
 					#parse("includes/twittermessage.vm")
 				#end
 				</ul>					
