@@ -16,23 +16,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.syndication.io.FeedException;
 
-
+// TODO Should be a queue?
 public class CommentFeedReader {
     
+	private static Logger log = Logger.getLogger(CommentFeedReader.class);
+	
     private static final int MAX_COMMENT_FEEDS_TO_LOAD = 30;
-
-    static Logger log = Logger.getLogger(CommentFeedReader.class);
     
     private ResourceRepository resourceDAO;   
     private CommentFeedService commentFeedService;
     private ContentUpdateService contentUpdateService;
     private ConfigRepository configDAO;
-    
-    
+        
     public CommentFeedReader() {        
     }
     
- 
     public CommentFeedReader(ResourceRepository resourceDAO,
 			CommentFeedService commentFeedService,
 			ContentUpdateService contentUpdateService, ConfigRepository configDAO) {
@@ -41,7 +39,6 @@ public class CommentFeedReader {
 		this.contentUpdateService = contentUpdateService;
 		this.configDAO = configDAO;
 	}
-
     
 	@Transactional
     public void loadComments() throws FeedException, IOException {
@@ -56,11 +53,10 @@ public class CommentFeedReader {
 		log.info("Reading " + commentFeedsToRead.size() + " comment feeds.");               
         for (CommentFeed commentFeed : commentFeedsToRead) {                        
             loadCommentsFromCommentFeed(commentFeed);
-        }        
+        }
         log.info("Finished loading comments.");
-    }
-
-    
+	}
+	
     public void loadCommentsFromCommentFeed(CommentFeed commentFeed) {    	
     	DateFormatter dateFormatter = new DateFormatter();    	
         if (hasntBeenReadInTheLastHour(commentFeed)) {
@@ -70,7 +66,6 @@ public class CommentFeedReader {
             log.info("Skipping loading of comments for: " + commentFeed.getUrl() + " (last read " + dateFormatter.timeSince(commentFeed.getLastRead()) +")");
         }
     }
-
     
     private boolean hasntBeenReadInTheLastHour(CommentFeed commentFeed) {                    
         if (commentFeed != null && commentFeed.getLastRead() == null) {
