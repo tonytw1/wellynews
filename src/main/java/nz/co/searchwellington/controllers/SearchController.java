@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.filters.RequestFilter;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ConfigRepository;
@@ -17,11 +16,9 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-
-
 public class SearchController extends BaseMultiActionController {
 	
-	Logger log = Logger.getLogger(SearchController.class);
+	private Logger log = Logger.getLogger(SearchController.class);
     
 	private RequestFilter requestFilter;
 	
@@ -103,6 +100,5 @@ public class SearchController extends BaseMultiActionController {
         
         return mv;
 	}
-
     
 }
