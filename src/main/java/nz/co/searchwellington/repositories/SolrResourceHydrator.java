@@ -79,7 +79,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 
 	private void hydrateTwitterFields(SolrDocument result,
 			FrontendNewsitemImpl newsitem) {
-		final Integer twitterCount = (Integer) result.getFieldValue("twitter_count");
+		final Integer twitterCount = (Integer) result.getFieldValue("twitterCount");
 		if (twitterCount != null && twitterCount > 0) {				
 			Iterator<Object> twitterAuthors = result.getFieldValues("tweet_author").iterator();
 			Iterator<Object> twitterText = result.getFieldValues("tweet_text").iterator();

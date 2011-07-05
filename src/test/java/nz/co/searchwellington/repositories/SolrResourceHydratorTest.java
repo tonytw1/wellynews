@@ -57,7 +57,7 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void canHyrdateNewsitemTweets() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("N");
-		solrRow.setField("twitter_count", 2);
+		solrRow.setField("twitterCount", 2);
 		solrRow.addField("geotagged", false);
 		solrRow.addField("tweet_author", "tonytw1");
 		solrRow.addField("tweet_text", "Blah");
