@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 
@@ -21,29 +21,29 @@ public class EditPermissionService {
 	}
 
 	
-	public boolean canEdit(Resource resource) {
+	public boolean canEdit(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return isAdminOrOwner(resource, loggedInUser);
 	}
 	
 	
-	public boolean canDelete(Resource resource) {
+	public boolean canDelete(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return isAdminOrOwner(resource, loggedInUser);
 	}
 	
-	public boolean canDecache(Resource resource) {
+	public boolean canDecache(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 	
-	public boolean canRead(Resource resource) {
+	public boolean canRead(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 
 	
-	public boolean canCheck(Resource resource) {
+	public boolean canCheck(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
@@ -77,7 +77,7 @@ public class EditPermissionService {
 	}
 	
 	
-	private boolean isAdminOrOwner(Resource resource, User loggedInUser) {
+	private boolean isAdminOrOwner(FrontendResource resource, User loggedInUser) {
 		if (loggedInUser == null) {
 			return false;
 		}
@@ -85,10 +85,11 @@ public class EditPermissionService {
 		if (loggedInUser.isAdmin()) {
 			return true;
 		}
-				
-		if (resource.getOwner() != null && loggedInUser.getId() == resource.getOwner().getId()) {
-			return true;
-		}
+			
+		// TODO reimplement for frontend resource.s
+		//if (resource.getOwner() != null && loggedInUser.getId() == resource.getOwner().getId()) {
+		//	return true;
+		//}
 		return false;
 	}
 
