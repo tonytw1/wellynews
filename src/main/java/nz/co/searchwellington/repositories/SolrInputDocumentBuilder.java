@@ -82,6 +82,7 @@ public class SolrInputDocumentBuilder {
 		
 		
 		if (resource.getType().equals("F")) {
+			inputDocument.addField("urlWords", resource.getUrlWords());
 			inputDocument.addField("feedLatestItemDate", ((Feed) resource).getLatestItemDate());			
 		}
 		

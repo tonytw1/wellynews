@@ -5,13 +5,13 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 public class UrlBuilder {
@@ -42,7 +42,7 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/ajax/tags";
 	}
 		
-	public String getFeedUrl(Feed feed) {		
+	public String getFeedUrl(FrontendFeed feed) {		
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
 	

@@ -1,14 +1,14 @@
-#set($itemUrl = $item.url)
-#if ($item.type == ('F'))
-	#set($itemUrl = $urlBuilder.getFeedUrl($item))
-#end
 	
 	<li>		
 				
 		#if ($item.image) 
 			<img src="$item.image.url" align="right" vspace="10">
-		#end	
-	
+		#end
+			
+		#set($itemUrl = $item.url)
+		#if ($item.type == ('F'))
+			#set($itemUrl = $urlBuilder.getFeedUrl($item))
+		#end
 		<h5><a href="$itemUrl">$escape.html($item.name)</a></h5>
 							
 		<ul>

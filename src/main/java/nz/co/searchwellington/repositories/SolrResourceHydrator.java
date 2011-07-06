@@ -9,6 +9,7 @@ import java.util.List;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
+import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
@@ -54,9 +55,13 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		}
 		
 		if (type.equals("F")) {
-			item = new FrontendResourceImpl();
-			item.setType("F");
+			FrontendFeedImpl feed = new FrontendFeedImpl();
+			feed.setType("F");
+			feed.setPublisherName((String) result.getFieldValue("publisherName"));
+			feed.setUrlWords((String) result.getFieldValue("urlWords"));
+			item = feed;
 		}
+		
 		if (type.equals("L")) {
 			item = new FrontendResourceImpl();
 			item.setType("L");

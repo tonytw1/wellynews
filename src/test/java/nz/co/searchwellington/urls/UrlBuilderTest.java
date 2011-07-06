@@ -1,9 +1,9 @@
 package nz.co.searchwellington.urls;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 
 import org.joda.time.DateTime;
@@ -21,6 +21,7 @@ public class UrlBuilderTest {
 
 	private UrlBuilder urlBuilder;
 	private FrontendNewsitemImpl frontendNewsitem;
+	private FrontendFeedImpl frontendFeed;
 	
 	@Before
 	public void setup() {
@@ -31,6 +32,8 @@ public class UrlBuilderTest {
 		frontendNewsitem = new FrontendNewsitemImpl();
 		frontendNewsitem.setName("Quick brown fox jumps over lazy dog");
 		frontendNewsitem.setDate(new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate());
+		
+		frontendFeed = new FrontendFeedImpl();;
 	}
 	
 	@Test
@@ -42,8 +45,13 @@ public class UrlBuilderTest {
 	@Test
 	public void shouldPrefixPageUrlWithPublisherWordsForUrlIfNewsitemHasPublisherSet() throws Exception {
 		frontendNewsitem.setPublisherName("Local sports club");
-		assertNotNull(frontendNewsitem.getPublisherName());
 		assertEquals(SITE_URL + "/local-sports-club/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem));
+	}
+	
+	@Test
+	public void urlForFeedsShouldPointToOurFeedPage() throws Exception {
+		frontendFeed.setUrlWords("my-local-sports-team-match-reports");
+		assertEquals(SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed));
 	}
 	
 }

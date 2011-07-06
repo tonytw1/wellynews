@@ -102,6 +102,7 @@
    <field name="lastChanged" type="date" indexed="true" stored="true"/>
    <field name="lastLive" type="date" indexed="true" stored="true"/>
    
+    <field name="urlWords" type="text" indexed="true" stored="true"/>   
  	<field name="pageUrl" type="text" indexed="true" stored="true"/>
       
    <field name="embargoedUntil" type="date" indexed="true" stored="true"/>

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import java.util.Date;
 
 import nz.co.searchwellington.model.Twit;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
@@ -97,12 +98,14 @@ public class SolrResourceHydratorTest {
 	public void testCanHydrateFeed() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("F");
 		solrRow.setField("publisherName", PUBLISHER_NAME);
+		solrRow.setField("urlWords", "my-teams-feed");
 		
-		FrontendResource hydratedFeed = (FrontendResource) solrResourceHydrator.hydrateResource(solrRow);
+		FrontendFeed hydratedFeed = (FrontendFeed) solrResourceHydrator.hydrateResource(solrRow);
 		
 		assertBaseFields(hydratedFeed);
 		assertEquals("F", hydratedFeed.getType());
-		//assertEquals(PUBLISHER_NAME, hydratedFeed.getPublisherName());
+		assertEquals(PUBLISHER_NAME, hydratedFeed.getPublisherName());
+		assertEquals("my-teams-feed", hydratedFeed.getUrlWords());
 	}
 	
 	// TODO could be replaced with a call to the real solr row builder?
