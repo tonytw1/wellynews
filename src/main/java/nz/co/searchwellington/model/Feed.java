@@ -2,8 +2,9 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 
-public interface Feed extends PublishedResource {
+public interface Feed extends PublishedResource, FrontendFeed {
 
     public String getAcceptancePolicy();
 
