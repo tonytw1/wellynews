@@ -105,7 +105,7 @@ public class SolrResourceHydratorTest {
 		assertBaseFields(hydratedFeed);
 		assertEquals("F", hydratedFeed.getType());
 		assertEquals(PUBLISHER_NAME, hydratedFeed.getPublisherName());
-		assertEquals("my-teams-feed", hydratedFeed.getUrlWords());
+		assertEquals("my-teams-feed", hydratedFeed.getUrlWords());		
 	}
 	
 	// TODO could be replaced with a call to the real solr row builder?
@@ -129,4 +129,5 @@ public class SolrResourceHydratorTest {
 		assertEquals(DATE, hydratedResource.getDate());		
 		assertEquals(DESCRIPTION, hydratedResource.getDescription());
 	}
+	
 }

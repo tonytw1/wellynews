@@ -161,6 +161,7 @@ public class ContentRetrievalService {
 	}
 	
 	public Feed getFeedByUrlWord(String feedUrlWords) {
+		// TODO can migrate to solr
 		return resourceDAO.loadFeedByUrlWords(feedUrlWords);
 	}
 	
