@@ -1,22 +1,35 @@
 package nz.co.searchwellington.model;
 
+import static org.junit.Assert.assertEquals;
+
 import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+public class UrlWordsGeneratorTest {
 
-public class UrlWordsGeneratorTest extends TestCase {
+	private Newsitem newsitem;
 
-	public void testShouldProduceCorrectUrl() throws Exception {		
-		Website publisher = new WebsiteImpl();
-		publisher.setName("Island Bay school");
-
-		Newsitem newsitem = new NewsitemImpl();
+	@Before
+	public void setup() {
+		newsitem = new NewsitemImpl();
+		newsitem.setName("Some thing happening");
 		DateTime pubdate = new DateTime(2010, 4, 2, 0, 0, 0, 0);
 		newsitem.setDate(pubdate.toDate());
+	}
+	
+	@Test
+	public void shouldProduceCorrectUrlBasedOnPublisherDateAndHeadline() throws Exception {		
+		Website publisher = new WebsiteImpl();
+		publisher.setName("Island Bay school");
 		newsitem.setPublisher(publisher);
-		newsitem.setName("Some thing happening");
 		
 		assertEquals("/island-bay-school/2010/apr/02/some-thing-happening", UrlWordsGenerator.markUrlForNewsitem(newsitem));
+	}
+	
+	@Test
+	public void urlWordshouldBeDateAndHeadlineIfPublisherIsNotSet() throws Exception {
+		assertEquals("/2010/apr/02/some-thing-happening", UrlWordsGenerator.markUrlForNewsitem(newsitem));
 	}
 	
 }
