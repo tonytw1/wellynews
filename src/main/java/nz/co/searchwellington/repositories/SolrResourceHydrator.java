@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
+import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 
 import org.apache.solr.common.SolrDocument;
 
@@ -50,8 +51,15 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		}
 		
 		if (type.equals("W")) {
-			item = new FrontendResourceImpl();
-			item.setType("W");
+			FrontendWebsiteImpl publisher = new FrontendWebsiteImpl();
+			if (result.getFieldValue("newsitemCount") != null) {
+				publisher.setNewsitemCount((Integer) result.getFieldValue("newsitemCount"));
+			}
+			if (result.getFieldValue("feedCount") != null) {
+				publisher.setFeedCount((Integer) result.getFieldValue("feedCount"));
+			}
+			publisher.setType("W");
+			item = publisher;
 		}
 		
 		if (type.equals("F")) {

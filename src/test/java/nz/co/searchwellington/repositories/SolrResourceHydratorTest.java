@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
 
 import org.apache.solr.common.SolrDocument;
 import org.joda.time.DateTime;
@@ -75,12 +76,15 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void canHydrateWebsite() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("W");
+		solrRow.setField("newsitemCount", 2);
+		solrRow.setField("feedCount", 1);
 		
-		FrontendResource hydratedWebsite = (FrontendResource) solrResourceHydrator.hydrateResource(solrRow);
+		FrontendWebsite hydratedWebsite = (FrontendWebsite) solrResourceHydrator.hydrateResource(solrRow);
 		
 		assertBaseFields(hydratedWebsite);
 		assertEquals("W", hydratedWebsite.getType());
-
+		assertEquals(2, hydratedWebsite.getNewsitemCount());
+		assertEquals(1, hydratedWebsite.getFeedCount());
 	}
 	
 	@Test
