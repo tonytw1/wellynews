@@ -141,6 +141,7 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "All Publishers");
         mv.addObject("publishers", contentRetrievalService.getAllPublishers());
         mv.setViewName("publishers");
+        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
         return mv;
     }
     
@@ -169,6 +170,7 @@ public class SimplePageController extends BaseMultiActionController {
         
         populateCommonLocal(mv);
         mv.setViewName("twitter");
+        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
         return mv;
     }
     

@@ -97,6 +97,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		if (request.getAttribute("location") == null) {
 			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());
 		}
+		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
 	
 	@Override

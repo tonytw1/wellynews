@@ -105,7 +105,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			final String searchTerm = (String) request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM);
 			mv.addObject("searchterm", searchTerm);
 			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, showBroken, null));
-		}		
+		}
+        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
 	
 	@Override
