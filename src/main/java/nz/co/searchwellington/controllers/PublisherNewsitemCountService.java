@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 
+@Deprecated // TODO This is probably nicely deprecated by having counts on the solr records. Saves a solr request per page view?
 public class PublisherNewsitemCountService {
 	
 	Logger log = Logger.getLogger(PublisherNewsitemCountService.class);
