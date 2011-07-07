@@ -83,12 +83,13 @@ public class CommentFeedReader {
     private void loadCommentsForCommentFeed(CommentFeed commentFeed) {
     	log.info("Loading comments from url: " + commentFeed.getUrl());
     	final List<Comment> loadedComments = commentFeedService.loadComments(commentFeed);
+    	log.info("Loaded " + loadedComments.size() + " comments from url: " + commentFeed.getUrl());
         commentFeed.getComments().clear();
         commentFeed.getComments().addAll(loadedComments);
         commentFeed.setLastRead(Calendar.getInstance().getTime());
-        if (commentFeed.getNewsitem() != null) {
-        	contentUpdateService.update(commentFeed.getNewsitem());
-        }        
+        //if (commentFeed.getNewsitem() != null) {
+        //	contentUpdateService.update(commentFeed.getNewsitem());
+        //}        
     }
     
 }

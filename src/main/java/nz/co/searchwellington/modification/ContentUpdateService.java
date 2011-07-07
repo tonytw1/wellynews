@@ -6,10 +6,13 @@ import nz.co.searchwellington.repositories.FrontendContentUpdater;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionRepository;
 
+import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 public class ContentUpdateService {
-
+	
+	private static Logger log = Logger.getLogger(ContentUpdateService.class);
+	
 	private ResourceRepository resourceDAO;
 	private SuggestionRepository suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
@@ -29,7 +32,8 @@ public class ContentUpdateService {
 	}
 
 	@Transactional
-	public void update(Resource resource) {				
+	public void update(Resource resource) {
+		log.info("Updating content for: " + resource.getName());
 		boolean resourceUrlHasChanged = false;
 		boolean newSubmission = resource.getId() == 0;
 		if (!newSubmission) {

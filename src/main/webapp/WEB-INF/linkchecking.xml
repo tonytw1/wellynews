@@ -19,9 +19,11 @@
 					<constructor-arg ref="commentFeedDetector" />
 					<constructor-arg ref="commentFeedGuesserService" />
 				</bean>				
-				<bean class="nz.co.searchwellington.linkchecking.NewsitemCommentReader">
-					<constructor-arg ref="commentFeedReader" />
-				</bean>
+				<!--  
+					<bean class="nz.co.searchwellington.linkchecking.NewsitemCommentReader">
+						<constructor-arg ref="commentFeedReader" />
+					</bean>
+				-->
 			</list>
 		</constructor-arg>
 	</bean>

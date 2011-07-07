@@ -20,11 +20,11 @@ public class SolrUpdateQueue {
 	}
 	
 	public void add(SolrInputDocument resource) {
-		log.debug("Adding resource to solr update queue");
+		log.info("Adding resource to solr update queue: " + resource.getFieldValue("title"));
 		queue.offer(resource);
 		log.debug("Queue contains " + queue.size() + " items.");		
 	}
-
+	
 	public boolean hasNext() {
 		return !queue.isEmpty();
 	}
