@@ -4,10 +4,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.FrontEndWebsite;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.SuggestionFeednewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
 
 public class AdminUrlBuilder {
 
@@ -57,7 +57,7 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/supress/unsupress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
 	}
 	
-	public String getPublisherAutoGatherUrl(FrontEndWebsite resource) throws UnsupportedEncodingException {
+	public String getPublisherAutoGatherUrl(FrontendWebsite resource) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/admin/gather?publisher=" + URLEncoder.encode(resource.getUrlWords(), "UTF-8");
 	}
 	
