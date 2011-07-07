@@ -53,6 +53,9 @@ public class CommentFeedReader {
 		log.info("Reading " + commentFeedsToRead.size() + " comment feeds.");               
         for (CommentFeed commentFeed : commentFeedsToRead) {                        
             loadCommentsFromCommentFeed(commentFeed);
+            if (commentFeed.getNewsitem() != null) {
+            	contentUpdateService.update(commentFeed.getNewsitem());
+            }
         }
         log.info("Finished loading comments.");
 	}
@@ -78,7 +81,6 @@ public class CommentFeedReader {
     	}        
     	return true;        
 	}
-
     
     private void loadCommentsForCommentFeed(CommentFeed commentFeed) {
     	log.info("Loading comments from url: " + commentFeed.getUrl());
@@ -86,10 +88,7 @@ public class CommentFeedReader {
     	log.info("Loaded " + loadedComments.size() + " comments from url: " + commentFeed.getUrl());
         commentFeed.getComments().clear();
         commentFeed.getComments().addAll(loadedComments);
-        commentFeed.setLastRead(Calendar.getInstance().getTime());
-        //if (commentFeed.getNewsitem() != null) {
-        //	contentUpdateService.update(commentFeed.getNewsitem());
-        //}        
+        commentFeed.setLastRead(Calendar.getInstance().getTime());           
     }
     
 }
