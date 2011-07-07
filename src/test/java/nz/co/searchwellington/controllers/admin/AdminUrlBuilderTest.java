@@ -1,10 +1,10 @@
 package nz.co.searchwellington.controllers.admin;
 
 import static org.junit.Assert.assertEquals;
-import nz.co.searchwellington.model.FrontEndWebsite;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ public class AdminUrlBuilderTest {
 	private static final String SITE_URL = "http://somesite.local";
 	
 	@Mock SiteInformation siteInformation;
-	@Mock FrontEndWebsite frontendWebsite;
+	@Mock FrontendWebsite frontendWebsite;
 	private FrontendResourceImpl frontendResource;
 	
 	private AdminUrlBuilder adminUrlBuilder;
