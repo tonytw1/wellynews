@@ -59,23 +59,25 @@
 					#end
 				#end				
 			#end
-									
+			
+						
 			#if ($item.type == 'W') 
-				#set ($newsitemCount = $item.newsitemCount
-				#if ($newsitemCount> 0)
+				#set ($newsitemCount = $publisherNewsitemCountService.getNewsitemCount($item))
+				#if ($newsitemCount> 0) 
 					<li><a href="$urlBuilder.getPublisherUrl($item)">#showItemCount($newsitemCount "newsitem")</a></li>
 				#end
 				
-				#set ($feedCount = $item.feedCount				
-				#if (feedCount > 0)
-					#if($feedCount == 1)
-						<li>1 feed<</li>
+				#if ($item.feeds && $item.feeds.size() > 0) 
+					#if($item.feeds.size() == 1)
+						#set ($feed = $item.feeds.iterator().next())					
+						<li><a href="$urlBuilder.getFeedUrl($feed)">1 feed</a></li>
 					#else
-						<li><a href="$urlBuilder.getPublisherUrl($item)">#showItemCount($feedCount "feed")</a></li>
+						<li><a href="$urlBuilder.getPublisherUrl($item)">#showItemCount($item.feeds.size() "feed")</a></li>
 					#end
 				#end
 			#end
-						
+			
+			
 			#if ($item.type == "N" && $item.feed) 
 				<li>
 				#parse('includes/accepted_details.vm')
