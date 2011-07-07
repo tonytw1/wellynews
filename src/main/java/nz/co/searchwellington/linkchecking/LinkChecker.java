@@ -49,7 +49,11 @@ public class LinkChecker {
 			log.info("Running linkchecking processors");
 			for (LinkCheckerProcessor processor : processers) {
 				log.info("Running processor: " + processor.getClass().toString());
-				processor.process(resource, pageContent);
+				try {
+					processor.process(resource, pageContent);
+				} catch (Exception e) {
+					log.error("An exception occured while running a link checker processor", e);
+				}
 			}
 			log.info("Finished linkchecking");
 						
