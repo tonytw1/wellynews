@@ -9,7 +9,7 @@ import org.junit.Test;
 public class UrlWordsGeneratorTest {
 
 	private Newsitem newsitem;
-
+	
 	@Before
 	public void setup() {
 		newsitem = new NewsitemImpl();

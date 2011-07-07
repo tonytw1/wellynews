@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.Resource;
 
 import org.apache.log4j.Logger;
 
+// TODO Not currently used - could be used from view?
 public class ContentDedupingService {
 	
 	Logger log = Logger.getLogger(ContentDedupingService.class);
