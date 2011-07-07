@@ -44,9 +44,10 @@ public class FeedItemAcceptorTest {
 	}
 	
 	@Test
-	public void shouldSetAcceptedByUserWhenAccepting() throws Exception {
+	public void shouldSetAcceptedByUserAndOwnerWhenAccepting() throws Exception {
 		feedItemAcceptor.acceptFeedItem(user, feednewsitem);
 		Mockito.verify(newsitem).setAcceptedBy(user);
+		Mockito.verify(newsitem).setOwner(user);
 	}
 	
 	@Test

@@ -38,6 +38,7 @@ public class FeedItemAcceptor {
         
         newsitem.setAccepted(new DateTime().toDate());
         newsitem.setAcceptedBy(user);
+        newsitem.setOwner(user);
         return newsitem;
     }
 	
