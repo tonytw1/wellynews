@@ -2,9 +2,11 @@ package nz.co.searchwellington.urls;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
+import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -22,6 +24,7 @@ public class UrlBuilderTest {
 	private UrlBuilder urlBuilder;
 	private FrontendNewsitemImpl frontendNewsitem;
 	private FrontendFeedImpl frontendFeed;
+	private FrontendWebsiteImpl frontendWebsite;
 	
 	@Before
 	public void setup() {
@@ -33,7 +36,15 @@ public class UrlBuilderTest {
 		frontendNewsitem.setName("Quick brown fox jumps over lazy dog");
 		frontendNewsitem.setDate(new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate());
 		
-		frontendFeed = new FrontendFeedImpl();;
+		frontendFeed = new FrontendFeedImpl();
+		
+		frontendWebsite = new FrontendWebsiteImpl();
+	}
+	
+	@Test
+	public void canCreateLocationSearchUrlFromGeotag() throws Exception {
+		Geocode somewhere = new Geocode("Somewhere,Far away", 3.1, 4.2);
+		assertEquals(SITE_URL + "/geotagged?location=Somewhere%2CFar+away", urlBuilder.getLocationUrlFor(somewhere));
 	}
 	
 	@Test
@@ -46,6 +57,12 @@ public class UrlBuilderTest {
 	public void shouldPrefixPageUrlWithPublisherWordsForUrlIfNewsitemHasPublisherSet() throws Exception {
 		frontendNewsitem.setPublisherName("Local sports club");
 		assertEquals(SITE_URL + "/local-sports-club/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem));
+	}
+	
+	@Test
+	public void canGenerateFrontendPublisherPageUrl() throws Exception {
+		frontendWebsite.setUrlWords("wellington-city-council");
+		assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl(frontendWebsite));
 	}
 	
 	@Test

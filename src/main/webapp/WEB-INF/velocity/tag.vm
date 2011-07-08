@@ -46,15 +46,13 @@
 			#else
 				<h2>$tag.displayName</h2>
 			#end
-	
+			
+			#parse("includes/tag_geocode.vm")
+				
 			#parse("includes/tag_admin_links.vm")	
 			#parse("includes/child_tags.vm")
 		#end
-		
-		#if ($tag.geocode)
-			$tag.geocode.latitude , $tag.geocode.longitude
-		#end
-
+				
 		#parse("includes/search_widget.vm")
 			
 		<div class="tag_main_content">

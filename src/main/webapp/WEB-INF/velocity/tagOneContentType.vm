@@ -21,8 +21,9 @@
 		#else
 			<h2>$tag.displayName</h2>
 		#end
-
-
+		
+		#parse("includes/tag_geocode.vm")
+		
 		#parse("includes/tag_admin_links.vm")
 
 		#parse("includes/child_tags.vm")
