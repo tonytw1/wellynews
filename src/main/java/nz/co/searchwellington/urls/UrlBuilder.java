@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
@@ -13,6 +14,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
 
 public class UrlBuilder {
 
@@ -79,7 +81,7 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + UrlWordsGenerator.markUrlForNewsitem(newsitem);
 	}
 	
-	public String getPublisherUrl(Website publisher) {
+	public String getPublisherUrl(FrontendWebsite publisher) {
 		return siteInformation.getUrl() + "/" + publisher.getUrlWords();
 	}
 
@@ -106,7 +108,6 @@ public class UrlBuilder {
 	public String getGeotaggedUrl() {
 		return siteInformation.getUrl() + "/geotagged";
 	}
-	
 	
 	public String getPublicTaggingSubmissionUrl(Resource resource) {
 		return siteInformation.getUrl() + "/tagging/submit";
@@ -145,6 +146,10 @@ public class UrlBuilder {
 
 	public String getTwitterCallbackUrl() {
 		return siteInformation.getUrl() + "/twitter/callback";
+	}
+
+	public String getLocationUrlFor(Geocode somewhere) {		
+		return siteInformation.getUrl() + "/geotagged?location=" + URLEncoder.encode(somewhere.getAddress());
 	}
 	
 }

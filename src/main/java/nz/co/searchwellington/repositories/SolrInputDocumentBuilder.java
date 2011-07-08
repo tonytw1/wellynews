@@ -79,13 +79,15 @@ public class SolrInputDocumentBuilder {
 			SolrTweetsHandler tweetsHandler = new SolrTweetsHandler();	//TODO inject
 			tweetsHandler.processTweets(newsitem.getRetweets(), inputDocument);			
 		}
-		
-		
+				
 		if (resource.getType().equals("F")) {
 			inputDocument.addField("urlWords", resource.getUrlWords());
 			inputDocument.addField("feedLatestItemDate", ((Feed) resource).getLatestItemDate());			
 		}
 		
+		if (resource.getType().equals("W")) {
+			inputDocument.addField("urlWords", resource.getUrlWords());
+		}
 		
 		for(HandTagging handTagging : handTaggingDAO.getHandTaggingsForResource(resource)) {			
 			final int userId = handTagging.getUser().getId();

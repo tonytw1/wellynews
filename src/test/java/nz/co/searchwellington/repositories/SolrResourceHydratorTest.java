@@ -76,15 +76,13 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void canHydrateWebsite() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("W");
-		solrRow.setField("newsitemCount", 2);
-		solrRow.setField("feedCount", 1);
+		solrRow.setField("urlWords", "url-words");
 		
 		FrontendWebsite hydratedWebsite = (FrontendWebsite) solrResourceHydrator.hydrateResource(solrRow);
 		
 		assertBaseFields(hydratedWebsite);
 		assertEquals("W", hydratedWebsite.getType());
-		assertEquals(2, hydratedWebsite.getNewsitemCount());
-		assertEquals(1, hydratedWebsite.getFeedCount());
+		assertEquals("url-words", hydratedWebsite.getUrlWords());	
 	}
 	
 	@Test

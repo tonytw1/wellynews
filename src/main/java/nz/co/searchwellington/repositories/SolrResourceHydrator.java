@@ -59,6 +59,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 				publisher.setFeedCount((Integer) result.getFieldValue("feedCount"));
 			}
 			publisher.setType("W");
+			publisher.setUrlWords((String) result.getFieldValue("urlWords"));
 			item = publisher;
 		}
 		

@@ -77,7 +77,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
 		mv.addObject("description", publisher.getName() + " newsitems");
-		mv.addObject("link", urlBuilder.getPublisherUrl(publisher));
+		//mv.addObject("link", urlBuilder.getPublisherUrl(publisher));	// TODO Reimplement
 		
 		int startIndex = getStartIndex(page);
 		final int mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);
