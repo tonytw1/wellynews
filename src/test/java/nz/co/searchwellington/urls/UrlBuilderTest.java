@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
@@ -39,6 +40,14 @@ public class UrlBuilderTest {
 		frontendFeed = new FrontendFeedImpl();
 		
 		frontendWebsite = new FrontendWebsiteImpl();
+		frontendWebsite.setUrlWords("wellington-city-council");
+	}
+	
+	@Test
+	public void canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName() throws Exception {
+		Tag tag = new Tag();
+		tag.setName("atag");
+		assertEquals(SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl(frontendWebsite, tag));
 	}
 	
 	@Test
@@ -61,7 +70,6 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canGenerateFrontendPublisherPageUrl() throws Exception {
-		frontendWebsite.setUrlWords("wellington-city-council");
 		assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl(frontendWebsite));
 	}
 	

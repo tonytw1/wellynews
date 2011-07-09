@@ -11,10 +11,10 @@ import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
+import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 
 public class UrlBuilder {
 
@@ -85,8 +85,8 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/" + publisher.getUrlWords();
 	}
 
-	public String getPublisherCombinerUrl(Website publisher, Tag tag) {
-		return siteInformation.getUrl() + "/" + publisher.getUrlWords() + "+" + tag.getName();
+	public String getPublisherCombinerUrl(FrontendWebsiteImpl frontendWebsite, Tag tag) {
+		return siteInformation.getUrl() + "/" + frontendWebsite.getUrlWords() + "+" + tag.getName();
 	}
 
 	public String getTagCommentUrl(Tag tag) {

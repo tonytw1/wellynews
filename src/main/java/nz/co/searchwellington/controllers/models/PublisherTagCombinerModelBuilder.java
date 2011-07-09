@@ -56,7 +56,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 			mv.addObject("publisher", publisher);
 			mv.addObject("heading", publisher.getName() + " and " + tag.getDisplayName());
 			mv.addObject("description", "");
-			mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag));			
+			//mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag));			// TODO reimplement
 			populatePublisherTagCombinerNewsitems(mv, publisher, tag, showBroken);			
 			return mv;
 		}
