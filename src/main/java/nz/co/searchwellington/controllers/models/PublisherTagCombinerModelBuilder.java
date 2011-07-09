@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendResource;
+import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -24,8 +25,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
-	
-	
+		
 	public PublisherTagCombinerModelBuilder(
 			ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
@@ -35,7 +35,6 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 	}
-
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
@@ -45,24 +44,28 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 		return isPublisherTagCombiner;
 	}
 	
-	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		if (isValid(request)) {
 			logger.info("Building publisher tag combiner page model");
 			Tag tag = (Tag) request.getAttribute("tag");
-			Website publisher = (Website) request.getAttribute("publisher"); 
-			ModelAndView mv = new ModelAndView();		
-			mv.addObject("publisher", publisher);
+			Website publisher = (Website) request.getAttribute("publisher");	// TODO probably needs to be a frontendwebsite
+			ModelAndView mv = new ModelAndView();	
+			
+			// TODO hack - fronendpublisher / publisher mismatch
+			FrontendWebsiteImpl frontendPublisher = new FrontendWebsiteImpl();
+			frontendPublisher.setName(publisher.getName());
+			frontendPublisher.setUrlWords(publisher.getUrlWords());			
+			mv.addObject("publisher", frontendPublisher);
+			
 			mv.addObject("heading", publisher.getName() + " and " + tag.getDisplayName());
 			mv.addObject("description", "");
-			//mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag));			// TODO reimplement
+			mv.addObject("link", urlBuilder.getPublisherCombinerUrl(frontendPublisher, tag));
 			populatePublisherTagCombinerNewsitems(mv, publisher, tag, showBroken);			
 			return mv;
 		}
 		return null;
 	}
-	
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
@@ -72,13 +75,11 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 			mv.addObject("related_tags", relatedTagLinks);
 		}		
 	}
-
 	
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "publisherCombiner";
-	}
-	
+	}	
 
 	// TODO needs pagination
 	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) {		

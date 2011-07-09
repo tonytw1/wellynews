@@ -37,7 +37,8 @@
 	<bean id="publisherModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherModelBuilder">
 		<constructor-arg ref="rssUrlBuilder" />
 		<constructor-arg ref="relatedTagsService" />
-		<constructor-arg ref="contentRetrievalService" />	
+		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="urlBuilder" />		
 	</bean>
 
 	<bean id="publisherTagCombinerModelBuilder" class="nz.co.searchwellington.controllers.models.PublisherTagCombinerModelBuilder">

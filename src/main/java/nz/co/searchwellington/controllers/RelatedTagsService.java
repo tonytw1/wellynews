@@ -49,8 +49,8 @@ public class RelatedTagsService {
 		query.addFacetField("tags");
 		query.setFacetMinCount(1);
 		
-		Map<String, List<Count>> facetResuls = solrQueryService.getFacetQueryResults(query);
-		return solrFacetLoader.loadTagFacet(facetResuls.get("tags"));
+		Map<String, List<Count>> facetResults = solrQueryService.getFacetQueryResults(query);
+		return solrFacetLoader.loadTagFacet(facetResults.get("tags"));
 	}
 	
 	public List<TagContentCount> getFeedworthyTags(boolean shouldShowBroken) {

@@ -51,13 +51,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		}
 		
 		if (type.equals("W")) {
-			FrontendWebsiteImpl publisher = new FrontendWebsiteImpl();
-			if (result.getFieldValue("newsitemCount") != null) {
-				publisher.setNewsitemCount((Integer) result.getFieldValue("newsitemCount"));
-			}
-			if (result.getFieldValue("feedCount") != null) {
-				publisher.setFeedCount((Integer) result.getFieldValue("feedCount"));
-			}
+			FrontendWebsiteImpl publisher = new FrontendWebsiteImpl();			
 			publisher.setType("W");
 			publisher.setUrlWords((String) result.getFieldValue("urlWords"));
 			item = publisher;

@@ -12,7 +12,9 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
+import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,11 +26,13 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private RssUrlBuilder rssUrlBuilder;
 	private RelatedTagsService relatedTagsService;
 	private ContentRetrievalService contentRetrievalService;
+	private UrlBuilder urlBuilder;
 	
-	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService) {		
+	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.contentRetrievalService = contentRetrievalService;
+		this.urlBuilder = urlBuilder;
 	}
 	
 	@Override
@@ -43,7 +47,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {				
 		if (isValid(request)) {
 			logger.info("Building publisher page model");
-			Website publisher = (Website) request.getAttribute("publisher");
+			Website publisher = (Website) request.getAttribute("publisher");	// TODO needs to be a frontend Website
 			int page = getPage(request);
 			return populatePublisherPageModelAndView(publisher, showBroken, page);			
 		}
@@ -74,7 +78,13 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
 		mv.addObject("description", publisher.getName() + " newsitems");
-		//mv.addObject("link", urlBuilder.getPublisherUrl(publisher));	// TODO Reimplement
+		mv.addObject("link", urlBuilder.getPublisherUrl(publisher));
+		
+		// TODO hack - fronendpublisher / publisher mismatch
+		FrontendWebsiteImpl frontendPublisher = new FrontendWebsiteImpl();
+		frontendPublisher.setName(publisher.getName());
+		frontendPublisher.setUrlWords(publisher.getUrlWords());			
+		mv.addObject("publisher", frontendPublisher);
 		
 		int startIndex = getStartIndex(page);
 		final int mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);
@@ -82,7 +92,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 			final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex);		
 			mv.addObject("main_content", publisherNewsitems);
 			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
-			mv.addObject("publisher", publisher);
+			
 			
 			populatePagination(mv, startIndex, mainContentTotal);			
 		}		
