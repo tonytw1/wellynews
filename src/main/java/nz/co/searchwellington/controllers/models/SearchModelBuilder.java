@@ -23,7 +23,7 @@ public class SearchModelBuilder extends AbstractModelBuilder implements ModelBui
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
-		return request.getParameter(KEYWORDS_PARAMETER) != null;
+		return request.getPathInfo().equals("/search") && request.getParameter(KEYWORDS_PARAMETER) != null;
 	}
 
 	@Override

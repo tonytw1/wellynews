@@ -30,9 +30,12 @@ public class SearchModelBuilderTest {
 	}
 	
 	@Test
-	public void keywordShouldBeSetToIndicateASearch() throws Exception {
+	public void keywordAndSearchPathShouldBeSetToIndicateASearch() throws Exception {
+		request.setPathInfo("");
 		assertFalse(modelBuilder.isValid(request));
 		request.setParameter("keywords", "widgets");
+		assertFalse(modelBuilder.isValid(request));
+		request.setPathInfo("/search");
 		assertTrue(modelBuilder.isValid(request));
 	}
 	
