@@ -18,6 +18,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
+import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
@@ -46,8 +47,9 @@ public class SolrBackedResourceDAO {
 	private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
 	private static final int TAG_TWITTER_OF_INTEREST_THRESHOLD = 2;
 	
+	private ResourceRepository resourceDAO;	// TODO this needs to be driven out somehow
+	
     private SolrQueryService solrQueryService;
-    private ResourceRepository resourceDAO;
     private TagDAO tagDAO;
     private ResourceHydrator resourceHydrator;
     
@@ -260,7 +262,7 @@ public class SolrBackedResourceDAO {
 	
 	public List<FrontendResource> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
 		List <FrontendResource> publishers = new ArrayList<FrontendResource>();
-		for (PublisherContentCount publisherCount : this.getAllPublishersWithContentCounts(shouldShowBroken, mustHaveNewsitems)) {
+		for (PublisherContentCount publisherCount : getAllPublishersWithContentCounts(shouldShowBroken, mustHaveNewsitems)) {
 			publishers.add(publisherCount.getPublisher());
 		}
 		return publishers;
@@ -448,7 +450,7 @@ public class SolrBackedResourceDAO {
 		query.setFacetMinCount(1);
 		query.setFacetSort(false);
 		query.setFacetLimit(MAXIMUM_PUBLISHERS_FACET_LIMIT);
-			
+		
 		List<PublisherContentCount> publishers = new ArrayList<PublisherContentCount>();
 		QueryResponse response = solrQueryService.querySolr(query);
 		if (response != null) {
@@ -458,10 +460,16 @@ public class SolrBackedResourceDAO {
 				List<Count> values = facetField.getValues();			
 				for (Count count : values) {
 					final int relatedPublisherId = Integer.parseInt(count.getName());
-					Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);
+					
+					Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);	// TODO this database load needs to be driven out somehow.
 					if (relatedPublisher != null) {
 						final Long relatedItemCount = count.getCount();
-						publishers.add(new PublisherContentCount(relatedPublisher, relatedItemCount.intValue()));
+						
+						FrontendWebsiteImpl frontendWebsite = new FrontendWebsiteImpl();	// TODO Hack - need to tighten up on what information really needs to be in a publisher count
+						frontendWebsite.setName(relatedPublisher.getName());
+						frontendWebsite.setUrlWords(relatedPublisher.getUrlWords());
+						
+						publishers.add(new PublisherContentCount(frontendWebsite, relatedItemCount.intValue()));
 					} else {
 						log.warn("Could not find website object for publisher id: " + relatedPublisherId);
 					}

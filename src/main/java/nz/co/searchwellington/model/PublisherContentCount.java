@@ -1,20 +1,22 @@
 package nz.co.searchwellington.model;
 
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
+
 public class PublisherContentCount implements Comparable {
 
-	private Website publisher;
+	private FrontendWebsite publisher;
 	private int count;
 	
-	public PublisherContentCount(Website publisher, int count) {		
+	public PublisherContentCount(FrontendWebsite publisher, int count) {		
 		this.publisher = publisher;
 		this.count = count;
 	}
 	
-	public Website getPublisher() {
+	public FrontendWebsite getPublisher() {
 		return publisher;
 	}
 	
-	public void setPublisher(Website publisher) {
+	public void setPublisher(FrontendWebsite publisher) {
 		this.publisher = publisher;
 	}
 	

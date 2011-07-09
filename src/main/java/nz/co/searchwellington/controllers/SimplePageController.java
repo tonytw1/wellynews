@@ -74,7 +74,6 @@ public class SimplePageController extends BaseMultiActionController {
         mv.setViewName("api");
         return mv;
     }
-
     
     public ModelAndView rssfeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();

@@ -3,8 +3,6 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
@@ -27,25 +25,14 @@
 	
 #end
 </ul>
-
-
-
-
 </div>
-
-
-
 
 <div class="right">
 
-
 <div class="box">
 #parse("includes/latest_newsitems.vm")
-
 <br clear="all"/>
-
 </div>
-
 
 </div>
 

@@ -46,8 +46,8 @@ public class PublisherModelBuilderTest {
 	
 	@SuppressWarnings("unchecked")
 	@Test
-	public void shouldHightlightPublishersGeotaggedContent() throws Exception {		
-		PublisherModelBuilder modelBuilder = new PublisherModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, contentRetrievalService);
+	public void shouldHightlightPublishersGeotaggedContent() throws Exception {
+		PublisherModelBuilder modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService);
 		
 		ModelAndView mv = new ModelAndView();
 		

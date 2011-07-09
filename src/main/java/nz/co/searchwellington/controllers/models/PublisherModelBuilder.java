@@ -13,7 +13,6 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,13 +22,11 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private static Logger logger = Logger.getLogger(PublisherModelBuilder.class);
 	
 	private RssUrlBuilder rssUrlBuilder;
-	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	private ContentRetrievalService contentRetrievalService;
 	
-	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService) {		
+	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService) {		
 		this.rssUrlBuilder = rssUrlBuilder;
-		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.contentRetrievalService = contentRetrievalService;
 	}
