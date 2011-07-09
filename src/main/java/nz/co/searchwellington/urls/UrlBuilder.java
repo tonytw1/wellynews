@@ -70,11 +70,7 @@ public class UrlBuilder {
 	}
 	
 	public String getTagSearchUrl(Tag tag, String keywords) {
-		try {
-			return siteInformation.getUrl() + "/search?keywords=" + URLEncoder.encode(keywords, "UTF-8") + "&tag="+ URLEncoder.encode(tag.getName(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
+		return getTagUrl(tag) + "?keywords=" + URLEncoder.encode(keywords);
 	}
 	
 	public String getLocalPageUrl(FrontendNewsitem newsitem) {
@@ -150,6 +146,10 @@ public class UrlBuilder {
 
 	public String getLocationUrlFor(Geocode somewhere) {		
 		return siteInformation.getUrl() + "/geotagged?location=" + URLEncoder.encode(somewhere.getAddress());
+	}
+
+	public String getSearchUrlFor(String keywords) {
+		return siteInformation.getUrl() + "/search?keywords=" + URLEncoder.encode(keywords);
 	}
 	
 }

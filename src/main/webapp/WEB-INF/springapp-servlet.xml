@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
 <beans>
-
 
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
@@ -16,11 +14,9 @@
    			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
   		</property>
 	</bean>
-	
 		
 	<import resource="admin-servlets.xml" />
-	
-		
+			
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="contentModelBuilder" />
@@ -31,6 +27,7 @@
 					<props>
 						<prop key="/">normal</prop>
 						<prop key="/*">normal</prop>
+						<prop key="/search">normal</prop>						
 						<prop key="/archive/*/*">normal</prop>
 						<prop key="/*/comment">normal</prop>
 						<prop key="/*/geotagged">normal</prop>
@@ -43,9 +40,7 @@
 			</bean>		
 		</property>
 	</bean>
-	
-	
-	
+		
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
 		<constructor-arg ref="adminRequestFilter" />	
 		<constructor-arg ref="anonUserService" />		
@@ -191,26 +186,8 @@
 				</property>
 			</bean>		
 		</property>	
-	</bean>		
-	
-
-	<bean id="searchController" class="nz.co.searchwellington.controllers.SearchController">
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="contentRetrievalService" />
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>					
-						<prop key="/search">search</prop>								
-					</props>
-				</property>
-			</bean>		
-		</property>
 	</bean>
 	
-		
 	<bean id="cancelController" class="nz.co.searchwellington.controllers.CancelController">
 		<constructor-arg ref="urlStack" />
 		<property name="methodNameResolver">
@@ -243,7 +220,6 @@
 		</property>
 	</bean>
 			
-		
 	<bean id="jsonController" class="nz.co.searchwellington.controllers.JSONController">
 		<constructor-arg ref="contentModelBuilder" />		
 		<property name="methodNameResolver">
@@ -256,10 +232,9 @@
 					</props>
 				</property>
 			</bean>
-		</property>		
+		</property>
 	</bean>
-	
-	
+		
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="contentRetrievalService" />
@@ -270,7 +245,7 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/rss">mainRss</prop>						
+						<prop key="/rss">mainRss</prop>
 					</props>
 				</property>
 			</bean>		
@@ -393,9 +368,7 @@
 				<prop key="/json">jsonController</prop>									
 				<prop key="*/json">jsonController</prop>
 				<prop key="/*/*/json">jsonController</prop>
-												
-				<prop key="/search">searchController</prop>
-								
+																							
 				<prop key="/admin/feed/decache">viewfeedController</prop>	
 				<prop key="/admin/feed/read">viewfeedController</prop>
 				
@@ -437,7 +410,9 @@
 				<prop key="/sitemap.xml">sitemapController</prop>
 				
 				<prop key="/supress/*">supressionController</prop>
-								
+
+				<prop key="/search">tagController</prop>
+				
 				<prop key="/">tagController</prop>								
 				<prop key="/feeds">tagController</prop>							
 				<prop key="/*+*">tagController</prop>

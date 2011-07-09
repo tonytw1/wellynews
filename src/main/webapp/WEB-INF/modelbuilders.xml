@@ -14,6 +14,11 @@
 		<constructor-arg ref="archiveLinksService" />		
 	</bean>
 	
+	<bean id="searchModelBuilder" class="nz.co.searchwellington.controllers.models.SearchModelBuilder">
+		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="urlBuilder" />				
+	</bean>
+	
 	<bean id="newsitemPageModelBuilder" class="nz.co.searchwellington.controllers.models.NewsitemPageModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="taggingReturnsOfficerService" />
@@ -123,6 +128,7 @@
 		<constructor-arg>
 			<list>				
 				<ref bean="indexModelBuilder" />
+				<ref bean="searchModelBuilder" />				
 				<ref bean="newsitemPageModelBuilder" />				
 				<ref bean="archiveModelBuilder" />
 				<ref bean="feedsModelBuilder" />

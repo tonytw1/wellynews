@@ -26,6 +26,7 @@ public class UrlBuilderTest {
 	private FrontendNewsitemImpl frontendNewsitem;
 	private FrontendFeedImpl frontendFeed;
 	private FrontendWebsiteImpl frontendWebsite;
+	private Tag tag;
 	
 	@Before
 	public void setup() {
@@ -41,12 +42,18 @@ public class UrlBuilderTest {
 		
 		frontendWebsite = new FrontendWebsiteImpl();
 		frontendWebsite.setUrlWords("wellington-city-council");
+		
+		tag = new Tag();
+		tag.setName("atag");
+	}
+	
+	@Test
+	public void testTagSearchRefinementsShouldBeOnTheTagPages() throws Exception {
+		assertEquals(SITE_URL + "/atag?keywords=something", urlBuilder.getTagSearchUrl(tag, "something"));
 	}
 	
 	@Test
 	public void canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName() throws Exception {
-		Tag tag = new Tag();
-		tag.setName("atag");
 		assertEquals(SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl(frontendWebsite, tag));
 	}
 	
