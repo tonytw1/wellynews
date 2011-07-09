@@ -14,6 +14,7 @@ public class Geocode {
     private String address;
     private double latitude;
     private double longitude;
+    private String type;
     
     public Geocode() {        
     }
@@ -65,8 +66,16 @@ public class Geocode {
     public boolean isValid() {
         return latitude != 0 && longitude != 0;	// TODO Should be nullable
     }
-  
-    // TODO These two compare methods shouldn't really be on the domain model
+    
+    public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
+	// TODO These two compare methods shouldn't really be on the domain model
     public boolean isSameLocation(Geocode other) {        
         final double distanceBetweenInKm = getDistanceTo(other.getLatitude(), other.getLongitude());
         log.debug("Points " + this.getAddress() + " and " + other.getAddress() + " are " + distanceBetweenInKm + " km part");

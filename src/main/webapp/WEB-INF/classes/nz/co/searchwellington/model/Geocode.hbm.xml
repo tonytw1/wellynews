@@ -4,9 +4,7 @@
     "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-
-    <class  name="nz.co.searchwellington.model.Geocode" table="geocode">
-    		
+    <class name="nz.co.searchwellington.model.Geocode" table="geocode">
     	<cache usage="read-write" region="nz.co.searchwellington.model.Geocode" />
     		
         <id name="id" type="integer">
@@ -26,7 +24,8 @@
             <column name="longitude" sql-type="double" not-null="true"/>                      
         </property>
         
+        <property name="type" type="text">
+        	<column name="type" not-null="true"/>
+        </property>    
     </class>
-
-
 </hibernate-mapping>
