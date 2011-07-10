@@ -4,38 +4,48 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
-import nz.co.searchwellington.controllers.models.SearchModelBuilder;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 public class SearchModelBuilderTest {
 	
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock UrlBuilder urlBuilder;
+	
+	@Mock Tag tag;
+	private List<Tag> tags;
 	private MockHttpServletRequest request;
 	
 	private SearchModelBuilder modelBuilder;
+	@Mock List<FrontendResource> tagKeywordNewsitemResults;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder);
+		tags = new ArrayList<Tag>();
+		tags.add(tag);
 	}
 	
 	@Test
-	public void keywordAndSearchPathShouldBeSetToIndicateASearch() throws Exception {
+	public void keywordShouldBeSetToIndicateASearch() throws Exception {
 		request.setPathInfo("");
 		assertFalse(modelBuilder.isValid(request));
 		request.setParameter("keywords", "widgets");
-		assertFalse(modelBuilder.isValid(request));
-		request.setPathInfo("/search");
 		assertTrue(modelBuilder.isValid(request));
 	}
 	
@@ -43,6 +53,18 @@ public class SearchModelBuilderTest {
 	public void pageHeadingShouldBeSearchKeyword() throws Exception {
 		request.setParameter("keywords", "widgets");
 		assertEquals("Search results - widgets", modelBuilder.populateContentModel(request, false).getModel().get("heading"));
+	}
+	
+	@Test
+	public void shouldGetTagRefinementResultsIfTagIsSet() throws Exception {
+		request.setParameter("keywords", "widgets");
+		request.setAttribute("tags", tags);
+		Mockito.when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", tag)).thenReturn(tagKeywordNewsitemResults);
+		
+		ModelAndView mv = modelBuilder.populateContentModel(request, false);
+		
+		assertEquals(tagKeywordNewsitemResults, mv.getModel().get("main_content"));
+		assertEquals(tag, mv.getModel().get("tag"));
 	}
 	
 }

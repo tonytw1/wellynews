@@ -135,7 +135,11 @@ public class ContentRetrievalService {
 	public List<FrontendResource> getWebsitesMatchingKeywords(String keywords, Tag tag) {
 		return keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
 	}
-
+	
+	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords) {
+		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), null);
+	}
+	
 	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, Tag tag) {
 		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
 	}
