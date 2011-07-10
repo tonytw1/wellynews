@@ -67,6 +67,8 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}
+		
+		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
 	
 	@Override
@@ -91,11 +93,9 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		if (mainContentTotal > 0) {			
 			final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex);		
 			mv.addObject("main_content", publisherNewsitems);
-			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
-			
-			
-			populatePagination(mv, startIndex, mainContentTotal);			
-		}		
+			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));			
+			populatePagination(mv, startIndex, mainContentTotal);
+		}
 		return mv;
 	}
 	

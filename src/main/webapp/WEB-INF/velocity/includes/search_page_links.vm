@@ -4,9 +4,9 @@
 		<ul class="pagelinks">
 			#foreach ($pagenumber in [1..$max_page_number])				
 				#if ($pagenumber > 1)
-					<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="">$pagenumber</a></li>
+				<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getSearchUrlFor($query)&page=$pagenumber">$pagenumber</a></li>
 				#else
-					<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="">$pagenumber</a></li>
+					<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getSearchUrlFor($query)">$pagenumber</a></li>
 				#end
 			#end
 		</ul>
