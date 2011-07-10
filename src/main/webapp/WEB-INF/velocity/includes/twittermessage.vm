@@ -1,2 +1,3 @@
-<li class="twitterMessage"><a href="http://twitter.com/$twit.author"><img src="$urlBuilder.getTwitterProfileImageUrlFor($twit.author)" align="left" width="30" border="0" /></a>$escape.html($twit.author) $escape.html($twit.text)</li>     
-                        
+#if($urlBuilder.getTwitterProfileImageUrlFor($twit.author)) 
+	<li class="twitterMessage"><a href="http://twitter.com/$twit.author"><img src=" $urlBuilder.getTwitterProfileImageUrlFor($twit.author)" align="left" width="30" border="0" /></a>$escape.html($twit.author) $escape.html($twit.text)</li>     
+#end
