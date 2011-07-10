@@ -20,25 +20,21 @@ public class KeywordSearchService {
 	private SolrKeywordQueryBuilder solrKeywordQueryBuilder;
 	private SolrFacetLoader solrFacetLoader;
 	private SolrBackedResourceDAO solrBackedResourceDAO;
-	
-	
+		
 	public KeywordSearchService(SolrQueryService solrQueryService,
 			SolrKeywordQueryBuilder solrKeywordQueryBuilder,
 			SolrFacetLoader solrFacetLoader,
 			SolrBackedResourceDAO solrBackedResourceDAO) {
-		super();
 		this.solrQueryService = solrQueryService;
 		this.solrKeywordQueryBuilder = solrKeywordQueryBuilder;
 		this.solrFacetLoader = solrFacetLoader;
 		this.solrBackedResourceDAO = solrBackedResourceDAO;
 	}
-
-
+	
 	public List<TagContentCount> getKeywordSearchFacets(String keywords, boolean showBroken, Tag tag) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBroken, tag);			
-		
 		query.setRows(SEARCH_FACETS_TO_SHOW);
-		query.setHighlight(true);
+		query.setHighlight(true);	// TODO Really - not needed for facet query?
 		
 		query.addFacetField("publisher");
 		query.addFacetField("tags");
@@ -46,23 +42,31 @@ public class KeywordSearchService {
 		
 		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);				
 		List<TagContentCount> relatedTagLinks = solrFacetLoader.loadTagFacet(facetQueryResults.get("tags"));		
-		return relatedTagLinks;		
+		return relatedTagLinks;
 	}
 	
-	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken, Tag tag) {
-		SolrQuery query = solrKeywordQueryBuilder.getSolrNewsitemKeywordQuery(keywords, showBroken, tag);		
-		query.setRows(100);
+	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken, Tag tag, int startIndex, int maxNewsitems) {
+		SolrQuery query = solrKeywordQueryBuilder.getSolrNewsitemKeywordQuery(keywords, showBroken, tag);
+		query.setStart(startIndex);
+		query.setRows(maxNewsitems);
 		query.setHighlight(true);
 		return solrBackedResourceDAO.getQueryResults(query);
 	}
-		
-	public List<FrontendResource> getWebsitesMatchingKeywords(String keywords, boolean showBroken, Tag tag) {
-		SolrQuery query = solrKeywordQueryBuilder.getSolrWebsiteKeywordQuery(keywords, showBroken, tag);			
-		query.setRows(100);
-		query.setHighlight(true);		
+	
+	public int getNewsitemsMatchingKeywordsCount(String keywords, boolean shouldShowBroken, Tag tag) {
+		SolrQuery query = solrKeywordQueryBuilder.getSolrNewsitemKeywordQuery(keywords, shouldShowBroken, tag);		
+		query.setHighlight(true);
+		return solrBackedResourceDAO.getQueryCount(query);
+	}
+	
+	public List<FrontendResource> getWebsitesMatchingKeywords(String keywords, boolean showBroken, Tag tag, int startIndex, int maxItems) {
+		SolrQuery query = solrKeywordQueryBuilder.getSolrWebsiteKeywordQuery(keywords, showBroken, tag, startIndex, maxItems);					
+		query.setStart(startIndex);
+		query.setRows(maxItems);
+		query.setHighlight(true);
 		return solrBackedResourceDAO.getQueryResults(query);
 	}
-
+	
 	public List<FrontendResource> getResourcesMatchingKeywords(String keywords, boolean showBroken) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBroken, null);			
 		query.setRows(100);

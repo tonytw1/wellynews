@@ -132,16 +132,24 @@ public class ContentRetrievalService {
 		return keywordSearchService.getKeywordSearchFacets(keywords, showBrokenDecisionService.shouldShowBroken(), null);
 	}
 
-	public List<FrontendResource> getWebsitesMatchingKeywords(String keywords, Tag tag) {
-		return keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
+	public List<FrontendResource> getWebsitesMatchingKeywords(String keywords, Tag tag, int startIndex, int maxItems) {
+		return keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag, startIndex, maxItems);
 	}
 	
-	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords) {
-		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), null);
+	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, int startIndex, int maxNewsitems) {
+		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), null, startIndex, maxNewsitems);
 	}
 	
-	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, Tag tag) {
-		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
+	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, Tag tag, int startIndex, int maxItems) {
+		return keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(), tag, startIndex, maxItems);
+	}
+	
+	public int getNewsitemsMatchingKeywordsCount(String keywords, Tag tag) {
+		return keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken(), tag);
+	}
+
+	public int getNewsitemsMatchingKeywordsCount(String keywords) {
+		return keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken(), null);
 	}
 	
 	public List<FrontendResource> getRecentedTwitteredNewsitems() {

@@ -59,7 +59,7 @@ public class SearchModelBuilderTest {
 	public void shouldGetTagRefinementResultsIfTagIsSet() throws Exception {
 		request.setParameter("keywords", "widgets");
 		request.setAttribute("tags", tags);
-		Mockito.when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", tag)).thenReturn(tagKeywordNewsitemResults);
+		Mockito.when(contentRetrievalService.getNewsitemsMatchingKeywords(Mockito.eq("widgets"), Mockito.eq(tag), Mockito.eq(0), Mockito.eq(30))).thenReturn(tagKeywordNewsitemResults);
 		
 		ModelAndView mv = modelBuilder.populateContentModel(request, false);
 		

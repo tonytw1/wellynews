@@ -1,15 +1,15 @@
 package nz.co.searchwellington.repositories.solr;
 
-import org.apache.solr.client.solrj.SolrQuery;
-
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 
+import org.apache.solr.client.solrj.SolrQuery;
+
+// TODO why isn't this folded into the main query builder
 public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
 	
-	
 	public SolrQuery getSolrKeywordQuery(String keywords, boolean showBroken, Tag tag) {
-		SolrQuery query = new SolrQuery();	
+		SolrQuery query = new SolrQuery();		
 		query.setQuery(keywords);
 		query.setQueryType("search");	
 		if (!showBroken) {
@@ -21,8 +21,7 @@ public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
 		}
 		return query;
 	}
-	
-	
+		
 	public SolrQuery getSolrKeywordQueryNotTaggedByUser(String keywords, boolean showBroken, Tag tag, User user) {
 		SolrQuery query = new SolrQuery();
 		query.setQuery(keywords);
@@ -37,17 +36,17 @@ public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
 		}
 		return query;
 	}
-	
-	
-	public SolrQuery getSolrWebsiteKeywordQuery(String keywords, boolean showBroken, Tag tag) {
+		
+	public SolrQuery getSolrWebsiteKeywordQuery(String keywords, boolean showBroken, Tag tag, int startIndex, int maxItems) {
 		SolrQuery query = getSolrKeywordQuery(keywords, showBroken, tag);
+		query.setStart(startIndex);
+		query.setRows(maxItems);
 		query.addFilterQuery("+type:W");
 		return query;
 	}
-	
-	
+		
 	public SolrQuery getSolrNewsitemKeywordQuery(String keywords, boolean showBroken, Tag tag) {
-		SolrQuery query = getSolrKeywordQuery(keywords, showBroken, tag);
+		SolrQuery query = getSolrKeywordQuery(keywords, showBroken, tag);		
 		query.addFilterQuery("+type:N");
 		return query;
 	}

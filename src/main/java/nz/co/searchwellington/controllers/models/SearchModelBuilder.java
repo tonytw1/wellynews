@@ -5,7 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -32,31 +31,48 @@ public class SearchModelBuilder extends AbstractModelBuilder implements ModelBui
 	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
 		ModelAndView mv = new ModelAndView();
 		final String keywords = request.getParameter(KEYWORDS_PARAMETER);
-		mv.addObject("query", keywords);
-		mv.addObject("heading", "Search results - " + keywords);
+		int page = getPage(request);
 		
+		mv.addObject("page", page);
+
+		Tag tag= null;
 		if (request.getAttribute("tags") != null) {
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-			Tag tag = tags.get(0);
-			
-			List<FrontendResource> mainContent = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag);
-			mv.addObject("main_content", contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag));
-			mv.addObject("main_description", "Found " + mainContent.size() + " matching newsitems.");
+			tag = tags.get(0);
 			mv.addObject("tag", tag);
-			
-		} else {
-			List<FrontendResource> mainContent = contentRetrievalService.getNewsitemsMatchingKeywords(keywords);
-			mv.addObject("main_description", "Found " + mainContent.size() + " matching newsitems.");
-			mv.addObject("main_content", mainContent);
-			mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords));	// TODO should able able to this as part of the above search query?
 		}
 		
-		mv.addObject("main_heading", "Matching Newsitems");        
+		int contentCount = 0;
+		if (request.getAttribute("tags") != null) {
+			contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag);
+		} else {
+			contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords);
+		}
+				
+		int startIndex = getStartIndex(page);
+		if (startIndex > contentCount) {
+			return null;
+		}
+		
+		populatePagination(mv, startIndex, contentCount);
+		
+		mv.addObject("query", keywords);
+		mv.addObject("heading", "Search results - " + keywords);
+				
+		if (tag != null) {
+			mv.addObject("main_content", contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS));			
+		} else {
+			mv.addObject("main_content",  contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS));
+			mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords));	// TODO should able able to this as part of the above search query?
+		}
+		mv.addObject("main_content_total", contentCount);
+		mv.addObject("main_heading", "Matching Newsitems");
+		mv.addObject("main_description", "Found " + contentCount + " matching newsitems");	// TODO Pull plural function from macro into java and use here.
 		mv.addObject("description", "Search results for '" + keywords + "'");
 		mv.addObject("link", urlBuilder.getSearchUrlFor(keywords));
         return mv;
 	}
-
+	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));		

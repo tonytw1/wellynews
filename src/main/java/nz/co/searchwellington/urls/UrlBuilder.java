@@ -154,6 +154,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/search?keywords=" + URLEncoder.encode(keywords);
 	}
 	
+	public String getSearchUrlFor(String keywords, int page) {
+		return siteInformation.getUrl() + "/search?keywords=" + URLEncoder.encode(keywords) + "&page=" + page;
+	}
+	
 	public String getTwitterProfileImageUrlFor(String twitterUsername) {
 		return twitterService.getTwitterProfileImageUrlFor(twitterUsername);
 	}

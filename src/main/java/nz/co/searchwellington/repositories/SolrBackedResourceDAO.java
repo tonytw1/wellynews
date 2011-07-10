@@ -492,7 +492,7 @@ public class SolrBackedResourceDAO {
 		return results;
 	}
 
-	private int getQueryCount(SolrQuery query) {
+	public int getQueryCount(SolrQuery query) {
 		QueryResponse response = solrQueryService.querySolr(query);	
 		if (response !=null) {
 			Long count =  response.getResults().getNumFound();
