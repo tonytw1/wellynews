@@ -1,6 +1,5 @@
 package nz.co.searchwellington.urls;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,13 +14,16 @@ import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
+import nz.co.searchwellington.twitter.TwitterService;
 
 public class UrlBuilder {
 
 	private SiteInformation siteInformation;
+	private TwitterService twitterService;
 	
-	public UrlBuilder(SiteInformation siteInformation) {		
+	public UrlBuilder(SiteInformation siteInformation, TwitterService twitterService) {		
 		this.siteInformation = siteInformation;
+		this.twitterService = twitterService;
 	}
 	
 	public String getHomeUrl() {
@@ -152,4 +154,7 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/search?keywords=" + URLEncoder.encode(keywords);
 	}
 	
+	public String getTwitterProfileImageUrlFor(String twitterUsername) {
+		return twitterService.getTwitterProfileImageUrlFor(twitterUsername);
+	}
 }

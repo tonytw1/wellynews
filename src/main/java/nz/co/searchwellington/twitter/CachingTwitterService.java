@@ -11,11 +11,12 @@ import org.apache.log4j.Logger;
 
 public class CachingTwitterService implements TwitterService {
 	
-	static Logger log = Logger.getLogger(CachingTwitterService.class);
+	private static Logger log = Logger.getLogger(CachingTwitterService.class);
     
 	private static final String TWITTER_REPLIES_CACHE = "twitterreplies";
 	private static final String CACHE_KEY = "replies";	
 	private static final String TWEETS_CACHE = "tweets";
+	private static final String TWITTER_PROFILE_IMAGES = "twitterprofileimages";
 	
 	private TwitterService twitterService;
 	private CacheManager manager;
@@ -37,7 +38,6 @@ public class CachingTwitterService implements TwitterService {
 				return cachedResult;
 			}
 		}
-		
 		
 		log.info("Delegrating to live twitter service");
 		Twit tweet = twitterService.getTwitById(twitterId);
@@ -65,6 +65,25 @@ public class CachingTwitterService implements TwitterService {
 		return fetchedResults;
 	}
 	
+	@Override
+	public String getTwitterProfileImageUrlFor(String twitterUsername) {
+		Cache cache = manager.getCache(TWITTER_PROFILE_IMAGES);		
+		if (cache != null) {
+			Element cacheElement = cache.get(twitterUsername);
+			if (cacheElement != null && cacheElement.getObjectValue() != null) {
+				log.info("Found profile image in cache");
+				return (String) cacheElement.getObjectValue();
+			}
+		}
+		
+		String twitterProfileImageUrlFor = twitterService.getTwitterProfileImageUrlFor(twitterUsername);
+		if (cache != null) {
+			log.info("Caching result");
+			Element cachedResult = new Element(twitterUsername, twitterProfileImageUrlFor);
+			cache.put(cachedResult);
+		}
+		return twitterProfileImageUrlFor;
+	}
 	
 	@Override
 	public boolean isConfigured() {

@@ -15,10 +15,9 @@ public class LiveTwitterService implements TwitterService {
 	
     //private static final int REPLY_PAGES_TO_FETCH = 1;	// TODO implement
 
-	static Logger log = Logger.getLogger(LiveTwitterService.class);
-
-	private TwitterApiFactory twitterApiFactory;
+	private static Logger log = Logger.getLogger(LiveTwitterService.class);
 	
+	private TwitterApiFactory twitterApiFactory;
 	
 	public LiveTwitterService(TwitterApiFactory twitterApiFactory) {		
 		this.twitterApiFactory = twitterApiFactory;
@@ -59,7 +58,18 @@ public class LiveTwitterService implements TwitterService {
 		}
 		return null;
 	}
-
+	
+	@Override
+	public String getTwitterProfileImageUrlFor(String twitterUsername) {	// TODO Doesn't need to be an authed call.
+		log.info("Fetching profile image url for: " + twitterUsername);
+    	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
+    	try {
+			return receiver.showUser(twitterUsername).getProfileImageURL().toExternalForm();
+		} catch (TwitterException e) {
+			log.warn("Error during twitter api call: " + e.getMessage());
+			return null;
+		}
+	}
 	
 	@Override
 	public boolean isConfigured() {

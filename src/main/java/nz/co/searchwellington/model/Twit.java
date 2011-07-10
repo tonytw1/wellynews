@@ -14,7 +14,6 @@ public class Twit {
 	private long inReplyToStatusId;
 	private String text;
 	private String author;
-	private String profileImage;	// TODO split off
 	private Date date;
 
 
@@ -26,7 +25,6 @@ public class Twit {
 		this.inReplyToStatusId = status.getInReplyToStatusId();
 		this.text = status.getText();
 		this.author = status.getUser().getScreenName();
-		this.profileImage = status.getUser().getProfileImageURL().toExternalForm();	
 		DateTime time = new DateTime(status.getCreatedAt());
 		this.date = time.toDate();
 	}
@@ -73,26 +71,11 @@ public class Twit {
 	public String getAuthor() {
 		return author;
 	}
-
-
-
+	
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-
-
 	
-
-	public String getProfileImage() {
-		return profileImage;
-	}
-
-
-	public void setProfileImage(String profileImage) {
-		this.profileImage = profileImage;
-	}
-
-
 	public Date getDate() {
 		return date;
 	}
@@ -111,6 +94,5 @@ public class Twit {
 	}
 	
 	// TODO equals needs to look at TwitterID - set that as hibernate id?
-	
 	
 }

@@ -9,6 +9,7 @@ public interface TwitterService {
 
 	public List<Twit> getReplies();
 	public Twit getTwitById(long twitterId);
+	public String getTwitterProfileImageUrlFor(String twitterUsername);
 	
 	public boolean isConfigured();	// TODO don't like this - should be factories problem.
 

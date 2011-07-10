@@ -192,6 +192,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		
 	<bean id="urlBuilder" class="nz.co.searchwellington.urls.UrlBuilder">
 		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="cachingTwitterService" />
 	</bean>	
 	<bean id="adminUrlBuilder" class="nz.co.searchwellington.controllers.admin.AdminUrlBuilder">
 		<constructor-arg ref="siteInformation" />

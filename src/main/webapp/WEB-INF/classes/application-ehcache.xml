@@ -25,8 +25,15 @@
         timeToLiveSeconds="3600"
         overflowToDisk="false"
         />
-    
-    
+        
+   	 <cache name="twitterprofileimages"
+        maxElementsInMemory="1000"
+        eternal="false"
+        timeToIdleSeconds="36000"
+        timeToLiveSeconds="36000"
+        overflowToDisk="false"
+        />
+          
     <defaultCache
         maxElementsInMemory="500"
         eternal="false"
