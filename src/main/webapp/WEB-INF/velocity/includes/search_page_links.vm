@@ -2,11 +2,21 @@
 	<hr>
 		#set($pagenumber = 1)	
 		<ul class="pagelinks">
-			#foreach ($pagenumber in [1..$max_page_number])				
-				#if ($pagenumber > 1)
-				<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getSearchUrlFor($query)&page=$pagenumber">$pagenumber</a></li>
+			#foreach ($pagenumber in [1..$max_page_number])
+						
+				#if ($tag) 
+					#if ($pagenumber > 1)
+						<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getTagSearchUrlFor($query, $tag)&page=$pagenumber">$pagenumber</a></li>
+					#else
+						<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getTagSearchUrlFor($query, $tag)">$pagenumber</a></li>
+					#end
+					
 				#else
-					<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getSearchUrlFor($query)">$pagenumber</a></li>
+					#if ($pagenumber > 1)
+					<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getSearchUrlFor($query)&page=$pagenumber">$pagenumber</a></li>
+					#else
+						<li #if($page && $pagenumber == $page) class="currentpage" #end ><a href="$urlBuilder.getSearchUrlFor($query)">$pagenumber</a></li>
+					#end
 				#end
 			#end
 		</ul>
