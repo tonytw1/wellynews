@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -48,8 +49,29 @@ public class TaggingReturnsOfficerService {
 		}
 		return indexTags;
 	}
-
-
+	
+	public Geocode getIndexGeocodeForResource(Resource resource) {
+		Geocode geocode = resource.getGeocode();
+		if (geocode != null && geocode.isValid()) {
+			return geocode;
+		}		
+		geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource));	// TODO could be made faster by passing in.
+		if (geocode != null && geocode.isValid()) {
+			return geocode;
+		}
+		return null;
+	}
+	
+	private Geocode getGeotagFromFirstResourceTagWithLocation(Set<Tag> indexTagsForResource) {
+		for (Tag tag : indexTagsForResource) {
+			if (tag.getGeocode() != null && tag.getGeocode().isValid()) {
+				log.info("Found subsitute geotag for resource on resource index tag: " + tag.getName());
+				return tag.getGeocode();
+			}
+		}
+		return null;
+	}
+	
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
 		List<TaggingVote> votes = new ArrayList<TaggingVote>();
 		for (HandTagging handTagging : tagVoteDAO.getHandTaggingsForResource(resource)) {

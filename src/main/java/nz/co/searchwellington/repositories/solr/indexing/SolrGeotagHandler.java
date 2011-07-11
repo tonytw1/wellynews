@@ -1,10 +1,8 @@
 package nz.co.searchwellington.repositories.solr.indexing;
 
-import java.util.Set;
-
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
@@ -13,24 +11,18 @@ public class SolrGeotagHandler {
 	
 	private static Logger log = Logger.getLogger(SolrGeotagHandler.class);
 	
-	public SolrInputDocument processGeotags(Resource resource, Set<Tag> indexTagsForResource, SolrInputDocument inputDocument) {
-		Geocode geocode = resource.getGeocode();
+	TaggingReturnsOfficerService taggingReturnsOfficerService;
+	
+	public SolrGeotagHandler(TaggingReturnsOfficerService taggingReturnsOfficerService) {
+		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
+	}
+
+	public SolrInputDocument processGeotags(Resource resource, SolrInputDocument inputDocument) {
+		final Geocode geocode = taggingReturnsOfficerService.getIndexGeocodeForResource(resource);
 		if (geocode != null && geocode.isValid()) {
 			applyGeotagToIndexDocument(inputDocument, geocode);
-		} else {
-			applyGeotagToIndexDocument(inputDocument, getGeotagFromFirstResourceTagWithLocation(indexTagsForResource));			
 		}
 		return inputDocument;
-	}
-	
-	private Geocode getGeotagFromFirstResourceTagWithLocation(Set<Tag> indexTagsForResource) {
-		for (Tag tag : indexTagsForResource) {
-			if (tag.getGeocode() != null && tag.getGeocode().isValid()) {
-				log.info("Found subsitute geotag for resource on resource index tag: " + tag.getName());
-				return tag.getGeocode();
-			}
-		}
-		return null;
 	}
 	
 	private void applyGeotagToIndexDocument(SolrInputDocument inputDocument, final Geocode geocode) {

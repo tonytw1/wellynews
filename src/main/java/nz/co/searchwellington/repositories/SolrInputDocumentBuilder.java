@@ -105,8 +105,8 @@ public class SolrInputDocumentBuilder {
 		for(Tag tag: indexTagsForResource) {
 			inputDocument.addField("tags", tag.getId());
 		}
-	
-		inputDocument = new SolrGeotagHandler().processGeotags(resource, indexTagsForResource, inputDocument);
+		
+		inputDocument = new SolrGeotagHandler(taggingReturnsService).processGeotags(resource, inputDocument);	// TODO inject
 		
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
