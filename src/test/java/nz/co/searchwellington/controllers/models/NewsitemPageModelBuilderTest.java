@@ -9,6 +9,7 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.GeotaggingVote;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -26,6 +27,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class NewsitemPageModelBuilderTest {
 	
+	private static final int NEWSITEM_ID = 123;
+	
 	private static final String VALID_NEWSITEM_PAGE_PATH = "/wellington-city-council/2010/feb/01/something-about-rates";
 	
 	@Mock ContentRetrievalService contentRetrievalService;
@@ -37,6 +40,7 @@ public class NewsitemPageModelBuilderTest {
 	@Mock Newsitem newsitem;
 	@Mock Geocode validGeotag;
 	@Mock ResourceRepository resourceDAO;
+	@Mock List<GeotaggingVote> geotagVotes;
 	
 	private MockHttpServletRequest request;	
 	private ModelBuilder builder;
@@ -47,6 +51,7 @@ public class NewsitemPageModelBuilderTest {
 		builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter, resourceDAO);
 		request = new MockHttpServletRequest();
 		request.setPathInfo(VALID_NEWSITEM_PAGE_PATH);
+		when(newsitem.getId()).thenReturn(123);
 	}
 	
 	@Test
@@ -73,6 +78,18 @@ public class NewsitemPageModelBuilderTest {
 		when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(newsitem);
 		ModelAndView mv = builder.populateContentModel(request, false);
 		assertNull(mv.getModel().get("geocoded"));		
+	}
+	
+	@Test
+	public void shouldDisplayGeotaggingVotes() throws Exception {
+		when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(newsitem);
+		when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(newsitem);
+
+		when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(geotagVotes);
+
+		ModelAndView mv = builder.populateContentModel(request, false);
+		
+		assertEquals(geotagVotes, mv.getModel().get("geotag_votes"));
 	}
 	
 }

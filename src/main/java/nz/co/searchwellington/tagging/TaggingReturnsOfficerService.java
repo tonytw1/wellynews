@@ -7,6 +7,7 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.GeotaggingVote;
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -28,8 +29,7 @@ public class TaggingReturnsOfficerService {
 	public TaggingReturnsOfficerService(HandTaggingDAO tagVoteDAO) {
 		this.tagVoteDAO = tagVoteDAO;
 	}
-
-		
+	
 	public Set<Tag> getHandTagsForResource(Resource resource) {		
 		Set<Tag>tags = new HashSet<Tag>();
 		List<HandTagging> handTaggings = tagVoteDAO.getHandTaggingsForResource(resource);			
@@ -38,7 +38,6 @@ public class TaggingReturnsOfficerService {
 		}
 		return tags;
 	}
-	
 	
 	public Set<Tag> getIndexTagsForResource(Resource resource) {		
 		Set <Tag> indexTags = new HashSet<Tag>();
@@ -51,25 +50,24 @@ public class TaggingReturnsOfficerService {
 	}
 	
 	public Geocode getIndexGeocodeForResource(Resource resource) {
-		Geocode geocode = resource.getGeocode();
-		if (geocode != null && geocode.isValid()) {
-			return geocode;
-		}		
-		geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource));	// TODO could be made faster by passing in.
-		if (geocode != null && geocode.isValid()) {
-			return geocode;
+		List<GeotaggingVote> votes = getGeotagVotesForResource(resource);
+		if (!votes.isEmpty()) {
+			return votes.get(0).getGeotag();
 		}
 		return null;
 	}
 	
-	private Geocode getGeotagFromFirstResourceTagWithLocation(Set<Tag> indexTagsForResource) {
-		for (Tag tag : indexTagsForResource) {
-			if (tag.getGeocode() != null && tag.getGeocode().isValid()) {
-				log.info("Found subsitute geotag for resource on resource index tag: " + tag.getName());
-				return tag.getGeocode();
-			}
+	public List<GeotaggingVote> getGeotagVotesForResource(Resource resource) {
+		List<GeotaggingVote> votes = new ArrayList<GeotaggingVote>();
+		if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
+			votes.add(new GeotaggingVote(resource.getGeocode(), resource.getOwner(), 1));
 		}
-		return null;
+		
+		Geocode tagGeocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource));	// TODO could be made faster by passing in.
+		if (tagGeocode != null && tagGeocode.isValid()) {
+			votes.add(new GeotaggingVote(tagGeocode, new AncestorTagVoter(), 1));	// TODO needs a new voter type
+		}
+		return votes;
 	}
 	
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
@@ -97,8 +95,7 @@ public class TaggingReturnsOfficerService {
 				
 		return votes;
 	}
-
-
+	
 	private void addAcceptedFromFeedTags(Resource resource, Set<Tag> feedsHandTags, List<TaggingVote> votes) {
 		for (Tag tag : feedsHandTags) {
 			votes.add(new TaggingVote(tag, new FeedsTagsTagVoter(), 100));
@@ -108,8 +105,7 @@ public class TaggingReturnsOfficerService {
 		}
 				
 	}
-
-
+	
 	private void addPublisherDerviedTags(Resource resource,
 			List<TaggingVote> votes) {
 		if (((PublishedResource) resource).getPublisher() != null) {
@@ -122,8 +118,7 @@ public class TaggingReturnsOfficerService {
 			}
 		}
 	}
-
-
+	
 	private void addAncestorTagVotes(Resource resource, List<TaggingVote> votes) {
 		for (Tag tag : this.getHandTagsForResource(resource)) {
 			for (Tag ancestorTag: tag.getAncestors()) {
@@ -131,5 +126,15 @@ public class TaggingReturnsOfficerService {
 			}
 		}
 	}
-
+	
+	private Geocode getGeotagFromFirstResourceTagWithLocation(Set<Tag> indexTagsForResource) {
+		for (Tag tag : indexTagsForResource) {
+			if (tag.getGeocode() != null && tag.getGeocode().isValid()) {
+				log.info("Found subsitute geotag for resource on resource index tag: " + tag.getName());
+				return tag.getGeocode();
+			}
+		}
+		return null;
+	}
+	
 }

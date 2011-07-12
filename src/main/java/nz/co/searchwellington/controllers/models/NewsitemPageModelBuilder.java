@@ -62,8 +62,9 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 			}
     
 			Resource resource = resourceDAO.loadResourceById(newsitem.getId());	// TODO Caused by model confusion
-			mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));            
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));            
+			mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));
+			mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource));            
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));
 			return mv;
 		}
 		return null;

@@ -50,11 +50,39 @@
 			#end
 			</li>	
 			#end		
-		</ul>
-		
+		</ul>		
 	#else
 		<p>No tags have been applied to this item.</p>
 	#end
+	
+	
+	#if($geotag_votes.size() > 0) 
+		<p>This item has had the following geotags applied to it:</p>					
+		<ul>
+		#foreach($vote in $geotag_votes)
+			<li>
+			
+			#if ($vote.geotag && $vote.geotag.address)		
+				#if ($vote.geotag.valid) 
+					<a href="$urlBuilder.getLocationUrlFor($vote.geotag)">#parse("includes/geotag_icon.vm")</a> $vote.geotag.address
+				#else
+					#parse("includes/geotag_icon.vm") $vote.geotag.address
+				#end
+			#end
+												
+			#if($vote.voter.profilename) 
+				by <a href="$urlBuilder.getProfileUrl($vote.voter)">$escape.html($vote.voter.voterName)</a>
+			#else 
+				(automatically derived from $vote.voter.voterName.toLowerCase())		
+			#end
+			</li>	
+			#end		
+		</ul>
+		
+	#else
+		<p>No geotags have been applied to this item.</p>
+	#end
+	
 	
 	<p>Add tags to this items:</p>
 	<form id="editForm" action="$urlBuilder.getPublicTaggingSubmissionUrl($item)" method="POST">
