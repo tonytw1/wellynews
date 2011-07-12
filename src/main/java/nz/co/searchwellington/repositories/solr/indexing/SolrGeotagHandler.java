@@ -21,6 +21,8 @@ public class SolrGeotagHandler {
 		final Geocode geocode = taggingReturnsOfficerService.getIndexGeocodeForResource(resource);
 		if (geocode != null && geocode.isValid()) {
 			applyGeotagToIndexDocument(inputDocument, geocode);
+		} else {
+			inputDocument.addField("geotagged", false);
 		}
 		return inputDocument;
 	}
@@ -31,9 +33,7 @@ public class SolrGeotagHandler {
 			inputDocument.addField("geotagged", true);
 			inputDocument.addField("address", geocode.getAddress());
 			inputDocument.addField("position", geocode.getLatitude() + "," + geocode.getLongitude());
-		} else {
-			inputDocument.addField("geotagged", false);
-		}		
+		}
 	}
 	
 }

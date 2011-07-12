@@ -10,6 +10,7 @@ import java.util.Set;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.common.SolrInputField;
@@ -24,6 +25,7 @@ public class SolrGeotagHandlerTest {
 	@Mock Resource resource;
 	@Mock Set<Tag> indexTagsForResource;
 	@Mock Tag placeTag;
+	@Mock TaggingReturnsOfficerService taggingReturnsOfficer;
 	
 	private SolrGeotagHandler solrGeotagHandler;
 	private Geocode somewhere;
@@ -32,25 +34,28 @@ public class SolrGeotagHandlerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		// = new SolrGeotagHandler();
+		solrGeotagHandler = new SolrGeotagHandler(taggingReturnsOfficer);
 		indexTagsForResource = new HashSet<Tag>();
 		somewhere = new Geocode("Somewhere", 1, 2);
 		place = new Geocode("A Place", 3, 4);
 	}
 	
-	//@Test
+	@Test
 	public void shouldMarkAsNotGetaggedIfNoneAvailable() throws Exception {
 		SolrInputDocument inputDocument = new SolrInputDocument();
-		//.processGeotags(resource, indexTagsForResource, inputDocument);		
+		Mockito.when(taggingReturnsOfficer.getIndexGeocodeForResource(resource)).thenReturn(null);
+		
+		solrGeotagHandler.processGeotags(resource, inputDocument);		
+		
 		assertFalse((Boolean) inputDocument.getFieldValue("geotagged"));
 	}
 
-	//@Test
-	public void shouldIndexResourceGeotagIfPresent() throws Exception {		
-		Mockito.when(resource.getGeocode()).thenReturn(somewhere);
+	@Test
+	public void shouldIndexResourceGeotagIfPresent() throws Exception {
+		Mockito.when(taggingReturnsOfficer.getIndexGeocodeForResource(resource)).thenReturn(somewhere);
 		
 		SolrInputDocument inputDocument = new SolrInputDocument();
-		//solrGeotagHandler.processGeotags(resource, indexTagsForResource, inputDocument);
+		solrGeotagHandler.processGeotags(resource, inputDocument);
 		
 		assertTrue((Boolean) inputDocument.getFieldValue("geotagged"));
 		assertEquals("Somewhere", inputDocument.getFieldValue("address"));
@@ -58,7 +63,7 @@ public class SolrGeotagHandlerTest {
 		assertEquals("1.0,2.0", positionField.getFirstValue());		
 	}
 	
-	//@Test
+	//@Test // TODO Push to tagging returns officer test
 	public void shouldFallBackToUsingTagGeotagsIfTheResourceIsNoTagged() throws Exception {
 		SolrInputDocument inputDocument = new SolrInputDocument();
 		Mockito.when(placeTag.getGeocode()).thenReturn(place);
