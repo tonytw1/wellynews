@@ -12,14 +12,13 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private static Logger log = Logger.getLogger(LocationParameterFilter.class);
 		
 	private static final String LONGITUDE = "longitude";
-	private static final String LATITUDE = "latitude";
-	
+	private static final String LATITUDE = "latitude";	
 	public static final String LOCATION = "location";
-
+	
 	private GeoCodeService geoCodeService;
 	
 	public LocationParameterFilter(GeoCodeService geoCodeService) {
-		this.geoCodeService = geoCodeService;	// TODO You want to get some caching in this (as it's expensive time wise and quota restricted).
+		this.geoCodeService = geoCodeService;
 	}
 
 	public void filter(HttpServletRequest request) {		
