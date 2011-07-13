@@ -5,6 +5,7 @@ import java.util.List;
 public class JSONBucket {
 
 	private Integer totalItems;
+	private String description;
 	private Integer showingFrom;
 	private Integer showingTo;
 
@@ -18,6 +19,14 @@ public class JSONBucket {
 		this.totalItems = totalItems;
 	}
 	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public Integer getShowingFrom() {
 		return showingFrom;
 	}

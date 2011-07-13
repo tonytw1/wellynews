@@ -33,6 +33,19 @@ public class JSONViewTest {
 	}
 	
 	@Test
+	public void shouldIncludeDescriptionFieldIfAvailable() throws Exception {
+		List<FrontendNewsitem> mainContent = new ArrayList<FrontendNewsitem>();
+		mv.put("main_content", mainContent);
+		mv.put("description", "Tag description");
+		
+		view.render(mv, request, response);
+		
+		final String content = response.getContentAsString();		
+		assertTrue(content.contains("\"description\": \"Tag description\""));	// TODO Move to a proper JSON parsing assert.
+
+	}
+	
+	@Test
 	public void testShouldCorrectlyFormatDateField() throws Exception {		
 		FrontendNewsitemImpl newsitem = new FrontendNewsitemImpl();
 		newsitem.setName("Title");

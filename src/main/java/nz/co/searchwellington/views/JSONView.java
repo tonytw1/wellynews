@@ -80,6 +80,7 @@ public class JSONView implements View {
 		xstream.alias("date", java.sql.Date.class);
 		
 		JSONBucket bucket = new JSONBucket();
+		bucket.setDescription((String) model.get("description"));
 		if (model.get("main_content_total") != null) {
 			bucket.setTotalItems((Integer) model.get("main_content_total"));
 		}
