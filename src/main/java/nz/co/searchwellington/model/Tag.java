@@ -8,6 +8,7 @@ public class Tag {
 	private int id;
 	private String name;
 	private String displayName;
+	private String description;
 	private Tag parent;
 	private Set <Tag> children;
 	private boolean hidden;
@@ -156,6 +157,14 @@ public class Tag {
 
 	public void setGeocode(Geocode geocode) {
 		this.geocode = geocode;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 }

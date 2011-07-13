@@ -16,14 +16,18 @@
 				<input name="tag" type="hidden" value="$tag.name" />
 				<fieldset>
 					
-					<label for="name">Name: </label>
-					<input name="name" value="$tag.name" />
-					<br />
-		
-					<label for="name">Display Name: </label>
+					<label for="displayName">Name: </label>
 					<input name="displayName" value="$tag.displayName" />
 					<br />
 					
+					<label for="name">Url word: </label>
+					<input name="name" value="$tag.name" />
+					<br />
+		
+					<label for="description">Description: </label>
+					<input name="description" value="$tag.description" />
+					<br />
+							
 					<label for="geocode">Geocode: </label>
 					<input name="geocode" #if($tag.geocode) value="$tag.geocode.address" #end />
 					<br />

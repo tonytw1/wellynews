@@ -129,6 +129,7 @@ public class TagEditController extends MultiActionController {
         
         editTag.setName(request.getParameter("name"));
         editTag.setDisplayName(request.getParameter("displayName"));
+        editTag.setDescription(request.getParameter("description"));
         
         editTag.setGeocode(submissionProcessingService.processGeocode(request));
         

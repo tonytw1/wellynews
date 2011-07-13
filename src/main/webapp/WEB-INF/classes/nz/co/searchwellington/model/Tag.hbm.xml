@@ -22,6 +22,10 @@
 			<column name="display_name" length="255" not-null="false" />
 		</property>
 		
+		<property name="description">
+			<column name="description" length="1000" not-null="true" />
+		</property>
+		
 		<property name="relatedTwitter">
 			<column name="related_twitter" length="255" not-null="false" />
 		</property>

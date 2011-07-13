@@ -97,6 +97,9 @@ public class RssUrlBuilder {
 	}
 
 	public String getRssDescriptionForTag(Tag tag) {
+		if (tag.getDescription() != null && !tag.getDescription().isEmpty()) {
+			return tag.getDescription();
+		}
 		return siteInformation.getAreaname() + " related newsitems tagged with " + tag.getDisplayName();
 	}
 
