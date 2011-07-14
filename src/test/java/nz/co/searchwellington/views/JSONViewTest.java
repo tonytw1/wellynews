@@ -42,7 +42,10 @@ public class JSONViewTest {
 		
 		final String content = response.getContentAsString();		
 		assertTrue(content.contains("\"description\": \"Tag description\""));	// TODO Move to a proper JSON parsing assert.
-
+	}
+	
+	public void contentItemsShouldIncludePublisherField() throws Exception {
+		// TODO Implement
 	}
 	
 	@Test
