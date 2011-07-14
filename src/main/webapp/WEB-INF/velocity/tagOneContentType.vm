@@ -28,6 +28,10 @@
 
 		#parse("includes/child_tags.vm")
 
+		#if($tag.description) 
+			<p>$escape.html($tag.description)</p>
+		#end
+
 		#parse("includes/search_widget.vm")
 		
 		<div class="main_content">

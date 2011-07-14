@@ -50,6 +50,11 @@
 			#parse("includes/tag_geocode.vm")
 				
 			#parse("includes/tag_admin_links.vm")	
+			
+			#if($tag.description) 
+				<p>$escape.html($tag.description)</p>
+			#end
+			
 			#parse("includes/child_tags.vm")
 		#end
 				
