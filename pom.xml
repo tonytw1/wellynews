@@ -27,6 +27,25 @@
 		</plugins>
 	</build>
 
+<repositories>
+	<repository>
+		<id>geocoder-java</id>
+		<url>https://geocoder-java.googlecode.com/svn/mavenrepo</url>
+	</repository>
+
+	<repository>
+		<releases>
+			<updatePolicy>never</updatePolicy>
+			<checksumPolicy>warn</checksumPolicy>
+			<enabled>true</enabled>
+		</releases>
+		<id>geogoogle</id>
+		<name>geogoogle repo</name>
+		<url>http://www.cs.drexel.edu/~zl25/maven2/repo</url>
+	</repository>
+
+</repositories>
+
 	<dependencies>
 	
 	<dependency>
@@ -35,13 +54,6 @@
     <version>5.1.16</version>
 </dependency>
 
-		<dependency>
-			<groupId>geo.google</groupId>
-			<artifactId>geoGoogle</artifactId>
-			<version>1.5</version>
-			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/geoGoogle-1.5.0.jar</systemPath>
-		</dependency>
 		
 		<dependency>
 			<groupId>net.java.dev.rome</groupId>
@@ -49,28 +61,24 @@
 			<version>1.0.0</version>
 		</dependency>
 
-		<dependency>
-			<groupId>rome</groupId>
-			<artifactId>rome-fetcher</artifactId>
-			<version>1.0RC2</version>
-			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/rome-fetcher-1.0RC2.jar</systemPath>
-		</dependency>
+<dependency>
+    <groupId>net.java.dev.rome</groupId>
+    <artifactId>rome-fetcher</artifactId>
+    <version>1.0.0</version>
+</dependency>
 		
-		<dependency>
-			<groupId>rome</groupId>
-			<artifactId>geo-rss</artifactId>
-			<version>0.9.8</version>
-			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/georss-rome-0.9.8.jar</systemPath>
-		</dependency>
+<dependency>
+    <groupId>org.geonames</groupId>
+    <artifactId>georss-rome</artifactId>
+    <version>0.9.8</version>
+</dependency>
 
 		<dependency>
 			<groupId>rome</groupId>
 			<artifactId>media-rss</artifactId>
 			<version>0.2.1</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -78,7 +86,7 @@
 			<artifactId>scribe</artifactId>
 			<version>0.6.7-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -98,7 +106,7 @@
 			<artifactId>tokyotyrant</artifactId>
 			<version>0.10</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
 			</systemPath>
 		</dependency><dependency>
     <groupId>org.jboss.netty</groupId>
@@ -112,23 +120,21 @@
 			<artifactId>jdom</artifactId>
 			<version>unknown</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jdom.jar</systemPath>
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jdom.jar</systemPath>
 		</dependency>
 
-		<dependency>
-			<groupId>commons</groupId>
-			<artifactId>email</artifactId>
-			<version>1.0</version>
-			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/commons-email-1.0.jar</systemPath>
-		</dependency>
-		
+	<dependency>
+	    <groupId>org.apache.commons</groupId>
+    		<artifactId>commons-email</artifactId>	
+    <version>1.1</version>
+	</dependency>
+	
 		<dependency>
 			<groupId>jrobotx</groupId>
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
 			</systemPath>
 		</dependency>
 
@@ -306,12 +312,18 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.google.code.geocoder-java</groupId>
-			<artifactId>geocoder-java</artifactId>
-			<version>0.6-SNAPSHOT</version>
-		</dependency>
-		
+ <dependency>
+    <groupId>com.google.code.geocoder-java</groupId>
+    <artifactId>geocoder-java</artifactId>
+    <version>0.7</version>
+  </dependency>
+
+	<dependency>
+		<groupId>geoGoogle</groupId>
+		<artifactId>geoGoogle</artifactId>
+		<version>1.5.0</version>
+	</dependency>
+			
 	</dependencies>
 
 </project>
