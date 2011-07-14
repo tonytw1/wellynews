@@ -11,6 +11,8 @@
 </ul>
 <br/>
 <ul class="navtags">
+    <li><a href="$site_information.url/basinreserve">Basin Reserve Flyover</a></li>
+    <li><a href="$site_information.url/penguins">Our penguin overlords</a></li>
     <li><a href="$site_information.url/transport">Transport</a></li>
     <li><a href="$site_information.url/sport">Sport</a></li>
 </ul>
