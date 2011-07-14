@@ -18,13 +18,16 @@ public class RssHttpFetcher {
 		try {
 			URL url = new URL(feedUrl);
 			HttpClientFeedFetcher fetcher = new HttpClientFeedFetcher();
-			fetcher.setUserAgent(userAgent);
+			if (userAgent != null) {
+				fetcher.setUserAgent(userAgent);
+			}
 			fetcher.setConnectTimeout(TIMEOUT);
 			fetcher.setReadTimeout(30000);
 			SyndFeed feed = fetcher.retrieveFeed(url);            
 			return feed;
+			
 		} catch (Exception e) {
-			log.warn("Error while fetching feed: " + e.getMessage());
+			log.warn("Error while fetching feed" ,e);
 		}
 		return null;
 	}
