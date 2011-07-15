@@ -10,41 +10,34 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.WallClock;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
-
 
 public class RssNewsitemPrefetcher {
 	
 	private static Logger log = Logger.getLogger(RssNewsitemPrefetcher.class);
 
-
 	private ResourceRepository resourceDAO;
 	private LiveRssfeedNewsitemService rssNewsitemService;
 	private FeedNewsitemCache feedNewsitemCache;
 	private FeedReaderRunner feedReaderRunner;
-	private WallClock wallClock;
 	private ConfigRepository configDAO;
 	
 	public RssNewsitemPrefetcher() {		
 	}
-
 	
 	public RssNewsitemPrefetcher(ResourceRepository resourceDAO,
 			LiveRssfeedNewsitemService rssNewsitemService,
 			FeedNewsitemCache feedNewsitemCache,
-			FeedReaderRunner feedReaderRunner, WallClock wallClock,
+			FeedReaderRunner feedReaderRunner,
 			ConfigRepository configDAO) {
 		this.resourceDAO = resourceDAO;
 		this.rssNewsitemService = rssNewsitemService;
 		this.feedNewsitemCache = feedNewsitemCache;
 		this.feedReaderRunner = feedReaderRunner;
-		this.wallClock = wallClock;
 		this.configDAO = configDAO;
 	}
-
 	
     @Transactional
 	public void run() {
@@ -63,7 +56,6 @@ public class RssNewsitemPrefetcher {
 		}		
 		feedReaderRunner.readAllFeeds(allFeeds);	
 	}
-		
     
     // TODO implement something other than all here
 	private List<Feed> decideWhichFeedsToDecache(List<Feed> allFeeds) {
@@ -80,7 +72,6 @@ public class RssNewsitemPrefetcher {
 		feedNewsitemCache.decache(feed.getUrl());
 		loadAndCacheFeedNewsitems(feed);		
 	}
-	
 	
 	private void loadAndCacheFeedNewsitems(Feed feed) {
 		if (feed != null) {
