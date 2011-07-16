@@ -161,4 +161,17 @@ public class UrlBuilder {
 	public String getTwitterProfileImageUrlFor(String twitterUsername) {
 		return twitterService.getTwitterProfileImageUrlFor(twitterUsername);
 	}
+	
+	public String getSubmitWebsiteUrl() {
+		return siteInformation.getUrl() + "/edit/submit/website";
+	}
+	
+	public String getSubmitNewsitemUrl() {
+		return siteInformation.getUrl() + "/edit/submit/newsitem";
+	}
+	
+	public String getSubmitFeedUrl() {
+		return siteInformation.getUrl() + "/edit/submit/feed";
+	}
+		
 }

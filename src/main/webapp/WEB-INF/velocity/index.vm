@@ -62,11 +62,11 @@
 			<p>Enquiring minds want to know!</p>
 			<p>Submit your $site_information.areaname related listings.</p>
 			<ul>
-				<li><a href="edit/submit/website">Submit Website</a></li>
-				<li><a href="edit/submit/newsitem">Submit Newsitem</a></li>
-				<li><a href="edit/submit/feed">Submit Feed</a></li>
+				<li><a href="$urlBuilder.getSubmitWebsiteUrl()">Submit Website</a></li>
+				<li><a href="$urlBuilder.getSubmitNewsitemUrl()">Submit Newsitem</a></li>
+				<li><a href="$urlBuilder.getSubmitFeedUrl()">Submit Feed</a></li>
 			</ul>
-
+			
 			#if ($editPermissionService.canAddWatchlistAndTag() ) 
 				<ul>
 					<li><a href="edit/submit/watchlist">Submit Watchlist item</a></li>
