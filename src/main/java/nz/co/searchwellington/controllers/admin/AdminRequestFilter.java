@@ -84,9 +84,8 @@ public class AdminRequestFilter {
 				log.warn("Invalid embargo date string supplied: " + dateString);
 			}        	
 		}
-		
-				
-		// TODO Test coverage		
+						
+		// TODO Test coverage	Deprecated?	
         if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {
             final String publisherUrlWords = request.getParameter("publisher");
             Resource publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
@@ -95,18 +94,6 @@ public class AdminRequestFilter {
             }
         }
         
-        
-     // TODO Test coverage		
-        if (request.getParameter("publisherName") != null && !request.getParameter("publisherName").equals("")) {
-            final String publisherName = request.getParameter("publisherName");
-            Resource publisher = resourceDAO.getPublisherByName(publisherName);
-            if (publisher != null) {
-            	log.info("Found publisher: " + publisher.getName());
-                request.setAttribute("publisher", publisher);
-            }
-        }
-        
-    	
     	TagsParameterFilter tagsParameterFilter = new TagsParameterFilter(tagDAO);	// TODO up
     	tagsParameterFilter.filter(request); 
 		    	

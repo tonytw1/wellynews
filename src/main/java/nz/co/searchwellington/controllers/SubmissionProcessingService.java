@@ -20,6 +20,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -36,24 +37,22 @@ public class SubmissionProcessingService {
     private static final String REQUEST_GEOCODE_NAME = "geocode";
 	private static final String REQUEST_EMBARGO_DATE_NAME = "embargo_date";
     
-    Logger log = Logger.getLogger(SubmissionProcessingService.class);
-    
-    
+    private Logger log = Logger.getLogger(SubmissionProcessingService.class);
+        
     private UrlCleaner urlCleaner;
     private GeoCodeService geocodeService;
     private TagDAO tagDAO;
     private HandTaggingDAO tagVoteDAO;
-    
-        
-	public SubmissionProcessingService(UrlCleaner urlCleaner, GeoCodeService geocodeService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO) {
+	private ResourceRepository resourceDAO;
+	
+	public SubmissionProcessingService(UrlCleaner urlCleaner, GeoCodeService geocodeService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, ResourceRepository resourceDAO) {
 		this.urlCleaner = urlCleaner;
 		this.geocodeService = geocodeService;
 		this.tagDAO = tagDAO;
 		this.tagVoteDAO = tagVoteDAO;
-		
+		this.resourceDAO = resourceDAO;
 	}
-
-
+	
 	public void processTitle(HttpServletRequest req, Resource editResource) {           
         if (req.getParameter(REQUEST_TITLE_NAME) != null) {
             String title = new String(req.getParameter(REQUEST_TITLE_NAME));
@@ -70,13 +69,11 @@ public class SubmissionProcessingService {
         }
     }
 	
-		
 	public void processUrl(HttpServletRequest request, Resource editResource) {		
 		SubmissionProcessor urlProcessor = new UrlProcessor(urlCleaner);	// TODO inject
 		urlProcessor.process(request, editResource);
 	}
-	
-	
+		
 	public void processImage(HttpServletRequest request, Newsitem editResource, User loggedInUser) {
 		Image image = (Image) request.getAttribute("image");
     	editResource.setImage(image);
@@ -84,8 +81,7 @@ public class SubmissionProcessingService {
 	
 	public Geocode processGeocode(HttpServletRequest req) {      
 		log.info("Starting processing of geocode.");
-		if (req.getParameter(REQUEST_GEOCODE_NAME) != null) {           
-
+		if (req.getParameter(REQUEST_GEOCODE_NAME) != null) {
 	    	String address = new String(req.getParameter(REQUEST_GEOCODE_NAME));
 	        log.info("Found address: " + address);
 	        address = UrlFilters.trimWhiteSpace(address);
@@ -109,12 +105,10 @@ public class SubmissionProcessingService {
         }
     }
 	
-	
 	public void processEmbargoDate(HttpServletRequest request, Resource editResource) {
 		editResource.setEmbargoedUntil((Date) request.getAttribute(REQUEST_EMBARGO_DATE_NAME));
 	}
-
-
+	
     public void processDescription(HttpServletRequest request, Resource editResource) {
         String description = request.getParameter(REQUEST_DESCRIPTION_NAME);
         if (description != null) {
@@ -123,7 +117,6 @@ public class SubmissionProcessingService {
         }
         editResource.setDescription(description);
     }
-    
     
     public void processHeld (HttpServletRequest request, Resource editResource) {
     	if (request.getParameter("has_held") != null) {
@@ -135,8 +128,7 @@ public class SubmissionProcessingService {
     	}
     	return;
     }
-    
-    
+        
 	public void processTags(HttpServletRequest request, Resource editResource, User user) {
 		log.info("Processing tags");
     	if (request.getParameter("has_tag_select") != null) {
@@ -149,8 +141,7 @@ public class SubmissionProcessingService {
         }    
         trimTags(editResource, 4);               
     }
-
-
+	
 	@SuppressWarnings("unchecked")
 	private void processTagSelect(HttpServletRequest request, Resource editResource, User user) {
 		log.info("Processing tag select");
@@ -167,15 +158,19 @@ public class SubmissionProcessingService {
 		}
 	}
     
-
-    public void processPublisher(HttpServletRequest request, Resource editResource) {
+	public void processPublisher(HttpServletRequest request, Resource editResource) {
     	boolean isPublishedResource = editResource instanceof PublishedResource;
     	if (isPublishedResource) {
-    		((PublishedResource) editResource).setPublisher((Website) request.getAttribute("publisher"));
+    		if (request.getParameter("publisherName") != null && !request.getParameter("publisherName").equals("")) {
+    			final String publisherName = request.getParameter("publisherName");
+    			Website publisher = (Website) resourceDAO.getPublisherByName(publisherName);
+    			if (publisher != null) {
+    				log.info("Found publisher: " + publisher.getName());
+    				((PublishedResource) editResource).setPublisher(publisher);
+    			}
+    		}
     	}
     }
-    
-    
     
     private void processAdditionalTags(HttpServletRequest request, Resource editResource, User user) {
         String additionalTagString = request.getParameter("additional_tags").trim();
@@ -213,16 +208,11 @@ public class SubmissionProcessingService {
         }
     }
     
-    
-
     private String cleanTagName(String field) {
     	field = StringUtils.strip(field);
         field = StringUtils.remove(field, " ");    
         return field.toLowerCase().trim();
     }
-    
-    
-    
     
     protected void trimTags(Resource editResource, int maxTags) { // TODO reimplement
    /*     if (editResource.getTags().size() > maxTags) {
@@ -243,9 +233,5 @@ public class SubmissionProcessingService {
     protected boolean isValidTagName(String field) {
         return field != null && field.length() > 0 && field.matches("[a-zA-Z0-9]*");
     }
-
-
-	
     
-		
 }

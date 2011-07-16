@@ -257,10 +257,10 @@
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="geocodingService" />
 		<constructor-arg ref="tagDAO" />
-		<constructor-arg ref="handTaggingDAO" />		
+		<constructor-arg ref="handTaggingDAO" />
+		<constructor-arg ref="resourceDAO" />
 	</bean>
-	
-	
+		
 	<bean id="profileController" class="nz.co.searchwellington.controllers.profiles.ProfileController">
 		<constructor-arg ref="userDAO" />		
 		<constructor-arg ref="loggedInUserFilter" />
