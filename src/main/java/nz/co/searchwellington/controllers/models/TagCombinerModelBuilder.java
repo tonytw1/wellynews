@@ -30,7 +30,6 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 	}
-
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -39,7 +38,6 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		boolean isTagCombinerPage = tags != null && tags.size() == 2;
 		return isTagCombinerPage;		
 	}
-
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -50,16 +48,15 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		}
 		return null;
 	}
-	
-	
+		
 	@Override
 	@SuppressWarnings("unchecked")
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-		Tag tag = tags.get(0);		
+		Tag tag = tags.get(0);
 		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8));
+		mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5));
 	}
-
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -73,7 +70,6 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		}		
 		return "tag";		
 	}
-
 	
 	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, boolean showBroken) {
 		ModelAndView mv = new ModelAndView();		
