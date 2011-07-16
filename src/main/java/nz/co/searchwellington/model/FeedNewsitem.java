@@ -26,7 +26,11 @@ public class FeedNewsitem extends NewsitemImpl {
 	public String getType() {
 		return "FNI";
 	}
-
+	
+	public String getPublisherName() {
+		return feed.getPublisherName();
+	}
+	
 	public Feed getFeed() {
 		return feed;
 	}
