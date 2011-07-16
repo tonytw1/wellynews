@@ -144,6 +144,7 @@
 					
 				#if ($item.geocode.isValid())
 					#if ($item.id > 0) 
+						<a href="$urlBuilder.getLocationUrlFor($tag.geocode)">#parse("includes/geotag_icon.vm")</a>						
 						<a href="$urlBuilder.getLocalPageUrl($item)">#parse("includes/geotag_icon.vm")</a>
 					#else
 						#parse("includes/geotag_icon.vm")
