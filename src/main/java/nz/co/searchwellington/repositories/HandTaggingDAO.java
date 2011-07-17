@@ -17,19 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class HandTaggingDAO {
 	
-	static Logger log = Logger.getLogger(HandTaggingDAO.class);
+	private static Logger log = Logger.getLogger(HandTaggingDAO.class);
 	
 	private SessionFactory sessionFactory;
 		
 	public HandTaggingDAO() {
 	}
-
-
+	
 	public HandTaggingDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
-    
+	
+	@SuppressWarnings("unchecked")
 	public List<HandTagging> getHandTaggingsForResource(Resource resource) {
 		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
 			add(Expression.eq("resource", resource)).
@@ -37,7 +36,6 @@ public class HandTaggingDAO {
 			list();
 		return handTaggings;
 	}
-	
 	
     public Set<Tag> getHandpickedTagsForThisResourceByUser(User user, Resource resource) { // TODO stop gap measure until editor understands votes
 		Set<Tag>tags = new HashSet<Tag>();		
@@ -50,23 +48,10 @@ public class HandTaggingDAO {
 		}
 		return tags;
 	}
-
-
-    // TODO handTaggingDAO should be responsible for updating solr
-	private List<HandTagging> getHandTaggings(Resource resource, User user) {
-		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-			add(Expression.eq("resource", resource)).
-			add(Expression.eq("user", user)).
-			setCacheable(true).
-			list();
-		return handTaggings;
-	}
-	
-	
+    
 	public List<Resource> getResourcesWithTag(Tag tag) {
 		return new ArrayList<Resource>();	// TODO implement
 	}
-	
 	
 	@Transactional
 	public void setUsersTagVotesForResource(Resource editResource, User user, Set<Tag> tags) {
@@ -75,7 +60,6 @@ public class HandTaggingDAO {
 			this.addTag(user, tag, editResource);				
 		}		
 	}
-	
 	
 	@Transactional
     public void addTag(User user, Tag tag, Resource resource) {
@@ -86,19 +70,16 @@ public class HandTaggingDAO {
 				sessionFactory.getCurrentSession().save(newTagging);
 		}
 	}
-
-    
+	
 	public void clearTags(Resource resource) {
 		for (HandTagging handTagging : this.getHandTaggingsForResource(resource)) {
 			sessionFactory.getCurrentSession().delete(handTagging);
 		}
 	}
-
-
+	
 	public void clearTaggingsForTag(Tag tag) {
 		// TODO Auto-generated method stub		
 	}
-	
 	
 	private void clearTags(Resource resource, User user) {
 		for (HandTagging handTagging : this.getHandTaggings(resource, user)) {
@@ -106,4 +87,14 @@ public class HandTaggingDAO {
 		}
 	}
 	
+    // TODO handTaggingDAO should be responsible for updating solr
+	@SuppressWarnings("unchecked")
+	private List<HandTagging> getHandTaggings(Resource resource, User user) {
+		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
+			add(Expression.eq("resource", resource)).
+			add(Expression.eq("user", user)).
+			setCacheable(true).
+			list();
+		return handTaggings;
+	}	
 }
