@@ -3,15 +3,18 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 import java.util.Set;
 
-public class FeedNewsitem extends NewsitemImpl {
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+
+public class FeedNewsitem extends NewsitemImpl implements FrontendNewsitem {
 
 	private Feed feed;
 	private int itemNumber;
 	private Resource localCopy;
 	private boolean isSuppressed;
 	private Image image;
+	private String publisherName;
 	
-    public FeedNewsitem(int id, String name, String url, String description, Date date, Set<DiscoveredFeed> discoveredFeeds) {       
+    public FeedNewsitem(int id, String name, String url, String description, Date date, Set<DiscoveredFeed> discoveredFeeds, String publisherName) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -20,6 +23,7 @@ public class FeedNewsitem extends NewsitemImpl {
         this.discoveredFeeds = discoveredFeeds;
         this.isSuppressed = false;
         this.localCopy = null;
+        this.publisherName = publisherName;
     }
 	
 	@Override
@@ -28,7 +32,7 @@ public class FeedNewsitem extends NewsitemImpl {
 	}
 	
 	public String getPublisherName() {
-		return feed.getPublisherName();
+		return publisherName;
 	}
 	
 	public Feed getFeed() {

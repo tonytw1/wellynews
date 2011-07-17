@@ -32,7 +32,6 @@ import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
-
 public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
            
     public final Logger log = Logger.getLogger(LiveRssfeedNewsitemService.class);
@@ -88,8 +87,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         
         // TODO This reference should really come from the resourceDAO.
         // TODO feed decision maker and feedreader and user submissions should share the same title cleaning logic
-        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle().trim(), url, description, itemDate, new HashSet<DiscoveredFeed>());
-        
+        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle().trim(), url, description, itemDate, new HashSet<DiscoveredFeed>(), feed.getPublisherName());       
         feedItem.setImage(extractThumbnail(feed, item));
         feedItem.setGeocode(extractGeocode(feed, item));
       
