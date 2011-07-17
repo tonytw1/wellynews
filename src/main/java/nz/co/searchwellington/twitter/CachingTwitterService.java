@@ -34,12 +34,12 @@ public class CachingTwitterService implements TwitterService {
 			Element cacheElement = cache.get(CACHE_KEY);
 			if (cacheElement != null && cacheElement.getObjectValue() != null) {
 				Twit cachedResult = (Twit) cacheElement.getObjectValue();
-				log.info("Found tweet in cache");
+				log.debug("Found tweet in cache");
 				return cachedResult;
 			}
 		}
 		
-		log.info("Delegrating to live twitter service");
+		log.debug("Delegrating to live twitter service");
 		Twit tweet = twitterService.getTwitById(twitterId);
 		putTweetIntoCache(cache, tweet);		
 		return tweet;		
@@ -71,14 +71,14 @@ public class CachingTwitterService implements TwitterService {
 		if (cache != null) {
 			Element cacheElement = cache.get(twitterUsername);
 			if (cacheElement != null && cacheElement.getObjectValue() != null) {
-				log.info("Found profile image in cache");
+				log.debug("Found profile image in cache");
 				return (String) cacheElement.getObjectValue();
 			}
 		}
 		
 		String twitterProfileImageUrlFor = twitterService.getTwitterProfileImageUrlFor(twitterUsername);
 		if (cache != null) {
-			log.info("Caching result");
+			log.debug("Caching result");
 			Element cachedResult = new Element(twitterUsername, twitterProfileImageUrlFor);
 			cache.put(cachedResult);
 		}
