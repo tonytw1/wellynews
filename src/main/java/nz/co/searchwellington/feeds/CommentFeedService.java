@@ -33,8 +33,8 @@ public class CommentFeedService {
     	//	log.warn("Comment feed has no associated newsitems; no point in loading comments: " + commentFeed.getUrl());
     	//	return comments;
     	//}
+    	//log.info("Loading comments from comment feed for newsitem: " + commentFeed.getNewsitem().getName());
     	
-        log.info("Loading comments from comment feed for newsitem: " + commentFeed.getNewsitem().getName());
         SyndFeed syndfeed = rssHttpFetcher.httpFetch(commentFeed.getUrl());
         if (syndfeed != null) {            
             log.debug("Comment feed is of type: " + syndfeed.getFeedType());            
