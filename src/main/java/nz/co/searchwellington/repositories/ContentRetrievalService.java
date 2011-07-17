@@ -213,12 +213,16 @@ public class ContentRetrievalService {
 		return solrBackedResourceDAO.getNewsitemsForMonth(month, showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<FrontendResource> getTaggedWebsites(HashSet<Tag> tags, int maxItems) {
+	public List<FrontendResource> getTaggedWebsites(Set<Tag> tags, int maxItems) {
 		return solrBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
 	}
 
-	public List<FrontendResource> getTaggedNewsitems(HashSet<Tag> tags, int maxItems) {
-		return solrBackedResourceDAO.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken(), 0, maxItems);
+	public int getTaggedNewsitemsCount(Set<Tag> tags) {
+		return solrBackedResourceDAO.getTaggedNewsitemsCount(tags, showBrokenDecisionService.shouldShowBroken());
+	}
+	
+	public List<FrontendResource> getTaggedNewsitems(HashSet<Tag> tags, int startIndex, int maxItems) {
+		return solrBackedResourceDAO.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken(), startIndex, maxItems);
 	}
 	
 	public List<FrontendResource> getTaggedNewsitems(Tag tag, int startIndex, int maxNewsitems) {
