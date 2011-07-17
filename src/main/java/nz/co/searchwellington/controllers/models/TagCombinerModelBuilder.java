@@ -56,6 +56,9 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		Tag tag = tags.get(0);
 		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8));
 		mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5));
+
+		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), MAX_WEBSITES);  
+		mv.addObject("websites", taggedWebsites);
 	}
 	
 	@Override
@@ -83,16 +86,11 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("description", "Items tagged with " + firstTag.getDisplayName() +  " and " + secondTag.getDisplayName() + ".");
 		mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
 		
-		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), MAX_WEBSITES);  
-		final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(new HashSet<Tag>(tags), MAX_WEBSITES);
-		
-		mv.addObject("main_content", taggedNewsitems);	
-		mv.addObject("websites", taggedWebsites);
-		     
-		if (taggedNewsitems.size() > 0) { 
+		final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(new HashSet<Tag>(tags), MAX_WEBSITES);		
+		mv.addObject("main_content", taggedNewsitems);		     
+		if (taggedNewsitems.size() > 0) {
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
-		}
-		
+		}		
 		return mv;
 	}
 	
