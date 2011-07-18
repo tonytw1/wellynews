@@ -15,7 +15,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
-    private static final int HOW_FAR_IS_CLOSE_IN_KILOMETERS = 2;
+    private static final int HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1;
     
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
