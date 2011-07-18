@@ -71,6 +71,13 @@
     <groupId>org.geonames</groupId>
     <artifactId>georss-rome</artifactId>
     <version>0.9.8</version>
+    
+    <exclusions>
+    	<exclusion>
+    		<groupId>rome</groupId>
+    		<artifactId>rome</artifactId>
+    	</exclusion>
+    </exclusions>
 </dependency>
 
 		<dependency>
@@ -78,7 +85,7 @@
 			<artifactId>media-rss</artifactId>
 			<version>0.2.1</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -86,7 +93,7 @@
 			<artifactId>scribe</artifactId>
 			<version>0.6.7-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -106,7 +113,7 @@
 			<artifactId>tokyotyrant</artifactId>
 			<version>0.10</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
 			</systemPath>
 		</dependency><dependency>
     <groupId>org.jboss.netty</groupId>
@@ -120,7 +127,7 @@
 			<artifactId>jdom</artifactId>
 			<version>unknown</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jdom.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jdom.jar</systemPath>
 		</dependency>
 
 	<dependency>
@@ -134,7 +141,7 @@
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
 			</systemPath>
 		</dependency>
 
