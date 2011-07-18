@@ -480,19 +480,14 @@ public class SolrBackedResourceDAO {
 		return getQueryResults(query);
 	}
 
-	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude,
-			double longitude, int radius, boolean showBroken, int startIndex,
-			int maxNewsitems) {
-		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude,
-				longitude, radius, showBroken, startIndex, maxNewsitems);
+	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, double radius, boolean showBroken, int startIndex, int maxNewsitems) {
+		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, startIndex, maxNewsitems);
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
 
-	public int getGeotaggedNewsitemsNearCount(double latitude,
-			double longitude, int radius, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude,
-				longitude, radius, showBroken, 0, 0); // TODO maxitems not ideal
+	public int getGeotaggedNewsitemsNearCount(double latitude, double longitude, double radius, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(latitude, longitude, radius, showBroken, 0, 0); // TODO maxitems not ideal
 		return getQueryCount(query);
 	}
 

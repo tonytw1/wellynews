@@ -10,17 +10,18 @@ import org.apache.log4j.Logger;
 public class LocationParameterFilter implements RequestAttributeFilter {
 
 	private static Logger log = Logger.getLogger(LocationParameterFilter.class);
-		
+
+	public static final String LOCATION = "location";
+	public static String RADIUS = "radius";
+	
 	private static final String LONGITUDE = "longitude";
 	private static final String LATITUDE = "latitude";	
-	public static final String LOCATION = "location";
-	
 	private GeoCodeService geoCodeService;
 	
 	public LocationParameterFilter(GeoCodeService geoCodeService) {
 		this.geoCodeService = geoCodeService;
 	}
-
+	
 	public void filter(HttpServletRequest request) {		
 		if(request.getParameter(LOCATION) != null) {
 			final String location = request.getParameter(LOCATION);
@@ -43,6 +44,11 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			// TODO Should try todo a reverse lookup to name this location.
 			Geocode specificPointGeocode = new Geocode(latitude, longitude);
 			request.setAttribute(LOCATION, specificPointGeocode);
+		}
+		
+		Double radius = processDoubleParameter(request, RADIUS);
+		if (radius != null&& radius > 0) {
+			request.setAttribute(RADIUS, radius);
 		}
 	}
 	

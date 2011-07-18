@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.omg.PortableInterceptor.LOCATION_FORWARD;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 public class LocationParameterFilterTest {
@@ -41,6 +42,13 @@ public class LocationParameterFilterTest {
 		Geocode locationAttribute = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);	
 		assertTrue(locationAttribute.isValid());
 		assertEquals(VALID_LOCATION, locationAttribute.getAddress());
+	}
+	
+	@Test
+	public void canResolveLocationSearchRadius() throws Exception {
+		request.setParameter("radius", "3");
+		filter.filter(request);		
+		assertEquals(3.0, request.getAttribute(LocationParameterFilter.RADIUS));
 	}
 	
 	@Test

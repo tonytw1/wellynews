@@ -15,7 +15,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 
 	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
-    private static final int HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1;
+    protected static final double HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1.0;
     
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
@@ -54,7 +54,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 					final int page = getPage(request);
 					mv.addObject("page", page);
 					final int startIndex = getStartIndex(page);
-					final int totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS);
+					
+					final double radius = getLocationSearchRadius(request);					
+					final int totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, radius);
 					if (startIndex > totalNearbyCount) {
 						return null;
 					}
@@ -62,7 +64,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 					
 					mv.addObject("latitude", latitude);
 					mv.addObject("longitude", longitude);
-					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, HOW_FAR_IS_CLOSE_IN_KILOMETERS, startIndex, MAX_NEWSITEMS));
+					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
 				
 					if (userSuppliedLocation.getAddress() != null) {
 						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation.getAddress()));
@@ -90,6 +92,14 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			return mv;
 		}
 		return null;
+	}
+
+	private double getLocationSearchRadius(HttpServletRequest request) {
+		double radius = HOW_FAR_IS_CLOSE_IN_KILOMETERS;
+		if (request.getAttribute(LocationParameterFilter.RADIUS) != null) {
+			radius = (Double) request.getAttribute(LocationParameterFilter.RADIUS);
+		}
+		return radius;
 	}
 	
 	@Override

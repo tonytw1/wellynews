@@ -96,11 +96,11 @@ public class ContentRetrievalService {
 		return solrBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
-	public List<FrontendResource> getNewsitemsNear(double latitude, double longitude, int radius, int startIndex, int maxNewsitems) {
+	public List<FrontendResource> getNewsitemsNear(double latitude, double longitude, double radius, int startIndex, int maxNewsitems) {
 		return solrBackedResourceDAO.getGeotaggedNewsitemsNear(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
 	}
 	
-	public int getNewsitemsNearCount(double latitude, double longitude, int radius) {
+	public int getNewsitemsNearCount(double latitude, double longitude, double radius) {
 		return solrBackedResourceDAO.getGeotaggedNewsitemsNearCount(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken());
 	}
 	

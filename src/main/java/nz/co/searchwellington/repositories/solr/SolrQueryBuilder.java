@@ -117,13 +117,13 @@ public class SolrQueryBuilder {
 		return query;		
 	}
 	
-	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, int radius, boolean showBroken, int startIndex, int maxItems) {		
+	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, double radius, boolean showBroken, int startIndex, int maxItems) {		
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).geotagged().startIndex(startIndex).maxItems(maxItems).toQuery();
 		query.setFilterQueries("{!geofilt}");
 		query.setParam("sfield", "position");
 		query.setParam("pt", latitude + "," + longitude);
-		query.setParam("d", Integer.toString(radius));			
-		return query;		
+		query.setParam("d", Double.toString(radius));			
+		return query;
 	}
 	
 	public SolrQueryBuilder minTwitterCount(int count) {
