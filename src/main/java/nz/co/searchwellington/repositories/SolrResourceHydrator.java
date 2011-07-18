@@ -36,7 +36,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			newsitem.setType("N");
 			newsitem.setPublisherName((String) result.getFieldValue("publisherName"));			
 
-			if ((Boolean) result.getFirstValue("geotagged")) {
+			if ((Boolean) result.getFieldValue("geotagged")) {
 				Geocode geocode = new Geocode();
 				geocode.setAddress((String) result.getFieldValue("address"));
 				String positions = (String) result.getFirstValue("position");
@@ -45,7 +45,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 				newsitem.setGeocode(geocode);
 			}
 			
-			if ((Integer) result.getFirstValue("commented") == 1) {
+			if ((Boolean) result.getFieldValue("commented")) {
 				List<Comment> comments = new ArrayList<Comment>();
 				Collection<Object> commentFields = result.getFieldValues("comment");
 				for (Object commentField : commentFields) {

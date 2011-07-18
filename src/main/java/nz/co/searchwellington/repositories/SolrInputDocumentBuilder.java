@@ -61,7 +61,7 @@ public class SolrInputDocumentBuilder {
 			
 			List<Comment> comments = newsitem.getComments();
 			if(comments.size() > 0) {
-				inputDocument.addField("commented", 1);
+				inputDocument.addField("commented", true);
 				for (Comment comment : comments) {
 					if (comment != null) {
 						inputDocument.addField("comment", comment.getTitle());
@@ -69,7 +69,7 @@ public class SolrInputDocumentBuilder {
 				}
 				
 			} else {
-				inputDocument.addField("commented", 0);
+				inputDocument.addField("commented", false);
 			}
 			
 			if (newsitem.getFeed() != null) {

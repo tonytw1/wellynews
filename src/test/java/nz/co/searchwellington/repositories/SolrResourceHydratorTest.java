@@ -46,6 +46,7 @@ public class SolrResourceHydratorTest {
 		solrRow.setField("geotagged", true);
 		solrRow.setField("address", ADDRESS);
 		solrRow.setField("position", "51,-0.1");
+		solrRow.setField("commented", false);
 		
 		FrontendNewsitem hydratedNewsitem = (FrontendNewsitem) solrResourceHydrator.hydrateResource(solrRow);
 
@@ -61,19 +62,24 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void shouldHydrateNewsitemComments() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("N");
-		solrRow.addField("commented", 1);
+		solrRow.addField("commented", true);
 		solrRow.addField("comment", FIRST_COMMENT);
 		solrRow.addField("comment", SECOND_COMMENT);
-
+		solrRow.addField("geotagged", false);
+		
 		FrontendNewsitem hydratedNewsitem = (FrontendNewsitem) solrResourceHydrator.hydrateResource(solrRow);
+		
+		assertNotNull(hydratedNewsitem.getComments());
 		assertEquals(2, hydratedNewsitem.getComments().size());
-		assertEquals(FIRST_COMMENT, hydratedNewsitem.getComments().get(0));
-		assertEquals(SECOND_COMMENT, hydratedNewsitem.getComments().get(1));
+		assertEquals(FIRST_COMMENT, hydratedNewsitem.getComments().get(0).getTitle());
+		assertEquals(SECOND_COMMENT, hydratedNewsitem.getComments().get(1).getTitle());
 	}
 	
 	@Test
 	public void canHyrdateNewsitemTweets() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("N");
+		solrRow.setField("commented", false);
+		
 		solrRow.setField("twitterCount", 2);
 		solrRow.addField("geotagged", false);
 		solrRow.addField("tweet_author", "tonytw1");

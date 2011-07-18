@@ -64,6 +64,8 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 					
 					mv.addObject("latitude", latitude);
 					mv.addObject("longitude", longitude);
+					
+					log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
 					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
 				
 					if (userSuppliedLocation.getAddress() != null) {
