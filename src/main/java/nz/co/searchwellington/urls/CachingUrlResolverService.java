@@ -4,9 +4,10 @@ import nz.co.searchwellington.repositories.keystore.KeyStore;
 
 import org.apache.log4j.Logger;
 
+// TODO This should cache with a long TTL, not forever. Good candiate for first memcached migration
 public class CachingUrlResolverService extends UrlResolverService {
 	
-	Logger log = Logger.getLogger(CachingUrlResolverService.class);
+	private static Logger log = Logger.getLogger(CachingUrlResolverService.class);
 	
 	private KeyStore keystore;
 	private String keyPrefix;
@@ -15,8 +16,11 @@ public class CachingUrlResolverService extends UrlResolverService {
 		super(redirectResolvers);
 		this.keystore = keystore;
 	}
-
 	
+	public void setKeyPrefix(String keyPrefix) {
+		this.keyPrefix = keyPrefix;
+	}
+		
 	@Override
 	protected String resolveSingleUrl(String url) {		
 		if (url != null && !url.isEmpty()) {
@@ -48,10 +52,6 @@ public class CachingUrlResolverService extends UrlResolverService {
 	// TODO duplication with snapshotDAO
 	private String generateKey(String id) {
 		return keyPrefix + id;
-	}
-	
-	public void setKeyPrefix(String keyPrefix) {
-		this.keyPrefix = keyPrefix;
 	}
 	
 }
