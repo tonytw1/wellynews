@@ -120,8 +120,8 @@
    <field name="publisher" type="integer" indexed="true" stored="true" required="false" />
    <field name="publisherName" type="text" indexed="false" stored="true" required="false" />
    <field name="httpStatus" type="integer" indexed="true" stored="true" required="false" /> 
-
-   <field name="commented" type="integer" indexed="true" stored="true" required="false" />
+   
+   <field name="commented" type="boolean" indexed="true" stored="true" required="false" />
    <field name="comment" type="text" indexed="true" stored="true" required="false" multiValued="true" /> 
    <field name="geotagged" type="boolean" indexed="true" stored="true" required="false" /> 
    
