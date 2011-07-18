@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Twit;
@@ -42,6 +43,15 @@ public class SolrResourceHydrator implements ResourceHydrator {
 				geocode.setLatitude(Double.parseDouble(positions.split(",")[0]));
 				geocode.setLongitude(Double.parseDouble(positions.split(",")[1]));
 				newsitem.setGeocode(geocode);
+			}
+			
+			if ((Integer) result.getFirstValue("commented") == 1) {
+				List<Comment> comments = new ArrayList<Comment>();
+				Collection<Object> commentFields = result.getFieldValues("comment");
+				for (Object commentField : commentFields) {
+					comments.add(new Comment((String) commentField));
+				}
+				newsitem.setComments(comments);
 			}
 			
 			newsitem.setAcceptedFromFeedName((String) result.getFieldValue("acceptedFromFeedName"));

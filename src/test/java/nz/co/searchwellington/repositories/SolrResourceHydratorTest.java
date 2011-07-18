@@ -19,6 +19,8 @@ import org.mockito.Mock;
 
 public class SolrResourceHydratorTest {
 
+	private static final String SECOND_COMMENT = "I for one welcome...";
+	private static final String FIRST_COMMENT = "Someone is wrong in the Internet...";
 	private static final int ID = 123;
 	private static final String HEADLINE = "Test article";
 	private static final Object URL = "http://localhost/somewhere";
@@ -54,6 +56,19 @@ public class SolrResourceHydratorTest {
 		assertEquals(ADDRESS, hydratedNewsitem.getGeocode().getAddress());
 		assertEquals(51, hydratedNewsitem.getGeocode().getLatitude(), 0);
 		assertEquals(-0.1, hydratedNewsitem.getGeocode().getLongitude(), 0);
+	}
+	
+	@Test
+	public void shouldHydrateNewsitemComments() throws Exception {
+		SolrDocument solrRow = buildSolrRecord("N");
+		solrRow.addField("commented", 1);
+		solrRow.addField("comment", FIRST_COMMENT);
+		solrRow.addField("comment", SECOND_COMMENT);
+
+		FrontendNewsitem hydratedNewsitem = (FrontendNewsitem) solrResourceHydrator.hydrateResource(solrRow);
+		assertEquals(2, hydratedNewsitem.getComments().size());
+		assertEquals(FIRST_COMMENT, hydratedNewsitem.getComments().get(0));
+		assertEquals(SECOND_COMMENT, hydratedNewsitem.getComments().get(1));
 	}
 	
 	@Test
