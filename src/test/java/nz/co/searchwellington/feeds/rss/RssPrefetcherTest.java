@@ -33,7 +33,7 @@ public class RssPrefetcherTest extends TestCase {
 	
 	@Override
 	protected void setUp() throws Exception {
-		 prefetcher = new RssNewsitemPrefetcher(resourceDAO, rssHttpFetcher, rssCache, feedReaderRunner, null, configDAO);			
+		 prefetcher = new RssNewsitemPrefetcher(resourceDAO, rssHttpFetcher, rssCache, feedReaderRunner, configDAO);			
 		 
 		 firstFeed = new FeedImpl();
 		 firstFeed.setUrl("http://testdata/rss/1");		
