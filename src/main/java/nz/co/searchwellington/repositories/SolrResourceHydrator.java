@@ -54,7 +54,9 @@ public class SolrResourceHydrator implements ResourceHydrator {
 				newsitem.setComments(comments);
 			}
 			
+			newsitem.setAccepted((Date) result.getFieldValue("accepted"));
 			newsitem.setAcceptedFromFeedName((String) result.getFieldValue("acceptedFromFeedName"));
+			newsitem.setAcceptedByProfilename((String) result.getFieldValue("acceptedByProfileName"));
 			
 			hydrateTwitterFields(result, newsitem);
 			item = newsitem;			

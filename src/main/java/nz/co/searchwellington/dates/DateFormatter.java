@@ -25,8 +25,7 @@ public class DateFormatter {
         }
         return null;
     }
-    
-       
+           
     public static String formatDateToTimeZone(Date startDate) {
         final String TIMEZONE_ID = "Pacific/Auckland";
         DateTimeFormatter fmt = DateTimeFormat.forPattern("d MMM yyy h:mma");
@@ -35,19 +34,12 @@ public class DateFormatter {
         return (fmt.print(localTime));
     }
     
-    
-       
     public String formatW3CDate(Date startDate) {   
         DateTimeFormatter fmt = DateTimeFormat.forPattern(W3C_DATETIME_FORMAT);
         DateTime now = new DateTime(startDate);        
         return (fmt.print(now));
     }
-
     
-   
-    
-    
-        
     public String timeSince(Date then) {        
         Date now = Calendar.getInstance().getTime();
         final long deltaInMills = now.getTime() - then.getTime();
@@ -88,7 +80,4 @@ public class DateFormatter {
         return null;
     }
     
-    
-    
-
 }

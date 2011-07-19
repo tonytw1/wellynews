@@ -104,5 +104,13 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
 		}
 		return null;
 	}
+
+	@Override
+	public String getAcceptedByProfilename() {
+		if (acceptedBy != null) {
+			return acceptedBy.getProfilename();
+		}
+		return null;
+	}
 	
 }

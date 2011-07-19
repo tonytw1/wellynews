@@ -76,6 +76,22 @@ public class SolrResourceHydratorTest {
 	}
 	
 	@Test
+	public void shouldHydrateFeedAcceptanceFieldsCorrectly() throws Exception {
+		SolrDocument solrRow = buildSolrRecord("N");
+		solrRow.addField("commented", false);		
+		solrRow.addField("geotagged", false);
+		
+		solrRow.addField("accepted", new DateTime().toDate());
+		solrRow.addField("acceptedFromFeedName", "A feed");
+		solrRow.addField("acceptedByProfileName", "User");
+		
+		FrontendNewsitem hydratedNewsitem = (FrontendNewsitem) solrResourceHydrator.hydrateResource(solrRow);
+		assertNotNull(hydratedNewsitem.getAccepted());
+		assertEquals("A feed", hydratedNewsitem.getAcceptedFromFeedName());
+		assertEquals("User", hydratedNewsitem.getAcceptedByProfilename());
+	}
+	
+	@Test
 	public void canHyrdateNewsitemTweets() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("N");
 		solrRow.setField("commented", false);

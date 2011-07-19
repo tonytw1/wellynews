@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model.frontend;
 
+import java.util.Date;
 import java.util.List;
 
 import nz.co.searchwellington.model.Comment;
@@ -10,7 +11,9 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 	private String publisherName;
 	private List<Twit> retweets;
 	private String acceptedFromFeedName;
+	private String acceptedByProfilename;
 	private List<Comment> comments;
+	private Date accepted;
 	
 	public String getPublisherName() {
 		return publisherName;
@@ -35,7 +38,7 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 	public void setAcceptedFromFeedName(String acceptedFromFeedName) {
 		this.acceptedFromFeedName = acceptedFromFeedName;
 	}
-
+	
 	@Override
 	public List<Comment> getComments() {
 		return comments;
@@ -43,6 +46,23 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
+	}
+
+	public String getAcceptedByProfilename() {
+		return acceptedByProfilename;
+	}
+
+	public void setAcceptedByProfilename(String acceptedByProfilename) {
+		this.acceptedByProfilename = acceptedByProfilename;
+	}
+
+	@Override
+	public Date getAccepted() {
+		return accepted;
+	}
+
+	public void setAccepted(Date accepted) {
+		this.accepted = accepted;
 	}
 	
 }

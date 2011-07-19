@@ -72,9 +72,7 @@ public class SolrInputDocumentBuilder {
 				inputDocument.addField("commented", false);
 			}
 			
-			if (newsitem.getFeed() != null) {
-				inputDocument.addField("acceptedFromFeedName", newsitem.getFeed().getName());
-			}
+			populateFeedAcceptanceFields(inputDocument, newsitem);
 			
 			SolrTweetsHandler tweetsHandler = new SolrTweetsHandler();	//TODO inject
 			tweetsHandler.processTweets(newsitem.getRetweets(), inputDocument);			
@@ -120,6 +118,19 @@ public class SolrInputDocumentBuilder {
 		}
 		
 		return inputDocument;
+	}
+
+	private void populateFeedAcceptanceFields(SolrInputDocument inputDocument,
+			Newsitem newsitem) {
+		if (newsitem.getAcceptedFromFeedName() != null) {
+			inputDocument.addField("acceptedFromFeedName", newsitem.getAcceptedFromFeedName());				
+		}
+		if (newsitem.getAcceptedByProfilename() != null) {
+			inputDocument.addField("acceptedByProfileName", newsitem.getAcceptedByProfilename());
+		}
+		if (newsitem.getAccepted() != null) {
+			inputDocument.addField("accepted", newsitem.getAccepted());
+		}
 	}
 	
 	private Website getIndexPublisherForResource(Resource resource) {
