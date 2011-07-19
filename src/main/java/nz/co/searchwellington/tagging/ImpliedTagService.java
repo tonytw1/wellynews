@@ -11,13 +11,10 @@ public class ImpliedTagService {
 	public ImpliedTagService(TaggingReturnsOfficerService taggingReturnsOfficerService) {
 		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
 	}
-
    
-   public boolean alreadyHasTag(Resource resource, Tag tag) {	// TODO should look at this users votes only
-	   boolean isNewsitemWhosPublisherAlreadyHasThisTag = resource.getType().equals("N") && ((Newsitem) resource).getPublisher() != null && taggingReturnsOfficerService.getHandTagsForResource(((Newsitem) resource).getPublisher()).contains(tag);
-	   boolean resourceAlreadyHasTag = taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag) || isNewsitemWhosPublisherAlreadyHasThisTag;
-	   return resourceAlreadyHasTag;
-   }
-
-    
+	public boolean alreadyHasTag(Resource resource, Tag tag) {	// TODO should look at this users votes only
+		boolean isNewsitemWhosPublisherAlreadyHasThisTag = resource.getType().equals("N") && ((Newsitem) resource).getPublisher() != null && taggingReturnsOfficerService.getHandTagsForResource(((Newsitem) resource).getPublisher()).contains(tag);
+		return taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag) || isNewsitemWhosPublisherAlreadyHasThisTag;
+	}
+	
 }

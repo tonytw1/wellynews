@@ -40,8 +40,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 	public boolean isValid(HttpServletRequest request) {
 		Tag tag = (Tag) request.getAttribute("tag");
 		Website publisher = (Website) request.getAttribute("publisher"); 
-		boolean isPublisherTagCombiner = publisher != null && tag != null;
-		return isPublisherTagCombiner;
+		return publisher != null && tag != null;
 	}
 	
 	@Override

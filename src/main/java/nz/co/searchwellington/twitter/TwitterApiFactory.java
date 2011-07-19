@@ -15,16 +15,13 @@ public class TwitterApiFactory {
 	
 	public Twitter getOauthedTwitterApiForAccessToken(String token, String secret) {
 		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
-		Twitter twitterApi = new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(token, secret));
-		return twitterApi;
+		return new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(token, secret));
 	}
 	
 	public Twitter getOauthedTwitterApi() {
 		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
-		Twitter twitterApi = new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(accessToken, accessSecret));
-		return twitterApi;
+		return new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(accessToken, accessSecret));
 	}
-	
 	
 	public void setConsumerKey(String consumerKey) {
 		this.consumerKey = consumerKey;

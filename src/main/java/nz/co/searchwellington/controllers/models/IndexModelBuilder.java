@@ -68,25 +68,21 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());		
 		archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths());
 	}
-	
-	
+		
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "index";
 	}
-	
-	
+		
 	private Date monthOfLastItem(List<FrontendResource> latestNewsitems) {
 		if (latestNewsitems.size() > 0) {
 			FrontendResource lastNewsitem = latestNewsitems.get(latestNewsitems.size() - 1);
 			if (lastNewsitem.getDate() != null) {
-				Date lastDate = lastNewsitem.getDate();
-				return lastDate;
+				return lastNewsitem.getDate();
 			}
 		}
 		return null;
 	}
-
 	
 	private void populateUserOwnedResources(ModelAndView mv, User loggedInUser) {
 		 if (loggedInUser != null) {

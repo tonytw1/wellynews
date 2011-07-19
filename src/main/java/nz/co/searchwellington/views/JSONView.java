@@ -103,8 +103,7 @@ public class JSONView implements View {
 			}
 			
 			bucket.setNewsitems(jsonItems);
-			String jsonString = xstream.toXML(bucket);
-			return jsonString;
+			return xstream.toXML(bucket);
 			
 		} catch (Exception e) {
 			log.error("Exception while trying to create JSON string", e);

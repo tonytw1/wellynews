@@ -67,17 +67,13 @@ public class HibernateResourceDAO implements ResourceRepository {
         return new Watchlist(0, "", "", "", null, new HashSet <DiscoveredFeed>());
       
     }
-
     
     public CommentFeed createNewCommentFeed(String commentFeedUrl) {
-        CommentFeed commentFeed = new CommentFeed(0, commentFeedUrl, new ArrayList<Comment>(), null, null, new HashSet<Resource>());
-        return commentFeed;
+    	return new CommentFeed(0, commentFeedUrl, new ArrayList<Comment>(), null, null, new HashSet<Resource>());
     }
-    
-    
+        
     public CalendarFeed createNewCalendarFeed(String url) {
-        CalendarFeed calendar = new CalendarFeed(0, url, "", "");
-        return calendar;
+        return new CalendarFeed(0, url, "", "");
     }
     
     public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl) {
@@ -93,16 +89,13 @@ public class HibernateResourceDAO implements ResourceRepository {
         return session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list();        
        
     }
-    
-    
+        
     // TODO hup to CRS
 	public List<String> getPublisherNamesByStartingLetters(String q) {
          Session session = sessionFactory.getCurrentSession();
-         List<String> rows = session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
-         return rows;
+         return session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
 	}
-
-
+	
 	@SuppressWarnings("unchecked")
     final public List<Feed> getAllFeeds() {
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).

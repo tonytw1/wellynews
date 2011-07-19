@@ -21,18 +21,14 @@ public class TagDAO {
 	public TagDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
 	
 	public Tag createNewTag() {
-	        Tag newTag = new Tag(0, "", "", null, new HashSet<Tag>(), 0, false);	     
-			return newTag;
-	 }
-	
-	
+		return new Tag(0, "", "", null, new HashSet<Tag>(), 0, false);
+	}
+		
 	public Tag loadTagById(int tagID) {
 		return (Tag) sessionFactory.getCurrentSession().load(Tag.class, tagID);
 	}
-	
 	
 	public Tag loadTagByName(String tagName) {
         return (Tag) sessionFactory.getCurrentSession().
@@ -67,28 +63,23 @@ public class TagDAO {
 				.add(Restrictions.isNull("parent")).addOrder(Order.asc("name"))
 				.setCacheable(true).list();
 	}
-	
-	
+		
 	@Transactional
 	public void saveTag(Tag editTag) {
 		 sessionFactory.getCurrentSession().saveOrUpdate(editTag);
 		 sessionFactory.evictCollection("nz.co.searchwellington.model.Tag.children");
 		 // TODO solr index needs updating if a tag moves to a new parent.
-	 }
-	 
-	
+	}
+	 	
 	@Transactional
 	public void deleteTag(Tag tag) {
 		 sessionFactory.getCurrentSession().delete(tag);
 	}
-
-	
 	
 	// TODO hup to CRS
 	public List<String> getTagNamesStartingWith(String q) {
 		  Session session = sessionFactory.getCurrentSession();
-	         List<String> rows = session.createQuery("select name from nz.co.searchwellington.model.Tag where name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
-	         return rows;
+		  return session.createQuery("select name from nz.co.searchwellington.model.Tag where name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
 	}
 	
 }

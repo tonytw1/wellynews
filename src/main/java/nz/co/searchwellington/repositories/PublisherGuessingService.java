@@ -11,22 +11,18 @@ import org.apache.log4j.Logger;
 
 public class PublisherGuessingService {
     
-    Logger log = Logger.getLogger(PublisherGuessingService.class);
+    private static Logger log = Logger.getLogger(PublisherGuessingService.class);
     
     private ResourceRepository resourceDAO;
-    
-     
+         
     public PublisherGuessingService(ResourceRepository resourceDAO) {    
         this.resourceDAO = resourceDAO;
     }
-
-
-    public List<Resource> guessPossiblePublishersForUrl(String url) {
-        String urlStem = calculateUrlStem(url);      
-        final List<Resource> possiblePublishers = resourceDAO.getAllPublishersMatchingStem(urlStem, true);
-        return possiblePublishers;
-    }
     
+    public List<Resource> guessPossiblePublishersForUrl(String url) {
+        final String urlStem = calculateUrlStem(url);      
+        return resourceDAO.getAllPublishersMatchingStem(urlStem, true);
+    }
     
     public Website guessPublisherBasedOnUrl(String url) {    
         List<Resource> possiblePublishers = guessPossiblePublishersForUrl(url);      
@@ -44,8 +40,7 @@ public class PublisherGuessingService {
         }
         return null;
     }
-    
-    
+        
     private String calculateUrlStem(String fullURL) {
         String urlStem = null;        
         try {
@@ -58,5 +53,4 @@ public class PublisherGuessingService {
         return urlStem;
     }
     
-
 }
