@@ -121,15 +121,6 @@
     <version>3.2.4.Final</version>
 </dependency>
 
-
-		<dependency>
-			<groupId>org.jdom</groupId>
-			<artifactId>jdom</artifactId>
-			<version>unknown</version>
-			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jdom.jar</systemPath>
-		</dependency>
-
 	<dependency>
 	    <groupId>org.apache.commons</groupId>
     		<artifactId>commons-email</artifactId>	
