@@ -24,6 +24,28 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1</version>
 			</plugin>
+			
+		
+      
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <check>          
+            <haltOnFailure>false</haltOnFailure>            
+          </check>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      			
 		</plugins>
 	</build>
 
@@ -324,4 +346,22 @@
 			
 	</dependencies>
 
+
+ <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>cobertura-maven-plugin</artifactId>
+        <version>2.5.1</version>
+         <configuration>
+          <formats>
+            <format>html</format>
+            <format>xml</format>
+          </formats>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+  
+  
 </project>
