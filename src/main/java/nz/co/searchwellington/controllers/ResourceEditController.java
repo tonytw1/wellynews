@@ -29,9 +29,11 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
+import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
+import org.apache.ecs.xhtml.sub;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -188,7 +190,7 @@ public class ResourceEditController extends BaseMultiActionController {
         } else if (request.getParameter("url") != null) {
         	feedNewsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
         }
-                
+        
         if (feedNewsitem == null) {
         	log.warn("No matching newsitem found for feed/item.");
         	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -202,10 +204,10 @@ public class ResourceEditController extends BaseMultiActionController {
 		modelAndView.addObject("resource", acceptedNewsitem);
 		modelAndView.addObject("publisher_select", "1");
 		modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
+		modelAndView.addObject("acceptedFromFeed", UrlWordsGenerator.makeUrlWordsFromName(acceptedNewsitem.getAcceptedFromFeedName()));
 		return modelAndView;
     }
-    
-    
+        
     @Transactional
     public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("submitWebsite");
@@ -360,7 +362,8 @@ public class ResourceEditController extends BaseMultiActionController {
             submissionProcessingService.processPublisher(request, editResource);
             
             if (editResource.getType().equals("N")) {
-            	submissionProcessingService.processImage(request, (Newsitem) editResource, loggedInUser);            
+            	submissionProcessingService.processImage(request, (Newsitem) editResource, loggedInUser);
+            	submissionProcessingService.processAcceptance(request, editResource, loggedInUser);
             }
                         
             processFeedAcceptancePolicy(request, editResource);

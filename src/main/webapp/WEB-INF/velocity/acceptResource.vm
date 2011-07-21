@@ -27,6 +27,9 @@
 
 		<p><label for="date">Publisher: </label>	
 		<input name="publisherName" value="$resource.publisherName" /></p>
+		
+		<p>Accepted from: $item.acceptedFromFeed</p>
+		<input name="acceptedFromFeedName" value="$acceptedFromFeed" />
 										
 		#if ($resource.image) 			
 			<img src="$resource.image.url" align="right" vspace="10">

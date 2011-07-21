@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.submission.SubmissionProcessor;
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
 import nz.co.searchwellington.geocoding.GeoCodeService;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
@@ -28,6 +29,7 @@ import nz.co.searchwellington.utils.UrlFilters;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 
 public class SubmissionProcessingService {
 
@@ -57,12 +59,10 @@ public class SubmissionProcessingService {
         if (req.getParameter(REQUEST_TITLE_NAME) != null) {
             String title = new String(req.getParameter(REQUEST_TITLE_NAME));
             title = UrlFilters.trimWhiteSpace(title);
-            title = UrlFilters.stripHtml(title);
-            
-            log.info("Resource title is: " + title);    
-            String flattenedTitle = UrlFilters.lowerCappedSentence(title);           
+            title = UrlFilters.stripHtml(title);            
+            final String flattenedTitle = UrlFilters.lowerCappedSentence(title);           
             if (!flattenedTitle.equals(title)) {
-                title = flattenedTitle;             
+                title = flattenedTitle;   
                 log.info("Flatten capitalised sentence to '" + title + "'");
             }
             editResource.setName(title);
@@ -171,6 +171,24 @@ public class SubmissionProcessingService {
     		}
     	}
     }
+	
+	
+	public void processAcceptance(HttpServletRequest request, Resource editResource, User loggedInUser) {
+		if (editResource instanceof Newsitem) {
+			if (request.getParameter("acceptedFromFeed") != null && !request.getParameter("acceptedFromFeed").equals("")) {			
+				final String acceptedFromFeedUrlWords = request.getParameter("acceptedFromFeed");
+				log.info("Item was accepted from a feed with url words: " + acceptedFromFeedUrlWords);
+				Feed feed = resourceDAO.loadFeedByUrlWords(acceptedFromFeedUrlWords);
+				if (feed != null) {
+					log.info("Setting accepted from feed to: " + feed.getName());
+					((Newsitem) editResource).setFeed(feed);
+					((Newsitem) editResource).setAcceptedBy(loggedInUser);
+					((Newsitem) editResource).setAccepted(new DateTime().toDate());	// TODO not test covered
+				}
+			}
+		}
+	}
+	
     
     private void processAdditionalTags(HttpServletRequest request, Resource editResource, User user) {
         String additionalTagString = request.getParameter("additional_tags").trim();
