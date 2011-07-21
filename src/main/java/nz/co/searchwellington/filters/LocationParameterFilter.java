@@ -24,7 +24,6 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	
 	public void filter(HttpServletRequest request) {		
 		Double radius = processDoubleParameter(request, RADIUS);
-		log.info("Radius argument is: " + radius);
 		if (radius != null && radius > 0) {
 			log.info("Radius attribute set to: " + radius);
 			request.setAttribute(RADIUS, radius);
