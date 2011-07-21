@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
 import nz.co.searchwellington.model.Geocode;
@@ -37,13 +38,14 @@ public class GeotaggedModelBuilderTest {
 	@Mock Geocode invalidLocation;
 	
 	private ModelBuilder modelBuilder;
+	private RelatedTagsService relatedTagsService;
 	
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();		
 		validLocation = new Geocode("Petone Station", 1, 2);
-		modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder);
+		modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService);
 	}
 	
 	@Test
