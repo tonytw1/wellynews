@@ -11,7 +11,6 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SuggestionRepository;
-import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 
@@ -23,9 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FeedReader {
       
 	private static Logger log = Logger.getLogger(FeedReader.class);
-
-	private static final String FEED_READER_PROFILE_NAME = "feedreader";
-	    
+	
     private ResourceRepository resourceDAO;
     private RssfeedNewsitemService rssfeedNewsitemService;
     private FeedAcceptanceDecider feedAcceptanceDecider;
@@ -35,7 +32,6 @@ public class FeedReader {
     private ContentUpdateService contentUpdateService;
 	private FeedItemAcceptor feedItemAcceptor;
     private AutoTaggingService autoTagger;
-	private UserRepository userDAO;
     
     public FeedReader() {        
     }
@@ -47,8 +43,7 @@ public class FeedReader {
 			SuggestionRepository suggestionDAO,
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor,
-			AutoTaggingService autoTagger,
-			UserRepository userDAO) {
+			AutoTaggingService autoTagger) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
@@ -58,11 +53,10 @@ public class FeedReader {
 		this.contentUpdateService = contentUpdateService;
 		this.feedItemAcceptor = feedItemAcceptor;
 		this.autoTagger= autoTagger;
-		this.userDAO = userDAO;
 	}
-		
+	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void processFeed(int feedId) {
+    public void processFeed(int feedId, User feedReaderUser) {		
     	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);    	
     	log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));               
 
@@ -72,7 +66,7 @@ public class FeedReader {
         	|| feed.getAcceptancePolicy().equals("suggest");
 
         if (shouldLookAtFeed) {
-          processFeedItems(feed);
+          processFeedItems(feed, feedReaderUser);
         } else {
         	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept or suggest");
         }
@@ -86,13 +80,7 @@ public class FeedReader {
         return;
     }
 	
-	private void processFeedItems(Feed feed) {
-		User feedReaderUser = userDAO.getUserByProfileName(FEED_READER_PROFILE_NAME);
-		if (feedReaderUser == null) {
-			log.warn("Feed reader could not run as no user was found with profile name: " + FEED_READER_PROFILE_NAME);
-			return;
-		}
-		
+	private void processFeedItems(Feed feed, User feedReaderUser) {		
 		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (!feedNewsitems.isEmpty()) {
 			feed.setHttpStatus(200);			

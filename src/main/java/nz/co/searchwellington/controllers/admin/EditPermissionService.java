@@ -37,7 +37,7 @@ public class EditPermissionService {
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 	
-	public boolean canRead(FrontendResource resource) {
+	public boolean canAcceptAllFrom(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}

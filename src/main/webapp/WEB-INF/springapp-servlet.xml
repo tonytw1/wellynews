@@ -200,20 +200,20 @@
 			</bean>		
 		</property>
 	</bean>
-	
-	
+		
 	<bean id="viewfeedController" class="nz.co.searchwellington.controllers.admin.AdminFeedController">
 		<constructor-arg ref="adminRequestFilter" />
-		<constructor-arg ref="feedReaderRunner" />
+		<constructor-arg ref="feedReader" />
 		<constructor-arg ref="rssPrefetcher" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="editPermissionService" />
+		<constructor-arg ref="loggedInUserFilter" />		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
 						<prop key="/admin/feed/decache">decachefeed</prop>
-						<prop key="/admin/feed/read">readfeed</prop>						
+						<prop key="/admin/feed/acceptall">acceptAllFrom</prop>						
 					</props>
 				</property>
 			</bean>
@@ -370,7 +370,7 @@
 				<prop key="/*/*/json">jsonController</prop>
 																							
 				<prop key="/admin/feed/decache">viewfeedController</prop>	
-				<prop key="/admin/feed/read">viewfeedController</prop>
+				<prop key="/admin/feed/acceptall">viewfeedController</prop>
 				
 				<prop key="/edit/edit">editController</prop>
 				<prop key="/edit/delete">editController</prop>

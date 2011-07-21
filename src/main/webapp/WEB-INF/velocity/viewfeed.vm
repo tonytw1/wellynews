@@ -25,8 +25,8 @@
 				<li class="admin"><a href="${site_information.url}/admin/feed/decache?feed=$feed.id">Decache</a></li>
 			#end
 		
-			#if ($editPermissionService.canRead($feed))
-				<li class="admin"><a href="${site_information.url}/admin/feed/read?feed=$feed.id">Read</a></li>
+			#if ($editPermissionService.canAcceptAllFrom($feed))
+				<li class="admin"><a href="${site_information.url}/admin/feed/read?feed=$feed.id">Accept all</a></li>
 			#end
 		</ul>
 		
