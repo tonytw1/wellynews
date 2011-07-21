@@ -1,10 +1,15 @@
 package nz.co.searchwellington.controllers.models;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.PublisherContentCount;
+import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -12,19 +17,22 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 public class GeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
-
-	static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
+	private static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
+	
+	private static final int REFINEMENTS_TO_SHOW = 8;
     protected static final double HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1.0;
     
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
+	private RelatedTagsService relatedTagsService;
 	
-	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
+	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
+		this.relatedTagsService = relatedTagsService;
 	}
 
 	@Override
@@ -106,8 +114,21 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		if (request.getAttribute("location") == null) {
-			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());
+		if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
+			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());			
+		} else {
+			final Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);
+			if (userSuppliedLocation.isValid()) {
+				List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedLocation, showBroken, REFINEMENTS_TO_SHOW);
+				if (relatedTagLinks.size() > 0) {
+					mv.addObject("related_tags", relatedTagLinks);
+				}
+
+				List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedLocation, showBroken, REFINEMENTS_TO_SHOW);
+				if (relatedPublisherLinks.size() > 0) {
+					mv.addObject("related_publishers", relatedPublisherLinks);
+				}
+			}			
 		}
 		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}

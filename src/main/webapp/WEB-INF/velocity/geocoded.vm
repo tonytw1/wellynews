@@ -5,7 +5,9 @@
 #parse("includes/topbar.vm")
 
 <div class="left">
-#parse("includes/tag_tree.vm")
+	#parse("includes/location_related_tags.vm")
+	#parse("includes/location_related_publishers.vm")
+	#parse("includes/tag_tree.vm")
 </div>
 
 <div class="main">

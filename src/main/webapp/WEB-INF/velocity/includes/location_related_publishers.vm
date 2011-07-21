@@ -1,0 +1,18 @@
+#if ($related_publishers)
+	<h2>Related Publishers</h2>
+	<p>These publishers have published newsitems near $locationQuery:</p>
+	
+	<ul>
+	#set ($first =1)
+	#foreach ($related_publisher in $related_publishers)
+        <li><a href="$urlBuilder.getPublisherUrl($related_publisher.publisher)">$related_publisher.publisher.name.toLowerCase()</a>
+        #if ($first == 1)
+          	($related_publisher.count #showPluralWord($related_publisher.count "item"))
+           	#set ($first =0)
+        #else
+           	($related_publisher.count)
+        #end
+        </li>
+	#end
+	</ul>
+#end

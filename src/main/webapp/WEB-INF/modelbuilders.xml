@@ -67,6 +67,7 @@
 		<constructor-arg ref="contentRetrievalService" />	
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="rssUrlBuilder" />
+		<constructor-arg ref="relatedTagsService" />		
 	</bean>
 	
 	<bean id="commentModelBuilder" class="nz.co.searchwellington.controllers.models.CommentModelBuilder">
