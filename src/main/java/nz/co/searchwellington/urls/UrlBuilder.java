@@ -50,6 +50,11 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
 	
+	public String getFeedUrlFromFeedName(String feedname) {		
+		return siteInformation.getUrl() + "/feed/" + UrlWordsGenerator.makeUrlWordsFromName(feedname);
+	}
+	
+	
 	public String getFeedsInboxUrl() {
 		return siteInformation.getUrl() + "/feeds/inbox";
 	}
@@ -134,8 +139,13 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/openid/callback";
 	}
 	
+	@Deprecated
 	public String getProfileUrl(User user) {
 		return siteInformation.getUrl() + "/profiles/" + user.getProfilename();
+	}
+	
+	public String getProfileUrlFromProfileName(String username) {
+		return siteInformation.getUrl() + "/profiles/" + URLEncoder.encode(username);
 	}
 
 	public String getWatchlistUrl() {
