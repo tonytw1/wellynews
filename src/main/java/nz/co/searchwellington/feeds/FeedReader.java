@@ -5,6 +5,7 @@ import java.util.List;
 
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
@@ -56,17 +57,27 @@ public class FeedReader {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void processFeed(int feedId, User feedReaderUser) {		
-    	Feed feed = (Feed) resourceDAO.loadResourceById(feedId);    	
-    	log.info("Processing feed: " + feed.getName() + ". Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));               
+	public void processFeed(int feedId, User loggedInUser, FeedAcceptancePolicy manuallySpecifiedAcceptancePolicy) {
+		Feed feed = (Feed) resourceDAO.loadResourceById(feedId); 
+		processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy.getName());		
+	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	public void processFeed(int feedId, User loggedInUser) {
+		Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
+		processFeed(feed, loggedInUser, feed.getAcceptancePolicy());		
+	}
+	
+    private void processFeed(Feed feed, User feedReaderUser, String acceptancePolicy) {		    	
+    	log.info("Processing feed: " + feed.getName() + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));
+    	
     	// TODO can this move onto the enum?
-    	final boolean shouldLookAtFeed =  feed.getAcceptancePolicy() != null && feed.getAcceptancePolicy().equals("accept") 
-        	|| feed.getAcceptancePolicy().equals("accept_without_dates")
-        	|| feed.getAcceptancePolicy().equals("suggest");
+		final boolean shouldLookAtFeed =  acceptancePolicy != null && acceptancePolicy.equals("accept") 
+        	|| acceptancePolicy.equals("accept_without_dates")
+        	|| acceptancePolicy.equals("suggest");
 
         if (shouldLookAtFeed) {
-          processFeedItems(feed, feedReaderUser);
+          processFeedItems(feed, feedReaderUser, acceptancePolicy);
         } else {
         	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept or suggest");
         }
@@ -80,7 +91,7 @@ public class FeedReader {
         return;
     }
 	
-	private void processFeedItems(Feed feed, User feedReaderUser) {		
+	private void processFeedItems(Feed feed, User feedReaderUser, String acceptancePolicy) {		
 		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (!feedNewsitems.isEmpty()) {
 			feed.setHttpStatus(200);			
@@ -88,8 +99,8 @@ public class FeedReader {
 				String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
 				feednewsitem.setUrl(cleanSubmittedItemUrl);
 		    
-				if (feed.getAcceptancePolicy().startsWith("accept")) {
-					boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, feed.getAcceptancePolicy()).size() == 0;
+				if (acceptancePolicy.startsWith("accept")) {
+					boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, acceptancePolicy).size() == 0;
 					if (acceptThisItem) {
 						Newsitem newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser, feednewsitem);										   
 						contentUpdateService.create(newsitem);
