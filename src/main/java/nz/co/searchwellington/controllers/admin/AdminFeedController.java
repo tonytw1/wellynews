@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.feeds.FeedReader;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -62,7 +63,7 @@ public class AdminFeedController extends MultiActionController {
         }        
         return new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)));
     }
-            
+    
     @Transactional
     public ModelAndView acceptAllFrom(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         requestFilter.loadAttributesOntoRequest(request);
@@ -75,8 +76,8 @@ public class AdminFeedController extends MultiActionController {
             	return null; 	
             }
             
-            log.info("Reading feed: " + feed.getName());           
-            feedReader.processFeed(feed.getId(), loggedInUserFilter.getLoggedInUser());
+            log.info("Accepting all from feed: " + feed.getName());           
+            feedReader.processFeed(feed.getId(), loggedInUserFilter.getLoggedInUser(), FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES);
             
         } else {
             log.info("No feed seen on request; nothing to reread.");

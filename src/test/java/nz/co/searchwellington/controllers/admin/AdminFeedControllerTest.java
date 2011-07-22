@@ -4,6 +4,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.feeds.FeedReader;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -39,10 +40,11 @@ public class AdminFeedControllerTest {
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();		
 		Mockito.when(feed.getId()).thenReturn(FEED_ID);
+		Mockito.when(feed.getName()).thenReturn("A feed");
 	}
 
 	@Test
-	public void manualFeedReaderRunsShouldBeAttributedToTheUserWhoKicksThemOff() throws Exception {		
+	public void manualFeedReaderRunsShouldBeAttributedToTheUserWhoKicksThemOffAndShouldAcceptAllEvenIfNoDateIsGivenOfNotCurrent() throws Exception {		
 		Mockito.when(loggedInUserFilter.getLoggedInUser()).thenReturn(loggedInUser);
 		Mockito.when(permissionService.canAcceptAllFrom(feed)).thenReturn(true);		
 		AdminFeedController controller = new AdminFeedController(requestFilter, feedReader, rssPrefetcher, urlBuilder, permissionService, loggedInUserFilter);
@@ -50,7 +52,7 @@ public class AdminFeedControllerTest {
 		request.setAttribute("feedAttribute", feed);
 		controller.acceptAllFrom(request, response);
 		
-		Mockito.verify(feedReader).processFeed(FEED_ID, loggedInUser);		
+		Mockito.verify(feedReader).processFeed(FEED_ID, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES);
 	}
 	
 }

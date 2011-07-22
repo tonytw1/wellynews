@@ -26,7 +26,7 @@
 			#end
 		
 			#if ($editPermissionService.canAcceptAllFrom($feed))
-				<li class="admin"><a href="${site_information.url}/admin/feed/read?feed=$feed.id">Accept all</a></li>
+				<li class="admin"><a href="${site_information.url}/admin/feed/acceptall?feed=$feed.id">Accept all</a></li>
 			#end
 		</ul>
 		
