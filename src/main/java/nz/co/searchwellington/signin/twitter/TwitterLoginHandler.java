@@ -10,10 +10,14 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.signin.SigninHandler;
 import nz.co.searchwellington.twitter.TwitterApiFactory;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
-import org.scribe.oauth.Scribe;
-import org.scribe.oauth.Token;
+import org.scribe.builder.ServiceBuilder;
+import org.scribe.builder.api.TwitterApi;
+import org.scribe.model.Token;
+import org.scribe.model.Verifier;
+import org.scribe.oauth.OAuthService;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -24,42 +28,53 @@ public class TwitterLoginHandler implements SigninHandler {
 
 	private static Logger log = Logger.getLogger(TwitterLoginHandler.class);
 	
-	private static final String OAUTH_AUTHEN_URL = "http://api.twitter.com/oauth/authenticate?oauth_token=";
-	
-	private OAuthScribeFactory scribeFactory;
 	private UserRepository userDAO;
 	private TwitterApiFactory twitterApiFactory;
 	private Map<String, Token> tokens;
+	private UrlBuilder urlBuilder;
 	
-	public TwitterLoginHandler(OAuthScribeFactory scribeFactory, UserRepository userDAO, TwitterApiFactory twitterApiFactory) {
-		this.scribeFactory = scribeFactory;
+	private String consumerKey;
+	private String consumerSecret;
+
+	private OAuthService oauthService;	
+	
+	public TwitterLoginHandler(UserRepository userDAO, TwitterApiFactory twitterApiFactory, UrlBuilder urlBuilder) {
 		this.userDAO = userDAO;
 		this.twitterApiFactory = twitterApiFactory;
 		this.tokens = new HashMap<String, Token>();
+		this.urlBuilder = urlBuilder;
+	}
+	
+	public void setConsumerKey(String consumerKey) {
+		this.consumerKey = consumerKey;
+	}
+	
+	public void setConsumerSecret(String consumerSecret) {
+		this.consumerSecret = consumerSecret;
 	}
 	
 	@Override
 	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		try {
-			log.info("Getting request token");
-			Scribe scribe = scribeFactory.getScribe();
-			Token requestToken = scribe.getRequestToken();
+		try {			
+			log.info("Getting request token");			
+			OAuthService service = getOauthService();
+			
+			Token requestToken = service.getRequestToken();		
 			if (requestToken != null) {
 				log.info("Got request token: " + requestToken.getToken());
 				tokens.put(requestToken.getToken(), requestToken);
 				
-				final String authorizeUrl = OAUTH_AUTHEN_URL + requestToken.getToken();				
+				final String authorizeUrl = service.getAuthorizationUrl(requestToken);		
+				log.info("Redirecting user to authorize url : " + authorizeUrl);
 				RedirectView redirectView = new RedirectView(authorizeUrl);
-				log.info("Redirecting user to: " + redirectView.getUrl());
 				return new ModelAndView(redirectView);
 			}
 			
 		} catch (Exception e) {
-			log.warn("Failed to obtain request token" + e.getMessage());
+			log.warn("Failed to obtain request token.", e);
 		}
 		return null;	
 	}
-	
 	
 	@Override
 	public Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
@@ -67,14 +82,18 @@ public class TwitterLoginHandler implements SigninHandler {
 			final String token = request.getParameter("oauth_token");
 			final String verifier = request.getParameter("oauth_verifier");
 
+			log.info("oauth_token: " + token);
+			log.info("oauth_verifier: " + verifier);
+			
 			log.info("Looking for request token: " + token);
 			Token requestToken = tokens.get(token);
 			if (requestToken != null) {
-				log.debug("Found stored request token: " + requestToken.getToken());
+				log.info("Found stored request token: " + requestToken.getToken());
 				
-				log.debug("Exchanging for access token");				
-				Scribe scribe = scribeFactory.getScribe();
-				Token accessToken = scribe.getAccessToken(requestToken, verifier);
+				log.debug("Exchanging request token for access token");
+				
+				OAuthService service = getOauthService();
+				Token accessToken = service.getAccessToken(requestToken, new Verifier(verifier));
 				
 				if (accessToken != null) {
 					log.info("Got access token: '" + accessToken.getToken() + "', '" + accessToken.getSecret() + "'");
@@ -126,6 +145,14 @@ public class TwitterLoginHandler implements SigninHandler {
 			log.warn("Failed up obtain twitter user details due to Twitter exception: " + e.getMessage());
 			return null;
 		}
+	}
+	
+	private OAuthService getOauthService() {
+		if (oauthService == null) {
+			log.info("Building oauth service with consumer key and consumer secret: " + consumerKey + ":" + consumerSecret);
+			oauthService = new ServiceBuilder().provider(new TwitterApi()).apiKey(consumerKey).apiSecret(consumerSecret).callback(urlBuilder.getTwitterCallbackUrl()).build();
+		}
+		return oauthService;
 	}
 	
 }

@@ -107,15 +107,13 @@
 			<artifactId>media-rss</artifactId>
 			<version>0.2.1</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
 		</dependency>
 
 		<dependency>
-			<groupId>scribe</groupId>
-			<artifactId>scribe</artifactId>
-			<version>0.6.7-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/scribe-0.6.7-SNAPSHOT.jar</systemPath>
+		  <groupId>org.scribe</groupId>
+		  <artifactId>scribe</artifactId>
+		  <version>1.2.1</version>
 		</dependency>
 
 		<dependency>
@@ -135,7 +133,7 @@
 			<artifactId>tokyotyrant</artifactId>
 			<version>0.10</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
 			</systemPath>
 		</dependency><dependency>
     <groupId>org.jboss.netty</groupId>
@@ -154,7 +152,7 @@
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
 			</systemPath>
 		</dependency>
 
@@ -177,12 +175,6 @@
 		</dependency>
 
 <dependency>
-    <groupId>org.slf4j</groupId>
-    <artifactId>slf4j-api</artifactId>
-    <version>1.6.1</version>
-</dependency>
-
-<dependency>
     <groupId>commons-dbcp</groupId>
     <artifactId>commons-dbcp</artifactId>
     <version>1.4</version>
@@ -192,12 +184,30 @@
     		<groupId>org.quartz-scheduler</groupId>
     		<artifactId>quartz</artifactId>
     		<version>1.8.5</version>
+    		<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>	
+			</exclusions>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>3.3.2.GA</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>	
+			</exclusions>
+		</dependency>
+	
+		<dependency>
+			<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				<version>1.6.1</version>
 		</dependency>
 
 		<dependency>
@@ -208,7 +218,11 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-jdk14</artifactId>
-				</exclusion>			
+				</exclusion>						
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>	
 			</exclusions>
 		</dependency>
 		
