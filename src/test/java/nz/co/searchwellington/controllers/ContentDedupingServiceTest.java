@@ -28,8 +28,7 @@ public class ContentDedupingServiceTest {
 		MockitoAnnotations.initMocks(this);
 		dedupingService = new ContentDedupingService();
 	}
-    
-    
+        
     @Test
     public void testShouldDedupeCommentedNewsitemsFromIndexPageNewsitems() throws Exception {            
       List<Resource> newsitemsOnPage = new ArrayList<Resource>();
