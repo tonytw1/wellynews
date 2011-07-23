@@ -66,6 +66,17 @@
 		<url>http://www.cs.drexel.edu/~zl25/maven2/repo</url>
 	</repository>
 
+ <repository>
+      <id>spy</id>
+      <name>Spy Repository</name>
+      <layout>default</layout>
+      <url>http://files.couchbase.com/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+
 </repositories>
 
 	<dependencies>
@@ -107,7 +118,7 @@
 			<artifactId>media-rss</artifactId>
 			<version>0.2.1</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -133,7 +144,7 @@
 			<artifactId>tokyotyrant</artifactId>
 			<version>0.10</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
 			</systemPath>
 		</dependency><dependency>
     <groupId>org.jboss.netty</groupId>
@@ -152,7 +163,7 @@
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
+			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
 			</systemPath>
 		</dependency>
 
@@ -357,6 +368,12 @@
 		<artifactId>geoGoogle</artifactId>
 		<version>1.5.0</version>
 	</dependency>
+	
+	 <dependency>
+        <groupId>spy</groupId>
+        <artifactId>spymemcached</artifactId>
+        <version>2.6</version>        
+    </dependency>
 			
 	</dependencies>
 
