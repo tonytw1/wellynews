@@ -29,7 +29,7 @@
 		<input name="publisherName" value="$resource.publisherName" /></p>
 		
 		<p>Accepted from: $item.acceptedFromFeed</p>
-		<input name="acceptedFromFeed" value="$resource.feed.urlWords" />
+		<input name="acceptedFromFeed" value="$resource.feed.urlWords" type="hidden" />
 										
 		#if ($resource.image)
 			<img src="$resource.image.url" align="right" vspace="10">
