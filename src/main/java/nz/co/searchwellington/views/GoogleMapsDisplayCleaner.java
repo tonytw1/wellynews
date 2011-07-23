@@ -24,12 +24,12 @@ public class GoogleMapsDisplayCleaner {
         }
         
         for (FrontendResource resource : geocoded) {
-            if (resource.getGeocode() != null) {
-                boolean isUnique = !listAlreadyContainsResourceWithThisLocation(deduped, resource);
-                if (isUnique) {
-                    deduped.add(resource);
-                }
-            }
+        	if (resource.getGeocode() != null) {
+        		boolean isUnique = !listAlreadyContainsResourceWithThisLocation(deduped, resource);
+        		if (isUnique) {
+        			deduped.add(resource);
+        		}
+        	}
         }
         
         log.info("Returning collection with " + deduped.size() + " items");
