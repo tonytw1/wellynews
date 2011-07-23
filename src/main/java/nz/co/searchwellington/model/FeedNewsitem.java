@@ -6,7 +6,7 @@ import java.util.Set;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 public class FeedNewsitem extends NewsitemImpl implements FrontendNewsitem {
-
+	
 	private Feed feed;
 	private int itemNumber;
 	private Resource localCopy;

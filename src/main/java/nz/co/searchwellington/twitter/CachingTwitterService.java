@@ -5,6 +5,7 @@ import java.util.List;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
+import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Twit;
 
 import org.apache.log4j.Logger;
@@ -13,18 +14,21 @@ public class CachingTwitterService implements TwitterService {
 	
 	private static Logger log = Logger.getLogger(CachingTwitterService.class);
     
+	private static final int ONE_DAY = 24 * 3600;
+	private static final String TWITTER_PROFILE_IMAGE_CACHE_PREFIX = "twitterprofileimage";
 	private static final String TWITTER_REPLIES_CACHE = "twitterreplies";
 	private static final String CACHE_KEY = "replies";	
 	private static final String TWEETS_CACHE = "tweets";
-	private static final String TWITTER_PROFILE_IMAGES = "twitterprofileimages";
 	
 	private TwitterService twitterService;
+	@Deprecated // TODO migrate to memcached for application cache
 	private CacheManager manager;
-
+	private MemcachedCache cache;
 	
-	public CachingTwitterService(TwitterService twitterService, CacheManager manager) {
+	public CachingTwitterService(TwitterService twitterService, CacheManager manager, MemcachedCache cache) {
 		this.twitterService = twitterService;
 		this.manager = manager;
+		this.cache = cache;
 	}
 	
 	@Override
@@ -67,20 +71,13 @@ public class CachingTwitterService implements TwitterService {
 	
 	@Override
 	public String getTwitterProfileImageUrlFor(String twitterUsername) {
-		Cache cache = manager.getCache(TWITTER_PROFILE_IMAGES);		
-		if (cache != null) {
-			Element cacheElement = cache.get(twitterUsername);
-			if (cacheElement != null && cacheElement.getObjectValue() != null) {
-				log.debug("Found profile image in cache");
-				return (String) cacheElement.getObjectValue();
-			}
+		final String cachedResult = (String) cache.get(TWITTER_PROFILE_IMAGE_CACHE_PREFIX + twitterUsername);
+		if (cachedResult != null) {
+			return cachedResult;
 		}
-		
-		String twitterProfileImageUrlFor = twitterService.getTwitterProfileImageUrlFor(twitterUsername);
-		if (cache != null) {
-			log.debug("Caching result");
-			Element cachedResult = new Element(twitterUsername, twitterProfileImageUrlFor);
-			cache.put(cachedResult);
+		final String twitterProfileImageUrlFor = twitterService.getTwitterProfileImageUrlFor(twitterUsername);
+		if (twitterProfileImageUrlFor != null) {
+			cache.put(TWITTER_PROFILE_IMAGE_CACHE_PREFIX + twitterUsername, ONE_DAY, twitterProfileImageUrlFor);
 		}
 		return twitterProfileImageUrlFor;
 	}
@@ -89,14 +86,12 @@ public class CachingTwitterService implements TwitterService {
 	public boolean isConfigured() {
 		return twitterService.isConfigured();
 	}
-
 	
 	private void putIntoCache(Cache cache, List<Twit> results) {	
 		log.info("Caching result");
 		Element cachedResult = new Element(CACHE_KEY, results);
 		cache.put(cachedResult);
 	}
-
 	
 	private void putTweetIntoCache(Cache cache, Twit tweet) {
 		log.info("Caching result");

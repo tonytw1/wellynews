@@ -182,11 +182,16 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 			</map>
 		</property> 
 	</bean>
-		
+	
+	<bean id="memcachedCache" class="nz.co.searchwellington.caching.MemcachedCache">
+		<property name="memcachedUrls" value="${memcached.urls}"/>
+	</bean>
+			
 	<bean id="urlBuilder" class="nz.co.searchwellington.urls.UrlBuilder">
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="cachingTwitterService" />
 	</bean>	
+	
 	<bean id="adminUrlBuilder" class="nz.co.searchwellington.controllers.admin.AdminUrlBuilder">
 		<constructor-arg ref="siteInformation" />
 	</bean>	
@@ -245,6 +250,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="cachingTwitterService" class="nz.co.searchwellington.twitter.CachingTwitterService">
 		<constructor-arg ref="twitterService" />
 		<constructor-arg ref="cacheManager" />
+		<constructor-arg ref="memcachedCache" />
 	</bean>
 	
 	<bean id="twitterService" class="nz.co.searchwellington.twitter.LiveTwitterService">

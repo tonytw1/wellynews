@@ -23,7 +23,7 @@ public class MemcachedCacheFunctionalTest {
 	@Before
 	public void setup() {
 		cache = new MemcachedCache();
-		cache.setMemcacheUrls("dev.local:11211");
+		cache.setMemcachedUrls("dev.local:11211");
 	}
 	
 	@Test
