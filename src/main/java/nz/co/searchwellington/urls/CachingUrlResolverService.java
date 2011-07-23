@@ -1,20 +1,21 @@
 package nz.co.searchwellington.urls;
 
-import nz.co.searchwellington.repositories.keystore.KeyStore;
+import nz.co.searchwellington.caching.MemcachedCache;
 
 import org.apache.log4j.Logger;
 
-// TODO This should cache with a long TTL, not forever. Good candiate for first memcached migration
 public class CachingUrlResolverService extends UrlResolverService {
 	
 	private static Logger log = Logger.getLogger(CachingUrlResolverService.class);
+
+	private static final int ONE_DAY = 3600 * 24;
 	
-	private KeyStore keystore;
+	private MemcachedCache cache;
 	private String keyPrefix;
 	
-	public CachingUrlResolverService(KeyStore keystore, RedirectingUrlResolver... redirectResolvers) {
+	public CachingUrlResolverService(MemcachedCache cache, RedirectingUrlResolver... redirectResolvers) {
 		super(redirectResolvers);
-		this.keystore = keystore;
+		this.cache = cache;
 	}
 	
 	public void setKeyPrefix(String keyPrefix) {
@@ -23,9 +24,8 @@ public class CachingUrlResolverService extends UrlResolverService {
 		
 	@Override
 	protected String resolveSingleUrl(String url) {		
-		if (url != null && !url.isEmpty()) {
-			
-			final String cachedResult = keystore.get(generateKey(url));
+		if (url != null && !url.isEmpty()) {			
+			final String cachedResult = (String) cache.get(generateKey(url));
 			if (cachedResult != null) {
 				log.info("Found content for url '" + url + "' in cache: " + cachedResult);
 				return cachedResult;				
@@ -35,7 +35,7 @@ public class CachingUrlResolverService extends UrlResolverService {
 			final String fetchedResult = super.resolveSingleUrl(url);
 			if (fetchedResult != null) {
 				putUrlIntoCache(url, fetchedResult);
-			}			
+			}
 			return fetchedResult;
 			
 		} else {
@@ -46,7 +46,7 @@ public class CachingUrlResolverService extends UrlResolverService {
 
 	private void putUrlIntoCache(String url, String result) {	
 		log.info("Caching result for url: " + url);
-		keystore.put(generateKey(url), result);
+		cache.put(generateKey(url), ONE_DAY, result);
 	}
 	
 	// TODO duplication with snapshotDAO

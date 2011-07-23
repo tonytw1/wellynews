@@ -7,7 +7,7 @@
 	</bean>
 	
 	<bean id="urlResolverService" class="nz.co.searchwellington.urls.CachingUrlResolverService">
-		<constructor-arg ref="keystore" />
+		<constructor-arg ref="memcachedCache" />
 		<constructor-arg>
 			<list>
 				<ref bean="feedBurnerRedirectResolver" />
