@@ -20,23 +20,21 @@
 
 <br clear="all" />
 
-			#parse("includes/nearme.vm")
+#parse("includes/nearme.vm")
 			
-			<form action="$site_information.url/geotagged">
-				<fieldset>				
-		 			<input name="location" #if ($locationQuery) value="$locationQuery" #end />
-					<input type="submit" value="Search by location" />
-				</fieldset>
-			</form>
-		
-		
-
-#if ($geotagged_tags.size() > 0)
-<ul class="childtags">
-#foreach ($geotagged_tag in $geotagged_tags)
-	<li><a href="$urlBuilder.getTagGeocodedUrl($geotagged_tag)">$geotagged_tag.displayName</a>
-#end
-</ul>
+<form action="$site_information.url/geotagged">
+	<fieldset>				
+		<input name="location" #if ($locationQuery) value="$locationQuery" #end />
+		<input type="submit" value="Search by location" />
+	</fieldset>
+</form>
+			
+#if ($geotagged_tags && $geotagged_tags.size() > 0)
+	<ul class="childtags">
+	#foreach ($geotagged_tag in $geotagged_tags)
+		<li><a href="$urlBuilder.getTagGeocodedUrl($geotagged_tag)">$geotagged_tag.displayName</a>
+	#end
+	</ul>
 #end
 
 <div id="map_canvas" style="width: 520px; height: 520px"></div>
