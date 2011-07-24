@@ -17,14 +17,20 @@ public class CachingTwitterService implements TwitterService {
 	
 	private static final String TWITTER_PROFILE_IMAGE_CACHE_PREFIX = "twitterprofileimage";
 	private static final String TWEETS_CACHE_PREFIX = "tweets:";
-	private static final String TWITTER_REPLIES_CACHE = "twitterreplies";
+	private static final String TWITTER_REPLIES_CACHE = "twitterreplies:";
 	
 	private TwitterService twitterService;
 	private MemcachedCache cache;
+
+	private String twitterUsername;
 	
 	public CachingTwitterService(TwitterService twitterService, MemcachedCache cache) {
 		this.twitterService = twitterService;
 		this.cache = cache;
+	}
+	
+	public void setTwitterUsername(String twitterUsername) {
+		this.twitterUsername = twitterUsername;
 	}
 	
 	@Override
@@ -43,7 +49,8 @@ public class CachingTwitterService implements TwitterService {
 
 	@SuppressWarnings("unchecked")
 	public List<Twit> getReplies() {	
-		List<Twit> cachedResults = (List<Twit>) cache.get(TWITTER_REPLIES_CACHE);
+		final String cacheKey = TWITTER_REPLIES_CACHE + twitterUsername;
+		List<Twit> cachedResults = (List<Twit>) cache.get(cacheKey);
 		if (cachedResults != null) {
 			log.info("Found replies in cache");
 			return cachedResults;
@@ -52,7 +59,7 @@ public class CachingTwitterService implements TwitterService {
 		log.info("Delegrating to live twitter service");
 		final List<Twit> fetchedResults = (List<Twit>) twitterService.getReplies();
 		if (fetchedResults != null) {
-			putRepliesIntoCache(fetchedResults);
+			cache.put(cacheKey, ONE_HOUR, fetchedResults);
 		}
 		return fetchedResults;
 	}

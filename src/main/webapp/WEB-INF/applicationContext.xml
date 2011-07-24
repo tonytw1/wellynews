@@ -242,6 +242,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="cachingTwitterService" class="nz.co.searchwellington.twitter.CachingTwitterService">
 		<constructor-arg ref="twitterService" />
 		<constructor-arg ref="memcachedCache" />
+		<property name="twitterUsername" value="${twitter.username}" />
 	</bean>
 	
 	<bean id="twitterService" class="nz.co.searchwellington.twitter.LiveTwitterService">
@@ -254,9 +255,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="tweetDAO" />		
 	</bean>
-	
-
-	
+		
 	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
 	
 	<bean id="googleSearchTermExtractor" class="nz.co.searchwellington.filters.GoogleSearchTermExtractor" />
