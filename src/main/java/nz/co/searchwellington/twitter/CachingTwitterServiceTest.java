@@ -1,7 +1,6 @@
 package nz.co.searchwellington.twitter;
 
 import static org.junit.Assert.assertEquals;
-import net.sf.ehcache.CacheManager;
 import nz.co.searchwellington.caching.MemcachedCache;
 
 import org.junit.Before;
@@ -17,7 +16,6 @@ public class CachingTwitterServiceTest {
 	private String PROFILE_IMAGE_URL = "http://images.twitter.com...";
 	
 	@Mock TwitterService twitterService;
-	@Mock CacheManager manager;
 	@Mock MemcachedCache memcachedCache;
 
 	private CachingTwitterService service;
@@ -25,7 +23,7 @@ public class CachingTwitterServiceTest {
 	@Before
 	public void seup() {
 		MockitoAnnotations.initMocks(this);
-		service = new CachingTwitterService(twitterService, manager, memcachedCache);
+		service = new CachingTwitterService(twitterService, memcachedCache);
 	}
 
 	@Test

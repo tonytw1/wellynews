@@ -220,8 +220,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="solrResourceDAO" />		
 	</bean>
-	
-	
+		
 	<bean id="siteInformation" class="nz.co.searchwellington.model.SiteInformation">
 		<constructor-arg ref="configDAO" />
 		<property name="areaname" value="${areaname}" />
@@ -246,10 +245,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		
 	<bean id="contentDeduper" class="nz.co.searchwellington.views.ContentDedupingService" />
 	
-
 	<bean id="cachingTwitterService" class="nz.co.searchwellington.twitter.CachingTwitterService">
 		<constructor-arg ref="twitterService" />
-		<constructor-arg ref="cacheManager" />
 		<constructor-arg ref="memcachedCache" />
 	</bean>
 	

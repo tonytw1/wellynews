@@ -1,14 +1,6 @@
 <ehcache>
 
     <diskStore path="java.io.tmpdir/searchwellington"/>
-            
-  	<cache name="twitterreplies"
-        maxElementsInMemory="1"
-        eternal="false"
-        timeToIdleSeconds="3600"
-        timeToLiveSeconds="3600"
-        overflowToDisk="false"
-        />
         
    	<cache name="geocodes"
         maxElementsInMemory="500"
@@ -17,15 +9,7 @@
         timeToLiveSeconds="86400"
         overflowToDisk="false"
         />
-        
-    <cache name="tweets"
-        maxElementsInMemory="500"
-        eternal="false"
-        timeToIdleSeconds="3600"
-        timeToLiveSeconds="3600"
-        overflowToDisk="false"
-        />
-                 
+          
     <defaultCache
         maxElementsInMemory="500"
         eternal="false"

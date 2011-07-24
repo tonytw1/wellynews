@@ -2,9 +2,6 @@ package nz.co.searchwellington.twitter;
 
 import java.util.List;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
 import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Twit;
 
@@ -14,57 +11,49 @@ public class CachingTwitterService implements TwitterService {
 	
 	private static Logger log = Logger.getLogger(CachingTwitterService.class);
     
-	private static final int ONE_DAY = 24 * 3600;
+	private static final int ONE_HOUR = 3600;
+	private static final int ONE_DAY = 24 * ONE_HOUR;
+	private static final int ONE_WEEK = 7 * ONE_DAY;
+	
 	private static final String TWITTER_PROFILE_IMAGE_CACHE_PREFIX = "twitterprofileimage";
+	private static final String TWEETS_CACHE_PREFIX = "tweets:";
 	private static final String TWITTER_REPLIES_CACHE = "twitterreplies";
-	private static final String CACHE_KEY = "replies";	
-	private static final String TWEETS_CACHE = "tweets";
+	private static final String CACHE_KEY = "replies";
 	
 	private TwitterService twitterService;
-	@Deprecated // TODO migrate to memcached for application cache
-	private CacheManager manager;
 	private MemcachedCache cache;
 	
-	public CachingTwitterService(TwitterService twitterService, CacheManager manager, MemcachedCache cache) {
+	public CachingTwitterService(TwitterService twitterService, MemcachedCache cache) {
 		this.twitterService = twitterService;
-		this.manager = manager;
 		this.cache = cache;
 	}
 	
 	@Override
 	public Twit getTwitById(long twitterId) {
-		Cache cache = manager.getCache(TWEETS_CACHE);		
-		if (cache != null) {
-			Element cacheElement = cache.get(CACHE_KEY);
-			if (cacheElement != null && cacheElement.getObjectValue() != null) {
-				Twit cachedResult = (Twit) cacheElement.getObjectValue();
-				log.debug("Found tweet in cache");
-				return cachedResult;
-			}
+		Twit cachedTweet = (Twit) cache.get(TWEETS_CACHE_PREFIX + Long.toString(twitterId));
+		if (cachedTweet != null) {
+			log.debug("Found tweet in cache");
+			return cachedTweet;		
 		}
 		
 		log.debug("Delegrating to live twitter service");
 		Twit tweet = twitterService.getTwitById(twitterId);
-		putTweetIntoCache(cache, tweet);		
+		putTweetIntoCache(tweet);		
 		return tweet;		
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Twit> getReplies() {
-		Cache cache = manager.getCache(TWITTER_REPLIES_CACHE);		
-		if (cache != null) {
-			Element cacheElement = cache.get(CACHE_KEY);
-			if (cacheElement != null && cacheElement.getObjectValue() != null) {
-				List<Twit> cachedResult = (List<Twit>) cacheElement.getObjectValue();
-				log.info("Found replies in cache");
-				return cachedResult;
-			}
+	public List<Twit> getReplies() {	
+		List<Twit> cachedResults = (List<Twit>) cache.get(CACHE_KEY);
+		if (cachedResults != null) {
+			log.info("Found replies in cache");
+			return cachedResults;
 		}
 		
 		log.info("Delegrating to live twitter service");
 		final List<Twit> fetchedResults = (List<Twit>) twitterService.getReplies();
 		if (fetchedResults != null) {
-			putIntoCache(cache, fetchedResults);
+			putRepliesIntoCache(fetchedResults);
 		}
 		return fetchedResults;
 	}
@@ -87,16 +76,12 @@ public class CachingTwitterService implements TwitterService {
 		return twitterService.isConfigured();
 	}
 	
-	private void putIntoCache(Cache cache, List<Twit> results) {	
-		log.info("Caching result");
-		Element cachedResult = new Element(CACHE_KEY, results);
-		cache.put(cachedResult);
+	private void putRepliesIntoCache(List<Twit> fetchedResults) {
+		cache.put(TWITTER_REPLIES_CACHE, ONE_HOUR, fetchedResults);	
 	}
 	
-	private void putTweetIntoCache(Cache cache, Twit tweet) {
-		log.info("Caching result");
-		Element cachedResult = new Element(tweet.getId(), tweet);
-		cache.put(cachedResult);		
+	private void putTweetIntoCache(Twit tweet) {
+		cache.put(TWEETS_CACHE_PREFIX+ tweet.getId(), ONE_WEEK, tweet);		
 	}
 	
 }

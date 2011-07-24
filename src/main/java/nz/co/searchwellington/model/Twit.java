@@ -1,13 +1,15 @@
 package nz.co.searchwellington.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.joda.time.DateTime;
 
 import twitter4j.Status;
 
+public class Twit implements Serializable {
 
-public class Twit {
+	private static final long serialVersionUID = 1L;
 	
 	private int id;
 	private Long twitterid;
@@ -37,27 +39,19 @@ public class Twit {
 	public int getId() {
 		return id;
 	}
-
-
-
+	
 	public void setId(int id) {
 		this.id = id;
 	}
-
-
-
+	
 	public Long getTwitterid() {
 		return twitterid;
 	}
-
-
-
+	
 	public void setTwitterid(Long twitterid) {
 		this.twitterid = twitterid;
 	}
-
-
-
+	
 	public String getText() {
 		return text;
 	}
@@ -65,9 +59,7 @@ public class Twit {
 	public void setText(String text) {
 		this.text = text;
 	}
-
 	
-
 	public String getAuthor() {
 		return author;
 	}
@@ -83,12 +75,11 @@ public class Twit {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-
 	
 	public long getInReplyToStatusId() {
 		return inReplyToStatusId;
 	}
-
+	
 	public void setInReplyToStatusId(long inReplyToStatusId) {
 		this.inReplyToStatusId = inReplyToStatusId;
 	}
