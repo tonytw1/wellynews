@@ -1,15 +1,19 @@
 package nz.co.searchwellington.model;
 
+import java.io.Serializable;
+
 import geo.google.datamodel.GeoAltitude;
 import geo.google.datamodel.GeoCoordinate;
 import geo.google.datamodel.GeoUtils;
 
 import org.apache.log4j.Logger;
 
-public class Geocode {
+public class Geocode implements Serializable {
     
-    private static Logger log = Logger.getLogger(Geocode.class);
-        
+	private static Logger log = Logger.getLogger(Geocode.class);
+
+	private static final long serialVersionUID = 1L;
+	
     private int id;
     private String address;
     private double latitude;

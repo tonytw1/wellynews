@@ -18,7 +18,6 @@ public class CachingTwitterService implements TwitterService {
 	private static final String TWITTER_PROFILE_IMAGE_CACHE_PREFIX = "twitterprofileimage";
 	private static final String TWEETS_CACHE_PREFIX = "tweets:";
 	private static final String TWITTER_REPLIES_CACHE = "twitterreplies";
-	private static final String CACHE_KEY = "replies";
 	
 	private TwitterService twitterService;
 	private MemcachedCache cache;
@@ -44,7 +43,7 @@ public class CachingTwitterService implements TwitterService {
 
 	@SuppressWarnings("unchecked")
 	public List<Twit> getReplies() {	
-		List<Twit> cachedResults = (List<Twit>) cache.get(CACHE_KEY);
+		List<Twit> cachedResults = (List<Twit>) cache.get(TWITTER_REPLIES_CACHE);
 		if (cachedResults != null) {
 			log.info("Found replies in cache");
 			return cachedResults;

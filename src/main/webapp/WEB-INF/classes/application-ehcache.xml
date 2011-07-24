@@ -1,15 +1,7 @@
 <ehcache>
 
     <diskStore path="java.io.tmpdir/searchwellington"/>
-        
-   	<cache name="geocodes"
-        maxElementsInMemory="500"
-        eternal="false"
-        timeToIdleSeconds="86400"
-        timeToLiveSeconds="86400"
-        overflowToDisk="false"
-        />
-          
+               
     <defaultCache
         maxElementsInMemory="500"
         eternal="false"
@@ -17,8 +9,7 @@
         timeToLiveSeconds="7200"
         overflowToDisk="false"
         />
-    
-		
+    	
 	<!-- cache external RSS SyndFeeds -->
 	<cache name="feeds"
 		maxElementsInMemory="300"
