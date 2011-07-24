@@ -111,10 +111,6 @@
 			#parse("widgets/election_candidates_twitter.vm")
 		#end
 				
-		#if($tag.name == 'cats') 
-			#parse("widgets/neighbourhood_cats.vm")
-		#end
-		
 		#if($tag.name == 'cycling') 
 			#parse("widgets/cycling_blackspots.vm")
 		#end
