@@ -1,44 +1,39 @@
 package nz.co.searchwellington.geocoding;
 
-import org.apache.log4j.Logger;
-
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Geocode;
+
+import org.apache.log4j.Logger;
 
 public class CachingGeocodeService implements GeoCodeService {
 	
 	private static Logger log = Logger.getLogger(CachingGeocodeService.class);
 	
-	private static final String GEOCODE_CACHE_NAME = "geocodes";
+	private static final String GEOCODE_CACHE_PREFIX = "geocodes:";
+	private static final int ONE_DAY = 3600 * 24;
 	
 	private GeoCodeService geoCodeService;	
-	private Cache cache;
+	private MemcachedCache cache;
 	
-	public CachingGeocodeService(GeoCodeService geoCodeService, CacheManager manager) {
+	public CachingGeocodeService(GeoCodeService geoCodeService, MemcachedCache cache) {
 		this.geoCodeService = geoCodeService;
-		this.cache = manager.getCache(GEOCODE_CACHE_NAME);
+		this.cache = cache;
 	}
 
 	public Geocode resolveAddress(String address) {
-		final String cacheKey = address;
-		
+		final String cacheKey = GEOCODE_CACHE_PREFIX + address.replaceAll("\\s", "");
 		log.info("Resolving location for: " + address);
-		if (cache != null) {
-			Element cacheElement = cache.get(cacheKey);
-			if (cacheElement != null) {
-				log.info("Cache hit for: " + cacheKey);
-				return (Geocode) cacheElement.getObjectValue();
-			}
+		Geocode cachedResult = (Geocode) cache.get(cacheKey);
+		if (cachedResult != null) {
+			log.info("Cache hit for: " + cacheKey);
+			return cachedResult;			
 		}
 		
 		log.info("Cache miss for '" + cacheKey + "' - delegating to real resolver");
 		Geocode resolvedGeocode = geoCodeService.resolveAddress(address);
 		if (resolvedGeocode != null) {
 			log.info("Caching resolved address for '" + cacheKey + "'");
-			Element cacheElement = new Element(cacheKey, resolvedGeocode);
-			cache.put(cacheElement);
+			cache.put(cacheKey, ONE_DAY, resolvedGeocode);
 		}
 		return resolvedGeocode;
 	}

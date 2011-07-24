@@ -88,14 +88,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="editPermissionService" class="nz.co.searchwellington.controllers.admin.EditPermissionService" >
 		<constructor-arg ref="loggedInUserFilter" />
 	</bean>
-		
-	<bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-        <property name="configLocation">
-            <value>classpath:application-ehcache.xml</value>
-        </property>
-    </bean> 
-
-
+	
 	<bean id="feedAcceptanceDecider" class="nz.co.searchwellington.feeds.FeedAcceptanceDecider">
 		<constructor-arg ref="resourceDAO" />	
 		<constructor-arg ref="supressionDAO" />

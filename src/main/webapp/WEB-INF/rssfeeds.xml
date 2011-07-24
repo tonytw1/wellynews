@@ -36,7 +36,7 @@
 	</bean>
 					
 	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >
-		<constructor-arg ref="cacheManager" />
+		<constructor-arg ref="memcachedCache" />
 	</bean>
 	
 	<bean id="liveRssfeedNewsitemService" class="nz.co.searchwellington.feeds.LiveRssfeedNewsitemService">

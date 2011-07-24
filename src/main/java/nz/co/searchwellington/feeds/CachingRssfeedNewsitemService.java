@@ -11,7 +11,6 @@ import nz.co.searchwellington.repositories.SupressionRepository;
 public class CachingRssfeedNewsitemService extends RssfeedNewsitemService {
 
 	private FeedNewsitemCache feedNewsitemCache;
-
 	
 	public CachingRssfeedNewsitemService(ResourceRepository resourceDAO, SupressionRepository suppressionDAO, FeedNewsitemCache feedNewsitemCache) {
 		this.resourceDAO = resourceDAO;

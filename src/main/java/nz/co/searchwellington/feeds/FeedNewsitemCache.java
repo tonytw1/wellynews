@@ -2,51 +2,47 @@ package nz.co.searchwellington.feeds;
 
 import java.util.List;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
+import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.FeedNewsitem;
 
 import org.apache.log4j.Logger;
 
 public class FeedNewsitemCache {
 	
-	private static final String RSS_CACHE_NAME = "feeds";
 	private final Logger log = Logger.getLogger(FeedNewsitemCache.class);
+
+	private static final String RSS_FEEDS_CACHE_PREFIX = "rssfeednewsitems:";
+	private static final int ONE_DAY = 24 * 3600;
 	
-	private CacheManager manager;
+	private MemcachedCache cache;
 
-	public FeedNewsitemCache(CacheManager manager) {		
-		this.manager = manager;
+	public FeedNewsitemCache(MemcachedCache cache) {		
+		this.cache = cache;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	public List<FeedNewsitem> getFeeditems(String url) {
-		Cache cache = manager.getCache(RSS_CACHE_NAME);
-
-		if (cache != null) {
-			Element cacheElement = cache.get(url);
-			if (cacheElement != null) {
-				List<FeedNewsitem> items = (List<FeedNewsitem>) cacheElement.getObjectValue();
-				return items;
-			}
+		final String cacheKey = getCacheKey(url);
+		List<FeedNewsitem> cachedResult = (List<FeedNewsitem>) cache.get(cacheKey);
+		if (cachedResult != null) {			
+			return cachedResult;
 		}
 		return null;
 	}
 
-	public void putFeedNewsitems(String url, List<FeedNewsitem> liveItems) {
-		Cache cache = manager.getCache(RSS_CACHE_NAME);
-		log.debug("Caching feed items for url: " + url);
-		if (cache != null && liveItems != null) {
-			Element cachedFeedElement = new Element(url, liveItems);
-			cache.put(cachedFeedElement);
+	public void putFeedNewsitems(String url, List<FeedNewsitem> liveItems) {		
+		if (liveItems != null) {
+			cache.put(getCacheKey(url), ONE_DAY, liveItems);
 		}
 	}
 
 	public void decache(String feedUrl) {
-		Cache cache = manager.getCache(RSS_CACHE_NAME);
 		log.debug("Decaching: " + feedUrl);
-		cache.remove(feedUrl);		
+		cache.decache(feedUrl);		
+	}
+	
+	private String getCacheKey(String url) {
+		return RSS_FEEDS_CACHE_PREFIX + url;
 	}
 	
 }

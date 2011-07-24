@@ -40,6 +40,15 @@ public class MemcachedCache {
 		return null;
 	}
 	
+	public void decache(String key) {
+		try {
+			memcachedClient = getClient();
+			memcachedClient.delete(key);
+		} catch (IOException e) {
+			log.error("Failed to decache from cache: " + e.getMessage());
+		}		
+	}
+	
 	private MemcachedClient getClient() throws IOException {
 		if (memcachedClient == null) {
 			memcachedClient= new MemcachedClient( AddrUtil.getAddresses(memcachedUrls));
