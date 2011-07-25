@@ -7,6 +7,8 @@ import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 public class FeedNewsitem extends NewsitemImpl implements FrontendNewsitem {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private Feed feed;
 	private int itemNumber;
 	private Resource localCopy;
