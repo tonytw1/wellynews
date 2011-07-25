@@ -62,7 +62,7 @@ public class ProfileController extends BaseMultiActionController {
 	public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {	      
 		final User loggedInUser = loggerInUserFilter.getLoggedInUser();		  
 		if (loggedInUser != null) {
-			if (request.getParameter("profilename") != null && isProfilenameValid(request.getParameter("profilename"))) {
+			if (request.getParameter("profilename") != null && isValidNewProfilename(request.getParameter("profilename"))) {
 				loggedInUser.setProfilename(request.getParameter("profilename"));
 			}
 			  
@@ -104,7 +104,7 @@ public class ProfileController extends BaseMultiActionController {
 		return null;
 	}
 
-	private boolean isProfilenameValid(String profilename) {
+	protected boolean isValidNewProfilename(String profilename) {
 		if (profilename.matches("[a-z|A-Z|0-9]+")) {
 			if (userDAO.getUserByProfileName(profilename) == null) {
 				return true;
