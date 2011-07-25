@@ -39,7 +39,7 @@ public class GoogleMapsDisplayCleaner {
     private boolean listAlreadyContainsResourceWithThisLocation(List<FrontendResource> deduped, FrontendResource candidiate) {
         for (FrontendResource resource : deduped) {
             if (resource.getGeocode().isSameLocation(candidiate.getGeocode())) {
-                log.info("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
+                log.debug("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
                 return true;
             }
         }
