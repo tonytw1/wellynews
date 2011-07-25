@@ -40,8 +40,6 @@
 	</bean>
 	
 	<bean id="liveRssfeedNewsitemService" class="nz.co.searchwellington.feeds.LiveRssfeedNewsitemService">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="rssHttpFetcher" />
 		<constructor-arg ref="textTrimmer" />
