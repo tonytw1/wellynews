@@ -32,7 +32,9 @@ public class FeedNewsitemCache {
 
 	public void putFeedNewsitems(String url, List<FeedNewsitem> liveItems) {		
 		if (liveItems != null) {
-			cache.put(getCacheKey(url), ONE_DAY, liveItems);
+			final String cacheKey = getCacheKey(url);
+			log.info("Caching " + liveItems.size() + " feed news items at: " + cacheKey);
+			cache.put(cacheKey, ONE_DAY, liveItems);
 		}
 	}
 
