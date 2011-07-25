@@ -41,9 +41,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 	private RssHttpFetcher rssFetcher;
     private TextTrimmer textTrimmer;
 	
-    public LiveRssfeedNewsitemService(ResourceRepository resourceDAO, SupressionRepository suppressionDAO, UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer) {
-    	this.resourceDAO = resourceDAO;
-    	this.suppressionDAO = suppressionDAO;
+    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer) {
 		this.urlCleaner = urlCleaner;
 		this.rssFetcher = rssFetcher;
 		this.textTrimmer = textTrimmer;
@@ -85,7 +83,6 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
             url = urlCleaner.cleanSubmittedItemUrl(url);
         }
         
-        // TODO This reference should really come from the resourceDAO.
         // TODO feed decision maker and feedreader and user submissions should share the same title cleaning logic
         FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle().trim(), url, description, itemDate, new HashSet<DiscoveredFeed>(), feed.getPublisherName());       
         feedItem.setImage(extractThumbnail(feed, item));

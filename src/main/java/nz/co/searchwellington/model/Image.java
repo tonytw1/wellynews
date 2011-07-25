@@ -1,8 +1,11 @@
 package nz.co.searchwellington.model;
 
+import java.io.Serializable;
 
-public class Image {
-
+public class Image implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private int id;
 	private String url;
 	private String description;
