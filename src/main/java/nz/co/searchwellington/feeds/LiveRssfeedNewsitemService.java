@@ -12,8 +12,6 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
