@@ -41,11 +41,11 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			int page = getPage(request);
-			return populateTagCombinerModelAndView(tags, showBroken, page);
+			return populateTagCombinerModelAndView(tags, page);
 		}
 		return null;
 	}
@@ -74,7 +74,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		return "tag";
 	}
 	
-	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, boolean showBroken, int page) {
+	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, int page) {
 		ModelAndView mv = new ModelAndView();		
 		final Tag firstTag = tags.get(0);
 		final Tag secondTag = tags.get(1);

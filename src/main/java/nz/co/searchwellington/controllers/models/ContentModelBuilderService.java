@@ -30,7 +30,7 @@ public class ContentModelBuilderService {
 				logger.debug("Using " + modelBuilder);
 				
 				final boolean showBroken = shouldShowBrokenResources();								
-				ModelAndView mv = modelBuilder.populateContentModel(request, showBroken);
+				ModelAndView mv = modelBuilder.populateContentModel(request);
 				
 				final String path = request.getPathInfo();
 				if (path.endsWith("/rss")) {

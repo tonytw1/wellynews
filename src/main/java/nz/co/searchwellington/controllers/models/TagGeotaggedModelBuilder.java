@@ -42,12 +42,12 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			log.info("Building tag geotagged page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
-			return populateTagCommentPageModelAndView(tag, showBroken);
+			return populateTagCommentPageModelAndView(tag);
 		}
 		return null;
 	}
@@ -63,8 +63,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		return "geotagged";
 	}
 	
-
-	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken) {		
+	private ModelAndView populateTagCommentPageModelAndView(Tag tag) {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName() + " geotagged");        		

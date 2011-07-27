@@ -49,7 +49,7 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	}
 		
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		logger.info("Retrieving newsitem for path: " + request.getPathInfo());
 		ModelAndView mv = new ModelAndView();				
 		FrontendNewsitem newsitem = contentRetrievalService.getNewsPage(request.getPathInfo());

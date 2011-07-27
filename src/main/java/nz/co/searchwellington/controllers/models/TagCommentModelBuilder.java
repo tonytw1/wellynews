@@ -41,7 +41,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			log.info("Building tag comment page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
@@ -49,7 +49,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 
 			int page = getPage(request);
 			int startIndex = getStartIndex(page);
-			return populateTagCommentPageModelAndView(tag, showBroken, startIndex);
+			return populateTagCommentPageModelAndView(tag, startIndex);
 		}
 		return null;
 	}
@@ -66,7 +66,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	}
 	
 	
-	private ModelAndView populateTagCommentPageModelAndView(Tag tag, boolean showBroken, int startIndex) {		
+	private ModelAndView populateTagCommentPageModelAndView(Tag tag, int startIndex) {		
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("tag", tag);
 		mv.addObject("heading", tag.getDisplayName() + " comment");        		

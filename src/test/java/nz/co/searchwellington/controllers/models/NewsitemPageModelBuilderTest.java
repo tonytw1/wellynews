@@ -66,7 +66,7 @@ public class NewsitemPageModelBuilderTest {
 		when(geotaggedNewsitem.getGeocode()).thenReturn(validGeotag);
 		when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(geotaggedNewsitem);
 
-		ModelAndView mv = builder.populateContentModel(request, false);
+		ModelAndView mv = builder.populateContentModel(request);
 		
 		List<Resource> geotagged = (List<Resource>) mv.getModel().get("geocoded");
 		assertEquals(1, geotagged.size());
@@ -76,7 +76,7 @@ public class NewsitemPageModelBuilderTest {
 	@Test
 	public void shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged() throws Exception {
 		when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(newsitem);
-		ModelAndView mv = builder.populateContentModel(request, false);
+		ModelAndView mv = builder.populateContentModel(request);
 		assertNull(mv.getModel().get("geocoded"));		
 	}
 	
@@ -87,7 +87,7 @@ public class NewsitemPageModelBuilderTest {
 
 		when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(geotagVotes);
 
-		ModelAndView mv = builder.populateContentModel(request, false);
+		ModelAndView mv = builder.populateContentModel(request);
 		
 		assertEquals(geotagVotes, mv.getModel().get("geotag_votes"));
 	}

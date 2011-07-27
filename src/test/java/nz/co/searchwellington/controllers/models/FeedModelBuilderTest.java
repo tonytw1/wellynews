@@ -51,21 +51,21 @@ public class FeedModelBuilderTest {
 	
 	@Test
 	public void shouldPopulateFeedFromUrlWordsOnRequestPath() throws Exception {
-		ModelAndView mv = modelBuilder.populateContentModel(request, false);
+		ModelAndView mv = modelBuilder.populateContentModel(request);
 		verify(contentRetrievalService).getFeedByUrlWord("someonesfeed");
 		assertEquals(feed, mv.getModel().get("feed"));
 	}
 	
 	@Test
 	public void shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation() throws Exception {		
-		ModelAndView mv = modelBuilder.populateContentModel(request, false);
+		ModelAndView mv = modelBuilder.populateContentModel(request);
 		assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation, mv.getModel().get("main_content"));
 	}
 
 	@Test
 	public void shouldPushGeotaggedFeeditemsOntoTheModelSeperately() throws Exception {
 		when(rssfeedNewsitemService.extractGeotaggedFeeditems(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)).thenReturn(geotaggedFeedNewsitems);		
-		ModelAndView mv = modelBuilder.populateContentModel(request, false);
+		ModelAndView mv = modelBuilder.populateContentModel(request);
 		modelBuilder.populateExtraModelConent(request, false, mv);
 		assertEquals(geotaggedFeedNewsitems, mv.getModel().get("geocoded"));
 	}

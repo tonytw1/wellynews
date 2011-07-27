@@ -52,7 +52,7 @@ public class TagModelBuilderTest {
 	public void mainContentShouldBeTagNewsitems() throws Exception {
 		request.setAttribute("tags", Arrays.asList(tag));
 		Mockito.when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems);
-		ModelAndView mv = modelBuilder.populateContentModel(request, false);
+		ModelAndView mv = modelBuilder.populateContentModel(request);
 		
 		assertEquals(tagNewsitems, mv.getModel().get("main_content"));
 	}

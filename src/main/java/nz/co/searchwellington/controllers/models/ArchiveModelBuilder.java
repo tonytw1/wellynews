@@ -37,7 +37,7 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 
 	
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			log.info("Building archive page model");			
 			Date month = getArchiveDateFromPath(request.getPathInfo());

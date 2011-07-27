@@ -28,7 +28,7 @@ public class SearchModelBuilder extends AbstractModelBuilder implements ModelBui
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 		final String keywords = request.getParameter(KEYWORDS_PARAMETER);
 		int page = getPage(request);

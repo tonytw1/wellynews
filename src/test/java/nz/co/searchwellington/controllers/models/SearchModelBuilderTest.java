@@ -52,7 +52,7 @@ public class SearchModelBuilderTest {
 	@Test
 	public void pageHeadingShouldBeSearchKeyword() throws Exception {
 		request.setParameter("keywords", "widgets");
-		assertEquals("Search results - widgets", modelBuilder.populateContentModel(request, false).getModel().get("heading"));
+		assertEquals("Search results - widgets", modelBuilder.populateContentModel(request).getModel().get("heading"));
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ public class SearchModelBuilderTest {
 		request.setAttribute("tags", tags);
 		Mockito.when(contentRetrievalService.getNewsitemsMatchingKeywords(Mockito.eq("widgets"), Mockito.eq(tag), Mockito.eq(0), Mockito.eq(30))).thenReturn(tagKeywordNewsitemResults);
 		
-		ModelAndView mv = modelBuilder.populateContentModel(request, false);
+		ModelAndView mv = modelBuilder.populateContentModel(request);
 		
 		assertEquals(tagKeywordNewsitemResults, mv.getModel().get("main_content"));
 		assertEquals(tag, mv.getModel().get("tag"));

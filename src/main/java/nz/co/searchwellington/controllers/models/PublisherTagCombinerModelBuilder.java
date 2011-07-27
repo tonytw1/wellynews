@@ -44,7 +44,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 	}
 	
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			logger.info("Building publisher tag combiner page model");
 			Tag tag = (Tag) request.getAttribute("tag");
@@ -60,7 +60,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 			mv.addObject("heading", publisher.getName() + " and " + tag.getDisplayName());
 			mv.addObject("description", "");
 			mv.addObject("link", urlBuilder.getPublisherCombinerUrl(frontendPublisher, tag));
-			populatePublisherTagCombinerNewsitems(mv, publisher, tag, showBroken);			
+			populatePublisherTagCombinerNewsitems(mv, publisher, tag);			
 			return mv;
 		}
 		return null;
@@ -81,7 +81,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 	}	
 
 	// TODO needs pagination
-	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag, boolean showBroken) {		
+	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag) {		
 		final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS);
 		mv.addObject("main_content", publisherNewsitems);		
 		if (publisherNewsitems.size() > 0) {            

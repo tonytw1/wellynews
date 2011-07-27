@@ -42,7 +42,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	}
 	
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			ModelAndView mv = new ModelAndView();		
 			final List<FrontendResource> latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS);                

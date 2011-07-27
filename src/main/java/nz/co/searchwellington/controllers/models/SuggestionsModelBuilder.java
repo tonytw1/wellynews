@@ -38,7 +38,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 
 	
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			log.info("Building feeds inbox model");
 			ModelAndView mv = new ModelAndView();

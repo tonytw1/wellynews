@@ -44,12 +44,12 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 		
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {				
+	public ModelAndView populateContentModel(HttpServletRequest request) {				
 		if (isValid(request)) {
 			logger.info("Building publisher page model");
 			Website publisher = (Website) request.getAttribute("publisher");	// TODO needs to be a frontend Website
 			int page = getPage(request);
-			return populatePublisherPageModelAndView(publisher, showBroken, page);			
+			return populatePublisherPageModelAndView(publisher, page);			
 		}
 		return null;
 	}
@@ -76,7 +76,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		return "publisher";
 	}
 	
-	private ModelAndView populatePublisherPageModelAndView(Website publisher, boolean showBroken, int page) {
+	private ModelAndView populatePublisherPageModelAndView(Website publisher, int page) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
 		mv.addObject("description", publisher.getName() + " newsitems");

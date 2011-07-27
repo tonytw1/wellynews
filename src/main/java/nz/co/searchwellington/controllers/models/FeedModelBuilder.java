@@ -35,7 +35,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	}
 	
 	@Override
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			log.info("Building view feed model");
 			Feed feed = (Feed) request.getAttribute(FEED_ATTRIBUTE);

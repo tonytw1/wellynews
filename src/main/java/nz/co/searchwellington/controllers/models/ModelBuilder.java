@@ -8,7 +8,7 @@ public interface ModelBuilder {
 
 	public abstract boolean isValid(HttpServletRequest request);
 
-	public abstract ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken);
+	public abstract ModelAndView populateContentModel(HttpServletRequest request);
 	
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv);
 	

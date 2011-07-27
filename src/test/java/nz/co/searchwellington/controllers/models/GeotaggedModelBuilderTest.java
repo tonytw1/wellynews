@@ -70,7 +70,7 @@ public class GeotaggedModelBuilderTest {
 	public void geotaggedNewsitemsPageShouldHavePaginationInformation() throws Exception {
 		request.setPathInfo("/geotagged");				
 		Mockito.when(contentRetrievalService.getGeotaggedCount()).thenReturn(TOTAL_GEOTAGGED_COUNT);
-		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 		
 		assertEquals(0, modelAndView.getModel().get("page"));
 		assertEquals(TOTAL_GEOTAGGED_COUNT, modelAndView.getModel().get("main_content_total"));
@@ -82,7 +82,7 @@ public class GeotaggedModelBuilderTest {
 		request.setPathInfo("/geotagged");
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		
-		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 		
 		assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel().get("main_content"));
 	}
@@ -94,7 +94,7 @@ public class GeotaggedModelBuilderTest {
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		request.setAttribute(LocationParameterFilter.RADIUS, 3.0);
 		
-		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 		
 		assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel().get("main_content"));
 	}
@@ -106,7 +106,7 @@ public class GeotaggedModelBuilderTest {
 		
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 
-		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 		
 		assertEquals(0, modelAndView.getModel().get("page"));
 		assertEquals(LOCATION_RESULTS_COUNT, modelAndView.getModel().get("main_content_total"));
@@ -121,7 +121,7 @@ public class GeotaggedModelBuilderTest {
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		request.setAttribute("page", 2);
 		
-		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 		
 		assertEquals(2, modelAndView.getModel().get("page"));
 		assertEquals(newsitemsNearPetoneStationSecondPage, modelAndView.getModel().get("main_content"));
@@ -133,7 +133,7 @@ public class GeotaggedModelBuilderTest {
 		Mockito.when(invalidLocation.isValid()).thenReturn(false);
 		request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation);
 				
-		ModelAndView modelAndView = modelBuilder.populateContentModel(request, false);
+		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 
 		assertNull(modelAndView.getModel().get("main_content"));
 	}

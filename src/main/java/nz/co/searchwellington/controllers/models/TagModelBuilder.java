@@ -64,12 +64,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public ModelAndView populateContentModel(HttpServletRequest request, boolean showBroken) {
+	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
 			int page = getPage(request);
-			return populateTagPageModelAndView(tag, showBroken, page, request.getPathInfo());
+			return populateTagPageModelAndView(tag, page, request.getPathInfo());
 		}
 		return null;
 	}
@@ -134,7 +134,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		return "tag";	
 	}
 	
-	private ModelAndView populateTagPageModelAndView(Tag tag, boolean showBroken, int page, String path) {
+	private ModelAndView populateTagPageModelAndView(Tag tag, int page, String path) {
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject("page", page);
 		

@@ -16,7 +16,7 @@ import com.sun.syndication.io.FeedException;
 
 public class TagController extends MultiActionController {
 	
-    static Logger log = Logger.getLogger(TagController.class);
+    private static Logger log = Logger.getLogger(TagController.class);
    
     private ContentModelBuilderService contentModelBuilder;
     private TagDAO tagDAO;
@@ -31,15 +31,13 @@ public class TagController extends MultiActionController {
 	}
     
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-        log.info("Starting normal content");                                  
-        boolean showBroken = false;
-        
+        log.info("Starting normal content");        
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {			
 			boolean isHtmlView = isHtmlView(mv);			
 			if (isHtmlView) {
 				urlStack.setUrlStack(request);
-				addCommonModelElements(mv, showBroken);
+				addCommonModelElements(mv);
 			}			
 			return mv;
 		}
@@ -51,7 +49,7 @@ public class TagController extends MultiActionController {
 		return mv.getViewName() != null;
 	}
 		
-	private void addCommonModelElements(ModelAndView mv, boolean showBroken) throws IOException {
+	private void addCommonModelElements(ModelAndView mv) throws IOException {
 		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());      
 	}
     
