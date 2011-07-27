@@ -58,8 +58,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-		boolean isSingleTagPage = tags != null && tags.size() == 1;
-		return isSingleTagPage;
+		return tags != null && tags.size() == 1;
 	}
 	
 	@Override

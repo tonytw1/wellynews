@@ -1,6 +1,8 @@
 package nz.co.searchwellington.controllers.models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,6 +28,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class TagModelBuilderTest {
 
+	private static final String TAG_DISPLAY_NAME = "Penguins";
+
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock RssUrlBuilder rssUrlBuilder;
 	@Mock UrlBuilder urlBuilder;
@@ -46,6 +50,31 @@ public class TagModelBuilderTest {
 		MockitoAnnotations.initMocks(this);
 		modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, configDAO, rssfeedNewsitemService, contentRetrievalService, keywordSearchService, flickrService);
 		request = new MockHttpServletRequest();
+		Mockito.when(tag.getDisplayName()).thenReturn(TAG_DISPLAY_NAME);
+	}
+	
+	@Test
+	public void isNotValidIfNotTagsAreOnTheRequest() throws Exception {
+		assertFalse(modelBuilder.isValid(request));
+	}
+	
+	@Test
+	public void isValidIsOneTagIsOnTheRequest() throws Exception {
+		request.setAttribute("tags", Arrays.asList(tag));
+		assertTrue(modelBuilder.isValid(request));
+	}
+	
+	@Test
+	public void isNotValidIfMoreThanOneTagIsOnTheRequest() throws Exception {
+		request.setAttribute("tags", Arrays.asList(tag, tag));
+		assertFalse(modelBuilder.isValid(request));
+	}
+	
+	@Test
+	public void tagPageHeadingShouldBeTheTagDisplayName() throws Exception {
+		request.setAttribute("tags", Arrays.asList(tag));
+		ModelAndView mv = modelBuilder.populateContentModel(request);
+		assertEquals(TAG_DISPLAY_NAME, mv.getModel().get("heading"));
 	}
 	
 	@Test
