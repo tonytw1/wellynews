@@ -8,6 +8,7 @@ import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.filters.GoogleSearchTermFilter;
+import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.PublisherContentCount;
@@ -35,13 +36,14 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private KeywordSearchService keywordSearchService;
+	private FlickrService flickrService;
 	
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService,
 			ConfigRepository configDAO,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
-			KeywordSearchService keywordSearchService) {
+			KeywordSearchService keywordSearchService, FlickrService flickrService) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -49,6 +51,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.keywordSearchService = keywordSearchService;
+		this.flickrService = flickrService;
 	}
 	
 	@Override
@@ -170,10 +173,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	}
  		
     private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
-        if (tag.getFlickrCount() > 0) {
-            mv.addObject("flickr_count", tag.getFlickrCount());
-            mv.addObject("escaped_flickr_group_id", UrlFilters.encode(configDAO.getFlickrPoolGroupId()));
-        }
+    	mv.addObject("flickr_count", flickrService.getFlickrPhotoCountFor(tag));
+    	mv.addObject("escaped_flickr_group_id", UrlFilters.encode(configDAO.getFlickrPoolGroupId()));	// TODO double call to the config doa
     }
     
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {

@@ -12,14 +12,14 @@ import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.REST;
 import com.aetrion.flickr.photos.PhotoList;
 
-public class FlickrApiService {
+public class FlickrApi {
     
-    private static Logger log = Logger.getLogger(FlickrApiService.class);
+    private static Logger log = Logger.getLogger(FlickrApi.class);
     
     private String apiKey;
 	private String apiSecret;
     
-    public FlickrApiService() {      
+    public FlickrApi() {      
     }
         
     public void setApiKey(String apiKey) {

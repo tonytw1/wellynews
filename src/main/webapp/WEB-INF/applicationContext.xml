@@ -60,6 +60,16 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="loggedInUserFilter" />	
 	</bean>
 
+	<bean id="flickrApi" class="nz.co.searchwellington.flickr.FlirkrApi">
+		<property name="apiKey" value="${flickr.apikey}" />
+		<property name="apiSecret" value="${flickr.apisecret}" />				
+	</bean>
+	
+	<bean id="flickrService" class="nz.co.searchwellington.flickr.FlirkrService">
+		<constructor-arg ref="flickrApi" />
+		<constructor-arg ref="configDao" />
+		<constructor-arg ref="memcachedCache" />
+	</bean>
 	
 	<bean id="anonUserService" class="nz.co.searchwellington.controllers.AnonUserService">
 		<constructor-arg ref="userDAO" />
@@ -302,12 +312,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedDetector" />
 	</bean>
-	
-	<bean id="flickrApiService" class="nz.co.searchwellington.flickr.FlickrApiService">
-		<property name="apiKey" value="${flickr.apikey}" />
-		<property name="apiSecret" value="${flickr.apisecret}" />		
-	</bean>
-				
+					
 	<bean id="urlStack" class="nz.co.searchwellington.controllers.UrlStack">
 	 	<constructor-arg ref="urlBuilder" />
 	</bean>

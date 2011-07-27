@@ -13,19 +13,6 @@
     <property name="repeatInterval" value="3600000" />
 </bean>
 
-<bean id="flickrJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-  <property name="targetObject" ref="flickrJob" />
-  <property name="targetMethod" value="run" />
-  <property name="concurrent" value="false" />
-</bean>
-
-<bean id="flickrJobTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">   
-    <property name="jobDetail" ref="flickrJobRun" />
-    <property name="startDelay" value="3600000" />
-    <property name="repeatInterval" value="86400000" />
-</bean>
-
-
 <bean id="solrUpdateJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
   <property name="targetObject" ref="solrUpdateJob" />
   <property name="targetMethod" value="run" />
@@ -117,13 +104,6 @@
     <property name="repeatInterval" value="7200000" />
 </bean>
 
-<bean id="flickrJob" class="nz.co.searchwellington.jobs.FlickrJob">
-	<constructor-arg ref="flickrApiService" />
-	<constructor-arg ref="configDAO" />
-	<constructor-arg ref="tagDAO" />
-</bean>
-
-
 <bean id="twitterListenerJob" class="nz.co.searchwellington.jobs.TwitterListenerJob">
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="twitterMentionFinder" />
@@ -136,12 +116,10 @@
 	<constructor-arg ref="linkChecker" />
 </bean>
 
-
 <bean name="solrUpdateJob" class="nz.co.searchwellington.jobs.SolrUpdateJob">
 	<constructor-arg ref="solrUpdateQueue" />
 	<constructor-arg ref="solrQueryService" />
 </bean>
-
 
 <bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 	<property name="triggers">
@@ -149,7 +127,6 @@
 			<ref bean="linkCheckerTrigger"/>
 			<ref bean="solrUpdateTrigger"/>			
 			<ref bean="commentReaderTrigger" />
-			<ref bean="flickrJobTrigger" />
 			<ref bean="feedCheckerSchedulerTrigger"/>
 			<ref bean="watchlistCheckerSchedulerTrigger"/>
 			<ref bean="expiredCheckerSchedulerTrigger"/>
