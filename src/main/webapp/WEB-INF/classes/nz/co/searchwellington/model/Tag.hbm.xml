@@ -19,11 +19,11 @@
 		</property>
 		
 		<property name="displayName">
-			<column name="display_name" length="255" not-null="false" />
+			<column name="display_name" length="255" not-null="true" />
 		</property>
 		
 		<property name="description">
-			<column name="description" length="1000" not-null="true" />
+			<column name="description" length="1000" not-null="false" />
 		</property>
 		
 		<property name="relatedTwitter">

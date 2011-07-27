@@ -4,13 +4,8 @@
 #parse("includes/topbar.vm")
 
 <div class="left">
-
-
 #parse("includes/tag_tree.vm")
 </div>
-
-
-
 
 <div class="main">
 <h2>Submitting a New Tag</h2>
@@ -24,6 +19,9 @@
 		
 		<p><label for="name">Display Name: </label>
 		<input name="displayName" value="$tag.displayName" /></p>
+		
+		<p><label for="description">Description: </label>
+		<input name="description" value="$tag.description" /></p>
 		
 		#if ($tag_select) 
 			<p><label for="parent">Parent Tag: </label>
