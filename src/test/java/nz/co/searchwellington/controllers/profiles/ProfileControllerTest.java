@@ -39,7 +39,7 @@ public class ProfileControllerTest {
 	private List<User> allActiveUsers;
 
 	private ProfileController controller;
-	@Mock List<Resource> existingUsersSubmittedItems;
+	@Mock List<FrontendResource> existingUsersSubmittedItems;
 	@Mock List<FrontendResource> existingUsersTaggedItems;
 	
 	@Before

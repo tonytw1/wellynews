@@ -183,10 +183,14 @@ public class SolrBackedResourceDAO {
 		return getQueryResults(query);
 	}
 
-	public List<FrontendResource> getHandTaggingsForUser(User user,
-			boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().taggingUser(user).showBroken(
-				showBroken).toQuery();
+	public List<FrontendResource> getOwnedBy(User user, int maxItems, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().owningUser(user).showBroken(showBroken).toQuery();
+		setDateDescendingOrder(query);
+		return getQueryResults(query);
+	}
+		
+	public List<FrontendResource> getHandTaggingsForUser(User user, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().taggingUser(user).showBroken(showBroken).toQuery();
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
 	}
@@ -647,5 +651,7 @@ public class SolrBackedResourceDAO {
 	private void setFeedLatestItemOrder(SolrQuery query) {
 		query.setSortField("feedLatestItemDate", ORDER.desc);
 	}
+
+	
 
 }

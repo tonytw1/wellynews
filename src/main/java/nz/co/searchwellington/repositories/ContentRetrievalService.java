@@ -271,8 +271,8 @@ public class ContentRetrievalService {
 		return discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds();
 	}
 
-	public List<Resource> getOwnedBy(User loggedInUser, int maxItems) {
-		return resourceDAO.getOwnedBy(loggedInUser, maxItems);	// TODO push to solr for profile page usages.
+	public List<FrontendResource> getOwnedBy(User loggedInUser, int maxItems) {
+		return solrBackedResourceDAO.getOwnedBy(loggedInUser, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<FrontendResource> getTaggedBy(User user, int maxItems) {

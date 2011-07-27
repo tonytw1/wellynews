@@ -120,6 +120,8 @@
 	<field name="handTaggingUsers" type="integer" indexed="true" stored="true" required="false" multiValued="true" />
 	<field name="handTaggingUserTags" type="string" indexed="true" stored="true" required="false" multiValued="true" />
 	 	
+	<field name="owner" type="integer" indexed="true" stored="true" required="false" multiValued="false" />
+	 	
    <field name="publisher" type="integer" indexed="true" stored="true" required="false" />
    <field name="publisherName" type="text" indexed="false" stored="true" required="false" />
    <field name="httpStatus" type="integer" indexed="true" stored="true" required="false" /> 

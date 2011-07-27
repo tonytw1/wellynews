@@ -140,5 +140,10 @@ public class SolrQueryBuilder {
 		sb.append(" +pageUrl:'" + pageUrl + "'");
 		return this;
 	}
+
+	public SolrQueryBuilder owningUser(User user) {
+		sb.append(" +owner:" + user.getId());
+		return this;
+	}
 	
 }

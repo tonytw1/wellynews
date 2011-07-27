@@ -50,6 +50,10 @@ public class SolrInputDocumentBuilder {
 		inputDocument.addField("embargoedUntil", resource.getEmbargoedUntil());
 		inputDocument.addField("held", resource.isHeld());
 		
+		if (resource.getOwner() != null) {
+			inputDocument.addField("owner", resource.getOwner().getId());
+		}
+		
 		if (resource.getLastChanged() != null) {
 			inputDocument.addField("lastChanged", resource.getLastChanged());
 		}
