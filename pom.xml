@@ -118,7 +118,7 @@
 			<artifactId>media-rss</artifactId>
 			<version>0.2.1</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
 		</dependency>
 
 		<dependency>
@@ -144,7 +144,7 @@
 			<artifactId>tokyotyrant</artifactId>
 			<version>0.10</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
 			</systemPath>
 		</dependency><dependency>
     <groupId>org.jboss.netty</groupId>
@@ -163,14 +163,14 @@
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 			<scope>system</scope>
-			<systemPath>/Users/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
+			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
 			</systemPath>
 		</dependency>
 
 		<dependency>
 			<groupId>com.aetrion.flickr</groupId>
 			<artifactId>flickrapi</artifactId>
-			<version>1.1</version>
+			<version>1.2</version>
 		</dependency>
 
 		<dependency>

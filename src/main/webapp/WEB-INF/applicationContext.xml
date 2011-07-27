@@ -304,7 +304,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 	
 	<bean id="flickrApiService" class="nz.co.searchwellington.flickr.FlickrApiService">
-		<property name="apiKey" value="${flickr.apikey}" />	
+		<property name="apiKey" value="${flickr.apikey}" />
+		<property name="apiSecret" value="${flickr.apisecret}" />		
 	</bean>
 				
 	<bean id="urlStack" class="nz.co.searchwellington.controllers.UrlStack">

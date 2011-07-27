@@ -33,7 +33,7 @@ public class FlickrJob {
         String poolGroupId = configDAO.getFlickrPoolGroupId();        
         for (Tag  tag : tagDAO.getAllTags()) { 
             log.info("Updating Flickr photo count for tag: " + tag.getName());
-            int tagPhotoCount = flickrDAO.getPoolPhotoCountForTag(tag, poolGroupId);
+            final int tagPhotoCount = flickrDAO.getPoolPhotoCountForTag(tag.getName(), poolGroupId);
             tag.setFlickrCount(tagPhotoCount);
             tagDAO.saveTag(tag);
             log.info("Count: " + tagPhotoCount);           
