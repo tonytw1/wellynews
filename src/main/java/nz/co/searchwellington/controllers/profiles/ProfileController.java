@@ -83,6 +83,7 @@ public class ProfileController extends BaseMultiActionController {
 
 			User user = userDAO.getUserByProfileName(profilename);
 			if (user != null) {
+				log.info("Rendering profile for user: "+ profilename);
 				ModelAndView mv = new ModelAndView("viewProfile");
 				User loggedInUser = loggerInUserFilter.getLoggedInUser();
 				if (loggedInUser != null && loggedInUser.getId() == user.getId()) {
@@ -91,8 +92,6 @@ public class ProfileController extends BaseMultiActionController {
 				
 				mv.addObject("heading", "User profile");
 				mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
-
-				log.info("Put user onto model: " + user.getOpenId());
 				mv.addObject("profileuser", user);
 
 				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, MAX_NEWSITEMS));
