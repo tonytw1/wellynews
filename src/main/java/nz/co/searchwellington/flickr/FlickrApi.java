@@ -37,9 +37,7 @@ public class FlickrApi {
             try {                
                 Flickr flickr = new Flickr(apiKey, apiSecret, new REST());
                 String[] tags = new String[1];
-                tags[0] = tagName;
-                
-                log.info(poolGroupId);
+                tags[0] = tagName;                
                 PhotoList photos = flickr.getPoolsInterface().getPhotos(poolGroupId, tags, 0, 0);   
                 return photos.getTotal();
                 

@@ -60,14 +60,14 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="loggedInUserFilter" />	
 	</bean>
 
-	<bean id="flickrApi" class="nz.co.searchwellington.flickr.FlirkrApi">
+	<bean id="flickrApi" class="nz.co.searchwellington.flickr.FlickrApi">
 		<property name="apiKey" value="${flickr.apikey}" />
 		<property name="apiSecret" value="${flickr.apisecret}" />				
 	</bean>
 	
-	<bean id="flickrService" class="nz.co.searchwellington.flickr.FlirkrService">
+	<bean id="flickrService" class="nz.co.searchwellington.flickr.FlickrService">
 		<constructor-arg ref="flickrApi" />
-		<constructor-arg ref="configDao" />
+		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="memcachedCache" />
 	</bean>
 	
