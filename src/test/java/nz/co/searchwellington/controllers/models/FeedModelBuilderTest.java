@@ -10,6 +10,7 @@ import java.util.List;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.junit.Before;
@@ -25,8 +26,8 @@ public class FeedModelBuilderTest {
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock Feed feed;
 	@Mock List<FeedNewsitem> feedNewsitems;
-	@Mock List<FeedNewsitem> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
-	@Mock List<FeedNewsitem> geotaggedFeedNewsitems;
+	@Mock List<FrontendFeedNewsitem> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
+	@Mock List<FrontendFeedNewsitem> geotaggedFeedNewsitems;
 	
 	MockHttpServletRequest request;
 	ModelBuilder modelBuilder;

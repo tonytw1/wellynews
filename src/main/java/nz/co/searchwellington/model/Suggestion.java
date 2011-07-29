@@ -8,11 +8,9 @@ public class Suggestion {
 	protected String url;
 	protected Feed feed;
     protected Date firstSeen;
-    
-	
+    	
 	public Suggestion() {	
 	}
-
 	
 	public Suggestion(Feed feed, String url, Date firstSeen) {
 		this.feed = feed;
@@ -20,11 +18,9 @@ public class Suggestion {
 		this.firstSeen = firstSeen;
 	}
 
-
 	public int getId() {
 		return id;
 	}
-
 
 	public void setId(int id) {
 		this.id = id;

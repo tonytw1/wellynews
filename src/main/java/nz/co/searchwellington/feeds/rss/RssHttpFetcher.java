@@ -23,8 +23,11 @@ public class RssHttpFetcher {
 			}
 			fetcher.setConnectTimeout(TIMEOUT);
 			fetcher.setReadTimeout(30000);
-			SyndFeed feed = fetcher.retrieveFeed(url);            
-			return feed;
+			SyndFeed feed = fetcher.retrieveFeed(url);
+			if (feed != null) {
+				return feed;
+			}
+			log.warn("Rss feed was null after loading from: " + feedUrl);
 			
 		} catch (Exception e) {
 			log.warn("Error while fetching feed" ,e);

@@ -18,7 +18,7 @@ public class FeedItemAcceptorTest {
 
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	
-	@Mock FeedNewsitem feednewsitem;
+	@Mock Newsitem feednewsitem;
 	@Mock Feed feed;
 	@Mock FeedNewsitem feedNewsitem;
 	@Mock Newsitem newsitem;
@@ -30,10 +30,9 @@ public class FeedItemAcceptorTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(feednewsitem.getFeed()).thenReturn(feed);
 		Mockito.when(feed.getPublisher()).thenReturn(publisher);
 		Mockito.when(newsitem.getName()).thenReturn("HEADLINE");
-		Mockito.when(rssfeedNewsitemService.makeNewsitemFromFeedItem(Mockito.any(FeedNewsitem.class))).thenReturn(newsitem);
+		Mockito.when(rssfeedNewsitemService.makeNewsitemFromFeedItem(Mockito.eq(feed), Mockito.any(FeedNewsitem.class))).thenReturn(newsitem);
 		feedItemAcceptor = new FeedItemAcceptor(rssfeedNewsitemService);
 	}
 	

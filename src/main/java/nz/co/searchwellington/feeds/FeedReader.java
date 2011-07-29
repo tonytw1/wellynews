@@ -100,12 +100,13 @@ public class FeedReader {
 				feednewsitem.setUrl(cleanSubmittedItemUrl);
 		    
 				if (acceptancePolicy.startsWith("accept")) {
-					boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feednewsitem, acceptancePolicy).size() == 0;
+					boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy).isEmpty();
 					if (acceptThisItem) {
-						Newsitem newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser, feednewsitem);										   
+						Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
+						feedItemAcceptor.acceptFeedItem(feedReaderUser, newsitem);
 						contentUpdateService.create(newsitem);
 						autoTagger.autotag(newsitem);
-						contentUpdateService.update(newsitem);			        
+						contentUpdateService.update(newsitem);
 					}
 					
 				} else {                	

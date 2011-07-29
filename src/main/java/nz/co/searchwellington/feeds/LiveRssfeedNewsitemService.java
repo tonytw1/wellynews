@@ -2,12 +2,10 @@ package nz.co.searchwellington.feeds;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
 import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
-import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
@@ -52,16 +50,13 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         SyndFeed syndfeed = rssFetcher.httpFetch(feed.getUrl());
         if (syndfeed != null) {
             List entires = syndfeed.getEntries();
-            int itemNumber = 1;
             for (Iterator iter = entires.iterator(); iter.hasNext();) {
             	try {
             		SyndEntry item = (SyndEntry) iter.next();
             		FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
-            		feedItem.setItemNumber(itemNumber);
-                
             		feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
             		feedNewsitems.add(feedItem);
-            		itemNumber++;
+            		
             	} catch (Exception e) {
             		log.error("Unexpected exception while processing feed item", e);
 				}
@@ -75,9 +70,8 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
     }
 	
     private FeedNewsitem extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
-        String description = null;
-        description = getBodyFromSyndItem(item, description); 
-                
+        final String description = getBodyFromSyndItem(item);
+        
         Date itemDate = null;
         if (item.getPublishedDate() != null) {        
             itemDate = item.getPublishedDate();
@@ -89,14 +83,20 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         }
         
         // TODO feed decision maker and feedreader and user submissions should share the same title cleaning logic
-        FeedNewsitem feedItem = new FeedNewsitem(0, item.getTitle().trim(), url, description, itemDate, new HashSet<DiscoveredFeed>(), feed.getPublisherName());       
-        feedItem.setImage(extractThumbnail(feed, item));
-        feedItem.setGeocode(extractGeocode(feed, item));
-      
-        log.debug("Date of loaded newsitem is: " + feedItem.getDate());
-        feedItem.setFeed(feed);
-        return feedItem;
+        return makeFeednewsitemFromSyndEntry(feed, item, description, itemDate, url);
     }
+
+	private FeedNewsitem makeFeednewsitemFromSyndEntry(Feed feed, SyndEntry item, String description, Date itemDate, String url) {
+		FeedNewsitem feedItem = new FeedNewsitem();
+        feedItem.setName(item.getTitle().trim());
+        feedItem.setUrl(url);
+        feedItem.setDescription(description);
+        feedItem.setDate(itemDate);
+        feedItem.setPublisherName(feed.getPublisherName());
+        feedItem.setImage(extractThumbnail(feed, item));
+        feedItem.setGeocode(extractGeocode(feed, item));      
+        return feedItem;
+	}
 
 
 	private Geocode extractGeocode(Feed feed, SyndEntry item) {
@@ -148,7 +148,8 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 		return null;
 	}
 	
-	private String getBodyFromSyndItem(SyndEntry item, String description) {
+	private String getBodyFromSyndItem(SyndEntry item) {
+		String description = "";
 		// TODO; what's going on here? - why two settings? Check if this API call has updated?
 		SyndContent descriptionContent = (SyndContent) item.getDescription();
         if (descriptionContent != null) {

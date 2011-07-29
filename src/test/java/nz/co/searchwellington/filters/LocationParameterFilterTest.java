@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.omg.PortableInterceptor.LOCATION_FORWARD;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 public class LocationParameterFilterTest {

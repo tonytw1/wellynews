@@ -45,7 +45,9 @@ public class MemcachedCacheFunctionalTest {
 	@Test
 	public void canRoundTripMoreInterestingObjectsThroughTheCache() throws Exception {
 		List<FeedNewsitem> feednewsItems = new ArrayList<FeedNewsitem>();
-		FeedNewsitem feedNewsitem = new FeedNewsitem(1, HEADLINE, null, null, null, null, null);		
+		FeedNewsitem feedNewsitem = new FeedNewsitem();
+		feedNewsitem.setId(1);
+		feedNewsitem.setName(HEADLINE);
 		feednewsItems.add(feedNewsitem);
 		assertEquals(HEADLINE, feednewsItems.get(0).getName());
 

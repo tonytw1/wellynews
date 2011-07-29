@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +14,6 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -29,11 +27,9 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
-import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
-import org.apache.ecs.xhtml.sub;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
@@ -182,22 +178,18 @@ public class ResourceEditController extends BaseMultiActionController {
         	return null;
     	}
     	
-        FeedNewsitem feedNewsitem = null;
-        if (request.getAttribute("item") != null) {
-        	int item = (Integer) request.getAttribute("item");
-        	feedNewsitem = getRequestedFeedItemByFeedAndItemNumber(request, item);
-        	
-        } else if (request.getParameter("url") != null) {
-        	feedNewsitem = getRequestedFeedItemByUrl(request.getParameter("url"));        	
+    	Newsitem acceptedNewsitem = null;
+    	if (request.getParameter("url") != null) {
+    		acceptedNewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(request.getParameter("url"));        	
         }
-        
-        if (feedNewsitem == null) {
+    	
+        if (acceptedNewsitem == null) {
         	log.warn("No matching newsitem found for feed/item.");
         	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         	return null;
         }
         
-        Newsitem acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, feedNewsitem);
+        acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, acceptedNewsitem);
 		ModelAndView modelAndView = new ModelAndView("acceptResource");
 		populateCommonLocal(modelAndView);
 		modelAndView.addObject("heading", "Accepting a submission");
@@ -462,29 +454,7 @@ public class ResourceEditController extends BaseMultiActionController {
         }
     }
     
-    
-
-	private FeedNewsitem getRequestedFeedItemByFeedAndItemNumber(HttpServletRequest request, int item) {
-		log.info("Looking for feeditem by feed and item number: " + item);		
-    	if (request.getAttribute("feedAttribute") != null) {
-    		Feed feed = (Feed) request.getAttribute("feedAttribute");		
-    		List <FeedNewsitem> feednewsItems = rssfeedNewsitemService.getFeedNewsitems(feed);
-    		if (item > 0 && item <= feednewsItems.size()) {                    
-    			return feednewsItems.get(item-1);
-    		}
-    	}
-    	
-    	log.warn("No feed found on request object; can't load newsitem");
-    	return null;
-	}
-    
-	
-	// TODO Inline
-    private FeedNewsitem getRequestedFeedItemByUrl(String url) {
-    	return rssfeedNewsitemService.getFeedNewsitemByUrl(url);    	
-    }
-    
-    protected void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) {
+	protected void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) {
         boolean isPublishedResource = editResource instanceof PublishedResource;  
         if (isPublishedResource) {
             modelAndView.addObject("publisher_select", "1");   

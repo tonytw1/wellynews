@@ -4,7 +4,7 @@ import static org.mockito.Mockito.when;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -29,7 +29,7 @@ public class ApiControllerTest {
 	@Mock ContentUpdateService contentUpdateService;
 	@Mock AutoTaggingService autoTaggingService;
 	
-	@Mock FeedNewsitem acceptedFeedNewsitem;
+	@Mock Newsitem acceptedFeedNewsitem;
 	@Mock User adminUser;
 
 	@Before

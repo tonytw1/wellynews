@@ -9,6 +9,7 @@ import java.util.List;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
@@ -27,42 +28,40 @@ public abstract class RssfeedNewsitemService {
 	protected ResourceRepository resourceDAO;
 	protected SupressionRepository suppressionDAO;
 	
-	
 	public final Date getLatestPublicationDate(Feed feed) {
 		Date latestPublicationDate = null;
 		List<FeedNewsitem> feeditems = getFeedNewsitems(feed);
-		for (Resource resource : feeditems) {
-			if (resource.getDate() != null && (latestPublicationDate == null || resource.getDate().after(latestPublicationDate))) {
-				latestPublicationDate = resource.getDate();           
+		for (FeedNewsitem feeditem : feeditems) {
+			if (feeditem.getDate() != null && (latestPublicationDate == null || feeditem.getDate().after(latestPublicationDate))) {
+				latestPublicationDate = feeditem.getDate();           
 			}
 		}
 		return latestPublicationDate;
 	}
 	
 	// TODO merge with addSuppressAndLocalCopyInformation?
-	public Newsitem makeNewsitemFromFeedItem(FeedNewsitem feedNewsitem) {
+	public Newsitem makeNewsitemFromFeedItem(Feed feed, FeedNewsitem feedNewsitem) {
 		// TODO why are we newing up an instance of our superclass?
 	    String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : ""; 
-		Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feedNewsitem.getPublisher(),
+		Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(),
 	    		new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
 	    newsitem.setImage(feedNewsitem.getImage());
-	    newsitem.setFeed(feedNewsitem.getFeed());
-	    newsitem.setPublisher(feedNewsitem.getFeed().getPublisher());	    
+	    newsitem.setFeed(feed);
+	    newsitem.setPublisher(feed.getPublisher());	    
 	    return newsitem;
 	}
 	
-	public FeedNewsitem getFeedNewsitemByUrl(String url) {
+	public Newsitem getFeedNewsitemByUrl(String url) {
 		for(Feed feed : resourceDAO.getAllFeeds()) {
 			List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
 			for (FeedNewsitem feedNewsitem : feednewsItems) {                	
-				if (feedNewsitem.getUrl().equals(url)) {					
-					return feedNewsitem;
+				if (feedNewsitem.getUrl().equals(url)) {
+					makeNewsitemFromFeedItem(feed, feedNewsitem);
 				}
 			}
 		}
 		return null;
 	}
-	
 	
 	public FeedNewsitem getFeedNewsitemByUrl(Feed feed, String url) {
 		List<FeedNewsitem> feedNewsitems = this.getFeedNewsitems(feed);
@@ -76,25 +75,29 @@ public abstract class RssfeedNewsitemService {
 		return null;
 	}
 	
-	public List<FeedNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
-		List<FeedNewsitem> decoratedFeednewsitems = new ArrayList<FeedNewsitem>();
+	public List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+		List<FrontendFeedNewsitem> decoratedFeednewsitems = new ArrayList<FrontendFeedNewsitem>();
 		for (FeedNewsitem feedNewsitem : feedNewsitems) {
+
+			FrontendFeedNewsitem frontendFeedNewsitem = new FrontendFeedNewsitem(feedNewsitem);
 			if (feedNewsitem.getUrl() != null) {
+				
 				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());	// TODO expensive?
 				if (localCopy != null) {
-					feedNewsitem.setLocalCopy(localCopy);
+					frontendFeedNewsitem.setHasLocalCopy(true);
 				}
 				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
-				feedNewsitem.setSuppressed(isSuppressed);						
+				frontendFeedNewsitem.setSuppressed(isSuppressed);						
 			}
-			decoratedFeednewsitems.add(feedNewsitem);
+			decoratedFeednewsitems.add(frontendFeedNewsitem);
 		}
 		return decoratedFeednewsitems;
 	}
 	
-	public List<FeedNewsitem> extractGeotaggedFeeditems(List<FeedNewsitem> feedNewsitems) {
-		List<FeedNewsitem> geotaggedFeedNewsitems = new ArrayList<FeedNewsitem>();
-		for (FeedNewsitem feedNewsitem : feedNewsitems) {
+	// TODO In the wrong class - it only used in feed model builder
+	public List<FrontendFeedNewsitem> extractGeotaggedFeeditems(List<FrontendFeedNewsitem> feedNewsitems) {
+		List<FrontendFeedNewsitem> geotaggedFeedNewsitems = new ArrayList<FrontendFeedNewsitem>();
+		for (FrontendFeedNewsitem feedNewsitem : feedNewsitems) {
 			if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
 				geotaggedFeedNewsitems.add(feedNewsitem);
 			}

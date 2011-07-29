@@ -8,6 +8,8 @@ import nz.co.searchwellington.model.Twit;
 
 public class FrontendNewsitemImpl extends FrontendResourceImpl implements FrontendNewsitem {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private String publisherName;
 	private List<Twit> retweets;
 	private String acceptedFromFeedName;

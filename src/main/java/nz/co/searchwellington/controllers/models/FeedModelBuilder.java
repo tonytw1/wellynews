@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.apache.log4j.Logger;
@@ -41,10 +42,8 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 			Feed feed = (Feed) request.getAttribute(FEED_ATTRIBUTE);
 			if (feed != null) {
 				ModelAndView mv = new ModelAndView();
-				mv.addObject("feed", feed);
-				
+				mv.addObject("feed", feed);				
 				populateFeedItems(mv, feed);
-				
 				setRss(mv, feed.getName(), feed.getUrl());		       
 				return mv;
 			}
@@ -83,7 +82,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	@SuppressWarnings("unchecked")
 	private void populateGeotaggedFeedItems(ModelAndView mv) {
-		List<FeedNewsitem> mainContent = (List<FeedNewsitem>) mv.getModel().get("main_content");
+		List<FrontendFeedNewsitem> mainContent = (List<FrontendFeedNewsitem>) mv.getModel().get("main_content");
 		if (mainContent != null) {
 			mv.addObject("geocoded", rssfeedNewsitemService.extractGeotaggedFeeditems(mainContent));
 		}

@@ -17,9 +17,9 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
-import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
@@ -108,10 +108,9 @@ public class ApiController extends MultiActionController {
     			log.info("Attempting to accept feed item with url: " + url);
     			Newsitem newsitemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(url);
     			if (newsitemToAccept != null) {
-    				
+    				// TODO newsitem accector call required
     				log.info("Applying autotagging to new submission.");
-    				autoTagger.autotag(newsitemToAccept);
-    	            
+    				autoTagger.autotag(newsitemToAccept);            
     				contentUpdateService.update(newsitemToAccept);
     			}
     		}

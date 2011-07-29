@@ -44,6 +44,8 @@ public class GoogleGeoCodeService implements GeoCodeService {
 			geocode.setType(type);
 			return geocode;
 		}
+		
+		log.info("Resolver return non OK status: " + geocoderResponse.getStatus());
 		return null;  
     }
     

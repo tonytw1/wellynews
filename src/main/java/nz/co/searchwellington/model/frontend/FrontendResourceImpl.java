@@ -8,7 +8,9 @@ import nz.co.searchwellington.model.Tag;
 
 public class FrontendResourceImpl implements FrontendResource {
 	
-    private int id;
+	private static final long serialVersionUID = 1L;
+	
+	private int id;
     private String type;
     private String name;
     private String url;
@@ -20,71 +22,70 @@ public class FrontendResourceImpl implements FrontendResource {
     private List<Tag> handTags;
     private Geocode geocode;
 	
-	public int getId() {
+	final public int getId() {
 		return id;
 	}
-	public void setId(int id) {
+	final public void setId(int id) {
 		this.id = id;
 	}
 	public String getType() {
 		return type;
 	}
-	public void setType(String type) {
+	final public void setType(String type) {
 		this.type = type;
 	}
-	public String getName() {
+	final public String getName() {
 		return name;
 	}
-	public void setName(String name) {
+	final public void setName(String name) {
 		this.name = name;
 	}
-	public String getUrl() {
+	final public String getUrl() {
 		return url;
 	}
-	public void setUrl(String url) {
+	final public void setUrl(String url) {
 		this.url = url;
 	}
-	public int getHttpStatus() {
+	final public int getHttpStatus() {
 		return httpStatus;
 	}
-	public void setHttpStatus(int httpStatus) {
+	final public void setHttpStatus(int httpStatus) {
 		this.httpStatus = httpStatus;
 	}
-	public Date getDate() {
+	final public Date getDate() {
 		return date;
 	}
-	public void setDate(Date date) {
+	final public void setDate(Date date) {
 		this.date = date;
 	}
-	public String getDescription() {
+	final public String getDescription() {
 		return description;
 	}
-	public void setDescription(String description) {
+	final public void setDescription(String description) {
 		this.description = description;
 	}	
-	public Date getLiveTime() {
+	final public Date getLiveTime() {
 		return liveTime;
 	}
-	public void setLiveTime(Date liveTime) {
+	final public void setLiveTime(Date liveTime) {
 		this.liveTime = liveTime;
 	}
-	public List<Tag> getTags() {
+	final public List<Tag> getTags() {
 		return tags;
 	}
-	public void setTags(List<Tag> tags) {
+	final public void setTags(List<Tag> tags) {
 		this.tags = tags;
 	}
-	public List<Tag> getHandTags() {
+	final public List<Tag> getHandTags() {
 		return handTags;
 	}
-	public void setHandTags(List<Tag> handTags) {
+	final public void setHandTags(List<Tag> handTags) {
 		this.handTags = handTags;
 	}
-	public Geocode getGeocode() {
+	final public Geocode getGeocode() {
 		return geocode;
 	}
-	
-	public void setGeocode(Geocode geocode) {
+	final public void setGeocode(Geocode geocode) {
 		this.geocode = geocode;
 	}
 	
