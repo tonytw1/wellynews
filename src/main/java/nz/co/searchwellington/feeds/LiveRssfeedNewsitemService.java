@@ -25,6 +25,7 @@ import com.sun.syndication.feed.module.mediarss.MediaEntryModuleImpl;
 import com.sun.syndication.feed.module.mediarss.MediaModule;
 import com.sun.syndication.feed.module.mediarss.types.MediaContent;
 import com.sun.syndication.feed.module.mediarss.types.Metadata;
+import com.sun.syndication.feed.module.mediarss.types.Reference;
 import com.sun.syndication.feed.module.mediarss.types.Thumbnail;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
@@ -53,17 +54,23 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
             List entires = syndfeed.getEntries();
             int itemNumber = 1;
             for (Iterator iter = entires.iterator(); iter.hasNext();) {
-                SyndEntry item = (SyndEntry) iter.next();
-                FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
-                feedItem.setItemNumber(itemNumber);
+            	try {
+            		SyndEntry item = (SyndEntry) iter.next();
+            		FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
+            		feedItem.setItemNumber(itemNumber);
                 
-                feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
-                feedNewsitems.add(feedItem);
-                itemNumber++;
+            		feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));
+            		feedNewsitems.add(feedItem);
+            		itemNumber++;
+            	} catch (Exception e) {
+            		log.error("Unexpected exception while processing feed item", e);
+				}
             }
         } else {
             log.warn("Feed was null after loading attempt; returning empty list.");
         }
+        
+        log.info("Found " + feedNewsitems.size() + " feed newsitems");
         return feedNewsitems;
     }
 	
@@ -106,27 +113,37 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 	private Image extractThumbnail(Feed feed, SyndEntry item) {		
         MediaEntryModuleImpl mediaModule = (MediaEntryModuleImpl) item.getModule(MediaModule.URI);
         if (mediaModule != null) {
-        	
-        	log.debug("Found media module for feed: " + feed.getName());
+        	log.debug("Found media module for item: " + item.getTitle());
         	
         	MediaContent[] mediaContents = mediaModule.getMediaContents();
 			if (mediaContents.length > 0) {
-				MediaContent mediaContent = mediaContents[0];				
+				MediaContent mediaContent = mediaContents[0];
+								
 				Metadata metadata = mediaContent.getMetadata();
 				Thumbnail[] thumbnails = metadata.getThumbnail();
 				if (thumbnails.length > 0) {
 					Thumbnail thumbnail = thumbnails[0];		
-					log.info("Found thumbnail on first media content: " + thumbnail.getUrl());
+					log.info("Took first thumbnail on first mediaContent: " + thumbnail.getUrl());
 					return new Image(thumbnail.getUrl().toExternalForm(), null);
 				}
+				
+				if (mediaContent.getReference() != null) {
+					final Reference reference = mediaContent.getReference();
+					if (reference.toString().endsWith(".jpg")) {
+						log.info("Took image reference from first MediaContent: " + reference);						
+					}
+					return new Image(reference.toString(), null);
+				}
+				log.info(mediaContent.getReference());
 			}
 						
 			Thumbnail[] thumbnails = mediaModule.getMetadata().getThumbnail();
 			if (thumbnails.length > 0) {					
 				Thumbnail thumbnail = thumbnails[0];
-				log.info("Found first thumbnail on module metadata: " + thumbnail.getUrl());
+				log.info("Took first thumbnail from module metadata: " + thumbnail.getUrl());
 				return new Image(thumbnail.getUrl().toExternalForm(), null);				
-			}						
+			}
+			
         }	
 		return null;
 	}

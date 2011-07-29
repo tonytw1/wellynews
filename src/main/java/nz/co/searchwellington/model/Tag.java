@@ -13,7 +13,6 @@ public class Tag {
 	private Set <Tag> children;
 	private boolean hidden;
     
-	private int flickrCount;
 	private String mainImage;
 	private String secondaryImage;
 	
@@ -84,15 +83,7 @@ public class Tag {
         }
         return ancestors;
     }
-
-    public int getFlickrCount() {
-        return flickrCount;
-    }
-
-    public void setFlickrCount(int flickrCount) {
-        this.flickrCount = flickrCount;
-    }
-        
+    
     // TODO only used in tag tree vm. Can come off the interface.
     public boolean isParentOf(Tag tag) {        
         return tag.getAncestors().contains(this);            
