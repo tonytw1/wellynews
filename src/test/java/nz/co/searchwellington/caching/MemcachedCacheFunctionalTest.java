@@ -12,6 +12,7 @@ import org.junit.Test;
 
 public class MemcachedCacheFunctionalTest {
 
+	private static final String UPDATED_VALUE = "Updated value";
 	private static final int TTL = 60;
 	private static final String KEY = "testkey3";
 	private static final String FEED_KEY = "feedkey2";
@@ -23,13 +24,21 @@ public class MemcachedCacheFunctionalTest {
 	@Before
 	public void setup() {
 		cache = new MemcachedCache();
-		cache.setMemcachedUrls("dev.local:11211");
+		cache.setMemcachedUrls("localhost:11211");
 	}
 	
 	@Test
 	public void canRoundTripSimpleContentThroughTheCache() throws Exception {		
 		cache.put(KEY, 3600, TEST_STRING);		
 		assertEquals(TEST_STRING, cache.get(KEY));		
+	}
+	
+	@Test
+	public void subsequentPutsShouldOverwriteExistingValue() throws Exception {
+		cache.put(KEY, 3600, TEST_STRING);
+		assertEquals(TEST_STRING, cache.get(KEY));		
+		cache.put(KEY, 3600, UPDATED_VALUE);
+		assertEquals(UPDATED_VALUE, cache.get(KEY));
 	}
 	
 	@SuppressWarnings("unchecked")

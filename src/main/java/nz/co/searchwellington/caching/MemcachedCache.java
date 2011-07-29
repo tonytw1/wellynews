@@ -23,7 +23,8 @@ public class MemcachedCache {
 	public void put(String key, int ttl, Object value) {
 		try {
 			memcachedClient = getClient();
-			memcachedClient.add(key, ttl, value);			
+			memcachedClient.set(key, ttl, value);
+			
 		} catch (IOException e) {
 			log.error("Failed to put to cache: " + e.getMessage());
 		}		
