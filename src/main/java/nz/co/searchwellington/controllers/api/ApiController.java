@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
+import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -43,8 +44,10 @@ public class ApiController extends MultiActionController {
 	private SubmissionProcessingService submissionProcessingService;
 	private AutoTaggingService autoTagger;
 	private HandTaggingDAO tagVoteDAO;
+
+	private FeedItemAcceptor feedItemAcceptor;
 	
-    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO) {		
+    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor) {
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
@@ -54,6 +57,7 @@ public class ApiController extends MultiActionController {
 		this.submissionProcessingService = submissionProcessingService;
 		this.autoTagger = autoTagger;
 		this.tagVoteDAO = tagVoteDAO;
+		this.feedItemAcceptor = feedItemAcceptor;
 	}
     
     @Transactional
@@ -108,9 +112,8 @@ public class ApiController extends MultiActionController {
     			log.info("Attempting to accept feed item with url: " + url);
     			Newsitem newsitemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(url);
     			if (newsitemToAccept != null) {
-    				// TODO newsitem accector call required
-    				log.info("Applying autotagging to new submission.");
-    				autoTagger.autotag(newsitemToAccept);            
+    				feedItemAcceptor.acceptFeedItem(loggedInUser, newsitemToAccept);
+    				autoTagger.autotag(newsitemToAccept);   // TODO in the wrong place - should be behind the content update service?
     				contentUpdateService.update(newsitemToAccept);
     			}
     		}

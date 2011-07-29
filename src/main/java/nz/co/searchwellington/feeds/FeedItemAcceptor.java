@@ -11,14 +11,8 @@ import org.joda.time.DateTime;
 public class FeedItemAcceptor {
 	
 	private static Logger log = Logger.getLogger(FeedItemAcceptor.class);
-
-	private RssfeedNewsitemService rssfeedNewsitemService;
-    
-	public FeedItemAcceptor() {
-	}
 	
-	public FeedItemAcceptor(RssfeedNewsitemService rssfeedNewsitemService) {
-		this.rssfeedNewsitemService = rssfeedNewsitemService;
+	public FeedItemAcceptor() {
 	}
 	
 	public Newsitem acceptFeedItem(User user, Newsitem newsitem) {
