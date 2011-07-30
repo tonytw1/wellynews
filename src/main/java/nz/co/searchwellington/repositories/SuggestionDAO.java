@@ -14,32 +14,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class SuggestionDAO implements SuggestionRepository {
 	
-	static Logger log = Logger.getLogger(SuggestionDAO.class);
+	private static Logger log = Logger.getLogger(SuggestionDAO.class);
 	    
-	SessionFactory sessionFactory;
-	    	
+	private SessionFactory sessionFactory;
 	
 	public SuggestionDAO() {		
 	}
 
-
 	public SuggestionDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-
 	
 	@Transactional
 	public Suggestion createSuggestion(Feed feed, String url, Date firstSeen) {
 		return new Suggestion(feed, url, firstSeen);
 	}
-	 
-	 
+	 	 
 	@Transactional
 	public void addSuggestion(Suggestion suggestion) {
 		log.info("Creating suggestion for: " + suggestion.getUrl());        
 		sessionFactory.getCurrentSession().saveOrUpdate(suggestion);
 	}
-
 
 	public boolean isSuggested(String url) {
 		Suggestion existingSuggestion = (Suggestion) sessionFactory.getCurrentSession().createCriteria(Suggestion.class).
@@ -52,14 +47,7 @@ public class SuggestionDAO implements SuggestionRepository {
 		 }        
 		 return false;
 	 }
-	 
-	 	
-	 public List<Suggestion> getAllSuggestions() {        
-		 return getSuggestions(500); 
-	 }
-	 
-	 
-	 // TODO This should really be private or in a wrapping service - ping ponging between this, the caller and getFeedNewsitems
+	
 	 @SuppressWarnings("unchecked")
 	 public List<Suggestion> getSuggestions(int maxResults) {
 		 return sessionFactory.getCurrentSession().createCriteria(Suggestion.class).
@@ -68,7 +56,6 @@ public class SuggestionDAO implements SuggestionRepository {
 	        setMaxResults(maxResults).
 	        list();
 	 }
-
 	 
 	 @Transactional
 	 public void removeSuggestion(String url) {

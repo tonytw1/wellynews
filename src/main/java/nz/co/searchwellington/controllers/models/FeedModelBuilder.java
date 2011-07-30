@@ -75,7 +75,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	private void populateFeedItems(ModelAndView mv, Feed feed) {
 		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);		
-		if (feedNewsitems != null && feedNewsitems.size() > 0) {
+		if (feedNewsitems != null && !feedNewsitems.isEmpty()) {
 			mv.addObject("main_content", rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems));
 		}
 	}

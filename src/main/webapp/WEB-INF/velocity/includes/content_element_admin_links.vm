@@ -28,9 +28,9 @@
 				
 			#if ($editPermissionService.canEdit($item) && ($item.type == "FNI"))
 				#if ($item.localCopy) 
-					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.getLocalCopy())">edit local copy</a></li>
+					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.localCopy)">edit local copy</a></li>
 				#else
-					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemAcceptUrl($item)">accept</a></li>					
+					<li class="admin"><a href="$adminUrlBuilder.getFeednewsItemAcceptUrl($item)">accept</a></li>					
 				#end
 									
 				#if ($item.suppressed) 

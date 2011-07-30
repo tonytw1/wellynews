@@ -3,8 +3,7 @@ package nz.co.searchwellington.controllers.admin;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
@@ -12,14 +11,17 @@ import nz.co.searchwellington.model.frontend.FrontendWebsite;
 public class AdminUrlBuilder {
 
 	private SiteInformation siteInformation;
-
-		
+	
 	public AdminUrlBuilder(SiteInformation siteInformation) {		
 		this.siteInformation = siteInformation;
 	}
 	
 	public String getResourceEditUrl(FrontendResource resource) {
 		return siteInformation.getUrl() + "/edit/edit?resource=" + resource.getId();
+	}
+	
+	public String getResourceEditUrl(Integer resourceId) {
+		return siteInformation.getUrl() + "/edit/edit?resource=" + resourceId;
 	}
 	
 	public String getResourceDeleteUrl(FrontendResource frontendResource) {
@@ -34,19 +36,15 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/edit/viewsnapshot?resource=" + resource.getId();	
 	}
 	
-	public String getFeednewsItemAcceptUrl(Newsitem feednewsitem) throws UnsupportedEncodingException {
+	public String getFeednewsItemAcceptUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/edit/accept?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");		
 	}
 	
-	public String getFeedNewsitemSuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
-		return makeSuppressionUrl(feednewsitem.getUrl());
+	public String getFeedNewsitemSuppressUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
 	}
 	
-	private String makeSuppressionUrl(String url) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(url, "UTF-8");
-	}
-	
-	public String getFeedNewsitemUnsuppressUrl(FeedNewsitem feednewsitem) throws UnsupportedEncodingException {
+	public String getFeedNewsitemUnsuppressUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
 		return siteInformation.getUrl() + "/supress/unsupress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
 	}
 	

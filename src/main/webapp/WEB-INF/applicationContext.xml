@@ -416,10 +416,14 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="tagDAO" />
 	</bean>
 	
-		
+	<bean id="availableSuggestedFeeditemsService" class="nz.co.searchwellington.repositories.AvailableSuggestedFeeditemsService">
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
+	</bean>
+			
 	<bean id="suggestedFeeditemsService" class="nz.co.searchwellington.repositories.SuggestedFeeditemsService">
 		<constructor-arg ref="suggestionDAO" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />	
+		<constructor-arg ref="availableSuggestedFeeditemsService" />
+		<constructor-arg ref="cachingRssfeedNewsitemService" />
 	</bean>
-		
+			
 </beans>

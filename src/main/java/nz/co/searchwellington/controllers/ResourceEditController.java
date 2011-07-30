@@ -178,13 +178,16 @@ public class ResourceEditController extends BaseMultiActionController {
         	return null;
     	}
     	
-    	Newsitem acceptedNewsitem = null;
-    	if (request.getParameter("url") != null) {
-    		acceptedNewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(request.getParameter("url"));        	
-        }
+    	final String url = request.getParameter("url");
+		if (url == null) {
+			log.warn("No feeditem url given");
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        	return null;
+		}
     	
+		Newsitem acceptedNewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(url);        	
         if (acceptedNewsitem == null) {
-        	log.warn("No matching newsitem found for feed/item.");
+        	log.warn("No matching newsitem found for url: " + url);
         	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         	return null;
         }

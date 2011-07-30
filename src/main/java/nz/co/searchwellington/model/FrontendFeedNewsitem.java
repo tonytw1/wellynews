@@ -10,24 +10,23 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 	private static final long serialVersionUID = 1L;
 
 	FeedNewsitem feedNewsitem;
-	boolean hasLocalCopy;
 	private boolean isSuppressed;
 	private Suggestion suggestion;
+	Integer localCopy;
 	
     public FrontendFeedNewsitem(FeedNewsitem feedNewsitem) {
     	this.feedNewsitem = feedNewsitem;
         this.isSuppressed = false;
-        this.hasLocalCopy = false;
     }
     
-	public boolean isHasLocalCopy() {
-		return hasLocalCopy;
+	public Integer getLocalCopy() {
+		return localCopy;
 	}
-
-	public void setHasLocalCopy(boolean hasLocalCopy) {
-		this.hasLocalCopy = hasLocalCopy;
+	
+	public void setLocalCopy(Integer localCopy) {
+		this.localCopy = localCopy;
 	}
-
+	
 	public boolean isSuppressed() {
 		return isSuppressed;
 	}

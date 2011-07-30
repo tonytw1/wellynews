@@ -52,11 +52,12 @@ public abstract class RssfeedNewsitemService {
 	}
 	
 	public Newsitem getFeedNewsitemByUrl(String url) {
+		log.info("Looking for feed news items by url: " + url);
 		for(Feed feed : resourceDAO.getAllFeeds()) {
 			List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
 			for (FeedNewsitem feedNewsitem : feednewsItems) {                	
 				if (feedNewsitem.getUrl().equals(url)) {
-					makeNewsitemFromFeedItem(feed, feedNewsitem);
+					return makeNewsitemFromFeedItem(feed, feedNewsitem);
 				}
 			}
 		}
@@ -68,13 +69,14 @@ public abstract class RssfeedNewsitemService {
 		Iterator<FeedNewsitem> i = feedNewsitems.iterator();
 		while (i.hasNext()) {
 			FeedNewsitem feedNewsitem = i.next();
-			if (feedNewsitem.getUrl().equals(url)) {
+			if (feedNewsitem.getUrl() != null && feedNewsitem.getUrl().equals(url)) {
 				return feedNewsitem;
 			}
 		}
 		return null;
 	}
 	
+	// TODO This is probably a seperate class as it has nothing todo with looking through the feed item cache for items.
 	public List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
 		List<FrontendFeedNewsitem> decoratedFeednewsitems = new ArrayList<FrontendFeedNewsitem>();
 		for (FeedNewsitem feedNewsitem : feedNewsitems) {
@@ -84,7 +86,7 @@ public abstract class RssfeedNewsitemService {
 				
 				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());	// TODO expensive?
 				if (localCopy != null) {
-					frontendFeedNewsitem.setHasLocalCopy(true);
+					frontendFeedNewsitem.setLocalCopy(localCopy.getId());
 				}
 				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
 				frontendFeedNewsitem.setSuppressed(isSuppressed);						

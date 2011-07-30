@@ -13,9 +13,7 @@ public interface SuggestionRepository {
 	public void addSuggestion(Suggestion suggestion);
 
 	public boolean isSuggested(String url);
-
-	public List<Suggestion> getAllSuggestions();
-
+	
 	public List<Suggestion> getSuggestions(int maxResults);
 
 	public void removeSuggestion(String url);

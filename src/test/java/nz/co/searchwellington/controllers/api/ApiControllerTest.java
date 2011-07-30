@@ -2,11 +2,14 @@ package nz.co.searchwellington.controllers.api;
 
 import static org.mockito.Mockito.when;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
+import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
+import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -26,11 +29,14 @@ public class ApiControllerTest {
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock SupressionService supressionService;
 	@Mock RssfeedNewsitemService rssNewsitemService;
+	@Mock SubmissionProcessingService submissionProcessingService;
 	@Mock ContentUpdateService contentUpdateService;
 	@Mock AutoTaggingService autoTaggingService;
+	@Mock FeedItemAcceptor feedItemAcceptor;
 	
 	@Mock Newsitem acceptedFeedNewsitem;
 	@Mock User adminUser;
+	private HandTaggingDAO tagVoteDao;
 
 	@Before
 	public void setUp() throws Exception {
@@ -42,8 +48,11 @@ public class ApiControllerTest {
 	
 	@Test
 	public void authorisedUsersCanRemotelyAcceptFeedsItemByUrl() throws Exception {
-		ApiController controller = new ApiController(resourceDAO, requestFilter, loggedInUserFilter, supressionService, rssNewsitemService, contentUpdateService, null, autoTaggingService, null);
-		
+		ApiController controller = new ApiController(resourceDAO,
+				requestFilter, loggedInUserFilter, supressionService,
+				rssNewsitemService, contentUpdateService,
+				submissionProcessingService, autoTaggingService, tagVoteDao, feedItemAcceptor);
+
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		

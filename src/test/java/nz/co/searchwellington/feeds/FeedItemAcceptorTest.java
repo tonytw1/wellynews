@@ -15,13 +15,10 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class FeedItemAcceptorTest {
-
-	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	
 	@Mock Newsitem feednewsitem;
 	@Mock Feed feed;
 	@Mock FeedNewsitem feedNewsitem;
-	@Mock Newsitem newsitem;
 	@Mock Website publisher;
 	
 	private FeedItemAcceptor feedItemAcceptor;
@@ -31,28 +28,29 @@ public class FeedItemAcceptorTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(feed.getPublisher()).thenReturn(publisher);
-		Mockito.when(newsitem.getName()).thenReturn("HEADLINE");
-		Mockito.when(rssfeedNewsitemService.makeNewsitemFromFeedItem(Mockito.eq(feed), Mockito.any(FeedNewsitem.class))).thenReturn(newsitem);
-		feedItemAcceptor = new FeedItemAcceptor(rssfeedNewsitemService);
+		Mockito.when(feed.getName()).thenReturn("A feed");
+		Mockito.when(feednewsitem.getName()).thenReturn("HEADLINE");
+		Mockito.when(feednewsitem.getFeed()).thenReturn(feed);
+		feedItemAcceptor = new FeedItemAcceptor();
 	}
 	
 	@Test
 	public void shouldSetAcceptedTimeWhenAccepting() throws Exception {
 		feedItemAcceptor.acceptFeedItem(user, feednewsitem);
-		Mockito.verify(newsitem).setAccepted(Mockito.any(Date.class));
+		Mockito.verify(feednewsitem).setAccepted(Mockito.any(Date.class));
 	}
 	
 	@Test
 	public void shouldSetAcceptedByUserAndOwnerWhenAccepting() throws Exception {
 		feedItemAcceptor.acceptFeedItem(user, feednewsitem);
-		Mockito.verify(newsitem).setAcceptedBy(user);
-		Mockito.verify(newsitem).setOwner(user);
+		Mockito.verify(feednewsitem).setAcceptedBy(user);
+		Mockito.verify(feednewsitem).setOwner(user);
 	}
 	
 	@Test
 	public void shouldFlattenLoudHeadlinesWhenAccepting() throws Exception {		
 		feedItemAcceptor.acceptFeedItem(user, feednewsitem);
-		Mockito.verify(newsitem).setName("Headline");
+		Mockito.verify(feednewsitem).setName("Headline");
 	}
 	
 }
