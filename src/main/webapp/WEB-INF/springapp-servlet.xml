@@ -380,10 +380,7 @@
 			
 				<prop key="/edit/viewsnapshot">editController</prop>				
 				
-				<prop key="/edit/tag/submit">tagEditController</prop>
-				<prop key="/edit/tag/save">tagEditController</prop>
 				<prop key="/edit/tag/*">tagEditController</prop>
-				<prop key="/edit/tag/delete">tagEditController</prop>
 							
 				<prop key="/autotag/*">autoTagController</prop>
 				<prop key="/autotag/*/apply">autoTagController</prop>

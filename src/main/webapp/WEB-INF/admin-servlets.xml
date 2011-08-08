@@ -60,7 +60,8 @@
 				<property name="mappings">
 					<props>
 						<prop key="/edit/tag/submit">submit</prop>
-						<prop key="/edit/tag/save">save</prop>												
+						<prop key="/edit/tag/save">save</prop>
+						<prop key="/edit/tag/add">add</prop>																
 						<prop key="/edit/tag/*">edit</prop>
 						<prop key="/edit/tag/delete">delete</prop>
 					</props>

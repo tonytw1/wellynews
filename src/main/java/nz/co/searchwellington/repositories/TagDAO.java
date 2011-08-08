@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -21,9 +22,14 @@ public class TagDAO {
 	public TagDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
-	
+
+	@Deprecated
 	public Tag createNewTag() {
 		return new Tag(0, "", "", null, new HashSet<Tag>(), 0, false);
+	}
+	
+	public Tag createNewTag(String tagUrlWords, String displayName) {
+		return new Tag(0, tagUrlWords, displayName, null, new HashSet<Tag>(), 0, false);
 	}
 		
 	public Tag loadTagById(int tagID) {

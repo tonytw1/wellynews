@@ -10,15 +10,19 @@ import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.TagModificationService;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.struts.mock.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import org.springframework.web.servlet.view.RedirectView;
 
 public class TagEditController extends MultiActionController {
     
@@ -54,16 +58,10 @@ public class TagEditController extends MultiActionController {
 	}
     
 	@Transactional
-    public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {
-    	    	
-        ModelAndView modelAndView = new ModelAndView("submitTag");    
+    public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {    	    	
+        ModelAndView modelAndView = new ModelAndView("submitTag");
         modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());
         modelAndView.addObject("heading", "Submitting a Tag");
-
-        Tag editTag = tagDAO.createNewTag();
-
-        modelAndView.addObject("tag", editTag);
-        modelAndView.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent(), new HashSet<Tag>()).toString());
         return modelAndView;
     }
         
@@ -110,6 +108,27 @@ public class TagEditController extends MultiActionController {
         urlStack.setUrlStack(request, "");                     
         return mv;
     }
+    
+    public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
+    	  ModelAndView modelAndView = new ModelAndView("savedTag");    
+          modelAndView.addObject("heading", "Tag Added");
+          
+          final String displayName = request.getParameter("displayName");
+          if (displayName != null) {        	  
+        	  String tagUrlWords = UrlWordsGenerator.makeUrlWordsFromName(displayName);
+        	  if (tagDAO.loadTagByName(tagUrlWords) == null) {
+        		  Tag newTag = tagDAO.createNewTag(tagUrlWords, displayName);        		  
+        		  log.info("Adding new tag: " + tagUrlWords);
+        		  tagDAO.saveTag(newTag);
+        		  modelAndView.addObject("tag", newTag);
+                  return modelAndView;
+
+        	  } else {
+        		  log.info("A tag already exists with url words: " + tagUrlWords + ". Not adding.");
+        	  }
+          }          
+          return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
+	}
     
     @Transactional
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {        

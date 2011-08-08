@@ -8,37 +8,19 @@
 </div>
 
 <div class="main">
-<h2>Submitting a New Tag</h2>
+<h2>Adding a New Tag</h2>
 
-
-<form action="save" method="POST"> 
-		<fieldset>
-					
-		<p><label for="name">Name: </label>
-		<input name="name" value="$tag.name" /></p>
-		
+<form action="add" method="POST">
+	<fieldset>
 		<p><label for="name">Display Name: </label>
-		<input name="displayName" value="$tag.displayName" /></p>
-		
-		<p><label for="description">Description: </label>
-		<input name="description" value="$tag.description" /></p>
-		
-		#if ($tag_select) 
-			<p><label for="parent">Parent Tag: </label>
-	    	$tag_select	
-			</p>
-		#end
-		
-		<input type="submit" value="Save" />		
+		<input name="displayName" value="" /></p>			
+		<input type="submit" value="Add" />
 	</fieldset>
 </form>
 
 <form action="../../cancel" method="POST">
 	<input type="submit" value="cancel" />
 </form>
-
-
 </div>
-
 
 #parse("includes/footer.vm")
