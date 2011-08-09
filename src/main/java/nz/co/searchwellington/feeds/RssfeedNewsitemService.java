@@ -2,18 +2,14 @@ package nz.co.searchwellington.feeds;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 
@@ -27,6 +23,7 @@ public abstract class RssfeedNewsitemService {
 
 	protected ResourceRepository resourceDAO;
 	protected SupressionRepository suppressionDAO;
+	protected FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	
 	public final Date getLatestPublicationDate(Feed feed) {
 		Date latestPublicationDate = null;
@@ -39,25 +36,13 @@ public abstract class RssfeedNewsitemService {
 		return latestPublicationDate;
 	}
 	
-	// TODO merge with addSuppressAndLocalCopyInformation?
-	public Newsitem makeNewsitemFromFeedItem(Feed feed, FeedNewsitem feedNewsitem) {
-		// TODO why are we newing up an instance of our superclass?
-	    String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : "";
-		Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(), new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
-	    newsitem.setImage(feedNewsitem.getImage());
-	    newsitem.setFeed(feed);
-	    newsitem.setPublisher(feed.getPublisher());
-	    newsitem.setGeocode(feedNewsitem.getGeocode());
-	    return newsitem;
-	}
-	
 	public Newsitem getFeedNewsitemByUrl(String url) {
 		log.info("Looking for feed news items by url: " + url);
 		for(Feed feed : resourceDAO.getAllFeeds()) {
 			List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
 			for (FeedNewsitem feedNewsitem : feednewsItems) {                	
 				if (feedNewsitem.getUrl().equals(url)) {
-					return makeNewsitemFromFeedItem(feed, feedNewsitem);
+					return feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feedNewsitem);
 				}
 			}
 		}

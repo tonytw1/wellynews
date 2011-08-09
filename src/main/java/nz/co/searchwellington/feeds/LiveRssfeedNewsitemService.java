@@ -38,10 +38,11 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 	private RssHttpFetcher rssFetcher;
     private TextTrimmer textTrimmer;
 	
-    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer) {
+    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer, FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
 		this.urlCleaner = urlCleaner;
 		this.rssFetcher = rssFetcher;
 		this.textTrimmer = textTrimmer;
+		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 	}
 
 	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {

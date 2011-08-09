@@ -33,6 +33,7 @@ public class FeedReader {
     private ContentUpdateService contentUpdateService;
 	private FeedItemAcceptor feedItemAcceptor;
     private AutoTaggingService autoTagger;
+    private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
     
     public FeedReader() {        
     }
@@ -44,7 +45,8 @@ public class FeedReader {
 			SuggestionRepository suggestionDAO,
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor,
-			AutoTaggingService autoTagger) {
+			AutoTaggingService autoTagger,
+			FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
@@ -54,6 +56,8 @@ public class FeedReader {
 		this.contentUpdateService = contentUpdateService;
 		this.feedItemAcceptor = feedItemAcceptor;
 		this.autoTagger= autoTagger;
+		this.feedAcceptanceDecider = feedAcceptanceDecider;
+		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -102,7 +106,7 @@ public class FeedReader {
 				if (acceptancePolicy.startsWith("accept")) {
 					boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy).isEmpty();
 					if (acceptThisItem) {
-						Newsitem newsitem = rssfeedNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
+						Newsitem newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
 						feedItemAcceptor.acceptFeedItem(feedReaderUser, newsitem);
 						contentUpdateService.create(newsitem);
 						autoTagger.autotag(newsitem);
