@@ -98,7 +98,6 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         return feedItem;
 	}
 
-
 	private Geocode extractGeocode(Feed feed, SyndEntry item) {
 		GeoRSSModule geoModule = (GeoRSSModule) GeoRSSUtils.getGeoRSS(item);
 		if (geoModule != null) {
@@ -106,10 +105,9 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 			log.info("Location is: " + address);
 			return new Geocode(address, geoModule.getPosition().getLatitude(), geoModule.getPosition().getLongitude());
 		}
-
 		return null;
 	}
-
+	
 	private Image extractThumbnail(Feed feed, SyndEntry item) {		
         MediaEntryModuleImpl mediaModule = (MediaEntryModuleImpl) item.getModule(MediaModule.URI);
         if (mediaModule != null) {
