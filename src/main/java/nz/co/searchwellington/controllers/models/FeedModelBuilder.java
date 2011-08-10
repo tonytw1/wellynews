@@ -12,12 +12,9 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
-import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
-
-	private static Logger log = Logger.getLogger(FeedModelBuilder.class);
 	
 	private static final String FEED_ATTRIBUTE = "feedAttribute";
 	private static Pattern feedPattern = Pattern.compile("^/feed/(.*)$");
