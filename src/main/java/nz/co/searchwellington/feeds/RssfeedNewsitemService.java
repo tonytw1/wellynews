@@ -81,20 +81,6 @@ public abstract class RssfeedNewsitemService {
 		return decoratedFeednewsitems;
 	}
 	
-	// TODO In the wrong class - it only used in feed model builder
-	public List<FrontendFeedNewsitem> extractGeotaggedFeeditems(List<FrontendFeedNewsitem> feedNewsitems) {
-		List<FrontendFeedNewsitem> geotaggedFeedNewsitems = new ArrayList<FrontendFeedNewsitem>();
-		for (FrontendFeedNewsitem feedNewsitem : feedNewsitems) {
-			if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
-				geotaggedFeedNewsitems.add(feedNewsitem);
-			}
-		}
-		if (!geotaggedFeedNewsitems.isEmpty()) {
-			return geotaggedFeedNewsitems;
-		}
-		return null;
-	}
-	
 	public boolean isUrlInAcceptedFeeds(String url) {
 		log.info("Looking for url in accepted feeds: " + url);
 		for(Feed feed : resourceDAO.getAllFeeds()) {

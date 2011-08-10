@@ -112,9 +112,12 @@
 		<constructor-arg ref="relatedTagsService" />
 	</bean>
 	
+	<bean id="geotaggedNewsitemExtractor" class="nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor" />
+	
 	<bean id="feedModelBuilder" class="nz.co.searchwellington.controllers.models.FeedModelBuilder">	
 		<constructor-arg ref="cachingRssfeedNewsitemService" />
 		<constructor-arg ref="contentRetrievalService" />
+		<constructor-arg ref="geotaggedNewsitemExtractor" />
 	</bean>
 			
 	<bean id="suggestionsModelBuilder" class="nz.co.searchwellington.controllers.models.SuggestionsModelBuilder">

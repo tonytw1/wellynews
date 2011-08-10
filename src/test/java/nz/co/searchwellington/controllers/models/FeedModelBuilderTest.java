@@ -24,6 +24,8 @@ public class FeedModelBuilderTest {
 	
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock ContentRetrievalService contentRetrievalService;
+	@Mock GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
+	
 	@Mock Feed feed;
 	@Mock List<FeedNewsitem> feedNewsitems;
 	@Mock List<FrontendFeedNewsitem> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
@@ -42,7 +44,7 @@ public class FeedModelBuilderTest {
 		request = new MockHttpServletRequest();
 		request.setPathInfo("/feed/someonesfeed");
 		
-		modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService);
+		modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor);
 	}
 	
 	@Test
@@ -62,10 +64,10 @@ public class FeedModelBuilderTest {
 		ModelAndView mv = modelBuilder.populateContentModel(request);
 		assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation, mv.getModel().get("main_content"));
 	}
-
+	
 	@Test
 	public void shouldPushGeotaggedFeeditemsOntoTheModelSeperately() throws Exception {
-		when(rssfeedNewsitemService.extractGeotaggedFeeditems(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)).thenReturn(geotaggedFeedNewsitems);		
+		when(geotaggedNewsitemExtractor.extractGeotaggedFeeditems(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)).thenReturn(geotaggedFeedNewsitems);		
 		ModelAndView mv = modelBuilder.populateContentModel(request);
 		modelBuilder.populateExtraModelConent(request, false, mv);
 		assertEquals(geotaggedFeedNewsitems, mv.getModel().get("geocoded"));

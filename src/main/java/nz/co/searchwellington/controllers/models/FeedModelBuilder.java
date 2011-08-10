@@ -23,10 +23,12 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	private static Pattern feedPattern = Pattern.compile("^/feed/(.*)$");
 	
 	private RssfeedNewsitemService rssfeedNewsitemService;
+	private GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 		
-	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService) {
+	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
+		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;
 	}
 	
 	@Override
@@ -84,7 +86,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	private void populateGeotaggedFeedItems(ModelAndView mv) {
 		List<FrontendFeedNewsitem> mainContent = (List<FrontendFeedNewsitem>) mv.getModel().get("main_content");
 		if (mainContent != null) {
-			mv.addObject("geocoded", rssfeedNewsitemService.extractGeotaggedFeeditems(mainContent));
+			mv.addObject("geocoded", geotaggedNewsitemExtractor.extractGeotaggedFeeditems(mainContent));
 		}
 	}
 	
