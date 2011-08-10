@@ -3,8 +3,8 @@ package nz.co.searchwellington.repositories;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.UrlWordsGenerator;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
