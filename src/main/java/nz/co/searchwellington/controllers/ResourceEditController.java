@@ -171,7 +171,7 @@ public class ResourceEditController extends BaseMultiActionController {
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
         response.setCharacterEncoding("UTF-8");
     	adminRequestFilter.loadAttributesOntoRequest(request);    	// TODO get all admin things into a common path and then make this a web.xml filter
-            
+    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (!editPermissionService.canAcceptFeedItems(loggedInUser)) {
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -202,7 +202,7 @@ public class ResourceEditController extends BaseMultiActionController {
 		modelAndView.addObject("acceptedFromFeed", UrlWordsGenerator.makeUrlWordsFromName(acceptedNewsitem.getAcceptedFromFeedName()));
 		return modelAndView;
     }
-        
+    
     @Transactional
     public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("submitWebsite");

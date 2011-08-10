@@ -12,10 +12,11 @@ public class CachingRssfeedNewsitemService extends RssfeedNewsitemService {
 
 	private FeedNewsitemCache feedNewsitemCache;
 	
-	public CachingRssfeedNewsitemService(ResourceRepository resourceDAO, SupressionRepository suppressionDAO, FeedNewsitemCache feedNewsitemCache) {
+	public CachingRssfeedNewsitemService(ResourceRepository resourceDAO, SupressionRepository suppressionDAO, FeedNewsitemCache feedNewsitemCache, FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
 		this.resourceDAO = resourceDAO;
 		this.suppressionDAO = suppressionDAO;
 		this.feedNewsitemCache = feedNewsitemCache;
+		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 	}
 
 	@Override

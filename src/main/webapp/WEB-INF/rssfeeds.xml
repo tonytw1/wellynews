@@ -49,6 +49,7 @@
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="supressionDAO" />
 		<constructor-arg ref="feedNewsitemCache" />
+		<constructor-arg ref="feednewsitemToNewsitemService" />		
 	</bean>
 	
 	<bean id="textTrimmer" class="nz.co.searchwellington.utils.TextTrimmer" />
