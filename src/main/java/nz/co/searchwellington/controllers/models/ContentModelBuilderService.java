@@ -23,11 +23,10 @@ public class ContentModelBuilderService {
 	}
 	
 	public ModelAndView populateContentModel(HttpServletRequest request) {
-		logger.info("Building content model");
 		for (int i = 0; i < modelBuilders.length; i++) {
 			ModelBuilder modelBuilder = modelBuilders[i];
 			if (modelBuilder.isValid(request)) {
-				logger.debug("Using " + modelBuilder);
+				logger.info("Using " + modelBuilder.getClass().getName() + " to server path: " + request.getPathInfo());
 				
 				final boolean showBroken = shouldShowBrokenResources();								
 				ModelAndView mv = modelBuilder.populateContentModel(request);
@@ -47,7 +46,7 @@ public class ContentModelBuilderService {
 				return null;				
 			}
 		}
-		logger.info("No matching model builders found for path: " + request.getPathInfo());
+		logger.warn("No matching model builders found for path: " + request.getPathInfo());
         return null;
 	}
 	
