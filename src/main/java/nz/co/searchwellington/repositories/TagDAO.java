@@ -25,11 +25,11 @@ public class TagDAO {
 
 	@Deprecated
 	public Tag createNewTag() {
-		return new Tag(0, "", "", null, new HashSet<Tag>(), 0, false);
+		return new Tag(0, "", "", null, new HashSet<Tag>(), 0, false, false);
 	}
 	
 	public Tag createNewTag(String tagUrlWords, String displayName) {
-		return new Tag(0, tagUrlWords, displayName, null, new HashSet<Tag>(), 0, false);
+		return new Tag(0, tagUrlWords, displayName, null, new HashSet<Tag>(), 0, false, false);
 	}
 		
 	public Tag loadTagById(int tagID) {
@@ -86,6 +86,12 @@ public class TagDAO {
 	public List<String> getTagNamesStartingWith(String q) {
 		  Session session = sessionFactory.getCurrentSession();
 		  return session.createQuery("select name from nz.co.searchwellington.model.Tag where name like ? order by name").setString(0, q + '%').setMaxResults(50).list();        
+	}
+
+	public List<Tag> getFeaturedTags() {
+		return sessionFactory.getCurrentSession().createCriteria(Tag.class)
+		.add(Restrictions.eq("featured", true)).addOrder(Order.asc("name"))
+		.setCacheable(true).list();
 	}
 	
 }

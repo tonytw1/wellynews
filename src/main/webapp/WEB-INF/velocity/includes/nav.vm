@@ -10,10 +10,13 @@
 	<li><a href="$site_information.url/about#contact">Contact</a></li>
 </ul>
 <br/>
+
+#if ($featuredTags) 
 <ul class="navtags">
-    <li><a href="$site_information.url/basinreserve">Basin Reserve Flyover</a></li>
-    <li><a href="$site_information.url/penguins">Our penguin overlords</a></li>
-    <li><a href="$site_information.url/transport">Transport</a></li>
-    <li><a href="$site_information.url/sport">Sport</a></li>
+	#foreach($featuredTag in $featuredTags)
+    <li><a href="$urlBuilder.getTagUrl($featuredTag)">$tag.displayName</a></li>
+	#end
 </ul>
+#end
+
 </div>

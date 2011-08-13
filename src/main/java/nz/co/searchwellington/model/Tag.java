@@ -12,6 +12,7 @@ public class Tag {
 	private Tag parent;
 	private Set <Tag> children;
 	private boolean hidden;
+	private boolean featured;
     
 	private String mainImage;
 	private String secondaryImage;
@@ -24,7 +25,7 @@ public class Tag {
     public Tag() {        
     }
         
-    public Tag(int id, String name, String displayName, Tag parent, Set <Tag> children, int flickrCount, boolean hidden) {  
+    public Tag(int id, String name, String displayName, Tag parent, Set <Tag> children, int flickrCount, boolean hidden, boolean featured) {  
         this.id = id;
         this.name = name;
         this.displayName = displayName;
@@ -32,6 +33,7 @@ public class Tag {
         this.children = children;
         this.hidden = hidden;
         this.relatedFeed = null;
+        this.featured = featured;
     }
         
     public int getId() {
@@ -156,6 +158,14 @@ public class Tag {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isFeatured() {
+		return featured;
+	}
+
+	public void setFeatured(boolean featured) {
+		this.featured = featured;
 	}
 	
 }

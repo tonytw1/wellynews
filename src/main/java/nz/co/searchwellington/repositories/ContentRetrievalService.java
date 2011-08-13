@@ -293,5 +293,9 @@ public class ContentRetrievalService {
 	public FrontendNewsitem getNewsPage(String pathInfo) {
 		return solrBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken());
 	}
+
+	public List<Tag> getFeaturedTags() {
+		return tagDAO.getFeaturedTags();
+	}
 	
 }

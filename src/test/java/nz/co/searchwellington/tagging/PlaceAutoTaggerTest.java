@@ -12,7 +12,6 @@ import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.TagDAO;
 
-
 public class PlaceAutoTaggerTest extends TestCase {
     
     private Tag placesTag;
@@ -24,8 +23,8 @@ public class PlaceAutoTaggerTest extends TestCase {
         
     @Override
     protected void setUp() throws Exception {
-        placesTag =  new Tag(1, "places","Places", null, new HashSet<Tag>(), 0, false);       
-        aroValleyTag = new Tag(2, "arovalley","Aro Valley", placesTag, new HashSet<Tag>(), 0, false);
+        placesTag =  new Tag(1, "places","Places", null, new HashSet<Tag>(), 0, false, false);       
+        aroValleyTag = new Tag(2, "arovalley","Aro Valley", placesTag, new HashSet<Tag>(), 0, false, false);
         placesTag.addChild(aroValleyTag);
         placeAutoTagger = new PlaceAutoTagger(tagDAO);
         when(tagDAO.loadTagByName("places")).thenReturn(placesTag);        

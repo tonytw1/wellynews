@@ -38,6 +38,10 @@
 			<column name="hidden" />
 		</property>
 		
+		<property name="featured" type="boolean">
+			<column name="featured" />
+		</property>
+		
 		<property name="mainImage">
 			<column name="main_image" length="255" not-null="false" />
 		</property>

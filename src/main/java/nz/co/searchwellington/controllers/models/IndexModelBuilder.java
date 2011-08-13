@@ -25,7 +25,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	private LoggedInUserFilter loggedInUserFilter;
 	private UrlBuilder urlBuilder;
 	private ArchiveLinksService archiveLinksService;
-		
+	
 	public IndexModelBuilder(ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter,
 			UrlBuilder urlBuilder, ArchiveLinksService archiveLinksService) {
@@ -67,6 +67,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateFeatured(mv);
 		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());		
 		archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths());
+		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
 		
 	@Override
@@ -95,7 +96,6 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			 }			 
 		 }
 	}
-
 	
 	private void populateFeatured(ModelAndView mv) {
         mv.addObject("featured", contentRetrievalService.getFeaturedSites());
@@ -111,7 +111,6 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			mv.addObject("commented_newsitems_moreurl", "comment");
 		}
 	}
-	
 	
 	private void populateGeocoded(ModelAndView mv) {
         List<FrontendResource> geocoded = contentRetrievalService.getGeocoded(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
