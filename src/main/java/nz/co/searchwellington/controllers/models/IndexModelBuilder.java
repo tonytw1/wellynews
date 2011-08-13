@@ -91,7 +91,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			 if (ownedCount > 0) {
 				 mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, MAX_OWNED_TO_SHOW_IN_RHS));
 				 if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
-					 mv.addObject("owned_moreurl", urlBuilder.getProfileUrl(loggedInUser));
+					 mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getName()));
 				 }
 			 }			 
 		 }
