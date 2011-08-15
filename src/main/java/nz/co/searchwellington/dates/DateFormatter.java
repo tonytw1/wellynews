@@ -10,7 +10,6 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class DateFormatter {
-
    
     public static final String DAY_MONTH_YEAR_FORMAT = "d MMM yyyy";
     public static final String TIME_DAY_MONTH_YEAR_FORMAT = "h:mm a d MMM yyyy";
@@ -18,6 +17,7 @@ public class DateFormatter {
     public static final String W3C_DATETIME_FORMAT = "yyyy-MM-dd'T'hh:mm:ssZZ";
     public static final String MONTH_FACET = "yyyyMM";
     
+    // TODO This probably needs to be private to pull all of the date formatting strings back into this class.
     public String formatDate (Date date, String format) {        
         if (date != null) {
             SimpleDateFormat sdfOutput = new SimpleDateFormat(format);

@@ -1,9 +1,9 @@
 package nz.co.searchwellington.urls;
 
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
@@ -20,10 +20,12 @@ public class UrlBuilder {
 
 	private SiteInformation siteInformation;
 	private TwitterService twitterService;
+	private DateFormatter dateFormatter;
 	
-	public UrlBuilder(SiteInformation siteInformation, TwitterService twitterService) {		
+	public UrlBuilder(SiteInformation siteInformation, TwitterService twitterService, DateFormatter dateFormatter) {		
 		this.siteInformation = siteInformation;
 		this.twitterService = twitterService;
+		this.dateFormatter = dateFormatter;
 	}
 	
 	public String getHomeUrl() {
@@ -126,15 +128,9 @@ public class UrlBuilder {
 	}
 	
 	public String getArchiveLinkUrl(Date date) {
-		// TODO if this dateformatter thread safe? Replace with DateFormatter
-		SimpleDateFormat df = new SimpleDateFormat();
-	    df.applyPattern("yyyy");
-	    String yearString = df.format(date.getTime());
-	    df.applyPattern("MMM");
-	    String monthString = df.format(date.getTime());
-	    return siteInformation.getUrl() + "/archive/" + yearString + "/" + monthString.toLowerCase();		
+		return siteInformation.getUrl() + "/archive/" + dateFormatter.formatDate(date, "yyyy") + "/" + dateFormatter.formatDate(date, "MMM").toLowerCase();		
 	}
-
+	
 	public String getOpenIDCallbackUrl() {
 		return siteInformation.getUrl() + "/openid/callback";
 	}
