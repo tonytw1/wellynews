@@ -230,19 +230,7 @@ public class HibernateResourceDAO implements ResourceRepository {
         setMaxResults(maxItems).
         list();
     }
-
 	
-    public int getCommentCount() {	// TODO migrate to solr call?
-        // TODO implement show broken logic if the parent newsitem is broken
-        return ((Long) sessionFactory.getCurrentSession().
-        		iterate("select count(*) from Comment").
-        		next()).intValue();
-    }
-    
-    
-    
-    
-    
     @Override
 	public int getOwnedByUserCount(User user) {
         return ((Long) sessionFactory.getCurrentSession().
