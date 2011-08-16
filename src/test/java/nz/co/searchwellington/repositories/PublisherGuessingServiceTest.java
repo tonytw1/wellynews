@@ -51,6 +51,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		List<Resource> possiblePublishers = new ArrayList<Resource>();
 		
 		Website wellingtonista = new WebsiteImpl();
+		wellingtonista.setName("The Wellingtonista");
 		wellingtonista.setUrl("http://www.wellingtonista.com");
 		possiblePublishers.add(wellingtonista);
 		
