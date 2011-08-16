@@ -1,15 +1,16 @@
 package nz.co.searchwellington.controllers.models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 public class IndexModelBuilderTest {
@@ -27,21 +29,51 @@ public class IndexModelBuilderTest {
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock UrlBuilder urlBuilder;
 	@Mock ArchiveLinksService archiveLinksService;
-	@Mock HttpServletRequest request;
+	MockHttpServletRequest request;
 
+	@Mock List<FrontendResource> latestNewsitems;
 	@Mock List<Tag> featuredTags;
+	
+	private IndexModelBuilder modelBuilder;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
+		modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService);
+		request = new MockHttpServletRequest();
+		request.setPathInfo("/");
+	}
+	
+	@Test
+	public void isValidForHomePageUrl() throws Exception {
+		assertTrue(modelBuilder.isValid(request));
+	}
+	
+	@Test
+	public void isNotValidForMainRssUrlAsThatsTakenCareOfByFeedBurner() throws Exception {
+		request.setPathInfo("/rss");
+		assertFalse(modelBuilder.isValid(request));
+	}
+	
+	@Test
+	public void isValidForMainJsonUrl() throws Exception {
+		request.setPathInfo("/json");
+		assertTrue(modelBuilder.isValid(request));
+	}
+	
+	@Test
+	public void indexPageMainContentIsTheLatestNewsitems() throws Exception {
+		Mockito.when(contentRetrievalService.getLatestNewsitems(30)).thenReturn(latestNewsitems);
+		
+		ModelAndView mv = modelBuilder.populateContentModel(request);
+		
+		assertEquals(latestNewsitems, mv.getModel().get("main_content"));		
 	}
 	
 	@Test
 	public void featuredTagsShouldBeShownAsExtraContent() throws Exception {
 		Mockito.when(contentRetrievalService.getFeaturedTags()).thenReturn(featuredTags);
-		
-		IndexModelBuilder modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService);
-		
+				
 		ModelAndView mv = new ModelAndView();
 		modelBuilder.populateExtraModelConent(request, false, mv);
 				
