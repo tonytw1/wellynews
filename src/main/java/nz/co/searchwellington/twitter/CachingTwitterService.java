@@ -43,7 +43,7 @@ public class CachingTwitterService implements TwitterService {
 		
 		log.debug("Delegrating to live twitter service");
 		Twit tweet = twitterService.getTwitById(twitterId);
-		putTweetIntoCache(tweet);		
+		cache.put(TWEETS_CACHE_PREFIX + tweet.getId(), ONE_WEEK, tweet);		
 		return tweet;		
 	}
 
@@ -80,14 +80,6 @@ public class CachingTwitterService implements TwitterService {
 	@Override
 	public boolean isConfigured() {
 		return twitterService.isConfigured();
-	}
-	
-	private void putRepliesIntoCache(List<Twit> fetchedResults) {
-		cache.put(TWITTER_REPLIES_CACHE, ONE_HOUR, fetchedResults);	
-	}
-	
-	private void putTweetIntoCache(Twit tweet) {
-		cache.put(TWEETS_CACHE_PREFIX+ tweet.getId(), ONE_WEEK, tweet);		
 	}
 	
 }
