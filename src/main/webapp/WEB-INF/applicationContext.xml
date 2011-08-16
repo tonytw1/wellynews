@@ -108,10 +108,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 
 	<bean id="tagModificationService" class="nz.co.searchwellington.modification.TagModificationService">
 		<constructor-arg ref="tagDAO" />	
-		<constructor-arg ref="contentUpdateService" />	
 		<constructor-arg ref="handTaggingDAO" />	
 	</bean>
-	
+		
 	<bean id="feedItemAcceptor" class="nz.co.searchwellington.feeds.FeedItemAcceptor" />
 		
 	<bean id="commentFeedReader" class="nz.co.searchwellington.feeds.CommentFeedReader">

@@ -49,10 +49,6 @@ public class HandTaggingDAO {
 		return tags;
 	}
     
-	public List<Resource> getResourcesWithTag(Tag tag) {
-		return new ArrayList<Resource>();	// TODO implement
-	}
-	
 	@Transactional
 	public void setUsersTagVotesForResource(Resource editResource, User user, Set<Tag> tags) {
 		this.clearTags(editResource, user);
