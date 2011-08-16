@@ -49,16 +49,15 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			mv.addObject("main_content", latestNewsitems);
 			
 			setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
-			// TODO Move to extra
+			
 			Date monthOfLastItem = monthOfLastItem(latestNewsitems);
 			if (monthOfLastItem != null) {
 				mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem));
-			}			
+			}
 			return mv;
 		}
 		return null;
 	}
-
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {		
@@ -102,7 +101,6 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
         mv.addObject("featured", contentRetrievalService.getFeaturedSites());
     }
 	
-
 	private void populateCommentedNewsitems(ModelAndView mv) {
 		final List<FrontendResource> recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0);
 		if (recentCommentedNewsitems.size() <= NUMBER_OF_COMMENTED_TO_SHOW) {
