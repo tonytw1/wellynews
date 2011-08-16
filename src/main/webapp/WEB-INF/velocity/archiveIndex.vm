@@ -20,7 +20,7 @@
 <ul>
 #set($year = 0)
 #foreach ($link in $archiveLinks) 
-	#set($current = $link.year)
+	#set($current = $dateFormatter.formatDate($link.month, 'yyyy'))
 	#if ($current != $year)
 		#set($year = $current)		
 		</ul>

@@ -15,10 +15,6 @@ public class ArchiveLink {
     public int getCount() {
         return count;
     }
-
-    public int getYear() {       
-        return month.getYear()+ 1900;
-    }
     
     public Date getMonth() {
         return month;
