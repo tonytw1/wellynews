@@ -1,7 +1,7 @@
 package nz.co.searchwellington.modification;
 
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.HandTaggingService;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -11,14 +11,14 @@ public class TagModificationService {
 	static Logger log = Logger.getLogger(TagModificationService.class);
 
     private TagDAO tagDAO;
-    private HandTaggingDAO handTaggingDAO;
+    private HandTaggingService handTaggingService;
         
-	public TagModificationService(TagDAO tagDAO,
-			HandTaggingDAO handTaggingDAO) {
-		this.tagDAO = tagDAO;
-		this.handTaggingDAO = handTaggingDAO;
-	}
 	
+	public TagModificationService(TagDAO tagDAO, HandTaggingService handTaggingService) {
+		this.tagDAO = tagDAO;
+		this.handTaggingService = handTaggingService;
+	}
+
 	public void updateTagParent(Tag editTag, Tag parentTag) {
 		log.info("Setting parent tag to: " + parentTag.getName());	
 		editTag.setParent(parentTag);
@@ -27,7 +27,7 @@ public class TagModificationService {
 	
 	public void deleteTag(Tag tag) {
 		log.info("Deleting tag " + tag.getName());
-		handTaggingDAO.clearTaggingsForTag(tag);                    
+		handTaggingService.clearTaggingsForTag(tag);                    
 		if (tag.getParent() != null) {
 		    tag.getParent().getChildren().remove(tag);
 		}

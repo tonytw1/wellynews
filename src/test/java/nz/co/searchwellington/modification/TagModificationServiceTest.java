@@ -1,7 +1,7 @@
 package nz.co.searchwellington.modification;
 
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.HandTaggingService;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.junit.Before;
@@ -13,8 +13,8 @@ import org.mockito.MockitoAnnotations;
 public class TagModificationServiceTest {
 
 	@Mock TagDAO tagDAO;
-	@Mock HandTaggingDAO handTaggingDAO;
-
+	@Mock HandTaggingService handTaggingService;
+	
 	@Mock Tag tag;
 
 	private TagModificationService tagModificationService;
@@ -23,7 +23,7 @@ public class TagModificationServiceTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(tag.getName()).thenReturn("Tag");
-		tagModificationService = new TagModificationService(tagDAO, handTaggingDAO);		
+		tagModificationService = new TagModificationService(tagDAO, handTaggingService);		
 	}
 
 	@Test
@@ -35,7 +35,7 @@ public class TagModificationServiceTest {
 	@Test
 	public void tagDeletionShouldResultInTheRemovalOfAllHandTaggingVotesForThatTag() throws Exception {
 		tagModificationService.deleteTag(tag);		
-		Mockito.verify(handTaggingDAO).clearTaggingsForTag(tag);
+		Mockito.verify(handTaggingService).clearTaggingsForTag(tag);
 	}
 	
 }

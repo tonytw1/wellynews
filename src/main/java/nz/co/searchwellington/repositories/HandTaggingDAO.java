@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,21 +36,35 @@ public class HandTaggingDAO {
 		return handTaggings;
 	}
 	
+	@Transactional
+	public void delete(HandTagging handTagging) {
+		sessionFactory.getCurrentSession().delete(handTagging);
+	}
+		
     public Set<Tag> getHandpickedTagsForThisResourceByUser(User user, Resource resource) { // TODO stop gap measure until editor understands votes
 		Set<Tag>tags = new HashSet<Tag>();		
 		if (user == null) {
 			return tags;
 		}
-		List<HandTagging> handTaggings = getHandTaggings(resource, user);				
+		List<HandTagging> handTaggings = getHandTaggingsForResourceByUser(resource, user);				
 		for (HandTagging tagging : handTaggings) {
 			tags.add(tagging.getTag());
 		}
 		return tags;
 	}
     
+    @SuppressWarnings("unchecked")
+	public List<HandTagging> getVotesForTag(Tag tag) {
+    	List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
+		add(Expression.eq("tag", tag)).
+		setCacheable(true).
+		list();
+    	return handTaggings;
+    }
+    
 	@Transactional
 	public void setUsersTagVotesForResource(Resource editResource, User user, Set<Tag> tags) {
-		this.clearTags(editResource, user);
+		this.clearTagsForResourceByUser(editResource, user);
 		for (Tag tag : tags) {
 			this.addTag(user, tag, editResource);				
 		}		
@@ -73,24 +86,20 @@ public class HandTaggingDAO {
 		}
 	}
 	
-	public void clearTaggingsForTag(Tag tag) {
-		// TODO Auto-generated method stub		
-	}
-	
-	private void clearTags(Resource resource, User user) {
-		for (HandTagging handTagging : this.getHandTaggings(resource, user)) {
+	private void clearTagsForResourceByUser(Resource resource, User user) {
+		for (HandTagging handTagging : this.getHandTaggingsForResourceByUser(resource, user)) {
 			sessionFactory.getCurrentSession().delete(handTagging);
 		}
 	}
 	
-    // TODO handTaggingDAO should be responsible for updating solr
 	@SuppressWarnings("unchecked")
-	private List<HandTagging> getHandTaggings(Resource resource, User user) {
+	private List<HandTagging> getHandTaggingsForResourceByUser(Resource resource, User user) {
 		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
 			add(Expression.eq("resource", resource)).
 			add(Expression.eq("user", user)).
 			setCacheable(true).
 			list();
 		return handTaggings;
-	}	
+	}
+	
 }

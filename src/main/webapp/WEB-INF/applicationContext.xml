@@ -106,11 +106,16 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="suggestionDAO" />
 	</bean>
 
+	<bean id="handTaggingService" class="nz.co.searchwellington.repositories.HandTaggingService">
+		<constructor-arg ref="handTaggingDAO" />
+		<constructor-arg ref="frontendContentUpdater" />
+	</bean>
+
 	<bean id="tagModificationService" class="nz.co.searchwellington.modification.TagModificationService">
 		<constructor-arg ref="tagDAO" />	
-		<constructor-arg ref="handTaggingDAO" />	
+		<constructor-arg ref="handTaggingService" />	
 	</bean>
-		
+	
 	<bean id="feedItemAcceptor" class="nz.co.searchwellington.feeds.FeedItemAcceptor" />
 		
 	<bean id="commentFeedReader" class="nz.co.searchwellington.feeds.CommentFeedReader">
@@ -388,7 +393,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="solrUpdateQueue" class="nz.co.searchwellington.repositories.solr.SolrUpdateQueue" />
 
-	<bean id="frontendCotntentUpdater" class="nz.co.searchwellington.repositories.FrontendContentUpdater">
+	<bean id="frontendContentUpdater" class="nz.co.searchwellington.repositories.FrontendContentUpdater">
 		<constructor-arg ref="solrUpdateQueue" />
 		<constructor-arg ref="solrInputDocumentBuilder" />			
 	</bean>
@@ -397,7 +402,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="suggestionDAO" />	
 		<constructor-arg ref="linkCheckerQueue" />
-		<constructor-arg ref="frontendCotntentUpdater" />
+		<constructor-arg ref="frontendContentUpdater" />
 	</bean>
 			
 	<bean id="suppressionService" class="nz.co.searchwellington.repositories.SupressionService">
