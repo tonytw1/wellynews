@@ -14,7 +14,7 @@
 #if ($featuredTags) 
 <ul class="navtags">
 	#foreach($featuredTag in $featuredTags)
-    <li><a href="$urlBuilder.getTagUrl($featuredTag)">$tag.displayName</a></li>
+    <li><a href="$urlBuilder.getTagUrl($featuredTag)">$featuredTag.displayName</a></li>
 	#end
 </ul>
 #end
