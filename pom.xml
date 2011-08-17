@@ -50,6 +50,12 @@
 	</build>
 
 <repositories>
+
+    <repository>
+      <id>local-dependencies</id>
+      <url>file:${basedir}/lib/repository</url>
+    </repository>
+
 	<repository>
 		<id>geocoder-java</id>
 		<url>https://geocoder-java.googlecode.com/svn/mavenrepo</url>
@@ -117,9 +123,7 @@
 			<groupId>rome</groupId>
 			<artifactId>media-rss</artifactId>
 			<version>0.2.1</version>
-			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/mediarss-0.2.1.jar</systemPath>
-		</dependency>
+				</dependency>
 
 		<dependency>
 		  <groupId>org.scribe</groupId>
@@ -143,9 +147,7 @@
 			<groupId>tokyo</groupId>
 			<artifactId>tokyotyrant</artifactId>
 			<version>0.10</version>
-			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/tokyotyrant-0.10.jar
-			</systemPath>
+			
 		</dependency><dependency>
     <groupId>org.jboss.netty</groupId>
     <artifactId>netty</artifactId>
@@ -162,9 +164,7 @@
 			<groupId>jrobotx</groupId>
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
-			<scope>system</scope>
-			<systemPath>/home/tony/git/wellynews/src/main/webapp/WEB-INF/lib/jrobotx-0.1.jar
-			</systemPath>
+			
 		</dependency>
 
 		<dependency>
