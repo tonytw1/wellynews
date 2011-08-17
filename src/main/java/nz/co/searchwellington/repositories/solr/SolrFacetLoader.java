@@ -28,9 +28,11 @@ public class SolrFacetLoader {
     	if (values != null) {
     		for (Count count : values) {
     			final int relatedTagId = Integer.parseInt(count.getName());
-    			Tag relatedTag = tagDAO.loadTagById(relatedTagId);    			
-				final Long relatedItemCount = count.getCount();
-				relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));				
+    			Tag relatedTag = tagDAO.loadTagById(relatedTagId);
+    			if (relatedTag != null) {
+    				final Long relatedItemCount = count.getCount();
+    				relatedTags.add(new TagContentCount(relatedTag, new Integer(relatedItemCount.intValue())));
+    			}
 			}
 		}
 		return relatedTags;
@@ -42,13 +44,15 @@ public class SolrFacetLoader {
 			for (Count count : values) {
 				final int relatedPublisherId = Integer.parseInt(count.getName());
 				Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);		// TODO Try to drive out			
-				final Long relatedItemCount = count.getCount();
+				if (relatedPublisher != null) {
+					final Long relatedItemCount = count.getCount();
 				
-				FrontendWebsiteImpl frontendWebsite = new FrontendWebsiteImpl();	// TODO Hack - need to tighten up on what information really needs to be in a publisher count
-				frontendWebsite.setName(relatedPublisher.getName());
-				frontendWebsite.setUrlWords(relatedPublisher.getUrlWords());
+					FrontendWebsiteImpl frontendWebsite = new FrontendWebsiteImpl();	// TODO Hack - need to tighten up on what information really needs to be in a publisher count
+					frontendWebsite.setName(relatedPublisher.getName());
+					frontendWebsite.setUrlWords(relatedPublisher.getUrlWords());
 				
-				relatedPublishers.add(new PublisherContentCount(frontendWebsite, relatedItemCount.intValue()));					
+					relatedPublishers.add(new PublisherContentCount(frontendWebsite, relatedItemCount.intValue()));
+				}
 			}
 		}	
 		return relatedPublishers;     

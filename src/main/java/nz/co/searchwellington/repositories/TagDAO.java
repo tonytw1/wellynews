@@ -33,7 +33,7 @@ public class TagDAO {
 	}
 		
 	public Tag loadTagById(int tagID) {
-		return (Tag) sessionFactory.getCurrentSession().load(Tag.class, tagID);
+		return (Tag) sessionFactory.getCurrentSession().get(Tag.class, tagID);
 	}
 	
 	public Tag loadTagByName(String tagName) {
