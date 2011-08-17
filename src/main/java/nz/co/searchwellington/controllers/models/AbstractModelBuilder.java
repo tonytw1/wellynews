@@ -36,12 +36,10 @@ public abstract class AbstractModelBuilder {
 		return startIndex;
 	}
 	
-	
 	protected void setRss(ModelAndView mv, String title, String url) {
 		mv.addObject("rss_title", title);
 		mv.addObject("rss_url", url);
 	}
-	
 	
 	protected void populatePagination(ModelAndView mv, int startIndex, int totalNewsitemCount) {
 		mv.addObject("main_content_total", totalNewsitemCount);
@@ -51,7 +49,6 @@ public abstract class AbstractModelBuilder {
 		mv.addObject("start_index", startIndex + 1);
 		mv.addObject("end_index", endIndex);
 	}
-	
 	
 	protected final void populateSecondaryFeeds(ModelAndView mv) {      
         mv.addObject("righthand_heading", "Local Feeds");                

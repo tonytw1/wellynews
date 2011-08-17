@@ -67,9 +67,8 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 		populateFeatured(mv);
 		populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser());		
 		archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths());
-		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
-		
+	
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "index";

@@ -20,7 +20,8 @@
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="contentModelBuilder" />
-		<constructor-arg ref="tagDAO" />		
+		<constructor-arg ref="tagDAO" />
+		<constructor-arg ref="contentRetrievalService" />
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">

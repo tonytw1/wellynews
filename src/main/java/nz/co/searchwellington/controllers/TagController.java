@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -17,19 +18,21 @@ import com.sun.syndication.io.FeedException;
 public class TagController extends MultiActionController {
 	
     private static Logger log = Logger.getLogger(TagController.class);
-   
+    
     private ContentModelBuilderService contentModelBuilder;
     private TagDAO tagDAO;
     private UrlStack urlStack;
-
-    public TagController(UrlStack urlStack,
-			ContentModelBuilderService contentModelBuilder,
-			TagDAO tagDAO) {
-		this.urlStack = urlStack;
+    private ContentRetrievalService contentRetrievalService;
+    
+	public TagController(ContentModelBuilderService contentModelBuilder,
+			TagDAO tagDAO, UrlStack urlStack,
+			ContentRetrievalService contentRetrievalService) {
 		this.contentModelBuilder = contentModelBuilder;
 		this.tagDAO = tagDAO;
+		this.urlStack = urlStack;
+		this.contentRetrievalService = contentRetrievalService;
 	}
-    
+
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         log.info("Starting normal content");        
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
@@ -50,7 +53,8 @@ public class TagController extends MultiActionController {
 	}
 		
 	private void addCommonModelElements(ModelAndView mv) throws IOException {
-		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());      
+		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
-    
+	
 }
