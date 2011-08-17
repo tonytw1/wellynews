@@ -9,7 +9,6 @@ import java.util.List;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
-import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -32,7 +31,6 @@ public class IndexModelBuilderTest {
 	MockHttpServletRequest request;
 
 	@Mock List<FrontendResource> latestNewsitems;
-	@Mock List<Tag> featuredTags;
 	
 	private IndexModelBuilder modelBuilder;
 
@@ -68,16 +66,6 @@ public class IndexModelBuilderTest {
 		ModelAndView mv = modelBuilder.populateContentModel(request);
 		
 		assertEquals(latestNewsitems, mv.getModel().get("main_content"));		
-	}
-	
-	@Test
-	public void featuredTagsShouldBeShownAsExtraContent() throws Exception {
-		Mockito.when(contentRetrievalService.getFeaturedTags()).thenReturn(featuredTags);
-				
-		ModelAndView mv = new ModelAndView();
-		modelBuilder.populateExtraModelConent(request, false, mv);
-				
-		assertEquals(featuredTags, mv.getModel().get("featuredTags"));
 	}
 	
 }
