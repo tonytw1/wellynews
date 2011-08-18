@@ -150,27 +150,22 @@
 			</bean>		
 		</property>
 	</bean>
-	
 			
 	<bean id="linkCheckerController" class="nz.co.searchwellington.controllers.admin.LinkCheckerController">
 		<constructor-arg ref="adminRequestFilter" />		
 		<constructor-arg ref="linkCheckerQueue" />
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="resourceDAO" />
-		
+		<constructor-arg ref="urlStack" />		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
-						<prop key="/admin/linkchecker/status">showStatus</prop>
 						<prop key="/admin/linkchecker/add">addToQueue</prop>								
 					</props>
 				</property>
 			</bean>		
 		</property>
 	</bean>
-	
-	
+		
 	<bean id="publishersAjaxController" class="nz.co.searchwellington.controllers.ajax.PublisherAjaxController">
 		<constructor-arg ref="contentRetrievalService" />	
 	</bean>
