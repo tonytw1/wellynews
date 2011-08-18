@@ -22,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class TagControllerTest {
 
 	@Mock ContentModelBuilderService contentModelBuilder;
-	@Mock TagDAO tagDAO;	// TODO push method behine CRS
 	@Mock UrlStack urlStack;
 	@Mock ContentRetrievalService contentRetrievalService;
 	
@@ -37,7 +36,7 @@ public class TagControllerTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		modelAndHtmlView = new ModelAndView("a-view");
-		tagController = new TagController(contentModelBuilder, tagDAO, urlStack, contentRetrievalService);
+		tagController = new TagController(contentModelBuilder, urlStack, contentRetrievalService);
 	}
 	
 	@Test

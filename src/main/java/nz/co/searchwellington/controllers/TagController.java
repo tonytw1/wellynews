@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,15 +19,11 @@ public class TagController extends MultiActionController {
     private static Logger log = Logger.getLogger(TagController.class);
     
     private ContentModelBuilderService contentModelBuilder;
-    private TagDAO tagDAO;
     private UrlStack urlStack;
     private ContentRetrievalService contentRetrievalService;
     
-	public TagController(ContentModelBuilderService contentModelBuilder,
-			TagDAO tagDAO, UrlStack urlStack,
-			ContentRetrievalService contentRetrievalService) {
+	public TagController(ContentModelBuilderService contentModelBuilder, UrlStack urlStack, ContentRetrievalService contentRetrievalService) {
 		this.contentModelBuilder = contentModelBuilder;
-		this.tagDAO = tagDAO;
 		this.urlStack = urlStack;
 		this.contentRetrievalService = contentRetrievalService;
 	}
@@ -53,7 +48,7 @@ public class TagController extends MultiActionController {
 	}
 		
 	private void addCommonModelElements(ModelAndView mv) throws IOException {
-		mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
 		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
 	
