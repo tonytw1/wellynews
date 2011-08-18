@@ -1,8 +1,10 @@
 package nz.co.searchwellington.model;
 
 public abstract class PublishedResourceImpl extends ResourceImpl implements PublishedResource {
-
-    protected Website publisher;
+	
+	private static final long serialVersionUID = 1L;
+	
+	protected Website publisher;
 
     public Website getPublisher() {
         return publisher;
@@ -18,8 +20,5 @@ public abstract class PublishedResourceImpl extends ResourceImpl implements Publ
 		}
 		return null;
 	}
-    
-    
-
-
+	
 }

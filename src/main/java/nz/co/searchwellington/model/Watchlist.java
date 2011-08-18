@@ -2,12 +2,13 @@ package nz.co.searchwellington.model;
 
 import java.util.Set;
 
-
 public class Watchlist extends PublishedResourceImpl {
+	
+	private static final long serialVersionUID = 1L;
+	
+	public Watchlist() {}
     
-    public Watchlist() {}
-    
-        public Watchlist(int id, String name, String url, String description, Website publisher, Set<DiscoveredFeed> discoveredFeeds) {
+	public Watchlist(int id, String name, String url, String description, Website publisher, Set<DiscoveredFeed> discoveredFeeds) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -15,8 +16,7 @@ public class Watchlist extends PublishedResourceImpl {
         this.publisher = publisher;
         this.discoveredFeeds = discoveredFeeds;
     }
-
-    
+	
     public String getType() {
         return "L";
     }

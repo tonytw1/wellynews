@@ -2,19 +2,18 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
-
-
 public class FeedImpl extends PublishedResourceImpl implements Feed {
-  
-    // TODO migrate acceptance options to Enums.
+	
+	private static final long serialVersionUID = 1L;
+	
+	// TODO migrate acceptance options to Enums.
     String acceptancePolicy;
     Date latestItemDate;
     Date lastRead;
     
     public FeedImpl() {
     }
-    
-    
+        
     public FeedImpl(int id, String name, String url, String description, Website publisher, String acceptancePolicy) {
         this.id = id;
         this.name = name;
@@ -24,23 +23,17 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
         this.acceptancePolicy = acceptancePolicy;
     }
     
-    
-  
     public String getType() {
-        return "F";
-     }
-
-   
-
+    	return "F";
+    }
+    
     public String getAcceptancePolicy() {
         return acceptancePolicy;
     }
-
-
+    
     public void setAcceptancePolicy(String acceptancePolicy) {
         this.acceptancePolicy = acceptancePolicy;
     }
-    
     
     public Date getLatestItemDate() {
         return latestItemDate;
@@ -62,5 +55,4 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
     	return url.startsWith("http://brownbag.wellington.gen.nz/");    	
     }
     
-        
 }

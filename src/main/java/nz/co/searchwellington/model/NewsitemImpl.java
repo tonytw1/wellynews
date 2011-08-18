@@ -9,7 +9,9 @@ import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, FrontendNewsitem {
 	
-    CommentFeed commentFeed;	// TODO should be visible on the interface
+	private static final long serialVersionUID = 1L;
+	
+	CommentFeed commentFeed;	// TODO should be visible on the interface
     Image image;
     Feed feed;
     Date accepted;

@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 public abstract class ResourceImpl implements Resource {
-
-    protected int id;
+	
+	private static final long serialVersionUID = 1L;
+	
+	protected int id;
     protected String name;
     protected String url;
     protected int httpStatus;

@@ -6,12 +6,12 @@ import java.util.Set;
 
 
 public class WebsiteImpl extends ResourceImpl implements Website {
-   
-    Set <Feed> feeds;
+	
+	private static final long serialVersionUID = 1L;
+	
+	Set <Feed> feeds;
     Set <Watchlist> watchlist;
     Set <CalendarFeed> calendars;
- 
-	
     
     public WebsiteImpl() {        
     }
@@ -21,12 +21,10 @@ public class WebsiteImpl extends ResourceImpl implements Website {
 		this.name = name;
         this.url = url;
         this.date = date;
-        this.description = description;
-        
+        this.description = description;   
         this.feeds = feed;
         this.watchlist = watchlist;
-        this.calendars = calendars;
-        
+        this.calendars = calendars;        
         this.discoveredFeeds = discoveredFeeds;
 	}
 	
