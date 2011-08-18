@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
-import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
@@ -16,8 +15,6 @@ import com.sun.syndication.io.FeedException;
 
 public class TagController extends MultiActionController {
 	
-    private static Logger log = Logger.getLogger(TagController.class);
-    
     private ContentModelBuilderService contentModelBuilder;
     private UrlStack urlStack;
     private ContentRetrievalService contentRetrievalService;
@@ -29,14 +26,12 @@ public class TagController extends MultiActionController {
 	}
 
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-        log.info("Starting normal content");        
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
-		if (mv != null) {			
-			boolean isHtmlView = isHtmlView(mv);			
-			if (isHtmlView) {
+		if (mv != null) {
+			if (isHtmlView(mv)) {
 				urlStack.setUrlStack(request);
 				addCommonModelElements(mv);
-			}			
+			}
 			return mv;
 		}
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
