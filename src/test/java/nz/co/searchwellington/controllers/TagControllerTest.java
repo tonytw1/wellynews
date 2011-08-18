@@ -52,8 +52,15 @@ public class TagControllerTest {
 
 		tagController.normal(unknownPathRequest, response);
 		
-		Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);		
-	};
+		Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
+		Mockito.verifyZeroInteractions(urlStack);
+	}
+	
+	@Test
+	public void htmlPageViewsShouldBePutOntoTheUrlStack() throws Exception {
+		tagController.normal(request, response);
+		Mockito.verify(urlStack).setUrlStack(request);
+	}
 	
 	@Test
 	public void featuredTagsShouldBeAddedToHtmlViews() throws Exception {
