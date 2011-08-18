@@ -29,19 +29,34 @@ public class TagControllerTest {
 	
 	private TagController tagController;
 	private HttpServletRequest request;
-	private HttpServletResponse response;
+	private HttpServletRequest unknownPathRequest;
+	@Mock HttpServletResponse response;
 	private ModelAndView modelAndHtmlView;
 	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		modelAndHtmlView = new ModelAndView("a-view");
+		Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(modelAndHtmlView);
 		tagController = new TagController(contentModelBuilder, urlStack, contentRetrievalService);
 	}
 	
 	@Test
+	public void shouldDelegateTotTheContentModelBuilderToGetTheModelForThisRequest() throws Exception {
+		assertEquals(modelAndHtmlView, tagController.normal(request, response));
+	}
+	
+	@Test
+	public void should404IfNotModelWasAvailableForThisRequest() throws Exception {
+		Mockito.when(contentModelBuilder.populateContentModel(unknownPathRequest)).thenReturn(null);
+
+		tagController.normal(unknownPathRequest, response);
+		
+		Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);		
+	};
+	
+	@Test
 	public void featuredTagsShouldBeAddedToHtmlViews() throws Exception {
-		Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(modelAndHtmlView);
 		Mockito.when(contentRetrievalService.getFeaturedTags()).thenReturn(featuredTags);
 		
 		ModelAndView mv = tagController.normal(request, response);
@@ -51,7 +66,6 @@ public class TagControllerTest {
 	
 	@Test
 	public void topLevelTagsShouldBeAddedToHtmlViews() throws Exception {
-		Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(modelAndHtmlView);
 		Mockito.when(contentRetrievalService.getTopLevelTags()).thenReturn(topLevelTags);
 		
 		ModelAndView mv = tagController.normal(request, response);
