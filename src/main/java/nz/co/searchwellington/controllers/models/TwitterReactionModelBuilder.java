@@ -28,6 +28,7 @@ public class TwitterReactionModelBuilder implements ModelBuilder {
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		ModelAndView mv = new ModelAndView();
 		mv.addObject("main_content", contentRetrievalService.getRecentedTwitteredNewsitems());
+		mv.addObject("heading", "Following the Wellington newslog on Twitter");
 		return mv;
 	}
 

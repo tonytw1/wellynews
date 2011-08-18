@@ -127,7 +127,7 @@
 		<constructor-arg ref="contentRetrievalService" />		
 	</bean>
 	
-	<bean id="twitterReactionModelBuilder" class="nz.co.searchwellington.controllers.models.TwModelBuilder">		
+	<bean id="twitterReactionModelBuilder" class="nz.co.searchwellington.controllers.models.TwitterReactionModelBuilder">		
 		<constructor-arg ref="contentRetrievalService" />
 	</bean>
 	

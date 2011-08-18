@@ -45,6 +45,12 @@ public class TwitterReactionModelBuilderTest {
 	}
 	
 	@Test
+	public void shouldSetHeading() throws Exception {
+		ModelAndView mv = modelBuilder.populateContentModel(request);
+		assertEquals("Following the Wellington newslog on Twitter", mv.getModel().get("heading"));
+	}
+	
+	@Test
 	public void isValidForTwitterPath() throws Exception {
 		request.setPathInfo("/twitter");
 		assertTrue(modelBuilder.isValid(request));
