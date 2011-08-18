@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.TagDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,6 +25,7 @@ public class TagControllerTest {
 	@Mock ContentRetrievalService contentRetrievalService;
 	
 	@Mock List<Tag> featuredTags;
+	@Mock List<Tag> topLevelTags;
 	
 	private TagController tagController;
 	private HttpServletRequest request;
@@ -47,6 +47,16 @@ public class TagControllerTest {
 		ModelAndView mv = tagController.normal(request, response);
 		
 		assertEquals(featuredTags, mv.getModel().get("featuredTags"));
+	}
+	
+	@Test
+	public void topLevelTagsShouldBeAddedToHtmlViews() throws Exception {
+		Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(modelAndHtmlView);
+		Mockito.when(contentRetrievalService.getTopLevelTags()).thenReturn(topLevelTags);
+		
+		ModelAndView mv = tagController.normal(request, response);
+		
+		assertEquals(topLevelTags, mv.getModel().get("top_level_tags"));
 	}
 	
 }
