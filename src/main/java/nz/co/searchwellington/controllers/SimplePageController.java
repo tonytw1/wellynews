@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
@@ -18,17 +17,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class SimplePageController extends BaseMultiActionController {
             
-    private SiteInformation siteInformation;
 	private DiscoveredFeedRepository discoveredFeedRepository;
 	private TagDAO tagDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	
-    public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, 
-    		SiteInformation siteInformation, DiscoveredFeedRepository discoveredFeedRepository, 
+    public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, DiscoveredFeedRepository discoveredFeedRepository, 
     		ContentRetrievalService contentRetrievalService, TagDAO tagDAO, RssUrlBuilder rssUrlBuilder) {
         this.urlStack = urlStack;
         this.configDAO = configDAO;
-        this.siteInformation = siteInformation;        
         this.discoveredFeedRepository = discoveredFeedRepository;      
         this.contentRetrievalService = contentRetrievalService;
         this.tagDAO = tagDAO;

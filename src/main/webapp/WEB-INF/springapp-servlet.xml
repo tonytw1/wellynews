@@ -63,7 +63,6 @@
 	<bean id="simplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="tagDAO" />
