@@ -127,12 +127,17 @@
 		<constructor-arg ref="contentRetrievalService" />		
 	</bean>
 	
+	<bean id="twitterReactionModelBuilder" class="nz.co.searchwellington.controllers.models.TwModelBuilder">		
+		<constructor-arg ref="contentRetrievalService" />
+	</bean>
+	
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="rssViewFactory" />		
 		<constructor-arg>
 			<list>				
 				<ref bean="indexModelBuilder" />
+				<ref bean="twitterReactionModelBuilder" />
 				<ref bean="searchModelBuilder" />				
 				<ref bean="newsitemPageModelBuilder" />				
 				<ref bean="archiveModelBuilder" />

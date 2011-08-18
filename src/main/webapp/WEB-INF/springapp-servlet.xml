@@ -83,7 +83,6 @@
 						<prop key="/rssfeeds">rssfeeds</prop>
 						<prop key="/signin">signin</prop>						
 						<prop key="/tags">tags</prop>
-						<prop key="/twitter">twitter</prop>
 					</props>
 				</property>
 			</bean>		
@@ -343,9 +342,8 @@
 				<prop key="/publishers">simplePageController</prop>
 				<prop key="/rssfeeds">simplePageController</prop>	
 				<prop key="/signin">simplePageController</prop>
-				<prop key="/tags">simplePageController</prop>				
-				<prop key="/twitter">simplePageController</prop>
-								          	
+				<prop key="/tags">simplePageController</prop>
+												          	
             	<prop key="/archive/*/*">tagController</prop>
             	            	
             	<prop key="/clickthrough">clickThroughController</prop>

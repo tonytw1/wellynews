@@ -150,31 +150,6 @@ public class SimplePageController extends BaseMultiActionController {
         mv.addObject("heading", "Sign in");
         mv.setViewName("signin");
         return mv;
-    }
-        
-    public ModelAndView twitter(HttpServletRequest request, HttpServletResponse response) throws IOException {    	
-    	if (!siteInformation.isTwitterEnabled()) {
-    		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        	return null;
-    	}
-    	
-        ModelAndView mv = new ModelAndView();
-        urlStack.setUrlStack(request);
-        
-        mv.addObject("twitterUsername", siteInformation.getTwitterUsername());
-        mv.addObject("heading",  "Following the " + siteInformation.getAreaname() + " newslog on Twitter");
-
-        populateLatestTwitters(mv);        
-        mv.addObject("main_content", contentRetrievalService.getRecentedTwitteredNewsitems());
-        
-        populateCommonLocal(mv);
-        mv.setViewName("twitter");
-        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
-        return mv;
-    }
-    
-    private void populateLatestTwitters(ModelAndView mv) {       
-        mv.addObject("latest_twitters", contentRetrievalService.getRecentedTwitteredNewsitems());  	// TODO This is the incorrect content.
-    }
+    }   
     
 }
