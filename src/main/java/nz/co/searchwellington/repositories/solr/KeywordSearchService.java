@@ -31,21 +31,6 @@ public class KeywordSearchService {
 		this.solrBackedResourceDAO = solrBackedResourceDAO;
 	}
 	
-	// TODO Move to related tags?
-	public List<TagContentCount> getKeywordSearchFacets(String keywords, Tag tag, boolean showBroken) {
-		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBroken, tag);			
-		query.setRows(SEARCH_FACETS_TO_SHOW);
-		query.setHighlight(true);	// TODO Really - not needed for facet query?
-		
-		query.addFacetField("publisher");
-		query.addFacetField("tags");
-		query.setFacetMinCount(1);
-		
-		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);				
-		List<TagContentCount> relatedTagLinks = solrFacetLoader.loadTagFacet(facetQueryResults.get("tags"));		
-		return relatedTagLinks;
-	}
-	
 	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken, Tag tag, int startIndex, int maxNewsitems) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrNewsitemKeywordQuery(keywords, showBroken, tag);
 		query.setStart(startIndex);

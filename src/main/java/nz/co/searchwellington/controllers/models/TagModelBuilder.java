@@ -18,7 +18,6 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.UrlFilters;
 
@@ -35,22 +34,19 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private ConfigRepository configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
-	private KeywordSearchService keywordSearchService;
 	private FlickrService flickrService;
 	
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService,
 			ConfigRepository configDAO,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			ContentRetrievalService contentRetrievalService,
-			KeywordSearchService keywordSearchService, FlickrService flickrService) {
+			ContentRetrievalService contentRetrievalService, FlickrService flickrService) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.configDAO = configDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
-		this.keywordSearchService = keywordSearchService;
 		this.flickrService = flickrService;
 	}
 	
@@ -106,7 +102,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		if (request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM) != null) {
 			final String searchTerm = (String) request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM);
 			mv.addObject("searchterm", searchTerm);
-			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, null));
+			mv.addObject("searchfacets", relatedTagsService.getKeywordSearchFacets(searchTerm, null));
 		}
         mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}

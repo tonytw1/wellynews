@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.solr.SolrFacetLoader;
+import nz.co.searchwellington.repositories.solr.SolrKeywordQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
@@ -23,15 +24,22 @@ public class RelatedTagsService {
 	private static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
 	private SolrQueryService solrQueryService;
+	private SolrKeywordQueryBuilder solrKeywordQueryBuilder;
 	private SolrFacetLoader solrFacetLoader;
-	    
-	public RelatedTagsService(SolrQueryService solrQueryService, SolrFacetLoader solrFacetLoader) {		
-		this.solrQueryService = solrQueryService;
-		this.solrFacetLoader = solrFacetLoader;
-	}
+	private ShowBrokenDecisionService showBrokenDecisionService;
 	
+	public RelatedTagsService(SolrQueryService solrQueryService,
+			SolrKeywordQueryBuilder solrKeywordQueryBuilder,
+			SolrFacetLoader solrFacetLoader,
+			ShowBrokenDecisionService showBrokenDecisionService) {
+		this.solrQueryService = solrQueryService;
+		this.solrKeywordQueryBuilder = solrKeywordQueryBuilder;
+		this.solrFacetLoader = solrFacetLoader;
+		this.showBrokenDecisionService = showBrokenDecisionService;
+	}
+
 	public List<TagContentCount> getRelatedLinksForTag(Tag tag, int maxItems) {	
-		Map<String, List<Count>> facetResults = queryForRelatedTagAndPublisherFacets(tag, showBroken);		
+		Map<String, List<Count>> facetResults = queryForRelatedTagAndPublisherFacets(tag, showBrokenDecisionService.shouldShowBroken());		
 		List<TagContentCount> loadedTagFacet = solrFacetLoader.loadTagFacet(facetResults.get("tags"));
 		List<TagContentCount> allFacets = removeUnsuitableTags(tag, loadedTagFacet);
 		if (allFacets.size() > maxItems) {
@@ -40,9 +48,20 @@ public class RelatedTagsService {
 		return allFacets;		
 	}
 	
+	public List<TagContentCount> getKeywordSearchFacets(String keywords, Tag tag) {
+		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBrokenDecisionService.shouldShowBroken(), tag);			
+		query.setRows(8);
+		query.addFacetField("tags");
+		query.setFacetMinCount(1);
+		
+		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);				
+		List<TagContentCount> relatedTagLinks = solrFacetLoader.loadTagFacet(facetQueryResults.get("tags"));
+		return relatedTagLinks;
+	}
+	
 	public List<TagContentCount> getRelatedTagsForLocation(Geocode location, int maxItems) {
 		log.info("Querying for location related tags: " + location.getAddress());
-		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, showBroken);
+		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, showBrokenDecisionService.shouldShowBroken());
 		List<TagContentCount> loadedTagFacet = solrFacetLoader.loadTagFacet(facetResults.get("tags"));
 		log.info("Found facet count: " + loadedTagFacet.size());
 		if (loadedTagFacet.size() > maxItems) {
@@ -53,7 +72,7 @@ public class RelatedTagsService {
 	
 	public List<PublisherContentCount> getRelatedPublishersForLocation(Geocode location, int maxItems) {
 		log.info("Querying for location related publishers: " + location.getAddress());
-		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, showBroken);
+		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, showBrokenDecisionService.shouldShowBroken());
 		List<PublisherContentCount> loadedFacet = solrFacetLoader.loadPublisherFacet(facetResults.get("publisher"));
 		log.info("Found facet count: " + loadedFacet.size());
 		if (loadedFacet.size() > maxItems) {
@@ -63,7 +82,7 @@ public class RelatedTagsService {
 	}
 	
 	public List<PublisherContentCount> getRelatedPublishersForTag(Tag tag, int maxItems) {
-		Map<String, List<Count>> facetResults = queryForRelatedTagAndPublisherFacets(tag);		
+		Map<String, List<Count>> facetResults = queryForRelatedTagAndPublisherFacets(tag, showBrokenDecisionService.shouldShowBroken());		
 		List<PublisherContentCount> allFacets = solrFacetLoader.loadPublisherFacet(facetResults.get("publisher"));
 		if (allFacets.size() > maxItems) {
 			return allFacets.subList(0, maxItems);
@@ -72,7 +91,7 @@ public class RelatedTagsService {
 	}
 	
 	public List<TagContentCount> getRelatedLinksForPublisher(Website publisher) {
-		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBroken).maxItems(0).toQuery();
+		SolrQuery query = new SolrQueryBuilder().publisher(publisher).showBroken(showBrokenDecisionService.shouldShowBroken()).maxItems(0).toQuery();
 		query.addFacetField("tags");
 		query.setFacetMinCount(1);
 		
@@ -88,7 +107,7 @@ public class RelatedTagsService {
 		return solrFacetLoader.loadTagFacet(facetResults.get("tags"));
 	}
 	
-	private Map<String, List<Count>> queryForRelatedTagAndPublisherFacets(Tag tag) {
+	private Map<String, List<Count>> queryForRelatedTagAndPublisherFacets(Tag tag, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().tag(tag).showBroken(showBroken).maxItems(0).toQuery();
 		query.addFacetField("tags");
 		query.addFacetField("publisher");

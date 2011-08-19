@@ -128,7 +128,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<TagContentCount> getKeywordSearchFacets(String keywords) {
-		return keywordSearchService.getKeywordSearchFacets(keywords, null, showBrokenDecisionService.shouldShowBroken());
+		return relatedTagsService.getKeywordSearchFacets(keywords, null);	// TODO This is abit odd - it's the only facet one which comes through here.
 	}
 
 	public List<FrontendResource> getWebsitesMatchingKeywords(String keywords, Tag tag, int startIndex, int maxItems) {
