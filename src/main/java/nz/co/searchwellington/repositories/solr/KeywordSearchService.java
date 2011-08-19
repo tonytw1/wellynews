@@ -43,13 +43,6 @@ public class KeywordSearchService {
 		return solrBackedResourceDAO.getQueryResults(query);
 	}
 	
-	public List<FrontendResource> getResourcesMatchingKeywords(String keywords, boolean showBroken) {
-		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBroken, null);			
-		query.setRows(100);
-		query.setHighlight(true);
-		return solrBackedResourceDAO.getQueryResults(query);
-	}
-
 	public List<FrontendResource> getResourcesMatchingKeywordsNotTaggedByUser(String keywords, boolean showBroken, User user, Tag tag) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQueryNotTaggedByUser(keywords, showBroken, tag, user);			
 		query.setRows(100);

@@ -111,10 +111,7 @@ public class AutoTagController extends BaseMultiActionController {
     }
     
     private List<FrontendResource> getPossibleAutotagResources(User user, Tag tag) {
-    	if (user != null) {    		
-    		return keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName(), true, user, tag);
-    	}
-    	return keywordSearchService.getResourcesMatchingKeywords(tag.getDisplayName(), true);	// TODO Can't happen
+    	return keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName(), true, user, tag);
 	}
     
 }
