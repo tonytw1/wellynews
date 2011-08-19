@@ -211,12 +211,9 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="showBrokenDecisionService" class="nz.co.searchwellington.controllers.ShowBrokenDecisionService">
 		<constructor-arg ref="loggedInUserFilter" />
 	</bean>
-	
-		
+			
 	<bean id="keywordSearchService"  class="nz.co.searchwellington.repositories.solr.KeywordSearchService">
-		<constructor-arg ref="solrQueryService" />
 		<constructor-arg ref="solrKeywordQueryBuilder" />
-		<constructor-arg ref="solrFacetLoader" />
 		<constructor-arg ref="solrResourceDAO" />
 	</bean>
 			

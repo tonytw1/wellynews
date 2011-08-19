@@ -1,36 +1,26 @@
 package nz.co.searchwellington.repositories.solr;
 
 import java.util.List;
-import java.util.Map;
 
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.SolrBackedResourceDAO;
 
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.FacetField.Count;
 
 public class KeywordSearchService {
-		
-	private static final int SEARCH_FACETS_TO_SHOW = 30;
 	
-	private SolrQueryService solrQueryService;
 	private SolrKeywordQueryBuilder solrKeywordQueryBuilder;
-	private SolrFacetLoader solrFacetLoader;
 	private SolrBackedResourceDAO solrBackedResourceDAO;
-		
-	public KeywordSearchService(SolrQueryService solrQueryService,
+	
+	public KeywordSearchService(
 			SolrKeywordQueryBuilder solrKeywordQueryBuilder,
-			SolrFacetLoader solrFacetLoader,
 			SolrBackedResourceDAO solrBackedResourceDAO) {
-		this.solrQueryService = solrQueryService;
 		this.solrKeywordQueryBuilder = solrKeywordQueryBuilder;
-		this.solrFacetLoader = solrFacetLoader;
 		this.solrBackedResourceDAO = solrBackedResourceDAO;
 	}
-	
+
 	public List<FrontendResource> getNewsitemsMatchingKeywords(String keywords, boolean showBroken, Tag tag, int startIndex, int maxNewsitems) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrNewsitemKeywordQuery(keywords, showBroken, tag);
 		query.setStart(startIndex);

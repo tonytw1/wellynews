@@ -50,7 +50,7 @@ public class RelatedTagsService {
 	
 	public List<TagContentCount> getKeywordSearchFacets(String keywords, Tag tag) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBrokenDecisionService.shouldShowBroken(), tag);			
-		query.setRows(8);
+		query.setRows(30);
 		query.addFacetField("tags");
 		query.setFacetMinCount(1);
 		
