@@ -2,10 +2,11 @@ package nz.co.searchwellington.repositories;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
+
+import org.apache.log4j.Logger;
 
 public class HandTaggingService {
 	
@@ -29,4 +30,14 @@ public class HandTaggingService {
 		}
 	}
 
+	public void transferVotes(User previousOwner, User newOwner) {		
+		List<HandTagging> previousUsersVotes = handTaggingDao.getUsersVotes(previousOwner);
+		log.info("Transfering " + previousUsersVotes.size() + " vote from user " + previousOwner.getName() + " to " + newOwner.getName());
+		for (HandTagging handTagging : previousUsersVotes) {
+			handTagging.setUser(newOwner);
+			// TODO do we actually need to save or will the session sort it out?
+			frontendContentUpdater.update(handTagging.getResource());
+		}
+	}
+	
 }

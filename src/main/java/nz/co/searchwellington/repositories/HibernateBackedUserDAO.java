@@ -64,9 +64,8 @@ public class HibernateBackedUserDAO implements UserRepository {
 	}
 
 	@Override
-	public void deleteUser(User anonUser) {
-		// TODO Auto-generated method stub
-		
+	public void deleteUser(User user) {
+		sessionFactory.getCurrentSession().delete(user);		
 	}
 	
 }

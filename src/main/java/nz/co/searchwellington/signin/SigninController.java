@@ -18,16 +18,15 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class SigninController extends MultiActionController {
 
-	static Logger log = Logger.getLogger(SigninController.class);
+	private static Logger log = Logger.getLogger(SigninController.class);
 	
-	protected LoggedInUserFilter loggedInUserFilter;
-	protected UserRepository userDAO;
-	protected AnonUserService anonUserService;
-	protected LoginResourceOwnershipService loginResourceOwnershipService;
-	protected UrlStack urlStack;
-	protected SigninHandler signinHandler;
-	
-	
+	private LoggedInUserFilter loggedInUserFilter;
+	private UserRepository userDAO;
+	private AnonUserService anonUserService;
+	private LoginResourceOwnershipService loginResourceOwnershipService;
+	private UrlStack urlStack;
+	private SigninHandler signinHandler;
+		
 	public SigninController(
 			LoggedInUserFilter loggedInUserFilter, UserRepository userDAO,
 			AnonUserService anonUserService,
@@ -41,7 +40,6 @@ public class SigninController extends MultiActionController {
 		this.urlStack = urlStack;
 		this.signinHandler = signinHandler;
 	}
-
 	
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView loginView = signinHandler.getLoginView(request, response);
@@ -50,8 +48,6 @@ public class SigninController extends MultiActionController {
 		}
 		return signinErrorView(request);		
 	}
-	
-	
 	
 	@Transactional
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -80,7 +76,6 @@ public class SigninController extends MultiActionController {
 					if (!user.equals(alreadyLoggedInUser)) {
 						log.info("Reassigning resource ownership from " + alreadyLoggedInUser.getProfilename() + " to " + user.getProfilename());
 						loginResourceOwnershipService.reassignOwnership(alreadyLoggedInUser, user);
-						userDAO.deleteUser(alreadyLoggedInUser);
 					}
 				}
 				
@@ -93,12 +88,11 @@ public class SigninController extends MultiActionController {
 		return signinErrorView(request);
 	}
 	
-	protected ModelAndView signinErrorView(HttpServletRequest request) {
+	private ModelAndView signinErrorView(HttpServletRequest request) {
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));	// TODO replace with something meaningful
 	}
-	
-	
-	final protected User createNewUser(Object externalIdentifier) {
+		
+	private User createNewUser(Object externalIdentifier) {
 		User newUser = anonUserService.createAnonUser();
 		signinHandler.decorateUserWithExternalSigninIdentifier(newUser, externalIdentifier);
 		userDAO.saveUser(newUser);

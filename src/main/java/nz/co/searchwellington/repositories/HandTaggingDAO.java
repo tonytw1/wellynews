@@ -86,6 +86,14 @@ public class HandTaggingDAO {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	public List<HandTagging> getUsersVotes(User user) {
+		return sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
+		add(Expression.eq("user", user)).
+		setCacheable(true).
+		list();
+	}
+	
 	private void clearTagsForResourceByUser(Resource resource, User user) {
 		for (HandTagging handTagging : this.getHandTaggingsForResourceByUser(resource, user)) {
 			sessionFactory.getCurrentSession().delete(handTagging);

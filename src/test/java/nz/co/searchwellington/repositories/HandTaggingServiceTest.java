@@ -1,11 +1,15 @@
 package nz.co.searchwellington.repositories;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,34 +24,45 @@ public class HandTaggingServiceTest {
 	
 	@Mock Tag tag;
 	@Mock Resource taggedResource;
+	@Mock User previousUser;
+	@Mock User newUser;
+	@Mock HandTagging handTagging;
 	
 	private List<HandTagging> tagVotes;
-	private HandTagging handTagging;
 	
 	private HandTaggingService handTaggingService;
 	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		tagVotes = new ArrayList<HandTagging>();
-		handTagging = new HandTagging();
-		handTagging.setResource(taggedResource);
+		tagVotes = new ArrayList<HandTagging>();		
+		when(handTagging.getResource()).thenReturn(taggedResource);
 		tagVotes.add(handTagging);
-		handTaggingService = new HandTaggingService(handTaggingDAO, frontendContentUpdater);
+		when(previousUser.getName()).thenReturn("Previous User");
+		when(newUser.getName()).thenReturn("New User");
+
+		handTaggingService = new HandTaggingService(handTaggingDAO, frontendContentUpdater);		
 	}
 	
 	@Test
 	public void clearingTagVotesClearAllVotesForThatTagFromTheDatabase() throws Exception {				
 		Mockito.when(handTaggingDAO.getVotesForTag(tag)).thenReturn(tagVotes);
 		handTaggingService.clearTaggingsForTag(tag);
-		Mockito.verify(handTaggingDAO).delete(handTagging);
+		verify(handTaggingDAO).delete(handTagging);
 	}
 	
 	@Test
 	public void clearingTagVotesShouldtriggerFrontendContentUpdateForTheEffectedResources() throws Exception {
-		Mockito.when(handTaggingDAO.getVotesForTag(tag)).thenReturn(tagVotes);
+		when(handTaggingDAO.getVotesForTag(tag)).thenReturn(tagVotes);
 		handTaggingService.clearTaggingsForTag(tag);	
-		Mockito.verify(frontendContentUpdater).update(taggedResource);		
+		verify(frontendContentUpdater).update(taggedResource);		
 	}
 	
+	@Test
+	public void shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferingVotes() throws Exception {
+		Mockito.when(handTaggingDAO.getUsersVotes(previousUser)).thenReturn(tagVotes);
+		handTaggingService.transferVotes(previousUser, newUser);
+		verify(handTagging).setUser(newUser);
+		verify(frontendContentUpdater).update(taggedResource);
+	}
 }

@@ -16,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-
 public class SigninControllerTest {
 	
 	private @Mock LoggedInUserFilter loggedInUserFilter;
@@ -44,8 +43,7 @@ public class SigninControllerTest {
 		when(anonUser.isUnlinkedAnonAccount()).thenReturn(true);
 		controller = new SigninController(loggedInUserFilter, userDAO, anonUserService, loginResourceOwnershipService, urlStack, signinHandler);
 	}
-	
-	
+		
 	@Test
 	public void shouldLoginExistingUserIdentifiedBySigninHandler() throws Exception {		
 		when(signinHandler.getExternalUserIdentifierFromCallbackRequest(request)).thenReturn(externalIdentifier);
@@ -54,8 +52,7 @@ public class SigninControllerTest {
 		controller.callback(request, response);
 		verify(loggedInUserFilter).setLoggedInUser(request, existingUser);		
 	}
-	
-	
+		
 	@Test
 	public void testShouldCreateNewUserIfExternalIdentifierIsPreviouslyUnknown() throws Exception {
 		when(signinHandler.getExternalUserIdentifierFromCallbackRequest(request)).thenReturn(seenForTheFirstTimexternalIdentifier);
@@ -67,7 +64,6 @@ public class SigninControllerTest {
 		verify(loggedInUserFilter).setLoggedInUser(request, newUser);
 	}
 	
-	
 	@Test
 	public void testShouldMergeIntoExistingAccountWhenAnonUserSignsInWithKnownExternalIdentifier() throws Exception {
 		when(loggedInUserFilter.getLoggedInUser()).thenReturn(anonUser);
@@ -77,7 +73,6 @@ public class SigninControllerTest {
 		controller.callback(request, response);
 		verify(loggedInUserFilter).setLoggedInUser(request, existingUser);
 		verify(loginResourceOwnershipService).reassignOwnership(anonUser, existingUser);
-		verify(userDAO).deleteUser(anonUser);
 	}
 	
 }

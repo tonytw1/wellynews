@@ -79,6 +79,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		
 	<bean id="loginResourceOwnershipService" class="nz.co.searchwellington.controllers.LoginResourceOwnershipService">
 		<constructor-arg ref="resourceDAO" />
+		<constructor-arg ref="userDAO" />
+		<constructor-arg ref="handTaggingService" />
 	</bean>
 
 	<bean id="taggingReturnsOfficerService" class=" nz.co.searchwellington.tagging.TaggingReturnsOfficerService" >
