@@ -47,9 +47,11 @@
 		
 	<bean id="relatedTagsService" class="nz.co.searchwellington.controllers.RelatedTagsService">
 		<constructor-arg ref="solrQueryService" />
-		<constructor-arg ref="solrFacetLoader" />		
+		<constructor-arg ref="solrKeywordQueryBuilder" />		
+		<constructor-arg ref="solrFacetLoader" />
+		<constructor-arg ref="showBrokenDecisionService" />
 	</bean>
-			
+	
 	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
 		<constructor-arg ref="keystore" />			
 		<property name="keyPrefix" value="url-snapshots::" />
