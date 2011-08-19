@@ -21,6 +21,7 @@ public class FrontendResourceImpl implements FrontendResource {
     private List<Tag> tags;
     private List<Tag> handTags;
     private Geocode geocode;
+    private Integer ownerId;
 	
 	final public int getId() {
 		return id;
@@ -87,6 +88,12 @@ public class FrontendResourceImpl implements FrontendResource {
 	}
 	final public void setGeocode(Geocode geocode) {
 		this.geocode = geocode;
+	}	
+	final public Integer getOwnerId() {
+		return ownerId;
+	}
+	final public void setOwnerId(Integer ownerId) {
+		this.ownerId = ownerId;
 	}
 	
 	@Override
@@ -96,6 +103,7 @@ public class FrontendResourceImpl implements FrontendResource {
 		result = prime * result + id;
 		return result;
 	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

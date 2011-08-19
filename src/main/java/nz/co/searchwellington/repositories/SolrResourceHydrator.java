@@ -91,6 +91,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			item.setDate((Date) result.getFieldValue("date"));
 			item.setTags(hydrateTags(result, "tags"));
 			item.setHandTags(hydrateTags(result, "handTags"));
+			item.setOwnerId((Integer) result.getFieldValue("owner"));
 			return item;
 		}
 		

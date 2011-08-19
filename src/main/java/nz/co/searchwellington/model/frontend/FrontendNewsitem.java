@@ -6,7 +6,6 @@ import java.util.List;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Twit;
 
-
 public interface FrontendNewsitem extends FrontendResource {
 	
 	public String getPublisherName();

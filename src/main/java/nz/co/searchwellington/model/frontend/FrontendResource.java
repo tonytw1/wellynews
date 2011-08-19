@@ -22,5 +22,6 @@ public interface FrontendResource extends Serializable {
 	
 	public List<Tag> getTags();
 	public List<Tag> getHandTags();
+	public Integer getOwnerId();
 	
 }

@@ -121,5 +121,10 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 	public Date getAccepted() {
 		return feedNewsitem.getAccepted();
 	}
+
+	@Override
+	public Integer getOwnerId() {
+		return null;
+	}
 	
 }

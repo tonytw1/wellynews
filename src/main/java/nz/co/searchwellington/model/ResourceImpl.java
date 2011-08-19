@@ -157,4 +157,11 @@ public abstract class ResourceImpl implements Resource {
 		return new ArrayList<Tag>();
 	}
 	
+	final public Integer getOwnerId() {
+		if (owner != null) {
+			return owner.getId();
+		}
+		return null;
+	}
+	
 }

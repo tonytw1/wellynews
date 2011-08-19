@@ -70,26 +70,21 @@ public class EditPermissionService {
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 	
-	
 	public boolean canAddWatchlistAndTag() {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 	
-	
 	private boolean isAdminOrOwner(FrontendResource resource, User loggedInUser) {
 		if (loggedInUser == null) {
 			return false;
 		}
-		
 		if (loggedInUser.isAdmin()) {
 			return true;
+		}	
+		if (resource.getOwnerId() != null && loggedInUser.getId() == resource.getOwnerId()) {
+			return true;
 		}
-			
-		// TODO reimplement for frontend resource.s
-		//if (resource.getOwner() != null && loggedInUser.getId() == resource.getOwner().getId()) {
-		//	return true;
-		//}
 		return false;
 	}
 
