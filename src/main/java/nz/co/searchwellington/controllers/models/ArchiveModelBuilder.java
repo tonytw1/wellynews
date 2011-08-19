@@ -57,7 +57,7 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 
 	
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
 		Date month = getArchiveDateFromPath(request.getPathInfo());
         List<ArchiveLink> archiveLinks = contentRetrievalService.getArchiveMonths();
 		populateNextAndPreviousLinks(mv, month, archiveLinks);

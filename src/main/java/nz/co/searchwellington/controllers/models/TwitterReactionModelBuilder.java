@@ -33,11 +33,7 @@ public class TwitterReactionModelBuilder implements ModelBuilder {
 	}
 
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
-		// TODO Auto-generated method stub
-		
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {		
 	}
 	
-	
-
 }

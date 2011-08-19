@@ -71,7 +71,7 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	}
 	
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
 		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
 	

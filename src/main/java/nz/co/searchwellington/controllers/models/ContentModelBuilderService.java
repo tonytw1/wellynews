@@ -28,7 +28,6 @@ public class ContentModelBuilderService {
 			if (modelBuilder.isValid(request)) {
 				logger.info("Using " + modelBuilder.getClass().getName() + " to server path: " + request.getPathInfo());
 				
-				final boolean showBroken = shouldShowBrokenResources();								
 				ModelAndView mv = modelBuilder.populateContentModel(request);
 				
 				final String path = request.getPathInfo();
@@ -39,7 +38,7 @@ public class ContentModelBuilderService {
 				}
 				
 				if (mv != null) {
-					modelBuilder.populateExtraModelConent(request, showBroken, mv);
+					modelBuilder.populateExtraModelConent(request, mv);
 					mv.setViewName(modelBuilder.getViewName(mv));
 					return mv;
 				}
@@ -48,10 +47,6 @@ public class ContentModelBuilderService {
 		}
 		logger.warn("No matching model builders found for path: " + request.getPathInfo());
         return null;
-	}
-	
-	private boolean shouldShowBrokenResources() {
-		return loggedInUserFilter.getLoggedInUser() != null;
 	}
 	
 }

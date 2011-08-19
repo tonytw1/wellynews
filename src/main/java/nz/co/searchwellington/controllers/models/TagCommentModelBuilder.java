@@ -56,7 +56,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	
 		
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {	
 	}
 
 

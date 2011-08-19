@@ -69,7 +69,7 @@ public class FeedModelBuilderTest {
 	public void shouldPushGeotaggedFeeditemsOntoTheModelSeperately() throws Exception {
 		when(geotaggedNewsitemExtractor.extractGeotaggedFeeditems(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)).thenReturn(geotaggedFeedNewsitems);		
 		ModelAndView mv = modelBuilder.populateContentModel(request);
-		modelBuilder.populateExtraModelConent(request, false, mv);
+		modelBuilder.populateExtraModelConent(request, mv);
 		assertEquals(geotaggedFeedNewsitems, mv.getModel().get("geocoded"));
 	}
 	

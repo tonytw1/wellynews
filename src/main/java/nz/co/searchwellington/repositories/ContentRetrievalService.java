@@ -128,7 +128,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<TagContentCount> getKeywordSearchFacets(String keywords) {
-		return keywordSearchService.getKeywordSearchFacets(keywords, showBrokenDecisionService.shouldShowBroken(), null);
+		return keywordSearchService.getKeywordSearchFacets(keywords, null, showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<FrontendResource> getWebsitesMatchingKeywords(String keywords, Tag tag, int startIndex, int maxItems) {

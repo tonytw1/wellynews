@@ -55,7 +55,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 		
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
 		Website publisher = (Website) request.getAttribute("publisher");
 		
 		mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher));
@@ -63,7 +63,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	
 		populateGeotaggedItems(mv);
 		
-		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher, showBroken);
+		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher);
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}

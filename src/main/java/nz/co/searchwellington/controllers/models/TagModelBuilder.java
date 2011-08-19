@@ -75,27 +75,27 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
 		
 		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
 		mv.addObject("websites", taggedWebsites);
 		
-		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8);
+		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8);
 		if (relatedTagLinks.size() > 0) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}
 		
-		List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, showBroken, 8);
+		List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, 8);
 		if (relatedPublisherLinks.size() > 0) {
 			mv.addObject("related_publishers", relatedPublisherLinks);
 		}
 		
-		populateCommentedTaggedNewsitems(mv, tag, showBroken);
+		populateCommentedTaggedNewsitems(mv, tag);
 		mv.addObject("last_changed", contentRetrievalService.getLastLiveTimeForTag(tag));
 		populateRelatedFeed(mv, tag);
-		populateGeocoded(mv, showBroken, tag);		
+		populateGeocoded(mv, tag);		
 		populateTagFlickrPool(mv, tag);		
 		populateTagRelatedTwitter(mv, tag);		
 		populateRecentlyTwittered(mv, tag);
@@ -106,7 +106,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		if (request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM) != null) {
 			final String searchTerm = (String) request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM);
 			mv.addObject("searchterm", searchTerm);
-			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, showBroken, null));
+			mv.addObject("searchfacets", keywordSearchService.getKeywordSearchFacets(searchTerm, null));
 		}
         mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
@@ -176,7 +176,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     	mv.addObject("escaped_flickr_group_id", UrlFilters.encode(configDAO.getFlickrPoolGroupId()));	// TODO double call to the config doa
     }
     
-    private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag, boolean showBroken) {
+    private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag) {
         List<FrontendResource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
         List<FrontendResource> commentedToShow;
         if (recentCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
@@ -196,7 +196,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
         mv.addObject("commented_newsitems", commentedToShow);          
     }
 	    
-    private void populateGeocoded(ModelAndView mv, boolean showBroken, Tag tag) {
+    private void populateGeocoded(ModelAndView mv, Tag tag) {
         List<FrontendResource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {

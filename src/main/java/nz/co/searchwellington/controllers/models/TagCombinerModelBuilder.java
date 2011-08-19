@@ -52,10 +52,10 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
-		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, showBroken, 8));
+		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, 8));
 		mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5));
 
 		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), MAX_WEBSITES);  

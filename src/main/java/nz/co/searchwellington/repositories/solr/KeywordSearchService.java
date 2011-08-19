@@ -31,7 +31,8 @@ public class KeywordSearchService {
 		this.solrBackedResourceDAO = solrBackedResourceDAO;
 	}
 	
-	public List<TagContentCount> getKeywordSearchFacets(String keywords, boolean showBroken, Tag tag) {
+	// TODO Move to related tags?
+	public List<TagContentCount> getKeywordSearchFacets(String keywords, Tag tag, boolean showBroken) {
 		SolrQuery query = solrKeywordQueryBuilder.getSolrKeywordQuery(keywords, showBroken, tag);			
 		query.setRows(SEARCH_FACETS_TO_SHOW);
 		query.setHighlight(true);	// TODO Really - not needed for facet query?

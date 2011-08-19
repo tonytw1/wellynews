@@ -54,7 +54,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 	
 		
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, boolean showBroken, ModelAndView mv) {	
+	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {	
 	}
 
 
