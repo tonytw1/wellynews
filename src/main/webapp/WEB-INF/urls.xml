@@ -12,6 +12,7 @@
 			<list>
 				<ref bean="feedBurnerRedirectResolver" />
 				<ref bean="tinyUrlResolver" />
+				<ref bean="twitterShortenerUrlResolver" />				
 				<ref bean="bitlyUrlResolver" />
 			</list>
 		</constructor-arg>
@@ -20,6 +21,7 @@
 			
 	<bean id="bitlyUrlResolver" class="nz.co.searchwellington.urls.BitlyUrlResolver" />
 	<bean id="tinyUrlResolver" class="nz.co.searchwellington.urls.TinyUrlResolver" />
+	<bean id="twitterShortenerUrlResolver" class="nz.co.searchwellington.urls.TwitterShortenerUrlResolver" />	
 	<bean id="feedBurnerRedirectResolver" class="nz.co.searchwellington.urls.FeedBurnerRedirectResolver" />
 
 </beans>
