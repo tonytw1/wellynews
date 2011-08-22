@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
-import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -17,20 +16,17 @@ public class TagController extends MultiActionController {
 	
     private ContentModelBuilderService contentModelBuilder;
     private UrlStack urlStack;
-    private ContentRetrievalService contentRetrievalService;
     
-	public TagController(ContentModelBuilderService contentModelBuilder, UrlStack urlStack, ContentRetrievalService contentRetrievalService) {
+	public TagController(ContentModelBuilderService contentModelBuilder, UrlStack urlStack) {
 		this.contentModelBuilder = contentModelBuilder;
 		this.urlStack = urlStack;
-		this.contentRetrievalService = contentRetrievalService;
 	}
-
+	
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {
 			if (isHtmlView(mv)) {
 				urlStack.setUrlStack(request);
-				addCommonModelElements(mv);
 			}
 			return mv;
 		}
@@ -40,11 +36,6 @@ public class TagController extends MultiActionController {
 	
 	private boolean isHtmlView(ModelAndView mv) {
 		return mv.getViewName() != null;
-	}
-		
-	private void addCommonModelElements(ModelAndView mv) throws IOException {
-		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
-		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
 	
 }

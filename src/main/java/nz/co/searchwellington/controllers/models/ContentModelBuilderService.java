@@ -2,7 +2,8 @@ package nz.co.searchwellington.controllers.models;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.views.JSONView;
 import nz.co.searchwellington.views.RssViewFactory;
 
 import org.apache.log4j.Logger;
@@ -12,13 +13,13 @@ public class ContentModelBuilderService {
 
 	private static Logger logger = Logger.getLogger(ContentModelBuilderService.class);
 		
-	private LoggedInUserFilter loggedInUserFilter;
 	private RssViewFactory rssViewFactory;
+	private ContentRetrievalService contentRetrievalService;
 	private ModelBuilder[] modelBuilders;
 	
-	public ContentModelBuilderService(LoggedInUserFilter loggedInUserFilter, RssViewFactory rssViewFactory, ModelBuilder[] modelBuilders) {
-		this.loggedInUserFilter = loggedInUserFilter;
+	public ContentModelBuilderService(RssViewFactory rssViewFactory, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
 		this.rssViewFactory = rssViewFactory;
+		this.contentRetrievalService = contentRetrievalService;
 		this.modelBuilders = modelBuilders;
 	}
 	
@@ -26,7 +27,7 @@ public class ContentModelBuilderService {
 		for (int i = 0; i < modelBuilders.length; i++) {
 			ModelBuilder modelBuilder = modelBuilders[i];
 			if (modelBuilder.isValid(request)) {
-				logger.info("Using " + modelBuilder.getClass().getName() + " to server path: " + request.getPathInfo());
+				logger.info("Using " + modelBuilder.getClass().getName() + " to serve path: " + request.getPathInfo());
 				
 				ModelAndView mv = modelBuilder.populateContentModel(request);
 				
@@ -35,11 +36,17 @@ public class ContentModelBuilderService {
 					logger.info("Selecting rss view for path: " + path);
 					mv.setView(rssViewFactory.makeView());
 					return mv;
+				}				
+				if (path.endsWith("/json")) {
+					logger.info("Selecting json view for path: " + path);
+					mv.setView(new JSONView());
+					return mv;
 				}
 				
 				if (mv != null) {
-					modelBuilder.populateExtraModelConent(request, mv);
 					mv.setViewName(modelBuilder.getViewName(mv));
+					modelBuilder.populateExtraModelConent(request, mv);
+					addCommonModelElements(mv);
 					return mv;
 				}
 				return null;				
@@ -47,6 +54,11 @@ public class ContentModelBuilderService {
 		}
 		logger.warn("No matching model builders found for path: " + request.getPathInfo());
         return null;
+	}
+	
+	private void addCommonModelElements(ModelAndView mv) {
+		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
+		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
 	
 }

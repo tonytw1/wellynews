@@ -131,8 +131,8 @@
 	</bean>
 	
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
-		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="rssViewFactory" />		
+		<constructor-arg ref="rssViewFactory" />
+		<constructor-arg ref="contentRetrievalService" />		
 		<constructor-arg>
 			<list>				
 				<ref bean="indexModelBuilder" />

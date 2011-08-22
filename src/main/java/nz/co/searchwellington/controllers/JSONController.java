@@ -4,12 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
-import nz.co.searchwellington.views.JSONView;
 
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+@Deprecated
 public class JSONController extends MultiActionController {
 
 	private static Logger log = Logger.getLogger(JSONController.class);
@@ -33,8 +33,7 @@ public class JSONController extends MultiActionController {
 					log.info("Adding callback to model:" + callback);
 					mv.addObject("callback", callback);
 				}	 
-			}
-			mv.setView(new JSONView());
+			}			
 			return mv;
 		}     
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
