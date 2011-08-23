@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +21,6 @@ public class TagControllerTest {
 
 	@Mock ContentModelBuilderService contentModelBuilder;
 	@Mock UrlStack urlStack;
-	@Mock ContentRetrievalService contentRetrievalService;
 	
 	@Mock List<Tag> featuredTags;
 	@Mock List<Tag> topLevelTags;
@@ -38,7 +36,7 @@ public class TagControllerTest {
 		MockitoAnnotations.initMocks(this);
 		modelAndHtmlView = new ModelAndView("a-view");
 		Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(modelAndHtmlView);
-		tagController = new TagController(contentModelBuilder, urlStack, contentRetrievalService);
+		tagController = new TagController(contentModelBuilder, urlStack);
 	}
 	
 	@Test
@@ -60,24 +58,6 @@ public class TagControllerTest {
 	public void htmlPageViewsShouldBePutOntoTheUrlStack() throws Exception {
 		tagController.normal(request, response);
 		Mockito.verify(urlStack).setUrlStack(request);
-	}
-	
-	@Test
-	public void featuredTagsShouldBeAddedToHtmlViews() throws Exception {
-		Mockito.when(contentRetrievalService.getFeaturedTags()).thenReturn(featuredTags);
-		
-		ModelAndView mv = tagController.normal(request, response);
-		
-		assertEquals(featuredTags, mv.getModel().get("featuredTags"));
-	}
-	
-	@Test
-	public void topLevelTagsShouldBeAddedToHtmlViews() throws Exception {
-		Mockito.when(contentRetrievalService.getTopLevelTags()).thenReturn(topLevelTags);
-		
-		ModelAndView mv = tagController.normal(request, response);
-		
-		assertEquals(topLevelTags, mv.getModel().get("top_level_tags"));
 	}
 	
 }
