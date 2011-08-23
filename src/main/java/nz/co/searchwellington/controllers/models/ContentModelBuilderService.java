@@ -10,9 +10,12 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 
 public class ContentModelBuilderService {
-
+	
 	private static Logger logger = Logger.getLogger(ContentModelBuilderService.class);
-		
+
+	private static final String JSON_CALLBACK_PARAMETER = "callback";
+	private static final String VALID_CALLBACK_NAME_REGEX = "[a-z|A-Z|0-9|_]+";
+	
 	private RssViewFactory rssViewFactory;
 	private JsonViewFactory jsonViewFactory;
 	private ContentRetrievalService contentRetrievalService;
@@ -41,7 +44,8 @@ public class ContentModelBuilderService {
 				}				
 				if (path.endsWith("/json")) {
 					logger.info("Selecting json view for path: " + path);
-					mv.setView(jsonViewFactory.makeView());
+					mv.setView(jsonViewFactory.makeView());					
+					populateJsonCallback(request, mv);								
 					return mv;
 				}
 				
@@ -57,10 +61,26 @@ public class ContentModelBuilderService {
 		logger.warn("No matching model builders found for path: " + request.getPathInfo());
         return null;
 	}
+
+	private void populateJsonCallback(HttpServletRequest request, ModelAndView mv) {
+		if(request.getParameter(JSON_CALLBACK_PARAMETER) != null) {
+			final String callback = request.getParameter(JSON_CALLBACK_PARAMETER);
+			if (isValidCallbackName(callback)) {
+				logger.info("Adding callback to model:" + callback);
+				mv.addObject(JSON_CALLBACK_PARAMETER, callback);
+			}	 
+		}
+	}
+	
+	// TODO Push to service to remove protected
+	protected boolean isValidCallbackName(String callback) {
+		return callback.matches(VALID_CALLBACK_NAME_REGEX);
+	}
 	
 	private void addCommonModelElements(ModelAndView mv) {
 		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
 		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
+		  
 	
 }

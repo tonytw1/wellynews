@@ -211,21 +211,6 @@
 		</property>
 	</bean>
 			
-	<bean id="jsonController" class="nz.co.searchwellington.controllers.JSONController">
-		<constructor-arg ref="contentModelBuilder" />		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/json">contentJSON</prop>					
-						<prop key="/*/json">contentJSON</prop>
-						<prop key="/*/*/json">contentJSON</prop>																	
-					</props>
-				</property>
-			</bean>
-		</property>
-	</bean>
-		
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="contentRetrievalService" />
@@ -355,9 +340,9 @@
 				<prop key="/*/*/rss">tagController</prop>
 				<prop key="/feeds/inbox/rss">tagController</prop>
 									
-				<prop key="/json">jsonController</prop>									
-				<prop key="*/json">jsonController</prop>
-				<prop key="/*/*/json">jsonController</prop>
+				<prop key="/json">tagController</prop>									
+				<prop key="*/json">tagController</prop>
+				<prop key="/*/*/json">tagController</prop>
 																							
 				<prop key="/admin/feed/decache">viewfeedController</prop>	
 				<prop key="/admin/feed/acceptall">viewfeedController</prop>

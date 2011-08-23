@@ -1,7 +1,9 @@
 package nz.co.searchwellington.controllers.models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -80,6 +82,15 @@ public class ContentModelBuilderServiceTest {
 		request.setPathInfo("/something/json");
 		assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).getView());
 	}
+	
+	@Test
+	public void jsonCallbackShouldBeAddedToJsonModelIfValid() throws Exception {
+		when(jsonViewFactory.makeView()).thenReturn(jsonView);
+		request.setPathInfo("/something/json");
+		request.setParameter("callback", "callbackName");
+		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
+		assertEquals("callbackName", mv.getModel().get("callback"));
+	}
 		
 	@Test
 	public void featuredTagsShouldBeAddedToHtmlViews() throws Exception {
@@ -93,6 +104,16 @@ public class ContentModelBuilderServiceTest {
 		when(contentRetrievalService.getTopLevelTags()).thenReturn(topLevelTags);		
 		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
 		assertEquals(topLevelTags, mv.getModel().get("top_level_tags"));
+	}
+	
+	@Test
+	public void testShouldAcceptValidCallbackName() throws Exception {
+		assertTrue(contentModelBuilderService.isValidCallbackName("_callBack123"));
+	}
+	
+	@Test
+	public void testShouldRejectInvalidCallbackName() throws Exception {
+		assertFalse(contentModelBuilderService.isValidCallbackName("callback()"));
 	}
 	
 }
