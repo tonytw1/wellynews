@@ -92,6 +92,8 @@
 		<constructor-arg ref="rssUrlBuilder" />
 	</bean>
 	
+	<bean id="jsonViewFactory" class="nz.co.searchwellington.views.JsonViewFactory" />
+	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="urlBuilder" />
@@ -132,6 +134,7 @@
 	
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
 		<constructor-arg ref="rssViewFactory" />
+		<constructor-arg ref="jsonViewFactory" />		
 		<constructor-arg ref="contentRetrievalService" />		
 		<constructor-arg>
 			<list>				

@@ -8,6 +8,7 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.views.JsonViewFactory;
 import nz.co.searchwellington.views.RssViewFactory;
 
 import org.junit.Before;
@@ -21,11 +22,13 @@ import org.springframework.web.servlet.View;
 public class ContentModelBuilderServiceTest {
 	
 	@Mock RssViewFactory rssViewFactory;
+	@Mock JsonViewFactory jsonViewFactory;
 	@Mock ContentRetrievalService contentRetrievalService;
 	ModelBuilder[] modelBuilders;
 	
 	MockHttpServletRequest request;
 	@Mock View rssView;
+	@Mock View jsonView;
 	@Mock List<Tag> featuredTags;
 	@Mock List<Tag> topLevelTags;
 	
@@ -49,9 +52,8 @@ public class ContentModelBuilderServiceTest {
 		when(invalidModelBuilder.isValid(request)).thenReturn(false);
 		when(validModelBuilder.isValid(request)).thenReturn(true);
 		when(validModelBuilder.populateContentModel(request)).thenReturn(validModelAndView);
-		when(rssViewFactory.makeView()).thenReturn(rssView);
 		
-		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, contentRetrievalService,  modelBuilders);
+		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, jsonViewFactory, contentRetrievalService,  modelBuilders);
 	}
 	
 	@Test
@@ -66,9 +68,17 @@ public class ContentModelBuilderServiceTest {
 	}
 	
 	@Test
-	public void rssPrefixedRequestsShouldBeGivenTheRssView() throws Exception {
+	public void rssSuffixedRequestsShouldBeGivenTheRssView() throws Exception {
+		when(rssViewFactory.makeView()).thenReturn(rssView);
 		request.setPathInfo("/something/rss");
 		assertEquals(rssView, contentModelBuilderService.populateContentModel(request).getView());
+	}
+	
+	@Test
+	public void jsonSuffixedRequestsShouldBeGivenTheRssView() throws Exception {
+		when(jsonViewFactory.makeView()).thenReturn(jsonView);
+		request.setPathInfo("/something/json");
+		assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).getView());
 	}
 		
 	@Test

@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.views.JSONView;
+import nz.co.searchwellington.views.JsonViewFactory;
 import nz.co.searchwellington.views.RssViewFactory;
 
 import org.apache.log4j.Logger;
@@ -14,11 +14,13 @@ public class ContentModelBuilderService {
 	private static Logger logger = Logger.getLogger(ContentModelBuilderService.class);
 		
 	private RssViewFactory rssViewFactory;
+	private JsonViewFactory jsonViewFactory;
 	private ContentRetrievalService contentRetrievalService;
 	private ModelBuilder[] modelBuilders;
 	
-	public ContentModelBuilderService(RssViewFactory rssViewFactory, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
+	public ContentModelBuilderService(RssViewFactory rssViewFactory, JsonViewFactory jsonViewFactory, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
 		this.rssViewFactory = rssViewFactory;
+		this.jsonViewFactory = jsonViewFactory;
 		this.contentRetrievalService = contentRetrievalService;
 		this.modelBuilders = modelBuilders;
 	}
@@ -39,7 +41,7 @@ public class ContentModelBuilderService {
 				}				
 				if (path.endsWith("/json")) {
 					logger.info("Selecting json view for path: " + path);
-					mv.setView(new JSONView());
+					mv.setView(jsonViewFactory.makeView());
 					return mv;
 				}
 				
