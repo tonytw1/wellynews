@@ -132,9 +132,12 @@
 		<constructor-arg ref="contentRetrievalService" />
 	</bean>
 	
+	<bean id="jsonCallbackNameValidator" class="nz.co.searchwellington.controllers.models.JsonCallbackNameValidator" />
+	
 	<bean id="contentModelBuilder" class="nz.co.searchwellington.controllers.models.ContentModelBuilderService" >
 		<constructor-arg ref="rssViewFactory" />
-		<constructor-arg ref="jsonViewFactory" />		
+		<constructor-arg ref="jsonViewFactory" />
+		<constructor-arg ref="jsonCallbackNameValidator" />	
 		<constructor-arg ref="contentRetrievalService" />		
 		<constructor-arg>
 			<list>				

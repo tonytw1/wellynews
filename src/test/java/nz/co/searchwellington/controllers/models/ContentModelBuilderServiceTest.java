@@ -1,9 +1,7 @@
 package nz.co.searchwellington.controllers.models;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -25,6 +23,7 @@ public class ContentModelBuilderServiceTest {
 	
 	@Mock RssViewFactory rssViewFactory;
 	@Mock JsonViewFactory jsonViewFactory;
+	@Mock JsonCallbackNameValidator jsonCallbackNameValidator;
 	@Mock ContentRetrievalService contentRetrievalService;
 	ModelBuilder[] modelBuilders;
 	
@@ -55,7 +54,7 @@ public class ContentModelBuilderServiceTest {
 		when(validModelBuilder.isValid(request)).thenReturn(true);
 		when(validModelBuilder.populateContentModel(request)).thenReturn(validModelAndView);
 		
-		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, jsonViewFactory, contentRetrievalService,  modelBuilders);
+		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, jsonViewFactory, jsonCallbackNameValidator, contentRetrievalService,  modelBuilders);
 	}
 	
 	@Test
@@ -82,15 +81,6 @@ public class ContentModelBuilderServiceTest {
 		request.setPathInfo("/something/json");
 		assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).getView());
 	}
-	
-	@Test
-	public void jsonCallbackShouldBeAddedToJsonModelIfValid() throws Exception {
-		when(jsonViewFactory.makeView()).thenReturn(jsonView);
-		request.setPathInfo("/something/json");
-		request.setParameter("callback", "callbackName");
-		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-		assertEquals("callbackName", mv.getModel().get("callback"));
-	}
 		
 	@Test
 	public void featuredTagsShouldBeAddedToHtmlViews() throws Exception {
@@ -107,13 +97,23 @@ public class ContentModelBuilderServiceTest {
 	}
 	
 	@Test
-	public void testShouldAcceptValidCallbackName() throws Exception {
-		assertTrue(contentModelBuilderService.isValidCallbackName("_callBack123"));
+	public void jsonCallbackShouldBeAddedToJsonModelIfValid() throws Exception {
+		when(jsonViewFactory.makeView()).thenReturn(jsonView);
+		request.setPathInfo("/something/json");
+		request.setParameter("callback", "validname");
+		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter("callback"))).thenReturn(true);
+		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
+		assertEquals("validname", mv.getModel().get("callback"));
 	}
 	
 	@Test
-	public void testShouldRejectInvalidCallbackName() throws Exception {
-		assertFalse(contentModelBuilderService.isValidCallbackName("callback()"));
+	public void shouldRejectInvalidCallbackNames() throws Exception {
+		when(jsonViewFactory.makeView()).thenReturn(jsonView);
+		request.setPathInfo("/something/json");
+		request.setParameter("callback", "Invalid name!");
+		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter("callback"))).thenReturn(false);
+		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
+		assertNull(mv.getModel().get("callback"));
 	}
 	
 }

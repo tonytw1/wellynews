@@ -14,16 +14,17 @@ public class ContentModelBuilderService {
 	private static Logger logger = Logger.getLogger(ContentModelBuilderService.class);
 
 	private static final String JSON_CALLBACK_PARAMETER = "callback";
-	private static final String VALID_CALLBACK_NAME_REGEX = "[a-z|A-Z|0-9|_]+";
 	
 	private RssViewFactory rssViewFactory;
 	private JsonViewFactory jsonViewFactory;
+	private JsonCallbackNameValidator jsonCallbackNameValidator;
 	private ContentRetrievalService contentRetrievalService;
 	private ModelBuilder[] modelBuilders;
 	
-	public ContentModelBuilderService(RssViewFactory rssViewFactory, JsonViewFactory jsonViewFactory, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
+	public ContentModelBuilderService(RssViewFactory rssViewFactory, JsonViewFactory jsonViewFactory, JsonCallbackNameValidator jsonCallbackNameValidator, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
 		this.rssViewFactory = rssViewFactory;
 		this.jsonViewFactory = jsonViewFactory;
+		this.jsonCallbackNameValidator = jsonCallbackNameValidator;
 		this.contentRetrievalService = contentRetrievalService;
 		this.modelBuilders = modelBuilders;
 	}
@@ -65,22 +66,16 @@ public class ContentModelBuilderService {
 	private void populateJsonCallback(HttpServletRequest request, ModelAndView mv) {
 		if(request.getParameter(JSON_CALLBACK_PARAMETER) != null) {
 			final String callback = request.getParameter(JSON_CALLBACK_PARAMETER);
-			if (isValidCallbackName(callback)) {
+			if (jsonCallbackNameValidator.isValidCallbackName(callback)) {
 				logger.info("Adding callback to model:" + callback);
 				mv.addObject(JSON_CALLBACK_PARAMETER, callback);
 			}	 
 		}
 	}
 	
-	// TODO Push to service to remove protected
-	protected boolean isValidCallbackName(String callback) {
-		return callback.matches(VALID_CALLBACK_NAME_REGEX);
-	}
-	
 	private void addCommonModelElements(ModelAndView mv) {
 		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
 		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
-		  
 	
 }
