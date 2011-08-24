@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 public class HandTaggingService {
 	
@@ -14,6 +15,9 @@ public class HandTaggingService {
 
 	private HandTaggingDAO handTaggingDao;
 	private FrontendContentUpdater frontendContentUpdater;	
+	
+	public HandTaggingService() {
+	}
 
 	public HandTaggingService(HandTaggingDAO handTaggingDao, FrontendContentUpdater frontendContentUpdater) {
 		this.handTaggingDao = handTaggingDao;
@@ -30,6 +34,7 @@ public class HandTaggingService {
 		}
 	}
 
+	@Transactional
 	public void transferVotes(User previousOwner, User newOwner) {		
 		List<HandTagging> previousUsersVotes = handTaggingDao.getUsersVotes(previousOwner);
 		log.info("Transfering " + previousUsersVotes.size() + " vote from user " + previousOwner.getName() + " to " + newOwner.getName());
