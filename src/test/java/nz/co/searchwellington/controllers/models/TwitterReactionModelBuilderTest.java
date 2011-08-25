@@ -39,7 +39,7 @@ public class TwitterReactionModelBuilderTest {
 	
 	@Test
 	public void mainContentIsTwitteredNewsitems() throws Exception {
-		Mockito.when(contentRetrievalService.getTwitteredNewsitems()).thenReturn(twitteredNewitems);
+		Mockito.when(contentRetrievalService.getTwitteredNewsitems(0, 30)).thenReturn(twitteredNewitems);
 		ModelAndView mv = modelBuilder.populateContentModel(request);
 		assertEquals(twitteredNewitems, mv.getModel().get("main_content"));
 	}
