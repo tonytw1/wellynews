@@ -6,7 +6,6 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.apache.log4j.Logger;
 
-
 public class PublisherAjaxController extends BaseAjaxController {
 	
     private static Logger log = Logger.getLogger(PublisherAjaxController.class);
