@@ -151,8 +151,12 @@ public class ContentRetrievalService {
 		return keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken(), null);
 	}
 	
-	public List<FrontendResource> getRecentedTwitteredNewsitems() {
-		return solrBackedResourceDAO.getRecentTwitteredNewsitems(MAX_NEWSITEMS_TO_SHOW, showBrokenDecisionService.shouldShowBroken());
+	public List<FrontendResource> getTwitteredNewsitems(int startIndex, int maxItems) {
+		return solrBackedResourceDAO.getTwitteredNewsitems(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
+	}
+	
+	public int getTwitteredNewsitemsCount() {
+		return solrBackedResourceDAO.getTwitteredNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<FrontendResource> getRecentedTwitteredNewsitemsForTag(int maxItems, Tag tag) {

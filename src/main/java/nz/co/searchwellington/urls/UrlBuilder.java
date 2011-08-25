@@ -1,5 +1,6 @@
 package nz.co.searchwellington.urls;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 
@@ -47,7 +48,11 @@ public class UrlBuilder {
 	public String getTagsAutoCompleteUrl() {
 		return siteInformation.getUrl() + "/ajax/tags";
 	}
-		
+	
+	public String getTwitterReactionsUrl() {
+		return siteInformation.getUrl() + "/twitter";
+	}
+	
 	public String getFeedUrl(FrontendFeed feed) {		
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
@@ -79,7 +84,7 @@ public class UrlBuilder {
 	}
 	
 	public String getTagSearchUrl(Tag tag, String keywords) {
-		return getTagUrl(tag) + "?keywords=" + URLEncoder.encode(keywords);
+		return getTagUrl(tag) + "?keywords=" + urlEncode(keywords);
 	}
 	
 	public String getLocalPageUrl(FrontendNewsitem newsitem) {
@@ -141,7 +146,7 @@ public class UrlBuilder {
 	}
 	
 	public String getProfileUrlFromProfileName(String username) {
-		return siteInformation.getUrl() + "/profiles/" + URLEncoder.encode(username);
+		return siteInformation.getUrl() + "/profiles/" + urlEncode(username);
 	}
 
 	public String getWatchlistUrl() {
@@ -153,15 +158,15 @@ public class UrlBuilder {
 	}
 
 	public String getLocationUrlFor(Geocode somewhere) {		
-		return siteInformation.getUrl() + "/geotagged?location=" + URLEncoder.encode(somewhere.getAddress());
+		return siteInformation.getUrl() + "/geotagged?location=" + urlEncode(somewhere.getAddress());
 	}
 
 	public String getSearchUrlFor(String keywords) {
-		return siteInformation.getUrl() + "/search?keywords=" + URLEncoder.encode(keywords);
+		return siteInformation.getUrl() + "/search?keywords=" + urlEncode(keywords);
 	}
 	
 	public String getTagSearchUrlFor(String keywords, Tag tag) {
-		return getTagUrl(tag) + "?keywords=" + URLEncoder.encode(keywords);
+		return getTagUrl(tag) + "?keywords=" + urlEncode(keywords);
 	}
 	
 	public String getTwitterProfileImageUrlFor(String twitterUsername) {
@@ -179,5 +184,13 @@ public class UrlBuilder {
 	public String getSubmitFeedUrl() {
 		return siteInformation.getUrl() + "/edit/submit/feed";
 	}
-		
+	
+	private String urlEncode(String keywords) {
+		try {
+			return URLEncoder.encode(keywords, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}
+	
 }

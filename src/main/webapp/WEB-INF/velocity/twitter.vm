@@ -21,6 +21,8 @@
 		<p>These tweeted newsitems have been mentioned on Twitter. This could mean they're of interest.</p>
 
 		#parse("includes/main_content.vm")
+		
+		#parse("includes/twitter_page_links.vm")
 	</div>
 
 

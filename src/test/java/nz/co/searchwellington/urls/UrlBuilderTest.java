@@ -83,6 +83,11 @@ public class UrlBuilderTest {
 	public void canGenerateFrontendPublisherPageUrl() throws Exception {
 		assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl(frontendWebsite));
 	}
+
+	@Test
+	public void canGenerateTwitterReactionsPageUrl() throws Exception {
+		assertEquals(SITE_URL + "/twitter", urlBuilder.getTwitterReactionsUrl());
+	}
 	
 	@Test
 	public void urlForFeedsShouldPointToOurFeedPage() throws Exception {

@@ -220,12 +220,16 @@ public class SolrBackedResourceDAO {
 		query.setStart(startIndex);
 		return getQueryResults(query);
 	}
+	
+	public int getTwitteredNewsitemsCount(boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).minTwitterCount(1).toQuery();
+		return getQueryCount(query);
+	}
 
-	public List<FrontendResource> getRecentTwitteredNewsitems(int maxItems,
-			boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(
-				showBroken).dateRange(60).minTwitterCount(1).maxItems(maxItems)
-				.toQuery();
+	public List<FrontendResource> getTwitteredNewsitems(int startIndex, int maxItems, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken)
+			.minTwitterCount(1).startIndex(startIndex).maxItems(maxItems)
+			.toQuery();
 
 		setDateDescendingOrder(query);
 		return getQueryResults(query);
