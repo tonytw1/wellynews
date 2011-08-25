@@ -9,14 +9,13 @@ import org.apache.log4j.Logger;
 
 public class PublisherAjaxController extends BaseAjaxController {
 	
-    static Logger log = Logger.getLogger(PublisherAjaxController.class);
-	private ContentRetrievalService contentRetrievalService;
+    private static Logger log = Logger.getLogger(PublisherAjaxController.class);
 	
-	
+    private ContentRetrievalService contentRetrievalService;
+		
     public PublisherAjaxController(ContentRetrievalService contentRetrievalService) {
 		this.contentRetrievalService = contentRetrievalService;
 	}
-
     
 	protected List<String> getSuggestions(String q) {
         log.info("Looking up possible publishers starting with: " + q);
@@ -24,4 +23,3 @@ public class PublisherAjaxController extends BaseAjaxController {
 	}
     
 }
-    
