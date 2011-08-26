@@ -51,8 +51,8 @@ public class ContentModelBuilderService {
 				}
 				
 				if (mv != null) {
-					mv.setViewName(modelBuilder.getViewName(mv));
 					modelBuilder.populateExtraModelConent(request, mv);
+					mv.setViewName(modelBuilder.getViewName(mv));
 					addCommonModelElements(mv);
 					return mv;
 				}
