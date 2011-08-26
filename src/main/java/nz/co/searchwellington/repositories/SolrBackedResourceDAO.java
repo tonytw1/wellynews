@@ -32,6 +32,7 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
+import org.apache.solr.common.params.FacetParams;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -278,7 +279,7 @@ public class SolrBackedResourceDAO {
 		query.addFacetField("month"); // TODO can't solr create this facet
 										// automagically from the date field?
 		query.setFacetMinCount(1);
-		query.setFacetSort(false);
+		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_ARCHIVE_MONTHS);
 
 		List<ArchiveLink> archiveLinks = new ArrayList<ArchiveLink>();
@@ -444,7 +445,7 @@ public class SolrBackedResourceDAO {
 			SolrQuery query = getCommentedNewsitemsQuery(showBroken);
 			query.addFacetField("tags");
 			query.setFacetMinCount(1);
-			query.setFacetSort(true);
+			query.setFacetSort(FacetParams.FACET_SORT_COUNT);
 
 			QueryResponse response = solr.query(query);
 			FacetField facetField = response.getFacetField("tags");
@@ -500,7 +501,7 @@ public class SolrBackedResourceDAO {
 					showBroken).geotagged().toQuery();
 			query.addFacetField("tags");
 			query.setFacetMinCount(1);
-			query.setFacetSort(true);
+			query.setFacetSort(FacetParams.FACET_SORT_COUNT);
 
 			QueryResponse response = solr.query(query);
 			FacetField facetField = response.getFacetField("tags");
@@ -529,7 +530,7 @@ public class SolrBackedResourceDAO {
 				.showBroken(showBroken).toQuery();
 		query.addFacetField("publisher");
 		query.setFacetMinCount(1);
-		query.setFacetSort(false);
+		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_PUBLISHERS_FACET_LIMIT);
 
 		List<PublisherContentCount> publishers = new ArrayList<PublisherContentCount>();
