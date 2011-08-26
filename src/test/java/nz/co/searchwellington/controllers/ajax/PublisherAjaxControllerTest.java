@@ -31,16 +31,22 @@ public class PublisherAjaxControllerTest {
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		controller = new PublisherAjaxController(contentRetrievalService);
+		request.setParameter("q", "Wellington City");
 	}
 	
 	@Test
 	public void shouldReturnSuggestionsForPublishersWithNamesStartingWith() throws Exception {
 		when(contentRetrievalService.getPublisherNamesByStartingLetters("Wellington City")).thenReturn(publisherSuggestions);
-		request.setParameter("q", "Wellington City");
 		
 		ModelAndView mv = controller.handleRequest(request, response);
 		
 		assertEquals(publisherSuggestions, mv.getModel().get("suggestions"));
+	}
+	
+	@Test
+	public void shouldUseAjaxViewInReply() throws Exception {
+		ModelAndView mv = controller.handleRequest(request, response);
+		assertEquals("autocompleteData", mv.getViewName());
 	}
 	
 }
