@@ -1,39 +1,37 @@
 package nz.co.searchwellington.model;
 
-import nz.co.searchwellington.model.frontend.FrontendWebsite;
+public class PublisherContentCount implements Comparable<PublisherContentCount> {
 
-public class PublisherContentCount implements Comparable {
-
-	private FrontendWebsite publisher;
+	private String publisherName;
 	private int count;
 	
-	public PublisherContentCount(FrontendWebsite publisher, int count) {		
-		this.publisher = publisher;
+	public PublisherContentCount(String publisherName, int count) {		
+		this.publisherName = publisherName;
 		this.count = count;
 	}
-	
-	public FrontendWebsite getPublisher() {
-		return publisher;
+
+	public String getPublisherName() {
+		return publisherName;
 	}
-	
-	public void setPublisher(FrontendWebsite publisher) {
-		this.publisher = publisher;
+
+	public void setPublisherName(String publisherName) {
+		this.publisherName = publisherName;
 	}
-	
+
 	public int getCount() {
 		return count;
 	}
-	
+
 	public void setCount(int count) {
 		this.count = count;
 	}
 	
-	public int compareTo(Object event) {       
+	public int compareTo(PublisherContentCount event) {       
         if (event instanceof PublisherContentCount) {
-            if (this.publisher == null) {                
+            if (this.publisherName == null) {                
                 return -1;
             }
-            return this.publisher.getName().compareTo(((PublisherContentCount) event).getPublisher().getName());
+            return this.publisherName.compareTo(((PublisherContentCount) event).getPublisherName());
         }        
         return 0;
     }

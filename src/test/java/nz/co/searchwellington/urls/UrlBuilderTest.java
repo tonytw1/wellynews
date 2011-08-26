@@ -58,7 +58,7 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName() throws Exception {
-		assertEquals(SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl(frontendWebsite, tag));
+		assertEquals(SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl(frontendWebsite.getName(), tag));
 	}
 	
 	@Test

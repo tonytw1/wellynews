@@ -6,20 +6,15 @@ import java.util.List;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
-import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
-import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
 
 public class SolrFacetLoader {
-
-	private ResourceRepository resourceDAO;	// TODO Try to drive out
+	
 	private TagDAO tagDAO;
 	
-	public SolrFacetLoader(ResourceRepository resourceDAO, TagDAO tagDAO) {		
-		this.resourceDAO = resourceDAO;
+	public SolrFacetLoader(TagDAO tagDAO) {		
 		this.tagDAO = tagDAO;
 	}
 	
@@ -40,21 +35,13 @@ public class SolrFacetLoader {
 	
     public List<PublisherContentCount> loadPublisherFacet(List<Count> values) {
     	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();		
-		if (values != null) {			
+		if (values != null) {
 			for (Count count : values) {
-				final int relatedPublisherId = Integer.parseInt(count.getName());
-				Website relatedPublisher = (Website) resourceDAO.loadResourceById(relatedPublisherId);		// TODO Try to drive out			
-				if (relatedPublisher != null) {
-					final Long relatedItemCount = count.getCount();
-				
-					FrontendWebsiteImpl frontendWebsite = new FrontendWebsiteImpl();	// TODO Hack - need to tighten up on what information really needs to be in a publisher count
-					frontendWebsite.setName(relatedPublisher.getName());
-					frontendWebsite.setUrlWords(relatedPublisher.getUrlWords());
-				
-					relatedPublishers.add(new PublisherContentCount(frontendWebsite, relatedItemCount.intValue()));
-				}
+				final String relatedPublisherName = (String) count.getName();
+				final Long relatedItemCount = count.getCount();
+				relatedPublishers.add(new PublisherContentCount(relatedPublisherName, relatedItemCount.intValue()));
 			}
-		}	
+		}		
 		return relatedPublishers;     
     }
     

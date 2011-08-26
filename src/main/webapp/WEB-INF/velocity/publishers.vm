@@ -13,7 +13,7 @@
 <ul>
 #set($letter = "")
 #foreach ($publisher in $publishers) 	
-	#set($current = $publisher.name.substring(0, 1).toUpperCase())
+	#set($current = $publisher.publisherName.substring(0, 1).toUpperCase())
 	#if ($current != $letter)
 		#set($letter = $current)		
 		</ul>
@@ -21,7 +21,7 @@
 		<ul>
 	#end
 	
-	<li><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a></li>
+	<li><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.publisherName</a></li>
 	
 #end
 </ul>

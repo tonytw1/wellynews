@@ -95,8 +95,8 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/" + publisher.getUrlWords();
 	}
 
-	public String getPublisherCombinerUrl(FrontendWebsiteImpl frontendWebsite, Tag tag) {
-		return siteInformation.getUrl() + "/" + frontendWebsite.getUrlWords() + "+" + tag.getName();
+	public String getPublisherCombinerUrl(String publisherName, Tag tag) {
+		return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(publisherName) + "+" + tag.getName();
 	}
 
 	public String getTagCommentUrl(Tag tag) {
