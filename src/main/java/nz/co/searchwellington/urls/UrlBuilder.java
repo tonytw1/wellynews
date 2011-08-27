@@ -13,8 +13,6 @@ import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
-import nz.co.searchwellington.model.frontend.FrontendWebsite;
-import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 import nz.co.searchwellington.twitter.TwitterService;
 
 public class UrlBuilder {
@@ -91,8 +89,8 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + UrlWordsGenerator.markUrlForNewsitem(newsitem);
 	}
 	
-	public String getPublisherUrl(FrontendWebsite publisher) {
-		return siteInformation.getUrl() + "/" + publisher.getUrlWords();
+	public String getPublisherUrl(String publisherName) {
+		return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(publisherName);
 	}
 
 	public String getPublisherCombinerUrl(String publisherName, Tag tag) {

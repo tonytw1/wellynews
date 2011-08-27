@@ -81,7 +81,7 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canGenerateFrontendPublisherPageUrl() throws Exception {
-		assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl(frontendWebsite));
+		assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl(frontendWebsite.getName()));
 	}
 
 	@Test
