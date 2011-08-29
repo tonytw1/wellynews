@@ -8,7 +8,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 
 public class RssHttpFetcherFunctionalTest {
 
-	@Test
+	//@Test
 	public void canRetrieveRemoveFeed() throws Exception {
 		RssHttpFetcher rssFetcher = new RssHttpFetcher();		
 		SyndFeed result = rssFetcher.httpFetch("http://www.capitaltimes.co.nz/page/32/rss/News.html");
