@@ -5,7 +5,7 @@
 	<ul>
 	#set ($first =1)
 	#foreach ($related_publisher in $related_publishers)
-        <li><a href="$urlBuilder.getPublisherUrl($related_publisher.publisher)">$related_publisher.publisher.name.toLowerCase()</a>
+        <li><a href="$urlBuilder.getPublisherUrl($related_publisher.publisherName)">$related_publisher.publisherName.toLowerCase()</a>
         #if ($first == 1)
           	($related_publisher.count #showPluralWord($related_publisher.count "item"))
            	#set ($first =0)
