@@ -16,7 +16,7 @@ public class LiveRssfeedNewsitemServiceTest {
 	private TextTrimmer textTrimmer;
 	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 
-	@Test
+	//@Test
 	public void test() throws Exception {
 		urlCleaner = new UrlCleaner(new UrlResolverService());
 		rssFetcher = new RssHttpFetcher();
