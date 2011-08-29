@@ -8,7 +8,6 @@ import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
-import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 import nz.co.searchwellington.twitter.TwitterService;
 
 import org.joda.time.DateTime;
@@ -29,7 +28,6 @@ public class UrlBuilderTest {
 	private UrlBuilder urlBuilder;
 	private FrontendNewsitemImpl frontendNewsitem;
 	private FrontendFeedImpl frontendFeed;
-	private FrontendWebsiteImpl frontendWebsite;
 	private Tag tag;
 	
 	@Before
@@ -44,9 +42,6 @@ public class UrlBuilderTest {
 		
 		frontendFeed = new FrontendFeedImpl();
 		
-		frontendWebsite = new FrontendWebsiteImpl();
-		frontendWebsite.setUrlWords("wellington-city-council");
-		
 		tag = new Tag();
 		tag.setName("atag");
 	}
@@ -58,7 +53,7 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName() throws Exception {
-		assertEquals(SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl(frontendWebsite.getName(), tag));
+		assertEquals(SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl("Wellington City Council", tag));
 	}
 	
 	@Test
@@ -81,7 +76,7 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canGenerateFrontendPublisherPageUrl() throws Exception {
-		assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl(frontendWebsite.getName()));
+		assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl("Wellington City Council"));
 	}
 
 	@Test
