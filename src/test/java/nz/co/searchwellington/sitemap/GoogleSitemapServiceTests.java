@@ -81,14 +81,14 @@ public class GoogleSitemapServiceTests extends TestCase {
     }
     
     
-    public void testShouldRenderTagPaginations() throws Exception {
+    public void testNotShouldRenderTagPaginations() throws Exception {
     	  when(contentRetrievalService.getTaggedNewitemsCount(apples)).thenReturn(65);
     	  when(contentRetrievalService.getTaggedNewitemsCount(bananas)).thenReturn(10);
           
     	  Document document = parse(service.render("http://test"));
     	  
     	  List<?> locs = document.selectNodes( "//urlset/sitemap:url/sitemap:loc" );
-          assertEquals(4, locs.size());    	  
+          assertEquals(2, locs.size());    	  
 	}
     
     
