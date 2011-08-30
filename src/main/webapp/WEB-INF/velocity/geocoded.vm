@@ -49,43 +49,13 @@
 
 </div>
 
+
 <div class="right">
-
-<div class="box">
-<h2>Who, What, When and <i>Where</i>.</h2>
-
-<p>Relevent newsitems in the <i>Welly newslog</i> are now geotagged
-with location information.</p>
-
-<p>
-#parse("includes/geotag_icon.vm")
- Geotagged newsitems are indicated throughout the site using the geotag icon.
-</p>
-
-<p> Geotags are also embedded in our RSS feeds using the
-<a href="http://georss.org/">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
-
-<code>
-	&lt;item&gt;<br/>
-	&lt;title&gt;Can you replace the Hilton?&lt;/title&gt; <br/>
-	&lt;geo:lat&gt;-41.284896&lt;/geo:lat&gt; <br/>
-	&lt;geo:long&gt;174.778531&lt;/geo:long&gt; <br/>
-	&lt;/item&gt;
-</code>
-
-<p>A feed containing only the geotagged newsitems is also available:</p>
-
-#parse("includes/rss_widget_for_geotagged.vm")
-
-<p>The location resolution service which makes this all possible is provided by the
-<a href="http://code.google.com/apis/maps/index.html">Google Maps API</a>.</p>
-</div>
+#parse("includes/about_geotagging.vm")
 
 <div class="box">
 #parse("includes/latest_newsitems.vm")
-
 <br clear="all"/>
-
 </div>
 
 </div>

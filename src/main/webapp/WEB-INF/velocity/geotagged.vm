@@ -4,15 +4,11 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
-#parse("includes/tag_tree.vm")
+	#parse("includes/location_related_tags.vm")
+	#parse("includes/location_related_publishers.vm")
+	#parse("includes/tag_tree.vm")
 </div>
-
-
-
-
 
 <div class="main">
 
@@ -22,6 +18,9 @@
 
 <h2><a href="$site_information.url/geotagged">Geotagged</a> / <a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2>
 
+<br clear="all" />
+
+#parse("includes/nearme.vm")
 
 #if ($geotagged_tags.size() > 0)
 <ul class="childtags">
@@ -39,38 +38,22 @@
 #parse("includes/geocodedjs.vm")
 #parse("includes/main_content.vm")
 
+#if($location)
+	#parse("includes/location_page_links.vm")
+#else
+	#parse("includes/geotagged_page_links.vm")
+#end
+
 </div>
-
-
-
 
 
 <div class="right">
-<div class="box">
-<h2>Who, What, When and <i>Where</i>.</h2>
-
-<p>Relevent newsitems in the <i>Welly newslog</i> are now geotagged with location information.</p>
-
-<p>
-#parse("includes/geotag_icon.vm")
-Geotagged newsitems are indicated throughout the site using the geotag icon.
-</p>
-
-<p>A feed containing only the geotagged newsitems is also available:</p>
-
-#parse("includes/rss_widget_for_geotagged.vm")
-
-<p>The location resolution service which makes this all possible is provided by the
-<a href="http://code.google.com/apis/maps/index.html">Google Maps API</a>.</p>
-</div>
+#parse("includes/about_geotagging.vm")
 
 <div class="box">
 #parse("includes/latest_newsitems.vm")
-
 <br clear="all"/>
-
 </div>
-
 
 </div>
 
