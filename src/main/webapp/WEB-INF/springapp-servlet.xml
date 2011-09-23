@@ -32,6 +32,7 @@
 						<prop key="/*/geotagged">normal</prop>
 						<prop key="/feed/*">normal</prop>
 						<prop key="/feeds/inbox">normal</prop>
+						<prop key="/*/json">normal</prop>
 						<prop key="/*/rss">normal</prop>
 						<prop key="/*/*/*/*/*">normal</prop>																					
 					</props>
