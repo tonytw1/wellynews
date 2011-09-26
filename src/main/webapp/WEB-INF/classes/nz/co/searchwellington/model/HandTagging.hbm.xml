@@ -6,7 +6,7 @@
 <hibernate-mapping>
 
 	<class name="nz.co.searchwellington.model.HandTagging" 
-		  proxy="nz.co.searchwellington.model.HandTagging" table="resource_tags">
+		  proxy="nz.co.searchwellington.model.taggingvotes.HandTagging" table="resource_tags">
 
 		<cache usage="read-write" />
 

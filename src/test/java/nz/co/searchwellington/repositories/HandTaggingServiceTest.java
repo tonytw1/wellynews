@@ -6,10 +6,10 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.taggingvotes.HandTagging;
 
 import org.junit.Before;
 import org.junit.Test;

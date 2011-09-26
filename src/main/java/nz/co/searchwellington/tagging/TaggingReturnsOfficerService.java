@@ -7,13 +7,14 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.taggingvotes.GeneratedTaggingVote;
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote;
+import nz.co.searchwellington.model.taggingvotes.HandTagging;
 import nz.co.searchwellington.model.taggingvotes.TaggingVote;
 import nz.co.searchwellington.model.taggingvotes.voters.AncestorTagVoter;
 import nz.co.searchwellington.model.taggingvotes.voters.FeedTagAncestorTagVoter;
@@ -26,10 +27,9 @@ import org.apache.log4j.Logger;
 
 public class TaggingReturnsOfficerService {
 		
-	static Logger log = Logger.getLogger(TaggingReturnsOfficerService.class);
+	private static Logger log = Logger.getLogger(TaggingReturnsOfficerService.class);
 
 	private HandTaggingDAO tagVoteDAO;
-
 	
 	public TaggingReturnsOfficerService(HandTaggingDAO tagVoteDAO) {
 		this.tagVoteDAO = tagVoteDAO;
@@ -78,9 +78,9 @@ public class TaggingReturnsOfficerService {
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
 		List<TaggingVote> votes = new ArrayList<TaggingVote>();
 		for (HandTagging handTagging : tagVoteDAO.getHandTaggingsForResource(resource)) {
-			votes.add(new TaggingVote(handTagging.getTag(), handTagging.getUser(), 100));
+			votes.add(handTagging);
 		}
-
+		
 		final boolean shouldAppearOnPublisherAndParentTagPages = resource.getType().equals("L")
 				|| resource.getType().equals("N")
 				|| resource.getType().equals("C")
@@ -103,12 +103,11 @@ public class TaggingReturnsOfficerService {
 	
 	private void addAcceptedFromFeedTags(Resource resource, Set<Tag> feedsHandTags, List<TaggingVote> votes) {
 		for (Tag tag : feedsHandTags) {
-			votes.add(new TaggingVote(tag, new FeedsTagsTagVoter(), 100));
+			votes.add(new GeneratedTaggingVote(tag, new FeedsTagsTagVoter()));
 			for (Tag feedTagAncestor : tag.getAncestors()) {
-				votes.add(new TaggingVote(feedTagAncestor, new FeedTagAncestorTagVoter(), 100));
+				votes.add(new GeneratedTaggingVote(feedTagAncestor, new FeedTagAncestorTagVoter()));
 			}
-		}
-				
+		}				
 	}
 	
 	private void addPublisherDerviedTags(Resource resource,
@@ -116,9 +115,9 @@ public class TaggingReturnsOfficerService {
 		if (((PublishedResource) resource).getPublisher() != null) {
 			Website publisher = ((PublishedResource) resource).getPublisher();
 			for (Tag publisherTag : this.getHandTagsForResource(publisher)) {
-				votes.add(new TaggingVote(publisherTag, new PublishersTagsVoter(), 100));
+				votes.add(new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter()));
 				for (Tag publishersAncestor : publisherTag.getAncestors()) {
-					votes.add(new TaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter(), 100));
+					votes.add(new GeneratedTaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter()));
 				}
 			}
 		}
@@ -127,7 +126,7 @@ public class TaggingReturnsOfficerService {
 	private void addAncestorTagVotes(Resource resource, List<TaggingVote> votes) {
 		for (Tag tag : this.getHandTagsForResource(resource)) {
 			for (Tag ancestorTag: tag.getAncestors()) {
-				votes.add(new TaggingVote(ancestorTag, new AncestorTagVoter(), 100));
+				votes.add(new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter()));
 			}
 		}
 	}

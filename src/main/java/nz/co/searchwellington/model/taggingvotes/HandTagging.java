@@ -1,7 +1,11 @@
-package nz.co.searchwellington.model;
+package nz.co.searchwellington.model.taggingvotes;
 
-// TODO This looks like a duplication of TaggingVote
-public class HandTagging {
+import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.taggingvotes.voters.TaggingVoter;
+
+public class HandTagging implements TaggingVote {
 
 	private int id;
 	private Resource resource;
@@ -48,6 +52,11 @@ public class HandTagging {
 	
 	public void setTag(Tag tag) {
 		this.tag = tag;
+	}
+
+	@Override
+	public TaggingVoter getVoter() {
+		return user;
 	}
 	
 }

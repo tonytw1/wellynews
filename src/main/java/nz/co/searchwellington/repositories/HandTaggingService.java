@@ -2,9 +2,9 @@ package nz.co.searchwellington.repositories;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.taggingvotes.HandTagging;
 
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
