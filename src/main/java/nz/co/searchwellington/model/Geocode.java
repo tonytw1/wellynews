@@ -93,5 +93,10 @@ public class Geocode implements Serializable {
 		log.debug("Distance to " + latitude + ", " + longitude + " is " + distanceBetweenInKm);
 		return distanceBetweenInKm;
 	}
+
+	@Override
+	public String toString() {
+		return "Geocode [address=" + address + ", id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", type=" + type + "]";
+	}
 	
 }
