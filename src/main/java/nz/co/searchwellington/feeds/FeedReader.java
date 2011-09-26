@@ -108,6 +108,9 @@ public class FeedReader {
 					if (acceptThisItem) {
 						Newsitem newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
 						feedItemAcceptor.acceptFeedItem(feedReaderUser, newsitem);
+						
+						log.info("Geocode of accepted newsitem after accept feed item: " + newsitem.getGeocode());
+						
 						contentUpdateService.create(newsitem);
 						autoTagger.autotag(newsitem);
 						contentUpdateService.update(newsitem);
