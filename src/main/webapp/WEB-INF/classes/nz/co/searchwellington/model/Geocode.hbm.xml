@@ -13,7 +13,7 @@
         </id>
 
      	<property name="address" type="text">
-            <column name="address" not-null="true"/>
+            <column name="address" not-null="false"/>
         </property>
         
       	<property name="latitude" type="double">
