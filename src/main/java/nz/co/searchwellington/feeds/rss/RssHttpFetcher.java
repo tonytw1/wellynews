@@ -9,7 +9,9 @@ import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
 public class RssHttpFetcher {
 
-	private static final int TIMEOUT = 10000;
+	private static final int CONNECT_TIMEOUT = 10000;
+	private static final int READ_TIMEOUT = 30000;
+	
 	Logger log = Logger.getLogger(RssHttpFetcher.class);
 	private String userAgent;
 
@@ -21,8 +23,8 @@ public class RssHttpFetcher {
 			if (userAgent != null) {
 				fetcher.setUserAgent(userAgent);
 			}
-			fetcher.setConnectTimeout(TIMEOUT);
-			fetcher.setReadTimeout(30000);
+			fetcher.setConnectTimeout(CONNECT_TIMEOUT);
+			fetcher.setReadTimeout(READ_TIMEOUT);
 			SyndFeed feed = fetcher.retrieveFeed(url);
 			if (feed != null) {
 				return feed;
