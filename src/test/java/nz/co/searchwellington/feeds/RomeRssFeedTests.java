@@ -41,8 +41,8 @@ public class RomeRssFeedTests extends TestCase {
 	
 	public void testShouldRenderGeocodeInRss() throws Exception {
 		Geocode geocode = new Geocode("119 Farringdon Road, London");
-        geocode.setLatitude(3);
-        geocode.setLongitude(45);
+        geocode.setLatitude(new Double(3));
+        geocode.setLongitude(new Double(45));
 		newsitem.setGeocode(geocode);
 		
 		List<FrontendNewsitem> content = new ArrayList<FrontendNewsitem>();

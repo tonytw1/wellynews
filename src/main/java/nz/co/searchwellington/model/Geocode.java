@@ -16,17 +16,17 @@ public class Geocode implements Serializable {
 	
     private int id;
     private String address;
-    private double latitude;
-    private double longitude;
+    private Double latitude;
+    private Double longitude;
     private String type;
     
     public Geocode() {        
     }
             
-    public Geocode(String geocode) {
-        this.address = geocode;
-        this.latitude = 0;
-        this.longitude = 0;          
+    public Geocode(String address) {
+        this.address = address;
+        this.latitude = null;
+        this.longitude = null;         
     }
         
     public Geocode(String address, double latitude, double longitude) {     
@@ -54,21 +54,21 @@ public class Geocode implements Serializable {
     public void setAddress(String address) {
         this.address = address;
     }
-    public double getLatitude() {
+    public Double getLatitude() {
         return latitude;
     }
-    public void setLatitude(double d) {
+    public void setLatitude(Double d) {
         this.latitude = d;
     }
-    public double getLongitude() {
-        return longitude;
+    public Double getLongitude() {
+    	return longitude;
     }
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
     
     public boolean isValid() {
-        return latitude != 0 && longitude != 0;	// TODO Should be nullable
+        return latitude != null && longitude != null;
     }
     
     public String getType() {
