@@ -7,7 +7,6 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.GeotaggingVote;
 import nz.co.searchwellington.model.HandTagging;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -15,6 +14,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TaggingVote;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.taggingvotes.GeotaggingVote;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 
 import org.apache.log4j.Logger;

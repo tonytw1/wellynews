@@ -9,9 +9,9 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.GeotaggingVote;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.taggingvotes.GeotaggingVote;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;

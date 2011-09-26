@@ -1,5 +1,6 @@
-package nz.co.searchwellington.model;
+package nz.co.searchwellington.model.taggingvotes;
 
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.tagging.TaggingVoter;
 
 public class GeotaggingVote {
