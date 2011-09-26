@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model;
 
+// TODO This looks like a duplication of TaggingVote
 public class HandTagging {
 
 	private int id;

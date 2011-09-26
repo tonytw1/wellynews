@@ -1,4 +1,4 @@
-package nz.co.searchwellington.tagging;
+package nz.co.searchwellington.model.taggingvotes.voters;
 
 public class AncestorTagVoter implements TaggingVoter {
 

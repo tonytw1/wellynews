@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model;
 
-import nz.co.searchwellington.tagging.TaggingVoter;
+import nz.co.searchwellington.model.taggingvotes.voters.TaggingVoter;
 
 public interface User extends TaggingVoter {
 

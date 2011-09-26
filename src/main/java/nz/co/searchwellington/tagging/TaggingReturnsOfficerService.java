@@ -12,9 +12,14 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.TaggingVote;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote;
+import nz.co.searchwellington.model.taggingvotes.TaggingVote;
+import nz.co.searchwellington.model.taggingvotes.voters.AncestorTagVoter;
+import nz.co.searchwellington.model.taggingvotes.voters.FeedTagAncestorTagVoter;
+import nz.co.searchwellington.model.taggingvotes.voters.FeedsTagsTagVoter;
+import nz.co.searchwellington.model.taggingvotes.voters.PublishersTagAncestorTagVoter;
+import nz.co.searchwellington.model.taggingvotes.voters.PublishersTagsVoter;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 
 import org.apache.log4j.Logger;
