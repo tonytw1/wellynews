@@ -16,7 +16,7 @@ public class SolrQueryFunctionalTest {
 	
 	private CommonsHttpSolrServer solr;
 	
-	@Before
+	//@Before
 	public void setup() throws MalformedURLException {
 		solr = new CommonsHttpSolrServer(SOLR_URL);
 	}
