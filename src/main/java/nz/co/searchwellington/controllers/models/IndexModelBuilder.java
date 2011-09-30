@@ -50,10 +50,13 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 			
 			setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
 			
-			Date monthOfLastItem = monthOfLastItem(latestNewsitems);
-			if (monthOfLastItem != null) {
-				mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem));
+			if (latestNewsitems != null) {
+				Date monthOfLastItem = monthOfLastItem(latestNewsitems);
+				if (monthOfLastItem != null) {
+					mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem));
+				}
 			}
+			
 			return mv;
 		}
 		return null;

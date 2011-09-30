@@ -54,7 +54,7 @@ public abstract class AbstractModelBuilder {
         mv.addObject("righthand_heading", "Local Feeds");                
         mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
         final List<FrontendResource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();
-        if (allFeeds.size() > 0) {
+        if (allFeeds != null && allFeeds.size() > 0) {
             mv.addObject("righthand_content", allFeeds);       
         }
     }
