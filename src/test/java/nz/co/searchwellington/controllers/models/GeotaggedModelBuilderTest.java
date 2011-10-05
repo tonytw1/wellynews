@@ -85,10 +85,11 @@ public class GeotaggedModelBuilderTest {
 		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 		
 		assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel().get("main_content"));
+		assertEquals(validLocation, modelAndView.getModel().get("location"));
 	}
 	
 	@Test
-	public void locationSearchRadiusShouldBeTweatableFromTheRequestParameters() throws Exception {
+	public void locationSearchRadiusShouldBeTweakableFromTheRequestParameters() throws Exception {
 		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, 3.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
 		request.setPathInfo("/geotagged");
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
@@ -136,6 +137,7 @@ public class GeotaggedModelBuilderTest {
 		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 
 		assertNull(modelAndView.getModel().get("main_content"));
+		assertNull(modelAndView.getModel().get("location"));
 	}
 	
 }

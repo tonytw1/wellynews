@@ -1,6 +1,6 @@
 #if ($related_tags)
 	<h2>Related Tags</h2>
-	<p>Items near $locationQuery have been tagged with:</p>
+	<p>Items near $location have been tagged with:</p>
 
 	<ul>
 	#set ($first =1)

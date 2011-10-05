@@ -31,7 +31,6 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		
 		if(request.getParameter(LOCATION) != null) {
 			final String location = request.getParameter(LOCATION);
-			request.setAttribute("locationQuery", location);
 			Geocode resolvedGeocode = geoCodeService.resolveAddress(location);
 			if (resolvedGeocode != null && resolvedGeocode.isValid()) {
 				log.info("User supplied location '" + location + "' resolved to point: " + resolvedGeocode.getLatitude() + ", " + resolvedGeocode.getLongitude());				

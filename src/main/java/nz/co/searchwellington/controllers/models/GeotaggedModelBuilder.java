@@ -51,8 +51,8 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
 			final Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);						
-			final boolean userSuppliedALocation = userSuppliedLocation != null;
-			if (userSuppliedALocation) {
+			final boolean hasUserSuppliedALocation = userSuppliedLocation != null;
+			if (hasUserSuppliedALocation) {
 				if (userSuppliedLocation.isValid()) {
 					
 					final double latitude = userSuppliedLocation.getLatitude();
@@ -70,7 +70,8 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 					}
 					populatePagination(mv, startIndex, totalNearbyCount);
 					
-					mv.addObject("latitude", latitude);
+					mv.addObject("location", userSuppliedLocation);
+					mv.addObject("latitude", latitude);	// TODO Are these used in the view?
 					mv.addObject("longitude", longitude);
 					
 					log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
