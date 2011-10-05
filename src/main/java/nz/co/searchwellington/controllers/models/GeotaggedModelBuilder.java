@@ -78,10 +78,8 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
 				
 					if (userSuppliedLocation.getAddress() != null) {
-						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation.getAddress()));
-					} else {
-						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude));
-					}				
+						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation));
+					}			
 					setRssForLocation(mv, userSuppliedLocation);
 				
 				}				
@@ -143,9 +141,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		final double latitude = location.getLatitude();
 		final double longitude = location.getLongitude();
 		if (location.getAddress() != null) {		
-			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location.getAddress()), rssUrlBuilder.getRssUrlForGeotagged(location.getAddress()));					
+			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(location.getAddress()));					
 		} else {
-			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(latitude, longitude), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
+			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
 		}
 	}
 	

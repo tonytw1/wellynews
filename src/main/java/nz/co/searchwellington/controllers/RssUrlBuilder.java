@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers;
 
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -111,13 +112,9 @@ public class RssUrlBuilder {
 		return getRssUrlForGeotagged() + "?latitude=" + latitude + "&longitude=" + longitude;
 	}
 
-	public String getRssTitleForGeotagged(String location) {
-		return "Newsitems near " + location;
+	public String getRssTitleForGeotagged(Geocode userSuppliedLocation) {
+		return "Newsitems near " + userSuppliedLocation.toString();
 	}
-	
-    public String getRssTitleForGeotagged(Double latitude, Double longitude) {
-        return "Newitems near " + latitude +  ", " + longitude;
-    }
 	
 	public String getRssUrlForGeotagged(String location) {
 		return getRssUrlForGeotagged() + "?location=" + location;
