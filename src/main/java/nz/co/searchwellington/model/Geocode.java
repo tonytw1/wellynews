@@ -96,7 +96,11 @@ public class Geocode implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Geocode [address=" + address + ", id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", type=" + type + "]";
+		if (address != null) {
+			return address;
+		} else {
+			return latitude + ", " + longitude;
+		}
 	}
 	
 }
