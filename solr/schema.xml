@@ -122,8 +122,7 @@
 	 	
 	<field name="owner" type="integer" indexed="true" stored="true" required="false" multiValued="false" />
 	 	
-   <field name="publisher" type="integer" indexed="true" stored="true" required="false" />
-   <field name="publisherName" type="string" indexed="true" stored="true" required="false" />
+	<field name="publisherName" type="string" indexed="true" stored="true" required="false" />
    <field name="httpStatus" type="integer" indexed="true" stored="true" required="false" /> 
    
    <field name="commented" type="boolean" indexed="true" stored="true" required="false" />

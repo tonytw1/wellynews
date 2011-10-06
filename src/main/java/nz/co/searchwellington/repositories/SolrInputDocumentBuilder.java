@@ -114,7 +114,6 @@ public class SolrInputDocumentBuilder {
 		
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
-			inputDocument.addField("publisher", publisher.getId());	// TODO Deprecated
 			inputDocument.addField(PUBLISHER_NAME, publisher.getName());
 		}
 		
