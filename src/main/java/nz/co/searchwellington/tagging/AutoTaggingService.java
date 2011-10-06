@@ -29,16 +29,16 @@ public class AutoTaggingService {
 	}
 	
 	public void autotag(Resource resource) {
-		User autotaggerUser = userDAO.getUserByProfileName(AUTOTAGGER_PROFILE_NAME);
+		final User autotaggerUser = userDAO.getUserByProfileName(AUTOTAGGER_PROFILE_NAME);
 		if (autotaggerUser == null) {
 			log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME);
 			return;
 		}
 		
 		Set<Tag> suggestedTags = placeAutoTagger.suggestTags(resource);
-		log.info("Suggested tags for '" + resource.getName() + "' are: " + suggestedTags.toString());
 		suggestedTags.addAll(tagHintAutoTagger.suggestTags(resource));
 
+		log.info("Suggested tags for '" + resource.getName() + "' are: " + suggestedTags.toString());
 		if (!suggestedTags.isEmpty()) {
 			handTaggingDAO.setUsersTagVotesForResource(resource, autotaggerUser, suggestedTags);
 		}
