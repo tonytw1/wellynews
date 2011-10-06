@@ -58,9 +58,9 @@
 			
 						
 			#if ($item.type == 'W') 
-				#set ($newsitemCount = $publisherNewsitemCountService.getNewsitemCount($item))
+				#set ($newsitemCount = $publisherNewsitemCountService.getNewsitemCount($item.name))
 				#if ($newsitemCount> 0) 
-					<li><a href="$urlBuilder.getPublisherUrl($item)">#showItemCount($newsitemCount "newsitem")</a></li>
+					<li><a href="$urlBuilder.getPublisherUrl($item.name)">#showItemCount($newsitemCount "newsitem")</a></li>
 				#end
 				
 				#if ($item.feeds && $item.feeds.size() > 0) 
@@ -68,7 +68,7 @@
 						#set ($feed = $item.feeds.iterator().next())					
 						<li><a href="$urlBuilder.getFeedUrl($feed)">1 feed</a></li>
 					#else
-						<li><a href="$urlBuilder.getPublisherUrl($item)">#showItemCount($item.feeds.size() "feed")</a></li>
+						<li><a href="$urlBuilder.getPublisherUrl($item.name)">#showItemCount($item.feeds.size() "feed")</a></li>
 					#end
 				#end
 			#end

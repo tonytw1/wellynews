@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.searchwellington.model.frontend.FrontendWebsite;
+import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
@@ -16,7 +16,7 @@ public class PublisherNewsitemCountService {
 	private LoggedInUserFilter loggedInFilter;
 	private SolrQueryService solrQueryService;
 	
-	private Map<Integer, Integer> newsitemCounts;
+	private Map<String, Integer> newsitemCounts;
 	
 	public PublisherNewsitemCountService() {	
 	}
@@ -26,40 +26,38 @@ public class PublisherNewsitemCountService {
 		this.solrQueryService = solrQueryService;
 	}
 	
-	public int getNewsitemCount(FrontendWebsite publisher) {	
+	public int getNewsitemCount(String publisherName) {	
 		final boolean showBroken = loggedInFilter.getLoggedInUser() != null;		
-		Map<Integer, Integer> newsitemCounts = createOrGetCorrectPublisherNewsitemCounts(showBroken);
+		Map<String, Integer> newsitemCounts = createOrGetCorrectPublisherNewsitemCounts(showBroken);
 		if (newsitemCounts == null) {
 			return 0;
 		}
-		final int publisherId = publisher.getId();
-		if (newsitemCounts.containsKey(publisherId)) {
-			return newsitemCounts.get(publisherId);
+		if (newsitemCounts.containsKey(publisherName)) {
+			return newsitemCounts.get(publisherName);
 		}
 		return 0;
 	}
 	
-	private Map<Integer, Integer> createOrGetCorrectPublisherNewsitemCounts(boolean showBroken) {	
+	private Map<String, Integer> createOrGetCorrectPublisherNewsitemCounts(boolean showBroken) {	
 		if (this.newsitemCounts == null) {		
 			this.newsitemCounts = populatePublisherNewsitemCounts(showBroken);				
 		}
 		return this.newsitemCounts;
 	}
 	
-	private Map<Integer, Integer> populatePublisherNewsitemCounts(boolean showBroken) {
+	private Map<String, Integer> populatePublisherNewsitemCounts(boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
-		query.addFacetField("publisher");	// TODO publisher id facet field is depreciated isn't it?
+		query.addFacetField(SolrInputDocumentBuilder.PUBLISHER_NAME);
 		query.setFacetMinCount(1);
 		query.setFacetLimit(5000);
 		
 		Map<String, List<Count>> facetQueryResults = solrQueryService.getFacetQueryResults(query);
-		List<Count> field = facetQueryResults.get("publisher");
+		List<Count> field = facetQueryResults.get(SolrInputDocumentBuilder.PUBLISHER_NAME);
 		if (field != null) {
-			Map<Integer, Integer>  newsitemCounts = new HashMap<Integer, Integer>();
+			Map<String, Integer>  newsitemCounts = new HashMap<String, Integer>();
 			for (Count count : field) {
-				final int publisherId = Integer.parseInt(count.getName());						
-				final Long relatedItemCount = count.getCount();
-				newsitemCounts.put(publisherId, relatedItemCount.intValue());
+				final String publisherName = count.getName();
+				newsitemCounts.put(publisherName, ((Long) count.getCount()).intValue());
 			}
 			return newsitemCounts;
 		}
