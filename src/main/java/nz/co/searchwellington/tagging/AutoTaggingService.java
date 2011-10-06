@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 public class AutoTaggingService {
 	
-	static Logger log = Logger.getLogger(AutoTaggingService.class);
+	private static Logger log = Logger.getLogger(AutoTaggingService.class);
 	
 	private static final String AUTOTAGGER_PROFILE_NAME = "autotagger";
    
