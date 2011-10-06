@@ -23,8 +23,10 @@ import org.apache.solr.common.SolrInputDocument;
 
 public class SolrInputDocumentBuilder {
 	
-	private static Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
+	public static final String PUBLISHER_NAME = "publisherName";
 	
+	private static Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
+		
 	private SnapshotBodyExtractor snapshotBodyExtractor;
 	private TaggingReturnsOfficerService taggingReturnsService;
 	private HandTaggingDAO handTaggingDAO;
@@ -113,7 +115,7 @@ public class SolrInputDocumentBuilder {
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {
 			inputDocument.addField("publisher", publisher.getId());	// TODO Deprecated
-			inputDocument.addField("publisherName", publisher.getName());
+			inputDocument.addField(PUBLISHER_NAME, publisher.getName());
 		}
 		
 		final String bodyText = snapshotBodyExtractor.extractSnapshotBodyTextFor(resource);

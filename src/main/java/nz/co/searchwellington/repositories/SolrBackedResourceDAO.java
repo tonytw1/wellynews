@@ -38,7 +38,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 public class SolrBackedResourceDAO {
-
+	
 	private static Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
 
 	private static final int MAXIMUM_FEEDS = 500;
@@ -526,7 +526,7 @@ public class SolrBackedResourceDAO {
 	// functionaility - could remove
 	private List<PublisherContentCount> getAllPublishersWithContentCounts(boolean showBroken, boolean mustHaveNewsitems) {
 		SolrQuery query = new SolrQueryBuilder().allPublishedTypes().showBroken(showBroken).toQuery();
-		query.addFacetField("publisherName");
+		query.addFacetField(SolrInputDocumentBuilder.PUBLISHER_NAME);
 		query.setFacetMinCount(1);
 		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_PUBLISHERS_FACET_LIMIT);
@@ -534,7 +534,7 @@ public class SolrBackedResourceDAO {
 		List<PublisherContentCount> publishers = new ArrayList<PublisherContentCount>();
 		QueryResponse response = solrQueryService.querySolr(query);
 		if (response != null) {
-			FacetField facetField = response.getFacetField("publisherName");
+			FacetField facetField = response.getFacetField(SolrInputDocumentBuilder.PUBLISHER_NAME);
 			if (facetField != null && facetField.getValues() != null) {
 				log.debug("Found facet field: " + facetField);
 				List<Count> values = facetField.getValues();

@@ -42,7 +42,7 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void canHydrateNewsitem() throws Exception {	
 		SolrDocument solrRow = buildSolrRecord("N");
-		solrRow.setField("publisherName", PUBLISHER_NAME);
+		solrRow.setField(SolrInputDocumentBuilder.PUBLISHER_NAME, PUBLISHER_NAME);
 		solrRow.setField("geotagged", true);
 		solrRow.setField("address", ADDRESS);
 		solrRow.setField("position", "51,-0.1");
@@ -125,7 +125,7 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void canHydrateWatchlistItem() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("L");
-		solrRow.setField("publisherName", PUBLISHER_NAME);
+		solrRow.setField(SolrInputDocumentBuilder.PUBLISHER_NAME, PUBLISHER_NAME);
 		FrontendResource hydratedWatchlist = (FrontendResource) solrResourceHydrator.hydrateResource(solrRow);
 
 		assertBaseFields(hydratedWatchlist);
@@ -136,7 +136,7 @@ public class SolrResourceHydratorTest {
 	@Test
 	public void testCanHydrateFeed() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("F");
-		solrRow.setField("publisherName", PUBLISHER_NAME);
+		solrRow.setField(SolrInputDocumentBuilder.PUBLISHER_NAME, PUBLISHER_NAME);
 		solrRow.setField("urlWords", "my-teams-feed");
 		
 		FrontendFeed hydratedFeed = (FrontendFeed) solrResourceHydrator.hydrateResource(solrRow);
