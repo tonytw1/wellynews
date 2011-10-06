@@ -524,11 +524,9 @@ public class SolrBackedResourceDAO {
 
 	// TODO nothing actually uses the counts; only using the sorting
 	// functionaility - could remove
-	private List<PublisherContentCount> getAllPublishersWithContentCounts(
-			boolean showBroken, boolean mustHaveNewsitems) {
-		SolrQuery query = new SolrQueryBuilder().allPublishedTypes()
-				.showBroken(showBroken).toQuery();
-		query.addFacetField("publisher");
+	private List<PublisherContentCount> getAllPublishersWithContentCounts(boolean showBroken, boolean mustHaveNewsitems) {
+		SolrQuery query = new SolrQueryBuilder().allPublishedTypes().showBroken(showBroken).toQuery();
+		query.addFacetField("publisherName");
 		query.setFacetMinCount(1);
 		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_PUBLISHERS_FACET_LIMIT);

@@ -48,7 +48,7 @@ public class PublisherNewsitemCountService {
 	
 	private Map<Integer, Integer> populatePublisherNewsitemCounts(boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
-		query.addFacetField("publisher");
+		query.addFacetField("publisher");	// TODO publisher id facet field is depreciated isn't it?
 		query.setFacetMinCount(1);
 		query.setFacetLimit(5000);
 		
