@@ -30,13 +30,18 @@ public class SolrInputDocumentBuilder {
 	private SnapshotBodyExtractor snapshotBodyExtractor;
 	private TaggingReturnsOfficerService taggingReturnsService;
 	private HandTaggingDAO handTaggingDAO;
+	private SolrTweetsHandler tweetsHandler;
 	
-	public SolrInputDocumentBuilder(SnapshotBodyExtractor snapshotBodyExtractor, TaggingReturnsOfficerService taggingReturnsService, HandTaggingDAO handTaggingDAO) {
+	public SolrInputDocumentBuilder(
+			SnapshotBodyExtractor snapshotBodyExtractor,
+			TaggingReturnsOfficerService taggingReturnsService,
+			HandTaggingDAO handTaggingDAO, SolrTweetsHandler tweetsHandler) {
 		this.snapshotBodyExtractor = snapshotBodyExtractor;
 		this.taggingReturnsService = taggingReturnsService;
 		this.handTaggingDAO = handTaggingDAO;
+		this.tweetsHandler = tweetsHandler;
 	}
-	
+
 	public SolrInputDocument buildResouceInputDocument(Resource resource) {
 		SolrInputDocument inputDocument = new SolrInputDocument();
 		inputDocument.addField("id", resource.getId());
@@ -80,7 +85,6 @@ public class SolrInputDocumentBuilder {
 			
 			populateFeedAcceptanceFields(inputDocument, newsitem);
 			
-			SolrTweetsHandler tweetsHandler = new SolrTweetsHandler();	//TODO inject
 			tweetsHandler.processTweets(newsitem.getRetweets(), inputDocument);			
 		}
 				
