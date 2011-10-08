@@ -22,7 +22,7 @@
 </div>
 
 
-<h2><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.name</a> and             
+<h2><a href="$urlBuilder.getPublisherUrl($publisher.name)">$publisher.name</a> and             
    	<a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2>
 
 #parse("includes/search_widget.vm")

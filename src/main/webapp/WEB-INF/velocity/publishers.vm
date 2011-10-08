@@ -21,7 +21,7 @@
 		<ul>
 	#end
 	
-	<li><a href="$urlBuilder.getPublisherUrl($publisher)">$publisher.publisherName</a></li>
+	<li><a href="$urlBuilder.getPublisherUrl($publisher.publisherName)">$publisher.publisherName</a></li>
 	
 #end
 </ul>
