@@ -72,6 +72,16 @@ public class TaggingReturnsOfficerService {
 		if (tagGeocode != null && tagGeocode.isValid()) {
 			votes.add(new GeotaggingVote(tagGeocode, new AncestorTagVoter(), 1));	// TODO needs a new voter type
 		}
+		
+		if (resource.getType().equals("N")) {
+			if (((PublishedResource) resource).getPublisher() != null) {
+				Website publisher = ((PublishedResource) resource).getPublisher();
+				if (publisher.getGeocode() != null && publisher.getGeocode().isValid()) {
+					log.info("Adding publisher geotag: " + publisher.getGeocode().toString());
+					votes.add(new GeotaggingVote(publisher.getGeocode(), new PublishersTagsVoter(), 1));
+				}
+			}
+		}
 		return votes;
 	}
 	
@@ -110,8 +120,7 @@ public class TaggingReturnsOfficerService {
 		}				
 	}
 	
-	private void addPublisherDerviedTags(Resource resource,
-			List<TaggingVote> votes) {
+	private void addPublisherDerviedTags(Resource resource, List<TaggingVote> votes) {
 		if (((PublishedResource) resource).getPublisher() != null) {
 			Website publisher = ((PublishedResource) resource).getPublisher();
 			for (Tag publisherTag : this.getHandTagsForResource(publisher)) {
@@ -119,7 +128,7 @@ public class TaggingReturnsOfficerService {
 				for (Tag publishersAncestor : publisherTag.getAncestors()) {
 					votes.add(new GeneratedTaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter()));
 				}
-			}
+			}						
 		}
 	}
 	
