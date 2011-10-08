@@ -55,8 +55,7 @@
 					#end
 				#end				
 			#end
-			
-						
+									
 			#if ($item.type == 'W') 
 				#set ($newsitemCount = $publisherNewsitemCountService.getNewsitemCount($item.name))
 				#if ($newsitemCount> 0) 
@@ -72,8 +71,7 @@
 					#end
 				#end
 			#end
-			
-			
+						
 			#if ($item.type == "N" && $item.accepted) 
 				<li>
 				#parse('includes/accepted_details.vm')

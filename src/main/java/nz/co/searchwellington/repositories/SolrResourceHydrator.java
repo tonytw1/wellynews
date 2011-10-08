@@ -34,16 +34,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		if (type.equals("N")) {			
 			FrontendNewsitemImpl newsitem = new FrontendNewsitemImpl();
 			newsitem.setType("N");
-			newsitem.setPublisherName((String) result.getFieldValue(SolrInputDocumentBuilder.PUBLISHER_NAME));			
-
-			if ((Boolean) result.getFieldValue("geotagged")) {
-				Geocode geocode = new Geocode();
-				geocode.setAddress((String) result.getFieldValue("address"));
-				String positions = (String) result.getFirstValue("position");
-				geocode.setLatitude(Double.parseDouble(positions.split(",")[0]));
-				geocode.setLongitude(Double.parseDouble(positions.split(",")[1]));
-				newsitem.setGeocode(geocode);
-			}
+			newsitem.setPublisherName((String) result.getFieldValue(SolrInputDocumentBuilder.PUBLISHER_NAME));
 			
 			if ((Boolean) result.getFieldValue("commented")) {
 				List<Comment> comments = new ArrayList<Comment>();
@@ -92,6 +83,16 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			item.setTags(hydrateTags(result, "tags"));
 			item.setHandTags(hydrateTags(result, "handTags"));
 			item.setOwnerId((Integer) result.getFieldValue("owner"));
+			
+			if (result.containsKey("geotagged") && (Boolean) result.getFieldValue("geotagged")) {
+				Geocode geocode = new Geocode();
+				geocode.setAddress((String) result.getFieldValue("address"));
+				String positions = (String) result.getFirstValue("position");
+				geocode.setLatitude(Double.parseDouble(positions.split(",")[0]));
+				geocode.setLongitude(Double.parseDouble(positions.split(",")[1]));
+				item.setGeocode(geocode);
+			}
+			
 			return item;
 		}
 		

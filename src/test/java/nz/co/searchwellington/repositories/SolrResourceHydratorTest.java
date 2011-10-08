@@ -114,12 +114,21 @@ public class SolrResourceHydratorTest {
 	public void canHydrateWebsite() throws Exception {
 		SolrDocument solrRow = buildSolrRecord("W");
 		solrRow.setField("urlWords", "url-words");
+		solrRow.setField("geotagged", true);
+		solrRow.setField("address", ADDRESS);
+		solrRow.setField("position", "51,-0.1");
+		solrRow.setField("commented", false);
 		
 		FrontendWebsite hydratedWebsite = (FrontendWebsite) solrResourceHydrator.hydrateResource(solrRow);
 		
 		assertBaseFields(hydratedWebsite);
 		assertEquals("W", hydratedWebsite.getType());
-		assertEquals("url-words", hydratedWebsite.getUrlWords());	
+		assertEquals("url-words", hydratedWebsite.getUrlWords());
+		
+		assertNotNull(hydratedWebsite.getGeocode());
+		assertEquals(ADDRESS, hydratedWebsite.getGeocode().getAddress());
+		assertEquals(51, hydratedWebsite.getGeocode().getLatitude(), 0);
+		assertEquals(-0.1, hydratedWebsite.getGeocode().getLongitude(), 0);
 	}
 	
 	@Test
