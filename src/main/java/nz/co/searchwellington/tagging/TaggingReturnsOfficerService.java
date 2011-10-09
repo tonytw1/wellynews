@@ -68,11 +68,6 @@ public class TaggingReturnsOfficerService {
 			votes.add(new GeotaggingVote(resource.getGeocode(), resource.getOwner(), 1));
 		}
 		
-		Geocode tagGeocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource));	// TODO could be made faster by passing in.
-		if (tagGeocode != null && tagGeocode.isValid()) {
-			votes.add(new GeotaggingVote(tagGeocode, new AncestorTagVoter(), 1));	// TODO needs a new voter type
-		}
-		
 		if (resource.getType().equals("N")) {
 			if (((PublishedResource) resource).getPublisher() != null) {
 				Website publisher = ((PublishedResource) resource).getPublisher();
@@ -82,6 +77,12 @@ public class TaggingReturnsOfficerService {
 				}
 			}
 		}
+		
+		Geocode tagGeocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource));	// TODO could be made faster by passing in.
+		if (tagGeocode != null && tagGeocode.isValid()) {
+			votes.add(new GeotaggingVote(tagGeocode, new AncestorTagVoter(), 1));	// TODO needs a new voter type
+		}
+		
 		return votes;
 	}
 	
