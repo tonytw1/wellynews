@@ -57,7 +57,10 @@
 					<label for="secondary_image">Secondary Image: </label>
 					<input name="secondary_image" #if ($tag.secondaryImage) value="$tag.secondaryImage" #end />
 					<br />
-						
+					
+					<label for="featured">Featured: </label>
+					<input name="featured" type="checkbox"  #if ($tag.featured) CHECKED #end>
+																
 					<input type="submit" value="Save" />		
 				</fieldset>
 			</form>

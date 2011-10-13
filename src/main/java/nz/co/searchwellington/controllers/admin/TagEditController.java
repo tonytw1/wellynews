@@ -74,7 +74,7 @@ public class TagEditController extends MultiActionController {
             editTag = (Tag) request.getAttribute("tag");         
             mv.addObject("tag", editTag);
             mv.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent(), editTag.getChildren()).toString());
-            mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed()));           
+            mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed()));        
         }
         
         return mv;
@@ -145,6 +145,8 @@ public class TagEditController extends MultiActionController {
         editTag.setName(request.getParameter("name"));
         editTag.setDisplayName(request.getParameter("displayName"));
         editTag.setDescription(request.getParameter("description"));
+        final boolean isFeatured = request.getParameter("featured") != null;
+        editTag.setFeatured(isFeatured);
         
         editTag.setGeocode(submissionProcessingService.processGeocode(request));
         
