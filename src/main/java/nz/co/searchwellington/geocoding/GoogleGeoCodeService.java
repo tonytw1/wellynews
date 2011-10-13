@@ -23,7 +23,7 @@ public class GoogleGeoCodeService implements GeoCodeService {
     	GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(address).setRegion(REGION_RESTRICTION).setLanguage("en").getGeocoderRequest();		
 		GeocodeResponse geocoderResponse = callResolver(address, geocoderRequest);
 		
-		if (geocoderResponse.getStatus().equals(GeocoderStatus.OK)) {
+		if (geocoderResponse != null && geocoderResponse.getStatus().equals(GeocoderStatus.OK)) {
 			final GeocoderResult firstMatch = geocoderResponse.getResults().get(0);
 			log.info("Address '" + address + "' resolved to: " + firstMatch);
 			Geocode geocode = new Geocode();
