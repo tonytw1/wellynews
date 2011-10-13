@@ -17,7 +17,7 @@ public class GoogleGeoCodeService implements GeoCodeService {
 
 	private static Logger log = Logger.getLogger(GoogleGeoCodeService.class);
 
-	private static final String REGION_RESTRICTION = "nz";
+	private static final String REGION_RESTRICTION = "nz";	// TODO This probably wants to be an instance config option give we have uk copies running.
 	
     public Geocode resolveAddress(String address) {
     	GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(address).setRegion(REGION_RESTRICTION).setLanguage("en").getGeocoderRequest();		
