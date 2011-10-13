@@ -5,6 +5,7 @@ import java.util.Set;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
 
 import org.apache.solr.client.solrj.SolrQuery;
 
@@ -78,7 +79,7 @@ public class SolrQueryBuilder {
 	
 	public SolrQueryBuilder publisher(Website publisher) {
 		if (publisher != null) {
-			sb.append(" +publisher:" + publisher.getId());			
+			sb.append(" +" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":" + publisher.getName());			
 		}
 		return this;
 	}
