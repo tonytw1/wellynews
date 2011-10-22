@@ -79,7 +79,7 @@ public class SolrQueryBuilder {
 	
 	public SolrQueryBuilder publisher(Website publisher) {
 		if (publisher != null) {
-			sb.append(" +" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":" + publisher.getName());			
+			sb.append(" +" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":\"" + publisher.getName() + "\"");
 		}
 		return this;
 	}
