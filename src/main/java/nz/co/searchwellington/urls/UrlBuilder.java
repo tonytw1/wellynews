@@ -90,7 +90,10 @@ public class UrlBuilder {
 	}
 	
 	public String getPublisherUrl(String publisherName) {
-		return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(publisherName);
+		if (publisherName != null) {
+			return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(publisherName);
+		}
+		return null;
 	}
 
 	public String getPublisherCombinerUrl(String publisherName, Tag tag) {
