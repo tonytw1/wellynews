@@ -125,11 +125,11 @@
 			<version>0.2.1</version>
 				</dependency>
 
-		<dependency>
-		  <groupId>org.scribe</groupId>
-		  <artifactId>scribe</artifactId>
-		  <version>1.2.1</version>
-		</dependency>
+	<dependency>
+		<groupId>org.scribe</groupId>
+		<artifactId>scribe</artifactId>
+		<version>1.2.3</version>
+	</dependency>
 
 		<dependency>
 			<groupId>org.twitter4j</groupId>
@@ -289,7 +289,7 @@
 		<dependency>
 			<groupId>org.openid4java</groupId>
 			<artifactId>openid4java</artifactId>
-			<version>0.9.5</version>
+			<version>0.9.6</version>
 			<type>pom</type>
 		</dependency>
 
