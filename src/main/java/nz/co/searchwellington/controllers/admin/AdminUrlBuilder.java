@@ -4,7 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 
@@ -17,7 +19,20 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getResourceEditUrl(FrontendResource resource) {
-		return siteInformation.getUrl() + "/edit/edit?resource=" + resource.getId();
+		String editId = null;
+		if (resource.getType() == "N") {
+			editId = UrlWordsGenerator.markUrlForNewsitem((Newsitem) resource);
+		}
+		if (resource.getType() == "F") {
+			editId = "feed/" + UrlWordsGenerator.makeUrlWordsFromName(resource.getName());
+		}
+		if (resource.getType() == "W") {
+			editId = ((FrontendWebsite) resource).getUrlWords();
+		}
+		if (editId != null) {
+			return siteInformation.getUrl() + "/edit/edit?resource=" + editId;
+		}
+		return null;
 	}
 	
 	public String getResourceDeleteUrl(FrontendResource frontendResource) {

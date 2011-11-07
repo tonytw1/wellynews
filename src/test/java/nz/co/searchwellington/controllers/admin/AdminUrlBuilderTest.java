@@ -1,15 +1,14 @@
 package nz.co.searchwellington.controllers.admin;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
-import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
+import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class AdminUrlBuilderTest {
@@ -18,23 +17,25 @@ public class AdminUrlBuilderTest {
 	
 	@Mock SiteInformation siteInformation;
 	@Mock FrontendWebsite frontendWebsite;
-	private FrontendResourceImpl frontendResource;
+	private FrontendWebsiteImpl frontendResource;
 	
 	private AdminUrlBuilder adminUrlBuilder;
 	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		Mockito.when(frontendWebsite.getUrlWords()).thenReturn("my-local-sports-team");
-		frontendResource = new FrontendNewsitemImpl();
+		when(siteInformation.getUrl()).thenReturn(SITE_URL);
+		adminUrlBuilder = new AdminUrlBuilder(siteInformation);
+		
+		frontendResource = new FrontendWebsiteImpl();
 		frontendResource.setId(123);
-		adminUrlBuilder = new AdminUrlBuilder(siteInformation);		
+		frontendResource.setType("W");
+		frontendResource.setUrlWords("my-local-sports-team");
 	}
 
 	@Test
-	public void canConstructEditUrlForFrontendResource() throws Exception {
-		assertEquals("http://somesite.local/edit/edit?resource=123",adminUrlBuilder.getResourceEditUrl(frontendResource));
+	public void canConstructEditUrlForFrontendWebsite() throws Exception {
+		assertEquals("http://somesite.local/edit/edit?resource=my-local-sports-team",adminUrlBuilder.getResourceEditUrl(frontendResource));
 	}
 	
 	@Test
@@ -54,7 +55,7 @@ public class AdminUrlBuilderTest {
 	
 	@Test
 	public void canConstructAutoGatherUrlForPublisher() throws Exception {
-		assertEquals("http://somesite.local/admin/gather?publisher=my-local-sports-team", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite));
+		assertEquals("http://somesite.local/admin/gather?publisher=my-local-sports-team", adminUrlBuilder.getPublisherAutoGatherUrl(frontendResource));
 	}
 	
 }
