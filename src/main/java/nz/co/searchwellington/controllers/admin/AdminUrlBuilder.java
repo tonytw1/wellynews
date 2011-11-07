@@ -20,10 +20,6 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/edit/edit?resource=" + resource.getId();
 	}
 	
-	public String getResourceEditUrl(Integer resourceId) {
-		return siteInformation.getUrl() + "/edit/edit?resource=" + resourceId;
-	}
-	
 	public String getResourceDeleteUrl(FrontendResource frontendResource) {
 		return siteInformation.getUrl() + "/edit/delete?resource=" + frontendResource.getId();
 	}
