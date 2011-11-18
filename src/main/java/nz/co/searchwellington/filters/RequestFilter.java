@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.filters.attributesetters.AttributeSetter;
+import nz.co.searchwellington.filters.attributesetters.CombinerPageAttributeSetter;
+import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter;
+import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
@@ -20,135 +20,63 @@ public class RequestFilter {
         
 	private static Logger log = Logger.getLogger(RequestFilter.class);
 	
-	private static Pattern contentPattern = Pattern.compile("^/(.*?)(/.*)?(/(rss|json|comment|geotagged))?$");
-	private static Pattern combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
-	private static Pattern autotagPattern = Pattern.compile("^/autotag/(.*)$");
-	    
-    private ResourceRepository resourceDAO;
-    private TagDAO tagDAO;    
+    private AttributeSetter combinerPageAttributeSetter;
+    private AttributeSetter tagPageAttibuteSetter;
+    private AttributeSetter publisherPageAttributeSetter;
+    
 	RequestAttributeFilter[] filters;
-	
+	List<AttributeSetter> attributeSetters;
+
 	public RequestFilter() {         
     }
     
     public RequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO, RequestAttributeFilter[] filters) {
-        this.resourceDAO = resourceDAO;
-        this.tagDAO = tagDAO;
         this.filters = filters;
+        this.tagPageAttibuteSetter = new TagPageAttributeSetter(tagDAO);
+        this.publisherPageAttributeSetter = new PublisherPageAttributeSetter(resourceDAO);
+        this.combinerPageAttributeSetter = new CombinerPageAttributeSetter(tagDAO, resourceDAO);
+        
+        attributeSetters = new ArrayList<AttributeSetter>();	// TODO push to spring.
+        attributeSetters.add(tagPageAttibuteSetter);
+        attributeSetters.add(publisherPageAttributeSetter);
+        attributeSetters.add(combinerPageAttributeSetter);
     }
-              
-	public void loadAttributesOntoRequest(HttpServletRequest request) {    	
+    
+	public void loadAttributesOntoRequest(HttpServletRequest request) {
+		if (isReservedPath(request.getPathInfo())) {
+			return;
+		}
+		
     	for (RequestAttributeFilter filter : filters) {
 			filter.filter(request);
 		}
-    			
-        log.debug("Looking for combiner urls");        
-        Matcher matcher = combinerPattern.matcher(request.getPathInfo());
-        if (matcher.matches()) {
-        	final String left = matcher.group(1);
-        	final String right = matcher.group(2);        	
-        	log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'");        	
-        	// righthand side is always a tag;
-        	// Left could be a publisher or a tag.
-        	Tag rightHandTag = tagDAO.loadTagByName(right);        	
-        	if (rightHandTag != null) {
-	        	Website publisher = resourceDAO.getPublisherByUrlWords(left);
-	        	log.debug("Right matches tag: " + rightHandTag.getName());
-	        	if (publisher != null) {
-	        		log.debug("Left matches publisher: " + publisher.getName());
-	        		request.setAttribute("publisher", publisher);
-	        		request.setAttribute("tag", rightHandTag);
-	        		return;
-	        		
-	        	} else {
-	        		Tag leftHandTag = tagDAO.loadTagByName(left);
-	        		if (leftHandTag != null) {
-	        			log.debug("Left matches tag: " + leftHandTag.getName());
-	        			log.info("Setting tags '" + leftHandTag.getName() + "', '" + rightHandTag.getName() + "'");
-	        			List<Tag> tags = new ArrayList<Tag>();
-	        			tags.add(leftHandTag);
-	        			tags.add(rightHandTag);
-	        			request.setAttribute("tags", tags);
-	        			return;
-	        		}
-	        	}
-        	}
-        	return;
-        } 
-        
- 
-        log.debug("Looking for single publisher and tag urls");
-        Matcher contentMatcher = contentPattern.matcher(request.getPathInfo());
-        if (contentMatcher.matches()) {
-        	final String match = contentMatcher.group(1);
-        	
-        	if (!isReservedUrlWord(match)) {
-	        	log.debug("'" + match + "' matches content");
-		        	
-	        	log.debug("Looking for tag '" + match + "'");	        	
-	        	Tag tag = tagDAO.loadTagByName(match);
-		        if (tag != null) {
-		        	log.info("Setting tag: " + tag.getName());
-		        	request.setAttribute("tag", tag);	// TODO deprecate
-		        	List<Tag> tags = new ArrayList<Tag>();
-		        	tags.add(tag);
-		        	log.info("Setting tags: " + tags);
-		        	request.setAttribute("tags", tags);
-		        	return;
-		        } else {
-		        	log.debug("Looking for publisher '" + match + "'");
-		        	Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
-		        	if (publisher != null) {
-		        		log.info("Setting publisher: " + publisher.getName());
-		        		request.setAttribute("publisher", publisher);
-		        		return;
-		       		}
-		       	}
-		    
-		        return;
-        	}
-        }
-        
-        log.debug("Looking for autotag urls");
-        Matcher autotagMatcher = autotagPattern.matcher(request.getPathInfo());
-        if (autotagMatcher.matches()) {        	
-        	final String match = autotagMatcher.group(1);        	
-        	if (!isReservedUrlWord(match)) {
-	        	log.debug("'" + match + "' matches content");
-		        	
-	        	log.debug("Looking for tag '" + match + "'");	        	
-	        	Tag tag = tagDAO.loadTagByName(match);
-		        if (tag != null) {
-		        	log.info("Setting tag: " + tag.getName());
-		        	request.setAttribute("tag", tag);	// TODO deprecate
-		        	List<Tag> tags = new ArrayList<Tag>();
-		        	tags.add(tag);
-		        	log.info("Setting tags: " + tags);
-		        	request.setAttribute("tags", tags);
-		        	return;
-		        }
-		        return;
-        	}
-        }
-        
+    	
+    	for (AttributeSetter attributeSetter : attributeSetters) {
+    		if (attributeSetter.setAttributes(request)) {    		
+    			return;
+    		}
+    	}
+    	
+		log.debug("Looking for single publisher and tag urls");       
     }
 
-    
-  
-    
-
-    // TODO this wants to be in the spring config
-	private boolean isReservedUrlWord(String urlWord) {
-    	Set<String> reservedUrlWords = new HashSet<String>();
-    	reservedUrlWords.add("about");
-    	reservedUrlWords.add("api");
-    	reservedUrlWords.add("autotag");
-       	reservedUrlWords.add("index");
-    	reservedUrlWords.add("feeds");
-    	reservedUrlWords.add("comment");
-    	reservedUrlWords.add("geotagged");
-    	reservedUrlWords.add("tags");
-    	return reservedUrlWords.contains(urlWord);
+	private boolean isReservedPath(String path) {
+    	Set<String> reservedUrlWords = new HashSet<String>();		 // TODO this wants to be in the spring config
+    	reservedUrlWords.add("/about");
+    	reservedUrlWords.add("/api");
+    	reservedUrlWords.add("/autotag");
+       	reservedUrlWords.add("/index");
+    	reservedUrlWords.add("/feeds");
+    	reservedUrlWords.add("/comment");
+    	reservedUrlWords.add("/geotagged");
+    	reservedUrlWords.add("/tags");
+    	
+    	for(String prefix : reservedUrlWords) {
+    		if (path.startsWith(prefix)) {
+    			return true;
+    		}
+    	}    	
+    	return false;
 	}
 	
 }

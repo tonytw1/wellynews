@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
+@Deprecated
 public class PublisherParameterFilter implements RequestAttributeFilter {
 
 	private ResourceRepository resourceDAO;
