@@ -3,9 +3,8 @@ package nz.co.searchwellington.model;
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
-
 public class UrlWordsGenerator {
-
+		
 	public static String makeUrlWordsFromName(String name) {
 		String urlWords = new String(name);		
 		return urlWords.
