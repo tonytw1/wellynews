@@ -273,12 +273,12 @@
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
-					<props>																
-						<prop key="/autotag/*">prompt</prop>
-						<prop key="/autotag/*/apply">apply</prop>
+					<props>											
+						<prop key="/*/autotag">prompt</prop>
+						<prop key="/*/autotag/apply">apply</prop>
 					</props>
 				</property>
-			</bean>		
+			</bean>
 		</property>
 	</bean>
 	
@@ -364,8 +364,8 @@
 				
 				<prop key="/edit/tag/*">tagEditController</prop>
 							
-				<prop key="/autotag/*">autoTagController</prop>
-				<prop key="/autotag/*/apply">autoTagController</prop>
+				<prop key="/*/autotag">autoTagController</prop>
+				<prop key="/*/autotag/apply">autoTagController</prop>
 				
 				<prop key="/admin/gather">autoGatherController</prop>
 				<prop key="/admin/gather/apply">autoGatherController</prop>		

@@ -25,7 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class AutoTagController extends BaseMultiActionController {
 
-    static Logger log = Logger.getLogger(AutoTagController.class);
+    private static Logger log = Logger.getLogger(AutoTagController.class);
     
     private ResourceRepository resourceDAO;
     private AdminRequestFilter requestFilter;
@@ -46,8 +46,7 @@ public class AutoTagController extends BaseMultiActionController {
         this.tagVoteDAO = tagVoteDAO;
         this.loggedInUserFilter = loggedInUserFilter;
 	}
-
-
+	
 	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null) {
@@ -71,8 +70,7 @@ public class AutoTagController extends BaseMultiActionController {
         mv.addObject("resources_to_tag", getPossibleAutotagResources(loggedInUserFilter.getLoggedInUser(), tag));
         return mv;
     }
-
-
+	
     public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null) {

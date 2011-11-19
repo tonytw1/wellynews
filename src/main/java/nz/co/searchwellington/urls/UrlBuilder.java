@@ -59,7 +59,6 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/feed/" + UrlWordsGenerator.makeUrlWordsFromName(feedname);
 	}
 	
-	
 	public String getFeedsInboxUrl() {
 		return siteInformation.getUrl() + "/feeds/inbox";
 	}
@@ -72,11 +71,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/" + tag.getName();
 	}
 	
-	
 	public String getAutoTagUrl(Tag tag) {
-		return siteInformation.getUrl() + "/autotag/" + tag.getName();
+		return siteInformation.getUrl() + "/" + tag.getName() + "/autotag";
 	}
-
+	
 	public String getTagCombinerUrl(Tag firstTag, Tag secondTag) {
 		return siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName();
 	}
