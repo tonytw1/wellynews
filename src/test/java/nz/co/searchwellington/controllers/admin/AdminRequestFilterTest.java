@@ -1,48 +1,54 @@
 package nz.co.searchwellington.controllers.admin;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
-import junit.framework.TestCase;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-public class AdminRequestFilterTest extends TestCase {
+public class AdminRequestFilterTest {
 	
 	private ResourceRepository resourceDAO = mock(ResourceRepository.class);
 	private AdminRequestFilter filter;
 	private Tag transportTag = mock(Tag.class);
 	private Feed feed = mock(Feed.class);
 	private Resource resource = mock(Resource.class);
+	private Website publisher = mock(Website.class);
 	private TagDAO tagDAO = mock(TagDAO.class);
 	
-	
-	@Override
-	protected void setUp() throws Exception {		 
+	@Before
+	public void setUp() throws Exception {
 		when(tagDAO.loadTagByName("transport")).thenReturn(transportTag);
 		when(resourceDAO.loadResourceById(123)).thenReturn(feed);
 		when(resourceDAO.loadResourceById(567)).thenReturn(resource);
 		filter = new AdminRequestFilter(resourceDAO, tagDAO);
 	}
-
 	
+	@Test
 	public void testShouldPopulateParentTagAttribute() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/save");
 		 request.setParameter("parent", "transport");
+		 assertNotNull(filter);
 		 filter.loadAttributesOntoRequest(request);		 
 		 assertNotNull(request.getAttribute("parent_tag"));
 	}
 	
+	@Test
 	public void testShouldParseDateParameterIntoDateAttribute() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/save");
@@ -53,8 +59,7 @@ public class AdminRequestFilterTest extends TestCase {
 		 assertEquals(new DateTime(2009, 4, 23, 0, 0, 0, 0), date);		
 	}
 	
-	
-	
+	@Test
 	public void testShouldPopulateResourceFromParameter() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/edit");
@@ -65,7 +70,7 @@ public class AdminRequestFilterTest extends TestCase {
 		 assertEquals(resource, requestResource);
 	}
 	
-	
+	@Test
 	public void testShouldPutTagOntoEditTagPath() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/transport");
@@ -76,7 +81,7 @@ public class AdminRequestFilterTest extends TestCase {
 		 assertNotNull(requestTag);
 	}
 	
-		
+	@Test
 	public void testShouldPopulateTagFromParameterAsWell() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/save");
@@ -89,7 +94,7 @@ public class AdminRequestFilterTest extends TestCase {
 		 assertEquals(transportTag, requestTag);
 	}
 		
-	
+	@Test
 	public void testShouldPopulateFeedAttributeFromParameter() throws Exception {
 		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/save");
