@@ -205,6 +205,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	
 	<bean id="adminUrlBuilder" class="nz.co.searchwellington.controllers.admin.AdminUrlBuilder">
 		<constructor-arg ref="siteInformation" />
+		<constructor-arg ref="urlBuilder" />		
 	</bean>	
 	<bean id="rssUrlBuilder" class="nz.co.searchwellington.controllers.RssUrlBuilder">
 		<constructor-arg ref="siteInformation" />

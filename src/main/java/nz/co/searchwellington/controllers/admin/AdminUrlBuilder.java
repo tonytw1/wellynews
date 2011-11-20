@@ -4,39 +4,35 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 public class AdminUrlBuilder {
 
 	private SiteInformation siteInformation;
+	private UrlBuilder urlBuilder;
 	
-	public AdminUrlBuilder(SiteInformation siteInformation) {		
+	public AdminUrlBuilder(SiteInformation siteInformation, UrlBuilder urlBuilder) {		
 		this.siteInformation = siteInformation;
+		this.urlBuilder = urlBuilder;
 	}
 	
 	public String getResourceEditUrl(FrontendResource resource) {
-		String editId = null;
-		if (resource.getType() == "N") {
-			editId = UrlWordsGenerator.markUrlForNewsitem((Newsitem) resource);
-		}
-		if (resource.getType() == "F") {
-			editId = "feed/" + UrlWordsGenerator.makeUrlWordsFromName(resource.getName());
-		}
-		if (resource.getType() == "W") {
-			editId = ((FrontendWebsite) resource).getUrlWords();
-		}
-		if (editId != null) {
-			return siteInformation.getUrl() + "/edit/edit?resource=" + editId;
-		}
+		final String resourceUrl = urlBuilder.getResourceUrl(resource);
+		if (resourceUrl != null) {
+			return resourceUrl + "/edit";
+		}		
 		return null;
 	}
 	
-	public String getResourceDeleteUrl(FrontendResource frontendResource) {
-		return siteInformation.getUrl() + "/edit/delete?resource=" + frontendResource.getId();
+	public String getResourceDeleteUrl(FrontendResource resource) {
+		final String resourceUrl = urlBuilder.getResourceUrl(resource);
+		if (resourceUrl != null) {
+			return resourceUrl + "/delete";
+		}
+		return null;
 	}
 	
 	public String getResourceCheckUrl(FrontendResource resource) {
@@ -44,7 +40,11 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getViewSnapshotUrl(FrontendResource resource) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/edit/viewsnapshot?resource=" + resource.getId();	
+		final String resourceUrl = urlBuilder.getResourceUrl(resource);
+		if (resourceUrl != null) {
+			return resourceUrl + "/viewsnapshot";
+		}
+		return null;
 	}
 	
 	public String getFeednewsItemAcceptUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
@@ -60,7 +60,11 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getPublisherAutoGatherUrl(FrontendWebsite resource) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/admin/gather?publisher=" + URLEncoder.encode(resource.getUrlWords(), "UTF-8");
+		final String resourceUrl = urlBuilder.getResourceUrl(resource);
+		if (resourceUrl != null) {
+			return resourceUrl + "/gather";
+		}
+		return null;
 	}
 	
 	public String getAddTagUrl() throws UnsupportedEncodingException {

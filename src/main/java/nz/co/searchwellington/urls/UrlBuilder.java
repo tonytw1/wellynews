@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.twitter.TwitterService;
 
 public class UrlBuilder {
@@ -190,6 +191,19 @@ public class UrlBuilder {
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}
+	}
+
+	public String getResourceUrl(FrontendResource resource) {
+		if (resource.getType() == "N") {
+			return getLocalPageUrl((FrontendNewsitem) resource);
+		}
+		if (resource.getType() == "F") {
+			return getFeedUrl((FrontendFeed) resource);
+		}
+		if (resource.getType() == "W") {
+			return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(resource.getName());
+		}
+		return null;
 	}
 	
 }

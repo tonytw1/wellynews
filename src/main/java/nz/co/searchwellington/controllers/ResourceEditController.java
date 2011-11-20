@@ -90,17 +90,17 @@ public class ResourceEditController extends BaseMultiActionController {
 		this.tagVoteDAO = tagVoteDAO;
 		this.feedItemAcceptor = feedItemAcceptor;
 	}
-   
     
-       
     @Transactional
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
+    	log.info("Starting resource edit method");
         response.setCharacterEncoding("UTF-8");
         
     	adminRequestFilter.loadAttributesOntoRequest(request);    	
     	Resource resource = (Resource) request.getAttribute("resource");    	
     	if (request.getAttribute("resource") == null) { 
     		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+    		log.info("No resource attribute found on request; returning 404");
         	return null;
     	}
     	    	
@@ -110,7 +110,6 @@ public class ResourceEditController extends BaseMultiActionController {
         	return null;
     	}
     	
-    	    	
     	ModelAndView mv = new ModelAndView("editResource");
     	populateCommonLocal(mv);
     	mv.addObject("heading", "Editing a Resource");
@@ -127,8 +126,6 @@ public class ResourceEditController extends BaseMultiActionController {
         }               
         return mv;        
     }
-
-
     
 	@Transactional
     public ModelAndView viewSnapshot(HttpServletRequest request, HttpServletResponse response) {

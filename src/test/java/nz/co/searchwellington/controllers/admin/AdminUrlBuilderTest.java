@@ -4,8 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
+import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
+import nz.co.searchwellington.urls.UrlBuilder;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -19,6 +22,7 @@ public class AdminUrlBuilderTest {
 	
 	private FrontendWebsiteImpl frontendWebsite;
 	private FrontendFeedImpl frontendFeed;
+	private FrontendNewsitemImpl frontendNewsitem;
 	
 	private AdminUrlBuilder adminUrlBuilder;
 	
@@ -26,32 +30,45 @@ public class AdminUrlBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		adminUrlBuilder = new AdminUrlBuilder(siteInformation);
+		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, null, null));
 		
 		frontendWebsite = new FrontendWebsiteImpl();
 		frontendWebsite.setId(123);
 		frontendWebsite.setType("W");
+		frontendWebsite.setName("My local sports team");
 		frontendWebsite.setUrlWords("my-local-sports-team");
+		
+		frontendNewsitem = new FrontendNewsitemImpl();
+		frontendNewsitem.setId(123);
+		frontendNewsitem.setType("N");
+		frontendNewsitem.setName("A news item");
+		frontendNewsitem.setPublisherName("My local sports team");
+		frontendNewsitem.setDate(new DateTime(2011, 5, 20, 0, 0, 0, 0).toDate());
 		
 		frontendFeed = new FrontendFeedImpl();
 		frontendFeed.setId(124);
 		frontendFeed.setType("F");
-		frontendFeed.setName("My local sports team news");
+		frontendFeed.setUrlWords("my-local-sports-team-news");
 	}
 
 	@Test
 	public void canConstructEditUrlForFrontendWebsite() throws Exception {
-		assertEquals("http://somesite.local/edit/edit?resource=my-local-sports-team",adminUrlBuilder.getResourceEditUrl(frontendWebsite));
+		assertEquals("http://somesite.local/my-local-sports-team/edit", adminUrlBuilder.getResourceEditUrl(frontendWebsite));
+	}
+	
+	@Test
+	public void canBuildEditUrlForNewsitems() throws Exception {
+		assertEquals("http://somesite.local/my-local-sports-team/2011/may/20/a-news-item/edit", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
 	}
 	
 	@Test
 	public void canConstructEditUrlForFrontendFeed() throws Exception {
-		assertEquals("http://somesite.local/edit/edit?resource=feed/my-local-sports-team-news",adminUrlBuilder.getResourceEditUrl(frontendFeed));
+		assertEquals("http://somesite.local/feed/my-local-sports-team-news/edit", adminUrlBuilder.getResourceEditUrl(frontendFeed));
 	}
 	
 	@Test
 	public void canConstructDeleteUrlForFrontendResource() throws Exception {
-		assertEquals("http://somesite.local/edit/delete?resource=123",adminUrlBuilder.getResourceDeleteUrl(frontendWebsite));
+		assertEquals("http://somesite.local/my-local-sports-team/delete", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite));
 	}
 	
 	@Test
@@ -61,12 +78,12 @@ public class AdminUrlBuilderTest {
 	
 	@Test
 	public void canConstructViewSnapshotUrlForFrontendResource() throws Exception {
-		assertEquals("http://somesite.local/edit/viewsnapshot?resource=123",adminUrlBuilder.getViewSnapshotUrl(frontendWebsite));
+		assertEquals("http://somesite.local/my-local-sports-team/viewsnapshot",adminUrlBuilder.getViewSnapshotUrl(frontendWebsite));
 	}
 	
 	@Test
 	public void canConstructAutoGatherUrlForPublisher() throws Exception {
-		assertEquals("http://somesite.local/admin/gather?publisher=my-local-sports-team", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite));
+		assertEquals("http://somesite.local/my-local-sports-team/gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite));
 	}
 	
 }
