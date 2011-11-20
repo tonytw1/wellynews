@@ -90,30 +90,7 @@
 	
 	
 	
-	<bean id="openIDSigninHandler" class="nz.co.searchwellington.signin.openid.OpenIDLoginHandler">
-		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="userDAO" />
-	</bean>
-		
-	<bean id="openIDLoginController" class="nz.co.searchwellington.signin.SigninController">
-		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="userDAO" />
-		<constructor-arg ref="anonUserService" />
-		<constructor-arg ref="loginResourceOwnershipService" />
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="openIDSigninHandler"/>
-								
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/openid/login">login</prop>
-						<prop key="/openid/callback">callback</prop>						
-					</props>
-				</property>
-			</bean>		
-		</property>					
-	</bean>
+	
 						
 	<bean id="twitterLoginController" class="nz.co.searchwellington.signin.SigninController">
 		<constructor-arg ref="loggedInUserFilter" />
@@ -348,7 +325,10 @@
 				<prop key="/admin/feed/decache">viewfeedController</prop>	
 				<prop key="/admin/feed/acceptall">viewfeedController</prop>
 				
-				<prop key="/edit/edit">editController</prop>
+				<prop key="/*/edit">editController</prop>
+				<prop key="/feed/*/edit">editController</prop>
+				<prop key="/*/*/*/*/*/edit">editController</prop>
+				
 				<prop key="/edit/delete">editController</prop>
 				<prop key="/edit/save">editController</prop>
 
@@ -405,10 +385,7 @@
             	<prop key="/justin">tagController</prop>
             	<prop key="/watchlist">tagController</prop>
            		<prop key="/watchlist/rss">tagController</prop>
-            	            	           						
-				<prop key="/openid/login">openIDLoginController</prop>	
-				<prop key="/openid/callback">openIDLoginController</prop>
-				
+           		            	            	           									
 				<prop key="/twitter/login">twitterLoginController</prop>
 				<prop key="/twitter/callback">twitterLoginController</prop>				
 				<prop key="/tagging/submit">publicTaggingController</prop>				
