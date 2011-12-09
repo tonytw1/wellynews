@@ -15,7 +15,12 @@ public class LiveRssfeedNewsitemServiceTest {
 	private RssHttpFetcher rssFetcher;
 	private TextTrimmer textTrimmer;
 	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
-
+	
+	@Test
+	public void testname() throws Exception {
+		// TODO Disabled test class placeholder
+	}
+	
 	//@Test
 	public void test() throws Exception {
 		urlCleaner = new UrlCleaner(new UrlResolverService());

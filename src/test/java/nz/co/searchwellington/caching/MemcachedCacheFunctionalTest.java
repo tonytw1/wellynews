@@ -21,11 +21,16 @@ public class MemcachedCacheFunctionalTest {
 
 	private MemcachedCache cache;
 	
-	//@Before
-	public void setup() {
-		cache = new MemcachedCache();
-		cache.setMemcachedUrls("localhost:11211");
+	@Test
+	public void testname() throws Exception {
+		// TODO Disabled test class placeholder
 	}
+	
+	//@Before
+	//public void setup() {
+	//	cache = new MemcachedCache();
+	//	cache.setMemcachedUrls("localhost:11211");
+	//}
 	
 	//@Test
 	public void canRoundTripSimpleContentThroughTheCache() throws Exception {		

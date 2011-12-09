@@ -9,12 +9,18 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Before;
+import org.junit.Test;
 
 public class SolrQueryFunctionalTest {
 	
 	private static final String SOLR_URL = "http://localhost:8080/apache-solr-3.2.0/twickenham";
 	
 	private CommonsHttpSolrServer solr;
+	
+	@Test
+	public void testname() throws Exception {
+		// TODO Disabled test class placeholder
+	}
 	
 	//@Before
 	public void setup() throws MalformedURLException {

@@ -7,6 +7,11 @@ import org.junit.Test;
 import com.sun.syndication.feed.synd.SyndFeed;
 
 public class RssHttpFetcherFunctionalTest {
+	
+	@Test
+	public void testname() throws Exception {
+		// TODO Disabled test class placeholder
+	}
 
 	//@Test
 	public void canRetrieveRemoveFeed() throws Exception {
