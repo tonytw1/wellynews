@@ -326,6 +326,8 @@
 				<prop key="/admin/feed/acceptall">viewfeedController</prop>
 				
 				<prop key="/*/edit">editController</prop>
+				<prop key="*/save">editController</prop>
+				
 				<prop key="/feed/*/edit">editController</prop>
 				<prop key="/*/*/*/*/*/edit">editController</prop>
 				

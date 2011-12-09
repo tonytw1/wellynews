@@ -14,7 +14,7 @@ public class PublisherPageAttributeSetter implements AttributeSetter {
 	
 	private static Logger log = Logger.getLogger(PublisherPageAttributeSetter.class);
 	
-	private static Pattern publisherPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged))?(/(edit|rss|json))?$");
+	private static Pattern publisherPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged))?(/(edit|save|rss|json))?$");
 	
 	private ResourceRepository resourceDAO;
 	

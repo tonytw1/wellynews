@@ -27,6 +27,7 @@
 				<property name="mappings">
 					<props>
 						<prop key="/*/edit">edit</prop>
+						<prop key="/*/save">save</prop>
 						<prop key="/edit/edit">edit</prop>
 						<prop key="/edit/*">edit</prop>
 						<prop key="/*/*/*/*/*/edit">edit</prop>						
