@@ -2,6 +2,7 @@ package nz.co.searchwellington.feeds;
 
 import java.util.List;
 
+import net.spy.memcached.OperationTimeoutException;
 import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.FeedNewsitem;
 
@@ -23,9 +24,13 @@ public class FeedNewsitemCache {
 	@SuppressWarnings("unchecked")
 	public List<FeedNewsitem> getFeeditems(String url) {
 		final String cacheKey = getCacheKey(url);
-		List<FeedNewsitem> cachedResult = (List<FeedNewsitem>) cache.get(cacheKey);
-		if (cachedResult != null) {			
-			return cachedResult;
+		try {
+			List<FeedNewsitem> cachedResult = (List<FeedNewsitem>) cache.get(cacheKey);
+			if (cachedResult != null) {			
+				return cachedResult;
+			}
+		} catch (OperationTimeoutException e) {
+			log.warn("Memcached connection timed out returning null result");
 		}
 		return null;
 	}

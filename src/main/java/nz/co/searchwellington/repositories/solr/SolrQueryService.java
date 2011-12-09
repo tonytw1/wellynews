@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories.solr;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,10 @@ public class SolrQueryService {
 	public Map<String, List<Count>> getFacetQueryResults(SolrQuery query) {
 		Map<String, List<Count>> results = new HashMap<String, List<Count>>();
 		QueryResponse response = querySolr(query);
+		if (response == null) {
+			log.warn("Null response from solr; returning empty result");
+			return Collections.EMPTY_MAP;
+		}
 		for (FacetField field : response.getFacetFields()) {
 			if (field.getValues() != null) {
 				results.put(field.getName(), field.getValues());

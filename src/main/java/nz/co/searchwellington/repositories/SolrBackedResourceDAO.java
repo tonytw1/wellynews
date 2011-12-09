@@ -379,7 +379,7 @@ public class SolrBackedResourceDAO {
 		if (response != null) {
 			return loadResourcesFromSolrResults(response);
 		}
-		return null;
+		return Collections.EMPTY_LIST;
 	}
 
 	public List<FrontendResource> getLatestNewsitems(int maxItems,
