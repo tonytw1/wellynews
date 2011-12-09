@@ -26,8 +26,8 @@
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
 				<property name="mappings">
 					<props>
+						<prop key="/*/edit">edit</prop>
 						<prop key="/edit/edit">edit</prop>
-						
 						<prop key="/edit/*">edit</prop>
 						<prop key="/*/*/*/*/*/edit">edit</prop>						
 						<prop key="/feed/*/edit">edit</prop>

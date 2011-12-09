@@ -105,8 +105,9 @@ public class ResourceEditController extends BaseMultiActionController {
     	}
     	    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
-    	if (!userIsAllowedToEdit(resource, request, loggedInUser)) {
+    	if (!userIsAllowedToEdit(resource, request, loggedInUser)) {    		
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+    		log.info("No logged in user or user not allowed to edit resource; returning 403");
         	return null;
     	}
     	
