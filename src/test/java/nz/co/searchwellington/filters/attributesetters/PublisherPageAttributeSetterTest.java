@@ -1,6 +1,6 @@
 package nz.co.searchwellington.filters.attributesetters;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -33,7 +33,7 @@ public class PublisherPageAttributeSetterTest {
 
 		pageAttributeSetter.setAttributes(request);
 		
-		assertNotNull(request.getAttribute("publisher"));		
+		assertEquals(publisher, request.getAttribute("publisher"));		
 	}
 	
 	@Test
@@ -42,7 +42,7 @@ public class PublisherPageAttributeSetterTest {
 		
 		pageAttributeSetter.setAttributes(request);
 		
-		assertNotNull(request.getAttribute("publisher"));		
+		assertEquals(publisher, request.getAttribute("publisher"));		
 	}
 	
 	@Test
@@ -51,7 +51,7 @@ public class PublisherPageAttributeSetterTest {
 		
 		pageAttributeSetter.setAttributes(request);
 		
-		assertNotNull(request.getAttribute("publisher"));		
+		assertEquals(publisher, request.getAttribute("publisher"));		
 	}
-
+	
 }

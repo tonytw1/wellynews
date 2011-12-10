@@ -1,8 +1,6 @@
  package nz.co.searchwellington.controllers.models;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,7 +15,6 @@ import org.springframework.web.servlet.ModelAndView;
 public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private static final String FEED_ATTRIBUTE = "feedAttribute";
-	private static Pattern feedPattern = Pattern.compile("^/feed/(.*)$");
 	
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
@@ -30,7 +27,6 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
-		populateFeed(request);
 		return request.getAttribute(FEED_ATTRIBUTE) != null;
 	}
 	
@@ -58,17 +54,6 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "viewfeed";
-	}
-	
-	private void populateFeed(HttpServletRequest request) {
-		Matcher feedMatcher = feedPattern.matcher(request.getPathInfo());
-		if (feedMatcher.matches()) {
-			final String feedUrlWords = feedMatcher.group(1);
-			Feed feed = contentRetrievalService.getFeedByUrlWord(feedUrlWords);
-			if (feed != null) {
-				request.setAttribute(FEED_ATTRIBUTE, feed);
-			}
-		}
 	}
 	
 	private void populateFeedItems(ModelAndView mv, Feed feed) {

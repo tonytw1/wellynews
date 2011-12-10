@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.filters.attributesetters.AttributeSetter;
 import nz.co.searchwellington.filters.attributesetters.CombinerPageAttributeSetter;
+import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter;
 import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter;
 import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter;
 import nz.co.searchwellington.repositories.ResourceRepository;
@@ -23,6 +24,7 @@ public class RequestFilter {
     private AttributeSetter combinerPageAttributeSetter;
     private AttributeSetter tagPageAttibuteSetter;
     private AttributeSetter publisherPageAttributeSetter;
+    private AttributeSetter feedAttributeSetter;
     
 	RequestAttributeFilter[] filters;
 	List<AttributeSetter> attributeSetters;
@@ -35,10 +37,12 @@ public class RequestFilter {
         this.tagPageAttibuteSetter = new TagPageAttributeSetter(tagDAO);
         this.publisherPageAttributeSetter = new PublisherPageAttributeSetter(resourceDAO);
         this.combinerPageAttributeSetter = new CombinerPageAttributeSetter(tagDAO, resourceDAO);
+        this.feedAttributeSetter = new FeedAttributeSetter(resourceDAO);
         
         attributeSetters = new ArrayList<AttributeSetter>();	// TODO push to spring.
         attributeSetters.add(tagPageAttibuteSetter);
         attributeSetters.add(publisherPageAttributeSetter);
+        attributeSetters.add(feedAttributeSetter);
         attributeSetters.add(combinerPageAttributeSetter);
     }
     

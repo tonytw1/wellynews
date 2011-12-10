@@ -28,11 +28,13 @@
 					<props>
 						<prop key="/*/edit">edit</prop>
 						<prop key="/*/save">save</prop>
+						<prop key="/feed/*/edit">edit</prop>
+						<prop key="/feed/*/save">save</prop>
+						
 						<prop key="/edit/edit">edit</prop>
 						<prop key="/edit/*">edit</prop>
 						<prop key="/*/*/*/*/*/edit">edit</prop>						
-						<prop key="/feed/*/edit">edit</prop>
-						
+												
 						<prop key="/edit/save">save</prop>
 						<prop key="/edit/delete">delete</prop>						
 						<prop key="/edit/submit/calendar">submitCalendar</prop>

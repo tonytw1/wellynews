@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -37,11 +36,12 @@ public class FeedModelBuilderTest {
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);		
-		when(contentRetrievalService.getFeedByUrlWord("someonesfeed")).thenReturn(feed);
 		when(rssfeedNewsitemService.getFeedNewsitems(feed)).thenReturn(feedNewsitems);
 		when(rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation);
 		when(feedNewsitems.size()).thenReturn(10);
+		
 		request = new MockHttpServletRequest();
+		request.setAttribute("feedAttribute", feed);
 		request.setPathInfo("/feed/someonesfeed");
 		
 		modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor);
@@ -53,9 +53,8 @@ public class FeedModelBuilderTest {
 	}
 	
 	@Test
-	public void shouldPopulateFeedFromUrlWordsOnRequestPath() throws Exception {
-		ModelAndView mv = modelBuilder.populateContentModel(request);
-		verify(contentRetrievalService).getFeedByUrlWord("someonesfeed");
+	public void shouldPopulateFeedFromRequestAttribute() throws Exception {
+		ModelAndView mv = modelBuilder.populateContentModel(request);	
 		assertEquals(feed, mv.getModel().get("feed"));
 	}
 	
