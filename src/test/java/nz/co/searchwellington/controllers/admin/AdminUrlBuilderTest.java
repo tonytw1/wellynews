@@ -58,7 +58,9 @@ public class AdminUrlBuilderTest {
 	
 	@Test
 	public void canBuildEditUrlForNewsitems() throws Exception {
-		assertEquals("http://somesite.local/my-local-sports-team/2011/may/20/a-news-item/edit", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
+		//assertEquals("http://somesite.local/my-local-sports-team/2011/may/20/a-news-item/edit", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
+		assertEquals("http://somesite.local/edit/edit?resource=123", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
+
 	}
 	
 	@Test

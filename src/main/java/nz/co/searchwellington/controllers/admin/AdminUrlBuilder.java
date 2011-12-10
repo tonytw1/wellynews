@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -21,6 +22,11 @@ public class AdminUrlBuilder {
 	
 	public String getResourceEditUrl(FrontendResource resource) {
 		final String resourceUrl = urlBuilder.getResourceUrl(resource);
+		
+		if (resource instanceof FrontendNewsitem) {
+			return siteInformation.getUrl() + "/edit/edit?resource=" + resource.getId();
+		}
+		
 		if (resourceUrl != null) {
 			return resourceUrl + "/edit";
 		}		
