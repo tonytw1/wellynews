@@ -334,13 +334,7 @@
 			<groupId>spy</groupId>
 			<artifactId>spymemcached</artifactId>
 			<version>2.7</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.openid4java</groupId>
-			<artifactId>openid4java</artifactId>
-			<version>0.9.6</version>
-		</dependency>
+		</dependency>	
 	</dependencies>
 
 	<reporting>
