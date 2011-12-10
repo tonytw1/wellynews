@@ -46,14 +46,14 @@ public class RequestFilter {
         attributeSetters.add(combinerPageAttributeSetter);
     }
     
-	public void loadAttributesOntoRequest(HttpServletRequest request) {
-		if (isReservedPath(request.getPathInfo())) {
-			return;
-		}
-		
+	public void loadAttributesOntoRequest(HttpServletRequest request) {		
     	for (RequestAttributeFilter filter : filters) {
 			filter.filter(request);
 		}
+    	
+    	if (isReservedPath(request.getPathInfo())) {
+    		return;
+    	}
     	
     	for (AttributeSetter attributeSetter : attributeSetters) {
     		if (attributeSetter.setAttributes(request)) {    		
