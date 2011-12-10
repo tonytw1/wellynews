@@ -1,3 +1,4 @@
+<!--
 <p>Sign in using your OpenID or your 
 	<a href="$site_information.url/openid/login?openid_claimed_identity=https://google.com/accounts/o8/id">Google</a>, 
 	<a href="$site_information.url/openid/login?openid_claimed_identity=https://flickr.com">Flickr</a>		
@@ -10,6 +11,7 @@
 		<input type="submit" class="password" value="Sign in">
 	</fieldset>
 </form>
-		
-<p>Or sign in using your twitter account:</p>
+-->
+	
+<p>Sign in using your twitter account:</p>
 <p><a href="$site_information.url/twitter/login"><img src="$urlBuilder.getImageUrl('sign-in-with-twitter-l.png')" border="0" alt="Sign in with Twitter"></a></p>
