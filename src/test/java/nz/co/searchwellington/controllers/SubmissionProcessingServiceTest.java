@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers;
 
+import java.util.Date;
+
 import nz.co.searchwellington.geocoding.GeoCodeService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
@@ -11,6 +13,7 @@ import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.struts.mock.MockHttpServletRequest;
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -26,23 +29,34 @@ public class SubmissionProcessingServiceTest {
 	@Mock HandTaggingDAO tagVoteDAO;
 	@Mock ResourceRepository resourceDAO;
 	@Mock Newsitem resource;
+	@Mock Feed feed;
+	@Mock User loggedInUser;	
 	
 	private MockHttpServletRequest request;
-	@Mock Feed feed;
-	@Mock User loggedInUser;
+	private SubmissionProcessingService submissionProcessingService;
 	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		Mockito.when(feed.getName()).thenReturn(FEED_NAME);
+		submissionProcessingService = new SubmissionProcessingService(urlCleaner, geocodeService, tagDAO, tagVoteDAO, resourceDAO);
 	}
 	
 	@Test
-	public void shouldFlattenLoudCapsHeadlinesInUserSubmissions() throws Exception {
-		SubmissionProcessingService submissionProcessingService = new SubmissionProcessingService(urlCleaner, geocodeService, tagDAO, tagVoteDAO, resourceDAO);
+	public void acceptsEmbargoDates() throws Exception {
+		Date embargoDate = new DateTime().toDate();
+		request.setAttribute("embargo_date", embargoDate);
 		
+		submissionProcessingService.processEmbargoDate(request, resource);
+		
+		Mockito.verify(resource).setEmbargoedUntil(embargoDate);
+	}
+	
+	@Test
+	public void shouldFlattenLoudCapsHeadlinesInUserSubmissions() throws Exception {	
 		request.addParameter("title", "THE QUICK BROWN FOX JUMPED OVER THE LAZY DOG");
+		
 		submissionProcessingService.processTitle(request, resource);
 		
 		Mockito.verify(resource).setName("The quick brown fox jumped over the lazy dog");
@@ -50,10 +64,9 @@ public class SubmissionProcessingServiceTest {
 	
 	@Test
 	public void shouldPopulateAcceptanceFieldsOnInitalSubmission() throws Exception {
-		SubmissionProcessingService submissionProcessingService = new SubmissionProcessingService(urlCleaner, geocodeService, tagDAO, tagVoteDAO, resourceDAO);
-		request.addParameter("acceptedFromFeed", UrlWordsGenerator.makeUrlWordsFromName(FEED_NAME));
-		
+		request.addParameter("acceptedFromFeed", UrlWordsGenerator.makeUrlWordsFromName(FEED_NAME));	
 		Mockito.when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(feed);
+		
 		submissionProcessingService.processAcceptance(request, resource, loggedInUser);
 		
 		Mockito.verify(resource).setFeed(feed);
