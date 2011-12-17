@@ -95,7 +95,7 @@ public class AdminRequestFilterTest {
 	@Test
 	public void testEmbargoDatesStatedAsTimesShouldBeAcceptedWithTodaysDate() throws Exception {
 		request.setPathInfo("/edit/save");
-		request.setParameter("embargo_date", "21:12");
+		request.setParameter("embargo_date", "today 9:12 PM");
 
 		filter.loadAttributesOntoRequest(request);
 

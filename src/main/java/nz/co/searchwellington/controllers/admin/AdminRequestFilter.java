@@ -20,6 +20,8 @@ import nz.co.searchwellington.repositories.TagDAO;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
+import com.clutch.dates.StringToTime;
+
 public class AdminRequestFilter {
 	
 	private static Logger log = Logger.getLogger(AdminRequestFilter.class);
@@ -145,8 +147,17 @@ public class AdminRequestFilter {
 			} catch (ParseException e) {
 				log.info("Supplied embargo date '" + dateString + "' did not match date format: " + dateFormat.toPattern());
 			}
-		}		
+		}
+		
+		Date date = new StringToTime(dateString);
+		if (date != null) {
+			return date;
+		}
+		
 		log.warn("User supplied embargo date '" + dateString + "' could not be parsed");
+		
+		
+		
 		return null;
 	}
 	

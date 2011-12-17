@@ -61,6 +61,12 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>com.clutch.dates</groupId>
+			<artifactId>stringtotime</artifactId>
+			<version>1.0.5</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>net.java.dev.rome</groupId>
 			<artifactId>rome</artifactId>
 			<version>1.0.0</version>
@@ -301,9 +307,9 @@
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<version>1.6.2</version>
+			<version>2.0</version>
 		</dependency>
-
+	
 		<dependency>
 			<groupId>ecs</groupId>
 			<artifactId>ecs</artifactId>
