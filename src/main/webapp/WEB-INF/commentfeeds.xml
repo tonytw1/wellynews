@@ -20,6 +20,8 @@
 		<property name="regex" value="^http://wellingtonista.com/crss/node/\d+$" />
 	</bean>
 	
+	<bean id ="wellingtonScoopCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector" />
+		
 	<bean id ="newswiresCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
 		<property name="regex" value="^http://www.newswire.co.nz/\d{4}/\d{2}/.*?/feed/$" />
 	</bean>
@@ -40,6 +42,7 @@
 				<ref bean="textureCommentFeedDetector" />
 				<ref bean="wellingtonistaCommentFeedDetector" />
 				<ref bean="newswiresCommentFeedDetector" />
+				<ref bean="wellingtonScoopCommentFeedDetector" />				
 				<ref bean="dateRegexCommentFeedDetector" />
 				<ref bean="yearMonthCommentFeedDetector" />				
 			</list>
