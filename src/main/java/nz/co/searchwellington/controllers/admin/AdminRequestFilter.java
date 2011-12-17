@@ -2,7 +2,9 @@ package nz.co.searchwellington.controllers.admin;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,20 +22,23 @@ import org.joda.time.DateTime;
 
 public class AdminRequestFilter {
 	
+	private static Logger log = Logger.getLogger(AdminRequestFilter.class);
 
-    Logger log = Logger.getLogger(AdminRequestFilter.class);
-    
-
-	private ResourceRepository resourceDAO;
-	private TagDAO tagDAO;
+	private static final String EMBARGO_DATE_FIELD = "embargo_date";
 	
-	
+	final private ResourceRepository resourceDAO;
+	final private TagDAO tagDAO;	
+	final private List<SimpleDateFormat> supportedEmbargoDateFormats;
+		
 	public AdminRequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO) {		
 		this.resourceDAO = resourceDAO;
 		this.tagDAO = tagDAO;
+		
+		supportedEmbargoDateFormats = new ArrayList<SimpleDateFormat>();
+		supportedEmbargoDateFormats.add(new SimpleDateFormat("dd MMM yyyy HH:mm"));
+		supportedEmbargoDateFormats.add(new SimpleDateFormat("HH:mm"));
 	}
-
-
+	
 	public void loadAttributesOntoRequest(HttpServletRequest request) {		
 		log.info("Looking for tag parameter");
 		if (request.getParameter("tag") != null) {
@@ -72,19 +77,10 @@ public class AdminRequestFilter {
 		
 		
 		log.info("Looking for embargoed field");
-		if (request.getParameter("embargo_date") != null) {
-			final String dateString = (String) request.getParameter("embargo_date");
-			SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm");              
-			try {
-				Date date = df.parse(dateString);
-				if (date != null) {
-					request.setAttribute("embargo_date", new DateTime(date).toDate());   	
-				}              
-			} catch (ParseException e) {
-				log.warn("Invalid embargo date string supplied: " + dateString);
-			}        	
+		if (request.getParameter(EMBARGO_DATE_FIELD) != null) {
+			request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate((String) request.getParameter(EMBARGO_DATE_FIELD)));
 		}
-						
+		
 		// TODO Test coverage	Deprecated?	
         if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {
             final String publisherUrlWords = request.getParameter("publisher");
@@ -138,7 +134,21 @@ public class AdminRequestFilter {
 	        }	        
         }
 	}
-	
+
+	private Date parseEmbargoDate(String dateString) {
+		for (SimpleDateFormat dateFormat : supportedEmbargoDateFormats) {
+			try {
+				Date date = dateFormat.parse(dateString);
+				if (date != null) {
+					return date;
+				}		
+			} catch (ParseException e) {
+				log.info("Supplied embargo date '" + dateString + "' did not match date format: " + dateFormat.toPattern());
+			}
+		}		
+		log.warn("User supplied embargo date '" + dateString + "' could not be parsed");
+		return null;
+	}
 	
 	private Long parseTwitterIdfromRequest(HttpServletRequest request) {
 		String twitterIdParam = request.getParameter("twitterid");

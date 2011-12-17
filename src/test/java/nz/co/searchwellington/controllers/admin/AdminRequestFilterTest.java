@@ -11,7 +11,6 @@ import java.util.Date;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
@@ -27,14 +26,15 @@ public class AdminRequestFilterTest {
 	private Tag transportTag = mock(Tag.class);
 	private Feed feed = mock(Feed.class);
 	private Resource resource = mock(Resource.class);
-	private Website publisher = mock(Website.class);
 	private TagDAO tagDAO = mock(TagDAO.class);
+	private MockHttpServletRequest request;
 	
 	@Before
 	public void setUp() throws Exception {
 		when(tagDAO.loadTagByName("transport")).thenReturn(transportTag);
 		when(resourceDAO.loadResourceById(123)).thenReturn(feed);
 		when(resourceDAO.loadResourceById(567)).thenReturn(resource);
+		request = new MockHttpServletRequest();
 		filter = new AdminRequestFilter(resourceDAO, tagDAO);
 	}
 	
@@ -50,7 +50,6 @@ public class AdminRequestFilterTest {
 	
 	@Test
 	public void testShouldParseDateParameterIntoDateAttribute() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/save");
 		 request.setParameter("date", "23 Apr 2009");
 		 filter.loadAttributesOntoRequest(request);
@@ -61,10 +60,11 @@ public class AdminRequestFilterTest {
 	
 	@Test
 	public void testShouldPopulateResourceFromParameter() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/edit");
 		 request.setParameter("resource", "567");
+
 		 filter.loadAttributesOntoRequest(request);		 
+		 
 		 assertNotNull(request.getAttribute("resource"));
 		 Resource requestResource = (Resource) request.getAttribute("resource");
 		 assertEquals(resource, requestResource);
@@ -72,34 +72,58 @@ public class AdminRequestFilterTest {
 	
 	@Test
 	public void testShouldPutTagOntoEditTagPath() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/transport");
 		 filter.loadAttributesOntoRequest(request);
-		 verify(tagDAO).loadTagByName("transport");
 		 
+		 verify(tagDAO).loadTagByName("transport");		 
 		 Tag requestTag = (Tag) request.getAttribute("tag");
 		 assertNotNull(requestTag);
 	}
 	
 	@Test
+	public void testEmbargoDatesInFullDateTimeFormatAreAccepted() throws Exception {
+		 request.setPathInfo("/edit/save");
+		 request.setParameter("embargo_date", "17 dec 2011 21:12");
+		 
+		 filter.loadAttributesOntoRequest(request);
+
+		Date embargoDate = (Date) request.getAttribute("embargo_date");
+		assertNotNull(embargoDate);
+		assertEquals(new DateTime(2011, 12, 17, 21, 12, 0, 0).toDate(), embargoDate);		 
+	}
+	
+	@Test
+	public void testEmbargoDatesStatedAsTimesShouldBeAcceptedWithTodaysDate() throws Exception {
+		request.setPathInfo("/edit/save");
+		request.setParameter("embargo_date", "21:12");
+
+		filter.loadAttributesOntoRequest(request);
+
+		Date embargoDate = (Date) request.getAttribute("embargo_date");
+		assertNotNull(embargoDate);
+		assertEquals(new DateTime(2011, 12, 17, 21, 12, 0, 0).toDate(), embargoDate);
+	}
+	
+	@Test
 	public void testShouldPopulateTagFromParameterAsWell() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/save");
 		 request.setParameter("tag", "transport");
 		 filter.loadAttributesOntoRequest(request);
+		 
 		 verify(tagDAO).loadTagByName("transport");
 		 
 		 Tag requestTag = (Tag) request.getAttribute("tag");
 		 assertNotNull(requestTag);
 		 assertEquals(transportTag, requestTag);
 	}
-		
+	
 	@Test
 	public void testShouldPopulateFeedAttributeFromParameter() throws Exception {
-		 MockHttpServletRequest request = new MockHttpServletRequest();
 		 request.setPathInfo("/edit/tag/save");
 		 request.setParameter("feed", "123");
+
 		 filter.loadAttributesOntoRequest(request);		 
+		 
 		 assertNotNull(request.getAttribute("feedAttribute"));
 	}
 		
