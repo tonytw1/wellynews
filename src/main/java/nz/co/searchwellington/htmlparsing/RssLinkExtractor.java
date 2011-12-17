@@ -3,6 +3,7 @@ package nz.co.searchwellington.htmlparsing;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -16,14 +17,13 @@ import org.htmlparser.util.ParserException;
 
 public class RssLinkExtractor implements LinkExtractor {
 
-    Logger log = Logger.getLogger(RssLinkExtractor.class);
+	private static Logger log = Logger.getLogger(RssLinkExtractor.class);
         
     public Set<String> extractLinks(String inputHTML) {
         Set<String> links = new HashSet<String>();
-
+        
         Parser parser = new Parser();
-        try {
-            
+        try {            
             parser.setInputHTML(inputHTML);
 
             NodeFilter filterNode = new AndFilter(new TagNameFilter("LINK"), new AndFilter(new HasAttributeFilter("rel"), new HasAttributeFilter("href")));
@@ -36,7 +36,7 @@ public class RssLinkExtractor implements LinkExtractor {
                 if (tag.getAttribute("type") != null) {
                     final boolean linkIsAFeed = tag.getAttribute("type").equals("application/rss+xml") || tag.getAttribute("type").equals("application/atom+xml");
                     if (linkIsAFeed) {
-                        final String feedLink = tag.getAttribute("href");
+                        final String feedLink = StringEscapeUtils.unescapeHtml(tag.getAttribute("href"));
                         log.info("Found feed url: " + feedLink);
                         links.add(feedLink);
                     }
@@ -50,6 +50,4 @@ public class RssLinkExtractor implements LinkExtractor {
         return links;        
     }
     
-    
-
 }

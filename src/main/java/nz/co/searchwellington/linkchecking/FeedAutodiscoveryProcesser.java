@@ -19,11 +19,10 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 	
     private static Logger log = Logger.getLogger(FeedAutodiscoveryProcesser.class);
 	
-    private ResourceRepository resourceDAO;	
-	private LinkExtractor linkExtractor;
-	private CommentFeedDetectorService commentFeedDetector;
-	private CommentFeedGuesserService commentFeedGuesser;
-	
+    final private ResourceRepository resourceDAO;	
+	final private LinkExtractor linkExtractor;
+	final private CommentFeedDetectorService commentFeedDetector;
+	final private CommentFeedGuesserService commentFeedGuesser;
 	
 	public FeedAutodiscoveryProcesser(ResourceRepository resourceDAO,
 			LinkExtractor linkExtractor,
@@ -34,7 +33,6 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 		this.commentFeedDetector = commentFeedDetector;
 		this.commentFeedGuesser = commentFeedGuesser;
 	}
-
 	
 	public void process(Resource checkResource, String pageContent) {
 		if (checkResource.getType().equals("F")) {
