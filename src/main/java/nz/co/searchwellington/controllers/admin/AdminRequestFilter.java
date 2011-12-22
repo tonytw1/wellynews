@@ -26,6 +26,7 @@ public class AdminRequestFilter {
 	
 	private static Logger log = Logger.getLogger(AdminRequestFilter.class);
 
+	private static final String DATE_FIELD = "date";
 	private static final String EMBARGO_DATE_FIELD = "embargo_date";
 	
 	final private ResourceRepository resourceDAO;
@@ -61,25 +62,23 @@ public class AdminRequestFilter {
     	if (twitterId != null) {
     		request.setAttribute("twitterId", twitterId);
     	}
-        
-		
+        		
 		log.info("Looking for date field");
-		if (request.getParameter("date") != null) {
-			final String dateString = (String) request.getParameter("date");
+		if (request.getParameter(DATE_FIELD) != null && !request.getParameter(DATE_FIELD).isEmpty()) {
+			final String dateString = (String) request.getParameter(DATE_FIELD);
 			SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");              
 			try {            	
 				Date date = df.parse(dateString);
 				if (date != null) {
-					request.setAttribute("date", new DateTime(date).toDate());   	
+					request.setAttribute(DATE_FIELD, new DateTime(date).toDate());   	
 				}              
 			} catch (ParseException e) {
 				log.warn("Invalid date string supplied: " + dateString);
 			}        	
-		}
-		
+		}		
 		
 		log.info("Looking for embargoed field");
-		if (request.getParameter(EMBARGO_DATE_FIELD) != null) {
+		if (request.getParameter(EMBARGO_DATE_FIELD) != null && !request.getParameter(EMBARGO_DATE_FIELD).isEmpty()) {
 			request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate((String) request.getParameter(EMBARGO_DATE_FIELD)));
 		}
 		
@@ -154,10 +153,7 @@ public class AdminRequestFilter {
 			return date;
 		}
 		
-		log.warn("User supplied embargo date '" + dateString + "' could not be parsed");
-		
-		
-		
+		log.warn("User supplied embargo date '" + dateString + "' could not be parsed");		
 		return null;
 	}
 	
