@@ -16,7 +16,7 @@
 	
 	<bean id ="textureCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.TextureCommentFeedDetector" />
 		
-	<bean id ="wellingtonistaCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.GenericCommentFeedDetector">
+	<bean id ="wellingtonistaCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.WellingtonScoopCommentFeedDetector">
 		<property name="regex" value="^http://wellingtonista.com/crss/node/\d+$" />
 	</bean>
 	
