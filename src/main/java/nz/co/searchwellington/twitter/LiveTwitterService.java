@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.Twit;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -31,7 +32,9 @@ public class LiveTwitterService implements TwitterService {
         try {
         	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
         	
-        	for (Status status : receiver.getMentions()) {
+        	ResponseList<Status> mentions = receiver.getMentions();
+        	log.info("Mentions: " + mentions.toString());
+			for (Status status : mentions) {
         		all.add(new Twit(status));        		
         	}        	
         	
@@ -39,7 +42,9 @@ public class LiveTwitterService implements TwitterService {
         	log.warn("Error during twitter api call: " + e.getMessage());
         }
         
-        all.addAll(getRetweets());        
+        List<Twit> retweets = getRetweets();
+    	log.info("Retweets: " + retweets.toString());
+		all.addAll(retweets);        
 		return all;
 	}
 	

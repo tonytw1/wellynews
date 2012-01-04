@@ -37,11 +37,11 @@ public class TwitterNewsitemMentionsFinderService {
 
 	
 	public List<TwitterMention> getNewsitemMentions() {
-		List<TwitterMention> RTs = new ArrayList<TwitterMention>();
-		
+		List<TwitterMention> RTs = new ArrayList<TwitterMention>();		
+
 		List<Twit> replies = twitterService.getReplies();
 		for (Twit status : replies) {
-				
+			log.info("Evaluating tweet: " + status.getText());
 			String message = status.getText();			
 			if (status.getInReplyToStatusId() > 0) {							
 				long inReplyTo = status.getInReplyToStatusId();
@@ -80,7 +80,6 @@ public class TwitterNewsitemMentionsFinderService {
 		}
 		return RTs;
 	}
-
 	
 	private Resource extractReferencedResourceFromMessage(String message) {
 		final String url = this.extractUrlFromMessage(message);
@@ -94,7 +93,6 @@ public class TwitterNewsitemMentionsFinderService {
 		return referencedNewsitem;
 	}
 	
-	
 	private Twit loadOrCreateTwit(Twit twit) {
 		Twit existingTwit = tweetDAO.loadTweetByTwitterId(twit.getTwitterid());
 		if (existingTwit == null) {
@@ -105,7 +103,6 @@ public class TwitterNewsitemMentionsFinderService {
 		// TODO confusing need to have the twitter id as the hibernate id
 		return existingTwit;
 	}
-
 	
 	protected String extractUrlFromMessage(String message) {
 		Pattern pattern = Pattern.compile(".*(http://[\\S]+).*");
