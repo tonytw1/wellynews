@@ -103,7 +103,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 		GeoRSSModule geoModule = (GeoRSSModule) GeoRSSUtils.getGeoRSS(item);
 		if (geoModule != null) {
 			final String address = geoModule.getPosition().getLatitude() + ", " + geoModule.getPosition().getLongitude();
-			log.info("Location is: " + address);
+			log.debug("Location is: " + address);
 			return new Geocode(address, geoModule.getPosition().getLatitude(), geoModule.getPosition().getLongitude());
 		}
 		return null;
