@@ -276,7 +276,10 @@ public class HibernateResourceDAO implements ResourceRepository {
 	public Resource loadResourceByUniqueUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).uniqueResult();        
     }
-    
+	
+	public Feed loadFeedByUrl(String url) {
+        return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Expression.eq("url", url)).uniqueResult();        
+    }    
         
     public CommentFeed loadCommentFeedByUrl(String url) {
         return (CommentFeed) sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();  

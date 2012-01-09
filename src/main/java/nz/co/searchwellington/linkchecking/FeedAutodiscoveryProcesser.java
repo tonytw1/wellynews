@@ -65,7 +65,12 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 		            recordCommentFeed(checkResource, discoveredUrl);
 		        }
 		    } else {
-		        recordDiscoveredFeedUrl(checkResource, discoveredUrl);
+		    	final boolean isUrlOfExistingFeed = resourceDAO.loadFeedByUrl(discoveredUrl) != null;
+				if (!isUrlOfExistingFeed) {
+		    		recordDiscoveredFeedUrl(checkResource, discoveredUrl);
+		    	} else {
+		    		log.debug("Not recording discovered feed as there is currently a feed of the same url: " + discoveredUrl);
+		    	}
 		    }
 		}
 		
