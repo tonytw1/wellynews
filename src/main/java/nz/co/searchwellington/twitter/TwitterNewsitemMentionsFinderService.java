@@ -17,13 +17,12 @@ import org.apache.log4j.Logger;
 
 public class TwitterNewsitemMentionsFinderService {
 
-    static Logger log = Logger.getLogger(TwitterNewsitemMentionsFinderService.class);
+    private static Logger log = Logger.getLogger(TwitterNewsitemMentionsFinderService.class);
     
     private UrlCleaner urlCleaner;
 	private ResourceRepository resourceDAO;
 	private TwitterService twitterService;
 	private TweetDAO tweetDAO;
-    
 	
 	public TwitterNewsitemMentionsFinderService(UrlCleaner urlCleaner,
 			ResourceRepository resourceDAO, TwitterService twitterService,
@@ -33,18 +32,16 @@ public class TwitterNewsitemMentionsFinderService {
 		this.twitterService = twitterService;
 		this.tweetDAO = tweetDAO;
 	}
-
-
 	
 	public List<TwitterMention> getNewsitemMentions() {
-		List<TwitterMention> RTs = new ArrayList<TwitterMention>();
-		
+		List<TwitterMention> RTs = new ArrayList<TwitterMention>();		
+
 		List<Twit> replies = twitterService.getReplies();
 		for (Twit status : replies) {
-				
-			String message = status.getText();			
+			final String message = status.getText();			
+			log.info("Evaluating tweet: " + message);
 			if (status.getInReplyToStatusId() > 0) {							
-				long inReplyTo = status.getInReplyToStatusId();
+				final long inReplyTo = status.getInReplyToStatusId();
 				log.info("Twit '" + status.getText() + "' is in reply to twit #: " + inReplyTo);
 								
 				Twit referencedTwit = tweetDAO.loadTweetByTwitterId(inReplyTo);
@@ -53,12 +50,14 @@ public class TwitterNewsitemMentionsFinderService {
 					if (referencedStatus != null) {
 						tweetDAO.saveTwit(referencedStatus);						
 						referencedTwit = referencedStatus;
+					} else {
+						log.warn("Failed to load replied to tweet from twitter api: " + inReplyTo);
 					}
 				}
 								
 				if (referencedTwit != null) {
-					message = referencedTwit.getText();
-					Resource referencedNewsitem = extractReferencedResourceFromMessage(message);
+					final String referencedTwitMessage = referencedTwit.getText();
+					Resource referencedNewsitem = extractReferencedResourceFromMessage(referencedTwitMessage);
 					if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
 						Twit replyTwit = loadOrCreateTwit(status);
 						RTs.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
@@ -80,7 +79,6 @@ public class TwitterNewsitemMentionsFinderService {
 		}
 		return RTs;
 	}
-
 	
 	private Resource extractReferencedResourceFromMessage(String message) {
 		final String url = this.extractUrlFromMessage(message);
@@ -94,7 +92,6 @@ public class TwitterNewsitemMentionsFinderService {
 		return referencedNewsitem;
 	}
 	
-	
 	private Twit loadOrCreateTwit(Twit twit) {
 		Twit existingTwit = tweetDAO.loadTweetByTwitterId(twit.getTwitterid());
 		if (existingTwit == null) {
@@ -105,7 +102,6 @@ public class TwitterNewsitemMentionsFinderService {
 		// TODO confusing need to have the twitter id as the hibernate id
 		return existingTwit;
 	}
-
 	
 	protected String extractUrlFromMessage(String message) {
 		Pattern pattern = Pattern.compile(".*(http://[\\S]+).*");

@@ -93,15 +93,15 @@ public class AdminRequestFilterTest {
 	}
 	
 	@Test
-	public void testEmbargoDatesStatedAsTimesShouldBeAcceptedWithTodaysDate() throws Exception {
+	public void embargoDatesWrittenInPlainTextShouldBeAccepted() throws Exception {
 		request.setPathInfo("/edit/save");
-		request.setParameter("embargo_date", "today 9:12 PM");
+		request.setParameter("embargo_date", "today");
 
 		filter.loadAttributesOntoRequest(request);
 
 		Date embargoDate = (Date) request.getAttribute("embargo_date");
 		assertNotNull(embargoDate);
-		assertEquals(new DateTime(2011, 12, 17, 21, 12, 0, 0).toDate(), embargoDate);
+		assertEquals(DateTime.now().toDateMidnight(), new DateTime(embargoDate));
 	}
 	
 	@Test
