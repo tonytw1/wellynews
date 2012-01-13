@@ -5,6 +5,7 @@ font:80% Arial, Helvetica, sans-serif;
 background:#FFF;
 color: #444;
 text-align: center;
+word-wrap: break-text;
 }
 
 .yellow {
