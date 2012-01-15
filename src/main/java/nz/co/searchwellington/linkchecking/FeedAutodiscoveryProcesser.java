@@ -39,12 +39,12 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 			return;
 		}
 		
-		if (pageContent == null) {
+		if (pageContent == null) {	// TODO Push up to calling service
 			log.warn("Page content was null");
 			return;
 		}
 		
-		for (Iterator iter = linkExtractor.extractLinks(pageContent).iterator(); iter.hasNext();) {
+		for (Iterator<String> iter = linkExtractor.extractLinks(pageContent).iterator(); iter.hasNext();) {
 		    String discoveredUrl = (String) iter.next();
 		    log.info("Processing discovered url: " + discoveredUrl);
 		    if (!discoveredUrl.startsWith("http://")) {
@@ -65,7 +65,12 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 		            recordCommentFeed(checkResource, discoveredUrl);
 		        }
 		    } else {
-		        recordDiscoveredFeedUrl(checkResource, discoveredUrl);
+		    	final boolean isUrlOfExistingFeed = resourceDAO.loadFeedByUrl(discoveredUrl) != null;
+				if (!isUrlOfExistingFeed) {
+		    		recordDiscoveredFeedUrl(checkResource, discoveredUrl);
+		    	} else {
+		    		log.debug("Not recording discovered feed as there is currently a feed of the same url: " + discoveredUrl);
+		    	}
 		    }
 		}
 		
@@ -73,7 +78,6 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 		    addGuessedCommentFeeds(checkResource);
 		}		
 	}
-	
 	
 	// TODO merge this with the discoveredFeedUrl method.
     private void recordCommentFeed(Resource checkResource, String commentFeedUrl) {
@@ -88,12 +92,12 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
         ((Newsitem) checkResource).setCommentFeed(commentFeed);      
     }
 
-    private void recordDiscoveredFeedUrl(Resource checkResource, String discoveredUrl) {
-    	DiscoveredFeed discoveredFeed = resourceDAO.loadDiscoveredFeedByUrl(discoveredUrl);
+    private void recordDiscoveredFeedUrl(Resource checkResource, String discoveredFeedUrl) {        
+    	DiscoveredFeed discoveredFeed = resourceDAO.loadDiscoveredFeedByUrl(discoveredFeedUrl);
     	if (discoveredFeed == null) {
-    		log.debug("Discovered feed url was not found in the database. Creating new: " + discoveredUrl);
-    		discoveredFeed = resourceDAO.createNewDiscoveredFeed(discoveredUrl);                  
-    	}               
+    		log.info("Recording newly discovered feed url: " + discoveredFeedUrl);
+    		discoveredFeed = resourceDAO.createNewDiscoveredFeed(discoveredFeedUrl);                  
+    	}
 	    discoveredFeed.getReferences().add(checkResource);
 	    resourceDAO.saveDiscoveredFeed(discoveredFeed);
     }
