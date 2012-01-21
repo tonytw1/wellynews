@@ -66,13 +66,24 @@ public class CachingTwitterService implements TwitterService {
 	
 	@Override
 	public String getTwitterProfileImageUrlFor(String twitterUsername) {
-		final String cachedResult = (String) cache.get(TWITTER_PROFILE_IMAGE_CACHE_PREFIX + twitterUsername);
-		if (cachedResult != null) {
+		final String cacheKey = TWITTER_PROFILE_IMAGE_CACHE_PREFIX + twitterUsername;
+		
+		final String cachedResult = (String) cache.get(cacheKey);
+		log.info("cached: " + cachedResult);
+		if (cachedResult != null && !cachedResult.isEmpty()) {
 			return cachedResult;
 		}
+		if (cachedResult != null && cachedResult.isEmpty()) {
+			log.info("Returning negitive cache hit for twitter profile image: " + twitterUsername);
+			return null;
+		}
+		
 		final String twitterProfileImageUrlFor = twitterService.getTwitterProfileImageUrlFor(twitterUsername);
 		if (twitterProfileImageUrlFor != null) {
-			cache.put(TWITTER_PROFILE_IMAGE_CACHE_PREFIX + twitterUsername, ONE_DAY, twitterProfileImageUrlFor);
+			cache.put(cacheKey, ONE_DAY, twitterProfileImageUrlFor);
+		} else {
+			log.info("Caching negitive result for twitter profile image: " + twitterUsername);
+			cache.put(cacheKey, ONE_HOUR, "");
 		}
 		return twitterProfileImageUrlFor;
 	}

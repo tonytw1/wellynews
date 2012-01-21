@@ -54,4 +54,24 @@ public class CachingTwitterServiceTest {
 		
 		Mockito.verify(memcachedCache).put("twitterprofileimage" + USER_NAME, 3600 * 24, PROFILE_IMAGE_URL);
 	}
+	
+	@Test
+	public void shouldCacheLiveFetchFailsForOneHour() throws Exception {
+		Mockito.when(memcachedCache.get("twitterprofileimage" + USER_NAME)).thenReturn(null);
+		Mockito.when(twitterService.getTwitterProfileImageUrlFor(USER_NAME)).thenReturn(null);
+		
+		service.getTwitterProfileImageUrlFor(USER_NAME);
+
+		Mockito.verify(memcachedCache).put("twitterprofileimage" + USER_NAME, 3600, "");
+	}
+	
+	@Test
+	public void shouldNotTryToQueryLiveIfNegitiveResultIsCached() throws Exception {
+		Mockito.when(memcachedCache.get("twitterprofileimage" + USER_NAME)).thenReturn("");
+		
+		service.getTwitterProfileImageUrlFor(USER_NAME);
+		
+		Mockito.verify(twitterService, Mockito.never()).getTwitterProfileImageUrlFor(USER_NAME);
+	}
+	
 }
