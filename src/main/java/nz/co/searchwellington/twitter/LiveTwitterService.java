@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.Twit;
 
 import org.apache.log4j.Logger;
 
+import twitter4j.RateLimitStatus;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -23,16 +24,15 @@ public class LiveTwitterService implements TwitterService {
 	public LiveTwitterService(TwitterApiFactory twitterApiFactory) {		
 		this.twitterApiFactory = twitterApiFactory;
 	}
-
 	
 	public List<Twit> getReplies() {
 		log.info("Getting twitter replies from live api");
 		List<Twit> all = new ArrayList<Twit>();
-				
         try {
-        	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
+        	Twitter api = twitterApiFactory.getOauthedTwitterApi();
+        	ResponseList<Status> mentions = api.getMentions();
+        	logRateLimitingInformation(api);
         	
-        	ResponseList<Status> mentions = receiver.getMentions();
         	log.info("Mentions: " + mentions.toString());
 			for (Status status : mentions) {
         		all.add(new Twit(status));        		
@@ -48,13 +48,14 @@ public class LiveTwitterService implements TwitterService {
 		return all;
 	}
 	
-	
 	@Override
 	public Twit getTwitById(long statusId) {
 		log.info("Getting tweet: " + statusId);
-    	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
+    	Twitter api = twitterApiFactory.getOauthedTwitterApi();
 		try {
-			Status status = receiver.showStatus(statusId);
+			Status status = api.showStatus(statusId);
+        	logRateLimitingInformation(api);
+
 			if (status != null) {
 				return new Twit(status);
 			}
@@ -67,9 +68,12 @@ public class LiveTwitterService implements TwitterService {
 	@Override
 	public String getTwitterProfileImageUrlFor(String twitterUsername) {	// TODO Doesn't need to be an authed call.
 		log.info("Fetching profile image url for: " + twitterUsername);
-    	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
+    	Twitter api = twitterApiFactory.getOauthedTwitterApi();
     	try {
-			return receiver.showUser(twitterUsername).getProfileImageURL().toExternalForm();
+			final String result = api.showUser(twitterUsername).getProfileImageURL().toExternalForm();
+			logRateLimitingInformation(api);
+			return result;
+			
 		} catch (TwitterException e) {
 			log.warn("Error during twitter api call: " + e.getMessage());
 			return null;
@@ -78,27 +82,32 @@ public class LiveTwitterService implements TwitterService {
 	
 	@Override
 	public boolean isConfigured() {
-		return true; // TODO
+		return true; // TODO	Move to factory
 	}
-
 	
 	private List<Twit> getRetweets() {
 		log.info("Getting twitter retweets from live api");
 		List<Twit> all = new ArrayList<Twit>();
         try {        	
-        	Twitter receiver = twitterApiFactory.getOauthedTwitterApi();
-        	List<Status> retweets = receiver.getRetweetsOfMe();
-             for (Status message : retweets) {
-                 List<Status> messageRetweets = receiver.getRetweets(message.getId());
-                 for (Status retweet : messageRetweets) {
-                	 all.add(new Twit(retweet));
-                 }                 
-             }
-        	
+        	Twitter api = twitterApiFactory.getOauthedTwitterApi();
+        	List<Status> retweets = api.getRetweetsOfMe();
+        	logRateLimitingInformation(api);
+			for (Status message : retweets) {
+				List<Status> messageRetweets = api.getRetweets(message.getId());
+				for (Status retweet : messageRetweets) {
+					all.add(new Twit(retweet));
+				}
+			}
+			
         } catch (Exception e) {
         	log.warn("Error during twitter api call: " + e.getMessage());
         }
 		return all;
+	}
+	
+	private void logRateLimitingInformation(Twitter api) throws TwitterException {
+		final RateLimitStatus rateLimitStatus = api.getRateLimitStatus();
+		log.info("Rate limiting information: limit=" + rateLimitStatus.getHourlyLimit() + ", remaining=" + rateLimitStatus.getRemainingHits());
 	}
 	
 }
