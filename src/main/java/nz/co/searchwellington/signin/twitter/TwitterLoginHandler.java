@@ -55,7 +55,12 @@ public class TwitterLoginHandler implements SigninHandler {
 	
 	@Override
 	public ModelAndView getLoginView(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		try {			
+		if (!apiIsConfigured()) {
+			log.warn("Twitter API is not configured - not attempting to get send user to twitter");
+			return null;
+		}
+		
+		try {
 			log.info("Getting request token");			
 			OAuthService service = getOauthService();
 			
@@ -78,6 +83,11 @@ public class TwitterLoginHandler implements SigninHandler {
 	
 	@Override
 	public Object getExternalUserIdentifierFromCallbackRequest(HttpServletRequest request) {
+		if (!apiIsConfigured()) {
+			log.warn("Twitter API is not configured - not attempting to get external user");
+			return null;
+		}
+		
 		if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
 			final String token = request.getParameter("oauth_token");
 			final String verifier = request.getParameter("oauth_verifier");
@@ -118,7 +128,7 @@ public class TwitterLoginHandler implements SigninHandler {
 		}
 		return null;
 	}
-		
+
 	@Override
 	public User getUserByExternalIdentifier(Object externalIdentifier) {
 		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
@@ -153,6 +163,10 @@ public class TwitterLoginHandler implements SigninHandler {
 			oauthService = new ServiceBuilder().provider(new TwitterApi()).apiKey(consumerKey).apiSecret(consumerSecret).callback(urlBuilder.getTwitterCallbackUrl()).build();
 		}
 		return oauthService;
+	}
+	
+	private boolean apiIsConfigured() {
+		return consumerKey != null && !consumerKey.isEmpty() && consumerSecret != null && !consumerKey.isEmpty();
 	}
 	
 }
