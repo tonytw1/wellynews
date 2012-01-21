@@ -50,7 +50,7 @@ public class LinkChecker {
 			for (LinkCheckerProcessor processor : processers) {
 				log.info("Running processor: " + processor.getClass().toString());
 				try {
-					processor.process(resource, pageContent);
+					processor.process(resource, pageContent);	// TODO should any of these run if the page content is null?
 				} catch (Exception e) {
 					log.error("An exception occured while running a link checker processor", e);
 				}

@@ -36,7 +36,7 @@ public class DateFormatter {
     
     public String formatW3CDate(Date startDate) {   
         DateTimeFormatter fmt = DateTimeFormat.forPattern(W3C_DATETIME_FORMAT);
-        DateTime now = new DateTime(startDate);        
+        DateTime now = new DateTime(startDate);
         return (fmt.print(now));
     }
     

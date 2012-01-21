@@ -24,6 +24,7 @@ public class DiscoveredFeedRepository {
 		List<DiscoveredFeed> allDiscoveredFeeds = resourceDAO.getAllDiscoveredFeeds();
         List<DiscoveredFeed> nonCommentFeeds = new ArrayList<DiscoveredFeed>();        
         for (DiscoveredFeed discoveredFeed : allDiscoveredFeeds) {
+        	// TODO Doing this at runtime is quite heavy
         	if (!commentFeedDetectorService.isCommentFeedUrl(discoveredFeed.getUrl())) {
         		nonCommentFeeds.add(discoveredFeed);
         	}
