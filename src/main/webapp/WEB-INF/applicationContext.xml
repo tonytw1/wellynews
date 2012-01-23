@@ -245,11 +245,21 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="dateFormatter" class="nz.co.searchwellington.dates.DateFormatter" />	
 	<bean id="columnSplitter" class="nz.co.searchwellington.utils.ColumnSplitter" />	
 	<bean id="googleMapsCleaner" class="nz.co.searchwellington.views.GoogleMapsDisplayCleaner" />
-	
+			
 	<bean id="googleGeocodingService" class="nz.co.searchwellington.geocoding.GoogleGeoCodeService" />
+	<bean id="nominatimGeocodingService" class="nz.co.searchwellington.geocoding.NominatimGeocodingService" />
 	
+	<bean id="compositeGeocodingService" class="nz.co.searchwellington.geocoding.CompositeGeocodeService">
+	<constructor-arg>
+		<list>
+			<ref bean="nominatimGeocodingService" />
+			<ref bean="googleGeocodingService" />				
+		</list>
+	</constructor-arg>
+	</bean>
+			
 	<bean id="geocodingService" class="nz.co.searchwellington.geocoding.CachingGeocodeService">
-		<constructor-arg ref="googleGeocodingService" />
+		<constructor-arg ref="compositeGeocodingService" />
 		<constructor-arg ref="memcachedCache" />
 	</bean>
 		

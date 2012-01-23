@@ -19,19 +19,20 @@ public class NominatimGeocodingService implements GeoCodeService {
 
 	@Override
 	public Geocode resolveAddress(String address) {
+		log.info("Resolving address with Nominatim: " + address);
 		HttpClient httpClient = new DefaultHttpClient();
 		NominatimClient nominatimClient = new JsonNominatimClient(httpClient, "tony@wellington.gen.nz");
 		try {
 			List<Address> results = nominatimClient.search(address);
 			if (!results.isEmpty()) {
 				Address firstResult = results.get(0);
-				return new Geocode(firstResult.getDisplayName(), firstResult.getLatitude(), firstResult.getLongitude());
+				log.info("Resolved to: " + firstResult.getDisplayName() + "(" + firstResult.getElementType() + ")");
+				return new Geocode(address, firstResult.getLatitude(), firstResult.getLongitude());
 			}
 			
 		} catch (IOException e) {
 			log.warn("Exception while searching for '" + address + "': " + e.getMessage());
-		}
-		
+		}		
 		return null;
 	}
 

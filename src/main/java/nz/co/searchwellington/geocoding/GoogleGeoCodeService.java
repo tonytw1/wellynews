@@ -49,11 +49,9 @@ public class GoogleGeoCodeService implements GeoCodeService {
 		return null;  
     }
     
-	private GeocodeResponse callResolver(String address,
-			GeocoderRequest geocoderRequest) {
+	private GeocodeResponse callResolver(String address, GeocoderRequest geocoderRequest) {
 		final Geocoder geocoder = new Geocoder();
-		GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
-		return geocoderResponse;
+		return geocoder.geocode(geocoderRequest);
 	}
 	
 }
