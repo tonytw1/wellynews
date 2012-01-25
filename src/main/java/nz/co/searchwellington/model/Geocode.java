@@ -19,6 +19,7 @@ public class Geocode implements Serializable {
     private Double latitude;
     private Double longitude;
     private String type;
+    private Integer osmPlaceId;
     
     public Geocode() {        
     }
@@ -26,7 +27,8 @@ public class Geocode implements Serializable {
     public Geocode(String address) {
         this.address = address;
         this.latitude = null;
-        this.longitude = null;         
+        this.longitude = null;
+        this.osmPlaceId = null;
     }
         
     public Geocode(String address, double latitude, double longitude) {     
@@ -39,6 +41,13 @@ public class Geocode implements Serializable {
     	 this.latitude = latitude;
          this.longitude = longitude;
     }
+
+	public Geocode(String address, double latitude, double longitude, int osmPlaceId) {
+		this.address = address;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.osmPlaceId = osmPlaceId;
+	}
 
 	public int getId() {
         return id;
@@ -77,6 +86,14 @@ public class Geocode implements Serializable {
 
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	public Integer getOsmPlaceId() {
+		return osmPlaceId;
+	}
+
+	public void setOsmPlaceId(Integer osmPlaceId) {
+		this.osmPlaceId = osmPlaceId;
 	}
 	
 	// TODO These two compare methods shouldn't really be on the domain model

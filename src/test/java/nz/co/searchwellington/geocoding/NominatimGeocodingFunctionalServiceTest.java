@@ -11,7 +11,8 @@ public class NominatimGeocodingFunctionalServiceTest {
 	public void canResolveBuildingNameToLocation() {
 		NominatimGeocodingService service = new NominatimGeocodingService();		
 		Geocode result = service.resolveAddress("St James Presbyterian Church, Newtown, Wellington");
-		assertEquals("St James' Presbyterian Church, Adelaide Road, Newtown, Wellington, 6021, Aotearoa New Zealand", result.getAddress());
+		assertEquals("St James Presbyterian Church, Newtown, Wellington", result.getAddress());
+		assertEquals(1457163, result.getOsmPlaceId(), 0);
 	}
 
 }
