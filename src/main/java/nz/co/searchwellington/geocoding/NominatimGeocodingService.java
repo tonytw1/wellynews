@@ -27,7 +27,7 @@ public class NominatimGeocodingService implements GeoCodeService {
 			if (!results.isEmpty()) {
 				Address firstResult = results.get(0);
 				log.info("Resolved to OSM place id #" + firstResult.getPlaceId() + ": " + firstResult.getDisplayName() + " (" + firstResult.getElementType() + ")");
-				return new Geocode(address, firstResult.getLatitude(), firstResult.getLongitude(), firstResult.getPlaceId());
+				return new Geocode(address, firstResult.getLatitude(), firstResult.getLongitude(), firstResult.getElementType(), firstResult.getPlaceId());
 			}
 			
 		} catch (IOException e) {

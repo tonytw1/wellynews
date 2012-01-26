@@ -42,10 +42,11 @@ public class Geocode implements Serializable {
          this.longitude = longitude;
     }
 
-	public Geocode(String address, double latitude, double longitude, int osmPlaceId) {
+	public Geocode(String address, double latitude, double longitude, String type, int osmPlaceId) {
 		this.address = address;
 		this.latitude = latitude;
 		this.longitude = longitude;
+		this.type = type;
 		this.osmPlaceId = osmPlaceId;
 	}
 
