@@ -466,13 +466,11 @@ public class SolrBackedResourceDAO {
 		return tagDAO.loadTagsById(tagIds);
 	}
 
-	public List<FrontendResource> getValidGeotagged(int startIndex,
-			int maxItems, boolean showBroken) {
+	public List<FrontendResource> getValidGeotagged(int startIndex, int maxItems, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(true)
 				.geotagged().startIndex(startIndex).maxItems(maxItems)
 				.toQuery();
 		setDateDescendingOrder(query);
-		;
 		return getQueryResults(query);
 	}
 
