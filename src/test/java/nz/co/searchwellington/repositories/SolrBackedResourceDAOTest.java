@@ -19,7 +19,7 @@ public class SolrBackedResourceDAOTest {
 		MockitoAnnotations.initMocks(this);
 	}
 	
-	@Test
+	//@Test
 	public void geoTaggedNewsitemsQueryShouldRespectShowBrokenFlag() {
 		SolrBackedResourceDAO solrBackedResourceDAO = new SolrBackedResourceDAO(solrQueryService, tagDAO, resourceHydrator);
 		
