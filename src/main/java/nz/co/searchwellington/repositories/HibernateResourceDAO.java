@@ -34,17 +34,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class HibernateResourceDAO implements ResourceRepository {
 
-    SessionFactory sessionFactory;
-
+    private SessionFactory sessionFactory;
     
     public HibernateResourceDAO() {
     }
-    
     
     public HibernateResourceDAO(SessionFactory sessionFactory) {     
         this.sessionFactory = sessionFactory;
     }
     
+    // TODO Move to Factory
     public Newsitem createNewNewsitem() {         
         return new NewsitemImpl(0, "", "", "", Calendar.getInstance().getTime(), null,
                             new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
@@ -61,11 +60,9 @@ public class HibernateResourceDAO implements ResourceRepository {
     public Feed createNewFeed() {
         return new FeedImpl(0, "", "", "", null, null);
     }
-    
-    
+        
     public Watchlist createNewWatchlist() {
-        return new Watchlist(0, "", "", "", null, new HashSet <DiscoveredFeed>());
-      
+        return new Watchlist(0, "", "", "", null, new HashSet <DiscoveredFeed>());      
     }
     
     public CommentFeed createNewCommentFeed(String commentFeedUrl) {
@@ -86,8 +83,7 @@ public class HibernateResourceDAO implements ResourceRepository {
     @SuppressWarnings("unchecked")
     public List<Integer> getAllResourceIds() {
         Session session = sessionFactory.getCurrentSession();
-        return session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list();        
-       
+        return session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list();       
     }
         
     // TODO hup to CRS
@@ -104,8 +100,7 @@ public class HibernateResourceDAO implements ResourceRepository {
         setCacheable(true).
         list();    
     }
-	
-	
+		
 	@SuppressWarnings("unchecked")
     final public List<Feed> getFeedsToRead() {
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).
@@ -114,8 +109,7 @@ public class HibernateResourceDAO implements ResourceRepository {
         setCacheable(false).
         list();
     }
-    
-        
+            
     @SuppressWarnings("unchecked")
     final public List<Resource> getAllCalendarFeeds() {
         return sessionFactory.getCurrentSession().createCriteria(CalendarFeed.class).       
@@ -123,8 +117,7 @@ public class HibernateResourceDAO implements ResourceRepository {
         setCacheable(true).
         list();    
     }
-    
-    
+        
     @SuppressWarnings("unchecked")
     final public List<Resource> getAllWatchlists() {
         return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).       
@@ -132,8 +125,7 @@ public class HibernateResourceDAO implements ResourceRepository {
         setCacheable(true).
         list();
     }
-    
-    
+        
     @SuppressWarnings("unchecked")
     // TODO add discovered timestamp and order by that.
     final public List<DiscoveredFeed> getAllDiscoveredFeeds() {
@@ -142,8 +134,7 @@ public class HibernateResourceDAO implements ResourceRepository {
         addOrder(Order.desc("id")).
         list();                
     }
-    
-    
+       
     @SuppressWarnings("unchecked")
 	@Override
 	public List<Newsitem> getNewsitemsForFeed(Feed feed) {
@@ -152,7 +143,6 @@ public class HibernateResourceDAO implements ResourceRepository {
     		addOrder(Order.desc("date")).
     		list();
     }
-
     
     @SuppressWarnings("unchecked")
 	@Override
@@ -161,7 +151,6 @@ public class HibernateResourceDAO implements ResourceRepository {
 		add(Restrictions.eq("publisher", publisher)).
 		list();
 	}
-
     
 	@SuppressWarnings("unchecked")  
     final public List<Resource> getOwnedBy(User owner, int maxItems) {    
@@ -172,8 +161,7 @@ public class HibernateResourceDAO implements ResourceRepository {
                 setMaxResults(maxItems).
                 list();
     }
-    
-       
+           
     @SuppressWarnings("unchecked")
     public List<Newsitem> getRecentUntaggedNewsitems() {
         return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
@@ -183,7 +171,6 @@ public class HibernateResourceDAO implements ResourceRepository {
                 setMaxResults(12).
                 setCacheable(true).list();        
     }
-    
     
     @SuppressWarnings("unchecked")
     public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken) {
@@ -195,24 +182,22 @@ public class HibernateResourceDAO implements ResourceRepository {
         }               
         return allPublishers;
     }
-    
-        
+            
     @SuppressWarnings("unchecked")
     // TODO migrate to a solr call
     public List<Resource> getNewsitemsMatchingStem(String stem) {
         return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list();        
     }
-    
-       
+           
     @SuppressWarnings("unchecked")
     public List<Resource> getNotCheckedSince(Date oneMonthAgo, int maxItems) {     
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).
         add(Restrictions.lt("lastScanned", oneMonthAgo)).addOrder(Order.asc("lastScanned")).
         setMaxResults(maxItems).list();       
     }
-    
-        
+            
     @Override
+    @SuppressWarnings("unchecked")
 	public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems) {
     	   return sessionFactory.getCurrentSession().createCriteria(Resource.class).
     	   add(Restrictions.gt("liveTime", launchedDate)).
@@ -220,7 +205,6 @@ public class HibernateResourceDAO implements ResourceRepository {
            addOrder(Order.asc("lastScanned")).
            setMaxResults(maxItems).list();       
 	}
-
 
 	@SuppressWarnings("unchecked")
     public List<CommentFeed> getCommentFeedsToCheck(int maxItems) {
@@ -237,18 +221,15 @@ public class HibernateResourceDAO implements ResourceRepository {
         		iterate("select count(*) from ResourceImpl where owner = " + user.getId()).
         		next()).intValue();
 	}
-
-
+    
 	public Resource loadResourceById(int resourceID) {
     	return (Resource) sessionFactory.getCurrentSession().get(ResourceImpl.class, resourceID);        
     }
-
-    
+	
     public Resource loadResourceByUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();        
     }
-    
-        
+            
     @Override
 	public Resource loadNewsitemByHeadlineAndPublisherWithinLastMonth(String name, Website publisher) {	// TODO last month clause
     	 return (Resource) sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
@@ -257,22 +238,18 @@ public class HibernateResourceDAO implements ResourceRepository {
     	 setMaxResults(1).uniqueResult();   
 	}
     
-        
 	public Website getPublisherByUrlWords(String urlWords) {
 		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();    		
 	}
-	
-	
+		
 	public Website getPublisherByName(String name) {
 		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("name", name)).setMaxResults(1).uniqueResult();    		
 	}
-	
-	
+		
 	public Feed loadFeedByUrlWords(String urlWords) {
 		return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();
 	}
-        
-    
+	
 	public Resource loadResourceByUniqueUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).uniqueResult();        
     }
@@ -284,8 +261,7 @@ public class HibernateResourceDAO implements ResourceRepository {
     public CommentFeed loadCommentFeedByUrl(String url) {
         return (CommentFeed) sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();  
     }
-    
-       
+           
     public DiscoveredFeed loadDiscoveredFeedByUrl(String url) {
         return (DiscoveredFeed) sessionFactory.getCurrentSession().createCriteria(DiscoveredFeed.class).
         add(Expression.eq("url", url)).
@@ -293,8 +269,7 @@ public class HibernateResourceDAO implements ResourceRepository {
         setCacheable(true).
         uniqueResult();  
     }
-    
-    
+        
 	@Transactional
     public void saveResource(Resource resource) {
 		if (resource.getType().equals("N")) {
@@ -314,24 +289,19 @@ public class HibernateResourceDAO implements ResourceRepository {
 		// Clear related tags query.
 		// sessionFactory.evictQueries();
 	}
-
-    
-    
+	
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(discoveredFeed);
     }
     
-    
     public void saveCommentFeed(CommentFeed commentFeed) {
         sessionFactory.getCurrentSession().saveOrUpdate(commentFeed);
     }
-
-
+    
     @SuppressWarnings("unchecked")
     public List<Resource> getTaggedResources(Tag tag, int max_newsitems) {
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).createCriteria("tags").add(Restrictions.eq("id", tag.getId())).list();
     }
-    
     
     public void deleteResource(Resource resource) {
         sessionFactory.getCurrentSession().delete(resource);       
@@ -340,12 +310,10 @@ public class HibernateResourceDAO implements ResourceRepository {
         sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.watchlist");
         sessionFactory.evictCollection("nz.co.searchwellington.model.DiscoveredFeed.references");
     }
-
-
+    
     public List<Tag> getTagsMatchingKeywords(String keywords) {
         throw(new UnsupportedOperationException());
     }
-
     
     @SuppressWarnings("unchecked")
 	public List<Resource> getResourcesWithTag(Tag tag) {
