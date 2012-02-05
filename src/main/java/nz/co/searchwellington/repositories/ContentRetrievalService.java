@@ -14,6 +14,7 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.PublisherContentCount;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
@@ -275,8 +276,8 @@ public class ContentRetrievalService {
 		return discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds();
 	}
 
-	public List<FrontendResource> getOwnedBy(User loggedInUser, int maxItems) {
-		return solrBackedResourceDAO.getOwnedBy(loggedInUser, maxItems, showBrokenDecisionService.shouldShowBroken());
+	public List<Resource> getOwnedBy(User loggedInUser, int maxItems) {
+		return resourceDAO.getOwnedBy(loggedInUser, maxItems);
 	}
 	
 	public List<FrontendResource> getTaggedBy(User user, int maxItems) {
