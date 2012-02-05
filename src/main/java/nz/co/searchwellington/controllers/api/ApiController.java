@@ -19,6 +19,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -35,19 +36,19 @@ public class ApiController extends MultiActionController {
 
 	private static Logger log = Logger.getLogger(ApiController.class);
 	
-	private ResourceRepository resourceDAO;
-	private AdminRequestFilter requestFilter;
-	private LoggedInUserFilter loggedInUserFilter;
-	private SupressionService suppressionService;
-	private RssfeedNewsitemService rssfeedNewsitemService;
-	private ContentUpdateService contentUpdateService;
-	private SubmissionProcessingService submissionProcessingService;
-	private AutoTaggingService autoTagger;
-	private HandTaggingDAO tagVoteDAO;
-
-	private FeedItemAcceptor feedItemAcceptor;
+	private final ResourceRepository resourceDAO;
+	private final AdminRequestFilter requestFilter;
+	private final LoggedInUserFilter loggedInUserFilter;
+	private final SupressionService suppressionService;
+	private final RssfeedNewsitemService rssfeedNewsitemService;
+	private final ContentUpdateService contentUpdateService;
+	private final SubmissionProcessingService submissionProcessingService;
+	private final AutoTaggingService autoTagger;
+	private final HandTaggingDAO tagVoteDAO;
+	private final ResourceFactory resourceFactory;
+	private final FeedItemAcceptor feedItemAcceptor;
 	
-    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor) {
+    public ApiController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor, ResourceFactory resourceFactory) {
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
@@ -58,6 +59,7 @@ public class ApiController extends MultiActionController {
 		this.autoTagger = autoTagger;
 		this.tagVoteDAO = tagVoteDAO;
 		this.feedItemAcceptor = feedItemAcceptor;
+		this.resourceFactory = resourceFactory;
 	}
     
     @Transactional
@@ -68,7 +70,7 @@ public class ApiController extends MultiActionController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (isAuthorised(loggedInUser)) {
         	log.info("Accepting newsitem submission from api call by user: " + loggedInUser.getName());
-	        Resource resource = resourceDAO.createNewNewsitem();
+	        Resource resource = resourceFactory.createNewNewsitem();
 	        
 	        submissionProcessingService.processUrl(request, resource);	         
 	    	submissionProcessingService.processTitle(request, resource);

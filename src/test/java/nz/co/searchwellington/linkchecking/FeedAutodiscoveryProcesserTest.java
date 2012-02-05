@@ -15,6 +15,7 @@ import nz.co.searchwellington.htmlparsing.LinkExtractor;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.junit.Before;
@@ -31,6 +32,7 @@ public class FeedAutodiscoveryProcesserTest {
 	@Mock LinkExtractor linkExtractor;
 	@Mock CommentFeedDetectorService commentFeedDetector;
 	@Mock CommentFeedGuesserService commentFeedGuesser;
+	@Mock private ResourceFactory resourceFactory;
 	
 	@Mock Resource resource;
 	@Mock Feed existingFeed;
@@ -41,7 +43,7 @@ public class FeedAutodiscoveryProcesserTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		processor = new FeedAutodiscoveryProcesser(resourceDAO, linkExtractor, commentFeedDetector, commentFeedGuesser);		
+		processor = new FeedAutodiscoveryProcesser(resourceDAO, linkExtractor, commentFeedDetector, commentFeedGuesser, resourceFactory);		
 		when(resource.getType()).thenReturn("N");
 	}
 	
@@ -57,7 +59,7 @@ public class FeedAutodiscoveryProcesserTest {
 		
 		DiscoveredFeed newlyDiscoveredFeed = new DiscoveredFeed();
 		newlyDiscoveredFeed.setReferences(new HashSet<Resource>());
-		when(resourceDAO.createNewDiscoveredFeed(UNSEEN_FEED_URL)).thenReturn(newlyDiscoveredFeed);
+		when(resourceFactory.createNewDiscoveredFeed(UNSEEN_FEED_URL)).thenReturn(newlyDiscoveredFeed);
 		
 		processor.process(resource, pageContent);
 		
@@ -77,7 +79,7 @@ public class FeedAutodiscoveryProcesserTest {
 		
 		processor.process(resource, pageContent);
 		
-		verify(resourceDAO, never()).createNewDiscoveredFeed(any(String.class));
+		verify(resourceFactory, never()).createNewDiscoveredFeed(any(String.class));
 		verify(resourceDAO, never()).saveDiscoveredFeed(any(DiscoveredFeed.class));
 	}
 	

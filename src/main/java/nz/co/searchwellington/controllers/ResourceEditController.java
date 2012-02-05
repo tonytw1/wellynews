@@ -24,7 +24,7 @@ import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
@@ -51,9 +51,9 @@ public class ResourceEditController extends BaseMultiActionController {
 	private ContentDeletionService contentDeletionService;
     private SnapshotBodyExtractor snapBodyExtractor;
     private AnonUserService anonUserService;
-    private ResourceRepository resourceDAO;
 	private HandTaggingDAO tagVoteDAO;
 	private FeedItemAcceptor feedItemAcceptor;
+	private ResourceFactory resourceFactory;
     
     public ResourceEditController(
 			RssfeedNewsitemService rssfeedNewsitemService,
@@ -66,11 +66,11 @@ public class ResourceEditController extends BaseMultiActionController {
 			SubmissionProcessingService submissionProcessingService,
 			ContentUpdateService contentUpdateService,
 			ContentDeletionService contentDeletionService,
-			ResourceRepository resourceDAO,
 			SnapshotBodyExtractor snapBodyExtractor,
 			AnonUserService anonUserService,
 			ContentRetrievalService contentRetrievalService,
-			HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor) {
+			HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor,
+			ResourceFactory resourceFactory) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -83,7 +83,6 @@ public class ResourceEditController extends BaseMultiActionController {
 		this.submissionProcessingService = submissionProcessingService;
 		this.contentUpdateService = contentUpdateService;
 		this.contentDeletionService = contentDeletionService;
-		this.resourceDAO = resourceDAO;
 		this.snapBodyExtractor = snapBodyExtractor;
 		this.anonUserService = anonUserService;
 		this.contentRetrievalService = contentRetrievalService;
@@ -205,7 +204,7 @@ public class ResourceEditController extends BaseMultiActionController {
     public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("submitWebsite");
         modelAndView.addObject("heading", "Submitting a Website");        
-        Resource editResource = resourceDAO.createNewWebsite();
+        Resource editResource = resourceFactory.createNewWebsite();
         modelAndView.addObject("resource", editResource);
        
         populateSubmitCommonElements(request, modelAndView);
@@ -219,7 +218,7 @@ public class ResourceEditController extends BaseMultiActionController {
     public ModelAndView submitNewsitem(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitNewsitem");
         modelAndView.addObject("heading", "Submitting a Newsitem");
-        Resource editResource = resourceDAO.createNewNewsitem();
+        Resource editResource = resourceFactory.createNewNewsitem();
         modelAndView.addObject("resource", editResource);
         
         populateSubmitCommonElements(request, modelAndView);        
@@ -231,7 +230,7 @@ public class ResourceEditController extends BaseMultiActionController {
     public ModelAndView submitCalendar(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView modelAndView = new ModelAndView("submitCalendar");
         modelAndView.addObject("heading", "Submitting a Calendar");
-        Resource editResource = resourceDAO.createNewCalendarFeed("");
+        Resource editResource = resourceFactory.createNewCalendarFeed("");
         modelAndView.addObject("resource", editResource);
         
         populateSubmitCommonElements(request, modelAndView);        
@@ -244,7 +243,7 @@ public class ResourceEditController extends BaseMultiActionController {
     public ModelAndView submitFeed(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitFeed");
         modelAndView.addObject("heading", "Submitting a Feed");
-        Resource editResource = resourceDAO.createNewFeed();
+        Resource editResource = resourceFactory.createNewFeed();
         modelAndView.addObject("resource", editResource);
         modelAndView.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect(null));
         
@@ -258,7 +257,7 @@ public class ResourceEditController extends BaseMultiActionController {
     public ModelAndView submitWatchlist(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitWatchlist");
         modelAndView.addObject("heading", "Submitting a Watchlist Item");
-        Resource editResource = resourceDAO.createNewWebsite();
+        Resource editResource = resourceFactory.createNewWebsite();
         modelAndView.addObject("resource", editResource);
         
         populateSubmitCommonElements(request, modelAndView);
@@ -316,18 +315,18 @@ public class ResourceEditController extends BaseMultiActionController {
             if (request.getParameter("type") != null) {
                 String type = request.getParameter("type");
                 if (type.equals("W")) {
-                    editResource = resourceDAO.createNewWebsite(); 
+                    editResource = resourceFactory.createNewWebsite(); 
                 } else if (type.equals("N")) {
-                    editResource = resourceDAO.createNewNewsitem(); 
+                    editResource = resourceFactory.createNewNewsitem(); 
                 } else if (type.equals("F")) {
-                    editResource = resourceDAO.createNewFeed();                     
+                    editResource = resourceFactory.createNewFeed();                     
                 } else if (type.equals("L")) {                    
-                    editResource = resourceDAO.createNewWatchlist();                   
+                    editResource = resourceFactory.createNewWatchlist();                   
                 } else if (type.equals("C")) {
-                    editResource = resourceDAO.createNewCalendarFeed("");                   
+                    editResource = resourceFactory.createNewCalendarFeed("");                   
                 } else {
                     // TODO this should be a caught error.
-                    editResource = resourceDAO.createNewWebsite();
+                    editResource = resourceFactory.createNewWebsite();
                 }
             }
                         

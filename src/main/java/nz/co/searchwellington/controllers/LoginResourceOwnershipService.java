@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.HandTaggingService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.UserRepository;

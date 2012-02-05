@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -33,6 +34,7 @@ public class ApiControllerTest {
 	@Mock ContentUpdateService contentUpdateService;
 	@Mock AutoTaggingService autoTaggingService;
 	@Mock FeedItemAcceptor feedItemAcceptor;
+	@Mock ResourceFactory resourceFactory;
 	
 	@Mock Newsitem acceptedFeedNewsitem;
 	@Mock User adminUser;
@@ -51,7 +53,7 @@ public class ApiControllerTest {
 		ApiController controller = new ApiController(resourceDAO,
 				requestFilter, loggedInUserFilter, supressionService,
 				rssNewsitemService, contentUpdateService,
-				submissionProcessingService, autoTaggingService, tagVoteDao, feedItemAcceptor);
+				submissionProcessingService, autoTaggingService, tagVoteDao, feedItemAcceptor, resourceFactory);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();

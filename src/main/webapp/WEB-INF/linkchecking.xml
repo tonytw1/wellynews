@@ -18,6 +18,7 @@
 					<constructor-arg ref="compositeLinkExtractor" />
 					<constructor-arg ref="commentFeedDetector" />
 					<constructor-arg ref="commentFeedGuesserService" />
+					<constructor-arg ref="resourceFactory" />
 				</bean>				
 				<bean class="nz.co.searchwellington.linkchecking.NewsitemCommentReader">
 					<constructor-arg ref="commentFeedReader" />

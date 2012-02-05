@@ -3,7 +3,6 @@ package nz.co.searchwellington.repositories;
 import java.util.Date;
 import java.util.List;
 
-import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
@@ -12,7 +11,6 @@ import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 
 
@@ -22,13 +20,8 @@ public interface ResourceRepository {
     public void saveResource(Resource resource);
      
     public Resource loadResourceByUrl(String url);    
-    public void deleteResource(Resource resource);
-        
-    public Website createNewWebsite();
-    public Newsitem createNewNewsitem();
-    public Feed createNewFeed();
-    public Watchlist createNewWatchlist();
-
+    public void deleteResource(Resource resource);        
+   
     public List<Feed> getAllFeeds();
     public List<Feed> getFeedsToRead();
     
@@ -44,15 +37,12 @@ public interface ResourceRepository {
     public List<DiscoveredFeed> getAllDiscoveredFeeds();
     public DiscoveredFeed loadDiscoveredFeedByUrl(String discoveredUrl);
     public void saveDiscoveredFeed(DiscoveredFeed discoveredFeed);
-    public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl);
     public CommentFeed loadCommentFeedByUrl(String feedLink);
-    public CommentFeed createNewCommentFeed(String discoveredUrl);
 	public void saveCommentFeed(CommentFeed commentFeed);
 	
     public List<Newsitem> getRecentUntaggedNewsitems();
     
     public List<Integer> getAllResourceIds();
-    public CalendarFeed createNewCalendarFeed(String url);
     
 	public Website getPublisherByUrlWords(String publisherUrlWords);
 	public Feed loadFeedByUrlWords(String string);

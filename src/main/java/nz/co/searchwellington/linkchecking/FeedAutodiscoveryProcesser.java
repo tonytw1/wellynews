@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
@@ -23,15 +24,18 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 	final private LinkExtractor linkExtractor;
 	final private CommentFeedDetectorService commentFeedDetector;
 	final private CommentFeedGuesserService commentFeedGuesser;
+	final private ResourceFactory resourceFactory;
 	
 	public FeedAutodiscoveryProcesser(ResourceRepository resourceDAO,
 			LinkExtractor linkExtractor,
 			CommentFeedDetectorService commentFeedDetector,
-			CommentFeedGuesserService commentFeedGuesser) {
+			CommentFeedGuesserService commentFeedGuesser,
+			ResourceFactory resourceFactory) {
 		this.resourceDAO = resourceDAO;
 		this.linkExtractor = linkExtractor;
 		this.commentFeedDetector = commentFeedDetector;
 		this.commentFeedGuesser = commentFeedGuesser;
+		this.resourceFactory = resourceFactory;
 	}
 	
 	public void process(Resource checkResource, String pageContent) {
@@ -86,7 +90,7 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
         CommentFeed commentFeed = resourceDAO.loadCommentFeedByUrl(commentFeedUrl);   
         if (commentFeed == null) {
             log.debug("Comment feed url was not found in the database. Creating new comment feed: " + commentFeedUrl);
-            commentFeed = resourceDAO.createNewCommentFeed(commentFeedUrl);                         
+            commentFeed = resourceFactory.createNewCommentFeed(commentFeedUrl);                         
             resourceDAO.saveCommentFeed(commentFeed);
         }
         ((Newsitem) checkResource).setCommentFeed(commentFeed);      
@@ -96,7 +100,7 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
     	DiscoveredFeed discoveredFeed = resourceDAO.loadDiscoveredFeedByUrl(discoveredFeedUrl);
     	if (discoveredFeed == null) {
     		log.info("Recording newly discovered feed url: " + discoveredFeedUrl);
-    		discoveredFeed = resourceDAO.createNewDiscoveredFeed(discoveredFeedUrl);                  
+    		discoveredFeed = resourceFactory.createNewDiscoveredFeed(discoveredFeedUrl);                  
     	}
 	    discoveredFeed.getReferences().add(checkResource);
 	    resourceDAO.saveDiscoveredFeed(discoveredFeed);
