@@ -52,7 +52,7 @@ public class CachingTwitterService implements TwitterService {
 		final String cacheKey = TWITTER_REPLIES_CACHE + twitterUsername;
 		List<Twit> cachedResults = (List<Twit>) cache.get(cacheKey);
 		if (cachedResults != null) {
-			log.info("Found replies in cache");
+			log.debug("Found replies in cache");
 			return cachedResults;
 		}
 		
@@ -74,7 +74,7 @@ public class CachingTwitterService implements TwitterService {
 			return cachedResult;
 		}
 		if (cachedResult != null && cachedResult.isEmpty()) {
-			log.info("Returning negitive cache hit for twitter profile image: " + twitterUsername);
+			log.debug("Returning negitive cache hit for twitter profile image: " + twitterUsername);
 			return null;
 		}
 		
@@ -82,7 +82,7 @@ public class CachingTwitterService implements TwitterService {
 		if (twitterProfileImageUrlFor != null) {
 			cache.put(cacheKey, ONE_DAY, twitterProfileImageUrlFor);
 		} else {
-			log.info("Caching negitive result for twitter profile image: " + twitterUsername);
+			log.debug("Caching negitive result for twitter profile image: " + twitterUsername);
 			cache.put(cacheKey, ONE_HOUR, "");
 		}
 		return twitterProfileImageUrlFor;
