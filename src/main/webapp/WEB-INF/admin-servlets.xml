@@ -15,12 +15,12 @@
 		<constructor-arg ref="submissionProcessingService" />
 		<constructor-arg ref="contentUpdateService" />
 		<constructor-arg ref="contentDeletionService" />
-		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="snapshotBodyExtractor" />
 		<constructor-arg ref="anonUserService" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="handTaggingDAO" />
 		<constructor-arg ref="feedItemAcceptor" />
+		<constructor-arg ref="resourceFactory" />
 		
 		<property name="methodNameResolver">
 			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
@@ -33,10 +33,11 @@
 						
 						<prop key="/edit/edit">edit</prop>
 						<prop key="/edit/*">edit</prop>
-						<prop key="/*/*/*/*/*/edit">edit</prop>						
-												
+						<prop key="/*/*/*/*/*/edit">edit</prop>
+						<prop key="/*/*/*/*/*/delete">delete</prop>	
+						<prop key="/edit/delete">delete</prop>
+																	
 						<prop key="/edit/save">save</prop>
-						<prop key="/edit/delete">delete</prop>						
 						<prop key="/edit/submit/calendar">submitCalendar</prop>
 						<prop key="/edit/submit/feed">submitFeed</prop>
 						<prop key="/edit/submit/newsitem">submitNewsitem</prop>

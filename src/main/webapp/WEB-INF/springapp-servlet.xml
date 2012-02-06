@@ -332,7 +332,8 @@
 				<prop key="/feed/*/save">editController</prop>
 				
 				<prop key="/*/*/*/*/*/edit">editController</prop>
-				
+				<prop key="/*/*/*/*/*/delete">editController</prop>
+								
 				<prop key="/edit/delete">editController</prop>
 				<prop key="/edit/save">editController</prop>
 
