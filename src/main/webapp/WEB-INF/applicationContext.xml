@@ -271,6 +271,8 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<property name="twitterUsername" value="${twitter.username}" />
 	</bean>
 	
+	<bean id="resourceFactory" class="nz.co.searchwellington.repositories.ResourceFactory" />
+	
 	<bean id="twitterService" class="nz.co.searchwellington.twitter.LiveTwitterService">
 		<constructor-arg ref="twitterApiFactory" />
 	</bean>
