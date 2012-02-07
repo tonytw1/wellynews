@@ -19,12 +19,12 @@ public class SolrBackedResourceDAOTest {
 		MockitoAnnotations.initMocks(this);
 	}
 	
-	//@Test
+	@Test
 	public void geoTaggedNewsitemsQueryShouldRespectShowBrokenFlag() {
-		SolrBackedResourceDAO solrBackedResourceDAO = new SolrBackedResourceDAO(solrQueryService, tagDAO, resourceHydrator);
+		//SolrBackedResourceDAO solrBackedResourceDAO = new SolrBackedResourceDAO(solrQueryService, tagDAO, resourceHydrator);
 		
-		solrBackedResourceDAO.getGeotaggedNewsitemsNear(1, 2, 1, false, 0, 20);
-		fail();
+		//solrBackedResourceDAO.getGeotaggedNewsitemsNear(1, 2, 1, false, 0, 20);
+		//fail();
 	}
 
 }
