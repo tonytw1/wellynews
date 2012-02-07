@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.profiles;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -18,7 +19,6 @@ import nz.co.searchwellington.urls.UrlBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -27,6 +27,8 @@ import org.springframework.web.servlet.ModelAndView;
 public class ProfileControllerTest {
 
 	private static final String VALID_PROFILE_NAME = "tonytw1";
+	private static final String INVALID_PROFILE_NAME = "tony-tw1";
+	
 	@Mock UserRepository userDao;
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock UrlBuilder urlBuilder;
@@ -52,7 +54,7 @@ public class ProfileControllerTest {
 	
 	@Test
 	public void allActiveProfilesShouldBeShownOnProfilesIndex() throws Exception {
-		Mockito.when(userDao.getActiveUsers()).thenReturn(allActiveUsers);
+		when(userDao.getActiveUsers()).thenReturn(allActiveUsers);
 		ModelAndView mv = controller.all(request, response);
 		assertEquals(allActiveUsers, mv.getModel().get("profiles"));
 	}
@@ -60,9 +62,9 @@ public class ProfileControllerTest {
 	@Test
 	public void usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService() throws Exception {
 		request.setPathInfo("/profiles/" + VALID_PROFILE_NAME);
-		Mockito.when(userDao.getUserByProfileName(VALID_PROFILE_NAME)).thenReturn(existingUser);
-		Mockito.when(contentRetrievalService.getOwnedBy(existingUser, 30)).thenReturn(existingUsersSubmittedItems);
-		Mockito.when(contentRetrievalService.getTaggedBy(existingUser, 30)).thenReturn(existingUsersTaggedItems);
+		when(userDao.getUserByProfileName(VALID_PROFILE_NAME)).thenReturn(existingUser);
+		when(contentRetrievalService.getOwnedBy(existingUser, 30)).thenReturn(existingUsersSubmittedItems);
+		when(contentRetrievalService.getTaggedBy(existingUser, 30)).thenReturn(existingUsersTaggedItems);
 
 		ModelAndView mv = controller.view(request, response);
 		
@@ -72,13 +74,19 @@ public class ProfileControllerTest {
 	
 	@Test
 	public void lettersAndNumbersIsValidNewProfileName() throws Exception {
-		Mockito.when(userDao.getUserByProfileName(VALID_PROFILE_NAME)).thenReturn(null);
+		when(userDao.getUserByProfileName(VALID_PROFILE_NAME)).thenReturn(null);
 		assertTrue(controller.isValidNewProfilename(VALID_PROFILE_NAME));
 	}
 	
 	@Test
+	public void nonLettersAndNumbersAreNotValidInProfileNames() throws Exception {
+		when(userDao.getUserByProfileName(INVALID_PROFILE_NAME)).thenReturn(null);
+		assertFalse(controller.isValidNewProfilename(INVALID_PROFILE_NAME));
+	}
+	
+	@Test
 	public void newProfileNamesMustNotAlreadyBeTaken() throws Exception {
-		Mockito.when(userDao.getUserByProfileName(VALID_PROFILE_NAME)).thenReturn(existingUser);
+		when(userDao.getUserByProfileName(VALID_PROFILE_NAME)).thenReturn(existingUser);
 		assertFalse(controller.isValidNewProfilename(VALID_PROFILE_NAME));
 	}
 			

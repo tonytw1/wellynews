@@ -18,7 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ProfileController extends BaseMultiActionController {
     
-	private Logger log = Logger.getLogger(ProfileController.class);
+	private static Logger log = Logger.getLogger(ProfileController.class);
 
     private UserRepository userDAO;
     private LoggedInUserFilter loggerInUserFilter;
