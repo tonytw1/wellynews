@@ -87,9 +87,10 @@ public class SubmissionProcessingService {
 	        address = UrlFilters.trimWhiteSpace(address);
 	        address = UrlFilters.stripHtml(address);
 	        if (address != null && !address.trim().equals("")) {
-	            Geocode resolvedGeocode = geocodeService.resolveAddress(address);
-	            if (resolvedGeocode != null) {
-	            	return resolvedGeocode;
+	            List<Geocode> resolvedGeocode = geocodeService.resolveAddress(address);
+	            if (resolvedGeocode != null && !resolvedGeocode.isEmpty() && resolvedGeocode.get(0).isValid()) {
+	            	return resolvedGeocode.get(0);
+	            	
 	            } else {
 	            	return new Geocode(address);
 	            }	            
