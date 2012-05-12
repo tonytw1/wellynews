@@ -1,5 +1,7 @@
 package nz.co.searchwellington.geocoding;
 
+import java.util.List;
+
 import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Geocode;
 
@@ -20,17 +22,17 @@ public class CachingGeocodeService implements GeoCodeService {
 		this.cache = cache;
 	}
 
-	public Geocode resolveAddress(String address) {
+	public List<Geocode> resolveAddress(String address) {
 		final String cacheKey = GEOCODE_CACHE_PREFIX + address.replaceAll("\\s", "");
 		log.info("Resolving location for: " + address);
-		Geocode cachedResult = (Geocode) cache.get(cacheKey);
+		List<Geocode> cachedResult = (List<Geocode>) cache.get(cacheKey);
 		if (cachedResult != null) {
 			log.info("Cache hit for: " + cacheKey);
 			return cachedResult;			
 		}
 		
 		log.info("Cache miss for '" + cacheKey + "' - delegating to real resolver");
-		Geocode resolvedGeocode = geoCodeService.resolveAddress(address);
+		List<Geocode> resolvedGeocode = geoCodeService.resolveAddress(address);
 		if (resolvedGeocode != null) {
 			log.info("Caching resolved address for '" + cacheKey + "'");
 			cache.put(cacheKey, ONE_DAY, resolvedGeocode);

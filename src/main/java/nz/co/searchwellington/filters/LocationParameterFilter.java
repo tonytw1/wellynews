@@ -1,5 +1,7 @@
 package nz.co.searchwellington.filters;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.GeoCodeService;
@@ -31,10 +33,11 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		
 		if(request.getParameter(LOCATION) != null) {
 			final String location = request.getParameter(LOCATION);
-			Geocode resolvedGeocode = geoCodeService.resolveAddress(location);
-			if (resolvedGeocode != null && resolvedGeocode.isValid()) {
-				log.info("User supplied location '" + location + "' resolved to point: " + resolvedGeocode.getLatitude() + ", " + resolvedGeocode.getLongitude());				
-				request.setAttribute(LOCATION, resolvedGeocode);
+			List<Geocode> resolvedGeocode = geoCodeService.resolveAddress(location);
+			if (resolvedGeocode != null && !resolvedGeocode.isEmpty() && resolvedGeocode.get(0).isValid()) {
+				final Geocode firstMatch = resolvedGeocode.get(0);
+				log.info("User supplied location '" + location + "' resolved to point: " + firstMatch.getLatitude() + ", " + firstMatch.getLongitude());				
+				request.setAttribute(LOCATION, firstMatch);
 				
 			} else {
 				log.info("User supplied location '" + location + "' could not be resolved to a point; marking as invalid");

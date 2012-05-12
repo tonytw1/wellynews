@@ -1,6 +1,7 @@
 package nz.co.searchwellington.geocoding;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Geocode;
@@ -18,16 +19,19 @@ public class NominatimGeocodingService implements GeoCodeService {
 	private static Logger log = Logger.getLogger(NominatimGeocodingService.class);
 
 	@Override
-	public Geocode resolveAddress(String address) {
+	public List<Geocode> resolveAddress(String address) {
 		log.info("Resolving address with Nominatim: " + address);
 		HttpClient httpClient = new DefaultHttpClient();
 		NominatimClient nominatimClient = new JsonNominatimClient(httpClient, "tony@wellington.gen.nz");
 		try {
 			List<Address> results = nominatimClient.search(address);
 			if (!results.isEmpty()) {
-				Address firstResult = results.get(0);
-				log.info("Resolved to OSM place id #" + firstResult.getPlaceId() + ": " + firstResult.getDisplayName() + " (" + firstResult.getElementType() + ")");
-				return new Geocode(address, firstResult.getLatitude(), firstResult.getLongitude(), firstResult.getElementType(), firstResult.getPlaceId());
+				List<Geocode> geocodes = new ArrayList<Geocode>();
+				for (Address result : results) {					
+					log.info("Resolved to OSM place id #" + result.getPlaceId() + ": " + result.getDisplayName() + " (" + result.getElementType() + ")");
+					geocodes.add(new Geocode(address, result.getLatitude(), result.getLongitude(), result.getElementType(), result.getPlaceId()));
+				}
+				return geocodes;
 			}
 			
 		} catch (IOException e) {

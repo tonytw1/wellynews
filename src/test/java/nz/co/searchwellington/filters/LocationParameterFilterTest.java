@@ -3,6 +3,10 @@ package nz.co.searchwellington.filters;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import nz.co.searchwellington.geocoding.GeoCodeService;
 import nz.co.searchwellington.model.Geocode;
 
@@ -34,7 +38,9 @@ public class LocationParameterFilterTest {
 	@Test
 	public void canResolveNamedPlaceAsLocation() throws Exception {
 		request.setParameter("location", VALID_LOCATION);
-		Mockito.when(geocodeService.resolveAddress(VALID_LOCATION)).thenReturn(petoneStation);
+		List<Geocode> results = new ArrayList<Geocode>();
+		results.add(petoneStation);
+		Mockito.when(geocodeService.resolveAddress(VALID_LOCATION)).thenReturn(results);
 		
 		filter.filter(request);
 		
