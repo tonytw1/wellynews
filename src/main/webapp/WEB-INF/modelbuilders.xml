@@ -93,6 +93,12 @@
 	</bean>
 	
 	<bean id="jsonViewFactory" class="nz.co.searchwellington.views.JsonViewFactory" />
+	<bean id="etagGenerator" class="nz.co.searchwellington.views.EtagGenerator" />
+	
+	<bean id="jsonViewFactory" class="nz.co.searchwellington.views.JsonViewFactory">
+		<constructor-arg ref="jsonSerializer" />
+		<constructor-arg ref="etagGenerator" />		
+	</bean>
 	
 	<bean id="TagCommentModelBuilder" class="nz.co.searchwellington.controllers.models.TagCommentModelBuilder">
 		<constructor-arg ref="contentRetrievalService" />

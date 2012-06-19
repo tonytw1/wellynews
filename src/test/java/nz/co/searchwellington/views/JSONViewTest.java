@@ -17,19 +17,23 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-public class JSONViewTest {
+public class JsonViewTest {
 	
-	MockHttpServletRequest request;
-	MockHttpServletResponse response;
-	Map<String, Object> mv;
-	JSONView view;
+	private JsonSerializer jsonSerializer = new JsonSerializer();
+	private EtagGenerator etagGenerator = new EtagGenerator();
+	
+	private MockHttpServletRequest request;
+	private MockHttpServletResponse response;
+	private Map<String, Object> mv;
+	
+	private JsonView view;
 	
 	@Before
 	public void setUp() throws Exception {
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 		mv = new HashMap<String, Object>();
-		view = new JSONView();
+		view = new JsonView(jsonSerializer, etagGenerator);
 	}
 	
 	@Test
@@ -40,8 +44,8 @@ public class JSONViewTest {
 		
 		view.render(mv, request, response);
 		
-		final String content = response.getContentAsString();		
-		assertTrue(content.contains("\"description\": \"Tag description\""));	// TODO Move to a proper JSON parsing assert.
+		final String content = response.getContentAsString();
+		assertTrue(content.contains("\"description\":\"Tag description\""));	// TODO Move to a proper JSON parsing assert.
 	}
 	
 	public void contentItemsShouldIncludePublisherField() throws Exception {
@@ -61,7 +65,7 @@ public class JSONViewTest {
 		
 		view.render(mv, request, response);		
 		final String content = response.getContentAsString();		
-		assertTrue(content.contains("\"date\": \"24 Apr 2009\""));
+		assertTrue(content.contains("\"date\":\"24 Apr 2009\""));
 	}
 	
 	@Test
@@ -78,7 +82,7 @@ public class JSONViewTest {
 		
 		view.render(mv, request, response);
 		
-		final String content = response.getContentAsString();		
+		final String content = response.getContentAsString();
 		assertTrue(content.contains("\"latitude\": -51.2"));
 		assertTrue(content.contains("\"longitude\": 1.2"));
 	}
