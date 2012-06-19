@@ -92,7 +92,7 @@
 		<constructor-arg ref="rssUrlBuilder" />
 	</bean>
 	
-	<bean id="jsonViewFactory" class="nz.co.searchwellington.views.JsonViewFactory" />
+	<bean id="jsonSerializer" class="nz.co.searchwellington.views.JsonSerializer" />
 	<bean id="etagGenerator" class="nz.co.searchwellington.views.EtagGenerator" />
 	
 	<bean id="jsonViewFactory" class="nz.co.searchwellington.views.JsonViewFactory">
