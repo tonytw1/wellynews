@@ -64,7 +64,8 @@ public class JsonViewTest {
 		mv.put("main_content", mainContent);
 		
 		view.render(mv, request, response);		
-		final String content = response.getContentAsString();		
+		final String content = response.getContentAsString();
+		
 		assertTrue(content.contains("\"date\":\"24 Apr 2009\""));
 	}
 	
@@ -82,9 +83,9 @@ public class JsonViewTest {
 		
 		view.render(mv, request, response);
 		
-		final String content = response.getContentAsString();
-		assertTrue(content.contains("\"latitude\": -51.2"));
-		assertTrue(content.contains("\"longitude\": 1.2"));
+		final String content = response.getContentAsString();		
+		assertTrue(content.contains("\"latitude\":-51.2"));
+		assertTrue(content.contains("\"longitude\":1.2"));
 	}
 	
 }
