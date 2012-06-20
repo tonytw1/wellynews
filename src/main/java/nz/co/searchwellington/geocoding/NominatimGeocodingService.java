@@ -29,7 +29,7 @@ public class NominatimGeocodingService implements GeoCodeService {
 				List<Geocode> geocodes = new ArrayList<Geocode>();
 				for (Address result : results) {					
 					log.info("Resolved to OSM place id #" + result.getPlaceId() + ": " + result.getDisplayName() + " (" + result.getElementType() + ")");
-					geocodes.add(new Geocode(address, result.getLatitude(), result.getLongitude(), result.getElementType(), result.getPlaceId()));
+					geocodes.add(new Geocode(result.getDisplayName(), result.getLatitude(), result.getLongitude(), result.getElementType(), result.getPlaceId(), "OSM"));
 				}
 				return geocodes;
 			}

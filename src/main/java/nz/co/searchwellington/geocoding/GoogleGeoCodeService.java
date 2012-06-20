@@ -27,21 +27,22 @@ public class GoogleGeoCodeService implements GeoCodeService {
 		
 		if (geocoderResponse != null && geocoderResponse.getStatus().equals(GeocoderStatus.OK)) {
 			List<Geocode> results = new ArrayList<Geocode>();
-			for (GeocoderResult firstMatch : geocoderResponse.getResults()) {
-				log.info("Address '" + address + "' resolved to: " + firstMatch);
+			for (GeocoderResult match : geocoderResponse.getResults()) {
+				log.info("Address '" + address + "' resolved to: " + match);
 				Geocode geocode = new Geocode();
-				geocode.setAddress(address);
-				geocode.setLatitude(firstMatch.getGeometry().getLocation().getLat().doubleValue());	// TODO mutating method
-				geocode.setLongitude(firstMatch.getGeometry().getLocation().getLng().doubleValue());
-						
-				BigDecimal northEastBoundLat = firstMatch.getGeometry().getViewport().getNortheast().getLat();
-				BigDecimal northEastBoundLng = firstMatch.getGeometry().getViewport().getNortheast().getLng();
+				geocode.setAddress(match.getFormattedAddress());
+				geocode.setLatitude(match.getGeometry().getLocation().getLat().doubleValue());	// TODO mutating method
+				geocode.setLongitude(match.getGeometry().getLocation().getLng().doubleValue());
+				geocode.setResolver("Google");
+				
+				BigDecimal northEastBoundLat = match.getGeometry().getViewport().getNortheast().getLat();
+				BigDecimal northEastBoundLng = match.getGeometry().getViewport().getNortheast().getLng();
 				Geocode northEastBound = new Geocode(northEastBoundLat.doubleValue(), northEastBoundLng.doubleValue());
 			
-				BigDecimal southWestBoundLat = firstMatch.getGeometry().getViewport().getSouthwest().getLat();
-				BigDecimal southWestBoundLng = firstMatch.getGeometry().getViewport().getSouthwest().getLng();
+				BigDecimal southWestBoundLat = match.getGeometry().getViewport().getSouthwest().getLat();
+				BigDecimal southWestBoundLng = match.getGeometry().getViewport().getSouthwest().getLng();
 				
-				final String type = firstMatch.getTypes().get(0);
+				final String type = match.getTypes().get(0);
 				geocode.setType(type);
 				final double boundingBoxSpan = northEastBound.getDistanceTo(southWestBoundLat.doubleValue(), southWestBoundLng.doubleValue());
 				log.info("Type is: " + type + ", bounding box span is: " + boundingBoxSpan);

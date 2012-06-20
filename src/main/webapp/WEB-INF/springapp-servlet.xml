@@ -40,6 +40,11 @@
 			</bean>		
 		</property>
 	</bean>
+	
+	<bean id="geocodeAjaxController" class="nz.co.searchwellington.controllers.ajax.GeocodeAjaxController">
+		<constructor-arg ref="compositeGeocodingService" />
+		<constructor-arg ref="jsonViewFactory" />		
+	</bean>	
 		
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
 		<constructor-arg ref="adminRequestFilter" />	
@@ -313,6 +318,7 @@
             	
             	<prop key="/ajax/publishers">publishersAjaxController</prop>
             	<prop key="/ajax/tags">tagsAjaxController</prop>
+           		<prop key="/ajax/geocode">geocodeAjaxController</prop>            	
            		
 				<prop key="/rss">rssController</prop>
 				<prop key="/*/rss">tagController</prop>

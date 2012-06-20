@@ -14,7 +14,7 @@ import nz.co.searchwellington.views.JsonViewFactory;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-public abstract class GeocodeAjaxController implements Controller {
+public class GeocodeAjaxController implements Controller {
 	
 	private GeoCodeService geoCodeService;
 	private JsonViewFactory jsonViewFactory;
