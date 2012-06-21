@@ -28,7 +28,7 @@ public class ContentHasChangedProcesser implements LinkCheckerProcessor {
     private void checkForChangeUsingSnapshots(Resource checkResource, String after) {             
     	log.debug("Comparing content before and after snapshots from content change.");
     	
-    	final String pageContentBeforeHttpCheck = snapshotDAO.loadContentForUrl(checkResource.getUrl());									     		
+    	final String pageContentBeforeHttpCheck = snapshotDAO.loadLatestContentForUrl(checkResource.getUrl());									     		
         boolean contentChanged = contentChanged(pageContentBeforeHttpCheck, after);                   
         if (contentChanged) {
             log.info("Change in content checksum detected. Setting last changed.");

@@ -25,7 +25,7 @@ public class SnapshotBodyExtractor {
     	if (resource.getUrl() == null) {
     		return null;
     	}    	
-    	final String content = snapshotDAO.loadContentForUrl(resource.getUrl());
+    	final String content = snapshotDAO.loadLatestContentForUrl(resource.getUrl());
     	if (content != null) {
     		return extractBodyText(content);
     	}

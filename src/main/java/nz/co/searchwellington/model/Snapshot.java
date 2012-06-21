@@ -1,26 +1,25 @@
 package nz.co.searchwellington.model;
 
+import java.util.Date;
+
 import org.apache.log4j.Logger;
 import org.apache.oro.text.perl.Perl5Util;
 
 
 public class Snapshot {
 
-    Logger log = Logger.getLogger(Snapshot.class);
+    private static Logger log = Logger.getLogger(Snapshot.class);
     
     private String url;
+    private Date date;
     protected String body;
-
     
     public Snapshot() {     
     }
-  
-    public Snapshot(String url) {
-        this.url = url;
-    }
-        
-    public Snapshot(String url, String body) {
+    
+	public Snapshot(String url, Date date, String body) {
 		this.url = url;
+		this.date = date;
 		this.body = body;
 	}
 
@@ -30,21 +29,26 @@ public class Snapshot {
 
     public void setUrl(String url) {
         this.url = url;
-    }
+    }    
+
+    public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+
 
     public String getBody() {
         return body;
     }
     
-  
-    public void setBody(String newbody) {
-        this.body = newbody;
+    public void setBody(String body) {
+        this.body = body;
     }
-    
-    
-    
-    
-    /** PHP uses 32 characters of hex as a unique session id, 
+      
+	/** PHP uses 32 characters of hex as a unique session id, 
      * and appends it to all links in a given page. We want to strip
      * this before trying to consider changes in the page.
      * 
@@ -61,8 +65,6 @@ public class Snapshot {
         return result;
     }
     
-    
-       
     public boolean contentMatches (Snapshot o) {
         log.debug("Snapshot.contentMatches() called.");
         boolean result = false;

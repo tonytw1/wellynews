@@ -59,7 +59,7 @@ public class LinkChecker {
 						
 			log.debug("Saving resource and updating snapshot");
 			resource.setLastScanned(new DateTime().toDate());
-			snapshotDAO.setSnapshotContentForUrl(resource.getUrl(), pageContent);
+			snapshotDAO.setSnapshotContentForUrl(resource.getUrl(), DateTime.now().toDate(), pageContent);
 			contentUpdateService.update(resource);
 			
         } else {
