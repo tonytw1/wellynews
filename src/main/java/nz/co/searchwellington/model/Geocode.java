@@ -19,7 +19,7 @@ public class Geocode implements Serializable {
     private Double latitude;
     private Double longitude;
     private String type;
-    private Integer osmPlaceId;
+    private Long osmPlaceId;
     private String resolver;
     
     public Geocode() {        
@@ -43,7 +43,7 @@ public class Geocode implements Serializable {
          this.longitude = longitude;
     }
 
-	public Geocode(String address, double latitude, double longitude, String type, int osmPlaceId, String resolver) {
+	public Geocode(String address, double latitude, double longitude, String type, Long osmPlaceId, String resolver) {
 		this.address = address;
 		this.latitude = latitude;
 		this.longitude = longitude;
@@ -91,11 +91,11 @@ public class Geocode implements Serializable {
 		this.type = type;
 	}
 	
-	public Integer getOsmPlaceId() {
+	public Long getOsmPlaceId() {
 		return osmPlaceId;
 	}
 
-	public void setOsmPlaceId(Integer osmPlaceId) {
+	public void setOsmPlaceId(Long osmPlaceId) {
 		this.osmPlaceId = osmPlaceId;
 	}
 	
