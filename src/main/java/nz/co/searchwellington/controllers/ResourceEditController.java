@@ -37,7 +37,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class ResourceEditController extends BaseMultiActionController {
     
-   private Logger log = Logger.getLogger(ResourceEditController.class);
+   private static Logger log = Logger.getLogger(ResourceEditController.class);
            
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
@@ -88,6 +88,7 @@ public class ResourceEditController extends BaseMultiActionController {
 		this.contentRetrievalService = contentRetrievalService;
 		this.tagVoteDAO = tagVoteDAO;
 		this.feedItemAcceptor = feedItemAcceptor;
+		this.resourceFactory = resourceFactory;
 	}
     
     @Transactional
