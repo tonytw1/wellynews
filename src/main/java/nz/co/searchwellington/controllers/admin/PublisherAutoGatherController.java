@@ -21,7 +21,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class PublisherAutoGatherController extends MultiActionController {
 
-    static Logger log = Logger.getLogger(PublisherAutoGatherController.class);
+    private static Logger log = Logger.getLogger(PublisherAutoGatherController.class);
     
     private AdminRequestFilter requestFilter;
     private TagDAO tagDAO;

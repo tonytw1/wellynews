@@ -15,7 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class IndexRebuildController extends BaseMultiActionController {
 
-	static Logger log = Logger.getLogger(IndexRebuildController.class);
+	private static Logger log = Logger.getLogger(IndexRebuildController.class);
     
 	private SolrIndexRebuildService solrIndexRebuildService;
 	

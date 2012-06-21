@@ -17,7 +17,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 public class SupressionController extends MultiActionController {
 
-    Logger log = Logger.getLogger(SupressionController.class);
+    private static Logger log = Logger.getLogger(SupressionController.class);
 
     private SupressionService suppressionService;
     private UrlStack urlStack;

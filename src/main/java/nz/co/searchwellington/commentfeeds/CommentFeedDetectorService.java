@@ -6,16 +6,13 @@ import org.apache.log4j.Logger;
 
 public class CommentFeedDetectorService {
 
-    Logger log = Logger.getLogger(CommentFeedDetectorService.class);
+    private static Logger log = Logger.getLogger(CommentFeedDetectorService.class);
     
-
 	private CommentFeedDetector[] detectors;
-    
-    
+        
 	public CommentFeedDetectorService(CommentFeedDetector... detectors) {
 		this.detectors = detectors;
 	}
-
 	
 	public boolean isCommentFeedUrl(String url) {
         for (CommentFeedDetector detector : detectors) {
@@ -28,5 +25,4 @@ public class CommentFeedDetectorService {
         return false;        
     }
 	
-
 }

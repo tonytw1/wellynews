@@ -7,16 +7,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
-
 public abstract class BaseAjaxController implements Controller {
-	
-    Logger log = Logger.getLogger(BaseAjaxController.class);
-
-
+	    
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         List<String> suggestions = new ArrayList<String>();
@@ -24,10 +19,9 @@ public abstract class BaseAjaxController implements Controller {
         	suggestions = this.getSuggestions(request.getParameter("q"));
         }        	
         mv.addObject("suggestions", suggestions);       
-        mv.setViewName("autocompleteData");
+        mv.setViewName("autocompleteData");	// TODO migrate to JSON view?
         return mv;
     }
-    
     
     protected abstract List<String> getSuggestions(String q);	
     
