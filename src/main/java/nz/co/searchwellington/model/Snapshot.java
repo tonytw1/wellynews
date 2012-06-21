@@ -2,15 +2,24 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
+import org.bson.types.ObjectId;
+
+import com.google.code.morphia.annotations.Entity;
+import com.google.code.morphia.annotations.Id;
+
+@Entity("snapshots")
 public class Snapshot {
-	
-    private String url;
-    private Date date;
-    protected String body;
-    
-    public Snapshot() {     
-    }
-    
+
+	@Id
+	ObjectId objectId;
+
+	private String url;
+	private Date date;
+	private String body;
+
+	public Snapshot() {
+	}
+
 	public Snapshot(String url, Date date, String body) {
 		this.url = url;
 		this.date = date;
@@ -18,14 +27,14 @@ public class Snapshot {
 	}
 
 	public String getUrl() {
-        return url;
-    }
+		return url;
+	}
 
-    public void setUrl(String url) {
-        this.url = url;
-    }    
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-    public Date getDate() {
+	public Date getDate() {
 		return date;
 	}
 
@@ -33,18 +42,17 @@ public class Snapshot {
 		this.date = date;
 	}
 
+	public String getBody() {
+		return body;
+	}
 
-    public String getBody() {
-        return body;
-    }
-    
-    public void setBody(String body) {
-        this.body = body;
-    }
+	public void setBody(String body) {
+		this.body = body;
+	}
 
 	@Override
 	public String toString() {
-		return "Snapshot [date=" + date + ", url=" + url + "]";
+		return "Snapshot [body=" + body + ", date=" + date + ", url=" + url + "]";
 	}
-	
+
 }

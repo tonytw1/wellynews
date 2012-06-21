@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import static org.junit.Assert.fail;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.junit.Before;

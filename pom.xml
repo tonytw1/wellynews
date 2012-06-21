@@ -63,6 +63,11 @@
 			<id>local-dependencies</id>
 			<url>file:${basedir}/lib/repository</url>
 		</repository>
+		<repository>
+			<id>morphia.googlecode.com</id>
+			<name>Morphia Repo at Google Code</name>
+			<url>http://morphia.googlecode.com/svn/mavenrepo</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -370,6 +375,24 @@
 			<version>1.9.4</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>2.7.3</version>
+		</dependency>
+	
+		<dependency>
+			<groupId>com.google.code.morphia</groupId>
+			<artifactId>morphia</artifactId>
+			<version>0.98</version>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-collections</groupId>
+			<artifactId>commons-collections</artifactId>
+			<version>3.2</version>
+		</dependency>
+			                
 	</dependencies>
 
 </project>

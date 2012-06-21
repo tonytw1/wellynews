@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers;
 
-import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,20 +15,20 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
+import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
-import org.mockito.MockitoAnnotations;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 public class ContentDeletionServiceTest extends TestCase {
 		
 	@Mock SupressionService supressionService;	
 	@Mock ResourceRepository resourceDAO;
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
-	@Mock SnapshotDAO SnapshotDAO;
+	@Mock MongoSnapshotDAO SnapshotDAO;
 	@Mock SolrQueryService solrQueryService;
 	@Mock HandTaggingDAO handTaggingDAO;
 	@Mock TagDAO tagDAO;
@@ -37,10 +37,8 @@ public class ContentDeletionServiceTest extends TestCase {
 	@Mock Feed feed;
 	@Mock Tag tag;
 	
-	
-	ContentDeletionService service;
-	
-	
+	private ContentDeletionService service;
+		
 	@Override
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
@@ -49,7 +47,6 @@ public class ContentDeletionServiceTest extends TestCase {
 		resource.setUrl("http://blah/test");
 		service = new ContentDeletionService(supressionService, rssfeedNewsitemService, resourceDAO, SnapshotDAO, solrQueryService, handTaggingDAO, tagDAO);
 	}
-	
 	
 	public void testShouldDeleteFromSolrIndex() throws Exception {
 		service.performDelete(resource);

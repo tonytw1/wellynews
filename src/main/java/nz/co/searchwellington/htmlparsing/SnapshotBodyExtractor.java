@@ -1,7 +1,8 @@
 package nz.co.searchwellington.htmlparsing;
 
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.SnapshotDAO;
+import nz.co.searchwellington.model.Snapshot;
+import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
@@ -13,19 +14,21 @@ import org.htmlparser.util.ParserException;
 
 public class SnapshotBodyExtractor {
 	
-    Logger log = Logger.getLogger(SnapshotBodyExtractor.class);
-
-    private SnapshotDAO snapshotDAO;
+    private static Logger log = Logger.getLogger(SnapshotBodyExtractor.class);
     
-    public SnapshotBodyExtractor(SnapshotDAO snapshotDAO) {	
+    private MongoSnapshotDAO snapshotDAO;
+    
+    public SnapshotBodyExtractor(MongoSnapshotDAO snapshotDAO) {	
 		this.snapshotDAO = snapshotDAO;
 	}
 
 	public String extractSnapshotBodyTextFor(Resource resource) {
     	if (resource.getUrl() == null) {
     		return null;
-    	}    	
-    	final String content = snapshotDAO.loadLatestContentForUrl(resource.getUrl());
+    	}
+    	
+    	final Snapshot latestFor = snapshotDAO.getLatestFor(resource.getUrl());
+		final String content = latestFor != null ? latestFor.getBody() : null;
     	if (content != null) {
     		return extractBodyText(content);
     	}

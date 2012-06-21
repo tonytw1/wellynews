@@ -10,9 +10,9 @@ import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SnapshotDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
+import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
@@ -25,7 +25,7 @@ public class ContentDeletionService {
 	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ResourceRepository resourceDAO;
-	private SnapshotDAO snapshotDAO;
+	private MongoSnapshotDAO snapshotDAO;
 	private SolrQueryService solrQueryService;
 	private HandTaggingDAO handTaggingDAO;
 	private TagDAO tagDAO;
@@ -34,14 +34,11 @@ public class ContentDeletionService {
 	public ContentDeletionService() {
 	}
 	
-	
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			ResourceRepository resourceDAO, 
-			SnapshotDAO snapshotDAO,
-			SolrQueryService solrQueryService, 
-			HandTaggingDAO handTaggingDAO,
-			TagDAO tagDAO) {		
+			ResourceRepository resourceDAO, MongoSnapshotDAO snapshotDAO,
+			SolrQueryService solrQueryService, HandTaggingDAO handTaggingDAO,
+			TagDAO tagDAO) {
 		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
@@ -50,7 +47,6 @@ public class ContentDeletionService {
 		this.handTaggingDAO = handTaggingDAO;
 		this.tagDAO = tagDAO;
 	}
-
 
 	@Transactional
 	public void performDelete(Resource resource) {		

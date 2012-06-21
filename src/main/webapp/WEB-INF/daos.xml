@@ -53,9 +53,12 @@
 		<constructor-arg ref="showBrokenDecisionService" />
 	</bean>
 	
-	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.SnapshotDAO" >
-		<constructor-arg ref="keystore" />			
-		<property name="keyPrefix" value="url-snapshots::" />
+	<bean id="dataStoreFactory" class="nz.co.searchwellington.repositories.mongo.DataStoreFactory" >
+		<property name="hostname" value="${mongo.hostname}" />
+	</bean>
+	
+	<bean id="snapshotDAO" class="nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO" >
+		<constructor-arg ref="dataStoreFactory" />			
 	</bean>
 		 
  </beans>
