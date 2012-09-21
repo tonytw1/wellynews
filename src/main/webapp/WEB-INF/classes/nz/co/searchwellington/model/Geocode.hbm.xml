@@ -28,8 +28,12 @@
         	<column name="type" not-null="false"/>
         </property>
         
-         <property name="osmPlaceId" type="integer">
-            <column name="osm_id" sql-type="integer" not-null="false"/>
+       	<property name="osmId" type="long">
+            <column name="osm_id" sql-type="long" not-null="false"/>
+        </property>
+        
+      	<property name="osmType" type="String">
+            <column name="osm_type" not-null="false"/>
         </property>
                       
     </class>

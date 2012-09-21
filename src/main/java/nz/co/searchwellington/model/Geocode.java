@@ -19,7 +19,8 @@ public class Geocode implements Serializable {
     private Double latitude;
     private Double longitude;
     private String type;
-    private Long osmPlaceId;
+    private Long osmId;
+    private String osmType;
     private String resolver;
     
     public Geocode() {        
@@ -29,7 +30,8 @@ public class Geocode implements Serializable {
         this.address = address;
         this.latitude = null;
         this.longitude = null;
-        this.osmPlaceId = null;
+        this.osmId = null;
+        this.osmType = null;
     }
         
     public Geocode(String address, double latitude, double longitude) {     
@@ -43,12 +45,13 @@ public class Geocode implements Serializable {
          this.longitude = longitude;
     }
 
-	public Geocode(String address, double latitude, double longitude, String type, Long osmPlaceId, String resolver) {
+	public Geocode(String address, double latitude, double longitude, String type, Long osmId, String osmType, String resolver) {
 		this.address = address;
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.type = type;
-		this.osmPlaceId = osmPlaceId;
+		this.osmId = osmId;
+		this.osmType = osmType;
 		this.resolver = resolver;
 	}
 
@@ -91,12 +94,16 @@ public class Geocode implements Serializable {
 		this.type = type;
 	}
 	
-	public Long getOsmPlaceId() {
-		return osmPlaceId;
+	public Long getOsmId() {
+		return osmId;
 	}
 
-	public void setOsmPlaceId(Long osmPlaceId) {
-		this.osmPlaceId = osmPlaceId;
+	public void setOsmId(Long osmId) {
+		this.osmId = osmId;
+	}
+	
+	public String getOsmType() {
+		return osmType;
 	}
 	
 	public String getResolver() {
@@ -126,7 +133,7 @@ public class Geocode implements Serializable {
 	public String toString() {
 		return "Geocode [address=" + address + ", id=" + id + ", latitude="
 				+ latitude + ", longitude=" + longitude + ", osmPlaceId="
-				+ osmPlaceId + ", type=" + type + "]";
+				+ osmId + ", type=" + type + "]";
 	}
 	
 }
