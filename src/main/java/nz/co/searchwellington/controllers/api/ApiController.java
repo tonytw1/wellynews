@@ -26,12 +26,15 @@ import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.sun.syndication.io.FeedException;
 
+@Controller
 public class ApiController extends MultiActionController {
 
 	private static Logger log = Logger.getLogger(ApiController.class);
@@ -63,6 +66,7 @@ public class ApiController extends MultiActionController {
 	}
     
     @Transactional
+    @RequestMapping("/api/submit/newsitem")
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
     	ModelAndView mv = new ModelAndView();
     	request.setCharacterEncoding("UTF-8");
@@ -104,6 +108,7 @@ public class ApiController extends MultiActionController {
     }
     
     @Transactional
+    @RequestMapping("/api/accept")
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
     	ModelAndView mv = new ModelAndView();
 
@@ -126,6 +131,7 @@ public class ApiController extends MultiActionController {
     }
     
     @Transactional
+    @RequestMapping("/api/changeurl")
     public ModelAndView changeUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {    		
     	 ModelAndView mv = new ModelAndView();
          User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -157,6 +163,7 @@ public class ApiController extends MultiActionController {
     }
     
     @Transactional
+    @RequestMapping("/api/supress")
     public ModelAndView suppress(HttpServletRequest request, HttpServletResponse response) {
     	ModelAndView mv = new ModelAndView();	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -176,6 +183,7 @@ public class ApiController extends MultiActionController {
 	}
     
     @Transactional
+    @RequestMapping("/api/tag")
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         User loggedInUser = loggedInUserFilter.getLoggedInUser();

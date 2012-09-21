@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+        
+	<context:annotation-config />
+	<context:component-scan base-package="com.n0tice.rsston0tice" />
 
+	<mvc:annotation-driven />
+	<mvc:default-servlet-handler />
+   
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
 
 	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
@@ -19,26 +35,7 @@
 			
 	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">	
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="contentModelBuilder" />
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/">normal</prop>
-						<prop key="/*">normal</prop>
-						<prop key="/search">normal</prop>						
-						<prop key="/archive/*/*">normal</prop>
-						<prop key="/*/comment">normal</prop>
-						<prop key="/*/geotagged">normal</prop>
-						<prop key="/feed/*">normal</prop>
-						<prop key="/feeds/inbox">normal</prop>
-						<prop key="/*/json">normal</prop>
-						<prop key="/*/rss">normal</prop>
-						<prop key="/*/*/*/*/*">normal</prop>																					
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="contentModelBuilder" />		
 	</bean>
 	
 	<bean id="geocodeAjaxController" class="nz.co.searchwellington.controllers.ajax.GeocodeAjaxController">
@@ -52,69 +49,24 @@
 		<constructor-arg ref="loggedInUserFilter" />	
 		<constructor-arg ref="submissionProcessingService" />
 		<constructor-arg ref="urlStack" />
-			
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/tagging/submit">tag</prop>						
-					</props>
-				</property>
-			</bean>		
-		</property>
 	</bean>
-
-
+	
 	<bean id="simplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="discoveredFeedRespository" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="tagDAO" />
-		<constructor-arg ref="rssUrlBuilder" />
-									
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/about">about</prop>
-						<prop key="/api">api</prop>
-						<prop key="/broken">broken</prop>						
-						<prop key="/archive">archive</prop>
-						<prop key="/feeds/discovered">discovered</prop>
-						<prop key="/lastupdated">lastUpdated</prop>
-						<prop key="/publishers">publishers</prop>
-						<prop key="/rssfeeds">rssfeeds</prop>
-						<prop key="/signin">signin</prop>						
-						<prop key="/tags">tags</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="rssUrlBuilder" />									
 	</bean>
 	
-	
-	
-	
-						
 	<bean id="twitterLoginController" class="nz.co.searchwellington.signin.SigninController">
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="userDAO" />
 		<constructor-arg ref="anonUserService" />
 		<constructor-arg ref="loginResourceOwnershipService" />
 		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="twitterSigninHandler"/>
-		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/twitter/login">login</prop>
-						<prop key="/twitter/callback">callback</prop>						
-					</props>
-				</property>
-			</bean>	
-		</property>					
+		<constructor-arg ref="twitterSigninHandler"/>				
 	</bean>
 			
 	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
@@ -122,18 +74,8 @@
 	</bean>
 				
 	<bean id="loginController" class="nz.co.searchwellington.controllers.LoginController">	
-		<constructor-arg ref="urlStack" />	
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>					
-						<prop key="/login/logout">logout</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="urlStack" />			
 	</bean>
-	
 	
 	<bean id="apiController" class="nz.co.searchwellington.controllers.api.ApiController">
 		<constructor-arg ref="resourceDAO" />
@@ -146,34 +88,11 @@
 		<constructor-arg ref="autoTaggingService" />
 		<constructor-arg ref="handTaggingDAO" />
 		<constructor-arg ref="feedItemAcceptor" />
-		<constructor-arg ref="resourceFactory" />
-				
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/api/accept">accept</prop>
-						<prop key="/api/suppress">suppress</prop>
-						<prop key="/api/tag">tag</prop>
-						<prop key="/api/changeurl">changeUrl</prop>
-						<prop key="/api/submit/newsitem">submit</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>	
+		<constructor-arg ref="resourceFactory" />	
 	</bean>
 	
 	<bean id="cancelController" class="nz.co.searchwellington.controllers.CancelController">
-		<constructor-arg ref="urlStack" />
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/cancel">cancel</prop>					
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="urlStack" />		
 	</bean>
 		
 	<bean id="viewfeedController" class="nz.co.searchwellington.controllers.admin.AdminFeedController">
@@ -183,36 +102,15 @@
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="loggedInUserFilter" />		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/admin/feed/decache">decachefeed</prop>
-						<prop key="/admin/feed/acceptall">acceptAllFrom</prop>						
-					</props>
-				</property>
-			</bean>
-		</property>
 	</bean>
 			
 	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
 		<constructor-arg ref="siteInformation" />
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="rssItemMaker" />
-		<constructor-arg ref="rssUrlBuilder" />
-				
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/rss">mainRss</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>		
+		<constructor-arg ref="rssUrlBuilder" />	
 	</bean>
-	
-		
+			
 	<bean id="submissionProcessingService" class="nz.co.searchwellington.controllers.SubmissionProcessingService">	
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="geocodingService" />
@@ -226,22 +124,9 @@
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="urlBuilder" />
 		<constructor-arg ref="tagDAO" />
-		<constructor-arg ref="contentRetrievalService" />
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/profiles">all</prop>					
-						<prop key="/profile/edit">edit</prop>
-						<prop key="/profile/save">save</prop>
-						<prop key="/profiles/*">view</prop>
-					</props>
-				</property>
-			</bean>
-		</property>
+		<constructor-arg ref="contentRetrievalService" />	
 	</bean>
-	
-		
+			
 	<bean id="autoTagController" class="nz.co.searchwellington.controllers.admin.AutoTagController">
 		<constructor-arg ref="resourceDAO" />		
 		<constructor-arg ref="adminRequestFilter" />	
@@ -251,158 +136,12 @@
 		<constructor-arg ref="tagDAO" />
 		<constructor-arg ref="contentUpdateService" />
 		<constructor-arg ref="handTaggingDAO" />
-		<constructor-arg ref="loggedInUserFilter" />
-					
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>											
-						<prop key="/*/autotag">prompt</prop>
-						<prop key="/*/autotag/apply">apply</prop>
-					</props>
-				</property>
-			</bean>
-		</property>
+		<constructor-arg ref="loggedInUserFilter" />		
 	</bean>
-	
-	
-	
+		
 	<bean id="sitemapController" class="nz.co.searchwellington.controllers.SitemapController">
 		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="sitemapService" />
-				
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/sitemap.xml">sitemap</prop>					
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="sitemapService" />	
 	</bean>
-	
-	
-	
-    <bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
-        <property name="mappings">
-            <props>
-            	<prop key="/admin/index">adminIndexController</prop>
-            	<prop key="/api/tag">apiController</prop>
-            	<prop key="/api/changeurl">apiController</prop>
-            	<prop key="/api/suppress">apiController</prop>
-				<prop key="/api/accept">apiController</prop>
-				<prop key="/api/submit/newsitem">apiController</prop>
-            	
-            	<prop key="/about">simplePageController</prop>
-				<prop key="/api">simplePageController</prop>
-            	<prop key="/archive">simplePageController</prop>
-            	<prop key="/broken">simplePageController</prop>
-           		<prop key="/feeds/discovered">simplePageController</prop>           	
-				<prop key="/lastupdated">simplePageController</prop>
-									
-				<prop key="/profiles">profileController</prop>	
-				<prop key="/profile/edit">profileController</prop>
-				<prop key="/profile/save">profileController</prop>
-				<prop key="/profiles/*">profileController</prop>
-																
-				<prop key="/publishers">simplePageController</prop>
-				<prop key="/rssfeeds">simplePageController</prop>	
-				<prop key="/signin">simplePageController</prop>
-				<prop key="/tags">simplePageController</prop>
-												          	
-            	<prop key="/archive/*/*">tagController</prop>
-            	            	
-            	<prop key="/clickthrough">clickThroughController</prop>
-            	<prop key="/annoyingclickcountingthingamajig">clickThroughController</prop>
-            	
-            	<prop key="/ajax/publishers">publishersAjaxController</prop>
-            	<prop key="/ajax/tags">tagsAjaxController</prop>
-           		<prop key="/ajax/geocode">geocodeAjaxController</prop>            	
-           		
-				<prop key="/rss">rssController</prop>
-				<prop key="/*/rss">tagController</prop>
-				<prop key="/*/*/rss">tagController</prop>
-				<prop key="/feeds/inbox/rss">tagController</prop>
-									
-				<prop key="/json">tagController</prop>									
-				<prop key="*/json">tagController</prop>
-				<prop key="/*/*/json">tagController</prop>
-																							
-				<prop key="/admin/feed/decache">viewfeedController</prop>	
-				<prop key="/admin/feed/acceptall">viewfeedController</prop>
-				
-				<prop key="/*/edit">editController</prop>
-				<prop key="/*/save">editController</prop>				
-				<prop key="/feed/*/edit">editController</prop>
-				<prop key="/feed/*/save">editController</prop>
-				
-				<prop key="/*/*/*/*/*/edit">editController</prop>
-				<prop key="/*/*/*/*/*/delete">editController</prop>
-								
-				<prop key="/edit/delete">editController</prop>
-				<prop key="/edit/save">editController</prop>
-
-				<prop key="/edit/submit/calendar">editController</prop>			
-				<prop key="/edit/submit/feed">editController</prop>				
-				<prop key="/edit/submit/newsitem">editController</prop>
-				<prop key="/edit/submit/watchlist">editController</prop>
-				<prop key="/edit/submit/website">editController</prop>
-				<prop key="/edit/accept">editController</prop>
-				<prop key="/edit/twitteraccept">editController</prop>
-			
-				<prop key="/edit/viewsnapshot">editController</prop>				
-				
-				<prop key="/edit/tag/*">tagEditController</prop>
-							
-				<prop key="/*/autotag">autoTagController</prop>
-				<prop key="/*/autotag/apply">autoTagController</prop>
-				
-				<prop key="/admin/gather">autoGatherController</prop>
-				<prop key="/admin/gather/apply">autoGatherController</prop>		
-				
-				<prop key="/cancel">cancelController</prop>
-				<prop key="/login/logout">loginController</prop>
-																	
-				<prop key="/admin/indexbuilder">indexRebuildController</prop>
-				<prop key="/admin/refreshtweets">indexRebuildController</prop>
-								
-				<prop key="/admin/linkchecker/*">linkCheckerController</prop>
-				<prop key="/admin/config/edit">configEditController</prop>
-				<prop key="/admin/config/save">configEditController</prop>
-				
-				<prop key="/sitemap.xml">sitemapController</prop>
-				
-				<prop key="/supress/*">supressionController</prop>
-
-				<prop key="/search">tagController</prop>
-				
-				<prop key="/">tagController</prop>								
-				<prop key="/feeds">tagController</prop>							
-				<prop key="/*+*">tagController</prop>
-          		<prop key="/*%2B*">tagController</prop>				
-				<prop key="/*/comment">tagController</prop>
-				<prop key="/*/geotagged">tagController</prop>				
-				<prop key="/feed/*">tagController</prop>
-								
-				<prop key="/feeds/inbox">tagController</prop>
-				
-				<prop key="/*/*/*/*/*">tagController</prop>
-				
-				<prop key="/*">tagController</prop>
-				<prop key="/index">tagController</prop>				
-				<prop key="/comment">tagController</prop>
-				<prop key="/geotagged">tagController</prop>            	
-            	<prop key="/justin">tagController</prop>
-            	<prop key="/watchlist">tagController</prop>
-           		<prop key="/watchlist/rss">tagController</prop>
-           		            	            	           									
-				<prop key="/twitter/login">twitterLoginController</prop>
-				<prop key="/twitter/callback">twitterLoginController</prop>				
-				<prop key="/tagging/submit">publicTaggingController</prop>				
-            </props>
-        </property>
-    </bean>
-    
-    
+	    
 </beans>

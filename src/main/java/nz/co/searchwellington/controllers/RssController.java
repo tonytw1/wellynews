@@ -11,14 +11,17 @@ import nz.co.searchwellington.views.RssItemMaker;
 import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
+@Controller
 public class RssController extends MultiActionController {
 	
-	static Logger log = Logger.getLogger(RssController.class);
+	private static Logger log = Logger.getLogger(RssController.class);
     
     private static final int MAX_RSS_ITEMS = 30;	// TODO move this knowledge towards the CRS
     
@@ -34,6 +37,7 @@ public class RssController extends MultiActionController {
         this.rssUrlBuilder = rssUrlBuilder;
     }
     
+    @RequestMapping("/rss")
     public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    	
     	if (siteInformation.getFeedburnerUrl() != null && !siteInformation.getFeedburnerUrl().trim().equals("")) {    		
     		final String userAgent = request.getHeader("User-Agent");

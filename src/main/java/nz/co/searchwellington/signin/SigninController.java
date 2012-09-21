@@ -11,12 +11,14 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.UserRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class SigninController extends MultiActionController {
+@Controller
+public class SigninController {
 
 	private static Logger log = Logger.getLogger(SigninController.class);
 	
@@ -26,7 +28,10 @@ public class SigninController extends MultiActionController {
 	private LoginResourceOwnershipService loginResourceOwnershipService;
 	private UrlStack urlStack;
 	private SigninHandler signinHandler;
-		
+	
+	public SigninController() {
+	}
+	
 	public SigninController(
 			LoggedInUserFilter loggedInUserFilter, UserRepository userDAO,
 			AnonUserService anonUserService,
@@ -41,6 +46,7 @@ public class SigninController extends MultiActionController {
 		this.signinHandler = signinHandler;
 	}
 	
+	@RequestMapping("/twitter/login")
 	public ModelAndView login(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView loginView = signinHandler.getLoginView(request, response);
 		if (loginView != null) {
@@ -50,6 +56,7 @@ public class SigninController extends MultiActionController {
 	}
 	
 	@Transactional
+	@RequestMapping("/twitter/callback")
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		final Object externalIdentifier = signinHandler.getExternalUserIdentifierFromCallbackRequest(request);
 		if (externalIdentifier != null) {

@@ -11,9 +11,12 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+@Controller
 public class LinkCheckerController extends BaseMultiActionController {
 
 	private static Logger log = Logger.getLogger(LinkCheckerController.class);
@@ -27,6 +30,7 @@ public class LinkCheckerController extends BaseMultiActionController {
         this.urlStack = urlStack;
     }
     
+    @RequestMapping("/admin/linkchecker/add")
     public ModelAndView addToQueue(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();                
         setRedirect(mv, request);

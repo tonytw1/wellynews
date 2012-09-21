@@ -12,10 +12,14 @@ import nz.co.searchwellington.repositories.UserRepository;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+@Controller
 public class ProfileController extends BaseMultiActionController {
     
 	private static Logger log = Logger.getLogger(ProfileController.class);
@@ -38,6 +42,7 @@ public class ProfileController extends BaseMultiActionController {
 	}
 	
 	@Transactional
+	@RequestMapping("/profiles")
     public ModelAndView all(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("profiles");    
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
@@ -47,6 +52,7 @@ public class ProfileController extends BaseMultiActionController {
     }
 	
 	@Transactional
+	@RequestMapping("/profile/edit")
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("editProfile");    
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
@@ -59,6 +65,7 @@ public class ProfileController extends BaseMultiActionController {
     }	
 	  
 	@Transactional
+	@RequestMapping(value="/profile/edit", method=RequestMethod.POST)
 	public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {	      
 		final User loggedInUser = loggerInUserFilter.getLoggedInUser();		  
 		if (loggedInUser != null) {
@@ -75,13 +82,13 @@ public class ProfileController extends BaseMultiActionController {
 		return new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename())));
 	}
 	
-	@Transactional
+	@Transactional(readOnly=true)
+	@RequestMapping("/profiles/*")
 	public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
 		final String path = request.getPathInfo();
 		if (path.matches("^/profiles/.*$")) {
-			final String profilename = path.split("/")[2];
-
-			User user = userDAO.getUserByProfileName(profilename);
+			final String profilename = path.split("/")[2];	// TODO move to spring path parameters
+			final User user = userDAO.getUserByProfileName(profilename);
 			if (user != null) {
 				log.info("Rendering profile for user: "+ profilename);
 				ModelAndView mv = new ModelAndView("viewProfile");

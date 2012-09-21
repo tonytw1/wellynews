@@ -21,8 +21,12 @@ import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+@Controller
 public class AutoTagController extends BaseMultiActionController {
 
     private static Logger log = Logger.getLogger(AutoTagController.class);
@@ -47,6 +51,7 @@ public class AutoTagController extends BaseMultiActionController {
         this.loggedInUserFilter = loggedInUserFilter;
 	}
 	
+	@RequestMapping("/*/autotag")
 	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null) {
@@ -54,7 +59,7 @@ public class AutoTagController extends BaseMultiActionController {
         	return null;
     	}
     	
-        ModelAndView mv = new ModelAndView();        
+        final ModelAndView mv = new ModelAndView();        
         mv.setViewName("autoTagPrompt");        
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Autotagging");
@@ -71,6 +76,7 @@ public class AutoTagController extends BaseMultiActionController {
         return mv;
     }
 	
+	@RequestMapping(value="/*/autotag/apply", method=RequestMethod.POST)
     public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {    	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null) {
@@ -85,7 +91,7 @@ public class AutoTagController extends BaseMultiActionController {
         	return null;
         }
         
-        ModelAndView mv = new ModelAndView();
+        final ModelAndView mv = new ModelAndView();
         mv.setViewName("autoTagApply");
         mv.addObject("heading", "Autotagging");
         

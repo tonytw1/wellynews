@@ -31,10 +31,14 @@ import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+@Controller
 public class ResourceEditController extends BaseMultiActionController {
     
    private static Logger log = Logger.getLogger(ResourceEditController.class);
@@ -54,7 +58,10 @@ public class ResourceEditController extends BaseMultiActionController {
 	private HandTaggingDAO tagVoteDAO;
 	private FeedItemAcceptor feedItemAcceptor;
 	private ResourceFactory resourceFactory;
-    
+	
+	public ResourceEditController() {
+	}
+	
     public ResourceEditController(
 			RssfeedNewsitemService rssfeedNewsitemService,
 			AdminRequestFilter adminRequestFilter,
@@ -91,7 +98,8 @@ public class ResourceEditController extends BaseMultiActionController {
 		this.resourceFactory = resourceFactory;
 	}
     
-    @Transactional
+    @Transactional	
+	@RequestMapping("/*/edit")
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
     	log.info("Starting resource edit method");
         response.setCharacterEncoding("UTF-8");
@@ -129,6 +137,7 @@ public class ResourceEditController extends BaseMultiActionController {
     }
     
 	@Transactional
+	@RequestMapping("/edit/viewsnapshot")	
     public ModelAndView viewSnapshot(HttpServletRequest request, HttpServletResponse response) {
     	
 		adminRequestFilter.loadAttributesOntoRequest(request);    	
@@ -161,10 +170,9 @@ public class ResourceEditController extends BaseMultiActionController {
        
     	return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
     }
-    
-    
-    
+	
     @Transactional
+    @RequestMapping("/edit/accept")
     // TODO should be a straight delegation to the feed acceptor?
     public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, IOException {
         response.setCharacterEncoding("UTF-8");
@@ -201,7 +209,8 @@ public class ResourceEditController extends BaseMultiActionController {
 		return modelAndView;
     }
     
-    @Transactional
+    @Transactional    
+    @RequestMapping("/edit/submit/website")
     public ModelAndView submitWebsite(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("submitWebsite");
         modelAndView.addObject("heading", "Submitting a Website");        
@@ -213,9 +222,9 @@ public class ResourceEditController extends BaseMultiActionController {
         modelAndView.addObject("publisher_select", null);
         return modelAndView;
     }
-
     
     @Transactional
+    @RequestMapping("/edit/submit/newsitem")
     public ModelAndView submitNewsitem(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitNewsitem");
         modelAndView.addObject("heading", "Submitting a Newsitem");
@@ -225,9 +234,9 @@ public class ResourceEditController extends BaseMultiActionController {
         populateSubmitCommonElements(request, modelAndView);        
         return modelAndView;
     }
-
-
-    @Transactional
+    
+    @Transactional 
+    @RequestMapping("/edit/submit/calendar")
     public ModelAndView submitCalendar(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView modelAndView = new ModelAndView("submitCalendar");
         modelAndView.addObject("heading", "Submitting a Calendar");
@@ -238,9 +247,8 @@ public class ResourceEditController extends BaseMultiActionController {
         return modelAndView;
     }
     
-    
-    
     @Transactional
+    @RequestMapping("/edit/submit/feed")
     public ModelAndView submitFeed(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitFeed");
         modelAndView.addObject("heading", "Submitting a Feed");
@@ -253,8 +261,8 @@ public class ResourceEditController extends BaseMultiActionController {
         return modelAndView;
     }
     
-    
     @Transactional
+    @RequestMapping("/edit/submit/watchlist")
     public ModelAndView submitWatchlist(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitWatchlist");
         modelAndView.addObject("heading", "Submitting a Watchlist Item");
@@ -265,10 +273,9 @@ public class ResourceEditController extends BaseMultiActionController {
         
         return modelAndView;
     }
-   
-    
     
     @Transactional
+    @RequestMapping("/edit/delete")
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
         populateCommonLocal(modelAndView);
@@ -290,10 +297,9 @@ public class ResourceEditController extends BaseMultiActionController {
         // TODO need to given failure message if we didn't actually remove the item.
         return modelAndView;
     }
-
-
     
 	@Transactional
+	@RequestMapping(value="/*/save", method=RequestMethod.POST)
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");

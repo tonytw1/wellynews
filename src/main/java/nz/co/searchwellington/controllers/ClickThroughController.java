@@ -9,12 +9,15 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.mvc.Controller;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class ClickThroughController implements Controller {
+@Deprecated
+@Controller
+public class ClickThroughController {
     
     private static Logger log = Logger.getLogger(ClickThroughController.class);
     
@@ -24,6 +27,7 @@ public class ClickThroughController implements Controller {
 		this.urlBuilder = urlBuilder;
 	}
     
+    @RequestMapping("/clickthrough")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();        
         String redirectUrl = null;

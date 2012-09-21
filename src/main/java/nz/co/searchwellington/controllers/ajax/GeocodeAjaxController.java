@@ -11,10 +11,12 @@ import nz.co.searchwellington.geocoding.GeoCodeService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.views.JsonViewFactory;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.Controller;
 
-public class GeocodeAjaxController implements Controller {
+@Controller
+public class GeocodeAjaxController {
 	
 	private GeoCodeService geoCodeService;
 	private JsonViewFactory jsonViewFactory;
@@ -23,7 +25,8 @@ public class GeocodeAjaxController implements Controller {
 		this.geoCodeService = geoCodeService;
 		this.jsonViewFactory = jsonViewFactory;
 	}
-
+	
+	@RequestMapping("/ajax/geocode")
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final ModelAndView mv = new ModelAndView(jsonViewFactory.makeView());
         List<Geocode> addresses = new ArrayList<Geocode>();

@@ -7,16 +7,25 @@ import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+@Controller
 public class PublicTaggingController extends BaseMultiActionController {
-
+	
+    private static Logger log = Logger.getLogger(PublicTaggingController.class);
+    
 	private AdminRequestFilter adminRequestFilter;
 	private AnonUserService anonUserService;
 	private SubmissionProcessingService submissionProcessingService;
 	
+	public PublicTaggingController() {
+	}
 	
 	public PublicTaggingController(AdminRequestFilter adminRequestFilter,
 			LoggedInUserFilter loggedInUserFilter,
@@ -29,9 +38,9 @@ public class PublicTaggingController extends BaseMultiActionController {
 		this.submissionProcessingService = submissionProcessingService;
 		this.urlStack = urlStack;
 	}
-
-
+	
 	@Transactional
+	@RequestMapping(value="/tagging/submit", method=RequestMethod.POST)
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) {	
 		adminRequestFilter.loadAttributesOntoRequest(request);    	
     	Resource resource = (Resource) request.getAttribute("resource");    	
@@ -48,7 +57,6 @@ public class PublicTaggingController extends BaseMultiActionController {
 		submissionProcessingService.processTags(request, resource, loggedInUser);
 		return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));	
 	}
-	
 	
 	private User createAndSetAnonUser(HttpServletRequest request) {
 		log.info("Creating new anon user for resource submission");

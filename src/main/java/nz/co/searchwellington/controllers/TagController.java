@@ -7,11 +7,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.sun.syndication.io.FeedException;
 
+@Controller
 public class TagController extends MultiActionController {
 	
     private ContentModelBuilderService contentModelBuilder;
@@ -22,6 +25,7 @@ public class TagController extends MultiActionController {
 		this.urlStack = urlStack;
 	}
 	
+	@RequestMapping(value={"/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/*/json", "/*/rss", "/*/*/*/*/*"})
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {

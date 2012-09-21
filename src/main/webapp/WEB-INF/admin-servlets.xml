@@ -20,38 +20,7 @@
 		<constructor-arg ref="contentRetrievalService" />
 		<constructor-arg ref="handTaggingDAO" />
 		<constructor-arg ref="feedItemAcceptor" />
-		<constructor-arg ref="resourceFactory" />
-		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/*/edit">edit</prop>
-						<prop key="/*/save">save</prop>
-						<prop key="/feed/*/edit">edit</prop>
-						<prop key="/feed/*/save">save</prop>
-						
-						<prop key="/edit/edit">edit</prop>
-						<prop key="/edit/*">edit</prop>
-						<prop key="/*/*/*/*/*/edit">edit</prop>
-						<prop key="/*/*/*/*/*/delete">delete</prop>	
-						<prop key="/edit/delete">delete</prop>
-																	
-						<prop key="/edit/save">save</prop>
-						<prop key="/edit/submit/calendar">submitCalendar</prop>
-						<prop key="/edit/submit/feed">submitFeed</prop>
-						<prop key="/edit/submit/newsitem">submitNewsitem</prop>
-						<prop key="/edit/submit/watchlist">submitWatchlist</prop>
-						<prop key="/edit/submit/website">submitWebsite</prop>
-						
-						<prop key="/edit/accept">accept</prop>
-						<prop key="/edit/twitteraccept">twitteraccept</prop>
-						
-						<prop key="/edit/viewsnapshot">viewSnapshot</prop>	
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="resourceFactory" />	
 	</bean>
 		
 	<bean id="tagEditController" class="nz.co.searchwellington.controllers.admin.TagEditController">
@@ -62,117 +31,40 @@
 		<constructor-arg ref="tagModificationService" />
 		<constructor-arg ref="editPermissionService" />
 		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="submissionProcessingService" />
-				
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/edit/tag/submit">submit</prop>
-						<prop key="/edit/tag/save">save</prop>
-						<prop key="/edit/tag/add">add</prop>																
-						<prop key="/edit/tag/*">edit</prop>
-						<prop key="/edit/tag/delete">delete</prop>
-					</props>
-				</property>
-			</bean>
-		</property>
+		<constructor-arg ref="submissionProcessingService" />		
 	</bean>
-	
 	
 	<bean id="autoGatherController" class="nz.co.searchwellington.controllers.admin.PublisherAutoGatherController">
 		<constructor-arg ref="adminRequestFilter" />	
 		<constructor-arg ref="tagDAO" />		
 		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="contentUpdateService" />
-		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>																
-						<prop key="/admin/gather">prompt</prop>
-						<prop key="/admin/gather/apply">apply</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="contentUpdateService" />	
 	</bean>
 	
-		
 	<bean id="supressionController" class="nz.co.searchwellington.controllers.admin.SupressionController">	
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="loggedInUserFilter" />		
-		<constructor-arg ref="suppressionService" />
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/supress/supress">supress</prop>
-						<prop key="/supress/unsupress">unsupress</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="suppressionService" />		
 	</bean>
-	
 		
 	<bean id="adminIndexController" class="nz.co.searchwellington.controllers.admin.AdminIndexController">
-		<constructor-arg ref="keystore" />
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/admin/index">index</prop>							
-					</props>
-				</property>
-			</bean>		
-		</property>
-	</bean>
-	
-		
-	<bean id="indexRebuildController" class="nz.co.searchwellington.controllers.admin.IndexRebuildController">
-		<constructor-arg ref="solrIndexRebuildService" />
-		<constructor-arg ref="loggedInUserFilter" />		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/admin/indexbuilder">build</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>	
-	</bean>
-	
-		
-	<bean id="configEditController" class="nz.co.searchwellington.controllers.admin.ConfigEditController">
-		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="loggedInUserFilter" />		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>														
-						<prop key="/admin/config/edit">edit</prop>
-						<prop key="/admin/config/save">save</prop>
-					</props>
-				</property>
-			</bean>		
-		</property>
+		<constructor-arg ref="keystore" />		
 	</bean>
 			
+	<bean id="indexRebuildController" class="nz.co.searchwellington.controllers.admin.IndexRebuildController">
+		<constructor-arg ref="solrIndexRebuildService" />
+		<constructor-arg ref="loggedInUserFilter" />				
+	</bean>
+			
+	<bean id="configEditController" class="nz.co.searchwellington.controllers.admin.ConfigEditController">
+		<constructor-arg ref="configDAO" />
+		<constructor-arg ref="loggedInUserFilter" />
+	</bean>
+	
 	<bean id="linkCheckerController" class="nz.co.searchwellington.controllers.admin.LinkCheckerController">
 		<constructor-arg ref="adminRequestFilter" />		
 		<constructor-arg ref="linkCheckerQueue" />
 		<constructor-arg ref="urlStack" />		
-		<property name="methodNameResolver">
-			<bean class="org.springframework.web.servlet.mvc.multiaction.PropertiesMethodNameResolver">
-				<property name="mappings">
-					<props>
-						<prop key="/admin/linkchecker/add">addToQueue</prop>								
-					</props>
-				</property>
-			</bean>		
-		</property>
 	</bean>
 		
 	<bean id="publishersAjaxController" class="nz.co.searchwellington.controllers.ajax.PublisherAjaxController">

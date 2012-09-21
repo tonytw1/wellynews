@@ -15,12 +15,15 @@ import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
-public class TagEditController extends MultiActionController {
+@Controller
+public class TagEditController {
     
     private static Logger log = Logger.getLogger(TagEditController.class);
     
@@ -54,14 +57,16 @@ public class TagEditController extends MultiActionController {
 	}
     
 	@Transactional
+	@RequestMapping("/edit/tag/submit")
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {    	    	
         ModelAndView modelAndView = new ModelAndView("submitTag");
         modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());
         modelAndView.addObject("heading", "Submitting a Tag");
         return modelAndView;
-    }
-        
+    }        
+
     @Transactional
+    @RequestMapping("/edit/tag/*")
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView("editTag");   
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
@@ -81,6 +86,7 @@ public class TagEditController extends MultiActionController {
     }
                 
     @Transactional
+    @RequestMapping("/edit/tag/delete")			
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) {	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (!editPermissionService.canDeleteTags(loggedInUser)) {
@@ -105,6 +111,7 @@ public class TagEditController extends MultiActionController {
         return mv;
     }
     
+	@RequestMapping("/edit/tag/add")
     public ModelAndView add(HttpServletRequest request, HttpServletResponse response) {
     	  ModelAndView modelAndView = new ModelAndView("savedTag");    
           modelAndView.addObject("heading", "Tag Added");
@@ -125,8 +132,9 @@ public class TagEditController extends MultiActionController {
           }          
           return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
 	}
-    
+	
     @Transactional
+	@RequestMapping(value="/edit/tag/save", method=RequestMethod.POST)
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView modelAndView = new ModelAndView("savedTag");    
         modelAndView.addObject("heading", "Tag Saved");

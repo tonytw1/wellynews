@@ -10,12 +10,12 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.SolrIndexRebuildService;
 
-import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+@Controller
 public class IndexRebuildController extends BaseMultiActionController {
-
-	private static Logger log = Logger.getLogger(IndexRebuildController.class);
     
 	private SolrIndexRebuildService solrIndexRebuildService;
 	
@@ -24,6 +24,7 @@ public class IndexRebuildController extends BaseMultiActionController {
         this.loggedInUserFilter = loggedInUserFilter;
     }
     
+    @RequestMapping("/admin/indexbuilder")
     public ModelAndView build(HttpServletRequest request, HttpServletResponse response) throws IOException {
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null || !loggedInUser.isAdmin()) {

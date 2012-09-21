@@ -11,30 +11,35 @@ import nz.co.searchwellington.repositories.ConfigRepository;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-public class ConfigEditController extends MultiActionController {
+@Controller
+public class ConfigEditController {
     
     private ConfigRepository configDAO;
 	private LoggedInUserFilter loggedInUserFilter;
-
+	
+	public ConfigEditController() {
+	}
 	
 	public ConfigEditController(ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter) {
 		this.configDAO = configDAO;
 		this.loggedInUserFilter = loggedInUserFilter;
 	}
-
-
+	
+	@RequestMapping("/admin/config/edit")
 	public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
-    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	final User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (!(loggedInUser != null && loggedInUser.isAdmin())) {
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     		return null;
     	}
     	    	
-        ModelAndView modelAndView = new ModelAndView("editConfig");        
+    	final ModelAndView modelAndView = new ModelAndView("editConfig");        
         modelAndView.addObject("heading", "Editing Configuration");      
         modelAndView.addObject("stats_tracking_code", StringEscapeUtils.escapeHtml(configDAO.getStatsTracking()));
         modelAndView.addObject("flickr_pool_group_id", StringEscapeUtils.escapeHtml(configDAO.getFlickrPoolGroupId()));
@@ -44,9 +49,9 @@ public class ConfigEditController extends MultiActionController {
         modelAndView.addObject("twitter_listener_is_enabled_select", buildBooleanSelect(configDAO.isTwitterListenerEnabled(), "twitter_listener_is_enabled").toString());        
         return modelAndView;
     }
-    
-    
+	
 	@Transactional
+	@RequestMapping(value="/admin/config/save", method=RequestMethod.POST)
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (!(loggedInUser != null && loggedInUser.isAdmin())) {
@@ -72,7 +77,6 @@ public class ConfigEditController extends MultiActionController {
         configDAO.saveConfig(config);
         return modelAndView;
     }
-	
 	
     private Select buildBooleanSelect(boolean selected, String fieldname) {
 		Select select = new Select(fieldname);

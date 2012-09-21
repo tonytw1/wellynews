@@ -16,10 +16,13 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-public class PublisherAutoGatherController extends MultiActionController {
+@Controller
+public class PublisherAutoGatherController {
 
     private static Logger log = Logger.getLogger(PublisherAutoGatherController.class);
     
@@ -37,8 +40,8 @@ public class PublisherAutoGatherController extends MultiActionController {
 		this.resourceDAO = resourceDAO;
 		this.contentUpdateService = contentUpdateService;
 	}
-
     
+	@RequestMapping("/admin/gather/prompt")
 	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         
@@ -61,8 +64,8 @@ public class PublisherAutoGatherController extends MultiActionController {
         }
         return mv;
     }
-
-
+	
+	@RequestMapping(value="/admin/gather/apply", method=RequestMethod.POST)
 	public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         mv.setViewName("autoGatherApply");      

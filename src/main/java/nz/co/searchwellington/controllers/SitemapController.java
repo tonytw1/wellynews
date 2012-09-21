@@ -8,16 +8,15 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.sitemap.GoogleSitemapService;
 
-import org.apache.log4j.Logger;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-
+@Controller
 public class SitemapController extends MultiActionController {
-    
-    Logger log = Logger.getLogger(SitemapController.class);
-    
+        
     private SiteInformation siteInformation;
     private GoogleSitemapService sitemapService;
      
@@ -26,7 +25,8 @@ public class SitemapController extends MultiActionController {
         this.sitemapService = sitemapService;        
     }
         
-    @Transactional	// TODO read only
+    @Transactional(readOnly=true)
+    @RequestMapping("/sitemap.xml")
     public ModelAndView sitemap(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         

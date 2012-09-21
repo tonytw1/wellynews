@@ -13,10 +13,13 @@ import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+@Controller
 public class SimplePageController extends BaseMultiActionController {
-            
+	
 	private DiscoveredFeedRepository discoveredFeedRepository;
 	private TagDAO tagDAO;
 	private RssUrlBuilder rssUrlBuilder;
@@ -30,7 +33,8 @@ public class SimplePageController extends BaseMultiActionController {
         this.tagDAO = tagDAO;
         this.rssUrlBuilder = rssUrlBuilder;
     }
-           
+    
+    @RequestMapping("/about")
     public ModelAndView about(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -42,6 +46,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
         
+    @RequestMapping("/archive")
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -57,6 +62,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
+    @RequestMapping("/api")
     public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -71,6 +77,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
+    @RequestMapping("/rssfeeds")
     public ModelAndView rssfeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -89,7 +96,8 @@ public class SimplePageController extends BaseMultiActionController {
 		mv.addObject("rss_title", title);
 		mv.addObject("rss_url", url);
 	}
-        
+    
+    @RequestMapping("/broken")
     public ModelAndView broken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -100,8 +108,8 @@ public class SimplePageController extends BaseMultiActionController {
         mv.setViewName("browse");
         return mv;
     }
-
-         
+    
+    @RequestMapping("/feeds/discovered")
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         populateCommonLocal(mv);
@@ -115,7 +123,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
 
-    
+    @RequestMapping("/tags")
     public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -127,7 +135,7 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
-    
+    @RequestMapping("/publishers")
     public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
@@ -140,12 +148,13 @@ public class SimplePageController extends BaseMultiActionController {
         return mv;
     }
     
+    @RequestMapping("/signin")
     public ModelAndView signin(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         populateCommonLocal(mv);        
         mv.addObject("heading", "Sign in");
         mv.setViewName("signin");
         return mv;
-    }   
+    }
     
 }
