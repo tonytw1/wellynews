@@ -106,6 +106,10 @@ public class Geocode implements Serializable {
 		return osmType;
 	}
 	
+	public void setOsmType(String osmType) {
+		this.osmType = osmType;
+	}
+	
 	public String getResolver() {
 		return resolver;
 	}

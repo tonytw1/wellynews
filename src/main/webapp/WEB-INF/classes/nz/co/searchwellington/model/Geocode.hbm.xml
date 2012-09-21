@@ -32,7 +32,7 @@
             <column name="osm_id" sql-type="long" not-null="false"/>
         </property>
         
-      	<property name="osmType" type="String">
+      	<property name="osmType" type="string">
             <column name="osm_type" not-null="false"/>
         </property>
                       
