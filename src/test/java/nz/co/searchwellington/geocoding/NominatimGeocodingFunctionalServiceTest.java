@@ -23,14 +23,13 @@ public class NominatimGeocodingFunctionalServiceTest {
 		List<Geocode> results = service.resolveAddress("St James Presbyterian Church, Newtown, Wellington");
 		final Geocode firstMatch = results.get(0);
 		assertEquals("St James' Presbyterian Church, Adelaide Road, Newtown, Wellington, Wellington Region, 6021, New Zealand", firstMatch.getAddress());
-		assertEquals(1422043, firstMatch.getOsmPlaceId(), 0);
+		assertEquals(301919657, firstMatch.getOsmId().longValue());
 		assertEquals("place_of_worship", firstMatch.getType());
 	}
 
 	@Test
 	public void canResolveAddressWithMultipleResults() throws Exception {
 		List<Geocode> results = service.resolveAddress("Civic Square, Wellington");
-		System.out.println(results);
 		assertEquals(2, results.size());
 	}
 	
