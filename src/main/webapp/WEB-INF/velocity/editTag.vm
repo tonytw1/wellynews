@@ -29,7 +29,7 @@
 					<br />
 							
 					<label for="geocode">Geocode: </label>
-					<input name="geocode" #if($tag.geocode) value="$tag.geocode.address" #end />
+					<input id="geocode" name="geocode" #if($tag.geocode) value="$tag.geocode.address" #end />
 					<br />
 					
 					#if ($tag_select) 

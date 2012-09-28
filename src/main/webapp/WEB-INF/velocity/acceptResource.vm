@@ -43,7 +43,7 @@
 		</p>
 		
 		<label for="geocode">Geocode: </label>
-		<input name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end />
+		<input id="geocode" name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end />
 		<br />
 		
 		#parse("includes/moderation_fields.vm")
