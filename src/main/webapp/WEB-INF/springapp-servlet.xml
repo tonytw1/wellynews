@@ -13,7 +13,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
         
 	<context:annotation-config />
-	<context:component-scan base-package="com.n0tice.rsston0tice" />
+	<context:component-scan base-package="nz.gen.wellington,uk.co.eelpieconsulting.common" />
 
 	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
@@ -37,11 +37,6 @@
 		<constructor-arg ref="urlStack" />
 		<constructor-arg ref="contentModelBuilder" />		
 	</bean>
-	
-	<bean id="geocodeAjaxController" class="nz.co.searchwellington.controllers.ajax.GeocodeAjaxController">
-		<constructor-arg ref="compositeGeocodingService" />
-		<constructor-arg ref="jsonViewFactory" />		
-	</bean>	
 		
 	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
 		<constructor-arg ref="adminRequestFilter" />	

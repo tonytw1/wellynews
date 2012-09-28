@@ -1,3 +1,0 @@
-#foreach($item in $suggestions)
-$item
-#end

@@ -36,10 +36,10 @@
 						#end
 					#end
 					
-					#parse("includes/tag_edit_fields.vm")				
+					#parse("includes/tag_edit_fields.vm")
 									
 					<label for="geocode">Geocode: </label>
-					<input name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end />
+					<input id="geocode" name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end />
 					<br />
 				
 					<label for="description">Description: </label>
