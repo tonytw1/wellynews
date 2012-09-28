@@ -41,7 +41,7 @@ $(function() {
 			});
 		},			
 		select: function( event, ui ) {
-			$("#selected").text( ui.item ? "Selected: " + ui.item.osmId + "/" + ui.item.osmType : "Nothing selected");
+			$("#selectedGeocode").val( ui.item ? ui.item.osmId + "/" + ui.item.osmType : "");
 		}
 	});
 
