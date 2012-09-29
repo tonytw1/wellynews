@@ -163,10 +163,13 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/twitter/callback";
 	}
 
-	public String getLocationUrlFor(Geocode somewhere) {		
+	public String getLocationUrlFor(Geocode somewhere) {
+		if (somewhere.getOsmPlaceId() != null) {
+			return siteInformation.getUrl() + "/geotagged?osm=" + urlEncode(somewhere.getOsmPlaceId());
+		}
 		return siteInformation.getUrl() + "/geotagged?location=" + urlEncode(somewhere.getAddress());
 	}
-
+	
 	public String getSearchUrlFor(String keywords) {
 		return siteInformation.getUrl() + "/search?keywords=" + urlEncode(keywords);
 	}

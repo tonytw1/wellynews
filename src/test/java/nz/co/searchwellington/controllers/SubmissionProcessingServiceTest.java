@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers;
 
 import java.util.Date;
 
-import nz.co.searchwellington.geocoding.GeoCodeService;
+import nz.co.searchwellington.geocoding.NominatimGeocodingService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
@@ -24,7 +24,7 @@ public class SubmissionProcessingServiceTest {
 
 	private static final String FEED_NAME = "A feed";
 	@Mock UrlCleaner urlCleaner;
-	@Mock GeoCodeService geocodeService;
+	@Mock NominatimGeocodingService geocodeService;
 	@Mock TagDAO tagDAO;
 	@Mock HandTaggingDAO tagVoteDAO;
 	@Mock ResourceRepository resourceDAO;

@@ -1,8 +1,11 @@
 #if ($tag.geocode && $tag.geocode.address)		
 	#if ($tag.geocode.valid) 
 		<a href="$urlBuilder.getLocationUrlFor($tag.geocode)">#parse("includes/geotag_icon.vm")</a> $tag.geocode.address
-		#if ($tag.geocode.osmPlaceId) 
-			- OSM $tag.geocode.osmPlaceId ($tag.geocode.type)
+		#if ($tag.geocode.osmPlaceId)
+			- OSM $tag.geocode.osmPlaceId
+		#end
+		#if ($tag.geocode.type)
+			- OSM $tag.geocode.type
 		#end
 	#else
 		#parse("includes/geotag_icon.vm") $tag.geocode.address

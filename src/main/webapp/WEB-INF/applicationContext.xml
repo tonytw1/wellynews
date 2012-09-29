@@ -288,6 +288,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				</bean>
 				<bean class="nz.co.searchwellington.filters.LocationParameterFilter">
 					<constructor-arg ref="geocodingService" />
+					<constructor-arg ref="nominatimGeocodingService" />				
 				</bean>				
 			</list>
 		</constructor-arg>

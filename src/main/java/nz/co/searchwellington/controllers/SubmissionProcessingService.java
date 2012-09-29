@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.submission.SubmissionProcessor;
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
-import nz.co.searchwellington.geocoding.GeoCodeService;
+import nz.co.searchwellington.geocoding.NominatimGeocodingService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
@@ -30,28 +30,28 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class SubmissionProcessingService {
 
 	private static final String REQUEST_TITLE_NAME = "title";
 	private static final String REQUEST_DATE_NAME = "date";
     private static final String REQUEST_DESCRIPTION_NAME = "description";
-    private static final String REQUEST_GEOCODE_NAME = "geocode";
-    private static final String REQUEST_GEOCODE_OSM_ID = "selectedGeocode";
-    
+    private static final String REQUEST_SELECTED_GEOCODE = "selectedGeocode";
 	private static final String REQUEST_EMBARGO_DATE_NAME = "embargo_date";
     
     private Logger log = Logger.getLogger(SubmissionProcessingService.class);
         
     private UrlCleaner urlCleaner;
-    private GeoCodeService geocodeService;
+    private NominatimGeocodingService nominatimGeocodeService;
     private TagDAO tagDAO;
     private HandTaggingDAO tagVoteDAO;
 	private ResourceRepository resourceDAO;
 	
-	public SubmissionProcessingService(UrlCleaner urlCleaner, GeoCodeService geocodeService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, ResourceRepository resourceDAO) {
+	@Autowired
+	public SubmissionProcessingService(UrlCleaner urlCleaner, NominatimGeocodingService NominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, ResourceRepository resourceDAO) {
 		this.urlCleaner = urlCleaner;
-		this.geocodeService = geocodeService;
+		this.nominatimGeocodeService = NominatimGeocodingService;
 		this.tagDAO = tagDAO;
 		this.tagVoteDAO = tagVoteDAO;
 		this.resourceDAO = resourceDAO;
@@ -83,21 +83,17 @@ public class SubmissionProcessingService {
 	
 	public Geocode processGeocode(HttpServletRequest req) {      
 		log.info("Starting processing of geocode.");
-		if (req.getParameter(REQUEST_GEOCODE_NAME) != null) {
-			final String osmId = new String(req.getParameter(REQUEST_GEOCODE_OSM_ID));
-			String address = new String(req.getParameter(REQUEST_GEOCODE_NAME));
-			
-	        log.info("Found address: " + address);
-	        address = UrlFilters.trimWhiteSpace(address);
-	        address = UrlFilters.stripHtml(address);
-	        if (address != null && !address.trim().equals("")) {
-	            List<Geocode> resolvedGeocode = geocodeService.resolveAddress(address);	// TODO resolve by osm id
-	            if (resolvedGeocode != null && !resolvedGeocode.isEmpty() && resolvedGeocode.get(0).isValid()) {
-	            	return resolvedGeocode.get(0);
-	            	
-	            } else {
-	            	return new Geocode(address, osmId);
-	            }	            
+		if (req.getParameter(REQUEST_SELECTED_GEOCODE) != null) {
+	    	final String selectedGeocode = new String(req.getParameter(REQUEST_SELECTED_GEOCODE));
+	        log.info("Found selected geocode: " + selectedGeocode);
+	        if (selectedGeocode != null && !selectedGeocode.trim().equals("")) {
+	        	
+	        	final long osmId = Long.parseLong(selectedGeocode.split("/")[0]);
+	            final String osmType = selectedGeocode.split("/")[1];
+	            
+	            final Geocode resolvedGeocode = nominatimGeocodeService.resolveAddress(osmType, osmId);
+	            log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedGeocode);
+	            return resolvedGeocode;
 	        }
 		}
 		return null;

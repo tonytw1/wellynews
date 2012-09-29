@@ -10,11 +10,13 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class TagDAO {
 
-	SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 
 	public TagDAO() {
 	}

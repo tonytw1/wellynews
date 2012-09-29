@@ -115,6 +115,14 @@ public class Geocode implements Serializable {
 		this.osmType = osmType;
 	}
 	
+	@Deprecated
+	public String getOsmPlaceId() {
+		if (osmId != null && osmType != null) {
+			return osmId + "/" + osmType.substring(0, 1).toUpperCase();
+		}
+		return null;
+	}
+	
 	public String getResolver() {
 		return resolver;
 	}
@@ -143,6 +151,13 @@ public class Geocode implements Serializable {
 		return "Geocode [address=" + address + ", id=" + id + ", latitude="
 				+ latitude + ", longitude=" + longitude + ", osmPlaceId="
 				+ osmId + ", type=" + type + "]";
+	}
+	
+	public String getDisplayName() {
+		if (address !=  null) {
+			return address;
+		}
+		return latitude + ", " + longitude;		
 	}
 	
 }

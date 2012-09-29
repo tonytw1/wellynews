@@ -3,7 +3,9 @@ package nz.co.searchwellington.utils;
 import nz.co.searchwellington.urls.UrlResolverService;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UrlCleaner {
 
     Logger log = Logger.getLogger(UrlCleaner.class);

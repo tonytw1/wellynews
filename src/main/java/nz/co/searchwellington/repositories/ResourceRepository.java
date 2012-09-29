@@ -13,7 +13,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 
-
 public interface ResourceRepository {
 
     public Resource loadResourceById(int resourceID);

@@ -38,11 +38,8 @@
 					
 					#parse("includes/tag_edit_fields.vm")
 														
-					<label for="geocode">Geocode: </label>
-					<input id="geocode" name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end />
-					<input id="selectedGeocode" name="selectedGeocode">
-					<br />
-				
+					#parse("includes/geocodeFields.vm")
+									
 					<label for="description">Description: </label>
 					<textarea name="description" rows="6" cols="40">$escape.html($resource.description)</textarea>
 					<br />
