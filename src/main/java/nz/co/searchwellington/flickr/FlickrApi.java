@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
 import com.aetrion.flickr.Flickr;
@@ -12,6 +13,7 @@ import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.REST;
 import com.aetrion.flickr.photos.PhotoList;
 
+@Component
 public class FlickrApi {
     
     private static Logger log = Logger.getLogger(FlickrApi.class);

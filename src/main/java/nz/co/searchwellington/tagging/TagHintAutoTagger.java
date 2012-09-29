@@ -9,13 +9,17 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TagHintAutoTagger {
 
-	static Logger log = Logger.getLogger(TagHintAutoTagger.class);
+	private static Logger log = Logger.getLogger(TagHintAutoTagger.class);
 
 	private TagDAO tagDAO;
 
+	@Autowired
 	public TagHintAutoTagger(TagDAO tagDAO) {
 		this.tagDAO = tagDAO;
 	}

@@ -3,11 +3,13 @@ package nz.co.searchwellington.caching;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import net.spy.memcached.AddrUtil;
 import net.spy.memcached.MemcachedClient;
 import nz.co.searchwellington.controllers.TagController;
 
+@Component
 public class MemcachedCache {
 	
 	private static Logger log = Logger.getLogger(TagController.class);

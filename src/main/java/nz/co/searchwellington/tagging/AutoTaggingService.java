@@ -9,7 +9,10 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.UserRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AutoTaggingService {
 	
 	private static Logger log = Logger.getLogger(AutoTaggingService.class);
@@ -21,6 +24,7 @@ public class AutoTaggingService {
 	private HandTaggingDAO handTaggingDAO;
 	private UserRepository userDAO;
 	
+	@Autowired
 	public AutoTaggingService(PlaceAutoTagger placeAutoTagger, TagHintAutoTagger tagHintAutoTagger, HandTaggingDAO handTaggingDAO, UserRepository userDAO) {
 		this.placeAutoTagger = placeAutoTagger;
 		this.tagHintAutoTagger = tagHintAutoTagger;

@@ -2,6 +2,8 @@ package nz.co.searchwellington.feeds;
 
 import java.util.HashSet;
 
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -9,6 +11,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Twit;
 
+@Component
 public class FeednewsItemToNewsitemService {
 	
 	// TODO merge with addSuppressAndLocalCopyInformation?

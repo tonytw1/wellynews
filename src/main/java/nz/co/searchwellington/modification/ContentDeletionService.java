@@ -16,11 +16,14 @@ import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class ContentDeletionService {
 	
-	static Logger log = Logger.getLogger(ContentDeletionService.class);
+	private static Logger log = Logger.getLogger(ContentDeletionService.class);
     	
 	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
@@ -34,6 +37,7 @@ public class ContentDeletionService {
 	public ContentDeletionService() {
 	}
 	
+	@Autowired
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ResourceRepository resourceDAO, MongoSnapshotDAO snapshotDAO,
@@ -76,8 +80,7 @@ public class ContentDeletionService {
 		solrQueryService.deleteResourceFromIndex(resource.getId());
 		resourceDAO.deleteResource(resource);
 	}
-
-
+	
 	private void removeRelatedFeedFromTags(Feed editResource) {
 		for (Tag tag : tagDAO.getAllTags()) {
 			if (tag.getRelatedFeed() != null && tag.getRelatedFeed().equals(editResource)) {
@@ -85,14 +88,12 @@ public class ContentDeletionService {
 			}
 		}
 	}
-
-
+	
 	private void suppressDeletedNewsitem(Newsitem deletedNewsitem) {
 		log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl());			
 		supressionService.suppressUrl(deletedNewsitem.getUrl());
 	}
-
-		
+	
 	private void removePublisherFromPublishersContent(Resource editResource) {
     	Website publisher = (Website) editResource;
     	for (PublishedResource published : resourceDAO.getNewsitemsForPublishers(publisher)) {
@@ -108,7 +109,6 @@ public class ContentDeletionService {
     		resourceDAO.saveResource(watchlist);					
     	}
     }
-    
 	
     private void removeFeedFromFeedNewsitems(Feed feed) {    	
     	for (Newsitem newsitem : resourceDAO.getNewsitemsForFeed(feed)) {

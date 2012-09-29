@@ -5,23 +5,24 @@ import nz.co.searchwellington.config.Config;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class ConfigDAO implements ConfigRepository {
     
-    static Logger log = Logger.getLogger(ConfigDAO.class);
+	private static Logger log = Logger.getLogger(ConfigDAO.class);
     
-    SessionFactory sessionFactory;
-
-    
+	private SessionFactory sessionFactory;
+	
     public ConfigDAO() {        
     }
 
-    
+    @Autowired
     public ConfigDAO(SessionFactory sessionFactory) {        
         this.sessionFactory = sessionFactory;
     }
-    
     
     public Config getConfig() {
         Config config  = loadConfigObject(); 
@@ -44,7 +45,6 @@ public class ConfigDAO implements ConfigRepository {
         return null;
     }
     
-    
     public String getFlickrPoolGroupId() {
         Config config  = loadConfigObject();  
         if (config != null) {
@@ -55,8 +55,6 @@ public class ConfigDAO implements ConfigRepository {
         }
         return null;
     }
-
-    
     
     public boolean getUseClickThroughCounter() {
         Config config  = loadConfigObject();     
@@ -72,7 +70,6 @@ public class ConfigDAO implements ConfigRepository {
         return false;
     }
     
-    
     public boolean isTwitterListenerEnabled() {
     	 Config config  = loadConfigObject();  
          if (config != null) {
@@ -80,7 +77,6 @@ public class ConfigDAO implements ConfigRepository {
          }
          return false;
     }
-    
     
     public boolean isFeedReadingEnabled() {
     	 Config config  = loadConfigObject();  
@@ -90,7 +86,6 @@ public class ConfigDAO implements ConfigRepository {
          return false;    	
     }
     
-        
     private Config loadConfigObject() {
         return  (Config) sessionFactory.getCurrentSession().createCriteria(Config.class).setCacheable(true).uniqueResult();
     }

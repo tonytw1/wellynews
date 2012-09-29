@@ -18,20 +18,21 @@ import nz.co.searchwellington.repositories.solr.indexing.SolrGeotagHandler;
 import nz.co.searchwellington.repositories.solr.indexing.SolrTweetsHandler;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
-import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SolrInputDocumentBuilder {
 	
 	public static final String PUBLISHER_NAME = "publisherName";
-	
-	private static Logger log = Logger.getLogger(SolrInputDocumentBuilder.class);
-		
+			
 	private SnapshotBodyExtractor snapshotBodyExtractor;
 	private TaggingReturnsOfficerService taggingReturnsService;
 	private HandTaggingDAO handTaggingDAO;
 	private SolrTweetsHandler tweetsHandler;
 	
+	@Autowired
 	public SolrInputDocumentBuilder(
 			SnapshotBodyExtractor snapshotBodyExtractor,
 			TaggingReturnsOfficerService taggingReturnsService,

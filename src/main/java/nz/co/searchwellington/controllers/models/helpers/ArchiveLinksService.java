@@ -6,19 +6,20 @@ import java.util.Map;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class ArchiveLinksService {
 	
-		
 	private ContentRetrievalService contentRetrievalService;
 	
-	
+	@Autowired
 	public ArchiveLinksService(ContentRetrievalService contentRetrievalService) {
 		this.contentRetrievalService = contentRetrievalService;
 	}
-
-
+	
 	public void populateArchiveLinks(ModelAndView mv, List<ArchiveLink> archiveMonths) {                        
         final int MAX_BACK_ISSUES = 6;
         if (archiveMonths.size() <= MAX_BACK_ISSUES) {
@@ -29,7 +30,6 @@ public class ArchiveLinksService {
         }        
         populateArchiveStatistics(mv);
     }
-	
 	
     private void populateArchiveStatistics(ModelAndView mv) {
 		Map<String, Integer> archiveStatistics = contentRetrievalService.getArchiveStatistics();

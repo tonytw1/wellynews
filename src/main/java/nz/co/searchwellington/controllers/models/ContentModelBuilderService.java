@@ -3,12 +3,16 @@ package nz.co.searchwellington.controllers.models;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.views.JsonViewFactory;
 import nz.co.searchwellington.views.RssViewFactory;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.views.ViewFactory;
+
+@Component
 public class ContentModelBuilderService {
 	
 	private static Logger logger = Logger.getLogger(ContentModelBuilderService.class);
@@ -16,14 +20,15 @@ public class ContentModelBuilderService {
 	private static final String JSON_CALLBACK_PARAMETER = "callback";
 	
 	private RssViewFactory rssViewFactory;
-	private JsonViewFactory jsonViewFactory;
+	private ViewFactory viewFactory;
 	private JsonCallbackNameValidator jsonCallbackNameValidator;
 	private ContentRetrievalService contentRetrievalService;
 	private ModelBuilder[] modelBuilders;
 	
-	public ContentModelBuilderService(RssViewFactory rssViewFactory, JsonViewFactory jsonViewFactory, JsonCallbackNameValidator jsonCallbackNameValidator, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
+	@Autowired
+	public ContentModelBuilderService(RssViewFactory rssViewFactory, ViewFactory viewFactory, JsonCallbackNameValidator jsonCallbackNameValidator, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
 		this.rssViewFactory = rssViewFactory;
-		this.jsonViewFactory = jsonViewFactory;
+		this.viewFactory = viewFactory;
 		this.jsonCallbackNameValidator = jsonCallbackNameValidator;
 		this.contentRetrievalService = contentRetrievalService;
 		this.modelBuilders = modelBuilders;
@@ -45,7 +50,7 @@ public class ContentModelBuilderService {
 				}				
 				if (path.endsWith("/json")) {
 					logger.info("Selecting json view for path: " + path);
-					mv.setView(jsonViewFactory.makeView());					
+					mv.setView(viewFactory.getJsonView());					
 					populateJsonCallback(request, mv);								
 					return mv;
 				}

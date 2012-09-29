@@ -5,7 +5,10 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ConfigRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FlickrService {
 
     private static final int ONE_DAY = 3600 * 24;
@@ -16,6 +19,7 @@ public class FlickrService {
     private ConfigRepository configDAO;
 	private MemcachedCache cache;
     
+	@Autowired
     public FlickrService(FlickrApi flickrApi, ConfigRepository configDAO, MemcachedCache cache) {
         this.flickerApiService = flickrApi;
         this.configDAO = configDAO;

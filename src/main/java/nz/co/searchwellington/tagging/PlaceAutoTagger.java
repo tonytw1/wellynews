@@ -8,15 +8,19 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PlaceAutoTagger {
     
-    Logger log = Logger.getLogger(PlaceAutoTagger.class);
+	private static Logger log = Logger.getLogger(PlaceAutoTagger.class);
     
     final String PLACES_TAG_NAME = "places";
         
     private TagDAO tagDAO;
     
+    @Autowired
     public PlaceAutoTagger(TagDAO tagDAO) {
         this.tagDAO = tagDAO;
     }

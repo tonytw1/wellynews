@@ -13,8 +13,11 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private static final int MAX_OWNED_TO_SHOW_IN_RHS = 4;
@@ -26,6 +29,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	private UrlBuilder urlBuilder;
 	private ArchiveLinksService archiveLinksService;
 	
+	@Autowired
 	public IndexModelBuilder(ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter,
 			UrlBuilder urlBuilder, ArchiveLinksService archiveLinksService) {

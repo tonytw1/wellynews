@@ -17,15 +17,18 @@ import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class FeedReader {
       
 	private static Logger log = Logger.getLogger(FeedReader.class);
 	
     private ResourceRepository resourceDAO;
-    private RssfeedNewsitemService rssfeedNewsitemService;
+    private CachingRssfeedNewsitemService rssfeedNewsitemService;
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
@@ -38,8 +41,9 @@ public class FeedReader {
     public FeedReader() {        
     }
     
+    @Autowired
 	public FeedReader(ResourceRepository resourceDAO,
-			RssfeedNewsitemService rssfeedNewsitemService,
+			CachingRssfeedNewsitemService rssfeedNewsitemService,
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			DateFormatter dateFormatter, UrlCleaner urlCleaner,
 			SuggestionRepository suggestionDAO,

@@ -4,12 +4,16 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class TwitterReactionModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
 	private ContentRetrievalService contentRetrievalService;
 	
+	@Autowired
 	public TwitterReactionModelBuilder(ContentRetrievalService contentRetrievalService) {
 		this.contentRetrievalService = contentRetrievalService;
 	}

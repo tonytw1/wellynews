@@ -11,17 +11,21 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
+@Component
 public class CommentFeedService {
     
     public final static Logger log = Logger.getLogger(CommentFeedService.class);
     
     private RssHttpFetcher rssHttpFetcher;
-        
+    
+    @Autowired
     public CommentFeedService(RssHttpFetcher rssHttpFetcher) {       
         this.rssHttpFetcher = rssHttpFetcher;
     }

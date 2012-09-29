@@ -13,8 +13,11 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class TagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private ContentRetrievalService contentRetrievalService;
@@ -22,6 +25,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
 	
+	@Autowired
 	public TagCombinerModelBuilder(ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService) {

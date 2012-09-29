@@ -1,5 +1,7 @@
 package nz.co.searchwellington.views;
 
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Watchlist;
@@ -14,6 +16,7 @@ import com.sun.syndication.feed.synd.SyndContentImpl;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 
+@Component
 public class RssItemMaker {
 	
 	public SyndEntry makeRssItem(FrontendResource content) {

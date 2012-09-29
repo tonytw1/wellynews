@@ -23,8 +23,11 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class HibernateResourceDAO implements ResourceRepository {
 
     private SessionFactory sessionFactory;
@@ -32,6 +35,7 @@ public class HibernateResourceDAO implements ResourceRepository {
     public HibernateResourceDAO() {
     }
     
+    @Autowired
     public HibernateResourceDAO(SessionFactory sessionFactory) {     
         this.sessionFactory = sessionFactory;
     }

@@ -13,7 +13,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Namespace;
 import org.dom4j.QName;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GoogleSitemapService {
     
 	private static final String NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9";
@@ -23,6 +26,7 @@ public class GoogleSitemapService {
     private UrlBuilder urlBuilder;
     private TagDAO tagDAO;
     
+    @Autowired
     public GoogleSitemapService(ContentRetrievalService contentRetrivalService, DateFormatter dateFormatter, UrlBuilder urlBuilder, TagDAO tagDAO) {        
         this.contentRetrivalService = contentRetrivalService;
         this.dateFormatter = dateFormatter;

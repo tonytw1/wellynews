@@ -3,18 +3,23 @@ package nz.co.searchwellington.feeds.rss;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.fetcher.impl.HttpClientFeedFetcher;
 
+@Component
 public class RssHttpFetcher {
 
+	private static Logger log = Logger.getLogger(RssHttpFetcher.class);
+	
 	private static final int CONNECT_TIMEOUT = 10000;
 	private static final int READ_TIMEOUT = 30000;
 	
-	Logger log = Logger.getLogger(RssHttpFetcher.class);
 	private String userAgent;
-
+	
+	@Autowired
 	public SyndFeed httpFetch(String feedUrl) {
 		log.info("Fetching rss from live url: " + feedUrl);
 		try {

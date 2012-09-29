@@ -10,8 +10,11 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private static final String FEED_ATTRIBUTE = "feedAttribute";
@@ -19,6 +22,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 		
+	@Autowired
 	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;

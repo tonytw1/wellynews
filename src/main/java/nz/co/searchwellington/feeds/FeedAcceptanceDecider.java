@@ -13,13 +13,15 @@ import nz.co.searchwellington.repositories.SupressionRepository;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Component
 public class FeedAcceptanceDecider {
     
-    static Logger log = Logger.getLogger(FeedAcceptanceDecider.class);
+	private static Logger log = Logger.getLogger(FeedAcceptanceDecider.class);
     
     private ResourceRepository resourceDAO;
     private SupressionRepository supressionDAO;
@@ -29,14 +31,14 @@ public class FeedAcceptanceDecider {
     public FeedAcceptanceDecider() {
 	}
     
+    @Autowired
 	public FeedAcceptanceDecider(ResourceRepository resourceDAO, SupressionRepository supressionDAO, UrlCleaner urlCleaner, SuggestionRepository suggestionDAO) {
         this.resourceDAO = resourceDAO;
         this.supressionDAO = supressionDAO;
         this.urlCleaner = urlCleaner;
         this.suggestionDAO = suggestionDAO;
     }
-
-
+    
     @Transactional(propagation = Propagation.REQUIRES_NEW) 
     public List<String> getAcceptanceErrors(Feed feed, FeedNewsitem feedNewsitem, String feedAcceptancePolicy) {
         List<String> acceptanceErrors = new ArrayList<String>();
@@ -60,7 +62,6 @@ public class FeedAcceptanceDecider {
         
         return acceptanceErrors;        
     }
-
     
 	public boolean shouldSuggest(FeedNewsitem feednewsitem) {
 		String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
@@ -102,7 +103,7 @@ public class FeedAcceptanceDecider {
 		 }
 	}
 	
-    public void lessThanOneWeekOld(FeedNewsitem feedNewsitem, String feedAcceptancePolicy, List<String> acceptanceErrors) {      
+    private void lessThanOneWeekOld(FeedNewsitem feedNewsitem, String feedAcceptancePolicy, List<String> acceptanceErrors) {      
         if (feedAcceptancePolicy != null && feedAcceptancePolicy.equals("accept_without_dates")) {
             return;                        
         }

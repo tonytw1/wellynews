@@ -7,7 +7,10 @@ import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.FeedNewsitem;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FeedNewsitemCache {
 	
 	private final Logger log = Logger.getLogger(FeedNewsitemCache.class);
@@ -17,6 +20,7 @@ public class FeedNewsitemCache {
 	
 	private MemcachedCache cache;
 
+	@Autowired
 	public FeedNewsitemCache(MemcachedCache cache) {		
 		this.cache = cache;
 	}

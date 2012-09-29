@@ -12,8 +12,11 @@ import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class RssNewsitemPrefetcher {
 	
 	private static Logger log = Logger.getLogger(RssNewsitemPrefetcher.class);
@@ -27,6 +30,7 @@ public class RssNewsitemPrefetcher {
 	public RssNewsitemPrefetcher() {		
 	}
 	
+	@Autowired
 	public RssNewsitemPrefetcher(ResourceRepository resourceDAO,
 			LiveRssfeedNewsitemService rssNewsitemService,
 			FeedNewsitemCache feedNewsitemCache,

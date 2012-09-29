@@ -6,7 +6,12 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.UserRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope("request")
 public class LoggedInUserFilter {
 	
 	private static Logger log = Logger.getLogger(LoggedInUserFilter.class);
@@ -17,6 +22,7 @@ public class LoggedInUserFilter {
 	public LoggedInUserFilter() {
 	}
 
+	@Autowired
 	public LoggedInUserFilter(UserRepository userDAO) {	
 		this.loggedInUser = null;
 		this.userDAO = userDAO; 

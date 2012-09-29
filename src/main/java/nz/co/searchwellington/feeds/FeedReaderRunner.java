@@ -7,7 +7,10 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.UserRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FeedReaderRunner {
 
 	private static Logger log = Logger.getLogger(FeedReaderRunner.class);
@@ -17,6 +20,7 @@ public class FeedReaderRunner {
 	private FeedReader feedReader;
 	private UserRepository userDAO;
 	
+	@Autowired
 	public FeedReaderRunner(FeedReader feedReader, UserRepository userDAO) {		
 		this.feedReader = feedReader;
 		this.userDAO = userDAO;

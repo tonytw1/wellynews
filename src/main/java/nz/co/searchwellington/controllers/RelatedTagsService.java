@@ -19,7 +19,10 @@ import nz.co.searchwellington.repositories.solr.SolrQueryService;
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RelatedTagsService {
 	
 	private static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
@@ -29,6 +32,7 @@ public class RelatedTagsService {
 	private SolrFacetLoader solrFacetLoader;
 	private ShowBrokenDecisionService showBrokenDecisionService;
 	
+	@Autowired
 	public RelatedTagsService(SolrQueryService solrQueryService,
 			SolrKeywordQueryBuilder solrKeywordQueryBuilder,
 			SolrFacetLoader solrFacetLoader,

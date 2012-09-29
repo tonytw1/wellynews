@@ -24,13 +24,17 @@ import nz.co.searchwellington.model.taggingvotes.voters.PublishersTagsVoter;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TaggingReturnsOfficerService {
 		
 	private static Logger log = Logger.getLogger(TaggingReturnsOfficerService.class);
 
 	private HandTaggingDAO tagVoteDAO;
 	
+	@Autowired
 	public TaggingReturnsOfficerService(HandTaggingDAO tagVoteDAO) {
 		this.tagVoteDAO = tagVoteDAO;
 	}

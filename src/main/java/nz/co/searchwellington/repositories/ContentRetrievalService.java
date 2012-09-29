@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
@@ -23,6 +26,7 @@ import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
+@Component
 public class ContentRetrievalService {
 	
 	final protected int MAX_NEWSITEMS_TO_SHOW = 30;
@@ -35,6 +39,7 @@ public class ContentRetrievalService {
 	private DiscoveredFeedRepository discoveredFeedsDAO;
 	private SolrBackedResourceDAO solrBackedResourceDAO;
 	
+	@Autowired
 	public ContentRetrievalService(ResourceRepository resourceDAO,
 			KeywordSearchService keywordSearchService,
 			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO,

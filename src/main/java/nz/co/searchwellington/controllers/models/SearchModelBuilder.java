@@ -8,14 +8,18 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class SearchModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 
 	private static final String KEYWORDS_PARAMETER = "keywords";
 	
 	private UrlBuilder urlBuilder;
 	
+	@Autowired
 	public SearchModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;

@@ -1,14 +1,19 @@
 package nz.co.searchwellington.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
 
+@Component
 public class RssUrlBuilder {
     
     private SiteInformation siteInformation;
     
+    @Autowired
     public RssUrlBuilder(SiteInformation siteInformation) {
         this.siteInformation = siteInformation;
     }

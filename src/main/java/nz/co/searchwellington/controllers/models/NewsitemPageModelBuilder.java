@@ -14,8 +14,11 @@ import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class NewsitemPageModelBuilder implements ModelBuilder {
 	
 	private static Logger logger = Logger.getLogger(NewsitemPageModelBuilder.class);
@@ -27,6 +30,7 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	private LoggedInUserFilter loggedInUserFilter;
 	private ResourceRepository resourceDAO;
 	
+	@Autowired
 	public NewsitemPageModelBuilder(ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService, 
 			TagWidgetFactory tagWidgetFactory, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter, ResourceRepository resourceDAO) {
 		this.contentRetrievalService = contentRetrievalService;

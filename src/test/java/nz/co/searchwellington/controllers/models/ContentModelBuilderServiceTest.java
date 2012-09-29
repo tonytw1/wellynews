@@ -8,7 +8,6 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.views.JsonViewFactory;
 import nz.co.searchwellington.views.RssViewFactory;
 
 import org.junit.Before;
@@ -19,10 +18,12 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
+import uk.co.eelpieconsulting.common.views.ViewFactory;
+
 public class ContentModelBuilderServiceTest {
 	
 	@Mock RssViewFactory rssViewFactory;
-	@Mock JsonViewFactory jsonViewFactory;
+	@Mock ViewFactory viewFactory;
 	@Mock JsonCallbackNameValidator jsonCallbackNameValidator;
 	@Mock ContentRetrievalService contentRetrievalService;
 	ModelBuilder[] modelBuilders;
@@ -54,7 +55,7 @@ public class ContentModelBuilderServiceTest {
 		when(validModelBuilder.isValid(request)).thenReturn(true);
 		when(validModelBuilder.populateContentModel(request)).thenReturn(validModelAndView);
 		
-		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, jsonViewFactory, jsonCallbackNameValidator, contentRetrievalService,  modelBuilders);
+		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, viewFactory, jsonCallbackNameValidator, contentRetrievalService,  modelBuilders);
 	}
 	
 	@Test
@@ -77,7 +78,7 @@ public class ContentModelBuilderServiceTest {
 	
 	@Test
 	public void jsonSuffixedRequestsShouldBeGivenTheRssView() throws Exception {
-		when(jsonViewFactory.makeView()).thenReturn(jsonView);
+		when(viewFactory.getJsonView()).thenReturn(jsonView);
 		request.setPathInfo("/something/json");
 		assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).getView());
 	}
@@ -98,7 +99,7 @@ public class ContentModelBuilderServiceTest {
 	
 	@Test
 	public void jsonCallbackShouldBeAddedToJsonModelIfValid() throws Exception {
-		when(jsonViewFactory.makeView()).thenReturn(jsonView);
+		when(viewFactory.getJsonView()).thenReturn(jsonView);
 		request.setPathInfo("/something/json");
 		request.setParameter("callback", "validname");
 		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter("callback"))).thenReturn(true);
@@ -108,7 +109,7 @@ public class ContentModelBuilderServiceTest {
 	
 	@Test
 	public void shouldRejectInvalidCallbackNames() throws Exception {
-		when(jsonViewFactory.makeView()).thenReturn(jsonView);
+		when(viewFactory.getJsonView()).thenReturn(jsonView);
 		request.setPathInfo("/something/json");
 		request.setParameter("callback", "Invalid name!");
 		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter("callback"))).thenReturn(false);

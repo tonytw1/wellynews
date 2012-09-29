@@ -17,8 +17,11 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private static Logger logger = Logger.getLogger(PublisherModelBuilder.class);
@@ -28,6 +31,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	
+	@Autowired
 	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;

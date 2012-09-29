@@ -16,6 +16,8 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.GeoRSSUtils;
@@ -29,15 +31,18 @@ import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
+@Component
 public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
-           
-    public final Logger log = Logger.getLogger(LiveRssfeedNewsitemService.class);
+	
+    private final Logger log = Logger.getLogger(LiveRssfeedNewsitemService.class);
+    
     private static final int MAXIMUM_BODY_LENGTH = 400;
     
     private UrlCleaner urlCleaner;
 	private RssHttpFetcher rssFetcher;
     private TextTrimmer textTrimmer;
 	
+    @Autowired
     public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer, FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
 		this.urlCleaner = urlCleaner;
 		this.rssFetcher = rssFetcher;

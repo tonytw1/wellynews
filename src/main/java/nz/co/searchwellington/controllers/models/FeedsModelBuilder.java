@@ -7,8 +7,11 @@ import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	static Logger log = Logger.getLogger(FeedsModelBuilder.class);
@@ -16,6 +19,7 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private UrlBuilder urlBuilder;
 		
+	@Autowired
 	public FeedsModelBuilder(ContentRetrievalService contentRetrievalService, SuggestedFeeditemsService suggestedFeeditemsService, UrlBuilder urlBuilder) {		
 		this.contentRetrievalService = contentRetrievalService;
 		this.suggestedFeeditemsService = suggestedFeeditemsService;

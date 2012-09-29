@@ -10,8 +10,11 @@ import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class SuggestionDAO implements SuggestionRepository {
 	
 	private static Logger log = Logger.getLogger(SuggestionDAO.class);
@@ -21,6 +24,7 @@ public class SuggestionDAO implements SuggestionRepository {
 	public SuggestionDAO() {		
 	}
 
+	@Autowired
 	public SuggestionDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}

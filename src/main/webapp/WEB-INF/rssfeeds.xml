@@ -5,53 +5,5 @@
 	<bean id="rssHttpFetcher" class="nz.co.searchwellington.feeds.rss.RssHttpFetcher" >
 		<property name="userAgent"><value>${http.useragent}</value></property>
 	</bean>
-	
-	<bean id="rssPrefetcher" class="nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher" >
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="liveRssfeedNewsitemService" />
-		<constructor-arg ref="feedNewsitemCache" />
-		<constructor-arg ref="feedReaderRunner" />
-		<constructor-arg ref="configDAO" />		
-	</bean>
-	
-	<bean id="feedReaderRunner" class="nz.co.searchwellington.feeds.FeedReaderRunner" >
-		<constructor-arg ref="feedReader" />		
-		<constructor-arg ref="userDAO" />		
-	</bean>
 		
-	<bean id="feednewsitemToNewsitemService" class="nz.co.searchwellington.feeds.FeednewsItemToNewsitemService" />
-	
-	<bean id="feedReader" class="nz.co.searchwellington.feeds.FeedReader">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />
-		<constructor-arg ref="feedAcceptanceDecider" />
-		<constructor-arg ref="dateFormatter" />
-		<constructor-arg ref="urlCleaner" />
-		<constructor-arg ref="suggestionDAO" />
-		<constructor-arg ref="contentUpdateService" />
-		<constructor-arg ref="feedItemAcceptor" />
-		<constructor-arg ref="autoTaggingService" />
-		<constructor-arg ref="feednewsitemToNewsitemService" />		
-	</bean>
-						
-	<bean id="feedNewsitemCache" class="nz.co.searchwellington.feeds.FeedNewsitemCache" >
-		<constructor-arg ref="memcachedCache" />
-	</bean>
-		
-	<bean id="liveRssfeedNewsitemService" class="nz.co.searchwellington.feeds.LiveRssfeedNewsitemService">
-		<constructor-arg ref="urlCleaner" />
-		<constructor-arg ref="rssHttpFetcher" />
-		<constructor-arg ref="textTrimmer" />
-		<constructor-arg ref="feednewsitemToNewsitemService" />
-	</bean>
-		
-	<bean id="cachingRssfeedNewsitemService" class="nz.co.searchwellington.feeds.CachingRssfeedNewsitemService">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="supressionDAO" />
-		<constructor-arg ref="feedNewsitemCache" />
-		<constructor-arg ref="feednewsitemToNewsitemService" />		
-	</bean>
-	
-	<bean id="textTrimmer" class="nz.co.searchwellington.utils.TextTrimmer" />
-	
 </beans>

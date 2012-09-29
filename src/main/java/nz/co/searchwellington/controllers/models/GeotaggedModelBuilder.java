@@ -14,8 +14,11 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class GeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
@@ -28,6 +31,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	private RssUrlBuilder rssUrlBuilder;
 	private RelatedTagsService relatedTagsService;
 	
+	@Autowired
 	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;

@@ -8,7 +8,9 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.stereotype.Component;
 
+@Component
 public class DateFormatter {
    
     public static final String DAY_MONTH_YEAR_FORMAT = "d MMM yyyy";

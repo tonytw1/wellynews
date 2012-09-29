@@ -5,13 +5,17 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UrlStack {
     
-    private Logger log = Logger.getLogger(UrlStack.class);
+    private static Logger log = Logger.getLogger(UrlStack.class);
     
     private UrlBuilder urlBuilder;
     
+    @Autowired
     public UrlStack(UrlBuilder urlBuilder) {
 		this.urlBuilder = urlBuilder;
 	}

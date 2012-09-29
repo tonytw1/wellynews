@@ -10,7 +10,10 @@ import nz.co.searchwellington.repositories.TagDAO;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 // TODO remove duplication.
 public class TagWidgetFactory {
     
@@ -19,6 +22,7 @@ public class TagWidgetFactory {
     private TagDAO tagDAO;
     private ResourceRepository resourceDAO;
     
+    @Autowired
     public TagWidgetFactory(TagDAO tagDAO, ResourceRepository resourceDAO) {
 		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;

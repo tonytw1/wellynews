@@ -10,16 +10,21 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class StandardHttpFetcher implements HttpFetcher {
+@Component
+public class StandardHttpFetcher implements HttpFetcher {	// TODO migrate to common http
 
-    Logger log = Logger.getLogger(StandardHttpFetcher.class);
+	private static Logger log = Logger.getLogger(StandardHttpFetcher.class);
+	
     private static final int HTTP_TIMEOUT = 20000;
     
     private String userAgent;    
     private String httpProxyHostname;
     private int httpProxyPort;
     
+    @Autowired
     public HttpFetchResult httpFetch(String url) {
     	log.info("Attempting fetch of url: " + url);
 		HttpClient client = setupClient();        
@@ -48,30 +53,23 @@ public class StandardHttpFetcher implements HttpFetcher {
         }
 		return new HttpFetchResult(-1, null);
 	}
-
     
 	public String getUserAgent() {
 		return userAgent;
 	}
-
 	
 	public void setUserAgent(String userAgent) {
 		this.userAgent = userAgent;
 	}
 	
-	
-	
-	
 	public void setHttpProxyHostname(String httpProxyHostname) {
 		this.httpProxyHostname = httpProxyHostname;
 	}
-
-
+	
 	public void setHttpProxyPort(int httpProxyPort) {
 		this.httpProxyPort = httpProxyPort;
 	}
-
-
+	
 	private HttpClient setupClient() {
 		HttpClient client = new HttpClient();
 		if (userAgent != null) {

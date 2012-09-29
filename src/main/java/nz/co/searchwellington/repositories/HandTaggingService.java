@@ -7,8 +7,11 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.taggingvotes.HandTagging;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class HandTaggingService {
 	
 	private static Logger log = Logger.getLogger(HandTaggingService.class);
@@ -19,6 +22,7 @@ public class HandTaggingService {
 	public HandTaggingService() {
 	}
 
+	@Autowired
 	public HandTaggingService(HandTaggingDAO handTaggingDao, FrontendContentUpdater frontendContentUpdater) {
 		this.handTaggingDao = handTaggingDao;
 		this.frontendContentUpdater = frontendContentUpdater;

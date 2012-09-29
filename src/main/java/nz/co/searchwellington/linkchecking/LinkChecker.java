@@ -13,8 +13,11 @@ import nz.co.searchwellington.utils.HttpFetcher;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class LinkChecker {
     
 	private static Logger log = Logger.getLogger(LinkChecker.class);
@@ -30,6 +33,7 @@ public class LinkChecker {
 	public LinkChecker() {
     }
 	
+	@Autowired
 	public LinkChecker(ResourceRepository resourceDAO, MongoSnapshotDAO snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
 		this.resourceDAO = resourceDAO;
 		this.snapshotDAO = snapshotDAO;

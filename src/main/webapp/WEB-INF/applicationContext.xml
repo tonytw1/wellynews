@@ -6,7 +6,6 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>classpath:searchwellington.properties</value>
@@ -23,8 +22,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<import resource="linkextractors.xml" />
 	<import resource="urls.xml" />
 	<import resource="linkchecking.xml" />
-	<import resource="modelbuilders.xml"/>
-	
+		
 	<import resource="timertasks.xml"/>
 			
 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
@@ -74,9 +72,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean id="anonUserService" class="nz.co.searchwellington.controllers.AnonUserService">
 		<constructor-arg ref="userDAO" />
 	</bean>
-	
-	<bean id="rssItemMaker" class="nz.co.searchwellington.views.RssItemMaker" />
-		
+			
 	<bean id="loginResourceOwnershipService" class="nz.co.searchwellington.controllers.LoginResourceOwnershipService">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="userDAO" />
@@ -107,12 +103,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="urlCleaner" />
 		<constructor-arg ref="suggestionDAO" />
 	</bean>
-
-	<bean id="handTaggingService" class="nz.co.searchwellington.repositories.HandTaggingService">
-		<constructor-arg ref="handTaggingDAO" />
-		<constructor-arg ref="frontendContentUpdater" />
-	</bean>
-
+	
 	<bean id="tagModificationService" class="nz.co.searchwellington.modification.TagModificationService">
 		<constructor-arg ref="tagDAO" />	
 		<constructor-arg ref="handTaggingService" />	
@@ -130,20 +121,13 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	<bean name="commentFeedReaderJob" class="nz.co.searchwellington.jobs.CommentFeedReaderJob">
 		<constructor-arg ref="commentFeedReader" />
 	</bean>
-
-     <bean id="tagWidgetFactory" class="nz.co.searchwellington.widgets.TagWidgetFactory">
-     	<constructor-arg ref="tagDAO" />
-    	<constructor-arg ref="resourceDAO" />	
-    </bean>
-    
+	
   	<bean id="acceptanceWidgetFactory" class="nz.co.searchwellington.widgets.AcceptanceWidgetFactory" />    		
 
 	<bean id="snapshotBodyExtractor" class="nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor" >
 		<constructor-arg ref="snapshotDAO" />
 	</bean>
-			
-	<bean id="chartBuilder" class="nz.co.searchwellington.charts.ChartBuilder" />
-
+	
 	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" scope="request">
 		<aop:scoped-proxy/>
 		<constructor-arg ref="loggedInUserFilter" />
@@ -280,9 +264,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 	</bean>
 		
 	<bean id="linkCheckerQueue" class="nz.co.searchwellington.model.LinkCheckerQueue" />
-	
-	<bean id="googleSearchTermExtractor" class="nz.co.searchwellington.filters.GoogleSearchTermExtractor" />
-				
+					
 	<bean id="requestFilter" class="nz.co.searchwellington.filters.RequestFilter" scope="request">
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="tagDAO" />
@@ -325,11 +307,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="resourceDAO" />
 		<constructor-arg ref="commentFeedDetector" />
 	</bean>
-					
-	<bean id="urlStack" class="nz.co.searchwellington.controllers.UrlStack">
-	 	<constructor-arg ref="urlBuilder" />
-	</bean>
-			
+				
 	<bean id="mailSender" class="nz.co.searchwellington.mail.MailSender">
 		<constructor-arg value="${smtp.host}" />
 		<constructor-arg value="${smtp.username}" />
@@ -342,41 +320,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 		<constructor-arg ref="velocityEngine" />		
 		<property name="recipient" value="${feedreader.email}" />	
 	</bean>
-		
-	<bean id="impliedTagService" class="nz.co.searchwellington.tagging.ImpliedTagService">
-		<constructor-arg ref="taggingReturnsOfficerService" />
-	</bean>
-	
-	<bean id="placeAutoTagger" class="nz.co.searchwellington.tagging.PlaceAutoTagger">   
- 		<constructor-arg ref="tagDAO" /> 		
-	</bean>	
-	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">   
- 		<constructor-arg ref="tagDAO" /> 		
-	</bean>
-	
-	<bean id="autoTaggingService" class="nz.co.searchwellington.tagging.AutoTaggingService"> 
- 		<constructor-arg ref="placeAutoTagger" />
- 		<constructor-arg ref="tagHintAutoTagger" />
- 		<constructor-arg ref="handTaggingDAO" />
- 		<constructor-arg ref="userDAO" /> 		
-	</bean>
 			
-	<bean id="commentFeedService" class="nz.co.searchwellington.feeds.CommentFeedService">
-		<constructor-arg ref="rssHttpFetcher" />
-	</bean>
-	
-	
-	<bean id="sitemapService" class="nz.co.searchwellington.sitemap.GoogleSitemapService">
-		<constructor-arg ref="contentRetrievalService" />
-		<constructor-arg ref="dateFormatter" />
-		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="tagDAO" />
-	</bean>
-	
-	<bean id="robotExclusionService" class="nz.co.searchwellington.utils.RobotExclusionService" >
-		<constructor-arg ref="standardHttpFetcher" />
-	</bean>
-		
 	<bean id="standardHttpFetcher" class="nz.co.searchwellington.utils.StandardHttpFetcher" >
 		<property name="userAgent" value="${http.useragent}" />
 		<property name="httpProxyHostname" value="${http.proxy.hostname}" />
@@ -396,46 +340,6 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				<value>http://us1.campaign-archive.com</value>
 			</list>
 		</constructor-arg>
-	</bean>
-	
-	<bean id="solrUpdateQueue" class="nz.co.searchwellington.repositories.solr.SolrUpdateQueue" />
-
-	<bean id="frontendContentUpdater" class="nz.co.searchwellington.repositories.FrontendContentUpdater">
-		<constructor-arg ref="solrUpdateQueue" />
-		<constructor-arg ref="solrInputDocumentBuilder" />			
-	</bean>
-			
-	<bean id="contentUpdateService"  class="nz.co.searchwellington.modification.ContentUpdateService">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="suggestionDAO" />	
-		<constructor-arg ref="linkCheckerQueue" />
-		<constructor-arg ref="frontendContentUpdater" />
-	</bean>
-			
-	<bean id="suppressionService" class="nz.co.searchwellington.repositories.SupressionService">
-		<constructor-arg ref="supressionDAO" />
-		<constructor-arg ref="suggestionDAO" />		
-	</bean>
-	
-	
-	<bean id="contentDeletionService" class="nz.co.searchwellington.modification.ContentDeletionService">
-		<constructor-arg ref="suppressionService" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="snapshotDAO" />
-		<constructor-arg ref="solrQueryService" />
-		<constructor-arg ref="handTaggingDAO" />		
-		<constructor-arg ref="tagDAO" />
-	</bean>
-	
-	<bean id="availableSuggestedFeeditemsService" class="nz.co.searchwellington.repositories.AvailableSuggestedFeeditemsService">
-		<constructor-arg ref="cachingRssfeedNewsitemService" />
-	</bean>
-			
-	<bean id="suggestedFeeditemsService" class="nz.co.searchwellington.repositories.SuggestedFeeditemsService">
-		<constructor-arg ref="suggestionDAO" />
-		<constructor-arg ref="availableSuggestedFeeditemsService" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />
 	</bean>
 			
 </beans>

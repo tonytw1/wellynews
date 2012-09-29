@@ -8,18 +8,22 @@ import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class SuggestionsModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+
+	private static Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
 
 	private static final int MAX_SUGGESTIONS = 50;
 	
-	static Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
-    	
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	
+	@Autowired
 	public SuggestionsModelBuilder(
 			SuggestedFeeditemsService suggestedFeeditemsService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
@@ -30,12 +34,10 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 		this.contentRetrievalService = contentRetrievalService;
 	}
 	
-	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/feeds/inbox(/(rss|json))?$");	
 	}
-
 	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
@@ -54,14 +56,12 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 		}
 		return null;
 	}
-
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
 		populateSecondaryFeeds(mv);
 	}
 	
-
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "suggestions";

@@ -4,6 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
@@ -17,12 +20,14 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.twitter.TwitterService;
 
+@Component
 public class UrlBuilder {
 
 	private SiteInformation siteInformation;
 	private TwitterService twitterService;
 	private DateFormatter dateFormatter;
 	
+	@Autowired
 	public UrlBuilder(SiteInformation siteInformation, TwitterService twitterService, DateFormatter dateFormatter) {		
 		this.siteInformation = siteInformation;
 		this.twitterService = twitterService;

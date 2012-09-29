@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.filters.GoogleSearchTermFilter;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -22,8 +22,11 @@ import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(TagModelBuilder.class);
@@ -36,10 +39,11 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private ContentRetrievalService contentRetrievalService;
 	private FlickrService flickrService;
 	
+	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService,
 			ConfigRepository configDAO,
-			RssfeedNewsitemService rssfeedNewsitemService,
+			CachingRssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService, FlickrService flickrService) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
@@ -99,11 +103,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("tag_watchlist", contentRetrievalService.getTagWatchlist(tag));		
 		mv.addObject("tag_feeds", contentRetrievalService.getTaggedFeeds(tag));
 		
-		if (request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM) != null) {
-			final String searchTerm = (String) request.getAttribute(GoogleSearchTermFilter.SEARCH_TERM);
-			mv.addObject("searchterm", searchTerm);
-			mv.addObject("searchfacets", relatedTagsService.getKeywordSearchFacets(searchTerm, null));
-		}
         mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
 	

@@ -63,6 +63,10 @@ public class RequestFilter {
     	
 		log.debug("Looking for single publisher and tag urls");       
     }
+	
+	public RequestAttributeFilter[] getFilters() {
+		return filters;
+	}
 
 	private boolean isReservedPath(String path) {
     	Set<String> reservedUrlWords = new HashSet<String>();		 // TODO this wants to be in the spring config

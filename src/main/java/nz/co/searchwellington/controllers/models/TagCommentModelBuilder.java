@@ -11,23 +11,25 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class TagCommentModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 		
-	static Logger log = Logger.getLogger(TagCommentModelBuilder.class);
+	private static Logger log = Logger.getLogger(TagCommentModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
-
-		
+	
+	@Autowired
 	public TagCommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {		
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
 	}
-
 	
 	@Override
 	@SuppressWarnings("unchecked")
@@ -37,8 +39,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		boolean hasCommentPath = request.getPathInfo().matches("^(.*?)/comment(/(rss|json))?$");		
 		return isSingleTagPage && hasCommentPath;
 	}
-
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request) {
@@ -54,17 +55,14 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		return null;
 	}
 	
-		
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {	
 	}
-
-
+	
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "tagComment";
 	}
-	
 	
 	private ModelAndView populateTagCommentPageModelAndView(Tag tag, int startIndex) {		
 		ModelAndView mv = new ModelAndView();				

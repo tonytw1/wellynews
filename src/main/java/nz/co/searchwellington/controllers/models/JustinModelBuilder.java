@@ -10,23 +10,25 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class JustinModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	static Logger log = Logger.getLogger(JustinModelBuilder.class);
+	private static Logger log = Logger.getLogger(JustinModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	
-
+	@Autowired
 	public JustinModelBuilder(ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {		
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 	}
-	
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
@@ -51,12 +53,10 @@ public class JustinModelBuilder extends AbstractModelBuilder implements ModelBui
 		}
 		return null;
 	}
-
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {		
 	}
-
 	
 	@Override
 	public String getViewName(ModelAndView mv) {

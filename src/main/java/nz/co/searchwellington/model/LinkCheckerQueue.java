@@ -5,14 +5,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class LinkCheckerQueue {
     
-    Logger log = Logger.getLogger(LinkCheckerQueue.class);
+	private static Logger log = Logger.getLogger(LinkCheckerQueue.class);
     
     private ConcurrentLinkedQueue<Integer> queue;
-       
+    
+    @Autowired
     public LinkCheckerQueue() {
         queue = new ConcurrentLinkedQueue<Integer>();
     }
@@ -42,10 +45,8 @@ public class LinkCheckerQueue {
     }
 
     public void add(Resource resource) {
-    	this.add(resource.getId());		
-
+    	this.add(resource.getId());
     }
-
     
     private void add(int id) {
         log.debug("Adding id to queue: " + id);
@@ -56,6 +57,5 @@ public class LinkCheckerQueue {
            log.warn("Queue already contains id: " + id);
         }
     }
-
     
 }

@@ -4,25 +4,29 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.FrontendContentUpdater;
 import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SuggestionRepository;
+import nz.co.searchwellington.repositories.SuggestionDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class ContentUpdateService {
 	
 	private static Logger log = Logger.getLogger(ContentUpdateService.class);
 	
 	private ResourceRepository resourceDAO;
-	private SuggestionRepository suggestionsDAO;
+	private SuggestionDAO suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
 	private FrontendContentUpdater frontendContentUpdater;
 	
 	public ContentUpdateService() {
 	}
 	
+	@Autowired
 	public ContentUpdateService(ResourceRepository resourceDAO,
-			SuggestionRepository suggestionsDAO,
+			SuggestionDAO suggestionsDAO,
 			LinkCheckerQueue linkCheckerQueue,
 			FrontendContentUpdater frontendContentUpdater) {
 		this.resourceDAO = resourceDAO;

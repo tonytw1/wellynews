@@ -37,6 +37,8 @@ public class SubmissionProcessingService {
 	private static final String REQUEST_DATE_NAME = "date";
     private static final String REQUEST_DESCRIPTION_NAME = "description";
     private static final String REQUEST_GEOCODE_NAME = "geocode";
+    private static final String REQUEST_GEOCODE_OSM_ID = "selectedGeocode";
+    
 	private static final String REQUEST_EMBARGO_DATE_NAME = "embargo_date";
     
     private Logger log = Logger.getLogger(SubmissionProcessingService.class);
@@ -82,17 +84,19 @@ public class SubmissionProcessingService {
 	public Geocode processGeocode(HttpServletRequest req) {      
 		log.info("Starting processing of geocode.");
 		if (req.getParameter(REQUEST_GEOCODE_NAME) != null) {
-	    	String address = new String(req.getParameter(REQUEST_GEOCODE_NAME));
+			final String osmId = new String(req.getParameter(REQUEST_GEOCODE_OSM_ID));
+			String address = new String(req.getParameter(REQUEST_GEOCODE_NAME));
+			
 	        log.info("Found address: " + address);
 	        address = UrlFilters.trimWhiteSpace(address);
 	        address = UrlFilters.stripHtml(address);
 	        if (address != null && !address.trim().equals("")) {
-	            List<Geocode> resolvedGeocode = geocodeService.resolveAddress(address);
+	            List<Geocode> resolvedGeocode = geocodeService.resolveAddress(address);	// TODO resolve by osm id
 	            if (resolvedGeocode != null && !resolvedGeocode.isEmpty() && resolvedGeocode.get(0).isValid()) {
 	            	return resolvedGeocode.get(0);
 	            	
 	            } else {
-	            	return new Geocode(address);
+	            	return new Geocode(address, osmId);
 	            }	            
 	        }
 		}

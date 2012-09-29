@@ -4,14 +4,19 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
 
+@Component
 public class AvailableSuggestedFeeditemsService {
 	
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	
+	@Autowired
 	public AvailableSuggestedFeeditemsService(RssfeedNewsitemService rssfeedNewsitemService) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 	}

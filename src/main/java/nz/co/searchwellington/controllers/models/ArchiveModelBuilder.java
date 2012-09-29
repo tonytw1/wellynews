@@ -13,28 +13,28 @@ import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
-	static Logger log = Logger.getLogger(ArchiveModelBuilder.class);
+	private static Logger log = Logger.getLogger(ArchiveModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private ArchiveLinksService archiveLinksService;
 
-	
-	public ArchiveModelBuilder(ContentRetrievalService contentRetrievalService,
-			ArchiveLinksService archiveLinksService) {
+	@Autowired
+	public ArchiveModelBuilder(ContentRetrievalService contentRetrievalService, ArchiveLinksService archiveLinksService) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.archiveLinksService = archiveLinksService;
 	}
-
 	
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/archive/.*?/.*?$");
 	}
-
 	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
@@ -64,12 +64,10 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 		archiveLinksService.populateArchiveLinks(mv, archiveLinks);
 	}
 	
-	
 	@Override
 	public String getViewName(ModelAndView mv) {
 		return "archivePage";
 	}
-	
 	
     private void populateNextAndPreviousLinks(ModelAndView mv, Date month, List<ArchiveLink> archiveLinks) {
         ArchiveLink selected = null;
@@ -92,7 +90,6 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
         }
     }
     
-
     private Date getArchiveDateFromPath(String path) {
 		// TODO this method can probably be written in alot less lines, with regexs and a matches check.
 		if (path.startsWith("/archive/")) {
