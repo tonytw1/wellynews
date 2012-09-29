@@ -13,26 +13,23 @@
 
 		#if ($tag)
 			<form action="save" method="POST"> 
-				<input name="tag" type="hidden" value="$tag.name" />
+				<input name="tag" type="hidden" value="$!tag.name" />
 				<fieldset>
 					
 					<label for="displayName">Name: </label>
-					<input name="displayName" value="$tag.displayName" />
+					<input name="displayName" value="$!tag.displayName" />
 					<br />
 					
 					<label for="name">Url word: </label>
-					<input name="name" value="$tag.name" />
+					<input name="name" value="$!tag.name" />
 					<br />
 		
 					<label for="description">Description: </label>
-					<input name="description" value="$tag.description" />
+					<input name="description" value="$!tag.description" />
 					<br />
-							
-					<label for="geocode">Geocode: </label>
-					<input id="geocode" name="geocode" #if($tag.geocode) value="$tag.geocode.address" #end />
-					<input id="selectedGeocode" name="selectedGeocode">
-					<br />
-					
+			
+					#parse("includes/geocodeFields.vm")
+															
 					#if ($tag_select) 
 						<label for="parent">Parent Tag: </label>
 				    	$tag_select	
@@ -52,11 +49,11 @@
 					<br />
 							
 					<label for="main_image">Main Image: </label>
-					<input name="main_image" #if ($tag.mainImage) value="$tag.mainImage" #end />
+					<input name="main_image" #if ($tag.mainImage) value="$!tag.mainImage" #end />
 					<br />
 				
 					<label for="secondary_image">Secondary Image: </label>
-					<input name="secondary_image" #if ($tag.secondaryImage) value="$tag.secondaryImage" #end />
+					<input name="secondary_image" #if ($tag.secondaryImage) value="$!tag.secondaryImage" #end />
 					<br />
 					
 					<label for="featured">Featured: </label>

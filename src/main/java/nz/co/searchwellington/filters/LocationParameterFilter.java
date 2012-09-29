@@ -5,10 +5,16 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.GeoCodeService;
+import nz.co.searchwellington.geocoding.NominatimGeocodingService;
 import nz.co.searchwellington.model.Geocode;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope(value = "request")
 public class LocationParameterFilter implements RequestAttributeFilter {
 
 	private static Logger log = Logger.getLogger(LocationParameterFilter.class);
@@ -18,10 +24,15 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	
 	private static final String LONGITUDE = "longitude";
 	private static final String LATITUDE = "latitude";	
+	private static final String OSM = "osm";	
+
 	private GeoCodeService geoCodeService;
+	private NominatimGeocodingService nominatimGeocodingService;
 	
-	public LocationParameterFilter(GeoCodeService geoCodeService) {
+	@Autowired
+	public LocationParameterFilter(GeoCodeService geoCodeService, NominatimGeocodingService nominatimGeocodingService) {
 		this.geoCodeService = geoCodeService;
+		this.nominatimGeocodingService = nominatimGeocodingService;
 	}
 	
 	public void filter(HttpServletRequest request) {		
@@ -29,6 +40,13 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		if (radius != null && radius > 0) {
 			log.info("Radius attribute set to: " + radius);
 			request.setAttribute(RADIUS, radius);
+		}
+		
+		if(request.getParameter(OSM) != null) {
+			final String osm = request.getParameter(OSM);
+			final Geocode resolvedOsmPlace = nominatimGeocodingService.resolveAddress(osm.split("/")[1], Long.parseLong(osm.split("/")[0]));
+			log.info("OSM place '" + osm + "' resolved to: " + resolvedOsmPlace);
+			request.setAttribute(LOCATION, resolvedOsmPlace);
 		}
 		
 		if(request.getParameter(LOCATION) != null) {
@@ -46,11 +64,11 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			return;
 		}
 		
-		Double latitude = processDoubleParameter(request, LATITUDE);
-		Double longitude = processDoubleParameter(request, LONGITUDE);
+		final Double latitude = processDoubleParameter(request, LATITUDE);
+		final Double longitude = processDoubleParameter(request, LONGITUDE);
 		if (latitude != null && longitude != null) {
 			// TODO Should try todo a reverse lookup to name this location.
-			Geocode specificPointGeocode = new Geocode(latitude, longitude);
+			final Geocode specificPointGeocode = new Geocode(latitude, longitude);
 			request.setAttribute(LOCATION, specificPointGeocode);
 		}
 		

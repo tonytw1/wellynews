@@ -6,7 +6,6 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>classpath:searchwellington.properties</value>
@@ -306,6 +305,7 @@ http://www.springframework.org/schema/aop http://www.springframework.org/schema/
 				</bean>
 				<bean class="nz.co.searchwellington.filters.LocationParameterFilter">
 					<constructor-arg ref="geocodingService" />
+					<constructor-arg ref="nominatimGeocodingService" />				
 				</bean>				
 			</list>
 		</constructor-arg>

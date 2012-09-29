@@ -113,7 +113,7 @@ public class RssUrlBuilder {
 	}
 
 	public String getRssTitleForGeotagged(Geocode userSuppliedLocation) {
-		return "Newsitems near " + userSuppliedLocation.toString();
+		return "Newsitems near " + userSuppliedLocation.getDisplayName();
 	}
 	
 	public String getRssUrlForGeotagged(String location) {

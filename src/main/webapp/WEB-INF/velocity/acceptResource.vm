@@ -42,11 +42,8 @@
 		<textarea name="description" rows="6" cols="50">$resource.description</textarea>
 		</p>
 		
-		<label for="geocode">Geocode: </label>
-		<input id="geocode" name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end />
-		<input id="selectedGeocode" name="selectedGeocode">
-		<br />
-		
+		#parse("includes/geocodeFields.vm")
+				
 		#parse("includes/moderation_fields.vm")
 		
 		<input type="submit" value="Save" />	

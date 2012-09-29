@@ -28,11 +28,8 @@
 										
 				#parse("includes/tag_edit_fields.vm")
 							
-				<label for="geocode">Geocode: </label>
-				<input id="geocode" name="geocode" #if($resource.geocode) value="$resource.geocode.address" #end />
-				<input id="selectedGeocode" name="selectedGeocode">				
-				<br />
-										
+				#parse("includes/geocodeFields.vm")
+														
 				#parse("includes/moderation_fields.vm")
 					
 				<input type="hidden" name="type" value="N" />

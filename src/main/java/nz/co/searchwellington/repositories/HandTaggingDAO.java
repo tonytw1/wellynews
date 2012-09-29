@@ -12,8 +12,10 @@ import nz.co.searchwellington.model.taggingvotes.HandTagging;
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+@Component
 public class HandTaggingDAO {
 	
 	private static Logger log = Logger.getLogger(HandTaggingDAO.class);
