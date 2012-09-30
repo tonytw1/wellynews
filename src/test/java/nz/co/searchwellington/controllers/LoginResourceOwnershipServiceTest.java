@@ -3,8 +3,8 @@ package nz.co.searchwellington.controllers;
 import static org.mockito.Mockito.verify;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HandTaggingService;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,8 +13,8 @@ import org.mockito.MockitoAnnotations;
 
 public class LoginResourceOwnershipServiceTest {
 
-	@Mock ResourceRepository resourceDAO;
-	@Mock UserRepository userDAO;
+	@Mock HibernateResourceDAO resourceDAO;
+	@Mock HibernateBackedUserDAO userDAO;
 	@Mock HandTaggingService handTaggingService;
 	
 	@Mock User previousOwner;

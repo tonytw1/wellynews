@@ -3,7 +3,7 @@ package nz.co.searchwellington.filters.attributesetters;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 public class FeedAttributeSetterTest {
 	
-	@Mock ResourceRepository resourceDAO;
+	@Mock HibernateResourceDAO resourceDAO;
 	@Mock Feed feed;
 	private MockHttpServletRequest request;
 	private FeedAttributeSetter feedAttributeSetter;

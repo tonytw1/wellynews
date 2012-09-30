@@ -24,7 +24,7 @@ public class SolrIndexRebuildService {
 
 	private static final int BATCH_COMMIT_SIZE = 1000;
 	
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
     
 	@Value("#{config['solr.ur']}")
@@ -39,7 +39,7 @@ public class SolrIndexRebuildService {
 	}
 
 	@Autowired
-	public SolrIndexRebuildService(ResourceRepository resourceDAO, SolrInputDocumentBuilder solrInputDocumentBuilder) {		
+	public SolrIndexRebuildService(HibernateResourceDAO resourceDAO, SolrInputDocumentBuilder solrInputDocumentBuilder) {		
 		this.resourceDAO = resourceDAO;
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
 	}

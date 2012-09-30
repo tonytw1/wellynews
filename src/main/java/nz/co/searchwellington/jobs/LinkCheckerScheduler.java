@@ -4,7 +4,7 @@ import java.util.Date;
 
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -15,7 +15,7 @@ public class LinkCheckerScheduler {
     
     Logger log = Logger.getLogger(LinkCheckerScheduler.class);
     
-    private ResourceRepository resourceDAO;
+    private HibernateResourceDAO resourceDAO;
     private LinkCheckerQueue linkCheckerQueue;
 
 
@@ -25,7 +25,7 @@ public class LinkCheckerScheduler {
     
     
     
-    public LinkCheckerScheduler(ResourceRepository resourceDAO, LinkCheckerQueue linkCheckerQueue) {
+    public LinkCheckerScheduler(HibernateResourceDAO resourceDAO, LinkCheckerQueue linkCheckerQueue) {
         super();
         this.resourceDAO = resourceDAO;
         this.linkCheckerQueue = linkCheckerQueue;

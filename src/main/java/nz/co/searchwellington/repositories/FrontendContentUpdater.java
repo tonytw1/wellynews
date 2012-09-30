@@ -15,6 +15,9 @@ public class FrontendContentUpdater {
 	private SolrUpdateQueue solrUpdateQueue;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
 	
+	public FrontendContentUpdater() {
+	}
+	
 	@Autowired
 	public FrontendContentUpdater(SolrUpdateQueue solrUpdateQueue, SolrInputDocumentBuilder solrInputDocumentBuilder) {
 		this.solrUpdateQueue = solrUpdateQueue;

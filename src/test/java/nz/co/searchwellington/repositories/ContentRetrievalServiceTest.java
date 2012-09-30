@@ -19,7 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 public class ContentRetrievalServiceTest {
 
-	@Mock private ResourceRepository resourceDAO;
+	@Mock private HibernateResourceDAO resourceDAO;
 	@Mock private KeywordSearchService keywordSearchService;
 	@Mock private ShowBrokenDecisionService showBrokenDecisionService;
 	@Mock private TagDAO tagDAO;

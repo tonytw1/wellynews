@@ -4,7 +4,7 @@ import java.util.Set;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.ecs.html.Option;
@@ -14,16 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-// TODO remove duplication.
 public class TagWidgetFactory {
     
+	// TODO remove duplication.
     private static Logger log = Logger.getLogger(TagWidgetFactory.class);
     
     private TagDAO tagDAO;
-    private ResourceRepository resourceDAO;
+    private HibernateResourceDAO resourceDAO;
+   
+    public TagWidgetFactory() {
+	}
     
     @Autowired
-    public TagWidgetFactory(TagDAO tagDAO, ResourceRepository resourceDAO) {
+    public TagWidgetFactory(TagDAO tagDAO, HibernateResourceDAO resourceDAO) {
 		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;
 	}

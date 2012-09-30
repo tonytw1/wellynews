@@ -3,13 +3,12 @@ package nz.co.searchwellington.utils;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import nz.co.searchwellington.urls.UrlResolverService;
+import nz.co.searchwellington.urls.CachingUrlResolverService;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 
 public class UrlCleanerTests {
 	
@@ -21,7 +20,8 @@ public class UrlCleanerTests {
 	private static final String SHORT_URL = "http://short.url/12234";
 	private static final String UNCLEANED_SHORT_URL = " http://short.url/12234  ";
 	
-	@Mock UrlResolverService urlResolverService;
+	@Mock CachingUrlResolverService urlResolverService;
+	
 	UrlCleaner cleaner;
 		
 	@Before

@@ -11,7 +11,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 
@@ -25,7 +25,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 public class ApiControllerTest {
 	
-	@Mock ResourceRepository resourceDAO;
+	@Mock HibernateResourceDAO resourceDAO;
 	@Mock AdminRequestFilter requestFilter;
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock SupressionService supressionService;

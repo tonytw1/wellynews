@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
 
@@ -24,7 +24,7 @@ public class SimplePageController extends BaseMultiActionController {
 	private TagDAO tagDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	
-    public SimplePageController(UrlStack urlStack, ConfigRepository configDAO, DiscoveredFeedRepository discoveredFeedRepository, 
+    public SimplePageController(UrlStack urlStack, ConfigDAO configDAO, DiscoveredFeedRepository discoveredFeedRepository, 
     		ContentRetrievalService contentRetrievalService, TagDAO tagDAO, RssUrlBuilder rssUrlBuilder) {
         this.urlStack = urlStack;
         this.configDAO = configDAO;

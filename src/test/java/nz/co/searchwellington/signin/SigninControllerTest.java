@@ -7,7 +7,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class SigninControllerTest {
 	
 	private @Mock LoggedInUserFilter loggedInUserFilter;
-	private @Mock UserRepository userDAO;
+	private @Mock HibernateBackedUserDAO userDAO;
 	private @Mock AnonUserService anonUserService;
 	private @Mock LoginResourceOwnershipService loginResourceOwnershipService;
 	private @Mock UrlStack urlStack;

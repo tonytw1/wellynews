@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers;
 
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -12,7 +12,7 @@ public abstract class BaseMultiActionController {	// TODO not a great pattern
     final protected int MAX_EVENTS_TO_SHOW_ON_FRONT = 10;
     
     protected UrlStack urlStack;
-    protected ConfigRepository configDAO;
+    protected ConfigDAO configDAO;
     protected LoggedInUserFilter loggedInUserFilter;
     protected ContentRetrievalService contentRetrievalService;
     

@@ -6,8 +6,8 @@ import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,9 +18,9 @@ import org.mockito.MockitoAnnotations;
 public class CommentFeedReaderTest {
 	
 	@Mock CommentFeedService commentFeedService;
-	@Mock ResourceRepository resourceDAO;
+	@Mock HibernateResourceDAO resourceDAO;
 	@Mock ContentUpdateService contentUpdateService;
-	@Mock ConfigRepository configDAO;
+	@Mock ConfigDAO configDAO;
 	
 	private ArrayList<CommentFeed> commentFeedsToCheck;
 	@Mock CommentFeed commentFeed;

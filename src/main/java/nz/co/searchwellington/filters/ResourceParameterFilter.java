@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 @Component
 @Scope("request")
@@ -17,7 +17,7 @@ public class ResourceParameterFilter implements RequestAttributeFilter {
 	
 	private static Logger log = Logger.getLogger(ResourceParameterFilter.class);
 	
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	
 	@Autowired
 	public ResourceParameterFilter(HibernateResourceDAO resourceDAO) {

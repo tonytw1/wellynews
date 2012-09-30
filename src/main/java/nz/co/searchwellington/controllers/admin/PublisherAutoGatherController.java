@@ -12,7 +12,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -28,12 +28,12 @@ public class PublisherAutoGatherController {
     
     private AdminRequestFilter requestFilter;
     private TagDAO tagDAO;
-    private ResourceRepository resourceDAO;
+    private HibernateResourceDAO resourceDAO;
     private ContentUpdateService contentUpdateService;
 
     
     public PublisherAutoGatherController(AdminRequestFilter requestFilter,
-			TagDAO tagDAO, ResourceRepository resourceDAO,
+			TagDAO tagDAO, HibernateResourceDAO resourceDAO,
 			ContentUpdateService contentUpdateService) {
 		this.requestFilter = requestFilter;
 		this.tagDAO = tagDAO;

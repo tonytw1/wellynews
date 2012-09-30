@@ -6,18 +6,18 @@ import org.springframework.stereotype.Component;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HandTaggingService;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 @Component
 public class LoginResourceOwnershipService {
 	
-	private ResourceRepository resourceDAO;
-	private UserRepository userDAO;
+	private HibernateResourceDAO resourceDAO;
+	private HibernateBackedUserDAO userDAO;
 	private HandTaggingService handTaggingService;
 	
 	@Autowired
-	public LoginResourceOwnershipService(ResourceRepository resourceDAO, UserRepository userDAO, HandTaggingService handTaggingService) {
+	public LoginResourceOwnershipService(HibernateResourceDAO resourceDAO, HibernateBackedUserDAO userDAO, HandTaggingService handTaggingService) {
 		this.resourceDAO = resourceDAO;
 		this.userDAO = userDAO;
 		this.handTaggingService = handTaggingService;

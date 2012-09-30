@@ -16,10 +16,10 @@ public class PublisherGuessingService {
     
     private static Logger log = Logger.getLogger(PublisherGuessingService.class);
     
-    private ResourceRepository resourceDAO;
+    private HibernateResourceDAO resourceDAO;
          
     @Autowired
-    public PublisherGuessingService(ResourceRepository resourceDAO) {    
+    public PublisherGuessingService(HibernateResourceDAO resourceDAO) {    
         this.resourceDAO = resourceDAO;
     }
     

@@ -8,16 +8,16 @@ import org.springframework.stereotype.Component;
 
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 @Component
 public class DiscoveredFeedRepository {
 	
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	private CommentFeedDetectorService commentFeedDetectorService;
 	
 	@Autowired
-	public DiscoveredFeedRepository(ResourceRepository resourceDAO, CommentFeedDetectorService commentFeedDetectorService) {
+	public DiscoveredFeedRepository(HibernateResourceDAO resourceDAO, CommentFeedDetectorService commentFeedDetectorService) {
 		this.resourceDAO = resourceDAO;
 		this.commentFeedDetectorService = commentFeedDetectorService;
 	}

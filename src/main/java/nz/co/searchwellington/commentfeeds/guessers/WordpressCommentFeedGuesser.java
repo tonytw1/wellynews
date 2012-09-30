@@ -1,5 +1,8 @@
 package nz.co.searchwellington.commentfeeds.guessers;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class WordpressCommentFeedGuesser implements CommentFeedGuesser {
 
     public boolean isValid(String url) {        

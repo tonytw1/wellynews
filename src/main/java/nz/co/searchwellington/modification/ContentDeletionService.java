@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
@@ -27,7 +27,7 @@ public class ContentDeletionService {
     	
 	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	private MongoSnapshotDAO snapshotDAO;
 	private SolrQueryService solrQueryService;
 	private HandTaggingDAO handTaggingDAO;
@@ -40,7 +40,7 @@ public class ContentDeletionService {
 	@Autowired
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			ResourceRepository resourceDAO, MongoSnapshotDAO snapshotDAO,
+			HibernateResourceDAO resourceDAO, MongoSnapshotDAO snapshotDAO,
 			SolrQueryService solrQueryService, HandTaggingDAO handTaggingDAO,
 			TagDAO tagDAO) {
 		this.supressionService = supressionService;

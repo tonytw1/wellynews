@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +22,10 @@ public class AutoTaggingService {
 	private PlaceAutoTagger placeAutoTagger;
 	private TagHintAutoTagger tagHintAutoTagger;
 	private HandTaggingDAO handTaggingDAO;
-	private UserRepository userDAO;
+	private HibernateBackedUserDAO userDAO;
 	
 	@Autowired
-	public AutoTaggingService(PlaceAutoTagger placeAutoTagger, TagHintAutoTagger tagHintAutoTagger, HandTaggingDAO handTaggingDAO, UserRepository userDAO) {
+	public AutoTaggingService(PlaceAutoTagger placeAutoTagger, TagHintAutoTagger tagHintAutoTagger, HandTaggingDAO handTaggingDAO, HibernateBackedUserDAO userDAO) {
 		this.placeAutoTagger = placeAutoTagger;
 		this.tagHintAutoTagger = tagHintAutoTagger;
 		this.handTaggingDAO = handTaggingDAO;

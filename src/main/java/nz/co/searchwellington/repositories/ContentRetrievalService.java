@@ -31,7 +31,7 @@ public class ContentRetrievalService {
 	
 	final protected int MAX_NEWSITEMS_TO_SHOW = 30;
         
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	private KeywordSearchService keywordSearchService;
 	private ShowBrokenDecisionService showBrokenDecisionService;
 	private TagDAO tagDAO;
@@ -39,8 +39,11 @@ public class ContentRetrievalService {
 	private DiscoveredFeedRepository discoveredFeedsDAO;
 	private SolrBackedResourceDAO solrBackedResourceDAO;
 	
+	public ContentRetrievalService() {
+	}
+	
 	@Autowired
-	public ContentRetrievalService(ResourceRepository resourceDAO,
+	public ContentRetrievalService(HibernateResourceDAO resourceDAO,
 			KeywordSearchService keywordSearchService,
 			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO,
 			RelatedTagsService relatedTagsService,

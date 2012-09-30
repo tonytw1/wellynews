@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;
-import nz.co.searchwellington.repositories.SupressionRepository;
+import nz.co.searchwellington.repositories.SupressionDAO;
 
 @Component("cachingRssfeedNewsitemService")
 public class CachingRssfeedNewsitemService extends RssfeedNewsitemService {

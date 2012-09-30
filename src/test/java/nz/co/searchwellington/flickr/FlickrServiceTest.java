@@ -3,7 +3,7 @@ package nz.co.searchwellington.flickr;
 import static org.junit.Assert.assertEquals;
 import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ public class FlickrServiceTest {
 	private static final String TAG_DISPLAY_NAME = "Trolley Buses";
 
 	@Mock FlickrApi flickrApi;
-	@Mock ConfigRepository configDAO;
+	@Mock ConfigDAO configDAO;
 	@Mock MemcachedCache cache;
 	
 	private FlickrService flickrService;

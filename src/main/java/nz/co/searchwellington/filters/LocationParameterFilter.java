@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.geocoding.GeoCodeService;
+import nz.co.searchwellington.geocoding.CachingGeocodeService;
 import nz.co.searchwellington.geocoding.NominatimGeocodingService;
 import nz.co.searchwellington.model.Geocode;
 
@@ -26,11 +26,11 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private static final String LATITUDE = "latitude";	
 	private static final String OSM = "osm";	
 
-	private GeoCodeService geoCodeService;
+	private CachingGeocodeService geoCodeService;
 	private NominatimGeocodingService nominatimGeocodingService;
 	
 	@Autowired
-	public LocationParameterFilter(GeoCodeService geoCodeService, NominatimGeocodingService nominatimGeocodingService) {
+	public LocationParameterFilter(CachingGeocodeService geoCodeService, NominatimGeocodingService nominatimGeocodingService) {
 		this.geoCodeService = geoCodeService;
 		this.nominatimGeocodingService = nominatimGeocodingService;
 	}

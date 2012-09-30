@@ -5,7 +5,7 @@ import java.io.IOException;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
@@ -24,7 +24,7 @@ public class LinkChecker {
 	
     private static final int CANT_CONNECT = -1;
     
-    private ResourceRepository resourceDAO;
+    private HibernateResourceDAO resourceDAO;
 	private MongoSnapshotDAO snapshotDAO;
 	private ContentUpdateService contentUpdateService;
 	private HttpFetcher httpFetcher;
@@ -34,7 +34,7 @@ public class LinkChecker {
     }
 	
 	@Autowired
-	public LinkChecker(ResourceRepository resourceDAO, MongoSnapshotDAO snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
+	public LinkChecker(HibernateResourceDAO resourceDAO, MongoSnapshotDAO snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
 		this.resourceDAO = resourceDAO;
 		this.snapshotDAO = snapshotDAO;
 		this.contentUpdateService = contentUpdateService;

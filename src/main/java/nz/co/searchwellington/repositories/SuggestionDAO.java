@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class SuggestionDAO implements SuggestionRepository {
+public class SuggestionDAO {
 	
 	private static Logger log = Logger.getLogger(SuggestionDAO.class);
 	    

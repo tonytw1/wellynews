@@ -13,7 +13,7 @@ import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -33,7 +33,7 @@ public class TagModelBuilderTest {
 	@Mock RssUrlBuilder rssUrlBuilder;
 	@Mock UrlBuilder urlBuilder;
 	@Mock RelatedTagsService relatedTagsService;
-	@Mock ConfigRepository configDAO;
+	@Mock ConfigDAO configDAO;
 	@Mock CachingRssfeedNewsitemService rssfeedNewsitemService;
 	@Mock FlickrService flickrService;
 

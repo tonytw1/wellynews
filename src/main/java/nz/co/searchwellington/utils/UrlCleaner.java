@@ -1,6 +1,6 @@
 package nz.co.searchwellington.utils;
 
-import nz.co.searchwellington.urls.UrlResolverService;
+import nz.co.searchwellington.urls.CachingUrlResolverService;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +11,10 @@ public class UrlCleaner {
 
     Logger log = Logger.getLogger(UrlCleaner.class);
 
-    private UrlResolverService urlResolver;
+    private CachingUrlResolverService urlResolver;
     
     @Autowired
-    public UrlCleaner(UrlResolverService urlResolver) {
+    public UrlCleaner(CachingUrlResolverService urlResolver) {
 		this.urlResolver = urlResolver;
 	}
 

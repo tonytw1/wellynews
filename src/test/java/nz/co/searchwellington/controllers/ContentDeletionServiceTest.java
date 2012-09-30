@@ -14,7 +14,7 @@ import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 public class ContentDeletionServiceTest extends TestCase {
 		
 	@Mock SupressionService supressionService;	
-	@Mock ResourceRepository resourceDAO;
+	@Mock HibernateResourceDAO resourceDAO;
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock MongoSnapshotDAO SnapshotDAO;
 	@Mock SolrQueryService solrQueryService;

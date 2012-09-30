@@ -4,7 +4,7 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +18,10 @@ public class FeedReaderRunner {
 	private static final String FEED_READER_PROFILE_NAME = "feedreader";
 	
 	private FeedReader feedReader;
-	private UserRepository userDAO;
+	private HibernateBackedUserDAO userDAO;
 	
 	@Autowired
-	public FeedReaderRunner(FeedReader feedReader, UserRepository userDAO) {		
+	public FeedReaderRunner(FeedReader feedReader, HibernateBackedUserDAO userDAO) {		
 		this.feedReader = feedReader;
 		this.userDAO = userDAO;
 	}

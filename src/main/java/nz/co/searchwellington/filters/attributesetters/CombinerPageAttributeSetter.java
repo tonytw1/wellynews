@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -21,9 +21,9 @@ public class CombinerPageAttributeSetter implements AttributeSetter {
 	private static Pattern combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$");
 
 	private TagDAO tagDAO;
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	
-	public CombinerPageAttributeSetter(TagDAO tagDAO, ResourceRepository resourceDAO) {
+	public CombinerPageAttributeSetter(TagDAO tagDAO, HibernateResourceDAO resourceDAO) {
 		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;
 	}

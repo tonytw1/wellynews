@@ -23,13 +23,13 @@ import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.FacetParams;
@@ -53,13 +53,13 @@ public class SolrBackedResourceDAO {
 	
 	private SolrQueryService solrQueryService;
 	private TagDAO tagDAO;
-	private ResourceHydrator resourceHydrator;
+	private SolrResourceHydrator resourceHydrator;
 
 	@Value("#{config['solr.ur']}")
 	private String solrUrl;
 
 	@Autowired
-	public SolrBackedResourceDAO(SolrQueryService solrQueryService, TagDAO tagDAO, ResourceHydrator resourceHydrator) {
+	public SolrBackedResourceDAO(SolrQueryService solrQueryService, TagDAO tagDAO, SolrResourceHydrator resourceHydrator) {
 		this.solrQueryService = solrQueryService;
 		this.tagDAO = tagDAO;
 		this.resourceHydrator = resourceHydrator;

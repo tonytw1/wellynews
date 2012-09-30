@@ -4,6 +4,7 @@ import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +15,7 @@ public class CommentFeedDetectorService {
 	private CommentFeedDetector[] detectors;
         
 	@Autowired
-	public CommentFeedDetectorService(CommentFeedDetector... detectors) {
+	public CommentFeedDetectorService(@Qualifier("newswiresCommentFeedDetector") CommentFeedDetector... detectors) {	// TODO wire all
 		this.detectors = detectors;
 	}
 	

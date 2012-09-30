@@ -16,7 +16,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		
 	public void testShouldNotMatchIfNoMatchingPublishers() throws Exception {
 		List<Resource> possiblePublishers = new ArrayList<Resource>();
-		ResourceRepository resourceDAO = mock(ResourceRepository.class);
+		HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 		when(resourceDAO.getAllPublishersMatchingStem("www.spammer.com", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);
@@ -39,7 +39,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		wccMainSite.setUrl("http://www.wellington.govt.nz");
 		possiblePublishers.add(wccMainSite);
 	
-		ResourceRepository resourceDAO = mock(ResourceRepository.class);
+		HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 		when(resourceDAO.getAllPublishersMatchingStem("www.wellington.govt.nz", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);	
@@ -55,7 +55,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		wellingtonista.setUrl("http://www.wellingtonista.com");
 		possiblePublishers.add(wellingtonista);
 		
-		ResourceRepository resourceDAO = mock(ResourceRepository.class);
+		HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 		when(resourceDAO.getAllPublishersMatchingStem("www.wellingtonista.com", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);	
@@ -74,7 +74,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 		hostedTwo.setUrl("http://homepages.ihug.co.nz/~waicoll/");
 		possiblePublishers.add(hostedTwo);
 		
-		ResourceRepository resourceDAO = mock(ResourceRepository.class);
+		HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 		when(resourceDAO.getAllPublishersMatchingStem("homepages.paradise.net.nz", true)).thenReturn(possiblePublishers);
 		
 		PublisherGuessingService service = new PublisherGuessingService(resourceDAO);	

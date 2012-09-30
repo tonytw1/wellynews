@@ -2,23 +2,25 @@ package nz.co.searchwellington.filters;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 @Deprecated
 @Component
 @Scope("request")
 public class PublisherParameterFilter implements RequestAttributeFilter {
 
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	
-	public PublisherParameterFilter(ResourceRepository resourceDAO) {
+	@Autowired
+	public PublisherParameterFilter(HibernateResourceDAO resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}
-
+	
 	@Override
 	public void filter(HttpServletRequest request) {
 		if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {

@@ -21,7 +21,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -46,10 +46,10 @@ public class SubmissionProcessingService {
     private NominatimGeocodingService nominatimGeocodeService;
     private TagDAO tagDAO;
     private HandTaggingDAO tagVoteDAO;
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	
 	@Autowired
-	public SubmissionProcessingService(UrlCleaner urlCleaner, NominatimGeocodingService NominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, ResourceRepository resourceDAO) {
+	public SubmissionProcessingService(UrlCleaner urlCleaner, NominatimGeocodingService NominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO) {
 		this.urlCleaner = urlCleaner;
 		this.nominatimGeocodeService = NominatimGeocodingService;
 		this.tagDAO = tagDAO;

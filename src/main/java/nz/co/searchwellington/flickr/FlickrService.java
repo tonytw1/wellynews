@@ -2,7 +2,7 @@ package nz.co.searchwellington.flickr;
 
 import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,11 +16,11 @@ public class FlickrService {
 	private static Logger log = Logger.getLogger(FlickrService.class);
 
     private FlickrApi flickerApiService;
-    private ConfigRepository configDAO;
+    private ConfigDAO configDAO;
 	private MemcachedCache cache;
     
 	@Autowired
-    public FlickrService(FlickrApi flickrApi, ConfigRepository configDAO, MemcachedCache cache) {
+    public FlickrService(FlickrApi flickrApi, ConfigDAO configDAO, MemcachedCache cache) {
         this.flickerApiService = flickrApi;
         this.configDAO = configDAO;
         this.cache = cache;

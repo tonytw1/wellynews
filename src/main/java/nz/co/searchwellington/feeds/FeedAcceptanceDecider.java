@@ -7,9 +7,9 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SuggestionRepository;
-import nz.co.searchwellington.repositories.SupressionRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
+import nz.co.searchwellington.repositories.SuggestionDAO;
+import nz.co.searchwellington.repositories.SupressionDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
@@ -23,16 +23,16 @@ public class FeedAcceptanceDecider {
     
 	private static Logger log = Logger.getLogger(FeedAcceptanceDecider.class);
     
-    private ResourceRepository resourceDAO;
-    private SupressionRepository supressionDAO;
+    private HibernateResourceDAO resourceDAO;
+    private SupressionDAO supressionDAO;
     private UrlCleaner urlCleaner;
-	private SuggestionRepository suggestionDAO;
+	private SuggestionDAO suggestionDAO;
  	
     public FeedAcceptanceDecider() {
 	}
     
     @Autowired
-	public FeedAcceptanceDecider(ResourceRepository resourceDAO, SupressionRepository supressionDAO, UrlCleaner urlCleaner, SuggestionRepository suggestionDAO) {
+	public FeedAcceptanceDecider(HibernateResourceDAO resourceDAO, SupressionDAO supressionDAO, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
         this.resourceDAO = resourceDAO;
         this.supressionDAO = supressionDAO;
         this.urlCleaner = urlCleaner;

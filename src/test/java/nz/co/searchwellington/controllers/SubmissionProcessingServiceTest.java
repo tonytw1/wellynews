@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
@@ -27,7 +27,7 @@ public class SubmissionProcessingServiceTest {
 	@Mock NominatimGeocodingService geocodeService;
 	@Mock TagDAO tagDAO;
 	@Mock HandTaggingDAO tagVoteDAO;
-	@Mock ResourceRepository resourceDAO;
+	@Mock HibernateResourceDAO resourceDAO;
 	@Mock Newsitem resource;
 	@Mock Feed feed;
 	@Mock User loggedInUser;	

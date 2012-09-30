@@ -15,7 +15,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
@@ -31,7 +31,7 @@ public class AutoTagController extends BaseMultiActionController {
 
     private static Logger log = Logger.getLogger(AutoTagController.class);
     
-    private ResourceRepository resourceDAO;
+    private HibernateResourceDAO resourceDAO;
     private AdminRequestFilter requestFilter;
     private ImpliedTagService autoTagService;
 	private KeywordSearchService keywordSearchService;
@@ -39,7 +39,7 @@ public class AutoTagController extends BaseMultiActionController {
 	private TagDAO tagDAO;
 	private HandTaggingDAO tagVoteDAO;
     
-	public AutoTagController(ResourceRepository resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter) {      
+	public AutoTagController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       
         this.urlStack = urlStack;

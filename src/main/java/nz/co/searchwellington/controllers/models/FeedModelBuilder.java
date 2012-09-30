@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
@@ -19,11 +19,11 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	private static final String FEED_ATTRIBUTE = "feedAttribute";
 	
-	private RssfeedNewsitemService rssfeedNewsitemService;
+	private CachingRssfeedNewsitemService rssfeedNewsitemService;
 	private GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 		
 	@Autowired
-	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor) {
+	public FeedModelBuilder(CachingRssfeedNewsitemService rssfeedNewsitemService, ContentRetrievalService contentRetrievalService, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;

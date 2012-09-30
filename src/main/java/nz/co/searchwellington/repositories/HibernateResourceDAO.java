@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class HibernateResourceDAO implements ResourceRepository {
+public class HibernateResourceDAO {
 
     private SessionFactory sessionFactory;
     
@@ -96,7 +96,6 @@ public class HibernateResourceDAO implements ResourceRepository {
     }
        
     @SuppressWarnings("unchecked")
-	@Override
 	public List<Newsitem> getNewsitemsForFeed(Feed feed) {
     	return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
     		add(Restrictions.eq("feed", feed)).
@@ -105,7 +104,6 @@ public class HibernateResourceDAO implements ResourceRepository {
     }
     
     @SuppressWarnings("unchecked")
-	@Override
 	public List<PublishedResource> getNewsitemsForPublishers(Website publisher) {
     	return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
 		add(Restrictions.eq("publisher", publisher)).
@@ -156,7 +154,6 @@ public class HibernateResourceDAO implements ResourceRepository {
         setMaxResults(maxItems).list();       
     }
             
-    @Override
     @SuppressWarnings("unchecked")
 	public List<Resource> getNotCheckedSince(Date launchedDate, Date lastScanned, int maxItems) {
     	   return sessionFactory.getCurrentSession().createCriteria(Resource.class).
@@ -175,7 +172,6 @@ public class HibernateResourceDAO implements ResourceRepository {
         list();
     }
 	
-    @Override
 	public int getOwnedByUserCount(User user) {
         return ((Long) sessionFactory.getCurrentSession().
         		iterate("select count(*) from ResourceImpl where owner = " + user.getId()).
@@ -189,8 +185,7 @@ public class HibernateResourceDAO implements ResourceRepository {
     public Resource loadResourceByUrl(String url) {
         return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();        
     }
-            
-    @Override
+    
 	public Resource loadNewsitemByHeadlineAndPublisherWithinLastMonth(String name, Website publisher) {	// TODO last month clause
     	 return (Resource) sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
     	 add(Expression.eq("name", name)).

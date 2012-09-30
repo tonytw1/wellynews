@@ -7,14 +7,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class SupressionService {
 
-	private SupressionRepository suppressionDAO;
-	private SuggestionRepository suggestionDAO;
+	private SupressionDAO suppressionDAO;
+	private SuggestionDAO suggestionDAO;
 	
-	@Autowired
 	public SupressionService() {
 	}
 	
-	public SupressionService(SupressionRepository suppressionDAO, SuggestionRepository suggestionDAO) {		
+	@Autowired
+	public SupressionService(SupressionDAO suppressionDAO, SuggestionDAO suggestionDAO) {		
 		this.suppressionDAO = suppressionDAO;
 		this.suggestionDAO = suggestionDAO;
 	}

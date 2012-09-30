@@ -8,8 +8,8 @@ import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,18 +26,18 @@ public class CommentFeedReader {
 	
     private static final int MAX_COMMENT_FEEDS_TO_LOAD = 30;
     
-    private ResourceRepository resourceDAO;   
+    private HibernateResourceDAO resourceDAO;   
     private CommentFeedService commentFeedService;
     private ContentUpdateService contentUpdateService;
-    private ConfigRepository configDAO;
+    private ConfigDAO configDAO;
         
     public CommentFeedReader() {        
     }
     
     @Autowired
-    public CommentFeedReader(ResourceRepository resourceDAO,
+    public CommentFeedReader(HibernateResourceDAO resourceDAO,
 			CommentFeedService commentFeedService,
-			ContentUpdateService contentUpdateService, ConfigRepository configDAO) {
+			ContentUpdateService contentUpdateService, ConfigDAO configDAO) {
 		this.resourceDAO = resourceDAO;
 		this.commentFeedService = commentFeedService;
 		this.contentUpdateService = contentUpdateService;

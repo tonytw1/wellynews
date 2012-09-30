@@ -7,13 +7,17 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ContentHasChangedProcesser implements LinkCheckerProcessor {
 
 	private static Logger log = Logger.getLogger(ContentHasChangedProcesser.class);
 	
 	private MongoSnapshotDAO snapshotDAO;
 	
+	@Autowired
 	public ContentHasChangedProcesser(MongoSnapshotDAO snapshotDAO) {		
 		this.snapshotDAO = snapshotDAO;
 	}

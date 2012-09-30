@@ -16,7 +16,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -34,7 +34,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
-	private ConfigRepository configDAO;
+	private ConfigDAO configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private FlickrService flickrService;
@@ -45,7 +45,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService,
-			ConfigRepository configDAO,
+			ConfigDAO configDAO,
 			CachingRssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService, FlickrService flickrService) {
 		this.rssUrlBuilder = rssUrlBuilder;

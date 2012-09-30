@@ -25,6 +25,9 @@ public class ContentModelBuilderService {
 	private ContentRetrievalService contentRetrievalService;
 	private ModelBuilder[] modelBuilders;
 	
+	public ContentModelBuilderService() {
+	}
+	
 	@Autowired
 	public ContentModelBuilderService(RssViewFactory rssViewFactory, ViewFactory viewFactory, JsonCallbackNameValidator jsonCallbackNameValidator, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
 		this.rssViewFactory = rssViewFactory;

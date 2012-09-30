@@ -5,7 +5,7 @@ import java.util.List;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService;
 import nz.co.searchwellington.twitter.TwitterService;
 
@@ -18,7 +18,7 @@ public class TwitterListenerJob {
     
     private TwitterService twitterService;
     private TwitterNewsitemMentionsFinderService twitterMentionFinder;
-    private ConfigRepository configDAO;
+    private ConfigDAO configDAO;
     private ContentUpdateService contentUpdateService;
     
     
@@ -28,7 +28,7 @@ public class TwitterListenerJob {
     
     public TwitterListenerJob(TwitterService twitterService,
 			TwitterNewsitemMentionsFinderService twitterMentionFinder,
-			ConfigRepository configDAO,
+			ConfigDAO configDAO,
 			ContentUpdateService contentUpdateService) {
 		super();
 		this.twitterService = twitterService;

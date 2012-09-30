@@ -6,7 +6,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,7 +17,6 @@ public class SolrUpdateQueue {
     
     private ConcurrentLinkedQueue<SolrInputDocument> queue;
     
-    @Autowired
 	public SolrUpdateQueue() {
         queue = new ConcurrentLinkedQueue<SolrInputDocument>();
 	}

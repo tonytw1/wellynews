@@ -10,8 +10,8 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SuggestionRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
+import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 
@@ -27,12 +27,12 @@ public class FeedReader {
       
 	private static Logger log = Logger.getLogger(FeedReader.class);
 	
-    private ResourceRepository resourceDAO;
+    private HibernateResourceDAO resourceDAO;
     private CachingRssfeedNewsitemService rssfeedNewsitemService;
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
-    private SuggestionRepository suggestionDAO;
+    private SuggestionDAO suggestionDAO;
     private ContentUpdateService contentUpdateService;
 	private FeedItemAcceptor feedItemAcceptor;
     private AutoTaggingService autoTagger;
@@ -42,11 +42,11 @@ public class FeedReader {
     }
     
     @Autowired
-	public FeedReader(ResourceRepository resourceDAO,
+	public FeedReader(HibernateResourceDAO resourceDAO,
 			CachingRssfeedNewsitemService rssfeedNewsitemService,
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			DateFormatter dateFormatter, UrlCleaner urlCleaner,
-			SuggestionRepository suggestionDAO,
+			SuggestionDAO suggestionDAO,
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor,
 			AutoTaggingService autoTagger,

@@ -13,7 +13,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.junit.Before;
@@ -29,7 +29,7 @@ public class ProfileControllerTest {
 	private static final String VALID_PROFILE_NAME = "tonytw1";
 	private static final String INVALID_PROFILE_NAME = "tony-tw1";
 	
-	@Mock UserRepository userDao;
+	@Mock HibernateBackedUserDAO userDao;
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock UrlBuilder urlBuilder;
 	@Mock TagDAO tagDAO;

@@ -8,7 +8,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -24,7 +24,7 @@ public class ProfileController extends BaseMultiActionController {
     
 	private static Logger log = Logger.getLogger(ProfileController.class);
 
-    private UserRepository userDAO;
+    private HibernateBackedUserDAO userDAO;
     private LoggedInUserFilter loggerInUserFilter;
 	private UrlBuilder urlBuilder;
 	private TagDAO tagDAO;
@@ -33,7 +33,7 @@ public class ProfileController extends BaseMultiActionController {
 	public ProfileController() {
 	}
 		
-	public ProfileController(UserRepository userDAO, LoggedInUserFilter loggerInUserFilter, UrlBuilder urlBuilder, TagDAO tagDAO, ContentRetrievalService contentRetrievalService) {
+	public ProfileController(HibernateBackedUserDAO userDAO, LoggedInUserFilter loggerInUserFilter, UrlBuilder urlBuilder, TagDAO tagDAO, ContentRetrievalService contentRetrievalService) {
 		this.userDAO = userDAO;
 		this.loggerInUserFilter = loggerInUserFilter;
 		this.urlBuilder = urlBuilder;

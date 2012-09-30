@@ -11,7 +11,6 @@ import nz.co.searchwellington.model.FrontendFeedNewsitem;
 @Component
 public class GeotaggedNewsitemExtractor {
 	
-	@Autowired
 	public List<FrontendFeedNewsitem> extractGeotaggedFeeditems(List<FrontendFeedNewsitem> feedNewsitems) {
 		List<FrontendFeedNewsitem> geotaggedFeedNewsitems = new ArrayList<FrontendFeedNewsitem>();
 		for (FrontendFeedNewsitem feedNewsitem : feedNewsitems) {

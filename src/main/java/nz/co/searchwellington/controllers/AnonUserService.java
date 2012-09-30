@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers;
 
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.UserImpl;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +14,13 @@ public class AnonUserService {
 
 	private static Logger log = Logger.getLogger(AnonUserService.class);
     
-	private UserRepository userDAO;
+	private HibernateBackedUserDAO userDAO;
 		
 	public AnonUserService() {
 	}
 
 	@Autowired
-	public AnonUserService(UserRepository userDAO) {
+	public AnonUserService(HibernateBackedUserDAO userDAO) {
 		this.userDAO = userDAO;
 	}
 	

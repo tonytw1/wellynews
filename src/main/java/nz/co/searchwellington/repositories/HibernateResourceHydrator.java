@@ -9,10 +9,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class HibernateResourceHydrator implements ResourceHydrator {
 	
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 
 	@Autowired
-	public HibernateResourceHydrator(ResourceRepository resourceDAO) {
+	public HibernateResourceHydrator(HibernateResourceDAO resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}
 

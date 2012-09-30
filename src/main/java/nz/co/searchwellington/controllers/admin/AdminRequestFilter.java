@@ -14,7 +14,7 @@ import nz.co.searchwellington.filters.ResourceParameterFilter;
 import nz.co.searchwellington.filters.TagsParameterFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -29,13 +29,13 @@ public class AdminRequestFilter {
 	private static final String DATE_FIELD = "date";
 	private static final String EMBARGO_DATE_FIELD = "embargo_date";
 	
-	private final ResourceRepository resourceDAO;
+	private final HibernateResourceDAO resourceDAO;
 	private final TagDAO tagDAO;	
 	private final ResourceParameterFilter resourceParameterFilter;
 	private final TagsParameterFilter tagsParameterFilter;
 	private final List<SimpleDateFormat> supportedEmbargoDateFormats;
 	
-	public AdminRequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO,
+	public AdminRequestFilter(HibernateResourceDAO resourceDAO, TagDAO tagDAO,
 			ResourceParameterFilter resourceParameterFilter,
 			TagsParameterFilter tagsParameterFilter) {
 		this.resourceDAO = resourceDAO;

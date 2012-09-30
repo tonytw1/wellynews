@@ -8,13 +8,13 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.FrontendContentUpdater;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 
 public class ContentUpdateServiceTest extends TestCase {
 
 	private ContentUpdateService service;
-	private ResourceRepository resourceDAO = mock(ResourceRepository.class);
+	private HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 	private SuggestionDAO suggestionsDAO = mock(SuggestionDAO.class);
 	private LinkCheckerQueue linkCheckerQueue = mock(LinkCheckerQueue.class);
 	

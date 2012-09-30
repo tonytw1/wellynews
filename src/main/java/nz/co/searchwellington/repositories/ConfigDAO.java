@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class ConfigDAO implements ConfigRepository {
+public class ConfigDAO {
     
 	private static Logger log = Logger.getLogger(ConfigDAO.class);
     

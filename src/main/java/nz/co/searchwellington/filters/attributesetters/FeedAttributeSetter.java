@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 
@@ -18,9 +18,9 @@ public class FeedAttributeSetter implements AttributeSetter {
 
 	private static Pattern feedPattern = Pattern.compile("^/feed/(.*?)(/(edit|save|rss|json))?$");
 
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	
-	public FeedAttributeSetter(ResourceRepository resourceDAO) {
+	public FeedAttributeSetter(HibernateResourceDAO resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}
 	

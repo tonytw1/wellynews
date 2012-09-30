@@ -3,7 +3,7 @@ package nz.co.searchwellington.modification;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.FrontendContentUpdater;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 
 import org.apache.log4j.Logger;
@@ -16,7 +16,7 @@ public class ContentUpdateService {
 	
 	private static Logger log = Logger.getLogger(ContentUpdateService.class);
 	
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	private SuggestionDAO suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
 	private FrontendContentUpdater frontendContentUpdater;
@@ -25,7 +25,7 @@ public class ContentUpdateService {
 	}
 	
 	@Autowired
-	public ContentUpdateService(ResourceRepository resourceDAO,
+	public ContentUpdateService(HibernateResourceDAO resourceDAO,
 			SuggestionDAO suggestionsDAO,
 			LinkCheckerQueue linkCheckerQueue,
 			FrontendContentUpdater frontendContentUpdater) {

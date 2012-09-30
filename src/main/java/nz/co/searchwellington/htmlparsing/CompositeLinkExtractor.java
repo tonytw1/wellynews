@@ -4,13 +4,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CompositeLinkExtractor implements LinkExtractor {
 
-    Logger log = Logger.getLogger(CompositeLinkExtractor.class);
+    private static Logger log = Logger.getLogger(CompositeLinkExtractor.class);
     
-    LinkExtractor[] linkExtractors;
-        
+    private LinkExtractor[] linkExtractors;
+    
+    @Autowired
     public CompositeLinkExtractor(LinkExtractor[] linkExtractors) {
 		this.linkExtractors = linkExtractors;
 	}
@@ -28,8 +32,5 @@ public class CompositeLinkExtractor implements LinkExtractor {
                
         return links;
     }
-    
-    
-    
 
 }

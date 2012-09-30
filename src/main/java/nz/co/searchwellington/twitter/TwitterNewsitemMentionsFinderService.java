@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.TwitterMention;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TweetDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
@@ -23,13 +23,13 @@ public class TwitterNewsitemMentionsFinderService {
     private static Logger log = Logger.getLogger(TwitterNewsitemMentionsFinderService.class);
     
     private UrlCleaner urlCleaner;
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	private TwitterService twitterService;
 	private TweetDAO tweetDAO;
 	
 	@Autowired
 	public TwitterNewsitemMentionsFinderService(UrlCleaner urlCleaner,
-			ResourceRepository resourceDAO, CachingTwitterService twitterService,
+			HibernateResourceDAO resourceDAO, CachingTwitterService twitterService,
 			TweetDAO tweetDAO) {		
 		this.urlCleaner = urlCleaner;
 		this.resourceDAO = resourceDAO;

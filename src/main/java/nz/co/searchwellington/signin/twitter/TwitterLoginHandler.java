@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 import nz.co.searchwellington.signin.SigninHandler;
 import nz.co.searchwellington.twitter.TwitterApiFactory;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -32,7 +32,7 @@ public class TwitterLoginHandler implements SigninHandler {
 
 	private static Logger log = Logger.getLogger(TwitterLoginHandler.class);
 	
-	private UserRepository userDAO;
+	private HibernateBackedUserDAO userDAO;
 	private TwitterApiFactory twitterApiFactory;
 	private Map<String, Token> tokens;
 	private UrlBuilder urlBuilder;
@@ -46,7 +46,7 @@ public class TwitterLoginHandler implements SigninHandler {
 	private OAuthService oauthService;	
 	
 	@Autowired
-	public TwitterLoginHandler(UserRepository userDAO, TwitterApiFactory twitterApiFactory, UrlBuilder urlBuilder) {
+	public TwitterLoginHandler(HibernateBackedUserDAO userDAO, TwitterApiFactory twitterApiFactory, UrlBuilder urlBuilder) {
 		this.userDAO = userDAO;
 		this.twitterApiFactory = twitterApiFactory;
 		this.tokens = new HashMap<String, Token>();

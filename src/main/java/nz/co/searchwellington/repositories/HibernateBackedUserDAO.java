@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class HibernateBackedUserDAO implements UserRepository {
+public class HibernateBackedUserDAO {
 
     private SessionFactory sessionFactory;
     
@@ -46,7 +46,6 @@ public class HibernateBackedUserDAO implements UserRepository {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("profilename", profilename)).uniqueResult();     	    
 	}
 	
-	@Override
 	public User getUserByTwitterId(int twitterId) {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("twitterId", twitterId)).uniqueResult();     	    
 	}
@@ -67,7 +66,6 @@ public class HibernateBackedUserDAO implements UserRepository {
 		return 1;
 	}
 
-	@Override
 	public void deleteUser(User user) {
 		sessionFactory.getCurrentSession().delete(user);		
 	}

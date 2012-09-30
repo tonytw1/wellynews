@@ -2,23 +2,23 @@ package nz.co.searchwellington.repositories;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 @Component
 public class SuggestedFeeditemsService {
 
-	private SuggestionRepository suggestionDAO;
+	private SuggestionDAO suggestionDAO;
 	private AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService;
-	private RssfeedNewsitemService rssfeedNewsitemService;
+	private CachingRssfeedNewsitemService rssfeedNewsitemService;
 
 	@Autowired
-	public SuggestedFeeditemsService(SuggestionRepository suggestionDAO, AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService, RssfeedNewsitemService rssfeedNewsitemService) {
+	public SuggestedFeeditemsService(SuggestionDAO suggestionDAO, AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService, CachingRssfeedNewsitemService rssfeedNewsitemService) {
 		this.suggestionDAO = suggestionDAO;
 		this.availableSuggestedFeeditemsService = availableSuggestedFeeditemsService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;

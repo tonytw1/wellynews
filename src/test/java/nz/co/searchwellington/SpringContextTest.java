@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.controllers.models.TagModelBuilder;
 import nz.co.searchwellington.filters.RequestFilter;
 
@@ -40,7 +41,7 @@ public class SpringContextTest {
 	@Test
 	public void canAutowire() throws Exception {
 		final ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		assertNotNull(context.getAutowireCapableBeanFactory().autowire(TagModelBuilder.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true));
+		assertNotNull(context.getAutowireCapableBeanFactory().autowire(ContentModelBuilderService.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true));
 	}
 	
 	//@Test

@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +17,13 @@ public class LoggedInUserFilter {
 	private static Logger log = Logger.getLogger(LoggedInUserFilter.class);
 	
 	private User loggedInUser;
-	private UserRepository userDAO;
+	private HibernateBackedUserDAO userDAO;
 		
 	public LoggedInUserFilter() {
 	}
 
 	@Autowired
-	public LoggedInUserFilter(UserRepository userDAO) {	
+	public LoggedInUserFilter(HibernateBackedUserDAO userDAO) {	
 		this.loggedInUser = null;
 		this.userDAO = userDAO; 
 	}

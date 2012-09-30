@@ -15,7 +15,7 @@ public class LinkCheckerQueue {
     
     private ConcurrentLinkedQueue<Integer> queue;
     
-    public LinkCheckerQueue() {
+	public LinkCheckerQueue() {
         queue = new ConcurrentLinkedQueue<Integer>();
     }
 

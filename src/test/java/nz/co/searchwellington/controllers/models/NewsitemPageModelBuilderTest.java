@@ -14,7 +14,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -39,7 +39,7 @@ public class NewsitemPageModelBuilderTest {
 	@Mock Newsitem geotaggedNewsitem;
 	@Mock Newsitem newsitem;
 	@Mock Geocode validGeotag;
-	@Mock ResourceRepository resourceDAO;
+	@Mock HibernateResourceDAO resourceDAO;
 	@Mock List<GeotaggingVote> geotagVotes;
 	
 	private MockHttpServletRequest request;	

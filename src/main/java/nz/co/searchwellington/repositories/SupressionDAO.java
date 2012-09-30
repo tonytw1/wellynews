@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
-public class SupressionDAO implements SupressionRepository {
+public class SupressionDAO {
     
 	private static Logger log = Logger.getLogger(SupressionDAO.class);
 	

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 
@@ -16,9 +16,9 @@ public class PublisherPageAttributeSetter implements AttributeSetter {
 	
 	private static Pattern publisherPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged))?(/(edit|save|rss|json))?$");
 	
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	
-	public PublisherPageAttributeSetter(ResourceRepository resourceDAO) {
+	public PublisherPageAttributeSetter(HibernateResourceDAO resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}
 	

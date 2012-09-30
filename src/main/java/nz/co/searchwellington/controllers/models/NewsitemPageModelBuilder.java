@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.widgets.TagWidgetFactory;
 
@@ -28,11 +28,14 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	private TagWidgetFactory tagWidgetFactory;
 	private HandTaggingDAO tagVoteDAO;
 	private LoggedInUserFilter loggedInUserFilter;
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
+	
+	public NewsitemPageModelBuilder() {
+	}
 	
 	@Autowired
 	public NewsitemPageModelBuilder(ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService, 
-			TagWidgetFactory tagWidgetFactory, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter, ResourceRepository resourceDAO) {
+			TagWidgetFactory tagWidgetFactory, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter, HibernateResourceDAO resourceDAO) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
 		this.tagWidgetFactory = tagWidgetFactory;

@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.config.Config;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.ConfigRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ecs.html.Option;
@@ -20,13 +20,13 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class ConfigEditController {
     
-    private ConfigRepository configDAO;
+    private ConfigDAO configDAO;
 	private LoggedInUserFilter loggedInUserFilter;
 	
 	public ConfigEditController() {
 	}
 	
-	public ConfigEditController(ConfigRepository configDAO, LoggedInUserFilter loggedInUserFilter) {
+	public ConfigEditController(ConfigDAO configDAO, LoggedInUserFilter loggedInUserFilter) {
 		this.configDAO = configDAO;
 		this.loggedInUserFilter = loggedInUserFilter;
 	}

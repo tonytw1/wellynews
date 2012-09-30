@@ -8,8 +8,8 @@ import nz.co.searchwellington.feeds.FeedReaderRunner;
 import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.repositories.ConfigRepository;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.ConfigDAO;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,21 +21,21 @@ public class RssNewsitemPrefetcher {
 	
 	private static Logger log = Logger.getLogger(RssNewsitemPrefetcher.class);
 
-	private ResourceRepository resourceDAO;
+	private HibernateResourceDAO resourceDAO;
 	private LiveRssfeedNewsitemService rssNewsitemService;
 	private FeedNewsitemCache feedNewsitemCache;
 	private FeedReaderRunner feedReaderRunner;
-	private ConfigRepository configDAO;
+	private ConfigDAO configDAO;
 	
 	public RssNewsitemPrefetcher() {		
 	}
 	
 	@Autowired
-	public RssNewsitemPrefetcher(ResourceRepository resourceDAO,
+	public RssNewsitemPrefetcher(HibernateResourceDAO resourceDAO,
 			LiveRssfeedNewsitemService rssNewsitemService,
 			FeedNewsitemCache feedNewsitemCache,
 			FeedReaderRunner feedReaderRunner,
-			ConfigRepository configDAO) {
+			ConfigDAO configDAO) {
 		this.resourceDAO = resourceDAO;
 		this.rssNewsitemService = rssNewsitemService;
 		this.feedNewsitemCache = feedNewsitemCache;

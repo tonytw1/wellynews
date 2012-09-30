@@ -4,30 +4,34 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
-
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.commentfeeds.CommentFeedGuesserService;
-import nz.co.searchwellington.htmlparsing.LinkExtractor;
+import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
-import nz.co.searchwellington.repositories.ResourceRepository;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
 	
     private static Logger log = Logger.getLogger(FeedAutodiscoveryProcesser.class);
 	
-    final private ResourceRepository resourceDAO;	
-	final private LinkExtractor linkExtractor;
+    final private HibernateResourceDAO resourceDAO;	
+	final private CompositeLinkExtractor linkExtractor;
 	final private CommentFeedDetectorService commentFeedDetector;
 	final private CommentFeedGuesserService commentFeedGuesser;
 	final private ResourceFactory resourceFactory;
 	
-	public FeedAutodiscoveryProcesser(ResourceRepository resourceDAO,
-			LinkExtractor linkExtractor,
+	@Autowired
+	public FeedAutodiscoveryProcesser(HibernateResourceDAO resourceDAO,
+			CompositeLinkExtractor linkExtractor,
 			CommentFeedDetectorService commentFeedDetector,
 			CommentFeedGuesserService commentFeedGuesser,
 			ResourceFactory resourceFactory) {

@@ -11,12 +11,12 @@ import java.util.Set;
 
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.commentfeeds.CommentFeedGuesserService;
-import nz.co.searchwellington.htmlparsing.LinkExtractor;
+import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
-import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,8 +28,8 @@ public class FeedAutodiscoveryProcesserTest {
 	private static final String UNSEEN_FEED_URL = "http://something/new";
 	private static final String EXISTING_FEED_URL = "http://something/old";
 	
-	@Mock ResourceRepository resourceDAO;
-	@Mock LinkExtractor linkExtractor;
+	@Mock HibernateResourceDAO resourceDAO;
+	@Mock CompositeLinkExtractor linkExtractor;
 	@Mock CommentFeedDetectorService commentFeedDetector;
 	@Mock CommentFeedGuesserService commentFeedGuesser;
 	@Mock private ResourceFactory resourceFactory;

@@ -10,7 +10,7 @@ import java.util.List;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.junit.Before;
@@ -21,7 +21,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 public class RequestFilterTest {
 	
-	@Mock private ResourceRepository resourceDAO;
+	@Mock private HibernateResourceDAO resourceDAO;
 	@Mock private TagDAO tagDAO;
 	
 	@Mock private Tag transportTag;

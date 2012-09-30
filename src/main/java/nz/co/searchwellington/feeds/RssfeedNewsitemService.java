@@ -10,8 +10,8 @@ import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.ResourceRepository;
-import nz.co.searchwellington.repositories.SupressionRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
+import nz.co.searchwellington.repositories.SupressionDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -23,8 +23,8 @@ public abstract class RssfeedNewsitemService {
 
 	public abstract List<FeedNewsitem> getFeedNewsitems(Feed feed);
 
-	protected ResourceRepository resourceDAO;
-	protected SupressionRepository suppressionDAO;
+	protected HibernateResourceDAO resourceDAO;
+	protected SupressionDAO suppressionDAO;
 	protected FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	
 	public final Date getLatestPublicationDate(Feed feed) {

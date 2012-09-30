@@ -8,7 +8,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.UserRepository;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -23,7 +23,7 @@ public class SigninController {
 	private static Logger log = Logger.getLogger(SigninController.class);
 	
 	private LoggedInUserFilter loggedInUserFilter;
-	private UserRepository userDAO;
+	private HibernateBackedUserDAO userDAO;
 	private AnonUserService anonUserService;
 	private LoginResourceOwnershipService loginResourceOwnershipService;
 	private UrlStack urlStack;
@@ -33,7 +33,7 @@ public class SigninController {
 	}
 	
 	public SigninController(
-			LoggedInUserFilter loggedInUserFilter, UserRepository userDAO,
+			LoggedInUserFilter loggedInUserFilter, HibernateBackedUserDAO userDAO,
 			AnonUserService anonUserService,
 			LoginResourceOwnershipService loginResourceOwnershipService,
 			UrlStack urlStack, SigninHandler signinHandler) {

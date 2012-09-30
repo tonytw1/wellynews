@@ -12,7 +12,7 @@ import nz.co.searchwellington.filters.attributesetters.CombinerPageAttributeSett
 import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter;
 import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter;
 import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
@@ -38,7 +38,7 @@ public class RequestFilter {
     }
     
 	@Autowired
-    public RequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO, RequestAttributeFilter[] filters) {
+    public RequestFilter(HibernateResourceDAO resourceDAO, TagDAO tagDAO, RequestAttributeFilter[] filters) {
         this.filters = filters;
         this.tagPageAttibuteSetter = new TagPageAttributeSetter(tagDAO);
         this.publisherPageAttributeSetter = new PublisherPageAttributeSetter(resourceDAO);

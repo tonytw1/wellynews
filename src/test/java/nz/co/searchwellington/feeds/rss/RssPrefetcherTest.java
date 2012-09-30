@@ -14,13 +14,13 @@ import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.repositories.ConfigDAO;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 public class RssPrefetcherTest extends TestCase {
 	
 	List<Feed> feeds;
 	
-	ResourceRepository resourceDAO = mock(ResourceRepository.class);
+	HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 	LiveRssfeedNewsitemService rssHttpFetcher = mock(LiveRssfeedNewsitemService.class);
 	FeedNewsitemCache rssCache = mock(FeedNewsitemCache.class);
 	ConfigDAO configDAO = mock(ConfigDAO.class);

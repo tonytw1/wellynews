@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
@@ -24,7 +24,7 @@ public class AvailableSuggestedFeeditemsServiceTest {
 	private static final String FEED_ITEM_URL_2 = "http://2";
 	private static final String FEED_ITEM_URL_1 = "http://1";
 	
-	@Mock RssfeedNewsitemService rssfeedNewsitemService;
+	@Mock CachingRssfeedNewsitemService rssfeedNewsitemService;
 	
 	private List<Suggestion> allSuggestions;
 	@Mock Feed feed;
