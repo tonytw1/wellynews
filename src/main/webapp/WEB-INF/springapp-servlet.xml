@@ -13,7 +13,7 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
         
 	<context:annotation-config />
-	<context:component-scan base-package="nz.gen.wellington,uk.co.eelpieconsulting.common" />
+	<context:component-scan base-package="nz.gen.wellington,nz.co.searchwellington,uk.co.eelpieconsulting.common" />
 
 	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
@@ -30,113 +30,5 @@
    			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
   		</property>
 	</bean>
-		
-	<import resource="admin-servlets.xml" />
-			
-	<bean id="tagController" class="nz.co.searchwellington.controllers.TagController">	
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="contentModelBuilder" />		
-	</bean>
-		
-	<bean id="publicTaggingController" class="nz.co.searchwellington.controllers.PublicTaggingController">
-		<constructor-arg ref="adminRequestFilter" />	
-		<constructor-arg ref="anonUserService" />		
-		<constructor-arg ref="loggedInUserFilter" />	
-		<constructor-arg ref="submissionProcessingService" />
-		<constructor-arg ref="urlStack" />
-	</bean>
-	
-	<bean id="simplePageController" class="nz.co.searchwellington.controllers.SimplePageController">	
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="configDAO" />
-		<constructor-arg ref="discoveredFeedRespository" />
-		<constructor-arg ref="contentRetrievalService" />
-		<constructor-arg ref="tagDAO" />
-		<constructor-arg ref="rssUrlBuilder" />									
-	</bean>
-	
-	<bean id="twitterLoginController" class="nz.co.searchwellington.signin.SigninController">
-		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="userDAO" />
-		<constructor-arg ref="anonUserService" />
-		<constructor-arg ref="loginResourceOwnershipService" />
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="twitterSigninHandler"/>				
-	</bean>
-			
-	<bean id="clickThroughController" class="nz.co.searchwellington.controllers.ClickThroughController">
-		<constructor-arg ref="urlBuilder" />
-	</bean>
-				
-	<bean id="loginController" class="nz.co.searchwellington.controllers.LoginController">	
-		<constructor-arg ref="urlStack" />			
-	</bean>
-	
-	<bean id="apiController" class="nz.co.searchwellington.controllers.api.ApiController">
-		<constructor-arg ref="resourceDAO" />
-		<constructor-arg ref="adminRequestFilter" />
-		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="suppressionService" />
-		<constructor-arg ref="cachingRssfeedNewsitemService" />
-		<constructor-arg ref="contentUpdateService" />
-		<constructor-arg ref="submissionProcessingService" />
-		<constructor-arg ref="autoTaggingService" />
-		<constructor-arg ref="handTaggingDAO" />
-		<constructor-arg ref="feedItemAcceptor" />
-		<constructor-arg ref="resourceFactory" />	
-	</bean>
-	
-	<bean id="cancelController" class="nz.co.searchwellington.controllers.CancelController">
-		<constructor-arg ref="urlStack" />		
-	</bean>
-		
-	<bean id="viewfeedController" class="nz.co.searchwellington.controllers.admin.AdminFeedController">
-		<constructor-arg ref="adminRequestFilter" />
-		<constructor-arg ref="feedReader" />
-		<constructor-arg ref="rssPrefetcher" />
-		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="editPermissionService" />
-		<constructor-arg ref="loggedInUserFilter" />		
-	</bean>
-			
-	<bean id="rssController" class="nz.co.searchwellington.controllers.RssController">
-		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="contentRetrievalService" />
-		<constructor-arg ref="rssItemMaker" />
-		<constructor-arg ref="rssUrlBuilder" />	
-	</bean>
-			
-	<bean id="submissionProcessingService" class="nz.co.searchwellington.controllers.SubmissionProcessingService">	
-		<constructor-arg ref="urlCleaner" />
-		<constructor-arg ref="geocodingService" />
-		<constructor-arg ref="tagDAO" />
-		<constructor-arg ref="handTaggingDAO" />
-		<constructor-arg ref="resourceDAO" />
-	</bean>
-		
-	<bean id="profileController" class="nz.co.searchwellington.controllers.profiles.ProfileController">
-		<constructor-arg ref="userDAO" />		
-		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="urlBuilder" />
-		<constructor-arg ref="tagDAO" />
-		<constructor-arg ref="contentRetrievalService" />	
-	</bean>
-			
-	<bean id="autoTagController" class="nz.co.searchwellington.controllers.admin.AutoTagController">
-		<constructor-arg ref="resourceDAO" />		
-		<constructor-arg ref="adminRequestFilter" />	
-		<constructor-arg ref="urlStack" />
-		<constructor-arg ref="impliedTagService" />
-		<constructor-arg ref="keywordSearchService" />
-		<constructor-arg ref="tagDAO" />
-		<constructor-arg ref="contentUpdateService" />
-		<constructor-arg ref="handTaggingDAO" />
-		<constructor-arg ref="loggedInUserFilter" />		
-	</bean>
-		
-	<bean id="sitemapController" class="nz.co.searchwellington.controllers.SitemapController">
-		<constructor-arg ref="siteInformation" />
-		<constructor-arg ref="sitemapService" />	
-	</bean>
-	    
+			    
 </beans>

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:aop="http://www.springframework.org/schema/aop"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="
@@ -36,12 +37,13 @@
    			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
   		</property>
 	</bean>
-	
-	<bean id="requestObjectLoaderFilter" class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" scope="request">
-		<aop:scoped-proxy/>	
-<constructor-arg ref="requestFilter" />
-<constructor-arg ref="loggedInUserFilter" />	
-</bean>
+
+	<bean id="requestObjectLoaderFilter"
+		class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" scope="request">
+		<aop:scoped-proxy />
+		<constructor-arg ref="requestFilter" />
+		<constructor-arg ref="loggedInUserFilter" />
+	</bean>
 	
 	<bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
 		<constructor-arg value="${solr.url}" />
