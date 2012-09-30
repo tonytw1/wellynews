@@ -5,17 +5,21 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.TagDAO;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class TagsParameterFilter implements RequestAttributeFilter {
 	
-	static Logger log = Logger.getLogger(TagsParameterFilter.class);
+	private static Logger log = Logger.getLogger(TagsParameterFilter.class);
 
 	private TagDAO tagDAO;
 	
+	@Autowired
 	public TagsParameterFilter(TagDAO tagDAO) {
 		this.tagDAO = tagDAO;
 	}

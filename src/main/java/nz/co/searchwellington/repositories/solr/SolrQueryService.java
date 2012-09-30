@@ -16,13 +16,17 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SolrQueryService {
 	
 	private static Logger log = Logger.getLogger(SolrQueryService.class);
 
 	private SolrServer solr;
 	
+	@Autowired
 	public SolrQueryService(SolrServer solr) {
 		this.solr = solr;
 	}

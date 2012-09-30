@@ -14,7 +14,9 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.SupressionRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+@Component
 public abstract class RssfeedNewsitemService {
 
 	private static Logger log = Logger.getLogger(RssfeedNewsitemService.class);

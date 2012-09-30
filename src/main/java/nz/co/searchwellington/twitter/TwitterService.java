@@ -4,7 +4,6 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Twit;
 
-
 public interface TwitterService {
 
 	public List<Twit> getReplies();

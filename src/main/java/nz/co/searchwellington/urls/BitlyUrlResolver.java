@@ -1,11 +1,10 @@
 package nz.co.searchwellington.urls;
 
+import org.springframework.stereotype.Component;
 
-import org.apache.log4j.Logger;
-
+@Component
 public class BitlyUrlResolver extends AbstractRedirectResolver {
     
-    Logger log = Logger.getLogger(BitlyUrlResolver.class);
     public static final String BITLY_URL_PREFIX = "http://bit.ly/";
     
     public boolean isValid(String url) {

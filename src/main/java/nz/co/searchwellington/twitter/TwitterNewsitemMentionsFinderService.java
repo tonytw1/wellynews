@@ -14,7 +14,10 @@ import nz.co.searchwellington.repositories.TweetDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TwitterNewsitemMentionsFinderService {
 
     private static Logger log = Logger.getLogger(TwitterNewsitemMentionsFinderService.class);
@@ -24,8 +27,9 @@ public class TwitterNewsitemMentionsFinderService {
 	private TwitterService twitterService;
 	private TweetDAO tweetDAO;
 	
+	@Autowired
 	public TwitterNewsitemMentionsFinderService(UrlCleaner urlCleaner,
-			ResourceRepository resourceDAO, TwitterService twitterService,
+			ResourceRepository resourceDAO, CachingTwitterService twitterService,
 			TweetDAO tweetDAO) {		
 		this.urlCleaner = urlCleaner;
 		this.resourceDAO = resourceDAO;

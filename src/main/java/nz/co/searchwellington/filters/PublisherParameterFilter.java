@@ -2,10 +2,15 @@ package nz.co.searchwellington.filters;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 @Deprecated
+@Component
+@Scope("request")
 public class PublisherParameterFilter implements RequestAttributeFilter {
 
 	private ResourceRepository resourceDAO;

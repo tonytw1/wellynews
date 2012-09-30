@@ -17,11 +17,15 @@ import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
 import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 
 import org.apache.solr.common.SolrDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SolrResourceHydrator implements ResourceHydrator {
 	
 	private TagDAO tagDAO;	// TODO could remove this by hydrating tag fields from resource
 	
+	@Autowired
 	public SolrResourceHydrator(TagDAO tagDAO) {
 		this.tagDAO = tagDAO;
 	}

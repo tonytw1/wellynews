@@ -36,7 +36,11 @@ import org.apache.solr.common.params.FacetParams;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SolrBackedResourceDAO {
 	
 	private static Logger log = Logger.getLogger(SolrBackedResourceDAO.class);
@@ -51,8 +55,10 @@ public class SolrBackedResourceDAO {
 	private TagDAO tagDAO;
 	private ResourceHydrator resourceHydrator;
 
+	@Value("#{config['solr.ur']}")
 	private String solrUrl;
 
+	@Autowired
 	public SolrBackedResourceDAO(SolrQueryService solrQueryService, TagDAO tagDAO, ResourceHydrator resourceHydrator) {
 		this.solrQueryService = solrQueryService;
 		this.tagDAO = tagDAO;
@@ -411,7 +417,7 @@ public class SolrBackedResourceDAO {
 				showBroken).maxItems(0).toQuery();
 		SolrServer solr;
 		try {
-			solr = new CommonsHttpSolrServer(solrUrl);
+			solr = new CommonsHttpSolrServer(solrUrl);	// TODO should be injected
 
 			query.addFacetField("type");
 			query.setFacetMinCount(1);

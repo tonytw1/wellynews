@@ -7,8 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+@Component
 public abstract class AbstractModelBuilder {
 	
 	protected static final int MAX_NUMBER_OF_GEOTAGGED_TO_SHOW = 30;

@@ -1,39 +1,50 @@
 package nz.co.searchwellington.model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ConfigRepository;
 
+@Component
 public class SiteInformation {
 
-	private ConfigRepository configDAO;
+	private ConfigDAO configDAO;
+	
+    @Value("#{config['areaname']}")
 	private String areaname;
+
+    @Value("#{config['installed']}")
 	private String url;
-    private String adsenseAccount;
+    
+    @Value("#{config['twitter.username']}")
     private String twitterUsername;
+    
+    @Value("#{config['googlemaps.apikey']}")
     private String googleMapsApiKey;
+    
+    @Value("#{config['imageroot']}")  
     private String imageRoot;
+    
+    @Value("#{config['staticroot']}")
     private String staticRoot;
+    
+    @Value("#{config['feedburner.url']}")
     private String feedburnerUrl;
     
-	public SiteInformation(ConfigRepository configDAO) {	
+    public SiteInformation() {
+	}
+    
+    @Autowired
+	public SiteInformation(ConfigDAO configDAO) {	
 		this.configDAO = configDAO;
 	}
-
-	public String getAdsenseAccount() {
-        return adsenseAccount;
-    }
-
-    public void setAdsenseAccount(String adsenseAccount) {
-        this.adsenseAccount = adsenseAccount;
-    }
     
     public String getAreaname() {
 		return areaname;
 	}
-
-	public void setAreaname(String areaname) {
-		this.areaname = areaname;
-	}
-
+    
 	public String getSitename() {
 	    return "Search " + this.areaname;
 	}
@@ -45,30 +56,15 @@ public class SiteInformation {
 	public String getUrl() {
 		return url;
 	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
-
+	
     public String getTwitterUsername() {
         return twitterUsername;
     }
-
-
-    public void setTwitterUsername(String twitterUsername) {
-        this.twitterUsername = twitterUsername;
-    }
-
-
+    
     public String getGoogleMapsApiKey() {
         return googleMapsApiKey;
     }
 
-
-    public void setGoogleMapsApiKey(String googleMapsApiKey) {
-        this.googleMapsApiKey = googleMapsApiKey;
-    }
 
     public String getTrackingCode() {
     	return configDAO.getConfig().getStatsTracking();
@@ -78,24 +74,12 @@ public class SiteInformation {
 		return staticRoot;
 	}
 
-	public void setStaticRoot(String staticRoot) {
-		this.staticRoot = staticRoot;
-	}
-
 	public String getFeedburnerUrl() {
 		return feedburnerUrl;
 	}
 
-	public void setFeedburnerUrl(String feedburnerUrl) {
-		this.feedburnerUrl = feedburnerUrl;
-	}
-
 	public String getImageRoot() {
 		return imageRoot;
-	}
-
-	public void setImageRoot(String imageRoot) {
-		this.imageRoot = imageRoot;
 	}
 
 	public boolean isTwitterEnabled() {

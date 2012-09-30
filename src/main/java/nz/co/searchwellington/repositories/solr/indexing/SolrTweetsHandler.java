@@ -5,9 +5,11 @@ import java.util.List;
 import nz.co.searchwellington.model.Twit;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SolrTweetsHandler {
-
+	
 	public SolrInputDocument processTweets(List<Twit> tweets, SolrInputDocument inputDocument) {
 		inputDocument.addField("twitterCount", tweets.size());
 		for (Twit tweet : tweets) {

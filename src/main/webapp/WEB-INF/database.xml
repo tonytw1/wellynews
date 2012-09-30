@@ -7,7 +7,6 @@
 	    <property name="nestedTransactionAllowed" value="true" />	    
 	</bean>
 
-
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="true">
 		<property name="mappingResources">
     		<list>
@@ -23,25 +22,20 @@
       			<value>nz/co/searchwellington/model/Supression.hbm.xml</value>
       			<value>nz/co/searchwellington/model/Suggestion.hbm.xml</value>
       			<value>nz/co/searchwellington/model/Twit.hbm.xml</value>
-      			<value>nz/co/searchwellington/model/HandTagging.hbm.xml</value>      			
-      			   			
-      			
+      			<value>nz/co/searchwellington/model/HandTagging.hbm.xml</value>      			   			      			
     		</list>
   		</property>
   		<property name="hibernateProperties">
    	 		<props>
       			<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>      	
-      	
       			<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
-      			 		      	
     		</props>    
 	  	</property>
   		<property name="dataSource">
     		<ref bean="dataSource"/>
   		</property>
 	</bean>
-
-
+	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
 		<property name="driverClassName">
 	   		<value>com.mysql.jdbc.Driver</value>

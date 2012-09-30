@@ -3,6 +3,7 @@ package nz.co.searchwellington.utils;
 import nz.co.searchwellington.urls.UrlResolverService;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -12,6 +13,7 @@ public class UrlCleaner {
 
     private UrlResolverService urlResolver;
     
+    @Autowired
     public UrlCleaner(UrlResolverService urlResolver) {
 		this.urlResolver = urlResolver;
 	}

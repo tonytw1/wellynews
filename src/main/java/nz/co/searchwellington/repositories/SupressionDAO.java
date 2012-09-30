@@ -16,10 +16,10 @@ public class SupressionDAO implements SupressionRepository {
 	
     private SessionFactory sessionFactory;
     
-    @Autowired
     public SupressionDAO() {
 	}
     
+    @Autowired
 	public SupressionDAO(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }

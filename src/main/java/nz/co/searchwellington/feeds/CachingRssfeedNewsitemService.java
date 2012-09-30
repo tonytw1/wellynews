@@ -8,16 +8,18 @@ import org.springframework.stereotype.Component;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.SupressionDAO;
 import nz.co.searchwellington.repositories.SupressionRepository;
 
-@Component
+@Component("cachingRssfeedNewsitemService")
 public class CachingRssfeedNewsitemService extends RssfeedNewsitemService {
 
 	private FeedNewsitemCache feedNewsitemCache;
 	
 	@Autowired
-	public CachingRssfeedNewsitemService(ResourceRepository resourceDAO, SupressionRepository suppressionDAO, FeedNewsitemCache feedNewsitemCache, FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
+	public CachingRssfeedNewsitemService(HibernateResourceDAO resourceDAO, SupressionDAO suppressionDAO, FeedNewsitemCache feedNewsitemCache, FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
 		this.resourceDAO = resourceDAO;
 		this.suppressionDAO = suppressionDAO;
 		this.feedNewsitemCache = feedNewsitemCache;

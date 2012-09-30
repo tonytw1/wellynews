@@ -2,24 +2,22 @@ package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 
-import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EditPermissionService {
-
-	static Logger log = Logger.getLogger(EditPermissionService.class);
-	   
 	
 	private LoggedInUserFilter loggedInUserFilter;
 	
-
+	@Autowired
 	public EditPermissionService(LoggedInUserFilter loggedInUserFilter) {	
 		this.loggedInUserFilter = loggedInUserFilter;
 	}
-
 	
 	public boolean canEdit(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();

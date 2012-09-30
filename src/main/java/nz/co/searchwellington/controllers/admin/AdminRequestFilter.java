@@ -29,14 +29,19 @@ public class AdminRequestFilter {
 	private static final String DATE_FIELD = "date";
 	private static final String EMBARGO_DATE_FIELD = "embargo_date";
 	
-	final private ResourceRepository resourceDAO;
-	final private TagDAO tagDAO;	
-	final private List<SimpleDateFormat> supportedEmbargoDateFormats;
-		
-	public AdminRequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO) {		
+	private final ResourceRepository resourceDAO;
+	private final TagDAO tagDAO;	
+	private final ResourceParameterFilter resourceParameterFilter;
+	private final TagsParameterFilter tagsParameterFilter;
+	private final List<SimpleDateFormat> supportedEmbargoDateFormats;
+	
+	public AdminRequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO,
+			ResourceParameterFilter resourceParameterFilter,
+			TagsParameterFilter tagsParameterFilter) {
 		this.resourceDAO = resourceDAO;
 		this.tagDAO = tagDAO;
-		
+		this.resourceParameterFilter = resourceParameterFilter;
+		this.tagsParameterFilter = tagsParameterFilter;
 		supportedEmbargoDateFormats = new ArrayList<SimpleDateFormat>();
 		supportedEmbargoDateFormats.add(new SimpleDateFormat("dd MMM yyyy HH:mm"));
 		supportedEmbargoDateFormats.add(new SimpleDateFormat("HH:mm"));
@@ -91,12 +96,8 @@ public class AdminRequestFilter {
             }
         }
         
-    	TagsParameterFilter tagsParameterFilter = new TagsParameterFilter(tagDAO);	// TODO up
-    	tagsParameterFilter.filter(request); 
-		    	
-    	ResourceParameterFilter resourceParameterFilter = new ResourceParameterFilter(resourceDAO);	// TODO up
+    	tagsParameterFilter.filter(request);		    	
     	resourceParameterFilter.filter(request);
-		
     	
 		if (request.getParameter("feed") != null) {
 			String feedParameter = request.getParameter("feed");			

@@ -1,17 +1,14 @@
 package nz.co.searchwellington.widgets;
 
-
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
-import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class AcceptanceWidgetFactory {
-    
-    Logger log = Logger.getLogger(AcceptanceWidgetFactory.class);
-         
+             
     public String createAcceptanceSelect(String acceptancePolicy) {
         Select acceptanceSelect = new Select("acceptance");
                 

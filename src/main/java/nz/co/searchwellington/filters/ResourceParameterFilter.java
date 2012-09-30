@@ -3,17 +3,24 @@ package nz.co.searchwellington.filters;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
+@Component
+@Scope("request")
 public class ResourceParameterFilter implements RequestAttributeFilter {
 	
-	static Logger log = Logger.getLogger(ResourceParameterFilter.class);
+	private static Logger log = Logger.getLogger(ResourceParameterFilter.class);
 	
 	private ResourceRepository resourceDAO;
 	
-	public ResourceParameterFilter(ResourceRepository resourceDAO) {
+	@Autowired
+	public ResourceParameterFilter(HibernateResourceDAO resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}
 	
@@ -33,8 +40,7 @@ public class ResourceParameterFilter implements RequestAttributeFilter {
 			} catch (NumberFormatException e) {
 				log.warn("Invalid resource id given: " + resourceParametere);
 			}
-		}
-		
+		}	
 	}
 
 }

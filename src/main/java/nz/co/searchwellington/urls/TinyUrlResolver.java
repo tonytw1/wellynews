@@ -1,11 +1,10 @@
 package nz.co.searchwellington.urls;
 
+import org.springframework.stereotype.Component;
 
-import org.apache.log4j.Logger;
-
+@Component
 public class TinyUrlResolver extends AbstractRedirectResolver {
-    
-    Logger log = Logger.getLogger(TinyUrlResolver.class);
+	
     public static final String TINYURL_PREFIX = "http://tinyurl.com/";
     
     public boolean isValid(String url) {

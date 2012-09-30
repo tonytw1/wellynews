@@ -3,6 +3,9 @@ package nz.co.searchwellington.controllers.admin;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
@@ -10,11 +13,13 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.urls.UrlBuilder;
 
+@Component
 public class AdminUrlBuilder {
 
 	private SiteInformation siteInformation;
 	private UrlBuilder urlBuilder;
 	
+	@Autowired
 	public AdminUrlBuilder(SiteInformation siteInformation, UrlBuilder urlBuilder) {		
 		this.siteInformation = siteInformation;
 		this.urlBuilder = urlBuilder;

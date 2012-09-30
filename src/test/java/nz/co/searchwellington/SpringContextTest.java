@@ -8,7 +8,6 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.models.TagModelBuilder;
 import nz.co.searchwellington.filters.RequestFilter;
-import nz.co.searchwellington.modification.ContentDeletionService;
 
 import org.junit.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
@@ -41,13 +40,13 @@ public class SpringContextTest {
 	@Test
 	public void canAutowire() throws Exception {
 		final ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		assertNotNull(context.getAutowireCapableBeanFactory().autowire(ContentDeletionService.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true));
+		assertNotNull(context.getAutowireCapableBeanFactory().autowire(TagModelBuilder.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true));
 	}
 	
 	//@Test
 	public void canAutowireListParameters() throws Exception {
 		final ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		final RequestFilter requestFilter = (RequestFilter) context.getAutowireCapableBeanFactory().autowire(RequestFilter.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true);		
+		final RequestFilter requestFilter = (RequestFilter) context.getAutowireCapableBeanFactory().autowire(TagModelBuilder.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true);		
 		assertNotNull(requestFilter.getFilters());
 	}
 	

@@ -13,6 +13,9 @@ public class RssUrlBuilder {
     
     private SiteInformation siteInformation;
     
+    public RssUrlBuilder() {
+	}
+    
     @Autowired
     public RssUrlBuilder(SiteInformation siteInformation) {
         this.siteInformation = siteInformation;

@@ -3,13 +3,17 @@ package nz.co.searchwellington.commentfeeds;
 import nz.co.searchwellington.commentfeeds.detectors.CommentFeedDetector;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CommentFeedDetectorService {
 
     private static Logger log = Logger.getLogger(CommentFeedDetectorService.class);
     
 	private CommentFeedDetector[] detectors;
         
+	@Autowired
 	public CommentFeedDetectorService(CommentFeedDetector... detectors) {
 		this.detectors = detectors;
 	}

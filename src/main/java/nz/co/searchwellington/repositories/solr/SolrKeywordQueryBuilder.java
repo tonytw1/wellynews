@@ -4,9 +4,14 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.stereotype.Component;
 
 // TODO why isn't this folded into the main query builder
+@Component
 public class SolrKeywordQueryBuilder extends SolrQueryBuilder {
+	
+	public SolrKeywordQueryBuilder() {
+	}
 	
 	public SolrQuery getSolrKeywordQuery(String keywords, boolean showBroken, Tag tag) {
 		SolrQuery query = new SolrQuery();		

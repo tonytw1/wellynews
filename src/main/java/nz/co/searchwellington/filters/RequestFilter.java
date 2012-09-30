@@ -16,7 +16,12 @@ import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope("request")
 public class RequestFilter {
         
 	private static Logger log = Logger.getLogger(RequestFilter.class);
@@ -32,11 +37,12 @@ public class RequestFilter {
 	public RequestFilter() {         
     }
     
+	@Autowired
     public RequestFilter(ResourceRepository resourceDAO, TagDAO tagDAO, RequestAttributeFilter[] filters) {
         this.filters = filters;
         this.tagPageAttibuteSetter = new TagPageAttributeSetter(tagDAO);
         this.publisherPageAttributeSetter = new PublisherPageAttributeSetter(resourceDAO);
-        this.combinerPageAttributeSetter = new CombinerPageAttributeSetter(tagDAO, resourceDAO);
+        this.combinerPageAttributeSetter = new CombinerPageAttributeSetter(tagDAO, resourceDAO);	// TODO this is incorrect IoD
         this.feedAttributeSetter = new FeedAttributeSetter(resourceDAO);
         
         attributeSetters = new ArrayList<AttributeSetter>();	// TODO push to spring.

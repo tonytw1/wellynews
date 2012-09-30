@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
 
@@ -17,8 +18,11 @@ import com.aetrion.flickr.photos.PhotoList;
 public class FlickrApi {
     
     private static Logger log = Logger.getLogger(FlickrApi.class);
-    
+
+    @Value("#{config['flickr.apikey']}")
     private String apiKey;
+    
+    @Value("#{config['flickr.apisecret']}")
 	private String apiSecret;
     
     public FlickrApi() {      

@@ -14,13 +14,15 @@ import org.htmlparser.filters.NodeClassFilter;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class RssLinkExtractor implements LinkExtractor {
 
 	private static Logger log = Logger.getLogger(RssLinkExtractor.class);
-        
+	
     public Set<String> extractLinks(String inputHTML) {
-        Set<String> links = new HashSet<String>();
+    	final Set<String> links = new HashSet<String>();
         
         Parser parser = new Parser();
         try {            

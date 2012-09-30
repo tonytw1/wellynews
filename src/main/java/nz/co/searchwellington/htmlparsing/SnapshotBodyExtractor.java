@@ -11,13 +11,17 @@ import org.htmlparser.Parser;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SnapshotBodyExtractor {
 	
     private static Logger log = Logger.getLogger(SnapshotBodyExtractor.class);
     
     private MongoSnapshotDAO snapshotDAO;
     
+    @Autowired
     public SnapshotBodyExtractor(MongoSnapshotDAO snapshotDAO) {	
 		this.snapshotDAO = snapshotDAO;
 	}

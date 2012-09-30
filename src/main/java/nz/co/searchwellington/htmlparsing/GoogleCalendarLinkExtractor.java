@@ -10,11 +10,12 @@ import org.htmlparser.Tag;
 import org.htmlparser.filters.LinkRegexFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GoogleCalendarLinkExtractor implements LinkExtractor {
 
-    Logger log = Logger.getLogger(GoogleCalendarLinkExtractor.class);
-    
+    private static Logger log = Logger.getLogger(GoogleCalendarLinkExtractor.class);
     
     protected boolean isValid(String url) {
         if (url == null) {
@@ -22,7 +23,6 @@ public class GoogleCalendarLinkExtractor implements LinkExtractor {
         }
         return url.matches("http://www.google.com/calendar/render\\?.*");       
     }
-	
     
 	public Set<String> extractLinks(String inputHTML) {
 		Set<String> links = new HashSet<String>();

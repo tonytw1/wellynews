@@ -13,19 +13,24 @@ import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class SolrIndexRebuildService {
 
+	private static Logger log = Logger.getLogger(SolrIndexRebuildService.class);
+
 	private static final int BATCH_COMMIT_SIZE = 1000;
-
-	Logger log = Logger.getLogger(SolrIndexRebuildService.class);
-
+	
 	private ResourceRepository resourceDAO;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
-	
+    
+	@Value("#{config['solr.ur']}")
 	private String solrUrl;
-	private boolean running;
+	
+    private boolean running;
 	private int batchCounter;
 	
 	public SolrIndexRebuildService() {
@@ -33,7 +38,7 @@ public class SolrIndexRebuildService {
 		batchCounter = 0;
 	}
 
-
+	@Autowired
 	public SolrIndexRebuildService(ResourceRepository resourceDAO, SolrInputDocumentBuilder solrInputDocumentBuilder) {		
 		this.resourceDAO = resourceDAO;
 		this.solrInputDocumentBuilder = solrInputDocumentBuilder;
@@ -56,7 +61,7 @@ public class SolrIndexRebuildService {
 		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
 	
 		try {
-			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
+			SolrServer solr = new CommonsHttpSolrServer(solrUrl);	// TODO This should be injected
 			if (deleteAll) {
 				log.info("Deleting all existing records");
 				this.deleteAllFromIndex(solr);

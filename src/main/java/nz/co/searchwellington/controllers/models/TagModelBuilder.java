@@ -39,6 +39,9 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private ContentRetrievalService contentRetrievalService;
 	private FlickrService flickrService;
 	
+	public TagModelBuilder() {
+	}
+	
 	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService,

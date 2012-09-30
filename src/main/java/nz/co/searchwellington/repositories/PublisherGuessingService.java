@@ -8,13 +8,17 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PublisherGuessingService {
     
     private static Logger log = Logger.getLogger(PublisherGuessingService.class);
     
     private ResourceRepository resourceDAO;
          
+    @Autowired
     public PublisherGuessingService(ResourceRepository resourceDAO) {    
         this.resourceDAO = resourceDAO;
     }

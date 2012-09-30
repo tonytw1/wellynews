@@ -3,7 +3,10 @@ package nz.co.searchwellington.urls;
 import nz.co.searchwellington.caching.MemcachedCache;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CachingUrlResolverService extends UrlResolverService {
 	
 	private static Logger log = Logger.getLogger(CachingUrlResolverService.class);
@@ -11,15 +14,13 @@ public class CachingUrlResolverService extends UrlResolverService {
 	private static final int ONE_DAY = 3600 * 24;
 	
 	private MemcachedCache cache;
-	private String keyPrefix;
 	
+	private final String keyPrefix = "resolved-urls::";
+	
+	@Autowired
 	public CachingUrlResolverService(MemcachedCache cache, RedirectingUrlResolver... redirectResolvers) {
 		super(redirectResolvers);
 		this.cache = cache;
-	}
-	
-	public void setKeyPrefix(String keyPrefix) {
-		this.keyPrefix = keyPrefix;
 	}
 		
 	@Override

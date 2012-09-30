@@ -1,17 +1,20 @@
 package nz.co.searchwellington.urls;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public class UrlResolverService {
+@Component
+public class UrlResolverService {	// TODO move to common
 
-	Logger log = Logger.getLogger(UrlResolverService.class);
+	private static Logger log = Logger.getLogger(UrlResolverService.class);
 
 	protected RedirectingUrlResolver[] redirectResolvers;
 
+	@Autowired
 	public UrlResolverService(RedirectingUrlResolver... redirectResolvers) {
 		this.redirectResolvers = redirectResolvers;
 	}
-
 	
 	public String resolveUrl(String url) {
 		return fullyResolveUrl(url, 0);		
@@ -29,7 +32,6 @@ public class UrlResolverService {
 		return url;
 	}
 	
-	
 	protected boolean isResolvable(String url) {
 		for (RedirectingUrlResolver resolver : redirectResolvers) {
 			if (resolver.isValid(url)) {
@@ -38,7 +40,6 @@ public class UrlResolverService {
 		}
 		return false;
 	}
-
 	
 	protected String resolveSingleUrl(String url) {
 		for (RedirectingUrlResolver resolver : redirectResolvers) {

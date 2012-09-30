@@ -9,11 +9,15 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SolrFacetLoader {
 	
 	private TagDAO tagDAO;
 	
+	@Autowired
 	public SolrFacetLoader(TagDAO tagDAO) {		
 		this.tagDAO = tagDAO;
 	}

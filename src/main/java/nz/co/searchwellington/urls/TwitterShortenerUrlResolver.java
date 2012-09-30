@@ -1,5 +1,8 @@
 package nz.co.searchwellington.urls;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class TwitterShortenerUrlResolver extends AbstractRedirectResolver {
     
 	public static final String TWITTER_SHORTENER_PREFIX = "http://t.co/";

@@ -10,15 +10,17 @@ import org.htmlparser.Tag;
 import org.htmlparser.filters.LinkRegexFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class IcalEventsLinkExtractor implements LinkExtractor {
 
-    Logger log = Logger.getLogger(IcalEventsLinkExtractor.class);
+	private static Logger log = Logger.getLogger(IcalEventsLinkExtractor.class);
     
     public Set<String> extractLinks(String inputHTML) {
-        Set<String> links = new HashSet<String>();
+        final Set<String> links = new HashSet<String>();
 
-        Parser parser = new Parser();
+        final Parser parser = new Parser();
         try {
             parser.setInputHTML(inputHTML);
     
@@ -36,7 +38,5 @@ public class IcalEventsLinkExtractor implements LinkExtractor {
         }
         return links;
     }
-
-    
     
 }

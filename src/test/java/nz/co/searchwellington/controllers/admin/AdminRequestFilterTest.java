@@ -8,10 +8,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.Date;
 
+import nz.co.searchwellington.filters.ResourceParameterFilter;
+import nz.co.searchwellington.filters.TagsParameterFilter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ResourceRepository;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.joda.time.DateTime;
@@ -21,7 +23,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 public class AdminRequestFilterTest {
 	
-	private ResourceRepository resourceDAO = mock(ResourceRepository.class);
+	private HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 	private AdminRequestFilter filter;
 	private Tag transportTag = mock(Tag.class);
 	private Feed feed = mock(Feed.class);
@@ -35,7 +37,7 @@ public class AdminRequestFilterTest {
 		when(resourceDAO.loadResourceById(123)).thenReturn(feed);
 		when(resourceDAO.loadResourceById(567)).thenReturn(resource);
 		request = new MockHttpServletRequest();
-		filter = new AdminRequestFilter(resourceDAO, tagDAO);
+		filter = new AdminRequestFilter(resourceDAO, tagDAO, new ResourceParameterFilter(resourceDAO), new TagsParameterFilter(tagDAO));
 	}
 	
 	@Test

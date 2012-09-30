@@ -3,11 +3,15 @@ package nz.co.searchwellington.repositories;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.solr.common.SolrDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HibernateResourceHydrator implements ResourceHydrator {
 	
 	private ResourceRepository resourceDAO;
 
+	@Autowired
 	public HibernateResourceHydrator(ResourceRepository resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}

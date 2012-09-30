@@ -10,7 +10,7 @@ import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,11 +20,15 @@ public class StandardHttpFetcher implements HttpFetcher {	// TODO migrate to com
 	
     private static final int HTTP_TIMEOUT = 20000;
     
-    private String userAgent;    
+    @Value("#{config['http.useragent']}")
+    private String userAgent;
+    
+    @Value("#{config['http.proxy.hostname']}")
     private String httpProxyHostname;
+    
+    @Value("#{config['http.proxy.port']}")
     private int httpProxyPort;
     
-    @Autowired
     public HttpFetchResult httpFetch(String url) {
     	log.info("Attempting fetch of url: " + url);
 		HttpClient client = setupClient();        

@@ -1,17 +1,22 @@
 package nz.co.searchwellington.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HandTaggingService;
 import nz.co.searchwellington.repositories.ResourceRepository;
 import nz.co.searchwellington.repositories.UserRepository;
 
+@Component
 public class LoginResourceOwnershipService {
 	
 	private ResourceRepository resourceDAO;
 	private UserRepository userDAO;
 	private HandTaggingService handTaggingService;
 	
+	@Autowired
 	public LoginResourceOwnershipService(ResourceRepository resourceDAO, UserRepository userDAO, HandTaggingService handTaggingService) {
 		this.resourceDAO = resourceDAO;
 		this.userDAO = userDAO;

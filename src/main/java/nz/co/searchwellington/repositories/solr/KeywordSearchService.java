@@ -8,12 +8,16 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.SolrBackedResourceDAO;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class KeywordSearchService {
 	
 	private SolrKeywordQueryBuilder solrKeywordQueryBuilder;
 	private SolrBackedResourceDAO solrBackedResourceDAO;
 	
+	@Autowired
 	public KeywordSearchService(
 			SolrKeywordQueryBuilder solrKeywordQueryBuilder,
 			SolrBackedResourceDAO solrBackedResourceDAO) {

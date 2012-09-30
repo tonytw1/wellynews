@@ -6,6 +6,8 @@ import java.util.List;
 import nz.co.searchwellington.model.Twit;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import twitter4j.RateLimitStatus;
 import twitter4j.ResponseList;
@@ -13,14 +15,14 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+@Component
 public class LiveTwitterService implements TwitterService {
 	
-    //private static final int REPLY_PAGES_TO_FETCH = 1;	// TODO implement
-
 	private static Logger log = Logger.getLogger(LiveTwitterService.class);
 	
 	private TwitterApiFactory twitterApiFactory;
 	
+	@Autowired
 	public LiveTwitterService(TwitterApiFactory twitterApiFactory) {		
 		this.twitterApiFactory = twitterApiFactory;
 	}

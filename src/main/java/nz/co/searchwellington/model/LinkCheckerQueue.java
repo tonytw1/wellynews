@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -15,7 +15,6 @@ public class LinkCheckerQueue {
     
     private ConcurrentLinkedQueue<Integer> queue;
     
-    @Autowired
     public LinkCheckerQueue() {
         queue = new ConcurrentLinkedQueue<Integer>();
     }

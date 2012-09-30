@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds.rss;
 import java.net.URL;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -17,9 +17,9 @@ public class RssHttpFetcher {
 	private static final int CONNECT_TIMEOUT = 10000;
 	private static final int READ_TIMEOUT = 30000;
 	
+    @Value("#{config['http.useragent']}")
 	private String userAgent;
 	
-	@Autowired
 	public SyndFeed httpFetch(String feedUrl) {
 		log.info("Fetching rss from live url: " + feedUrl);
 		try {
@@ -40,14 +40,6 @@ public class RssHttpFetcher {
 			log.warn("Error while fetching feed" ,e);
 		}
 		return null;
-	}
-
-	public String getUserAgent() {
-		return userAgent;
-	}
-
-	public void setUserAgent(String userAgent) {
-		this.userAgent = userAgent;
 	}
 	
 }

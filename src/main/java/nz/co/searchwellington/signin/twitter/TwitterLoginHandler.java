@@ -18,12 +18,16 @@ import org.scribe.builder.api.TwitterApi;
 import org.scribe.model.Token;
 import org.scribe.model.Verifier;
 import org.scribe.oauth.OAuthService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
+@Component
 public class TwitterLoginHandler implements SigninHandler {
 
 	private static Logger log = Logger.getLogger(TwitterLoginHandler.class);
@@ -33,11 +37,15 @@ public class TwitterLoginHandler implements SigninHandler {
 	private Map<String, Token> tokens;
 	private UrlBuilder urlBuilder;
 	
+    @Value("#{config['consumer.key']}")
 	private String consumerKey;
+    
+    @Value("#{config['consumer.secret']}")
 	private String consumerSecret;
 
 	private OAuthService oauthService;	
 	
+	@Autowired
 	public TwitterLoginHandler(UserRepository userDAO, TwitterApiFactory twitterApiFactory, UrlBuilder urlBuilder) {
 		this.userDAO = userDAO;
 		this.twitterApiFactory = twitterApiFactory;

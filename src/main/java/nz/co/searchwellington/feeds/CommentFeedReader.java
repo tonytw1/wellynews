@@ -12,10 +12,13 @@ import nz.co.searchwellington.repositories.ConfigRepository;
 import nz.co.searchwellington.repositories.ResourceRepository;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.sun.syndication.io.FeedException;
 
+@Component
 // TODO Should be a queue?
 public class CommentFeedReader {
     
@@ -31,6 +34,7 @@ public class CommentFeedReader {
     public CommentFeedReader() {        
     }
     
+    @Autowired
     public CommentFeedReader(ResourceRepository resourceDAO,
 			CommentFeedService commentFeedService,
 			ContentUpdateService contentUpdateService, ConfigRepository configDAO) {

@@ -4,6 +4,7 @@ import java.net.UnknownHostException;
 
 import nz.co.searchwellington.model.Snapshot;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.code.morphia.Datastore;
@@ -16,6 +17,7 @@ public class DataStoreFactory {
 
 	private Datastore ds;
 	
+    @Value("#{config['mongo.hostname']}")
 	private String hostname;
 	
 	public DataStoreFactory() throws UnknownHostException, MongoException {

@@ -31,31 +31,5 @@
 	</bean>
 	
 	<bean id="dateRegexCommentFeedDetector" class="nz.co.searchwellington.commentfeeds.detectors.DateRegexCommentFeedDetector" />
-					  		  	
-	<bean id="commentFeedDetector" class="nz.co.searchwellington.commentfeeds.CommentFeedDetectorService">
-		<constructor-arg>
-			<list>
-				<ref bean="aucklandTrainsCommentFeedDetector" />
-				<ref bean="blogspotCommentFeedDetector" />
-				<ref bean="eyeOfTheFishCommentFeedDetector" />				
-				<ref bean="tepapaBlogCommentFeedDetector" />
-				<ref bean="textureCommentFeedDetector" />
-				<ref bean="wellingtonistaCommentFeedDetector" />
-				<ref bean="newswiresCommentFeedDetector" />
-				<ref bean="wellingtonScoopCommentFeedDetector" />				
-				<ref bean="dateRegexCommentFeedDetector" />
-				<ref bean="yearMonthCommentFeedDetector" />				
-			</list>
-		</constructor-arg>
-	</bean>
-		
-	<bean id="commentFeedGuesserService" class="nz.co.searchwellington.commentfeeds.CommentFeedGuesserService">
-		<constructor-arg>
-			<list>
-				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressCommentFeedGuesser" />
-				<bean class="nz.co.searchwellington.commentfeeds.guessers.WordpressDotComCommentFeedGuesser" />
-			</list>
-		</constructor-arg>
-	</bean>
 	
 </beans>

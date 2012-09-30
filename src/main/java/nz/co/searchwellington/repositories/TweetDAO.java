@@ -6,14 +6,18 @@ import nz.co.searchwellington.model.Twit;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TweetDAO {
 
-	SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
 
 	public TweetDAO() {
 	}
 
+	@Autowired
 	public TweetDAO(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}

@@ -7,13 +7,12 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FeedItemAcceptor {
 	
 	private static Logger log = Logger.getLogger(FeedItemAcceptor.class);
-	
-	public FeedItemAcceptor() {
-	}
 	
 	public Newsitem acceptFeedItem(User user, Newsitem newsitem) {
 		log.info("Accepting: " + newsitem.getName() + " from " + newsitem.getFeed().getName());
