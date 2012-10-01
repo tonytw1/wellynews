@@ -53,7 +53,7 @@ public class HibernateResourceDAO {
 	}
 	
 	@SuppressWarnings("unchecked")
-    final public List<Feed> getAllFeeds() {
+	public List<Feed> getAllFeeds() {
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).
         addOrder(Order.desc("latestItemDate")).
         addOrder(Order.asc("name")).
@@ -62,7 +62,7 @@ public class HibernateResourceDAO {
     }
 		
 	@SuppressWarnings("unchecked")
-    final public List<Feed> getFeedsToRead() {
+	public List<Feed> getFeedsToRead() {
         return sessionFactory.getCurrentSession().createCriteria(Feed.class).
         add(Restrictions.ne("acceptancePolicy", "ignore")).
         addOrder(Order.asc("lastRead")).
@@ -111,7 +111,7 @@ public class HibernateResourceDAO {
 	}
     
 	@SuppressWarnings("unchecked")  
-    final public List<Resource> getOwnedBy(User owner, int maxItems) {    
+	public List<Resource> getOwnedBy(User owner, int maxItems) {    
         return sessionFactory.getCurrentSession().createCriteria(Resource.class).
                 add(Restrictions.eq("owner", owner)).
                 addOrder(Order.desc("date")).

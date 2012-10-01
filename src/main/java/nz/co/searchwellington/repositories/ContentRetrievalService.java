@@ -43,11 +43,18 @@ public class ContentRetrievalService {
 	}
 	
 	@Autowired
+	
+	
+	public List<FrontendResource> getAllWatchlists() {
+		return solrBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
+	}
+
 	public ContentRetrievalService(HibernateResourceDAO resourceDAO,
 			KeywordSearchService keywordSearchService,
 			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO,
 			RelatedTagsService relatedTagsService,
-			DiscoveredFeedRepository discoveredFeedsDAO, SolrBackedResourceDAO solrBackedResourceDAO) {
+			DiscoveredFeedRepository discoveredFeedsDAO,
+			SolrBackedResourceDAO solrBackedResourceDAO) {
 		this.resourceDAO = resourceDAO;
 		this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
@@ -55,10 +62,6 @@ public class ContentRetrievalService {
 		this.relatedTagsService = relatedTagsService;
 		this.discoveredFeedsDAO = discoveredFeedsDAO;
 		this.solrBackedResourceDAO = solrBackedResourceDAO;
-	}
-	
-	public List<FrontendResource> getAllWatchlists() {
-		return solrBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
 
 	public List<FrontendResource> getGeocoded(int startIndex, int maxItems) {		
