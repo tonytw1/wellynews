@@ -1,9 +1,7 @@
 package nz.co.searchwellington.controllers;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import junit.framework.TestCase;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
@@ -11,21 +9,28 @@ import nz.co.searchwellington.repositories.FrontendContentUpdater;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 
-public class ContentUpdateServiceTest extends TestCase {
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-	private ContentUpdateService service;
-	private HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
-	private SuggestionDAO suggestionsDAO = mock(SuggestionDAO.class);
-	private LinkCheckerQueue linkCheckerQueue = mock(LinkCheckerQueue.class);
+public class ContentUpdateServiceTest {
+
+	@Mock private HibernateResourceDAO resourceDAO;
+	@Mock private SuggestionDAO suggestionsDAO;
+	@Mock private LinkCheckerQueue linkCheckerQueue;
 	
-	private Newsitem exitingResource = mock(Newsitem.class);
-	private Newsitem updatedResource = mock(Newsitem.class);
-	private Newsitem newResource = mock(Newsitem.class);
-	private FrontendContentUpdater frontendContentUpdater = mock(FrontendContentUpdater.class);
+	@Mock private Newsitem exitingResource;
+	@Mock private Newsitem updatedResource;
+	@Mock private Newsitem newResource;
+	@Mock private FrontendContentUpdater frontendContentUpdater;
+	
+	private ContentUpdateService service;
+	
+	@Before
+	public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
 		
-	@Override
-	protected void setUp() throws Exception {
-		service = new ContentUpdateService(resourceDAO, suggestionsDAO, linkCheckerQueue, frontendContentUpdater);
 		when(exitingResource.getId()).thenReturn(1);
 		when(exitingResource.getType()).thenReturn("N");
 		when(exitingResource.getUrl()).thenReturn("http://test/abc");
@@ -38,29 +43,36 @@ public class ContentUpdateServiceTest extends TestCase {
 		when(newResource.getType()).thenReturn("W");
 		
 		when(resourceDAO.loadResourceById(1)).thenReturn(updatedResource);
+		
+		service = new ContentUpdateService(resourceDAO, suggestionsDAO, linkCheckerQueue, frontendContentUpdater);
 	}
 	
+	@Test
 	public void testShouldSaveThroughTheHibernateDAO() throws Exception {		
 		service.update(updatedResource);
 		verify(resourceDAO).saveResource(updatedResource);
 	}
 	
+	@Test
 	public void testShouldUpdateTheFrontendSolrIndexOnSave() throws Exception {
 		service.update(updatedResource);
 		verify(frontendContentUpdater).update(updatedResource);
 	}
-	
+
+	@Test
 	public void testShouldRemoveSuggestionsForNewsitems() throws Exception {		
 		service.update(updatedResource);
 		verify(suggestionsDAO).removeSuggestion("http://test/123");
 	}
-		
+	
+	@Test
 	public void testShouldInitHttpStatusOwnerAndQueueLinkCheckForNewSubmissions() throws Exception {		
 		service.update(newResource);
 		verify(newResource).setHttpStatus(0);
 		verify(linkCheckerQueue).add(newResource);
 	}
 	
+	@Test
 	public void testShouldInitHttpStatusAndQueueLinkCheckWhenUrlChanges() throws Exception {	
 		when(resourceDAO.loadResourceById(1)).thenReturn(exitingResource);
 		service.update(updatedResource);
