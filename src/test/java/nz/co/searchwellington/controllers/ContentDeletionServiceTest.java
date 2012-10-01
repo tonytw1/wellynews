@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
@@ -27,7 +27,7 @@ public class ContentDeletionServiceTest extends TestCase {
 		
 	@Mock SupressionService supressionService;	
 	@Mock HibernateResourceDAO resourceDAO;
-	@Mock RssfeedNewsitemService rssfeedNewsitemService;
+	@Mock CachingRssfeedNewsitemService rssfeedNewsitemService;
 	@Mock MongoSnapshotDAO SnapshotDAO;
 	@Mock SolrQueryService solrQueryService;
 	@Mock HandTaggingDAO handTaggingDAO;

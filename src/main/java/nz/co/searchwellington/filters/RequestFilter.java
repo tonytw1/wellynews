@@ -18,10 +18,11 @@ import nz.co.searchwellington.repositories.TagDAO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-@Component
-@Scope("request")
+@Component("requestFilter")
+@Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class RequestFilter {
 	
 	private static Logger log = Logger.getLogger(RequestFilter.class);

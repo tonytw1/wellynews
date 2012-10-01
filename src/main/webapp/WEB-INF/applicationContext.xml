@@ -37,13 +37,6 @@
    			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
   		</property>
 	</bean>
-
-	<bean id="requestObjectLoaderFilter"
-		class="nz.co.searchwellington.filters.RequestObjectLoadingFilter" scope="request">
-		<aop:scoped-proxy />
-		<constructor-arg ref="requestFilter" />
-		<constructor-arg ref="loggedInUserFilter" />
-	</bean>
 	
 	<bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
 		<constructor-arg value="${solr.url}" />
@@ -55,13 +48,7 @@
 		<property name="accessToken" value="${access.token}" />
 		<property name="accessSecret" value="${access.secret}" />				
 	</bean>
-			
-	<bean id="keystore" class="nz.co.searchwellington.repositories.keystore.KeyStore">
-		<property name="hostname" value="${keystore.hostname}" />
-		<property name="port" value="${keystore.port}" />
-	</bean>
-					
-  		
+	
 	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" scope="request">
 		<aop:scoped-proxy/>
 		<constructor-arg ref="loggedInUserFilter" />

@@ -10,8 +10,14 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 
+@Component("requestObjectLoaderFilter")
+@Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class RequestObjectLoadingFilter implements Filter {
 	
 	private RequestFilter requestFilter;

@@ -1,6 +1,6 @@
 package nz.co.searchwellington.modification;
 
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -26,20 +26,19 @@ public class ContentDeletionService {
 	private static Logger log = Logger.getLogger(ContentDeletionService.class);
     	
 	private SupressionService supressionService;
-	private RssfeedNewsitemService rssfeedNewsitemService;
+	private CachingRssfeedNewsitemService rssfeedNewsitemService;
 	private HibernateResourceDAO resourceDAO;
 	private MongoSnapshotDAO snapshotDAO;
 	private SolrQueryService solrQueryService;
 	private HandTaggingDAO handTaggingDAO;
 	private TagDAO tagDAO;
-
 	
 	public ContentDeletionService() {
 	}
 	
 	@Autowired
 	public ContentDeletionService(SupressionService supressionService,
-			RssfeedNewsitemService rssfeedNewsitemService,
+			CachingRssfeedNewsitemService rssfeedNewsitemService,
 			HibernateResourceDAO resourceDAO, MongoSnapshotDAO snapshotDAO,
 			SolrQueryService solrQueryService, HandTaggingDAO handTaggingDAO,
 			TagDAO tagDAO) {

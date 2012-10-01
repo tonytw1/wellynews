@@ -13,6 +13,7 @@ import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,6 +28,7 @@ public class SimplePageController extends BaseMultiActionController {
 	public SimplePageController() {
 	}
 	
+	@Autowired
     public SimplePageController(UrlStack urlStack, ConfigDAO configDAO, DiscoveredFeedRepository discoveredFeedRepository, 
     		ContentRetrievalService contentRetrievalService, TagDAO tagDAO, RssUrlBuilder rssUrlBuilder) {
         this.urlStack = urlStack;

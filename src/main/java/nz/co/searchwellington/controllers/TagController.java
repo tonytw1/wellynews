@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,6 +24,7 @@ public class TagController extends MultiActionController {
     public TagController() {
 	}
     
+    @Autowired
 	public TagController(ContentModelBuilderService contentModelBuilder, UrlStack urlStack) {
 		this.contentModelBuilder = contentModelBuilder;
 		this.urlStack = urlStack;
