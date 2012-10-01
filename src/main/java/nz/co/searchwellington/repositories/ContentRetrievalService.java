@@ -42,13 +42,11 @@ public class ContentRetrievalService {
 	public ContentRetrievalService() {
 	}
 	
-	@Autowired
-	
-	
 	public List<FrontendResource> getAllWatchlists() {
 		return solrBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken());
 	}
-
+	
+	@Autowired
 	public ContentRetrievalService(HibernateResourceDAO resourceDAO,
 			KeywordSearchService keywordSearchService,
 			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO,
