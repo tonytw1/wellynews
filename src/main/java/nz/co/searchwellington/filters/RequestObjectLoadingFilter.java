@@ -10,12 +10,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 
-@Component
+import org.springframework.beans.factory.annotation.Autowired;
+
 public class RequestObjectLoadingFilter implements Filter {
 	
 	private RequestFilter requestFilter;
@@ -24,7 +22,6 @@ public class RequestObjectLoadingFilter implements Filter {
 	public RequestObjectLoadingFilter() {
 	}
 	
-	@Autowired
 	public RequestObjectLoadingFilter(RequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter) {	
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;

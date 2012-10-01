@@ -8,10 +8,11 @@ import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 @Component
-@Scope("request")
+@Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class LoggedInUserFilter {
 	
 	private static Logger log = Logger.getLogger(LoggedInUserFilter.class);
