@@ -14,19 +14,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TagWidgetFactory {
+public class TagsWidgetFactory {
     
 	// TODO remove duplication.
-    private static Logger log = Logger.getLogger(TagWidgetFactory.class);
+    private static Logger log = Logger.getLogger(TagsWidgetFactory.class);
     
     private TagDAO tagDAO;
     private HibernateResourceDAO resourceDAO;
    
-    public TagWidgetFactory() {
+    public TagsWidgetFactory() {
 	}
     
     @Autowired
-    public TagWidgetFactory(TagDAO tagDAO, HibernateResourceDAO resourceDAO) {
+    public TagsWidgetFactory(TagDAO tagDAO, HibernateResourceDAO resourceDAO) {
 		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;
 	}
