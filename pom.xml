@@ -144,13 +144,6 @@
 			<artifactId>cglib</artifactId>
 			<version>2.2.2</version>
 		</dependency>
-
-		<dependency>
-			<groupId>tokyo</groupId>
-			<artifactId>tokyotyrant</artifactId>
-			<version>0.10</version>
-
-		</dependency>
 		<dependency>
 			<groupId>org.jboss.netty</groupId>
 			<artifactId>netty</artifactId>
