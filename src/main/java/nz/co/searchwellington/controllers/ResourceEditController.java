@@ -28,7 +28,7 @@ import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.widgets.AcceptanceWidgetFactory;
-import nz.co.searchwellington.widgets.TagWidgetFactory;
+import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -45,7 +45,7 @@ public class ResourceEditController extends BaseMultiActionController {
            
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
-    private TagWidgetFactory tagWidgetFactory;
+    private TagsWidgetFactory tagWidgetFactory;
     private AutoTaggingService autoTagger;
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
     private RssNewsitemPrefetcher rssPrefetcher;
@@ -65,7 +65,7 @@ public class ResourceEditController extends BaseMultiActionController {
     public ResourceEditController(
 			RssfeedNewsitemService rssfeedNewsitemService,
 			AdminRequestFilter adminRequestFilter,
-			TagWidgetFactory tagWidgetFactory, AutoTaggingService autoTagger,
+			TagsWidgetFactory tagWidgetFactory, AutoTaggingService autoTagger,
 			AcceptanceWidgetFactory acceptanceWidgetFactory,
 			RssNewsitemPrefetcher rssPrefetcher,
 			LoggedInUserFilter loggedInUserFilter,

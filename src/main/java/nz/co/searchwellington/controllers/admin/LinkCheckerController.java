@@ -24,6 +24,9 @@ public class LinkCheckerController extends BaseMultiActionController {
     private LinkCheckerQueue queue;
     private AdminRequestFilter requestFilter;
     
+    public LinkCheckerController() {
+	}
+    
     public LinkCheckerController(AdminRequestFilter requestFilter, LinkCheckerQueue queue, UrlStack urlStack) {
         this.requestFilter = requestFilter;
         this.queue = queue;

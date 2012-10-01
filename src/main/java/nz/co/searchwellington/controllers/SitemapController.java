@@ -19,7 +19,10 @@ public class SitemapController extends MultiActionController {
         
     private SiteInformation siteInformation;
     private GoogleSitemapService sitemapService;
-     
+    
+    public SitemapController() {
+	}
+    
     public SitemapController(SiteInformation siteInformation, GoogleSitemapService sitemapService) {
         this.siteInformation = siteInformation;
         this.sitemapService = sitemapService;        

@@ -2,14 +2,13 @@ package nz.co.searchwellington.filters;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 @Component
 @Scope("request")

@@ -39,17 +39,20 @@ public class ApiController extends MultiActionController {
 
 	private static Logger log = Logger.getLogger(ApiController.class);
 	
-	private final HibernateResourceDAO resourceDAO;
-	private final AdminRequestFilter requestFilter;
-	private final LoggedInUserFilter loggedInUserFilter;
-	private final SupressionService suppressionService;
-	private final RssfeedNewsitemService rssfeedNewsitemService;
-	private final ContentUpdateService contentUpdateService;
-	private final SubmissionProcessingService submissionProcessingService;
-	private final AutoTaggingService autoTagger;
-	private final HandTaggingDAO tagVoteDAO;
-	private final ResourceFactory resourceFactory;
-	private final FeedItemAcceptor feedItemAcceptor;
+	private HibernateResourceDAO resourceDAO;
+	private AdminRequestFilter requestFilter;
+	private LoggedInUserFilter loggedInUserFilter;
+	private SupressionService suppressionService;
+	private RssfeedNewsitemService rssfeedNewsitemService;
+	private ContentUpdateService contentUpdateService;
+	private SubmissionProcessingService submissionProcessingService;
+	private AutoTaggingService autoTagger;
+	private HandTaggingDAO tagVoteDAO;
+	private ResourceFactory resourceFactory;
+	private FeedItemAcceptor feedItemAcceptor;
+	
+	public ApiController() {
+	}
 	
     public ApiController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor, ResourceFactory resourceFactory) {
 		this.resourceDAO = resourceDAO;

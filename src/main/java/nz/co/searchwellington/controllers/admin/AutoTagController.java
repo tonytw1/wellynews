@@ -39,6 +39,9 @@ public class AutoTagController extends BaseMultiActionController {
 	private TagDAO tagDAO;
 	private HandTaggingDAO tagVoteDAO;
     
+	public AutoTagController() {
+	}
+	
 	public AutoTagController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       

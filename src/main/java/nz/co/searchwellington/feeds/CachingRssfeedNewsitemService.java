@@ -3,15 +3,13 @@ package nz.co.searchwellington.feeds;
 import java.util.Collections;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;
-import nz.co.searchwellington.repositories.SupressionDAO;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component("cachingRssfeedNewsitemService")
 public class CachingRssfeedNewsitemService extends RssfeedNewsitemService {

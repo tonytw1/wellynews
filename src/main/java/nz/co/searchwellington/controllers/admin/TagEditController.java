@@ -12,7 +12,7 @@ import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.TagModificationService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.widgets.TagWidgetFactory;
+import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
@@ -28,7 +28,7 @@ public class TagEditController {
     private static Logger log = Logger.getLogger(TagEditController.class);
     
     private AdminRequestFilter requestFilter;
-    private TagWidgetFactory tagWidgetFactory;
+    private TagsWidgetFactory tagWidgetFactory;
     private UrlStack urlStack;
     private TagDAO tagDAO;
     private TagModificationService tagModifcationService;
@@ -40,7 +40,7 @@ public class TagEditController {
     }
     
     public TagEditController(AdminRequestFilter requestFilter,
-			TagWidgetFactory tagWidgetFactory, UrlStack urlStack,
+			TagsWidgetFactory tagWidgetFactory, UrlStack urlStack,
 			TagDAO tagDAO, TagModificationService tagModifcationService,
 			LoggedInUserFilter loggedInUserFilter,
 			EditPermissionService editPermissionService,

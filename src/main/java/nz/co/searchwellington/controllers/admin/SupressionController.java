@@ -22,6 +22,8 @@ public class SupressionController {
     private UrlStack urlStack;
 	private LoggedInUserFilter loggedInUserFilter;
 
+	public SupressionController() {
+	}
 	
     protected SupressionController(SupressionService suppressionService, UrlStack urlStack, LoggedInUserFilter loggedInUserFilter) {		
 		this.suppressionService = suppressionService;

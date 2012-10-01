@@ -20,6 +20,9 @@ public class TagController extends MultiActionController {
     private ContentModelBuilderService contentModelBuilder;
     private UrlStack urlStack;
     
+    public TagController() {
+	}
+    
 	public TagController(ContentModelBuilderService contentModelBuilder, UrlStack urlStack) {
 		this.contentModelBuilder = contentModelBuilder;
 		this.urlStack = urlStack;

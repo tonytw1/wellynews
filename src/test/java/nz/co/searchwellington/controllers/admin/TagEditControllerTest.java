@@ -8,7 +8,7 @@ import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.modification.TagModificationService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.widgets.TagWidgetFactory;
+import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.apache.struts.mock.MockHttpServletResponse;
 import org.junit.Before;
@@ -24,7 +24,7 @@ public class TagEditControllerTest {
 	private static final String NEW_TAG_DISPLAY_NAME = "A new tag";
 	
 	@Mock AdminRequestFilter requestFilter;
-	@Mock TagWidgetFactory tagWidgetFactory;
+	@Mock TagsWidgetFactory tagWidgetFactory;
 	@Mock UrlStack urlStack;
 	@Mock TagDAO tagDAO;
 	@Mock TagModificationService tagModifcationService;

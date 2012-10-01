@@ -10,7 +10,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 public class CancelController extends BaseMultiActionController {
-                
+	
+	public CancelController() {
+	}
+	
     public CancelController(UrlStack urlStack) { 
         this.urlStack = urlStack;
     }

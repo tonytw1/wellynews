@@ -23,6 +23,9 @@ public class PublisherAjaxController extends BaseAjaxController {
 	
     private ContentRetrievalService contentRetrievalService;
     
+    public PublisherAjaxController() {
+	}
+    
     @Autowired
 	public PublisherAjaxController(ViewFactory viewFactory, ContentRetrievalService contentRetrievalService) {
 		this.viewFactory = viewFactory;

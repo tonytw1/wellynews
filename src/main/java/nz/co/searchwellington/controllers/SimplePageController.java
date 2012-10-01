@@ -24,6 +24,9 @@ public class SimplePageController extends BaseMultiActionController {
 	private TagDAO tagDAO;
 	private RssUrlBuilder rssUrlBuilder;
 	
+	public SimplePageController() {
+	}
+	
     public SimplePageController(UrlStack urlStack, ConfigDAO configDAO, DiscoveredFeedRepository discoveredFeedRepository, 
     		ContentRetrievalService contentRetrievalService, TagDAO tagDAO, RssUrlBuilder rssUrlBuilder) {
         this.urlStack = urlStack;

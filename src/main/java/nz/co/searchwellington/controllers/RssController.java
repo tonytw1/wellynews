@@ -30,6 +30,9 @@ public class RssController extends MultiActionController {
 	private RssItemMaker rssItemMaker;
 	private RssUrlBuilder rssUrlBuilder;
 	
+	public RssController() {
+	}
+	
     public RssController(SiteInformation siteInformation, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker, RssUrlBuilder rssUrlBuilder) {
         this.siteInformation = siteInformation;
         this.contentRetrievalService = contentRetrievalService;

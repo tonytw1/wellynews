@@ -1,6 +1,5 @@
 package nz.co.searchwellington.urls;
 
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 @Component

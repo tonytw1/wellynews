@@ -31,6 +31,8 @@ public class PublisherAutoGatherController {
     private HibernateResourceDAO resourceDAO;
     private ContentUpdateService contentUpdateService;
 
+    public PublisherAutoGatherController() {
+	}
     
     public PublisherAutoGatherController(AdminRequestFilter requestFilter,
 			TagDAO tagDAO, HibernateResourceDAO resourceDAO,

@@ -19,6 +19,9 @@ public class IndexRebuildController extends BaseMultiActionController {
     
 	private SolrIndexRebuildService solrIndexRebuildService;
 	
+	public IndexRebuildController() {
+	}
+	
     public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService, LoggedInUserFilter loggedInUserFilter) {       
         this.solrIndexRebuildService = solrIndexRebuildService;
         this.loggedInUserFilter = loggedInUserFilter;

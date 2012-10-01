@@ -16,7 +16,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
-import nz.co.searchwellington.widgets.TagWidgetFactory;
+import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +33,7 @@ public class NewsitemPageModelBuilderTest {
 	
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock TaggingReturnsOfficerService taggingReturnsOfficerService;
-	@Mock TagWidgetFactory tagWidgetFactory;
+	@Mock TagsWidgetFactory tagWidgetFactory;
 	@Mock HandTaggingDAO handTaggingDAO;
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock Newsitem geotaggedNewsitem;

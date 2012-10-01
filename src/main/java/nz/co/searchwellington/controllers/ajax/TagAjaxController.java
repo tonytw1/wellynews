@@ -22,7 +22,10 @@ public class TagAjaxController extends BaseAjaxController {
     private static Logger log = Logger.getLogger(TagAjaxController.class);
 
     private ContentRetrievalService contentRetrievalService;
-		
+    
+    public TagAjaxController() {
+	}
+    
     @Autowired
     public TagAjaxController(ViewFactory viewFactory, ContentRetrievalService contentRetrievalService) {
     	this.viewFactory = viewFactory;

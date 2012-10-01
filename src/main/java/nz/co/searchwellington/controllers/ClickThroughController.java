@@ -23,6 +23,9 @@ public class ClickThroughController {
     
     private UrlBuilder urlBuilder;
     
+    public ClickThroughController() {
+	}
+    
     public ClickThroughController(UrlBuilder urlBuilder) {
 		this.urlBuilder = urlBuilder;
 	}

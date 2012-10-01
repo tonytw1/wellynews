@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 public class RequestObjectLoadingFilter implements Filter {
 	
 	private RequestFilter requestFilter;

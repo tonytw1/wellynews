@@ -11,7 +11,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
-import nz.co.searchwellington.widgets.TagWidgetFactory;
+import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 
 	private ContentRetrievalService contentRetrievalService;
 	private TaggingReturnsOfficerService taggingReturnsOfficerService;
-	private TagWidgetFactory tagWidgetFactory;
+	private TagsWidgetFactory tagWidgetFactory;
 	private HandTaggingDAO tagVoteDAO;
 	private LoggedInUserFilter loggedInUserFilter;
 	private HibernateResourceDAO resourceDAO;
@@ -35,7 +35,7 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	
 	@Autowired
 	public NewsitemPageModelBuilder(ContentRetrievalService contentRetrievalService, TaggingReturnsOfficerService taggingReturnsOfficerService, 
-			TagWidgetFactory tagWidgetFactory, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter, HibernateResourceDAO resourceDAO) {
+			TagsWidgetFactory tagWidgetFactory, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter, HibernateResourceDAO resourceDAO) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
 		this.tagWidgetFactory = tagWidgetFactory;
