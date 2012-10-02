@@ -19,9 +19,15 @@ import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 
 import com.clutch.dates.StringToTime;
 
+@Component
+@Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class AdminRequestFilter {
 	
 	private static Logger log = Logger.getLogger(AdminRequestFilter.class);
@@ -29,12 +35,16 @@ public class AdminRequestFilter {
 	private static final String DATE_FIELD = "date";
 	private static final String EMBARGO_DATE_FIELD = "embargo_date";
 	
-	private final HibernateResourceDAO resourceDAO;
-	private final TagDAO tagDAO;	
-	private final ResourceParameterFilter resourceParameterFilter;
-	private final TagsParameterFilter tagsParameterFilter;
-	private final List<SimpleDateFormat> supportedEmbargoDateFormats;
+	private HibernateResourceDAO resourceDAO;
+	private TagDAO tagDAO;	
+	private ResourceParameterFilter resourceParameterFilter;
+	private TagsParameterFilter tagsParameterFilter;
+	private List<SimpleDateFormat> supportedEmbargoDateFormats;
 	
+	public AdminRequestFilter() {
+	}
+	
+	@Autowired
 	public AdminRequestFilter(HibernateResourceDAO resourceDAO, TagDAO tagDAO,
 			ResourceParameterFilter resourceParameterFilter,
 			TagsParameterFilter tagsParameterFilter) {

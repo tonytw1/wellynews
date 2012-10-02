@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
-import nz.co.searchwellington.twitter.TwitterService;
+import nz.co.searchwellington.twitter.CachingTwitterService;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -22,7 +22,7 @@ public class UrlBuilderTest {
 	private static final String SITE_URL = "http://siteurl.test";
 	
 	@Mock SiteInformation siteInformation;
-	@Mock TwitterService twitterService;
+	@Mock CachingTwitterService twitterService;
 	@Mock DateFormatter dateFormatter;
 
 	private UrlBuilder urlBuilder;

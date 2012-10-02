@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
@@ -44,7 +44,7 @@ public class ResourceEditController extends BaseMultiActionController {
     
    private static Logger log = Logger.getLogger(ResourceEditController.class);
            
-    private RssfeedNewsitemService rssfeedNewsitemService;
+    private CachingRssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
     private TagsWidgetFactory tagWidgetFactory;
     private AutoTaggingService autoTagger;
@@ -65,7 +65,7 @@ public class ResourceEditController extends BaseMultiActionController {
 	
 	@Autowired
     public ResourceEditController(
-			RssfeedNewsitemService rssfeedNewsitemService,
+    		CachingRssfeedNewsitemService rssfeedNewsitemService,
 			AdminRequestFilter adminRequestFilter,
 			TagsWidgetFactory tagWidgetFactory, AutoTaggingService autoTagger,
 			AcceptanceWidgetFactory acceptanceWidgetFactory,

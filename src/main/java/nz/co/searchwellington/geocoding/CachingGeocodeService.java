@@ -17,11 +17,11 @@ public class CachingGeocodeService implements GeoCodeService {
 	private static final String GEOCODE_CACHE_PREFIX = "geocodes:";
 	private static final int ONE_DAY = 3600 * 24;
 	
-	private CompositeGeocodeService geoCodeService;	
+	private NominatimGeocodingService geoCodeService;	
 	private MemcachedCache cache;
 	
 	@Autowired
-	public CachingGeocodeService(CompositeGeocodeService geoCodeService, MemcachedCache cache) {
+	public CachingGeocodeService(NominatimGeocodingService geoCodeService, MemcachedCache cache) {
 		this.geoCodeService = geoCodeService;
 		this.cache = cache;
 	}

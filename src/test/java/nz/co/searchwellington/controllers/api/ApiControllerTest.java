@@ -4,14 +4,14 @@ import static org.mockito.Mockito.when;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
+import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 
@@ -29,7 +29,7 @@ public class ApiControllerTest {
 	@Mock AdminRequestFilter requestFilter;
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock SupressionService supressionService;
-	@Mock RssfeedNewsitemService rssNewsitemService;
+	@Mock CachingRssfeedNewsitemService rssNewsitemService;
 	@Mock SubmissionProcessingService submissionProcessingService;
 	@Mock ContentUpdateService contentUpdateService;
 	@Mock AutoTaggingService autoTaggingService;

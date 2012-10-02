@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
 
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.modification.ContentUpdateService;
@@ -15,6 +14,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import com.sun.syndication.io.FeedException;
 
