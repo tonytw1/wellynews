@@ -26,6 +26,7 @@ import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +55,7 @@ public class ApiController extends MultiActionController {
 	public ApiController() {
 	}
 	
+	@Autowired
     public ApiController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor, ResourceFactory resourceFactory) {
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;

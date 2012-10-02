@@ -11,6 +11,7 @@ import nz.co.searchwellington.repositories.ConfigDAO;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Select;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +27,7 @@ public class ConfigEditController {
 	public ConfigEditController() {
 	}
 	
+	@Autowired
 	public ConfigEditController(ConfigDAO configDAO, LoggedInUserFilter loggedInUserFilter) {
 		this.configDAO = configDAO;
 		this.loggedInUserFilter = loggedInUserFilter;

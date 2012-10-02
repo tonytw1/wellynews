@@ -15,6 +15,7 @@ import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,7 @@ public class TagEditController {
     public TagEditController() {       
     }
     
+    @Autowired
     public TagEditController(AdminRequestFilter requestFilter,
 			TagsWidgetFactory tagWidgetFactory, UrlStack urlStack,
 			TagDAO tagDAO, TagModificationService tagModifcationService,

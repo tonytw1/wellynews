@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,6 +28,7 @@ public class LinkCheckerController extends BaseMultiActionController {
     public LinkCheckerController() {
 	}
     
+    @Autowired
     public LinkCheckerController(AdminRequestFilter requestFilter, LinkCheckerQueue queue, UrlStack urlStack) {
         this.requestFilter = requestFilter;
         this.queue = queue;

@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +38,7 @@ public class AdminFeedController {
     public AdminFeedController() {	
 	}
     
+    @Autowired
     public AdminFeedController(AdminRequestFilter requestFilter,
 			FeedReader feedReader,
 			RssNewsitemPrefetcher rssPrefetcher, UrlBuilder urlBuilder,

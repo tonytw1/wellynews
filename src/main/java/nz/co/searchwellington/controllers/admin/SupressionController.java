@@ -10,6 +10,7 @@ import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.SupressionService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,6 +26,7 @@ public class SupressionController {
 	public SupressionController() {
 	}
 	
+	@Autowired
     protected SupressionController(SupressionService suppressionService, UrlStack urlStack, LoggedInUserFilter loggedInUserFilter) {		
 		this.suppressionService = suppressionService;
 		this.urlStack = urlStack;

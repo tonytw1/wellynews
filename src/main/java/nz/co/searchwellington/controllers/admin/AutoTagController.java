@@ -21,6 +21,7 @@ import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,6 +43,7 @@ public class AutoTagController extends BaseMultiActionController {
 	public AutoTagController() {
 	}
 	
+	@Autowired
 	public AutoTagController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter) {      
 		this.resourceDAO = resourceDAO;        
         this.requestFilter = requestFilter;       

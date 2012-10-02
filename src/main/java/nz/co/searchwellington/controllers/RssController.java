@@ -11,6 +11,7 @@ import nz.co.searchwellington.views.RssItemMaker;
 import nz.co.searchwellington.views.RssView;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,6 +34,7 @@ public class RssController extends MultiActionController {
 	public RssController() {
 	}
 	
+	@Autowired
     public RssController(SiteInformation siteInformation, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker, RssUrlBuilder rssUrlBuilder) {
         this.siteInformation = siteInformation;
         this.contentRetrievalService = contentRetrievalService;

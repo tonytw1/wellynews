@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.sitemap.GoogleSitemapService;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +24,7 @@ public class SitemapController extends MultiActionController {
     public SitemapController() {
 	}
     
+    @Autowired
     public SitemapController(SiteInformation siteInformation, GoogleSitemapService sitemapService) {
         this.siteInformation = siteInformation;
         this.sitemapService = sitemapService;        
