@@ -3,6 +3,7 @@ package nz.co.searchwellington.caching;
 import java.io.IOException;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import net.spy.memcached.AddrUtil;
@@ -16,12 +17,9 @@ public class MemcachedCache {
 	
 	private MemcachedClient memcachedClient;
 
+    @Value("#{config['memcached.urls']}")
 	private String memcachedUrls;
-	
-	public void setMemcachedUrls(String memcachedUrls) {
-		this.memcachedUrls = memcachedUrls;
-	}
-
+    
 	public void put(String key, int ttl, Object value) {
 		try {
 			memcachedClient = getClient();

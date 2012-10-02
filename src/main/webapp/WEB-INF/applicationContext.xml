@@ -13,9 +13,8 @@
 	http://www.springframework.org/schema/util/spring-util-3.0.xsd
 	">
 	
-	<context:annotation-config />
 	<util:properties id="config" location="classpath:searchwellington.properties" />
-	
+		
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>classpath:searchwellington.properties</value>
@@ -42,23 +41,12 @@
 		<constructor-arg value="${solr.url}" />
 	</bean>
 		
-	<bean id="twitterApiFactory" class="nz.co.searchwellington.twitter.TwitterApiFactory">
-		<property name="consumerKey" value="${consumer.key}" />
-		<property name="consumerSecret" value="${consumer.secret}" />
-		<property name="accessToken" value="${access.token}" />
-		<property name="accessSecret" value="${access.secret}" />				
-	</bean>
-	
 	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" scope="request">
 		<aop:scoped-proxy/>
 		<constructor-arg ref="loggedInUserFilter" />
 		<constructor-arg ref="solrQueryService" />
 	</bean>
-				
-	<bean id="velocityEngine" class="org.springframework.ui.velocity.VelocityEngineFactoryBean">
-   		<property name="resourceLoaderPath" value="/WEB-INF/velocity"/>
-	 </bean>
-	
+		
 	<bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
   		<property name="velocityProperties">
     		<props>
@@ -70,72 +58,17 @@
 	</bean>
 	
 	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
-  		<property name="cache" value="true"/>
-  		<property name="prefix" value=""/>
-  		<property name="suffix" value=".vm"/>  
-  		<property name="contentType"><value>text/html;charset=UTF-8</value></property>
-  		 <property name="toolboxConfigLocation" value="/WEB-INF/velocity/toolbox.xml"/>  		
-  			<property name="attributesMap">
-			<map>
-				<entry key="dateFormatter" value-ref="dateFormatter" />
-				<entry key="columnSplitter" value-ref="columnSplitter" />
-				<entry key="contentDeduper" value-ref="contentDeduper" />
-				<entry key="publisherNewsitemCountService"  value-ref="publisherNewsitemCountService" />
-				<entry key="googleMapCleaner" value-ref="googleMapsCleaner" />
+		<property name="cache" value="true" />
+		<property name="prefix" value="" />
+		<property name="suffix" value=".vm" />
+		<property name="contentType">
+			<value>text/html;charset=UTF-8</value>
+		</property>
+		<property name="toolboxConfigLocation" value="/WEB-INF/velocity/toolbox.xml" />
+		<property name="attributesMap">
+			<map>				
 			</map>
-		</property> 
-	</bean>
-	
-	<bean id="memcachedCache" class="nz.co.searchwellington.caching.MemcachedCache">
-		<property name="memcachedUrls" value="${memcached.urls}"/>
-	</bean>
-		
-	<bean id="dateFormatter" class="nz.co.searchwellington.dates.DateFormatter" />	
-	<bean id="columnSplitter" class="nz.co.searchwellington.utils.ColumnSplitter" />	
-	<bean id="googleMapsCleaner" class="nz.co.searchwellington.views.GoogleMapsDisplayCleaner" />
-			
-	<bean id="googleGeocodingService" class="nz.co.searchwellington.geocoding.GoogleGeoCodeService" />
-	<bean id="nominatimGeocodingService" class="nz.co.searchwellington.geocoding.NominatimGeocodingService" />
-	
-	<bean id="compositeGeocodingService" class="nz.co.searchwellington.geocoding.CompositeGeocodeService">
-	<constructor-arg>
-		<list>
-			<ref bean="nominatimGeocodingService" />
-			<ref bean="googleGeocodingService" />				
-		</list>
-	</constructor-arg>
+		</property>
 	</bean>
 			
-	<bean id="geocodingService" class="nz.co.searchwellington.geocoding.CachingGeocodeService">
-		<constructor-arg ref="compositeGeocodingService" />
-		<constructor-arg ref="memcachedCache" />
-	</bean>
-		
-	<bean id="contentDeduper" class="nz.co.searchwellington.views.ContentDedupingService" />
-	
-	<bean id="cachingTwitterService" class="nz.co.searchwellington.twitter.CachingTwitterService">
-		<constructor-arg ref="twitterService" />
-		<constructor-arg ref="memcachedCache" />
-		<property name="twitterUsername" value="${twitter.username}" />
-	</bean>
-	
-	<bean id="resourceFactory" class="nz.co.searchwellington.repositories.ResourceFactory" />
-	
-	<bean id="twitterService" class="nz.co.searchwellington.twitter.LiveTwitterService">
-		<constructor-arg ref="twitterApiFactory" />
-	</bean>
-					
-	<bean id="mailSender" class="nz.co.searchwellington.mail.MailSender">
-		<constructor-arg value="${smtp.host}" />
-		<constructor-arg value="${smtp.username}" />
-		<constructor-arg value="${smtp.password}" />
-		<constructor-arg value="notifications@wellington.gen.nz" />		
-	</bean>
-	
-	<bean id="notifier" class="nz.co.searchwellington.mail.Notifier">
-		<constructor-arg ref="mailSender" />
-		<constructor-arg ref="velocityEngine" />		
-		<property name="recipient" value="${feedreader.email}" />	
-	</bean>
-				
 </beans>

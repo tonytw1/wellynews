@@ -7,7 +7,9 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+@Component
 public class GoogleMapsDisplayCleaner {
         
     private static Logger log = Logger.getLogger(GoogleMapsDisplayCleaner.class);

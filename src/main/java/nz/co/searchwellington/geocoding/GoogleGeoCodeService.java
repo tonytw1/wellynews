@@ -7,6 +7,7 @@ import java.util.List;
 import nz.co.searchwellington.model.Geocode;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import com.google.code.geocoder.Geocoder;
 import com.google.code.geocoder.GeocoderRequestBuilder;
@@ -15,8 +16,9 @@ import com.google.code.geocoder.model.GeocoderRequest;
 import com.google.code.geocoder.model.GeocoderResult;
 import com.google.code.geocoder.model.GeocoderStatus;
 
+@Component
 public class GoogleGeoCodeService implements GeoCodeService {
-
+	
 	private static Logger log = Logger.getLogger(GoogleGeoCodeService.class);
 
 	private static final String REGION_RESTRICTION = "nz";	// TODO This probably wants to be an instance config option give we have uk copies running.

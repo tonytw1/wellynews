@@ -6,7 +6,9 @@ import java.util.List;
 import nz.co.searchwellington.model.Resource;
 
 import org.apache.log4j.Logger;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ContentDedupingService {
 	
 	private static Logger log = Logger.getLogger(ContentDedupingService.class);

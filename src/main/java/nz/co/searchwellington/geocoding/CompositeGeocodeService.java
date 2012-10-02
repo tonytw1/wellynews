@@ -5,10 +5,15 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Geocode;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component
 public class CompositeGeocodeService implements GeoCodeService {
 
 	private GeoCodeService[] geocoders;
 	
+	@Autowired
 	public CompositeGeocodeService(GeoCodeService... geocoders) {
 		this.geocoders = geocoders;
 	}

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
@@ -18,6 +20,7 @@ import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
 
+@Component
 public class ResourceFactory {
 
 	public Newsitem createNewNewsitem() {

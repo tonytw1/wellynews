@@ -14,7 +14,7 @@
         
 	<context:annotation-config />
 	<context:component-scan base-package="nz.gen.wellington,nz.co.searchwellington,uk.co.eelpieconsulting.common" />
-
+	
 	<mvc:annotation-driven />
 	<mvc:default-servlet-handler />
    

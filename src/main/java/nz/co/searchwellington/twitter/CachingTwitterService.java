@@ -6,7 +6,11 @@ import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Twit;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CachingTwitterService implements TwitterService {
 	
 	private static Logger log = Logger.getLogger(CachingTwitterService.class);
@@ -22,17 +26,15 @@ public class CachingTwitterService implements TwitterService {
 	private TwitterService twitterService;
 	private MemcachedCache cache;
 
+    @Value("#{config['twitter.username']}")
 	private String twitterUsername;
 	
+    @Autowired
 	public CachingTwitterService(TwitterService twitterService, MemcachedCache cache) {
 		this.twitterService = twitterService;
 		this.cache = cache;
 	}
-	
-	public void setTwitterUsername(String twitterUsername) {
-		this.twitterUsername = twitterUsername;
-	}
-	
+    
 	@Override
 	public Twit getTwitById(long twitterId) {
 		Twit cachedTweet = (Twit) cache.get(TWEETS_CACHE_PREFIX + Long.toString(twitterId));
