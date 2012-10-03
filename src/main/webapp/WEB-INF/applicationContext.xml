@@ -14,7 +14,10 @@
 	">
 	
 	<util:properties id="config" location="classpath:searchwellington.properties" />
-		
+	
+	<context:annotation-config />
+	<context:component-scan base-package="nz.gen.wellington,nz.co.searchwellington,uk.co.eelpieconsulting.common" />
+	
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>classpath:searchwellington.properties</value>
@@ -29,7 +32,7 @@
 	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
 	  	<property name="transactionInterceptor" ref="txInterceptor"/>
 	</bean>
-
+	
 	<bean id="txInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
 		<property name="transactionManager" ref="transactionManager"/>
 	 	<property name="transactionAttributeSource">
@@ -40,11 +43,5 @@
 	<bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
 		<constructor-arg value="${solr.url}" />
 	</bean>
-		
-	<bean id="publisherNewsitemCountService" class="nz.co.searchwellington.controllers.PublisherNewsitemCountService" scope="request">
-		<aop:scoped-proxy/>
-		<constructor-arg ref="loggedInUserFilter" />
-		<constructor-arg ref="solrQueryService" />
-	</bean>
-				
+					
 </beans>

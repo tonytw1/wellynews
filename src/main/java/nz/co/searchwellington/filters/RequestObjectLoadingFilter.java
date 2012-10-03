@@ -5,19 +5,21 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
-
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 
-@Component("requestObjectLoaderFilter")
-@Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
+@Component("requestObjectLoadingFilter")
 public class RequestObjectLoadingFilter implements Filter {
 	
 	private RequestFilter requestFilter;
@@ -26,6 +28,7 @@ public class RequestObjectLoadingFilter implements Filter {
 	public RequestObjectLoadingFilter() {
 	}
 	
+	@Autowired
 	public RequestObjectLoadingFilter(RequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter) {	
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
@@ -41,9 +44,12 @@ public class RequestObjectLoadingFilter implements Filter {
 	public void destroy() {
 		// TODO Auto-generated method stub		
 	}
-	
+
+	@Override
 	public void init(FilterConfig arg0) throws ServletException {
-		// TODO Auto-generated method stub	
+		// TODO Auto-generated method stub
+		
 	}
+
 	
 }
