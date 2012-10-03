@@ -10,7 +10,13 @@ import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.stereotype.Component;
 
+@Component
+@Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class PublisherNewsitemCountService {
 	
 	private LoggedInUserFilter loggedInFilter;
@@ -21,6 +27,7 @@ public class PublisherNewsitemCountService {
 	public PublisherNewsitemCountService() {	
 	}
 	
+	@Autowired
 	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter, SolrQueryService solrQueryService) {
 		this.loggedInFilter = loggedInFilter;
 		this.solrQueryService = solrQueryService;
