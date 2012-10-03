@@ -9,7 +9,7 @@ import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class DateFormatter {
+public class DateFormatter extends uk.co.eelpieconsulting.common.dates.DateFormatter {
    
     public static final String DAY_MONTH_YEAR_FORMAT = "d MMM yyyy";
     public static final String TIME_DAY_MONTH_YEAR_FORMAT = "h:mm a d MMM yyyy";
