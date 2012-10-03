@@ -3,15 +3,9 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
-
-
-
-
 
 <div class="main">
 
@@ -20,21 +14,18 @@
 <ul>
 #set($year = 0)
 #foreach ($link in $archiveLinks) 
-	#set($current = $dateFormatter.formatDate($link.month, 'yyyy'))
+	#set($current = $dateFormatter.year($link.month))
 	#if ($current != $year)
 		#set($year = $current)		
 		</ul>
 		<h4>$year</h4>
 		<ul>
 	#end
-	<li><a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a> ($link.count)</li>	
+	<li><a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
 #end
 </ul>
 
 </div>
-
-
-
 
 <div class="right">
 
@@ -44,10 +35,7 @@
 <br clear="all"/>
 
 </div>
-
-
 </div>
-
 </div>
 
 #parse("includes/footer.vm")

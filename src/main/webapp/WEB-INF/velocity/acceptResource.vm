@@ -23,7 +23,7 @@
 		<input name="url" value="$resource.url" /></p>
 		
 		<p><label for="date">Date: </label>	
-		<input name="date" value="$dateFormatter.formatDate($resource.date, 'd MMM yyyy')" /></p>
+		<input name="date" value="$dateFormatter.dayMonthYear($resource.date)" /></p>
 
 		<p><label for="date">Publisher: </label>	
 		<input name="publisherName" value="$resource.publisherName" /></p>

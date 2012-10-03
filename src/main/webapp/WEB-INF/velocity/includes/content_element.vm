@@ -13,7 +13,7 @@
 							
 		<ul>
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "TNI" || $item.type == "S") && $dateFormatter)
-				<li class="date">$dateFormatter.formatDate($item.date, 'd MMM yyyy')</li>
+				<li class="date">$dateFormatter.dayMonthYear($item.date)</li>
 			#end
 				
 			#if ($item.publisherName)
@@ -21,10 +21,10 @@
 			#end
 						
 			#if ($item.latestItemDate)
-				<li>Latest Item: $dateFormatter.formatDate($item.latestItemDate, 'd MMM yyyy')</li>				
+				<li>Latest Item: $dateFormatter.dayMonthYear($item.latestItemDate)</li>				
 			#end
 			#if (($item.type == 'L' || $item.type == 'F') && $item.lastChanged && !$item.latestItemDate)
-				<li>Last Changed: $dateFormatter.formatDate($item.lastChanged, 'd MMM yyyy')</li>
+				<li>Last Changed: $dateFormatter.dayMonthYear($item.lastChanged)</li>
 			#end
 				
 			#if ($item.description) 

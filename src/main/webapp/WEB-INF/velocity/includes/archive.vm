@@ -12,9 +12,9 @@
 	#if ($velocityCount <=6 ) 
 		<li class="archive_link">
         	#if ($archive_month && $link == $archive_month)
-	         	<b>$dateFormatter.formatDate($link.month, 'MMMM yyyy')</b>
+	         	<b>$dateFormatter.fullMonthYear($link.month)</b>
            	#else
-	         	<a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.formatDate($link.month, 'MMMM yyyy')</a>
+	         	<a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.fullMonthYear($link.month)</a>
           	#end
           	#if ($first == 1)
            		($link.count #showPluralWord($link.count "newsitem"))

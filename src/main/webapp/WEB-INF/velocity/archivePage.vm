@@ -1,34 +1,30 @@
-#set ($heading = $dateFormatter.formatDate($archive_month.month, 'MMMM yyyy'))
+#set ($heading = $dateFormatter.fullMonthYear($archive_month.month))
 
 #parse("includes/header.vm")
 
 <div class="page">
 	#parse("includes/topbar.vm")
 
-
 	<div class="left">		
 		#parse("includes/tag_tree.vm")
 	</div>
-
 
 	<div class="main">
 	
 		<div class="rss">
 			#parse("includes/rss_widget_for_publisher.vm")
 		</div>
-
 	
 		<h2><a href="$site_information.url/archive">Archive</a> / $heading</h2>
 		#parse("includes/search_widget.vm")
 
-
 		#if ($previous_page || $next_page)
 			#if ($previous_page) 			
-				<a href="$urlBuilder.getArchiveLinkUrl($previous_page.month)">$dateFormatter.formatDate($previous_page.month, 'MMMM yyyy')</a> 
+				<a href="$urlBuilder.getArchiveLinkUrl($previous_page.month)">$dateFormatter.fullMonthYear($previous_page.month)</a>
 			#end
 			|
 			#if ($next_page) 
-				<a href="$urlBuilder.getArchiveLinkUrl($next_page.month)">$dateFormatter.formatDate($next_page.month, 'MMMM yyyy')</a>
+				<a href="$urlBuilder.getArchiveLinkUrl($next_page.month)">$dateFormatter.fullMonthYear($next_page.month)</a>
 			#end
 		#end
 
