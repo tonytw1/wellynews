@@ -36,8 +36,8 @@ public class SolrGeotagHandlerTest {
 		MockitoAnnotations.initMocks(this);
 		solrGeotagHandler = new SolrGeotagHandler(taggingReturnsOfficer);
 		indexTagsForResource = new HashSet<Tag>();
-		somewhere = new Geocode("Somewhere", 1, 2);
-		place = new Geocode("A Place", 3, 4);
+		somewhere = new Geocode("Somewhere", 1.1, 2.2);
+		place = new Geocode("A Place", 3.3, 4.4);
 	}
 	
 	@Test
@@ -60,7 +60,7 @@ public class SolrGeotagHandlerTest {
 		assertTrue((Boolean) inputDocument.getFieldValue("geotagged"));
 		assertEquals("Somewhere", inputDocument.getFieldValue("address"));
 		SolrInputField positionField = inputDocument.getField("position");
-		assertEquals("1.0,2.0", positionField.getFirstValue());		
+		assertEquals("1.1,2.2", positionField.getFirstValue());		
 	}
 	
 	//@Test // TODO Push to tagging returns officer test
@@ -69,7 +69,7 @@ public class SolrGeotagHandlerTest {
 		Mockito.when(placeTag.getGeocode()).thenReturn(place);
 		indexTagsForResource.add(placeTag);
 		
-		//.processGeotags(resource, indexTagsForResource, inputDocument);
+		solrGeotagHandler.processGeotags(resource, inputDocument);
 		assertTrue((Boolean) inputDocument.getFieldValue("geotagged"));
 		assertEquals("A Place", inputDocument.getFieldValue("address"));
 		SolrInputField positionField = inputDocument.getField("position");

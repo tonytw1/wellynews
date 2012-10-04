@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.geocoding.CachingGeocodeService;
-import nz.co.searchwellington.geocoding.NominatimGeocodingService;
 import nz.co.searchwellington.model.Geocode;
 
 import org.junit.Before;
@@ -24,7 +23,6 @@ public class LocationParameterFilterTest {
 	private static final String INVALID_LOCATION = "Twickenham Station, Wellington";
 	
 	@Mock private CachingGeocodeService geocodeService;
-	@Mock private NominatimGeocodingService nominatimGeocodingService;
 	
 	private MockHttpServletRequest request;
 	private Geocode petoneStation;
@@ -35,8 +33,8 @@ public class LocationParameterFilterTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
-		filter = new LocationParameterFilter(geocodeService, nominatimGeocodingService);
-		petoneStation = new Geocode(VALID_LOCATION, 1, 2);
+		filter = new LocationParameterFilter(geocodeService);
+		petoneStation = new Geocode(VALID_LOCATION, 1.1, 2.2);
 	}
 
 	@Test

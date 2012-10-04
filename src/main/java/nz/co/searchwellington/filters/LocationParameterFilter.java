@@ -5,7 +5,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.CachingGeocodeService;
-import nz.co.searchwellington.geocoding.NominatimGeocodingService;
 import nz.co.searchwellington.model.Geocode;
 
 import org.apache.log4j.Logger;
@@ -27,12 +26,10 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private static final String OSM = "osm";	
 
 	private CachingGeocodeService geoCodeService;
-	private NominatimGeocodingService nominatimGeocodingService;
 	
 	@Autowired
-	public LocationParameterFilter(CachingGeocodeService geoCodeService, NominatimGeocodingService nominatimGeocodingService) {
+	public LocationParameterFilter(CachingGeocodeService geoCodeService) {
 		this.geoCodeService = geoCodeService;
-		this.nominatimGeocodingService = nominatimGeocodingService;
 	}
 	
 	public void filter(HttpServletRequest request) {		
@@ -44,7 +41,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		
 		if(request.getParameter(OSM) != null) {
 			final String osm = request.getParameter(OSM);
-			final Geocode resolvedOsmPlace = nominatimGeocodingService.resolveAddress(osm.split("/")[1], Long.parseLong(osm.split("/")[0]));
+			final Geocode resolvedOsmPlace = geoCodeService.resolveAddress(osm.split("/")[1], Long.parseLong(osm.split("/")[0]));
 			log.info("OSM place '" + osm + "' resolved to: " + resolvedOsmPlace);
 			request.setAttribute(LOCATION, resolvedOsmPlace);
 		}
@@ -59,7 +56,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 				
 			} else {
 				log.info("User supplied location '" + location + "' could not be resolved to a point; marking as invalid");
-				request.setAttribute(LOCATION, new Geocode(location));
+				request.setAttribute(LOCATION, new Geocode(location, null, null));
 			}
 			return;
 		}

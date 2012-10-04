@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.submission.SubmissionProcessor;
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
-import nz.co.searchwellington.geocoding.NominatimGeocodingService;
+import nz.co.searchwellington.geocoding.CachingGeocodeService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
@@ -45,13 +45,13 @@ public class SubmissionProcessingService {
     private Logger log = Logger.getLogger(SubmissionProcessingService.class);
         
     private UrlCleaner urlCleaner;
-    private NominatimGeocodingService nominatimGeocodeService;
+    private CachingGeocodeService nominatimGeocodeService;
     private TagDAO tagDAO;
     private HandTaggingDAO tagVoteDAO;
 	private HibernateResourceDAO resourceDAO;
 	
 	@Autowired
-	public SubmissionProcessingService(UrlCleaner urlCleaner, NominatimGeocodingService NominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO) {
+	public SubmissionProcessingService(UrlCleaner urlCleaner, CachingGeocodeService NominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO) {
 		this.urlCleaner = urlCleaner;
 		this.nominatimGeocodeService = NominatimGeocodingService;
 		this.tagDAO = tagDAO;

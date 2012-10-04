@@ -18,9 +18,9 @@ import org.junit.Test;
 
 public class GoogleMapsDisplayCleanerTest {
 	
-    Geocode here = new Geocode("here", 1, 1);
-    Geocode there = new Geocode("there", 2, 2);
-    Geocode alsoHere = new Geocode("here", 1, 1);
+    Geocode here = new Geocode("here", 1.1, 1.1);
+    Geocode there = new Geocode("there", 2.2, 2.2);
+    Geocode alsoHere = new Geocode("here", 1.1, 1.1);
     
     List<FrontendResource> geocoded; 
     Resource firstNewsitem;

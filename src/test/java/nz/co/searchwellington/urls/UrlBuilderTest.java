@@ -63,6 +63,12 @@ public class UrlBuilderTest {
 	}
 	
 	@Test
+	public void locationsShouldBeLinkedByOSMIdIfAvailable() throws Exception {
+		final Geocode somewhereWithOSMid= new Geocode("Somewhere,Far away", 3.1, 4.2, 12345L, "node");
+		assertEquals("http://siteurl.test/geotagged?osm=12345%2FN", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
+	}
+	
+	@Test
 	public void canContstructPageUrlForFrontendNewsitem() throws Exception {		
 		assertNull(frontendNewsitem.getPublisherName());		
 		assertEquals(SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem));

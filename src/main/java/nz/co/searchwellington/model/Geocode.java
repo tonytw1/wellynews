@@ -26,29 +26,24 @@ public class Geocode implements Serializable {
     public Geocode() {        
     }
             
-    public Geocode(String address) {
-        this.address = address;
-        this.latitude = null;
-        this.longitude = null;
-        this.osmId = null;
-        this.osmType = null;
-    }
-    
-    public Geocode(String address, String osmId) {
-    	this.address = address;
-    	this.osmId = this.osmId;
-    }
-    
-    public Geocode(String address, double latitude, double longitude) {     
-        this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
-
     public Geocode(Double latitude, Double longitude) {
-    	 this.latitude = latitude;
-         this.longitude = longitude;
+    	this.latitude = latitude;
+    	this.longitude = longitude;
     }
+    
+    public Geocode(String address, Double latitude, Double longitude) {     
+    	this.address = address;
+    	this.latitude = latitude;
+    	this.longitude = longitude;
+    }
+    
+    public Geocode(String address, double latitude, double longitude, Long osmId, String osmType) {
+		this.address = address;
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.osmId = osmId;
+		this.osmType = osmType;
+	}
 
 	public Geocode(String address, double latitude, double longitude, String type, Long osmId, String osmType, String resolver) {
 		this.address = address;

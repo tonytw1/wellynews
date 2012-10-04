@@ -22,7 +22,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 
 public class RomeRssFeedTests extends TestCase {
 	
-	Newsitem newsitem;
+	private Newsitem newsitem;
 		
 	public void setUp() throws Exception {	
 		newsitem = new NewsitemImpl();
@@ -40,9 +40,7 @@ public class RomeRssFeedTests extends TestCase {
 	}
 	
 	public void testShouldRenderGeocodeInRss() throws Exception {
-		Geocode geocode = new Geocode("119 Farringdon Road, London");
-        geocode.setLatitude(new Double(3));
-        geocode.setLongitude(new Double(45));
+		final Geocode geocode = new Geocode("119 Farringdon Road, London", 30.2, 45.1);
 		newsitem.setGeocode(geocode);
 		
 		List<FrontendNewsitem> content = new ArrayList<FrontendNewsitem>();

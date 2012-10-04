@@ -44,7 +44,7 @@ public class GeotaggedModelBuilderTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();		
-		validLocation = new Geocode("Petone Station", 1, 2);
+		validLocation = new Geocode("Petone Station", 1.1, 2.2);
 		modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService);
 	}
 	
