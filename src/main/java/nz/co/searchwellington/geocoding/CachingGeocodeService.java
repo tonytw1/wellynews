@@ -5,6 +5,7 @@ import java.util.List;
 
 import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.OsmId;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,11 +57,11 @@ public class CachingGeocodeService implements GeoCodeService {
 		return null;
 	}
 	
-	public Geocode resolveAddress(String osmType, long osmId) {
-		final String cacheKey = OSM_ID_CACHE_PREFIX + osmId + osmType;
-		log.info("Resolving location for: " + osmType + osmId);
+	public Geocode resolveAddress(OsmId osmId) {
+		final String cacheKey = OSM_ID_CACHE_PREFIX + osmId.getId() + osmId.getType();
+		log.info("Resolving location for: " + osmId);
 		
-		Geocode cachedResult = (Geocode) cache.get(cacheKey);
+		final Geocode cachedResult = (Geocode) cache.get(cacheKey);
 		if (cachedResult != null) {
 			if (isNegativeHit(cachedResult)) {
 				log.info("Negative cache hit for: " + cacheKey);
@@ -71,7 +72,7 @@ public class CachingGeocodeService implements GeoCodeService {
 		}
 		
 		log.info("Cache miss for '" + cacheKey + "' - delegating to real resolver");
-		final Geocode resolvedGeocode = geoCodeService.resolveAddress(osmType, osmId);
+		final Geocode resolvedGeocode = geoCodeService.resolveAddress(osmId);
 		if (resolvedGeocode != null) {
 			log.info("Caching resolved address for '" + cacheKey + "'");
 			cache.put(cacheKey, TWO_DAYS, resolvedGeocode);

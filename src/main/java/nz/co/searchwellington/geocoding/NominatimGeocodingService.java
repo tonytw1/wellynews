@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.OsmId;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -16,7 +17,7 @@ import fr.dudie.nominatim.client.NominatimClient;
 import fr.dudie.nominatim.model.Address;
 
 @Component
-public class NominatimGeocodingService implements GeoCodeService {
+public class NominatimGeocodingService implements GeoCodeService, CachableService<OsmId, Geocode> {
 	
 	private static Logger log = Logger.getLogger(NominatimGeocodingService.class);
 
@@ -43,12 +44,13 @@ public class NominatimGeocodingService implements GeoCodeService {
 		return null;
 	}
 	
-	public Geocode resolveAddress(String osmType, long osmId) {
-		log.info("Resolving OSM id with Nominatim: " + osmId + "/" + osmType);
+	public Geocode resolveAddress(OsmId osmId) {
+		log.info("Resolving OSM id with Nominatim: " + osmId);
 		try {
 			final NominatimClient nominatimClient = getNominatimClient();
-			Address address = nominatimClient.getAddress(osmType, osmId);
+			Address address = nominatimClient.getAddress(osmId.getType(), osmId.getId());
 			return address != null ? buildGeocodeFor(address) : null;
+			
 		} catch (IOException e) {
 			log.error(e);
 			return null;
@@ -63,6 +65,11 @@ public class NominatimGeocodingService implements GeoCodeService {
 
 	private Geocode buildGeocodeFor(Address result) {
 		return new Geocode(result.getDisplayName(), result.getLatitude(), result.getLongitude(), result.getElementType(), Long.parseLong(result.getOsmId()), result.getOsmType(), "OSM");
+	}
+
+	@Override
+	public Geocode callService(OsmId osmId) {
+		return resolveAddress(osmId);
 	}
 	
 }

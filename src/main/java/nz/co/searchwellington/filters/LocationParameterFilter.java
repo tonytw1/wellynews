@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.CachingGeocodeService;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.OsmId;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,10 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		
 		if(request.getParameter(OSM) != null) {
 			final String osm = request.getParameter(OSM);
-			final Geocode resolvedOsmPlace = geoCodeService.resolveAddress(osm.split("/")[1], Long.parseLong(osm.split("/")[0]));
-			log.info("OSM place '" + osm + "' resolved to: " + resolvedOsmPlace);
+			final OsmId osmId = new OsmId(Long.parseLong(osm.split("/")[0]), osm.split("/")[1]);
+	
+			final Geocode resolvedOsmPlace = geoCodeService.resolveAddress(osmId);
+			log.info("OSM id '" + osmId + "' resolved to: " + resolvedOsmPlace);
 			request.setAttribute(LOCATION, resolvedOsmPlace);
 		}
 		

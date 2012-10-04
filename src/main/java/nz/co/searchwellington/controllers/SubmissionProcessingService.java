@@ -15,6 +15,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.OsmId;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -88,12 +89,9 @@ public class SubmissionProcessingService {
 		if (req.getParameter(REQUEST_SELECTED_GEOCODE) != null) {
 	    	final String selectedGeocode = new String(req.getParameter(REQUEST_SELECTED_GEOCODE));
 	        log.info("Found selected geocode: " + selectedGeocode);
-	        if (selectedGeocode != null && !selectedGeocode.trim().equals("")) {
-	        	
-	        	final long osmId = Long.parseLong(selectedGeocode.split("/")[0]);
-	            final String osmType = selectedGeocode.split("/")[1];
-	            
-	            final Geocode resolvedGeocode = nominatimGeocodeService.resolveAddress(osmType, osmId);
+	        if (selectedGeocode != null && !selectedGeocode.trim().equals("")) {	        	
+				final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);				
+	            final Geocode resolvedGeocode = nominatimGeocodeService.resolveAddress(osmId);
 	            log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedGeocode);
 	            return resolvedGeocode;
 	        }
@@ -175,7 +173,6 @@ public class SubmissionProcessingService {
     	}
     }
 	
-	
 	public void processAcceptance(HttpServletRequest request, Resource editResource, User loggedInUser) {
 		if (editResource instanceof Newsitem) {
 			if (request.getParameter("acceptedFromFeed") != null && !request.getParameter("acceptedFromFeed").equals("")) {			
@@ -191,8 +188,7 @@ public class SubmissionProcessingService {
 			}
 		}
 	}
-	
-    
+	    
     private void processAdditionalTags(HttpServletRequest request, Resource editResource, User user) {
         String additionalTagString = request.getParameter("additional_tags").trim();
         log.debug("Found additional tag string: " + additionalTagString);
