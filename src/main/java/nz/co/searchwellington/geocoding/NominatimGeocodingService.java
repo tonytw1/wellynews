@@ -21,7 +21,23 @@ public class NominatimGeocodingService implements GeoCodeService, CachableServic
 	
 	private static Logger log = Logger.getLogger(NominatimGeocodingService.class);
 
+	private static final String OSM_ID_CACHE_PREFIX = "osmidgeocode:";
 	private static final String NOMINATIM_USER = "tony@wellington.gen.nz";
+	
+	@Override
+	public Geocode callService(OsmId osmId) {
+		return resolveAddress(osmId);
+	}
+
+	@Override
+	public String getCacheKeyFor(OsmId parameter) {
+		return OSM_ID_CACHE_PREFIX + parameter.getId() + parameter.getType() + ":";
+	}
+
+	@Override
+	public int getTTL() {
+		return 60 * 1000 * 48;
+	}
 	
 	@Override
 	public List<Geocode> resolveAddress(String address) {
@@ -63,13 +79,8 @@ public class NominatimGeocodingService implements GeoCodeService, CachableServic
 		return nominatimClient;
 	}
 
-	private Geocode buildGeocodeFor(Address result) {
+	private Geocode buildGeocodeFor(Address result) {	// TODO don't all for null resolves
 		return new Geocode(result.getDisplayName(), result.getLatitude(), result.getLongitude(), result.getElementType(), Long.parseLong(result.getOsmId()), result.getOsmType(), "OSM");
-	}
-
-	@Override
-	public Geocode callService(OsmId osmId) {
-		return resolveAddress(osmId);
 	}
 	
 }

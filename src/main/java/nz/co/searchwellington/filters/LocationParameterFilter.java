@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.CachingGeocodeService;
+import nz.co.searchwellington.geocoding.CachingServiceWrapper;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.OsmId;
 
@@ -27,10 +28,15 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private static final String OSM = "osm";	
 
 	private CachingGeocodeService geoCodeService;
+	private CachingServiceWrapper<OsmId, Geocode> osmGeocodeService;
+	
+	public LocationParameterFilter() {
+	}
 	
 	@Autowired
-	public LocationParameterFilter(CachingGeocodeService geoCodeService) {
+	public LocationParameterFilter(CachingGeocodeService geoCodeService, CachingServiceWrapper<OsmId, Geocode> osmGeocodeService) {
 		this.geoCodeService = geoCodeService;
+		this.osmGeocodeService = osmGeocodeService;
 	}
 	
 	public void filter(HttpServletRequest request) {		
@@ -43,8 +49,8 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		if(request.getParameter(OSM) != null) {
 			final String osm = request.getParameter(OSM);
 			final OsmId osmId = new OsmId(Long.parseLong(osm.split("/")[0]), osm.split("/")[1]);
-	
-			final Geocode resolvedOsmPlace = geoCodeService.resolveAddress(osmId);
+			
+			final Geocode resolvedOsmPlace = osmGeocodeService.callService(osmId);
 			log.info("OSM id '" + osmId + "' resolved to: " + resolvedOsmPlace);
 			request.setAttribute(LOCATION, resolvedOsmPlace);
 		}
@@ -70,8 +76,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			// TODO Should try todo a reverse lookup to name this location.
 			final Geocode specificPointGeocode = new Geocode(latitude, longitude);
 			request.setAttribute(LOCATION, specificPointGeocode);
-		}
-		
+		}		
 	}
 	
 	private Double processDoubleParameter(HttpServletRequest request, String parameterName) {
