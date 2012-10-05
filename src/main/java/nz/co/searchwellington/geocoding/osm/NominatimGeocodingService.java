@@ -1,4 +1,4 @@
-package nz.co.searchwellington.geocoding;
+package nz.co.searchwellington.geocoding.osm;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,29 +17,12 @@ import fr.dudie.nominatim.client.NominatimClient;
 import fr.dudie.nominatim.model.Address;
 
 @Component
-public class NominatimGeocodingService implements GeoCodeService, CachableService<OsmId, Geocode> {
+public class NominatimGeocodingService implements GeoCodeService {
 	
 	private static Logger log = Logger.getLogger(NominatimGeocodingService.class);
 
-	private static final String OSM_ID_CACHE_PREFIX = "osmidgeocode:";
 	private static final String NOMINATIM_USER = "tony@wellington.gen.nz";
 	
-	@Override
-	public Geocode callService(OsmId osmId) {
-		return resolveAddress(osmId);
-	}
-
-	@Override
-	public String getCacheKeyFor(OsmId parameter) {
-		return OSM_ID_CACHE_PREFIX + parameter.getId() + parameter.getType() + ":";
-	}
-
-	@Override
-	public int getTTL() {
-		return 60 * 1000 * 48;
-	}
-	
-	@Override
 	public List<Geocode> resolveAddress(String address) {
 		log.info("Resolving address with Nominatim: " + address);
 		final NominatimClient nominatimClient = getNominatimClient();
@@ -60,7 +43,7 @@ public class NominatimGeocodingService implements GeoCodeService, CachableServic
 		return null;
 	}
 	
-	public Geocode resolveAddress(OsmId osmId) {
+	public Geocode resolveOsmId(OsmId osmId) {
 		log.info("Resolving OSM id with Nominatim: " + osmId);
 		try {
 			final NominatimClient nominatimClient = getNominatimClient();

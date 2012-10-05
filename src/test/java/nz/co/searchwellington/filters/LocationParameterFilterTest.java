@@ -7,8 +7,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.searchwellington.geocoding.CachingGeocodeService;
 import nz.co.searchwellington.geocoding.CachingServiceWrapper;
+import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.OsmId;
 
@@ -24,7 +24,7 @@ public class LocationParameterFilterTest {
 	private static final String VALID_LOCATION = "Petone Station";
 	private static final String INVALID_LOCATION = "Twickenham Station, Wellington";
 	
-	@Mock private CachingGeocodeService geocodeService;
+	@Mock private CachingNominatimGeocodingService geocodeService;
 	@Mock private CachingServiceWrapper<OsmId, Geocode> osmGeocodeService;
 	
 	private MockHttpServletRequest request;

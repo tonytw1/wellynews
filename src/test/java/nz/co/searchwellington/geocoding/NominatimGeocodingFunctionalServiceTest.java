@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import nz.co.searchwellington.geocoding.osm.NominatimGeocodingService;
 import nz.co.searchwellington.model.Geocode;
 
 import org.junit.Before;

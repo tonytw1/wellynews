@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.submission.SubmissionProcessor;
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
-import nz.co.searchwellington.geocoding.CachingGeocodeService;
+import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
@@ -46,15 +46,15 @@ public class SubmissionProcessingService {
     private Logger log = Logger.getLogger(SubmissionProcessingService.class);
         
     private UrlCleaner urlCleaner;
-    private CachingGeocodeService nominatimGeocodeService;
+    private CachingNominatimGeocodingService nominatimGeocodeService;
     private TagDAO tagDAO;
     private HandTaggingDAO tagVoteDAO;
 	private HibernateResourceDAO resourceDAO;
 	
 	@Autowired
-	public SubmissionProcessingService(UrlCleaner urlCleaner, CachingGeocodeService NominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO) {
+	public SubmissionProcessingService(UrlCleaner urlCleaner, CachingNominatimGeocodingService nominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO) {
 		this.urlCleaner = urlCleaner;
-		this.nominatimGeocodeService = NominatimGeocodingService;
+		this.nominatimGeocodeService = nominatimGeocodingService;
 		this.tagDAO = tagDAO;
 		this.tagVoteDAO = tagVoteDAO;
 		this.resourceDAO = resourceDAO;
@@ -91,7 +91,7 @@ public class SubmissionProcessingService {
 	        log.info("Found selected geocode: " + selectedGeocode);
 	        if (selectedGeocode != null && !selectedGeocode.trim().equals("")) {	        	
 				final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);				
-	            final Geocode resolvedGeocode = nominatimGeocodeService.resolveAddress(osmId);
+	            final Geocode resolvedGeocode = nominatimGeocodeService.resolveOsmId(osmId);
 	            log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedGeocode);
 	            return resolvedGeocode;
 	        }
