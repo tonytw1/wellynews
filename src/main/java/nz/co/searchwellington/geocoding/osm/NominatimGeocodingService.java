@@ -61,8 +61,8 @@ public class NominatimGeocodingService implements GeoCodeService {
 		NominatimClient nominatimClient = new JsonNominatimClient(httpClient, NOMINATIM_USER);
 		return nominatimClient;
 	}
-
-	private Geocode buildGeocodeFor(Address result) {	// TODO don't all for null resolves
+	
+	private Geocode buildGeocodeFor(Address result) {
 		return new Geocode(result.getDisplayName(), result.getLatitude(), result.getLongitude(), result.getElementType(), Long.parseLong(result.getOsmId()), result.getOsmType(), "OSM");
 	}
 	
