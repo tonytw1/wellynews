@@ -40,7 +40,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	}
 	
 	public void filter(HttpServletRequest request) {		
-		Double radius = processDoubleParameter(request, RADIUS);
+		final Double radius = processDoubleParameter(request, RADIUS);
 		if (radius != null && radius > 0) {
 			log.info("Radius attribute set to: " + radius);
 			request.setAttribute(RADIUS, radius);
@@ -52,6 +52,10 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			
 			final Geocode resolvedOsmPlace = osmGeocodeService.callService(osmId);
 			log.info("OSM id '" + osmId + "' resolved to: " + resolvedOsmPlace);
+			if (resolvedOsmPlace == null) {
+				throw new RuntimeException("OSM place could not be resolved");	// TODO 404 in this use case
+			}
+			
 			request.setAttribute(LOCATION, resolvedOsmPlace);
 		}
 		
