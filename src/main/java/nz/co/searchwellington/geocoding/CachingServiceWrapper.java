@@ -11,6 +11,8 @@ public class CachingServiceWrapper <T, U> {
 
 	private static Logger log = Logger.getLogger(CachingServiceWrapper.class);
 	
+	private static final String NEGATIVE = "negative";
+	
 	private CachableService<T, U> service;
 	private MemcachedCache cache;
 	
@@ -30,6 +32,12 @@ public class CachingServiceWrapper <T, U> {
 			return cachedResult;
 		}
 		
+		log.info("Cache miss for '" + cacheKey + "' - checking for negative cache hit");
+		if (isNegativeCacheHit(cacheKey)) {
+			log.info("Negative cache hit for '" + cacheKey + "'; returning null");
+			return null;
+		}
+		
 		log.info("Cache miss for '" + cacheKey + "' - delegating to real service");
 		final U result = service.callService(parameter);
 		if (result != null) {
@@ -38,8 +46,21 @@ public class CachingServiceWrapper <T, U> {
 			return result;
 		}
 		
-		log.info("Live service call failed; returning null");
+		log.info("Live service call failed; returning adding negative cache and returning null");
+		setNegativeCacheHit(cacheKey);
 		return null;
+	}
+
+	private void setNegativeCacheHit(String cacheKey) {
+		cache.put(negativeCacheKeyFor(cacheKey) , service.getTTL(), 1);
+	}
+	
+	private boolean isNegativeCacheHit(String cacheKey) {
+		return cache.get(negativeCacheKeyFor(cacheKey)) != null;
+	}
+	
+	private String negativeCacheKeyFor(String cacheKey) {
+		return NEGATIVE + cacheKey;
 	}
 	
 }
