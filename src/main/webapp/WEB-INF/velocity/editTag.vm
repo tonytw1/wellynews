@@ -28,6 +28,7 @@
 					<input name="description" value="$!tag.description" />
 					<br />
 			
+					#set($geocode = $tag.geocode)
 					#parse("includes/geocodeFields.vm")
 															
 					#if ($tag_select) 
