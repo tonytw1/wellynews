@@ -29,10 +29,11 @@ public class SolrGeotagHandler {
 	
 	private void applyGeotagToIndexDocument(SolrInputDocument inputDocument, final Geocode geocode) {
 		if (geocode != null && geocode.isValid()) {
-			log.info("Appling geotag '" + geocode.getAddress() + "' to resource");
+			log.info("Applying geotag '" + geocode.getAddress() + "' to resource");
 			inputDocument.addField("geotagged", true);
 			inputDocument.addField("address", geocode.getAddress());
 			inputDocument.addField("position", geocode.getLatitude() + "," + geocode.getLongitude());
+			inputDocument.addField("osm_id", geocode.getOsmPlaceId());
 		}
 	}
 	

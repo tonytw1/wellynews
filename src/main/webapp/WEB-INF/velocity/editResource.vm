@@ -37,7 +37,8 @@
 					#end
 					
 					#parse("includes/tag_edit_fields.vm")
-														
+					
+					#set($geocode = $resource.geocode)								
 					#parse("includes/geocodeFields.vm")
 									
 					<label for="description">Description: </label>

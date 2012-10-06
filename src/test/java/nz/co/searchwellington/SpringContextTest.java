@@ -8,6 +8,8 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.controllers.models.TagModelBuilder;
+import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
+import nz.co.searchwellington.feeds.rss.RssPrefetcherTest;
 import nz.co.searchwellington.filters.RequestFilter;
 
 import org.junit.Test;
@@ -40,8 +42,10 @@ public class SpringContextTest {
 	
 	@Test
 	public void canAutowire() throws Exception {
-		final ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
-		assertNotNull(context.getAutowireCapableBeanFactory().autowire(ContentModelBuilderService.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true));
+		final ApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");		
+		Object autowire = context.getAutowireCapableBeanFactory().autowire(RssNewsitemPrefetcher.class, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, true);
+		System.out.println(autowire);
+		assertNotNull(autowire);
 	}
 	
 	//@Test

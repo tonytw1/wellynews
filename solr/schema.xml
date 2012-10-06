@@ -138,8 +138,10 @@
 	<field name="position" type="location" indexed="true" stored="true" multiValed="false" />
 	<field name="position_0_coordinate" type="double" indexed="true" stored="true" />
    	<field name="position_1_coordinate" type="double" indexed="true" stored="true" />
-   	
+   	   
+  	<field name="osm_id" type="string" indexed="true" stored="true" required="false" />   	   	
 	<field name="address" type="text" indexed="false" stored="true" required="false" />
+	
  </fields>
 
  <uniqueKey>id</uniqueKey>
