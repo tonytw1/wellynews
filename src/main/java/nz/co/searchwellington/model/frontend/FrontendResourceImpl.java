@@ -3,9 +3,12 @@ package nz.co.searchwellington.model.frontend;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Tag;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class FrontendResourceImpl implements FrontendResource {
 	
 	private static final long serialVersionUID = 1L;

@@ -8,6 +8,7 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.views.RssView;
 import nz.co.searchwellington.views.RssViewFactory;
 
 import org.junit.Before;
@@ -16,9 +17,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
+import uk.co.eelpieconsulting.common.views.json.JsonView;
 
 public class ContentModelBuilderServiceTest {
 	
@@ -29,8 +30,8 @@ public class ContentModelBuilderServiceTest {
 	ModelBuilder[] modelBuilders;
 	
 	MockHttpServletRequest request;
-	@Mock View rssView;
-	@Mock View jsonView;
+	@Mock RssView rssView;
+	@Mock JsonView jsonView;
 	@Mock List<Tag> featuredTags;
 	@Mock List<Tag> topLevelTags;
 	

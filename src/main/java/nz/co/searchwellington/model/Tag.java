@@ -3,6 +3,10 @@ package nz.co.searchwellington.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Tag {
     
 	private int id;
@@ -56,6 +60,7 @@ public class Tag {
         this.displayName = displayName;
     }
 
+    @JsonIgnore
     public Tag getParent() {
         return parent;
     }
@@ -67,7 +72,8 @@ public class Tag {
     public void setChildren(Set<Tag> children) {
         this.children = children;
     }
-
+    
+    @JsonIgnore
     public Set<Tag> getChildren() {
         return children;
     }
@@ -76,6 +82,7 @@ public class Tag {
         children.add(tag);        
     }
     
+    @JsonIgnore
     public Set<Tag> getAncestors() {
         HashSet<Tag> ancestors = new HashSet<Tag>();   
         Tag parent = getParent();
@@ -106,7 +113,7 @@ public class Tag {
     public void setSecondaryImage(String secondaryImage) {
         this.secondaryImage = secondaryImage;
     }
-
+    
     public Feed getRelatedFeed() {
         return this.relatedFeed;
     }

@@ -9,8 +9,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
+import uk.co.eelpieconsulting.common.views.json.JsonView;
 
 @Component
 public class ContentModelBuilderService {
@@ -53,7 +55,10 @@ public class ContentModelBuilderService {
 				}				
 				if (path.endsWith("/json")) {
 					logger.info("Selecting json view for path: " + path);
-					mv.setView(viewFactory.getJsonView());					
+					final JsonView jsonView = viewFactory.getJsonView();
+					System.out.println(mv.getModel().get("main_content"));
+					jsonView.setDataField("main_content");
+					mv.setView(jsonView);					
 					populateJsonCallback(request, mv);								
 					return mv;
 				}

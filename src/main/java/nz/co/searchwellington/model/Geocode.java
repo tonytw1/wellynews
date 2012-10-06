@@ -7,7 +7,9 @@ import geo.google.datamodel.GeoCoordinate;
 import geo.google.datamodel.GeoUtils;
 
 import org.apache.log4j.Logger;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Geocode implements Serializable {
     
 	private static Logger log = Logger.getLogger(Geocode.class);
