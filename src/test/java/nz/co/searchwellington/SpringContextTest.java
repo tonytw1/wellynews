@@ -6,10 +6,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 import nz.co.searchwellington.controllers.models.TagModelBuilder;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
-import nz.co.searchwellington.feeds.rss.RssPrefetcherTest;
 import nz.co.searchwellington.filters.RequestFilter;
 
 import org.junit.Test;
