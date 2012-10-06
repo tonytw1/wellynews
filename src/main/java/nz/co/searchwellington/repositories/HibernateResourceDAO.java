@@ -71,7 +71,7 @@ public class HibernateResourceDAO {
     }
             
     @SuppressWarnings("unchecked")
-    final public List<Resource> getAllCalendarFeeds() {
+    public List<Resource> getAllCalendarFeeds() {
         return sessionFactory.getCurrentSession().createCriteria(CalendarFeed.class).       
         addOrder(Order.asc("name")). 
         setCacheable(true).
@@ -79,7 +79,7 @@ public class HibernateResourceDAO {
     }
         
     @SuppressWarnings("unchecked")
-    final public List<Resource> getAllWatchlists() {
+    public List<Resource> getAllWatchlists() {
         return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).       
         addOrder(Order.asc("name")).
         setCacheable(true).
@@ -88,7 +88,7 @@ public class HibernateResourceDAO {
         
     @SuppressWarnings("unchecked")
     // TODO add discovered timestamp and order by that.
-    final public List<DiscoveredFeed> getAllDiscoveredFeeds() {
+    public List<DiscoveredFeed> getAllDiscoveredFeeds() {
         return sessionFactory.getCurrentSession().createCriteria(DiscoveredFeed.class).
         setCacheable(true).
         addOrder(Order.desc("id")).
