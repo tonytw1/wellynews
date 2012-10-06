@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.geocoding.CachingServiceWrapper;
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.OsmId;
@@ -28,15 +27,13 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private static final String OSM = "osm";	
 
 	private CachingNominatimGeocodingService geoCodeService;
-	private CachingServiceWrapper<OsmId, Geocode> osmGeocodeService;
 	
 	public LocationParameterFilter() {
 	}
 	
 	@Autowired
-	public LocationParameterFilter(CachingNominatimGeocodingService geoCodeService, CachingServiceWrapper<OsmId, Geocode> osmGeocodeService) {
+	public LocationParameterFilter(CachingNominatimGeocodingService geoCodeService) {
 		this.geoCodeService = geoCodeService;
-		this.osmGeocodeService = osmGeocodeService;
 	}
 	
 	public void filter(HttpServletRequest request) {		
@@ -48,9 +45,9 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		
 		if(request.getParameter(OSM) != null) {
 			final String osm = request.getParameter(OSM);
-			final OsmId osmId = new OsmId(Long.parseLong(osm.split("/")[0]), osm.split("/")[1]);
+			final OsmId osmId = new OsmId(Long.parseLong(osm.split("/")[0]), osm.split("/")[1]);			
 			
-			final Geocode resolvedOsmPlace = osmGeocodeService.callService(osmId);
+			final Geocode resolvedOsmPlace = geoCodeService.resolveOsmId(osmId);			
 			log.info("OSM id '" + osmId + "' resolved to: " + resolvedOsmPlace);
 			if (resolvedOsmPlace == null) {
 				throw new RuntimeException("OSM place could not be resolved");	// TODO 404 in this use case
