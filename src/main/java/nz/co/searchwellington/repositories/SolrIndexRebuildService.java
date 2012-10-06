@@ -27,7 +27,7 @@ public class SolrIndexRebuildService {
 	private HibernateResourceDAO resourceDAO;
 	private SolrInputDocumentBuilder solrInputDocumentBuilder;
     
-	@Value("#{config['solr.ur']}")
+	@Value("#{config['solr.url']}")
 	private String solrUrl;
 	
     private boolean running;

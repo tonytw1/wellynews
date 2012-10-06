@@ -94,6 +94,15 @@ public class SolrResourceHydrator implements ResourceHydrator {
 				String positions = (String) result.getFirstValue("position");
 				geocode.setLatitude(Double.parseDouble(positions.split(",")[0]));
 				geocode.setLongitude(Double.parseDouble(positions.split(",")[1]));
+				
+				if (result.containsKey("osm_id") && result.getFieldValue("osm_id") != null) {
+					final String placeId = (String) result.getFieldValue("osm_id");
+					final long osmId = Long.parseLong(placeId.split("/")[0]);
+		            final String osmType = placeId.split("/")[1];		            
+		            geocode.setOsmId(osmId);
+		            geocode.setOsmType(osmType);
+				}
+								
 				item.setGeocode(geocode);
 			}
 			
