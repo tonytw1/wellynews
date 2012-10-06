@@ -37,7 +37,7 @@ public class GeotaggedModelBuilderTest {
 	private Geocode validLocation;
 	@Mock Geocode invalidLocation;
 	
-	private ModelBuilder modelBuilder;
+	private GeotaggedModelBuilder modelBuilder;
 	private RelatedTagsService relatedTagsService;
 	
 	@Before
@@ -78,7 +78,7 @@ public class GeotaggedModelBuilderTest {
 	
 	@Test
 	public void locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent() throws Exception {
-		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
+		Mockito.when(contentRetrievalService.getNewsitemsNear(1.1, 2.2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
 		request.setPathInfo("/geotagged");
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		
@@ -90,7 +90,7 @@ public class GeotaggedModelBuilderTest {
 	
 	@Test
 	public void locationSearchRadiusShouldBeTweakableFromTheRequestParameters() throws Exception {
-		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, 3.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
+		Mockito.when(contentRetrievalService.getNewsitemsNear(1.1, 2.2, 3.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
 		request.setPathInfo("/geotagged");
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		request.setAttribute(LocationParameterFilter.RADIUS, 3.0);
@@ -103,7 +103,7 @@ public class GeotaggedModelBuilderTest {
 	@Test
 	public void locationSearchesShouldHavePagination() throws Exception {
 		request.setPathInfo("/geotagged");
-		Mockito.when(contentRetrievalService.getNewsitemsNearCount(1, 2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS)).thenReturn(LOCATION_RESULTS_COUNT);
+		Mockito.when(contentRetrievalService.getNewsitemsNearCount(1.1, 2.2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS)).thenReturn(LOCATION_RESULTS_COUNT);
 		
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 
@@ -116,8 +116,8 @@ public class GeotaggedModelBuilderTest {
 	@Test
 	public void locationSearchesShouldHaveCorrectContentOnSecondPaginationPage() throws Exception {
 		request.setPathInfo("/geotagged");
-		Mockito.when(contentRetrievalService.getNewsitemsNearCount(1, 2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS)).thenReturn(LOCATION_RESULTS_COUNT);
-		Mockito.when(contentRetrievalService.getNewsitemsNear(1, 2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage);
+		Mockito.when(contentRetrievalService.getNewsitemsNearCount(1.1, 2.2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS)).thenReturn(LOCATION_RESULTS_COUNT);
+		Mockito.when(contentRetrievalService.getNewsitemsNear(1.1, 2.2, GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage);
 
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		request.setAttribute("page", 2);
