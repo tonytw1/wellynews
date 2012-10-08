@@ -2,14 +2,15 @@ package nz.co.searchwellington.feeds;
 
 import java.util.List;
 
+import nz.co.searchwellington.model.FeedNewsitem;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import nz.co.searchwellington.caching.MemcachedCache;
-import nz.co.searchwellington.model.FeedNewsitem;
+import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 
 public class FeedNewsitemCacheTest {
 

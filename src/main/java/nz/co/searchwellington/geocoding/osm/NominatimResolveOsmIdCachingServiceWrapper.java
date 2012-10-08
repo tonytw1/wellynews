@@ -1,12 +1,13 @@
 package nz.co.searchwellington.geocoding.osm;
 
-import nz.co.searchwellington.geocoding.CachableService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.OsmId;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.caching.CachableService;
 
 @Component
 public class NominatimResolveOsmIdCachingServiceWrapper implements CachableService<OsmId, Geocode> {

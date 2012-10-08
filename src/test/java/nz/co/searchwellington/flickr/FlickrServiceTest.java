@@ -1,7 +1,6 @@
 package nz.co.searchwellington.flickr;
 
 import static org.junit.Assert.assertEquals;
-import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ConfigDAO;
 
@@ -10,6 +9,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 
 public class FlickrServiceTest {
 

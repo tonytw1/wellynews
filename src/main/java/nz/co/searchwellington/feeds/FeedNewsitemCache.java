@@ -3,12 +3,13 @@ package nz.co.searchwellington.feeds;
 import java.util.List;
 
 import net.spy.memcached.OperationTimeoutException;
-import nz.co.searchwellington.caching.MemcachedCache;
 import nz.co.searchwellington.model.FeedNewsitem;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 
 @Component
 public class FeedNewsitemCache {

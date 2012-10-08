@@ -2,12 +2,13 @@ package nz.co.searchwellington.geocoding.osm;
 
 import java.util.List;
 
-import nz.co.searchwellington.geocoding.CachableService;
 import nz.co.searchwellington.model.Geocode;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.caching.CachableService;
 
 @Component
 public class NominatimResolveAddressCachingServiceWrapper implements CachableService<String, List<Geocode>> {
