@@ -30,14 +30,13 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.1</version>
 			</plugin>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<additionalClasspathElements>
 						<additionalClasspathElement>src/main/webapp/WEB-INF</additionalClasspathElement>
-                                                <additionalClasspathElement>src/main/webapp/WEB-INF/classes</additionalClasspathElement>
+                    	<additionalClasspathElement>src/main/webapp/WEB-INF/classes</additionalClasspathElement>
 					</additionalClasspathElements>
 				</configuration>
 			</plugin>
@@ -58,8 +57,17 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
+            </plugin>            
+            <plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.0</version>
+				<configuration>
+					<port>9090</port>
+					<path>/</path>
+					<useTestClasspath>true</useTestClasspath>
+				</configuration>
+			</plugin>			
 		</plugins>
 	</build>
 
@@ -76,7 +84,7 @@
 	</repositories>
 
 	<dependencies>
-
+	
 		<dependency>
 			<groupId>uk.co.eelpieconsulting.common</groupId>
 			<artifactId>common-views</artifactId>
@@ -123,7 +131,6 @@
 			<groupId>org.geonames</groupId>
 			<artifactId>georss-rome</artifactId>
 			<version>0.9.8</version>
-
 			<exclusions>
 				<exclusion>
 					<groupId>rome</groupId>
@@ -172,7 +179,6 @@
 			<groupId>jrobotx</groupId>
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
-
 		</dependency>
 
 		<dependency>
@@ -281,13 +287,6 @@
 			<version>${hibernate-annotations.version}</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-mock</artifactId>
-			<version>2.0.8</version>
-			<scope>test</scope>
-		</dependency>
-
                 <dependency>
                         <groupId>org.apache.velocity</groupId>
                         <artifactId>velocity</artifactId>
@@ -330,21 +329,9 @@
 			<artifactId>servlet-api</artifactId>
 			<version>2.5</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>com.google.code.geocoder-java</groupId>
-			<artifactId>geocoder-java</artifactId>
-			<version>0.7</version>
-		</dependency>
-
-		<dependency>
-			<groupId>geoGoogle</groupId>
-			<artifactId>geoGoogle</artifactId>
-			<version>1.5.0</version>
-		</dependency>
-		
+				
 		<dependency>
 			<groupId>fr.dudie</groupId>
 			<artifactId>nominatim-api</artifactId>
@@ -381,15 +368,24 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-mock</artifactId>
+			<version>2.0.8</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.8.2</version>
+			<scope>test</scope>			
 		</dependency>
 	
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
-			<version>1.9.5-rc1</version>
+			<version>1.9.0</version>
+			<scope>test</scope>
 		</dependency>
 		    
 	</dependencies>
