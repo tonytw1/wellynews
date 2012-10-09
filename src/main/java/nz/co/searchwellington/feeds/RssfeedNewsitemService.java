@@ -14,6 +14,7 @@ import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,9 +23,19 @@ public class RssfeedNewsitemService {
 	private static Logger log = Logger.getLogger(RssfeedNewsitemService.class);
 
 	private CachingRssfeedNewsitemService cachingRssfeedNewsitemService;
-	protected HibernateResourceDAO resourceDAO;
-	protected SupressionDAO suppressionDAO;
-	protected FeednewsItemToNewsitemService feednewsItemToNewsitemService;
+	private HibernateResourceDAO resourceDAO;
+	private SupressionDAO suppressionDAO;
+	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
+	
+	@Autowired
+	public RssfeedNewsitemService(CachingRssfeedNewsitemService cachingRssfeedNewsitemService,
+			HibernateResourceDAO resourceDAO, SupressionDAO suppressionDAO,
+			FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
+		this.cachingRssfeedNewsitemService = cachingRssfeedNewsitemService;
+		this.resourceDAO = resourceDAO;
+		this.suppressionDAO = suppressionDAO;
+		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
+	}
 	
 	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
 		return cachingRssfeedNewsitemService.getFeedNewsitems(feed);
