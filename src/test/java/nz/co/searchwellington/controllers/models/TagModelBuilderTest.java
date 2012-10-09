@@ -9,7 +9,7 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
@@ -34,7 +34,7 @@ public class TagModelBuilderTest {
 	@Mock UrlBuilder urlBuilder;
 	@Mock RelatedTagsService relatedTagsService;
 	@Mock ConfigDAO configDAO;
-	@Mock CachingRssfeedNewsitemService rssfeedNewsitemService;
+	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock FlickrService flickrService;
 
 	private MockHttpServletRequest  request;

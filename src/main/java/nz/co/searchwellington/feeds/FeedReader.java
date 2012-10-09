@@ -28,7 +28,7 @@ public class FeedReader {
 	private static Logger log = Logger.getLogger(FeedReader.class);
 	
     private HibernateResourceDAO resourceDAO;
-    private CachingRssfeedNewsitemService rssfeedNewsitemService;
+    private RssfeedNewsitemService rssfeedNewsitemService;
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
@@ -43,7 +43,7 @@ public class FeedReader {
     
     @Autowired
 	public FeedReader(HibernateResourceDAO resourceDAO,
-			CachingRssfeedNewsitemService rssfeedNewsitemService,
+			RssfeedNewsitemService rssfeedNewsitemService,
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			DateFormatter dateFormatter, UrlCleaner urlCleaner,
 			SuggestionDAO suggestionDAO,

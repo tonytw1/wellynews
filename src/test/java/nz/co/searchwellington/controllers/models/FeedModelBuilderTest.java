@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 public class FeedModelBuilderTest {
 	
-	@Mock CachingRssfeedNewsitemService rssfeedNewsitemService;
+	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 	

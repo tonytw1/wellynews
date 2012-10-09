@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Feed;
@@ -45,8 +44,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
 			RelatedTagsService relatedTagsService,
-			ConfigDAO configDAO,
-			CachingRssfeedNewsitemService rssfeedNewsitemService,
+			ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService, FlickrService flickrService) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;

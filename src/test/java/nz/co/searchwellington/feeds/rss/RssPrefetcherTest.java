@@ -6,9 +6,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.searchwellington.feeds.FeedNewsitemCache;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedReaderRunner;
-import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedImpl;
 import nz.co.searchwellington.repositories.ConfigDAO;
@@ -22,8 +21,7 @@ import org.mockito.MockitoAnnotations;
 public class RssPrefetcherTest {
 	
 	@Mock private HibernateResourceDAO resourceDAO;
-	@Mock private LiveRssfeedNewsitemService rssHttpFetcher;
-	@Mock private FeedNewsitemCache rssCache;
+	@Mock private CachingRssfeedNewsitemService cachingRssfeedNewsiemService;
 	@Mock private ConfigDAO configDAO;
 	@Mock private FeedReaderRunner feedReaderRunner;
 	
@@ -50,7 +48,7 @@ public class RssPrefetcherTest {
 		when(configDAO.isFeedReadingEnabled()).thenReturn(true);
 		when(resourceDAO.getAllFeeds()).thenReturn(feeds);
 		
-		prefetcher = new RssNewsitemPrefetcher(resourceDAO, rssHttpFetcher, rssCache, feedReaderRunner, configDAO);
+		prefetcher = new RssNewsitemPrefetcher(resourceDAO, cachingRssfeedNewsiemService, feedReaderRunner, configDAO);
 	}
 	
 	@Test
@@ -64,8 +62,8 @@ public class RssPrefetcherTest {
 	public void testShouldFetchAndCacheAllFeeds() throws Exception {		
 		prefetcher.run();
 		
-		verify(rssHttpFetcher).getFeedNewsitems(firstFeed);
-		verify(rssHttpFetcher).getFeedNewsitems(secondFeed);
+		verify(cachingRssfeedNewsiemService).getFeedNewsitems(firstFeed);
+		verify(cachingRssfeedNewsiemService).getFeedNewsitems(secondFeed);
 		// TODO doesn't verify cache put
 	}
 	

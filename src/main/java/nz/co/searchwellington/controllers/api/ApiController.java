@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -44,7 +44,7 @@ public class ApiController extends MultiActionController {
 	private AdminRequestFilter requestFilter;
 	private LoggedInUserFilter loggedInUserFilter;
 	private SupressionService suppressionService;
-	private CachingRssfeedNewsitemService rssfeedNewsitemService;
+	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentUpdateService contentUpdateService;
 	private SubmissionProcessingService submissionProcessingService;
 	private AutoTaggingService autoTagger;
@@ -56,7 +56,7 @@ public class ApiController extends MultiActionController {
 	}
 	
 	@Autowired
-    public ApiController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, CachingRssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor, ResourceFactory resourceFactory) {
+    public ApiController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor, ResourceFactory resourceFactory) {
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;

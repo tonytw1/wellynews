@@ -17,15 +17,18 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 @Component
-public abstract class RssfeedNewsitemService {
+public class RssfeedNewsitemService {
 
 	private static Logger log = Logger.getLogger(RssfeedNewsitemService.class);
 
-	public abstract List<FeedNewsitem> getFeedNewsitems(Feed feed);
-
+	private CachingRssfeedNewsitemService cachingRssfeedNewsitemService;
 	protected HibernateResourceDAO resourceDAO;
 	protected SupressionDAO suppressionDAO;
 	protected FeednewsItemToNewsitemService feednewsItemToNewsitemService;
+	
+	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
+		return cachingRssfeedNewsitemService.getFeedNewsitems(feed);
+	}
 	
 	public final Date getLatestPublicationDate(Feed feed) {
 		Date latestPublicationDate = null;

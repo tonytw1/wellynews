@@ -3,11 +3,10 @@ package nz.co.searchwellington.feeds.rss;
 import java.util.ArrayList;
 import java.util.List;
 
-import nz.co.searchwellington.feeds.FeedNewsitemCache;
+import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedReaderRunner;
-import nz.co.searchwellington.feeds.LiveRssfeedNewsitemService;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
@@ -22,8 +21,7 @@ public class RssNewsitemPrefetcher {
 	private static Logger log = Logger.getLogger(RssNewsitemPrefetcher.class);
 
 	private HibernateResourceDAO resourceDAO;
-	private LiveRssfeedNewsitemService rssNewsitemService;
-	private FeedNewsitemCache feedNewsitemCache;
+	private CachingRssfeedNewsitemService cachingRssfeedNewsitemService;
 	private FeedReaderRunner feedReaderRunner;
 	private ConfigDAO configDAO;
 	
@@ -32,13 +30,11 @@ public class RssNewsitemPrefetcher {
 	
 	@Autowired
 	public RssNewsitemPrefetcher(HibernateResourceDAO resourceDAO,
-			LiveRssfeedNewsitemService rssNewsitemService,
-			FeedNewsitemCache feedNewsitemCache,
+			CachingRssfeedNewsitemService cachingRssfeedNewsitemService,
 			FeedReaderRunner feedReaderRunner,
 			ConfigDAO configDAO) {
 		this.resourceDAO = resourceDAO;
-		this.rssNewsitemService = rssNewsitemService;
-		this.feedNewsitemCache = feedNewsitemCache;
+		this.cachingRssfeedNewsitemService = cachingRssfeedNewsitemService;
 		this.feedReaderRunner = feedReaderRunner;
 		this.configDAO = configDAO;
 	}
@@ -52,18 +48,17 @@ public class RssNewsitemPrefetcher {
     		return;
     	}
     	
-		List<Feed> allFeeds = resourceDAO.getAllFeeds();
+		final List<Feed> allFeeds = resourceDAO.getAllFeeds();
 		for (Feed feed : decideWhichFeedsToDecache(allFeeds)) {
-			if (feed != null) {
-				loadAndCacheFeedNewsitems(feed);
-			}
-		}		
-		feedReaderRunner.readAllFeeds(allFeeds);	
+			cachingRssfeedNewsitemService.getFeedNewsitems(feed);
+		}
+		
+		feedReaderRunner.readAllFeeds(allFeeds);
 	}
     
     // TODO implement something other than all here
 	private List<Feed> decideWhichFeedsToDecache(List<Feed> allFeeds) {
-		List<Feed> feedsToDecache = new ArrayList<Feed>();
+		final List<Feed> feedsToDecache = new ArrayList<Feed>();
 		log.info("Deciding which feeds to decache");
 		for (Feed feed : allFeeds) {
 			log.debug("Feed '" + feed.getName() + "' was last read at: " + feed.getLastRead());
@@ -73,17 +68,8 @@ public class RssNewsitemPrefetcher {
 	}
 
 	public void decacheAndLoad(Feed feed) {
-		feedNewsitemCache.decache(feed.getUrl());
-		loadAndCacheFeedNewsitems(feed);		
+		cachingRssfeedNewsitemService.decache(feed);
+		cachingRssfeedNewsitemService.getFeedNewsitems(feed);
 	}
 	
-	private void loadAndCacheFeedNewsitems(Feed feed) {
-		if (feed != null) {
-			List<FeedNewsitem> loadedItems = rssNewsitemService.getFeedNewsitems(feed);
-			if (loadedItems != null) {
-				feedNewsitemCache.putFeedNewsitems(feed.getUrl(), loadedItems);
-			}
-		}
-	}
-			
 }

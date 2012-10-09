@@ -4,8 +4,8 @@ import static org.mockito.Mockito.when;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
@@ -29,7 +29,7 @@ public class ApiControllerTest {
 	@Mock AdminRequestFilter requestFilter;
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock SupressionService supressionService;
-	@Mock CachingRssfeedNewsitemService rssNewsitemService;
+	@Mock RssfeedNewsitemService rssFeedNewsitemService;
 	@Mock SubmissionProcessingService submissionProcessingService;
 	@Mock ContentUpdateService contentUpdateService;
 	@Mock AutoTaggingService autoTaggingService;
@@ -52,14 +52,14 @@ public class ApiControllerTest {
 	public void authorisedUsersCanRemotelyAcceptFeedsItemByUrl() throws Exception {
 		ApiController controller = new ApiController(resourceDAO,
 				requestFilter, loggedInUserFilter, supressionService,
-				rssNewsitemService, contentUpdateService,
+				rssFeedNewsitemService, contentUpdateService,
 				submissionProcessingService, autoTaggingService, tagVoteDao, feedItemAcceptor, resourceFactory);
 
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
 		
 		request.setParameter("url", "http://test/233");
-		when(rssNewsitemService.getFeedNewsitemByUrl("http://test/233")).thenReturn(acceptedFeedNewsitem);
+		when(rssFeedNewsitemService.getFeedNewsitemByUrl("http://test/233")).thenReturn(acceptedFeedNewsitem);
 		controller.accept(request, response);
 
 		Mockito.verify(autoTaggingService).autotag(acceptedFeedNewsitem);	// TODO Post accept steps should be shared with the normal accept method!

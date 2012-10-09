@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
@@ -18,7 +18,7 @@ import org.mockito.MockitoAnnotations;
 public class SuggestedFeeditemsServiceTest {
 
 	@Mock SuggestionDAO suggestionDAO;
-	@Mock CachingRssfeedNewsitemService rssfeedNewsitemService;
+	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService;
 
 	@Mock List<Suggestion> allSuggestions;

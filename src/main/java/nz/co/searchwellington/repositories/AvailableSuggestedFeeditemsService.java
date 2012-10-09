@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
 
@@ -14,10 +14,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class AvailableSuggestedFeeditemsService {
 	
-	private CachingRssfeedNewsitemService rssfeedNewsitemService;
+	private RssfeedNewsitemService rssfeedNewsitemService;
 	
 	@Autowired
-	public AvailableSuggestedFeeditemsService(CachingRssfeedNewsitemService rssfeedNewsitemService) {
+	public AvailableSuggestedFeeditemsService(RssfeedNewsitemService rssfeedNewsitemService) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 	}
 	

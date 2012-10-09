@@ -14,10 +14,13 @@ import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.caching.CachableService;
 
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.GeoRSSUtils;
@@ -32,10 +35,11 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 
 @Component
-public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
+public class LiveRssfeedNewsitemService implements CachableService<Feed, List<FeedNewsitem>> {
 	
-    private final Logger log = Logger.getLogger(LiveRssfeedNewsitemService.class);
-    
+	private final Logger log = Logger.getLogger(LiveRssfeedNewsitemService.class);
+	
+    private static final int ONE_DAY = 60 * 60 * 24;
     private static final int MAXIMUM_BODY_LENGTH = 400;
     
     private UrlCleaner urlCleaner;
@@ -47,13 +51,26 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
 		this.urlCleaner = urlCleaner;
 		this.rssFetcher = rssFetcher;
 		this.textTrimmer = textTrimmer;
-		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 	}
 
-	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
-        List<FeedNewsitem> feedNewsitems = new ArrayList<FeedNewsitem>();
+    @Override
+	public List<FeedNewsitem> callService(Feed feed) {
+		return getFeedNewsitems(feed);
+	}
 
-        SyndFeed syndfeed = rssFetcher.httpFetch(feed.getUrl());
+	@Override
+	public String getCacheKeyFor(Feed feed) {
+		return "feednewsitems" + DigestUtils.md5Hex(feed.getUrl());
+	}
+
+	@Override
+	public int getTTL() {
+		return ONE_DAY;
+	}
+    
+	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
+		final List<FeedNewsitem> feedNewsitems = new ArrayList<FeedNewsitem>();
+		final SyndFeed syndfeed = rssFetcher.httpFetch(feed.getUrl());
         if (syndfeed != null) {
             List entires = syndfeed.getEntries();
             for (Iterator iter = entires.iterator(); iter.hasNext();) {
@@ -67,6 +84,7 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
             		log.error("Unexpected exception while processing feed item", e);
 				}
             }
+            
         } else {
             log.warn("Feed was null after loading attempt; returning empty list.");
         }
@@ -167,5 +185,5 @@ public class LiveRssfeedNewsitemService extends RssfeedNewsitemService {
         
 		return StringEscapeUtils.unescapeHtml(description);
 	}
-    
+	
 }

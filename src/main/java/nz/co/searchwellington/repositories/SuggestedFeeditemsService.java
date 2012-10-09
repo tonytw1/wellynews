@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories;
 
 import java.util.List;
 
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
+import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
@@ -15,15 +15,18 @@ public class SuggestedFeeditemsService {
 
 	private SuggestionDAO suggestionDAO;
 	private AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService;
-	private CachingRssfeedNewsitemService rssfeedNewsitemService;
+	private RssfeedNewsitemService rssfeedNewsitemService;
 
 	@Autowired
-	public SuggestedFeeditemsService(SuggestionDAO suggestionDAO, AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService, CachingRssfeedNewsitemService rssfeedNewsitemService) {
+	public SuggestedFeeditemsService(
+			SuggestionDAO suggestionDAO,
+			AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService,
+			RssfeedNewsitemService rssfeedNewsitemService) {
 		this.suggestionDAO = suggestionDAO;
 		this.availableSuggestedFeeditemsService = availableSuggestedFeeditemsService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 	}
-	
+
 	public List<FrontendFeedNewsitem> getSuggestionFeednewsitems(int maxItems) {
 		List<Suggestion> bareSuggestions = suggestionDAO.getSuggestions(maxItems);
 		List<FeedNewsitem> suggestedFeeditems = availableSuggestedFeeditemsService.getAvailableSuggestedFeeditems(bareSuggestions, maxItems);

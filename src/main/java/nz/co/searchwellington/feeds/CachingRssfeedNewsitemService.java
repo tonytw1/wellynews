@@ -1,36 +1,26 @@
 package nz.co.searchwellington.feeds;
 
-import java.util.Collections;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.SupressionDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-@Component("cachingRssfeedNewsitemService")
-public class CachingRssfeedNewsitemService extends RssfeedNewsitemService {
+import uk.co.eelpieconsulting.common.caching.CachingServiceWrapper;
+import uk.co.eelpieconsulting.common.caching.MemcachedCache;
 
-	private FeedNewsitemCache feedNewsitemCache;
+@Component("cachingRssfeedNewsitemService")
+public class CachingRssfeedNewsitemService extends CachingServiceWrapper<Feed, List<FeedNewsitem>> {
 	
 	@Autowired
-	public CachingRssfeedNewsitemService(HibernateResourceDAO resourceDAO, SupressionDAO suppressionDAO, FeedNewsitemCache feedNewsitemCache, FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
-		this.resourceDAO = resourceDAO;
-		this.suppressionDAO = suppressionDAO;
-		this.feedNewsitemCache = feedNewsitemCache;
-		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
+	public CachingRssfeedNewsitemService(LiveRssfeedNewsitemService liveRssfeedNewsitemService, MemcachedCache cache) {
+		super(liveRssfeedNewsitemService, cache);
 	}
 
-	@Override
 	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
-		List<FeedNewsitem> cachedItems = feedNewsitemCache.getFeeditems(feed.getUrl());
-		if (cachedItems != null) {
-			return cachedItems;
-		}
-		return Collections.emptyList();
+		return super.callService(feed);
 	}
 	
 }
