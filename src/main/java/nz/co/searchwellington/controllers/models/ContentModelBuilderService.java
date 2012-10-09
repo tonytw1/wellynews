@@ -55,7 +55,6 @@ public class ContentModelBuilderService {
 				if (path.endsWith("/json")) {
 					logger.info("Selecting json view for path: " + path);
 					final JsonView jsonView = viewFactory.getJsonView();
-					System.out.println(mv.getModel().get("main_content"));
 					jsonView.setDataField("main_content");
 					mv.setView(jsonView);					
 					populateJsonCallback(request, mv);								
