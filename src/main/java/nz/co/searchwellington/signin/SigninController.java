@@ -78,16 +78,14 @@ public class SigninController {
 				}
 			}
 			
-			User alreadyLoggedInUser = loggedInUserFilter.getLoggedInUser();		
-			if (alreadyLoggedInUser != null) {
-				
-				if (alreadyLoggedInUser.isUnlinkedAnonAccount()) {	// TODO coverage
+			final User alreadyLoggedInUser = loggedInUserFilter.getLoggedInUser();		
+			if (alreadyLoggedInUser != null) {				
+				if (alreadyLoggedInUser.isUnlinkedAnonAccount()) {
 					if (!user.equals(alreadyLoggedInUser)) {
 						log.info("Reassigning resource ownership from " + alreadyLoggedInUser.getProfilename() + " to " + user.getProfilename());
 						loginResourceOwnershipService.reassignOwnership(alreadyLoggedInUser, user);
 					}
-				}
-				
+				}				
 			}
 				
 			loggedInUserFilter.setLoggedInUser(request, user);			
