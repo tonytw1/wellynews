@@ -28,7 +28,7 @@
 		<p><label for="date">Publisher: </label>	
 		<input name="publisherName" value="$resource.publisherName" /></p>
 		
-		<p>Accepted from: $item.acceptedFromFeed</p>
+		<p>Accepting from: $resource.feed.name</p>
 		<input name="acceptedFromFeed" value="$resource.feed.urlWords" type="hidden" />
 										
 		#if ($resource.image)
