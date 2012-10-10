@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import nz.co.searchwellington.geo.DistanceMeasuringService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
@@ -18,16 +19,16 @@ import org.junit.Test;
 
 public class GoogleMapsDisplayCleanerTest {
 	
-    Geocode here = new Geocode("here", 1.1, 1.1);
-    Geocode there = new Geocode("there", 2.2, 2.2);
-    Geocode alsoHere = new Geocode("here", 1.1, 1.1);
+	private Geocode here = new Geocode("here", 1.1, 1.1);
+	private Geocode there = new Geocode("there", 2.2, 2.2);
+	private Geocode alsoHere = new Geocode("here", 1.1, 1.1);
     
-    List<FrontendResource> geocoded; 
-    Resource firstNewsitem;
-    Resource secondNewsitem;
-    Resource thirdNewsitem;
-        
-    private GoogleMapsDisplayCleaner cleaner = new GoogleMapsDisplayCleaner();    
+	private List<FrontendResource> geocoded; 
+	private Resource firstNewsitem;
+	private Resource secondNewsitem;
+	private Resource thirdNewsitem;
+            
+    private GoogleMapsDisplayCleaner cleaner;
     
     @Before
     public void setup() throws Exception {
@@ -42,6 +43,8 @@ public class GoogleMapsDisplayCleanerTest {
         thirdNewsitem.setName("Third");
         thirdNewsitem.setGeocode(alsoHere);        
         geocoded.addAll(Arrays.asList(firstNewsitem, secondNewsitem, thirdNewsitem));
+        
+       cleaner = new GoogleMapsDisplayCleaner(new DistanceMeasuringService());
     }
     
     @Test

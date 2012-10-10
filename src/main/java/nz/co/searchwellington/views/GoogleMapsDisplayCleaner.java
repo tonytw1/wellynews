@@ -3,10 +3,12 @@ package nz.co.searchwellington.views;
 import java.util.ArrayList;
 import java.util.List;
 
+import nz.co.searchwellington.geo.DistanceMeasuringService;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,7 +16,14 @@ public class GoogleMapsDisplayCleaner {
         
     private static Logger log = Logger.getLogger(GoogleMapsDisplayCleaner.class);
     
-    public List<FrontendResource> dedupe(List<FrontendResource> geocoded) {
+    private final DistanceMeasuringService distanceMeasuringService;
+    
+    @Autowired
+    public GoogleMapsDisplayCleaner(DistanceMeasuringService distanceMeasuringService) {
+		this.distanceMeasuringService = distanceMeasuringService;
+	}
+
+	public List<FrontendResource> dedupe(List<FrontendResource> geocoded) {
         return dedupe(geocoded, null);
     }
 
@@ -40,7 +49,7 @@ public class GoogleMapsDisplayCleaner {
     
     private boolean listAlreadyContainsResourceWithThisLocation(List<FrontendResource> deduped, FrontendResource candidiate) {
         for (FrontendResource resource : deduped) {
-            if (resource.getGeocode().isSameLocation(candidiate.getGeocode())) {
+            if (distanceMeasuringService.areSameLocation(resource.getGeocode(), candidiate.getGeocode())) {
                 log.debug("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
                 return true;
             }

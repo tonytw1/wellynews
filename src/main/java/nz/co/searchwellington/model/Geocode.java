@@ -2,18 +2,11 @@ package nz.co.searchwellington.model;
 
 import java.io.Serializable;
 
-import geo.google.datamodel.GeoAltitude;
-import geo.google.datamodel.GeoCoordinate;
-import geo.google.datamodel.GeoUtils;
-
-import org.apache.log4j.Logger;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Geocode implements Serializable {
     
-	private static Logger log = Logger.getLogger(Geocode.class);
-
 	private static final long serialVersionUID = 1L;
 	
     private int id;
@@ -128,21 +121,6 @@ public class Geocode implements Serializable {
 		this.resolver = resolver;
 	}
 	
-	// TODO These two compare methods shouldn't really be on the domain model
-    public boolean isSameLocation(Geocode other) {        
-        final double distanceBetweenInKm = getDistanceTo(other.getLatitude(), other.getLongitude());
-        log.debug("Points " + this.getAddress() + " and " + other.getAddress() + " are " + distanceBetweenInKm + " km part");
-        return distanceBetweenInKm < 0.1;
-    }
-    
-	public double getDistanceTo(double otherLatitude, double otherLongitude) {
-		GeoCoordinate thisPoint = new GeoCoordinate(this.getLatitude(), this.getLongitude(), new GeoAltitude(0));
-		GeoCoordinate otherPoint = new GeoCoordinate(otherLatitude, otherLongitude, new GeoAltitude(0));
-		double distanceBetweenInKm = GeoUtils.distanceBetweenInKm(thisPoint, otherPoint);
-		log.debug("Distance to " + latitude + ", " + longitude + " is " + distanceBetweenInKm);
-		return distanceBetweenInKm;
-	}
-
 	@Override
 	public String toString() {
 		return "Geocode [address=" + address + ", id=" + id + ", latitude="
