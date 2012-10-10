@@ -49,17 +49,10 @@ public class ContentUpdateService {
 			resource.setHttpStatus(0);
 		}
 		
-		boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
-		
-		//if (newSubmission) {        // TODO is wrong place	
-		//	resource.setOwner(loggedInUser);
-		//}
-		
+		final boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
+
 		save(resource);
-		// TODO is in wrong place
-		//if ((newSubmission && (loggedInUser == null || !loggedInUser.isAdmin()))) {
-		//	 notifier.sendSubmissionNotification("New submission", resource);
-		//}
+		
 		if (needsLinkCheck) {
 			linkCheckerQueue.add(resource);
 		}		
