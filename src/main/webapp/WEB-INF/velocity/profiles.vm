@@ -16,7 +16,7 @@
 <ul>
 #set($letter = "")
 #foreach ($profile in $profiles) 
-	#if ($profile.isUnlinkedAnonAccount()) 
+	#if ($profile.isUnlinkedAccount()) 
 	
 	#else
 		#if ($profile.profilename)  

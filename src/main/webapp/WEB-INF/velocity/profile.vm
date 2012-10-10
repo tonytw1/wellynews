@@ -11,7 +11,7 @@
 
 	<h2><a href="$site_information.url/profiles">Profiles</a> #if ($user.profilename) / $escape.html($user.profilename) #end</h2>
 	
-	#if ($user.isUnlinkedAnonAccount()) 
+	#if ($user.isUnlinkedAccount()) 
 		<p>You are using a temporary anonymous user profile to post your submissions.</p>
 		<p>Access to this profile will cease when you close your browser.</p> 
 			

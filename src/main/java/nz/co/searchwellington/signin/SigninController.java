@@ -80,7 +80,7 @@ public class SigninController {
 			
 			final User alreadyLoggedInUser = loggedInUserFilter.getLoggedInUser();		
 			if (alreadyLoggedInUser != null) {				
-				if (alreadyLoggedInUser.isUnlinkedAnonAccount()) {
+				if (alreadyLoggedInUser.isUnlinkedAccount()) {
 					if (!user.equals(alreadyLoggedInUser)) {
 						log.info("Reassigning resource ownership from " + alreadyLoggedInUser.getProfilename() + " to " + user.getProfilename());
 						loginResourceOwnershipService.reassignOwnership(alreadyLoggedInUser, user);

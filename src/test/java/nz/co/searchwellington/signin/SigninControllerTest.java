@@ -40,7 +40,7 @@ public class SigninControllerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		when(anonUser.isUnlinkedAnonAccount()).thenReturn(true);
+		when(anonUser.isUnlinkedAccount()).thenReturn(true);
 		controller = new SigninController(loggedInUserFilter, userDAO, anonUserService, loginResourceOwnershipService, urlStack, signinHandler);
 	}
 		

@@ -146,7 +146,7 @@ public class TwitterLoginHandler implements SigninHandler {
 	@Override
 	public void decorateUserWithExternalSigninIdentifier(User user, Object externalIdentifier) {		
 		twitter4j.User twitterUser = (twitter4j.User) externalIdentifier;
-		if (user.getProfilename() == null || user.isUnlinkedAnonAccount()) {
+		if (user.getProfilename() == null || user.isUnlinkedAccount()) {
 			final String twitterScreenName = twitterUser.getScreenName();
 			if (userDAO.getUserByProfileName(twitterScreenName) == null) {
 				user.setProfilename(twitterScreenName);

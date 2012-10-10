@@ -2,9 +2,6 @@ package nz.co.searchwellington.model;
 
 import nz.co.searchwellington.model.User;
 
-
-
-
 public class UserImpl implements User {
 
     int id;
@@ -59,8 +56,8 @@ public class UserImpl implements User {
 	}
 
 	@Override
-	public boolean isUnlinkedAnonAccount() {
-		return (openid == null && twitterId == null) && this.profilename != "autotagger";	// TODO
+	public boolean isUnlinkedAccount() {
+		return (openid == null && twitterId == null);
 	}
 
 	public String getProfilename() {

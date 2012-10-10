@@ -25,6 +25,6 @@ public interface User extends TaggingVoter {
 	public String getApikey();
 	public void setApikey(String apikey);
 	
-	public boolean isUnlinkedAnonAccount();
+	public boolean isUnlinkedAccount();
        
 }

@@ -3,7 +3,7 @@
 	<div class="box">
 	<h2>Your Submissions</h2>
 
-	#if ($loggedInUserFilter.getLoggedInUser().isUnlinkedAnonAccount()) 		
+	#if ($loggedInUserFilter.getLoggedInUser().isUnlinkedAccount()) 		
 		<p>
 			You have submitted an item or made changes as an anonomous temporary user.
 			If you'd like to keep ownership of these changes, 
