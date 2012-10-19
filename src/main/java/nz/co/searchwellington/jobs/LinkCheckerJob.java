@@ -6,20 +6,18 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import org.apache.log4j.Logger;
 
 public class LinkCheckerJob  {
+
+	private static Logger log = Logger.getLogger(LinkCheckerJob.class);
         
     private LinkCheckerQueue queue;
-
-    Logger log = Logger.getLogger(LinkCheckerJob.class);
     private LinkChecker linkChecker;
-    
     
     public LinkCheckerJob() {
     }
     
     public LinkCheckerJob(LinkCheckerQueue queue, LinkChecker linkChecker) {
         this.queue = queue;
-        this.linkChecker = linkChecker;
-        
+        this.linkChecker = linkChecker;   
     }
     
     public void run() {
