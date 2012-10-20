@@ -18,6 +18,8 @@
 	<context:annotation-config />
 	<context:component-scan base-package="nz.gen.wellington,nz.co.searchwellington,uk.co.eelpieconsulting.common" />
 	
+	<aop:aspectj-autoproxy />
+		
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>classpath:searchwellington.properties</value>
@@ -26,9 +28,7 @@
 	
 	<import resource="database.xml" />	
 	<import resource="commentfeeds.xml" />	
-						
-	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
-	
+							
 	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
 	  	<property name="transactionInterceptor" ref="txInterceptor"/>
 	</bean>

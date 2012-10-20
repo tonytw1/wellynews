@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.annotations.Timed;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +31,10 @@ public class TagController extends MultiActionController {
 		this.urlStack = urlStack;
 	}
 	
+    @Timed(timingNotes = "this is a slow service")
 	@RequestMapping(value={"/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/*/json", "/*/rss", "/*/*/*/*/*"})
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
+    	System.out.println("----- IN");
 		ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {
 			if (isHtmlView(mv)) {
