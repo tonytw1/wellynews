@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.profiles;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.annotations.Timed;
 import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
@@ -45,6 +46,7 @@ public class ProfileController extends BaseMultiActionController {
 	
 	@Transactional
 	@RequestMapping("/profiles")
+    @Timed(timingNotes = "")
     public ModelAndView all(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("profiles");    
         mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
@@ -86,6 +88,7 @@ public class ProfileController extends BaseMultiActionController {
 	
 	@Transactional(readOnly=true)
 	@RequestMapping("/profiles/*")
+    @Timed(timingNotes = "")
 	public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
 		final String path = request.getPathInfo();
 		if (path.matches("^/profiles/.*$")) {

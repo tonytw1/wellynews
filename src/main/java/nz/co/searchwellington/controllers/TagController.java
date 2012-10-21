@@ -8,17 +8,19 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.annotations.Timed;
 import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.sun.syndication.io.FeedException;
 
 @Controller
-public class TagController extends MultiActionController {
+public class TagController {
 	
+	private static Logger log = Logger.getLogger(TagController.class);
+
     private ContentModelBuilderService contentModelBuilder;
     private UrlStack urlStack;
     
@@ -31,17 +33,18 @@ public class TagController extends MultiActionController {
 		this.urlStack = urlStack;
 	}
 	
-    @Timed(timingNotes = "this is a slow service")
 	@RequestMapping(value={"/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/*/json", "/*/rss", "/*/*/*/*/*"})
+	@Timed(timingNotes = "")
 	public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-    	System.out.println("----- IN");
-		ModelAndView mv = contentModelBuilder.populateContentModel(request);
+		final ModelAndView mv = contentModelBuilder.populateContentModel(request);
 		if (mv != null) {
 			if (isHtmlView(mv)) {
 				urlStack.setUrlStack(request);
 			}
 			return mv;
 		}
+		
+		log.warn("Model was null; returning 404");
 		response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		return null;
     }
