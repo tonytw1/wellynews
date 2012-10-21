@@ -13,21 +13,21 @@ public class TimingAspect {
 	
 	private static Logger log = Logger.getLogger(TimingAspect.class);
 
-	    /**
-     * This around advice adds timing to any method annotated with the Timed annotation.	     
-     	* It binds the annotation to the parameter timedAnnotation so that the values are available at runtime.
-	     * Also note that the retention policy of the annotation needs to be RUNTIME.
-	     *
-	     * @param pjp             - the join point for this advice
-	     * @param timedAnnotation - the Timed annotation as declared on the method
-	     * @return
-	     * @throws Throwable
-	     */
-	 
+	/**
+	 * This around advice adds timing to any method annotated with the Timed
+	 * annotation. It binds the annotation to the parameter timedAnnotation so
+	 * that the values are available at runtime. Also note that the retention
+	 * policy of the annotation needs to be RUNTIME.
+	 * 
+	 * @param pjp
+	 *            - the join point for this advice
+	 * @param timedAnnotation
+	 *            - the Timed annotation as declared on the method
+	 * @return
+	 * @throws Throwable
+	 */
 	@Around("@annotation( timedAnnotation ) ")
-	public Object processSystemRequest(final ProceedingJoinPoint pjp, Timed timedAnnotation) throws Throwable {
-		System.out.println("meh");
-		log.info("In annotation");
+	public Object processSystemRequest(final ProceedingJoinPoint pjp, Timed timedAnnotation) throws Throwable {		
 		try {
 			long start = System.currentTimeMillis();
 			Object retVal = pjp.proceed();
@@ -35,11 +35,12 @@ public class TimingAspect {
 			long differenceMs = end - start;
 
 			final MethodSignature methodSignature = (MethodSignature) pjp.getSignature();
-			Method targetMethod = methodSignature.getMethod();
-			log.debug(targetMethod.getDeclaringClass().getName() + "."
+			final Method targetMethod = methodSignature.getMethod();			
+			log.info(targetMethod.getDeclaringClass().getName() + "."
 					+ targetMethod.getName() + " took " + differenceMs
 					+ " ms : timing notes: " + timedAnnotation.timingNotes()
 					+ " request info : ");
+			
 			return retVal;
 			
 		} catch (Throwable t) {
