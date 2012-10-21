@@ -5,6 +5,7 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.springframework.web.servlet.ModelAndView;
 
+@Deprecated
 public abstract class BaseMultiActionController {	// TODO not a great pattern
 	
     final protected int MAX_SECONDARY_ITEMS = 4;
