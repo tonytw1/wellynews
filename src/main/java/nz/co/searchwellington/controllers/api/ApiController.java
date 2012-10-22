@@ -31,12 +31,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.sun.syndication.io.FeedException;
 
 @Controller
-public class ApiController extends MultiActionController {
+public class ApiController {
 
 	private static Logger log = Logger.getLogger(ApiController.class);
 	

@@ -16,11 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public class RssController extends MultiActionController {
+public class RssController {
 	
 	private static Logger log = Logger.getLogger(RssController.class);
     
