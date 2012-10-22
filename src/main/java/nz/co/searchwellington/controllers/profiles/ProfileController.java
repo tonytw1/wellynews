@@ -8,8 +8,8 @@ import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
+import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -22,7 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public class ProfileController extends BaseMultiActionController {
+public class ProfileController {
     
 	private static Logger log = Logger.getLogger(ProfileController.class);
 
@@ -106,8 +106,8 @@ public class ProfileController extends BaseMultiActionController {
 				mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
 				mv.addObject("profileuser", user);
 
-				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, MAX_NEWSITEMS));
-				mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, MAX_NEWSITEMS));
+				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, BaseMultiActionController.MAX_NEWSITEMS));
+				mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, BaseMultiActionController.MAX_NEWSITEMS));
 				return mv;
 			}
 		}

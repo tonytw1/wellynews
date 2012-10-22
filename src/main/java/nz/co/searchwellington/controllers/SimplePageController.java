@@ -20,33 +20,40 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class SimplePageController extends BaseMultiActionController {
+public class SimplePageController {
 	
 	private DiscoveredFeedRepository discoveredFeedRepository;
 	private TagDAO tagDAO;
 	private RssUrlBuilder rssUrlBuilder;
+	private CommonModelObjectsService commonModelObjectsService;
+	private UrlStack urlStack;
+	private ContentRetrievalService contentRetrievalService;
 	
 	public SimplePageController() {
-	}
+	}	
 	
 	@Autowired
-    public SimplePageController(UrlStack urlStack, ConfigDAO configDAO, DiscoveredFeedRepository discoveredFeedRepository, 
-    		ContentRetrievalService contentRetrievalService, TagDAO tagDAO, RssUrlBuilder rssUrlBuilder) {
-        this.urlStack = urlStack;
-        this.configDAO = configDAO;
-        this.discoveredFeedRepository = discoveredFeedRepository;      
-        this.contentRetrievalService = contentRetrievalService;
-        this.tagDAO = tagDAO;
-        this.rssUrlBuilder = rssUrlBuilder;
-    }
-    
-    @RequestMapping("/about")
+	public SimplePageController(
+			DiscoveredFeedRepository discoveredFeedRepository, TagDAO tagDAO,
+			RssUrlBuilder rssUrlBuilder,
+			CommonModelObjectsService commonModelObjectsService,
+			UrlStack urlStack, ConfigDAO configDAO,
+			ContentRetrievalService contentRetrievalService) {
+		this.discoveredFeedRepository = discoveredFeedRepository;
+		this.tagDAO = tagDAO;
+		this.rssUrlBuilder = rssUrlBuilder;
+		this.commonModelObjectsService = commonModelObjectsService;
+		this.urlStack = urlStack;
+		this.contentRetrievalService = contentRetrievalService;
+	}
+	
+	@RequestMapping("/about")
     @Timed(timingNotes = "")
     public ModelAndView about(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
+		final ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
                     
-        populateCommonLocal(mv);             
+        commonModelObjectsService.populateCommonLocal(mv);             
         mv.addObject("heading", "About");        
         mv.setViewName("about");
         mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
@@ -57,8 +64,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView archive(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-
-        populateCommonLocal(mv);        
+        commonModelObjectsService.populateCommonLocal(mv);        
    
         mv.addObject("heading", "Archive");        
         // TODO populate stats and dedupe as well.
@@ -73,7 +79,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView api(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateCommonLocal(mv);
+        commonModelObjectsService.populateCommonLocal(mv);
            
         mv.addObject("heading", "The Wellynews API");
 
@@ -88,7 +94,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView rssfeeds(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateCommonLocal(mv);
+        commonModelObjectsService.populateCommonLocal(mv);
            
         mv.addObject("heading", "RSS feeds");
         setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
@@ -108,7 +114,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView broken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateCommonLocal(mv);
+        commonModelObjectsService.populateCommonLocal(mv);
         
         mv.addObject("heading", "Broken sites");             
         mv.addObject("main_content", contentRetrievalService.getBrokenSites());
@@ -119,7 +125,7 @@ public class SimplePageController extends BaseMultiActionController {
     @RequestMapping("/feeds/discovered")
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();
-        populateCommonLocal(mv);
+        commonModelObjectsService.populateCommonLocal(mv);
         
         urlStack.setUrlStack(request);
 
@@ -134,7 +140,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateCommonLocal(mv);
+        commonModelObjectsService.populateCommonLocal(mv);
      
         mv.addObject("heading", "All Tags");        
         mv.addObject("tags", tagDAO.getAllTags());        
@@ -146,7 +152,7 @@ public class SimplePageController extends BaseMultiActionController {
     public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         urlStack.setUrlStack(request);
-        populateCommonLocal(mv);
+        commonModelObjectsService.populateCommonLocal(mv);
         
         mv.addObject("heading", "All Publishers");
         mv.addObject("publishers", contentRetrievalService.getAllPublishers());
@@ -158,7 +164,7 @@ public class SimplePageController extends BaseMultiActionController {
     @RequestMapping("/signin")
     public ModelAndView signin(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
-        populateCommonLocal(mv);        
+        commonModelObjectsService.populateCommonLocal(mv);        
         mv.addObject("heading", "Sign in");
         mv.setViewName("signin");
         return mv;

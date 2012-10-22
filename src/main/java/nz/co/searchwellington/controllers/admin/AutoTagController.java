@@ -6,9 +6,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
@@ -28,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class AutoTagController extends BaseMultiActionController {
+public class AutoTagController {
 
     private static Logger log = Logger.getLogger(AutoTagController.class);
     
@@ -39,21 +37,26 @@ public class AutoTagController extends BaseMultiActionController {
 	private ContentUpdateService contentUpateService;
 	private TagDAO tagDAO;
 	private HandTaggingDAO tagVoteDAO;
+	private LoggedInUserFilter loggedInUserFilter;
     
 	public AutoTagController() {
 	}
 	
 	@Autowired
-	public AutoTagController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, UrlStack urlStack, ImpliedTagService autoTagService, KeywordSearchService keywordSearchService, TagDAO tagDAO, ContentUpdateService contentUpateService, HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter) {      
-		this.resourceDAO = resourceDAO;        
-        this.requestFilter = requestFilter;       
-        this.urlStack = urlStack;
-        this.autoTagService = autoTagService;
-        this.keywordSearchService = keywordSearchService;
-        this.tagDAO = tagDAO;
-        this.contentUpateService = contentUpateService;
-        this.tagVoteDAO = tagVoteDAO;
-        this.loggedInUserFilter = loggedInUserFilter;
+	public AutoTagController(HibernateResourceDAO resourceDAO,
+			AdminRequestFilter requestFilter, ImpliedTagService autoTagService,
+			KeywordSearchService keywordSearchService,
+			ContentUpdateService contentUpateService, TagDAO tagDAO,
+			HandTaggingDAO tagVoteDAO,
+			LoggedInUserFilter loggedInUserFilter) {
+		this.resourceDAO = resourceDAO;
+		this.requestFilter = requestFilter;
+		this.autoTagService = autoTagService;
+		this.keywordSearchService = keywordSearchService;
+		this.contentUpateService = contentUpateService;
+		this.tagDAO = tagDAO;
+		this.tagVoteDAO = tagVoteDAO;
+		this.loggedInUserFilter = loggedInUserFilter;
 	}
 	
 	@RequestMapping("/*/autotag")

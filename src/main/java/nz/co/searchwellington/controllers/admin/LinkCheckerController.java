@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
@@ -18,12 +17,13 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public class LinkCheckerController extends BaseMultiActionController {
+public class LinkCheckerController {
 
 	private static Logger log = Logger.getLogger(LinkCheckerController.class);
     
     private LinkCheckerQueue queue;
     private AdminRequestFilter requestFilter;
+	private UrlStack urlStack;
     
     public LinkCheckerController() {
 	}

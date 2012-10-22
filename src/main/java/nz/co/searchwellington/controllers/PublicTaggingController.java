@@ -17,13 +17,15 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public class PublicTaggingController extends BaseMultiActionController {
+public class PublicTaggingController {
 	
     private static Logger log = Logger.getLogger(PublicTaggingController.class);
     
 	private AdminRequestFilter adminRequestFilter;
 	private AnonUserService anonUserService;
 	private SubmissionProcessingService submissionProcessingService;
+	private LoggedInUserFilter loggedInUserFilter;
+	private UrlStack urlStack;
 	
 	public PublicTaggingController() {
 	}

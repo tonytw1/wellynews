@@ -5,7 +5,6 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.SolrIndexRebuildService;
@@ -16,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
-public class IndexRebuildController extends BaseMultiActionController {
+public class IndexRebuildController {
     
 	private SolrIndexRebuildService solrIndexRebuildService;
+	private LoggedInUserFilter loggedInUserFilter;
 	
 	public IndexRebuildController() {
 	}

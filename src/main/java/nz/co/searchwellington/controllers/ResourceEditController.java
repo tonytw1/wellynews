@@ -22,7 +22,6 @@ import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.spam.SpamFilter;
@@ -40,7 +39,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public class ResourceEditController extends BaseMultiActionController {
+public class ResourceEditController {
     
    private static Logger log = Logger.getLogger(ResourceEditController.class);
            
@@ -59,6 +58,9 @@ public class ResourceEditController extends BaseMultiActionController {
 	private HandTaggingDAO tagVoteDAO;
 	private FeedItemAcceptor feedItemAcceptor;
 	private ResourceFactory resourceFactory;
+	private CommonModelObjectsService commonModelObjectsService;
+	private LoggedInUserFilter loggedInUserFilter;
+	private UrlStack urlStack;
 	
 	public ResourceEditController() {
 	}
@@ -77,9 +79,9 @@ public class ResourceEditController extends BaseMultiActionController {
 			ContentDeletionService contentDeletionService,
 			SnapshotBodyExtractor snapBodyExtractor,
 			AnonUserService anonUserService,
-			ContentRetrievalService contentRetrievalService,
 			HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor,
-			ResourceFactory resourceFactory) {
+			ResourceFactory resourceFactory,
+			CommonModelObjectsService commonModelObjectsService) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -94,10 +96,10 @@ public class ResourceEditController extends BaseMultiActionController {
 		this.contentDeletionService = contentDeletionService;
 		this.snapBodyExtractor = snapBodyExtractor;
 		this.anonUserService = anonUserService;
-		this.contentRetrievalService = contentRetrievalService;
 		this.tagVoteDAO = tagVoteDAO;
 		this.feedItemAcceptor = feedItemAcceptor;
 		this.resourceFactory = resourceFactory;
+		this.commonModelObjectsService = commonModelObjectsService;
 	}
     
     @Transactional	
@@ -114,7 +116,7 @@ public class ResourceEditController extends BaseMultiActionController {
         	return null;
     	}
     	    	
-    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	final User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (!userIsAllowedToEdit(resource, request, loggedInUser)) {    		
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     		log.info("No logged in user or user not allowed to edit resource; returning 403");
@@ -122,7 +124,7 @@ public class ResourceEditController extends BaseMultiActionController {
     	}
     	
     	ModelAndView mv = new ModelAndView("editResource");
-    	populateCommonLocal(mv);
+    	commonModelObjectsService.populateCommonLocal(mv);
     	mv.addObject("heading", "Editing a Resource");
     		
         mv.addObject("resource", resource);
@@ -149,7 +151,7 @@ public class ResourceEditController extends BaseMultiActionController {
     	}
     	Resource resource = (Resource) request.getAttribute("resource");    	
     	    	
-    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	final User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (!userIsAllowedToEdit(resource, request, loggedInUser)) {
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         	return null;
@@ -158,7 +160,7 @@ public class ResourceEditController extends BaseMultiActionController {
     	Resource editResource = (Resource) request.getAttribute("resource");    	
     	if (request.getAttribute("resource") != null && userIsAllowedToEdit(editResource, request, loggedInUser)) {    		
     		ModelAndView mv = new ModelAndView("viewSnapshot");
-    		populateCommonLocal(mv);
+    		commonModelObjectsService.populateCommonLocal(mv);
     		mv.addObject("heading", "Resource snapshot");
     		
             mv.addObject("resource", editResource);
@@ -202,7 +204,7 @@ public class ResourceEditController extends BaseMultiActionController {
         
         acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, acceptedNewsitem);
 		ModelAndView modelAndView = new ModelAndView("acceptResource");
-		populateCommonLocal(modelAndView);
+		commonModelObjectsService.populateCommonLocal(modelAndView);
 		modelAndView.addObject("heading", "Accepting a submission");
 		modelAndView.addObject("resource", acceptedNewsitem);
 		modelAndView.addObject("publisher_select", "1");
@@ -280,7 +282,7 @@ public class ResourceEditController extends BaseMultiActionController {
     @RequestMapping("/edit/delete")
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
-        populateCommonLocal(modelAndView);
+        commonModelObjectsService.populateCommonLocal(modelAndView);
         modelAndView.addObject("heading", "Resource Deleted");
         
         adminRequestFilter.loadAttributesOntoRequest(request);    
@@ -307,7 +309,7 @@ public class ResourceEditController extends BaseMultiActionController {
         response.setCharacterEncoding("UTF-8");
 
         ModelAndView modelAndView = new ModelAndView("savedResource");
-        populateCommonLocal(modelAndView);       
+        commonModelObjectsService.populateCommonLocal(modelAndView);       
         modelAndView.addObject("heading", "Resource Saved");
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -412,7 +414,6 @@ public class ResourceEditController extends BaseMultiActionController {
         return modelAndView;
     }
 
-
 	// TODO duplicated in public tagging
 	private User createAndSetAnonUser(HttpServletRequest request) {
 		User loggedInUser;
@@ -422,7 +423,6 @@ public class ResourceEditController extends BaseMultiActionController {
 		loggedInUserFilter.loadLoggedInUser(request);
 		return loggedInUser;
 	}
-
 
    // TODO move to submission handling service.
    private void processFeedAcceptancePolicy(HttpServletRequest request, Resource editResource) {
@@ -434,23 +434,18 @@ public class ResourceEditController extends BaseMultiActionController {
 		   }
 		   rssPrefetcher.decacheAndLoad((Feed) editResource);
 	   }
-   }
-
-
+   	}
+   
 	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource) {		
 		contentUpdateService.update(editResource);
 	}
-
 	
-	
-    
     private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {    
     	return editPermissionService.canEdit(editResource);
     }
-
     
     private void populateSubmitCommonElements(HttpServletRequest request, ModelAndView modelAndView) {
-        populateCommonLocal(modelAndView);
+        commonModelObjectsService.populateCommonLocal(modelAndView);
         modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
    
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
