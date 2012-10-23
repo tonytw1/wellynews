@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.annotations.Timed;
-import nz.co.searchwellington.controllers.BaseMultiActionController;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -26,6 +25,8 @@ public class ProfileController {
     
 	private static Logger log = Logger.getLogger(ProfileController.class);
 
+    public final static  int MAX_NEWSITEMS = 30;	// TODO move to config
+    
     private HibernateBackedUserDAO userDAO;
     private LoggedInUserFilter loggerInUserFilter;
 	private UrlBuilder urlBuilder;
@@ -106,8 +107,8 @@ public class ProfileController {
 				mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
 				mv.addObject("profileuser", user);
 
-				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, BaseMultiActionController.MAX_NEWSITEMS));
-				mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, BaseMultiActionController.MAX_NEWSITEMS));
+				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, MAX_NEWSITEMS));
+				mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, MAX_NEWSITEMS));
 				return mv;
 			}
 		}
