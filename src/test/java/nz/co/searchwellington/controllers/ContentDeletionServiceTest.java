@@ -23,6 +23,8 @@ import nz.co.searchwellington.repositories.solr.SolrQueryService;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Lists;
+
 public class ContentDeletionServiceTest extends TestCase {
 		
 	@Mock SupressionService supressionService;	
@@ -62,7 +64,7 @@ public class ContentDeletionServiceTest extends TestCase {
 	public void testShouldRemoveRelatedFeedFromTagsOnDelete() throws Exception {
 		when(feed.getType()).thenReturn("F");
 		when(tag.getRelatedFeed()).thenReturn(feed);		
-		List<Tag> allTags = new ArrayList<Tag>();
+		List<Tag> allTags = Lists.newArrayList();
 		allTags.add(tag);
 		when(tagDAO.getAllTags()).thenReturn(allTags);
 		

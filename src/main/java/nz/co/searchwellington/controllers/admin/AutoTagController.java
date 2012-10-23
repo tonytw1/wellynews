@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.admin;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +23,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Lists;
 
 @Controller
 public class AutoTagController {
@@ -103,9 +104,10 @@ public class AutoTagController {
         mv.setViewName("autoTagApply");
         mv.addObject("heading", "Autotagging");
         
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());		// TODO use common object loader
         mv.addObject("tag", tag);
-        List<Resource> resourcesAutoTagged = new ArrayList<Resource>();
+        
+        final List<Resource> resourcesAutoTagged = Lists.newArrayList();
         String[] autotaggedResourceIds = request.getParameterValues("autotag");
         for (String resourceIdString : autotaggedResourceIds) {
         	int resourceId = Integer.parseInt(resourceIdString);

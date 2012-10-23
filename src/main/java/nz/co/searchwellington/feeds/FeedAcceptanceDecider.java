@@ -1,7 +1,6 @@
 package nz.co.searchwellington.feeds;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -17,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class FeedAcceptanceDecider {
@@ -41,8 +42,7 @@ public class FeedAcceptanceDecider {
     
     @Transactional(propagation = Propagation.REQUIRES_NEW) 
     public List<String> getAcceptanceErrors(Feed feed, FeedNewsitem feedNewsitem, String feedAcceptancePolicy) {
-        List<String> acceptanceErrors = new ArrayList<String>();
-        
+        final List<String> acceptanceErrors = Lists.newArrayList();
         final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl());
 		final boolean isSuppressed = supressionDAO.isSupressed(cleanedUrl);
 		log.debug("Is feed item url '" + cleanedUrl + "' supressed: " + isSuppressed);
@@ -71,7 +71,7 @@ public class FeedAcceptanceDecider {
 			return false;
 		}
 		
-		List<String> acceptanceErrors = new ArrayList<String>();		
+		final List<String> acceptanceErrors = Lists.newArrayList();
 		alreadyHaveThisFeedItem(feednewsitem, acceptanceErrors);		
 		return acceptanceErrors.isEmpty();		
 	}

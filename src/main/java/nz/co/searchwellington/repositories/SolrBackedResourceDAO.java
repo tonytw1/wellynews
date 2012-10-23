@@ -40,6 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 @Component
 public class SolrBackedResourceDAO {
 	
@@ -288,7 +290,7 @@ public class SolrBackedResourceDAO {
 		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_ARCHIVE_MONTHS);
 
-		List<ArchiveLink> archiveLinks = new ArrayList<ArchiveLink>();
+		final List<ArchiveLink> archiveLinks = Lists.newArrayList();
 		QueryResponse response = solrQueryService.querySolr(query);
 		if (response != null) {
 			FacetField facetField = response.getFacetField("month");
@@ -385,7 +387,7 @@ public class SolrBackedResourceDAO {
 		if (response != null) {
 			return loadResourcesFromSolrResults(response);
 		}
-		return Collections.EMPTY_LIST;
+		return Collections.emptyList();
 	}
 
 	public List<FrontendResource> getLatestNewsitems(int maxItems,
@@ -445,7 +447,7 @@ public class SolrBackedResourceDAO {
 	}
 
 	public List<Tag> getCommentedTags(boolean showBroken) {
-		List<Integer> tagIds = new ArrayList<Integer>();
+		final List<Integer> tagIds = Lists.newArrayList();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
 			SolrQuery query = getCommentedNewsitemsQuery(showBroken);
@@ -498,7 +500,7 @@ public class SolrBackedResourceDAO {
 	}
 
 	public List<Tag> getGeotaggedTags(boolean showBroken) {
-		List<Integer> tagIds = new ArrayList<Integer>();
+		List<Integer> tagIds = Lists.newArrayList();
 		try {
 			SolrServer solr = new CommonsHttpSolrServer(solrUrl);
 			SolrQuery query = new SolrQueryBuilder().type("N").showBroken(

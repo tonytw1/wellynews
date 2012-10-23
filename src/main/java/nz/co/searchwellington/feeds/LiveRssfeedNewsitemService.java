@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachableService;
 
+import com.google.common.collect.Lists;
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.GeoRSSUtils;
 import com.sun.syndication.feed.module.mediarss.MediaEntryModuleImpl;
@@ -69,7 +69,7 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fe
 	}
     
 	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
-		final List<FeedNewsitem> feedNewsitems = new ArrayList<FeedNewsitem>();
+		final List<FeedNewsitem> feedNewsitems = Lists.newArrayList();
 		final SyndFeed syndfeed = rssFetcher.httpFetch(feed.getUrl());
         if (syndfeed != null) {
             List entires = syndfeed.getEntries();

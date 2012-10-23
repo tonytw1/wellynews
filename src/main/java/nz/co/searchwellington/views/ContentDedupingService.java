@@ -1,12 +1,13 @@
 package nz.co.searchwellington.views;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class ContentDedupingService {
@@ -15,7 +16,7 @@ public class ContentDedupingService {
 
     public List<Resource> dedupeNewsitems(List<Resource> latestNewsitems, List<Resource> commentedNewsitems) {
     	log.info("Called with " + latestNewsitems.size() + " main content items and " + commentedNewsitems.size() + " commented news items");
-    	List <Resource> depuded  = new ArrayList<Resource>(latestNewsitems);
+    	final List <Resource> depuded  = Lists.newArrayList();
     	depuded.removeAll(commentedNewsitems);
     	if (depuded.size() < latestNewsitems.size()) {
     		log.info("Removed " + (latestNewsitems.size() - depuded.size()) + " duplicates");

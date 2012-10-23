@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -10,6 +9,8 @@ import nz.co.searchwellington.model.Suggestion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class AvailableSuggestedFeeditemsService {
@@ -22,7 +23,7 @@ public class AvailableSuggestedFeeditemsService {
 	}
 	
 	public List<FeedNewsitem> getAvailableSuggestedFeeditems(List<Suggestion> bareSuggestions, int maxItems) {
-		List<FeedNewsitem> suggestions = new ArrayList<FeedNewsitem>();
+		final List<FeedNewsitem> suggestions = Lists.newArrayList();
 		Iterator<Suggestion> bareSuggestionsIterator = bareSuggestions.iterator();		
 		while (suggestions.size() < maxItems && bareSuggestionsIterator.hasNext()) {
 			Suggestion suggestion = bareSuggestionsIterator.next();

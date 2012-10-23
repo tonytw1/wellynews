@@ -1,12 +1,12 @@
 package nz.co.searchwellington.model;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.ImmutableList;
 
 @Component
 public class LinkCheckerQueue {
@@ -35,12 +35,7 @@ public class LinkCheckerQueue {
     
     public List<Integer> getContents() {
     	log.debug("Getting queue contents; currently contains " + queue.size() + " items.");
-    	List<Integer> contents = new ArrayList<Integer>();
-    	Iterator<Integer> contentIds = queue.iterator();
-    	while(contentIds.hasNext()) {
-    		contents.add(contentIds.next());
-    	}
-    	return contents;
+    	return ImmutableList.<Integer>builder().addAll(queue.iterator()).build();    	
     }
 
     public void add(Resource resource) {

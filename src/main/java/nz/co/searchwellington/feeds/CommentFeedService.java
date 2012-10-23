@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
 import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -31,7 +31,7 @@ public class CommentFeedService {
     }
     
     public List<Comment> loadComments(CommentFeed commentFeed) {
-    	List<Comment> comments = new ArrayList<Comment>();
+    	final List<Comment> comments = Lists.newArrayList();
     	// TODO this stopped working around 14 june 2011
     	//if (commentFeed.getNewsitem() == null) {
     	//	log.warn("Comment feed has no associated newsitems; no point in loading comments: " + commentFeed.getUrl());

@@ -3,7 +3,6 @@ package nz.co.searchwellington.repositories;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -11,11 +10,13 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
 
+import com.google.common.collect.Lists;
+
 public class PublisherGuessingServiceTest extends TestCase {
 	
 		
 	public void testShouldNotMatchIfNoMatchingPublishers() throws Exception {
-		List<Resource> possiblePublishers = new ArrayList<Resource>();
+		List<Resource> possiblePublishers = Lists.newArrayList();
 		HibernateResourceDAO resourceDAO = mock(HibernateResourceDAO.class);
 		when(resourceDAO.getAllPublishersMatchingStem("www.spammer.com", true)).thenReturn(possiblePublishers);
 		
@@ -25,7 +26,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 	
 	
 	public void testShouldMatchIfMultipleAvailable() throws Exception {
-		List<Resource> possiblePublishers = new ArrayList<Resource>();
+		List<Resource> possiblePublishers = Lists.newArrayList();
 		
 		Website golfCourseSite = new WebsiteImpl();
 		golfCourseSite.setUrl("http://www.wellington.govt.nz/services/berhgolf/index.html");
@@ -48,7 +49,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 	
 	
 	public void testShouldMatchIfOnlyOnePossiblePublisher() throws Exception {
-		List<Resource> possiblePublishers = new ArrayList<Resource>();
+		List<Resource> possiblePublishers = Lists.newArrayList();
 		
 		Website wellingtonista = new WebsiteImpl();
 		wellingtonista.setName("The Wellingtonista");
@@ -64,7 +65,7 @@ public class PublisherGuessingServiceTest extends TestCase {
 	
 	
 	public void testShouldNotMatchJustBecauseTheHostNameMatches() throws Exception {
-		List<Resource> possiblePublishers = new ArrayList<Resource>();
+		List<Resource> possiblePublishers = Lists.newArrayList();
 		
 		Website hostedOne = new WebsiteImpl();
 		hostedOne.setUrl("http://homepages.paradise.net.nz/~titahi/");

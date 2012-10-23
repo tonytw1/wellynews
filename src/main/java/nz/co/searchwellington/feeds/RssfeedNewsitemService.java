@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +15,8 @@ import nz.co.searchwellington.repositories.SupressionDAO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class RssfeedNewsitemService {
@@ -79,7 +80,7 @@ public class RssfeedNewsitemService {
 	
 	// TODO This is probably a seperate class as it has nothing todo with looking through the feed item cache for items.
 	public List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
-		List<FrontendFeedNewsitem> decoratedFeednewsitems = new ArrayList<FrontendFeedNewsitem>();
+		final List<FrontendFeedNewsitem> decoratedFeednewsitems = Lists.newArrayList();
 		for (FeedNewsitem feedNewsitem : feedNewsitems) {
 
 			FrontendFeedNewsitem frontendFeedNewsitem = new FrontendFeedNewsitem(feedNewsitem);

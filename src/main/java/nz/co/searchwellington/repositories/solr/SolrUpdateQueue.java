@@ -1,12 +1,13 @@
 package nz.co.searchwellington.repositories.solr;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class SolrUpdateQueue {
@@ -33,7 +34,7 @@ public class SolrUpdateQueue {
 	
 	public synchronized List<SolrInputDocument> getBatch() {
 		log.debug("Getting next from queue currently contains " + queue.size() + " items.");		
-		List<SolrInputDocument> batch = new ArrayList<SolrInputDocument>();		
+		List<SolrInputDocument> batch = Lists.newArrayList();	
 		if (!queue.isEmpty()) {
 			Object[] items = queue.toArray();
 			for (int i = 0; i < items.length; i++) {

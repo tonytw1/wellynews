@@ -2,7 +2,6 @@ package nz.co.searchwellington.repositories.solr.indexing;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,20 +14,22 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Lists;
+
 public class SolrTweetsHandlerTest {
 
 	private SolrTweetsHandler solrTweetsHandler;
 	
-	private List<Twit> tweets;
 	@Mock Twit firstTweet;
 	@Mock Twit secondTweet;
+	private List<Twit> tweets;
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		solrTweetsHandler = new SolrTweetsHandler();
 
-		tweets = new ArrayList<Twit>();
+		tweets = Lists.newArrayList();
 		Mockito.when(firstTweet.getAuthor()).thenReturn("tonytw1");
 		Mockito.when(firstTweet.getText()).thenReturn("Blah blah");
 		tweets.add(firstTweet);

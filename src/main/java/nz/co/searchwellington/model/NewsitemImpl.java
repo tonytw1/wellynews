@@ -1,9 +1,12 @@
 package nz.co.searchwellington.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.ImmutableList;
 
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
@@ -39,11 +42,10 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
     }
     
     public List<Comment> getComments() {
-    	List<Comment> comments = new ArrayList<Comment>();
     	if (getCommentFeed() != null) {
-    		return getCommentFeed().getComments();    		
+    		return ImmutableList.<Comment>builder().addAll(getCommentFeed().getComments()).build();
     	}
-    	return comments;
+    	return Collections.emptyList();
 	}
 
 	public CommentFeed getCommentFeed() {
@@ -68,7 +70,7 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
 	
 	@Override
 	public List<Twit> getRetweets() {
-		return new ArrayList<Twit>(reTwits);
+		return ImmutableList.<Twit>builder().addAll(reTwits).build();
 	}
 	
 	public void addReTwit(Twit retwit) {

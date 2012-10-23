@@ -1,6 +1,5 @@
 package nz.co.searchwellington.tagging;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +26,9 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 @Component
 public class TaggingReturnsOfficerService {
 		
@@ -40,7 +42,7 @@ public class TaggingReturnsOfficerService {
 	}
 	
 	public Set<Tag> getHandTagsForResource(Resource resource) {		
-		Set<Tag>tags = new HashSet<Tag>();
+		final Set<Tag>tags = Sets.newHashSet();
 		List<HandTagging> handTaggings = tagVoteDAO.getHandTaggingsForResource(resource);			
 		for (HandTagging tagging : handTaggings) {
 			tags.add(tagging.getTag());
@@ -67,7 +69,7 @@ public class TaggingReturnsOfficerService {
 	}
 	
 	public List<GeotaggingVote> getGeotagVotesForResource(Resource resource) {
-		List<GeotaggingVote> votes = new ArrayList<GeotaggingVote>();
+		final List<GeotaggingVote> votes = Lists.newArrayList();
 		if (resource.getGeocode() != null && resource.getGeocode().isValid()) {
 			votes.add(new GeotaggingVote(resource.getGeocode(), resource.getOwner(), 1));
 		}
@@ -91,7 +93,7 @@ public class TaggingReturnsOfficerService {
 	}
 	
 	public List<TaggingVote> complieTaggingVotes(Resource resource) {
-		List<TaggingVote> votes = new ArrayList<TaggingVote>();
+		final List<TaggingVote> votes = Lists.newArrayList();
 		for (HandTagging handTagging : tagVoteDAO.getHandTaggingsForResource(resource)) {
 			votes.add(handTagging);
 		}

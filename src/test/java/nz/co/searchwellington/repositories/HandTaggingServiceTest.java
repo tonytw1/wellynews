@@ -3,7 +3,6 @@ package nz.co.searchwellington.repositories;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
@@ -16,6 +15,8 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import com.google.common.collect.Lists;
 
 public class HandTaggingServiceTest {
 
@@ -35,7 +36,7 @@ public class HandTaggingServiceTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		tagVotes = new ArrayList<HandTagging>();		
+		tagVotes = Lists.newArrayList();	
 		when(handTagging.getResource()).thenReturn(taggedResource);
 		tagVotes.add(handTagging);
 		when(previousUser.getName()).thenReturn("Previous User");

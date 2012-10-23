@@ -1,14 +1,15 @@
 package nz.co.searchwellington.feeds;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class DiscoveredFeedRepository {
@@ -23,9 +24,8 @@ public class DiscoveredFeedRepository {
 	}
 	
 	public List<DiscoveredFeed> getAllNonCommentDiscoveredFeeds() {	// TODO this is fantasically expensive - move to the index?
-		List<DiscoveredFeed> allDiscoveredFeeds = resourceDAO.getAllDiscoveredFeeds();
-        List<DiscoveredFeed> nonCommentFeeds = new ArrayList<DiscoveredFeed>();        
-        for (DiscoveredFeed discoveredFeed : allDiscoveredFeeds) {
+		List<DiscoveredFeed> nonCommentFeeds = Lists.newArrayList();       
+        for (DiscoveredFeed discoveredFeed : resourceDAO.getAllDiscoveredFeeds()) {
         	// TODO Doing this at runtime is quite heavy
         	if (!commentFeedDetectorService.isCommentFeedUrl(discoveredFeed.getUrl())) {
         		nonCommentFeeds.add(discoveredFeed);

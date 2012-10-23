@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
@@ -16,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import com.google.common.collect.Lists;
 
 public class LocationParameterFilterTest {
 	
@@ -40,7 +41,7 @@ public class LocationParameterFilterTest {
 	@Test
 	public void canResolveNamedPlaceAsLocation() throws Exception {
 		request.setParameter("location", VALID_LOCATION);
-		List<Geocode> results = new ArrayList<Geocode>();
+		List<Geocode> results = Lists.newArrayList();
 		results.add(petoneStation);
 		Mockito.when(geocodeService.resolveAddress(VALID_LOCATION)).thenReturn(results);
 		

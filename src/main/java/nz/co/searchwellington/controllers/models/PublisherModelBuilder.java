@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +19,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
@@ -108,7 +109,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private void populateGeotaggedItems(ModelAndView mv) {
 		List<FrontendNewsitem> mainContent = (List<FrontendNewsitem>) mv.getModel().get("main_content");
 		if (mainContent != null) {
-			List<FrontendNewsitem> geotaggedNewsitems = new ArrayList<FrontendNewsitem>();
+			final List<FrontendNewsitem> geotaggedNewsitems = Lists.newArrayList();
 			for (FrontendNewsitem feedNewsitem : mainContent) {
 				if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
 					geotaggedNewsitems.add(feedNewsitem);

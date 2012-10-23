@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.collect.Lists;
+
 @Controller
 public class PublisherAutoGatherController {
 
@@ -58,7 +60,7 @@ public class PublisherAutoGatherController {
         mv.addObject("publisher", publisher);
         
         if (publisher != null) {    
-        	List<Resource> resourcesToAutoTag = new ArrayList<Resource>();      
+        	List<Resource> resourcesToAutoTag = Lists.newArrayList();   
         	for (Resource resource : getPossibleAutotagResources(publisher)) {
         		if (needsPublisher((Newsitem) resource, publisher)) {
         			resourcesToAutoTag.add(resource);
@@ -81,7 +83,7 @@ public class PublisherAutoGatherController {
         mv.addObject("publisher", publisher);
                 
         if (publisher != null) {                       
-            List<Resource> resourcesAutoTagged = new ArrayList<Resource>();            
+            List<Resource> resourcesAutoTagged = Lists.newArrayList();            
             String[] autotaggedResourceIds = request.getParameterValues("autotag");            
             for (String resourceIdString : autotaggedResourceIds) {
                 int resourceId = Integer.parseInt(resourceIdString);

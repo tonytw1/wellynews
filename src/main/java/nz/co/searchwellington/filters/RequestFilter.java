@@ -1,6 +1,5 @@
 package nz.co.searchwellington.filters;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component("requestFilter")
 @Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
@@ -46,7 +47,8 @@ public class RequestFilter {
         this.combinerPageAttributeSetter = new CombinerPageAttributeSetter(tagDAO, resourceDAO);	// TODO this is incorrect IoD
         this.feedAttributeSetter = new FeedAttributeSetter(resourceDAO);
         
-        attributeSetters = new ArrayList<AttributeSetter>();	// TODO push to spring.
+        // TODO push to spring.
+        attributeSetters = Lists.newArrayList();
         attributeSetters.add(tagPageAttibuteSetter);
         attributeSetters.add(publisherPageAttributeSetter);
         attributeSetters.add(feedAttributeSetter);

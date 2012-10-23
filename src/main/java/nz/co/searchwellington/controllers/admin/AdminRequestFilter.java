@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.admin;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,6 +24,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.clutch.dates.StringToTime;
+import com.google.common.collect.Lists;
 
 @Component
 @Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
@@ -52,7 +52,7 @@ public class AdminRequestFilter {
 		this.tagDAO = tagDAO;
 		this.resourceParameterFilter = resourceParameterFilter;
 		this.tagsParameterFilter = tagsParameterFilter;
-		supportedEmbargoDateFormats = new ArrayList<SimpleDateFormat>();
+		supportedEmbargoDateFormats = Lists.newArrayList();
 		supportedEmbargoDateFormats.add(new SimpleDateFormat("dd MMM yyyy HH:mm"));
 		supportedEmbargoDateFormats.add(new SimpleDateFormat("HH:mm"));
 	}

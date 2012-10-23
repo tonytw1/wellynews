@@ -1,7 +1,6 @@
 package nz.co.searchwellington.geocoding.osm;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Geocode;
@@ -11,6 +10,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 import fr.dudie.nominatim.client.JsonNominatimClient;
 import fr.dudie.nominatim.client.NominatimClient;
@@ -29,7 +30,7 @@ public class NominatimGeocodingService implements GeoCodeService {
 		try {
 			List<Address> results = nominatimClient.search(address);
 			if (!results.isEmpty()) {
-				List<Geocode> geocodes = new ArrayList<Geocode>();
+				List<Geocode> geocodes = Lists.newArrayList();
 				for (Address result : results) {
 					log.info("Resolved to OSM place id #" + result.getOsmId() + "/" + result.getOsmType() + ": " + result.getDisplayName() + " (" + result.getElementType() + ")");
 					geocodes.add(buildGeocodeFor(result));

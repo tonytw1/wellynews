@@ -17,6 +17,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Lists;
+
 public class AvailableSuggestedFeeditemsServiceTest {
 
 	private static final String FEED_ITEM_URL_4 = "http://4";
@@ -37,7 +39,7 @@ public class AvailableSuggestedFeeditemsServiceTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		allSuggestions = new ArrayList<Suggestion>();
+		allSuggestions = Lists.newArrayList();
 		allSuggestions.add(new Suggestion(feed, FEED_ITEM_URL_1, new DateTime().toDate()));
 		allSuggestions.add(new Suggestion(feed, FEED_ITEM_URL_2, new DateTime().toDate()));
 		allSuggestions.add(new Suggestion(feed, FEED_ITEM_URL_3, new DateTime().toDate()));

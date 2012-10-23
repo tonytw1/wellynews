@@ -1,6 +1,5 @@
 package nz.co.searchwellington.filters;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,6 +10,8 @@ import nz.co.searchwellington.repositories.TagDAO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class TagsParameterFilter implements RequestAttributeFilter {
@@ -28,7 +29,7 @@ public class TagsParameterFilter implements RequestAttributeFilter {
 		if (request.getParameter("tags") != null) {
 			String[] tagNames = request.getParameterValues("tags");
 			
-			List <Tag> tags = new ArrayList <Tag>();
+			final List <Tag> tags = Lists.newArrayList();
 			for (int i = 0; i < tagNames.length; i++) {             
 				String tagName = tagNames[i];
 				if (tagName != null) {  	// TODO cleaning        

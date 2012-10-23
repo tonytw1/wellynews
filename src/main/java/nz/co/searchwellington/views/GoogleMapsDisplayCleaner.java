@@ -1,6 +1,5 @@
 package nz.co.searchwellington.views;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.geo.DistanceMeasuringService;
@@ -10,6 +9,8 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class GoogleMapsDisplayCleaner {
@@ -29,7 +30,7 @@ public class GoogleMapsDisplayCleaner {
 
     public List<FrontendResource> dedupe(List<FrontendResource> geocoded, Resource selected) {      
         log.info("Deduping collection with " + geocoded.size() + " items");
-        List<FrontendResource> deduped = new ArrayList<FrontendResource>();
+        final List<FrontendResource> deduped = Lists.newArrayList();
         if (selected != null && selected.getGeocode() != null) {
             deduped.add(selected);
         }

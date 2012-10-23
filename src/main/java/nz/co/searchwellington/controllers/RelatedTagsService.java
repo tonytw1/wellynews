@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +20,8 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class RelatedTagsService {
@@ -132,7 +133,7 @@ public class RelatedTagsService {
 	}
 	
 	private List<TagContentCount> removeUnsuitableTags(Tag tag, List<TagContentCount> loadedTagFacet) {
-		List<TagContentCount> suitableTagFacets = new ArrayList<TagContentCount>();
+		List<TagContentCount> suitableTagFacets = Lists.newArrayList();
 		for (TagContentCount count : loadedTagFacet) {			
 			if (isTagSuitableRelatedTag(tag, count.getTag())) {
 				suitableTagFacets.add(count);

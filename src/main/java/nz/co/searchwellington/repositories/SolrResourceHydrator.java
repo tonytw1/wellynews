@@ -20,6 +20,8 @@ import org.apache.solr.common.SolrDocument;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 @Component
 public class SolrResourceHydrator implements ResourceHydrator {
 	
@@ -112,13 +114,13 @@ public class SolrResourceHydrator implements ResourceHydrator {
 		return null;	
 	}
 
-	private void hydrateTwitterFields(SolrDocument result,
-			FrontendNewsitemImpl newsitem) {
+	private void hydrateTwitterFields(SolrDocument result, FrontendNewsitemImpl newsitem) {
 		final Integer twitterCount = (Integer) result.getFieldValue("twitterCount");
 		if (twitterCount != null && twitterCount > 0) {				
 			Iterator<Object> twitterAuthors = result.getFieldValues("tweet_author").iterator();
 			Iterator<Object> twitterText = result.getFieldValues("tweet_text").iterator();
-			List<Twit> twits = new ArrayList<Twit>();
+			
+			final List<Twit> twits = Lists.newArrayList();
 			for (int i = 0; i < twitterCount; i++) {
 				Twit tweet = new Twit((String) twitterAuthors.next(), (String) twitterText.next());
 				twits.add(tweet);
@@ -128,7 +130,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 	}
 	
 	private List<Tag> hydrateTags(SolrDocument result, String sourceField) {
-		List<Tag> tags = new ArrayList<Tag>();
+		List<Tag> tags = Lists.newArrayList();
 		Collection<Object> tagIds = result.getFieldValues(sourceField);
 		if (tagIds != null) {
 			for (Object tagId : tagIds) {
