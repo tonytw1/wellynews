@@ -1,7 +1,6 @@
 package nz.co.searchwellington.repositories;
 
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -23,13 +22,13 @@ import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.FacetField;
-import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.FacetParams;
@@ -537,7 +536,7 @@ public class SolrBackedResourceDAO {
 		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_PUBLISHERS_FACET_LIMIT);
 
-		List<PublisherContentCount> publishers = new ArrayList<PublisherContentCount>();
+		List<PublisherContentCount> publishers = Lists.newArrayList();
 		QueryResponse response = solrQueryService.querySolr(query);
 		if (response != null) {
 			FacetField facetField = response.getFacetField(SolrInputDocumentBuilder.PUBLISHER_NAME);
@@ -555,9 +554,8 @@ public class SolrBackedResourceDAO {
 		return publishers;
 	}
 
-	private List<FrontendResource> loadResourcesFromSolrResults(
-			QueryResponse response) {
-		List<FrontendResource> results = new ArrayList<FrontendResource>();
+	private List<FrontendResource> loadResourcesFromSolrResults(QueryResponse response) {
+		List<FrontendResource> results = Lists.newArrayList();
 		SolrDocumentList solrResults = response.getResults();
 		for (SolrDocument result : solrResults) {
 			FrontendResource resource = resourceHydrator

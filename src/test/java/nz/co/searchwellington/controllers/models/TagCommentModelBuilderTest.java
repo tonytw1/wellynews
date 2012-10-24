@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models;
 
 import static org.mockito.Mockito.mock;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -10,6 +9,7 @@ import nz.co.searchwellington.model.Tag;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import com.google.common.collect.Lists;
 
 public class TagCommentModelBuilderTest extends TestCase {
 
@@ -20,19 +20,17 @@ public class TagCommentModelBuilderTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		request = new MockHttpServletRequest();
-		tags = new ArrayList<Tag>();		
+		tags = Lists.newArrayList();	
 		tags.add(tag);	
 		request.setAttribute("tags", tags);
 	}
-	
-	
+		
 	public void testShouldBeValidForTagCommentPath() throws Exception {
 		ModelBuilder modelBuilder = new TagCommentModelBuilder(null, null, null);		
 		request.setPathInfo("/transport/comment");
 		assertTrue(modelBuilder.isValid(request));
 	}
-	
-	
+		
 	public void testShouldBeValidForTagCommentRssPath() throws Exception {
 		ModelBuilder modelBuilder = new TagCommentModelBuilder(null, null, null);		
 		request.setPathInfo("/transport/comment/rss");

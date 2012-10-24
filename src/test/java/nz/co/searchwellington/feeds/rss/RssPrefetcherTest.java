@@ -3,7 +3,6 @@ package nz.co.searchwellington.feeds.rss;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
@@ -17,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import com.google.common.collect.Lists;
 
 public class RssPrefetcherTest {
 	
@@ -41,7 +42,7 @@ public class RssPrefetcherTest {
 		secondFeed = new FeedImpl();
 		secondFeed.setUrl("http://testdata/rss/2");
 
-		feeds = new ArrayList<Feed>();
+		feeds = Lists.newArrayList();
 		feeds.add(firstFeed);
 		feeds.add(secondFeed);
 

@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
@@ -20,6 +19,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Lists;
 
 public class PublisherModelBuilderTest {
 
@@ -49,9 +50,9 @@ public class PublisherModelBuilderTest {
 	public void shouldHightlightPublishersGeotaggedContent() throws Exception {
 		PublisherModelBuilder modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder);
 		
-		ModelAndView mv = new ModelAndView();
+		final ModelAndView mv = new ModelAndView();
 		
-		List<FrontendNewsitem> publisherNewsitems = new ArrayList<FrontendNewsitem>();
+		final List<FrontendNewsitem> publisherNewsitems = Lists.newArrayList();
 		publisherNewsitems.add(newsitem);
 		publisherNewsitems.add(geotaggedNewsitem);
 		

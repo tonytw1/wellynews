@@ -1,6 +1,5 @@
 package nz.co.searchwellington.twitter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Twit;
@@ -14,6 +13,8 @@ import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class LiveTwitterService implements TwitterService {
@@ -29,7 +30,7 @@ public class LiveTwitterService implements TwitterService {
 	
 	public List<Twit> getReplies() {
 		log.info("Getting twitter replies from live api");
-		List<Twit> all = new ArrayList<Twit>();
+		final List<Twit> all = Lists.newArrayList();
         try {
         	Twitter api = twitterApiFactory.getOauthedTwitterApi();
         	ResponseList<Status> mentions = api.getMentions();
@@ -89,7 +90,7 @@ public class LiveTwitterService implements TwitterService {
 	
 	private List<Twit> getRetweets() {
 		log.info("Getting twitter retweets from live api");
-		List<Twit> all = new ArrayList<Twit>();
+		final List<Twit> all = Lists.newArrayList();
         try {        	
         	Twitter api = twitterApiFactory.getOauthedTwitterApi();
         	List<Status> retweets = api.getRetweetsOfMe();

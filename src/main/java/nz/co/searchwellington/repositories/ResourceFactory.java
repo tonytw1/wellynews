@@ -1,10 +1,7 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
-
-import org.springframework.stereotype.Component;
 
 import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.Comment;
@@ -19,6 +16,10 @@ import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.WebsiteImpl;
+
+import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class ResourceFactory {
@@ -44,8 +45,7 @@ public class ResourceFactory {
 	}
 
 	public CommentFeed createNewCommentFeed(String commentFeedUrl) {
-		return new CommentFeed(0, commentFeedUrl, new ArrayList<Comment>(),
-				null, null, new HashSet<Resource>());
+		return new CommentFeed(0, commentFeedUrl, Lists.<Comment>newArrayList(), null, null, new HashSet<Resource>());
 	}
 
 	public CalendarFeed createNewCalendarFeed(String url) {

@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Lists;
+
 public class CommentFeedReaderTest {
 	
 	@Mock CommentFeedService commentFeedService;
@@ -34,10 +36,10 @@ public class CommentFeedReaderTest {
 		Mockito.when(configDAO.isFeedReadingEnabled()).thenReturn(true);
 		
 		Mockito.when(commentFeed.getNewsitem()).thenReturn(newsitem);
-		commentFeedsToCheck = new ArrayList<CommentFeed>();
+		commentFeedsToCheck = Lists.newArrayList();
 		commentFeedsToCheck.add(commentFeed);
 		for (int i = 0; i < 29; i++) {
-			commentFeedsToCheck.add(new CommentFeed(0, null, new ArrayList<Comment>(), null, null, null));
+			commentFeedsToCheck.add(new CommentFeed(0, null, Lists.<Comment>newArrayList(), null, null, null));
 		}		
 		Mockito.when(resourceDAO.getCommentFeedsToCheck(30)).thenReturn(commentFeedsToCheck);
 		

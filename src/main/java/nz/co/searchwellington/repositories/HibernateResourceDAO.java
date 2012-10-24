@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +25,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class HibernateResourceDAO {
@@ -132,7 +133,7 @@ public class HibernateResourceDAO {
     
     @SuppressWarnings("unchecked")
     public List<Resource> getAllPublishersMatchingStem(String stem, boolean showBroken) {
-        List<Resource> allPublishers = new ArrayList<Resource>();
+        List<Resource> allPublishers = Lists.newArrayList();
         if (showBroken) {
             allPublishers = sessionFactory.getCurrentSession().createCriteria(Website.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list();
         } else { 

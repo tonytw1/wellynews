@@ -14,7 +14,6 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
@@ -37,7 +36,6 @@ public class AutoTagController {
     private ImpliedTagService autoTagService;
 	private KeywordSearchService keywordSearchService;
 	private ContentUpdateService contentUpateService;
-	private TagDAO tagDAO;
 	private HandTaggingDAO tagVoteDAO;
 	private LoggedInUserFilter loggedInUserFilter;
 	private CommonModelObjectsService commonModelObjectsService;
@@ -49,21 +47,19 @@ public class AutoTagController {
 	public AutoTagController(HibernateResourceDAO resourceDAO,
 			AdminRequestFilter requestFilter, ImpliedTagService autoTagService,
 			KeywordSearchService keywordSearchService,
-			ContentUpdateService contentUpateService, TagDAO tagDAO,
-			HandTaggingDAO tagVoteDAO,
-			LoggedInUserFilter loggedInUserFilter,
+			ContentUpdateService contentUpateService,
+			HandTaggingDAO tagVoteDAO, LoggedInUserFilter loggedInUserFilter,
 			CommonModelObjectsService commonModelObjectsService) {
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.autoTagService = autoTagService;
 		this.keywordSearchService = keywordSearchService;
 		this.contentUpateService = contentUpateService;
-		this.tagDAO = tagDAO;
 		this.tagVoteDAO = tagVoteDAO;
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.commonModelObjectsService = commonModelObjectsService;
 	}
-	
+
 	@RequestMapping("/*/autotag")
 	public ModelAndView prompt(HttpServletRequest request, HttpServletResponse response) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();

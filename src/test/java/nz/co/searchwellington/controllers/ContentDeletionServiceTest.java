@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;

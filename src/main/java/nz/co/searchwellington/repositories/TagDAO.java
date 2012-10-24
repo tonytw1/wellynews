@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
@@ -13,6 +12,8 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class TagDAO {
@@ -57,7 +58,7 @@ public class TagDAO {
 
 	// TODO can hiberate do a batch load?
 	public List<Tag> loadTagsById(List<Integer> tagIds) {
-		List<Tag> tags = new ArrayList<Tag>();
+		final List<Tag> tags = Lists.newArrayList();
 		for (Integer tagId : tagIds) {
 			Tag tag = this.loadTagById(tagId);
 			if (tag != null) {

@@ -1,6 +1,5 @@
 package nz.co.searchwellington.views;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +12,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.View;
 
+import com.google.common.collect.Lists;
 import com.sun.syndication.feed.synd.SyndEntry;
 
 public class RssView implements View {
@@ -47,7 +47,7 @@ public class RssView implements View {
 	}
     
 	private List<SyndEntry> makeRssEntiresForContent(List<FrontendResource> content) {
-		List<SyndEntry> entires = new ArrayList<SyndEntry>();
+		final List<SyndEntry> entires = Lists.newArrayList();
     	for (FrontendResource item : content) {
 			SyndEntry rssItem = rssItemMaker.makeRssItem(item);
 			if (rssItem != null) {

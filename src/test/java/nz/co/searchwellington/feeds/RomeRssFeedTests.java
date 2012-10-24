@@ -2,7 +2,6 @@ package nz.co.searchwellington.feeds;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -17,8 +16,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
+import com.google.common.collect.Lists;
 import com.sun.syndication.feed.synd.SyndEntry;
-
 
 public class RomeRssFeedTests extends TestCase {
 	
@@ -31,7 +30,7 @@ public class RomeRssFeedTests extends TestCase {
 	}
 		
 	public void testShouldRenderRssItem() throws Exception {
-		List<FrontendNewsitem> content = new ArrayList<FrontendNewsitem>();
+		List<FrontendNewsitem> content = Lists.newArrayList();
 		content.add(newsitem);
 		Document document = createOutputAndParseBackDocument(content);
 		
@@ -43,7 +42,7 @@ public class RomeRssFeedTests extends TestCase {
 		final Geocode geocode = new Geocode("119 Farringdon Road, London", 30.2, 45.1);
 		newsitem.setGeocode(geocode);
 		
-		List<FrontendNewsitem> content = new ArrayList<FrontendNewsitem>();
+		List<FrontendNewsitem> content = Lists.newArrayList();;
 		content.add(newsitem);
 		Document document = createOutputAndParseBackDocument(content);
 
@@ -54,7 +53,7 @@ public class RomeRssFeedTests extends TestCase {
 	}
 	
 	private Document createOutputAndParseBackDocument(List<FrontendNewsitem> content) throws DocumentException {
-		List<SyndEntry> rssContent = new ArrayList<SyndEntry>();		
+		List<SyndEntry> rssContent = Lists.newArrayList();		
 		RssItemMaker rssItemMaker = new RssItemMaker();	// TODO this in in the wrong place implies this should be part of RssView
 		for (FrontendNewsitem newsitem: content) {
 			rssContent.add(rssItemMaker.getNewsitemRssItem(newsitem));

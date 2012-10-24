@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -43,7 +42,7 @@ public class SolrResourceHydrator implements ResourceHydrator {
 			newsitem.setPublisherName((String) result.getFieldValue(SolrInputDocumentBuilder.PUBLISHER_NAME));
 			
 			if ((Boolean) result.getFieldValue("commented")) {
-				List<Comment> comments = new ArrayList<Comment>();
+				final List<Comment> comments = Lists.newArrayList();
 				Collection<Object> commentFields = result.getFieldValues("comment");
 				for (Object commentField : commentFields) {
 					comments.add(new Comment((String) commentField));

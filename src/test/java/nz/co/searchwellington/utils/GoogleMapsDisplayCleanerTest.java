@@ -3,7 +3,6 @@ package nz.co.searchwellington.utils;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +15,8 @@ import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.collect.Lists;
 
 public class GoogleMapsDisplayCleanerTest {
 	
@@ -32,7 +33,7 @@ public class GoogleMapsDisplayCleanerTest {
     
     @Before
     public void setup() throws Exception {
-        geocoded = new ArrayList<FrontendResource>();
+        geocoded = Lists.newArrayList();
         firstNewsitem = new NewsitemImpl();
         firstNewsitem.setName("First");
         firstNewsitem.setGeocode(here);

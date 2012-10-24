@@ -1,6 +1,5 @@
 package nz.co.searchwellington.filters.attributesetters;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,6 +12,8 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.Lists;
 
 public class TagPageAttributeSetter implements AttributeSetter {
 	
@@ -41,7 +42,7 @@ public class TagPageAttributeSetter implements AttributeSetter {
 				if (tag != null) {
 					log.info("Setting tag: " + tag.getName());
 					request.setAttribute("tag", tag); // TODO deprecate
-					List<Tag> tags = new ArrayList<Tag>();
+					List<Tag> tags = Lists.newArrayList();
 					tags.add(tag);
 					log.info("Setting tags: " + tags);
 					request.setAttribute("tags", tags);

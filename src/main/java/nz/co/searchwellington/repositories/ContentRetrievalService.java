@@ -10,6 +10,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.Lists;
+
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
@@ -274,7 +276,7 @@ public class ContentRetrievalService {
 	}
 
 	public List<Tag> getFeedworthyTags() {
-		List<Tag> feedworthy = new ArrayList<Tag>();
+		final List<Tag> feedworthy = Lists.newArrayList();
 		for (TagContentCount tagContentCount : relatedTagsService.getFeedworthyTags(showBrokenDecisionService.shouldShowBroken())) {
 			feedworthy.add(tagContentCount.getTag());
 		}		

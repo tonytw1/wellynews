@@ -4,7 +4,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +22,7 @@ import org.dom4j.io.SAXReader;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.google.common.collect.Lists;
 
 public class GoogleSitemapServiceTests extends TestCase {
     
@@ -46,7 +46,7 @@ public class GoogleSitemapServiceTests extends TestCase {
 		bananas = new Tag();
 		bananas.setName("bananas");
 		
-		tags = new ArrayList<Tag>();
+		tags = Lists.newArrayList();
 		tags.add(apples);
 		tags.add(bananas);  
 		
@@ -63,8 +63,7 @@ public class GoogleSitemapServiceTests extends TestCase {
 		
 		service = new GoogleSitemapService(contentRetrievalService, dateFormatter, urlBuilder, tagDAO);        
 	}
-	
-	
+		
     public void testShouldRenderTagPagesWithLastModifiedTime() throws Exception {              
         final String xml = service.render("http://test");
 		Document document = parse(xml);
@@ -80,7 +79,6 @@ public class GoogleSitemapServiceTests extends TestCase {
         assertEquals(1, lastmods.size());
     }
     
-    
     public void testNotShouldRenderTagPaginations() throws Exception {
     	  when(contentRetrievalService.getTaggedNewitemsCount(apples)).thenReturn(65);
     	  when(contentRetrievalService.getTaggedNewitemsCount(bananas)).thenReturn(10);
@@ -90,7 +88,6 @@ public class GoogleSitemapServiceTests extends TestCase {
     	  List<?> locs = document.selectNodes( "//urlset/sitemap:url/sitemap:loc" );
           assertEquals(2, locs.size());    	  
 	}
-    
     
     private Document parse(String xml) throws DocumentException {
         Reader stringReader = new StringReader(xml);

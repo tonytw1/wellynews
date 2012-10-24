@@ -1,6 +1,5 @@
 package nz.co.searchwellington.twitter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +15,8 @@ import nz.co.searchwellington.utils.UrlCleaner;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class TwitterNewsitemMentionsFinderService {
@@ -38,10 +39,9 @@ public class TwitterNewsitemMentionsFinderService {
 	}
 	
 	public List<TwitterMention> getNewsitemMentions() {
-		List<TwitterMention> RTs = new ArrayList<TwitterMention>();		
-
-		List<Twit> replies = twitterService.getReplies();
-		for (Twit status : replies) {
+		final List<TwitterMention> RTs = Lists.newArrayList();	
+		
+		for (Twit status : twitterService.getReplies()) {
 			final String message = status.getText();			
 			log.info("Evaluating tweet: " + message);
 			if (status.getInReplyToStatusId() > 0) {							

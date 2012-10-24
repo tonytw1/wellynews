@@ -1,14 +1,13 @@
 package nz.co.searchwellington.model;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
-
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+
+import com.google.common.collect.ImmutableList;
 
 public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, FrontendNewsitem {
 	

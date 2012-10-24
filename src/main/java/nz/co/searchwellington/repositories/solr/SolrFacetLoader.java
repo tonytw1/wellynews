@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories.solr;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.PublisherContentCount;
@@ -11,6 +10,8 @@ import nz.co.searchwellington.repositories.TagDAO;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.collect.Lists;
 
 @Component
 public class SolrFacetLoader {
@@ -23,7 +24,7 @@ public class SolrFacetLoader {
 	}
 	
 	public List<TagContentCount> loadTagFacet(List<Count> values) {
-    	List<TagContentCount> relatedTags = new ArrayList<TagContentCount>();
+		final List<TagContentCount> relatedTags = Lists.newArrayList();
     	if (values != null) {
     		for (Count count : values) {
     			final int relatedTagId = Integer.parseInt(count.getName());
@@ -38,14 +39,14 @@ public class SolrFacetLoader {
     }
 	
     public List<PublisherContentCount> loadPublisherFacet(List<Count> values) {
-    	List<PublisherContentCount> relatedPublishers = new ArrayList<PublisherContentCount>();		
+    	final List<PublisherContentCount> relatedPublishers = Lists.newArrayList();		
 		if (values != null) {
 			for (Count count : values) {
 				final String relatedPublisherName = (String) count.getName();
 				final Long relatedItemCount = count.getCount();
 				relatedPublishers.add(new PublisherContentCount(relatedPublisherName, relatedItemCount.intValue()));
 			}
-		}		
+		}
 		return relatedPublishers;     
     }
     

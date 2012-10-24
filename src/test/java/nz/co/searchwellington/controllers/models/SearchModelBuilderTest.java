@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import nz.co.searchwellington.model.Tag;
@@ -19,6 +18,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.common.collect.Lists;
 
 public class SearchModelBuilderTest {
 	
@@ -37,7 +38,7 @@ public class SearchModelBuilderTest {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder);
-		tags = new ArrayList<Tag>();
+		tags = Lists.newArrayList();
 		tags.add(tag);
 	}
 	
