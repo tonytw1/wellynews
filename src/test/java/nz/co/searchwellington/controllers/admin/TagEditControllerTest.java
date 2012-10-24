@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.UrlStack;
@@ -31,6 +32,7 @@ public class TagEditControllerTest {
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock EditPermissionService editPermissionService;
 	@Mock SubmissionProcessingService submissionProcessingService;
+	@Mock CommonModelObjectsService commonModelObjectsService;
 
 	@Mock Tag newTag;
 	@Mock Tag existingTag;
@@ -43,9 +45,10 @@ public class TagEditControllerTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);				
 		request = new MockHttpServletRequest();		
-		controller = new TagEditController(requestFilter, 
-				tagWidgetFactory, urlStack, tagDAO, tagModifcationService, loggedInUserFilter, editPermissionService,
-				submissionProcessingService);
+		controller = new TagEditController(requestFilter, tagWidgetFactory,
+				urlStack, tagDAO, tagModifcationService, loggedInUserFilter,
+				editPermissionService, submissionProcessingService,
+				commonModelObjectsService);
 	}
 
 	@Test

@@ -18,7 +18,8 @@ public class CommonModelObjectsService {
 	}
 	
     public void populateCommonLocal(ModelAndView mv) {      
-        mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());      
+        mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
+		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
     }
 	
 }

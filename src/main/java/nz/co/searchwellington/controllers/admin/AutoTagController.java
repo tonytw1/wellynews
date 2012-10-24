@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -39,6 +40,7 @@ public class AutoTagController {
 	private TagDAO tagDAO;
 	private HandTaggingDAO tagVoteDAO;
 	private LoggedInUserFilter loggedInUserFilter;
+	private CommonModelObjectsService commonModelObjectsService;
     
 	public AutoTagController() {
 	}
@@ -49,7 +51,8 @@ public class AutoTagController {
 			KeywordSearchService keywordSearchService,
 			ContentUpdateService contentUpateService, TagDAO tagDAO,
 			HandTaggingDAO tagVoteDAO,
-			LoggedInUserFilter loggedInUserFilter) {
+			LoggedInUserFilter loggedInUserFilter,
+			CommonModelObjectsService commonModelObjectsService) {
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.autoTagService = autoTagService;
@@ -58,6 +61,7 @@ public class AutoTagController {
 		this.tagDAO = tagDAO;
 		this.tagVoteDAO = tagVoteDAO;
 		this.loggedInUserFilter = loggedInUserFilter;
+		this.commonModelObjectsService = commonModelObjectsService;
 	}
 	
 	@RequestMapping("/*/autotag")
@@ -70,7 +74,7 @@ public class AutoTagController {
     	
         final ModelAndView mv = new ModelAndView();        
         mv.setViewName("autoTagPrompt");        
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+        commonModelObjectsService.populateCommonLocal(mv);
         mv.addObject("heading", "Autotagging");
         
         requestFilter.loadAttributesOntoRequest(request);
@@ -103,8 +107,7 @@ public class AutoTagController {
         final ModelAndView mv = new ModelAndView();
         mv.setViewName("autoTagApply");
         mv.addObject("heading", "Autotagging");
-        
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());		// TODO use common object loader
+        commonModelObjectsService.populateCommonLocal(mv);
         mv.addObject("tag", tag);
         
         final List<Resource> resourcesAutoTagged = Lists.newArrayList();

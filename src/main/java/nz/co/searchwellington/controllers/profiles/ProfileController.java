@@ -4,11 +4,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.annotations.Timed;
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
-import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
@@ -30,19 +30,22 @@ public class ProfileController {
     private HibernateBackedUserDAO userDAO;
     private LoggedInUserFilter loggerInUserFilter;
 	private UrlBuilder urlBuilder;
-	private TagDAO tagDAO;
 	private ContentRetrievalService contentRetrievalService;
+	private CommonModelObjectsService commonModelObjectsService;
 	
 	public ProfileController() {
 	}
 	
 	@Autowired
-	public ProfileController(HibernateBackedUserDAO userDAO, LoggedInUserFilter loggerInUserFilter, UrlBuilder urlBuilder, TagDAO tagDAO, ContentRetrievalService contentRetrievalService) {
+	public ProfileController(HibernateBackedUserDAO userDAO,
+			LoggedInUserFilter loggerInUserFilter, UrlBuilder urlBuilder,
+			ContentRetrievalService contentRetrievalService,
+			CommonModelObjectsService commonModelObjectsService) {
 		this.userDAO = userDAO;
 		this.loggerInUserFilter = loggerInUserFilter;
 		this.urlBuilder = urlBuilder;
-		this.tagDAO = tagDAO;
 		this.contentRetrievalService = contentRetrievalService;
+		this.commonModelObjectsService = commonModelObjectsService;
 	}
 	
 	@Transactional
@@ -50,8 +53,8 @@ public class ProfileController {
     @Timed(timingNotes = "")
     public ModelAndView all(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("profiles");    
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Profiles");
+        commonModelObjectsService.populateCommonLocal(mv);
         mv.addObject("profiles", userDAO.getActiveUsers());        
         return mv;
     }
@@ -60,7 +63,7 @@ public class ProfileController {
 	@RequestMapping("/profile/edit")
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView mv = new ModelAndView("editProfile");    
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+        commonModelObjectsService.populateCommonLocal(mv);
         mv.addObject("heading", "Editing your profile");
 
         User loggedInUser = loggerInUserFilter.getLoggedInUser();
@@ -104,7 +107,7 @@ public class ProfileController {
 				}
 				
 				mv.addObject("heading", "User profile");
-				mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+				commonModelObjectsService.populateCommonLocal(mv);
 				mv.addObject("profileuser", user);
 
 				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, MAX_NEWSITEMS));

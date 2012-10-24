@@ -2,18 +2,17 @@ package nz.co.searchwellington.controllers.admin;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,21 +29,22 @@ public class PublisherAutoGatherController {
     private static Logger log = Logger.getLogger(PublisherAutoGatherController.class);
     
     private AdminRequestFilter requestFilter;
-    private TagDAO tagDAO;
     private HibernateResourceDAO resourceDAO;
     private ContentUpdateService contentUpdateService;
+    private CommonModelObjectsService commonModelObjectsService;
 
     public PublisherAutoGatherController() {
 	}
     
-    @Autowired
-    public PublisherAutoGatherController(AdminRequestFilter requestFilter,
-			TagDAO tagDAO, HibernateResourceDAO resourceDAO,
-			ContentUpdateService contentUpdateService) {
+	@Autowired
+	public PublisherAutoGatherController(AdminRequestFilter requestFilter,
+			HibernateResourceDAO resourceDAO,
+			ContentUpdateService contentUpdateService,
+			CommonModelObjectsService commonModelObjectsService) {
 		this.requestFilter = requestFilter;
-		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;
 		this.contentUpdateService = contentUpdateService;
+		this.commonModelObjectsService = commonModelObjectsService;
 	}
     
 	@RequestMapping("/admin/gather/prompt")
@@ -52,8 +52,8 @@ public class PublisherAutoGatherController {
         ModelAndView mv = new ModelAndView();
         
         mv.setViewName("autoGatherPrompt");       
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Auto Gathering");
+        commonModelObjectsService.populateCommonLocal(mv);
         
         requestFilter.loadAttributesOntoRequest(request);
         Website publisher = (Website) request.getAttribute("publisher");
@@ -75,8 +75,8 @@ public class PublisherAutoGatherController {
 	public ModelAndView apply(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();
         mv.setViewName("autoGatherApply");      
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
         mv.addObject("heading", "Auto Gathering");
+        commonModelObjectsService.populateCommonLocal(mv);
         
         requestFilter.loadAttributesOntoRequest(request);
         Website publisher = (Website) request.getAttribute("publisher");

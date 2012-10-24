@@ -7,12 +7,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -32,8 +32,8 @@ public class ProfileControllerTest {
 	@Mock HibernateBackedUserDAO userDao;
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock UrlBuilder urlBuilder;
-	@Mock TagDAO tagDAO;
 	@Mock ContentRetrievalService contentRetrievalService;
+	@Mock CommonModelObjectsService commonModelObjectsService;
 	
 	@Mock User existingUser;	
 	private MockHttpServletRequest request;
@@ -47,7 +47,7 @@ public class ProfileControllerTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		controller = new ProfileController(userDao, loggedInUserFilter, urlBuilder, tagDAO, contentRetrievalService);
+		controller = new ProfileController(userDao, loggedInUserFilter, urlBuilder, contentRetrievalService, commonModelObjectsService);
 		request = new MockHttpServletRequest();
 		response = new MockHttpServletResponse();
 	}

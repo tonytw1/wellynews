@@ -6,8 +6,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.views.RssView;
 import nz.co.searchwellington.views.RssViewFactory;
 
@@ -26,7 +26,7 @@ public class ContentModelBuilderServiceTest {
 	@Mock RssViewFactory rssViewFactory;
 	@Mock ViewFactory viewFactory;
 	@Mock JsonCallbackNameValidator jsonCallbackNameValidator;
-	@Mock ContentRetrievalService contentRetrievalService;
+	@Mock CommonModelObjectsService commonModelObjectsService;
 	ModelBuilder[] modelBuilders;
 	
 	MockHttpServletRequest request;
@@ -55,8 +55,12 @@ public class ContentModelBuilderServiceTest {
 		when(invalidModelBuilder.isValid(request)).thenReturn(false);
 		when(validModelBuilder.isValid(request)).thenReturn(true);
 		when(validModelBuilder.populateContentModel(request)).thenReturn(validModelAndView);
-		
-		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, viewFactory, jsonCallbackNameValidator, contentRetrievalService,  modelBuilders);
+
+		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, 
+				viewFactory, 
+				jsonCallbackNameValidator,
+				commonModelObjectsService,
+				modelBuilders);
 	}
 	
 	@Test
@@ -83,19 +87,10 @@ public class ContentModelBuilderServiceTest {
 		request.setPathInfo("/something/json");
 		assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).getView());
 	}
-		
-	@Test
-	public void featuredTagsShouldBeAddedToHtmlViews() throws Exception {
-		when(contentRetrievalService.getFeaturedTags()).thenReturn(featuredTags);		
-		ModelAndView mv = contentModelBuilderService.populateContentModel(request);		
-		assertEquals(featuredTags, mv.getModel().get("featuredTags"));
-	}
 	
 	@Test
-	public void topLevelTagsShouldBeAddedToHtmlViews() throws Exception {
-		when(contentRetrievalService.getTopLevelTags()).thenReturn(topLevelTags);		
-		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-		assertEquals(topLevelTags, mv.getModel().get("top_level_tags"));
+	public void commonModelElementsShouldBeAddedToHtmlViews() throws Exception {		
+		// TODO how to cover?
 	}
 	
 	@Test

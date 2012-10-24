@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.repositories.ContentRetrievalService;
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.views.RssViewFactory;
 
 import org.apache.log4j.Logger;
@@ -23,18 +23,22 @@ public class ContentModelBuilderService {
 	private RssViewFactory rssViewFactory;
 	private ViewFactory viewFactory;
 	private JsonCallbackNameValidator jsonCallbackNameValidator;
-	private ContentRetrievalService contentRetrievalService;
+	private CommonModelObjectsService commonModelObjectsService;
 	private ModelBuilder[] modelBuilders;
 	
 	public ContentModelBuilderService() {
 	}
-	
+
 	@Autowired
-	public ContentModelBuilderService(RssViewFactory rssViewFactory, ViewFactory viewFactory, JsonCallbackNameValidator jsonCallbackNameValidator, ContentRetrievalService contentRetrievalService, ModelBuilder[] modelBuilders) {
+	public ContentModelBuilderService(RssViewFactory rssViewFactory,
+			ViewFactory viewFactory,
+			JsonCallbackNameValidator jsonCallbackNameValidator,
+			CommonModelObjectsService commonModelObjectsService,
+			ModelBuilder[] modelBuilders) {
 		this.rssViewFactory = rssViewFactory;
 		this.viewFactory = viewFactory;
 		this.jsonCallbackNameValidator = jsonCallbackNameValidator;
-		this.contentRetrievalService = contentRetrievalService;
+		this.commonModelObjectsService = commonModelObjectsService;
 		this.modelBuilders = modelBuilders;
 	}
 	
@@ -64,7 +68,7 @@ public class ContentModelBuilderService {
 				if (mv != null) {
 					modelBuilder.populateExtraModelConent(request, mv);
 					mv.setViewName(modelBuilder.getViewName(mv));
-					addCommonModelElements(mv);
+					commonModelObjectsService.populateCommonLocal(mv);
 					return mv;
 				}
 				return null;				
@@ -82,11 +86,6 @@ public class ContentModelBuilderService {
 				mv.addObject(JSON_CALLBACK_PARAMETER, callback);
 			}	 
 		}
-	}
-	
-	private void addCommonModelElements(ModelAndView mv) {
-		mv.addObject("top_level_tags", contentRetrievalService.getTopLevelTags());
-		mv.addObject("featuredTags", contentRetrievalService.getFeaturedTags());
 	}
 	
 }

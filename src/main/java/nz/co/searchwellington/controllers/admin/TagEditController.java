@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.admin;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.UrlStack;
@@ -36,18 +37,19 @@ public class TagEditController {
 	private LoggedInUserFilter loggedInUserFilter;
     private EditPermissionService editPermissionService;
     private SubmissionProcessingService submissionProcessingService;
+    private CommonModelObjectsService commonModelObjectsService;
     
     public TagEditController() {       
     }
     
-    @Autowired
-    public TagEditController(AdminRequestFilter requestFilter,
+	@Autowired
+	public TagEditController(AdminRequestFilter requestFilter,
 			TagsWidgetFactory tagWidgetFactory, UrlStack urlStack,
 			TagDAO tagDAO, TagModificationService tagModifcationService,
 			LoggedInUserFilter loggedInUserFilter,
 			EditPermissionService editPermissionService,
-			SubmissionProcessingService submissionProcessingService) {
-		super();
+			SubmissionProcessingService submissionProcessingService,
+			CommonModelObjectsService commonModelObjectsService) {
 		this.requestFilter = requestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
 		this.urlStack = urlStack;
@@ -56,24 +58,25 @@ public class TagEditController {
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.editPermissionService = editPermissionService;
 		this.submissionProcessingService = submissionProcessingService;
+		this.commonModelObjectsService = commonModelObjectsService;
 	}
     
-	@Transactional
+	@Transactional	// TODO required? read only?
 	@RequestMapping("/edit/tag/submit")
-    public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {    	    	
-        ModelAndView modelAndView = new ModelAndView("submitTag");
-        modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());
-        modelAndView.addObject("heading", "Submitting a Tag");
-        return modelAndView;
-    }        
-
+    public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) {
+		final ModelAndView mv = new ModelAndView("submitTag");
+        mv.addObject("heading", "Submitting a Tag");
+        commonModelObjectsService.populateCommonLocal(mv);
+        return mv;
+    }
+	
     @Transactional
     @RequestMapping("/edit/tag/*")
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {        
-        ModelAndView mv = new ModelAndView("editTag");   
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+       final  ModelAndView mv = new ModelAndView("editTag");   
+        commonModelObjectsService.populateCommonLocal(mv);
         mv.addObject("heading", "Editing a Tag");
-
+        
         Tag editTag = null;
         requestFilter.loadAttributesOntoRequest(request);
            
@@ -102,9 +105,9 @@ public class TagEditController {
         	return null;
         }
         
-        ModelAndView mv = new ModelAndView("deleteTag"); 
-        mv.addObject("top_level_tags", tagDAO.getTopLevelTags());
+        final ModelAndView mv = new ModelAndView("deleteTag"); 
         mv.addObject("heading", "Editing a Tag");
+        commonModelObjectsService.populateCommonLocal(mv);
         
         Tag tag = (Tag) request.getAttribute("tag");         
         mv.addObject("tag", tag);            
@@ -136,10 +139,11 @@ public class TagEditController {
 	}
 	
     @Transactional
-	@RequestMapping(value="/edit/tag/save", method=RequestMethod.POST)
+	@RequestMapping(value="/edit/tag/save", method=RequestMethod.POST)	// TODO use redirect view
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) {        
-        ModelAndView modelAndView = new ModelAndView("savedTag");    
-        modelAndView.addObject("heading", "Tag Saved");
+        final ModelAndView mv = new ModelAndView("savedTag");    
+        mv.addObject("heading", "Tag Saved");
+        commonModelObjectsService.populateCommonLocal(mv);
 
         Tag editTag = null;
         requestFilter.loadAttributesOntoRequest(request);
@@ -192,12 +196,11 @@ public class TagEditController {
         // TODO validate.
         tagDAO.saveTag(editTag);	// TODO should go through the TMS surely?
         
-        modelAndView.addObject("tag", editTag);
-        modelAndView.addObject("top_level_tags", tagDAO.getTopLevelTags());    
-        return modelAndView;
+        mv.addObject("tag", editTag);
+        commonModelObjectsService.populateCommonLocal(mv);
+        return mv;
     }
-
-
+    
 	private void populateAutotagHints(HttpServletRequest request, Tag editTag) {
 		final String autotagHints = request.getParameter("autotag_hints");
         if (autotagHints != null && !autotagHints.trim().equals("")) {
@@ -206,7 +209,6 @@ public class TagEditController {
         	editTag.setAutotagHints(null);
         }
 	}
-
 
 	private void populateRelatedTwitter(HttpServletRequest request, Tag editTag) {
 		final String requestTwitter = request.getParameter("twitter");
