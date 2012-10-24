@@ -8,6 +8,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Component;
 
+@Deprecated
 @Component
 public class DateFormatter extends uk.co.eelpieconsulting.common.dates.DateFormatter {
    

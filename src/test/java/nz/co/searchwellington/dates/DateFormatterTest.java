@@ -4,11 +4,13 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
 
+import org.junit.Test;
+
 public class DateFormatterTest {
     
 	DateFormatter dateFormatter = new DateFormatter();        
     
-	//@Test TODO enable test
+	@Test
     public void testCanMakeW3CFormatForSitemaps() throws Exception {
         Calendar now = Calendar.getInstance();
         now.set(Calendar.HOUR, 8);
