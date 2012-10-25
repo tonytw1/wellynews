@@ -8,7 +8,7 @@ import nz.co.searchwellington.model.Suggestion;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -42,7 +42,7 @@ public class SuggestionDAO {
 
 	public boolean isSuggested(String url) {
 		Suggestion existingSuggestion = (Suggestion) sessionFactory.getCurrentSession().createCriteria(Suggestion.class).
-	      	add(Expression.eq("url", url)).
+	      	add(Restrictions.eq("url", url)).
 	      	setMaxResults(1).
 	        uniqueResult(); 
 		 
@@ -63,7 +63,7 @@ public class SuggestionDAO {
 	 
 	 @Transactional
 	 public void removeSuggestion(String url) {
-		Suggestion existingsuggestion = (Suggestion) sessionFactory.getCurrentSession().createCriteria(Suggestion.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();
+		Suggestion existingsuggestion = (Suggestion) sessionFactory.getCurrentSession().createCriteria(Suggestion.class).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult();
 		if (existingsuggestion != null) {
 			sessionFactory.getCurrentSession().delete(existingsuggestion);
 		}

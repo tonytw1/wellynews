@@ -19,7 +19,6 @@ import nz.co.searchwellington.model.Website;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,7 +124,7 @@ public class HibernateResourceDAO {
     public List<Newsitem> getRecentUntaggedNewsitems() {
         return sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
                 add(Restrictions.isEmpty("tags")).
-                add(Expression.eq("httpStatus", 200)).
+                add(Restrictions.eq("httpStatus", 200)).
                 addOrder(Order.desc("date")).
                 setMaxResults(12).
                 setCacheable(true).list();        
@@ -137,7 +136,7 @@ public class HibernateResourceDAO {
         if (showBroken) {
             allPublishers = sessionFactory.getCurrentSession().createCriteria(Website.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list();
         } else { 
-            allPublishers = sessionFactory.getCurrentSession().createCriteria(Website.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).add(Expression.eq("httpStatus", 200)).addOrder(Order.asc("name")).list();            
+            allPublishers = sessionFactory.getCurrentSession().createCriteria(Website.class).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).add(Restrictions.eq("httpStatus", 200)).addOrder(Order.asc("name")).list();            
         }               
         return allPublishers;
     }
@@ -184,43 +183,43 @@ public class HibernateResourceDAO {
     }
 	
     public Resource loadResourceByUrl(String url) {
-        return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();        
+        return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult();        
     }
     
 	public Resource loadNewsitemByHeadlineAndPublisherWithinLastMonth(String name, Website publisher) {	// TODO last month clause
     	 return (Resource) sessionFactory.getCurrentSession().createCriteria(Newsitem.class).
-    	 add(Expression.eq("name", name)).
-    	 add(Expression.eq("publisher", publisher)).
+    	 add(Restrictions.eq("name", name)).
+    	 add(Restrictions.eq("publisher", publisher)).
     	 setMaxResults(1).uniqueResult();   
 	}
     
 	public Website getPublisherByUrlWords(String urlWords) {
-		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();    		
+		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();    		
 	}
 		
 	public Website getPublisherByName(String name) {
-		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Expression.eq("name", name)).setMaxResults(1).uniqueResult();    		
+		return (Website) sessionFactory.getCurrentSession().createCriteria(Website.class).add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult();    		
 	}
 		
 	public Feed loadFeedByUrlWords(String urlWords) {
-		return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Expression.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();
+		return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();
 	}
 	
 	public Resource loadResourceByUniqueUrl(String url) {
-        return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Expression.eq("url", url)).uniqueResult();        
+        return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Restrictions.eq("url", url)).uniqueResult();        
     }
 	
 	public Feed loadFeedByUrl(String url) {
-        return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Expression.eq("url", url)).uniqueResult();        
+        return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Restrictions.eq("url", url)).uniqueResult();        
     }    
         
     public CommentFeed loadCommentFeedByUrl(String url) {
-        return (CommentFeed) sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();  
+        return (CommentFeed) sessionFactory.getCurrentSession().createCriteria(CommentFeed.class).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult();  
     }
            
     public DiscoveredFeed loadDiscoveredFeedByUrl(String url) {
         return (DiscoveredFeed) sessionFactory.getCurrentSession().createCriteria(DiscoveredFeed.class).
-        add(Expression.eq("url", url)).
+        add(Restrictions.eq("url", url)).
         setMaxResults(1).
         setCacheable(true).
         uniqueResult();  

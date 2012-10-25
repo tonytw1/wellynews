@@ -5,7 +5,7 @@ import java.util.List;
 import nz.co.searchwellington.model.Twit;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class TweetDAO {
 
 	public Twit loadTweetByTwitterId(Long twitterId) {
 		return (Twit) sessionFactory.getCurrentSession().createCriteria(
-				Twit.class).add(Expression.eq("twitterid", twitterId))
+				Twit.class).add(Restrictions.eq("twitterid", twitterId))
 				.setMaxResults(1).setCacheable(true).uniqueResult();
 	}
 

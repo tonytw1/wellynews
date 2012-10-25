@@ -11,7 +11,7 @@ import nz.co.searchwellington.model.taggingvotes.HandTagging;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +34,7 @@ public class HandTaggingDAO {
 	@SuppressWarnings("unchecked")
 	public List<HandTagging> getHandTaggingsForResource(Resource resource) {
 		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-			add(Expression.eq("resource", resource)).
+			add(Restrictions.eq("resource", resource)).
 			setCacheable(true).
 			list();
 		return handTaggings;
@@ -65,7 +65,7 @@ public class HandTaggingDAO {
     @SuppressWarnings("unchecked")
 	public List<HandTagging> getVotesForTag(Tag tag) {
     	List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-		add(Expression.eq("tag", tag)).
+		add(Restrictions.eq("tag", tag)).
 		setCacheable(true).
 		list();
     	return handTaggings;
@@ -98,7 +98,7 @@ public class HandTaggingDAO {
 	@SuppressWarnings("unchecked")
 	public List<HandTagging> getUsersVotes(User user) {
 		return sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-		add(Expression.eq("user", user)).
+		add(Restrictions.eq("user", user)).
 		setCacheable(true).
 		list();
 	}
@@ -112,8 +112,8 @@ public class HandTaggingDAO {
 	@SuppressWarnings("unchecked")
 	private List<HandTagging> getHandTaggingsForResourceByUser(Resource resource, User user) {
 		List<HandTagging> handTaggings = sessionFactory.getCurrentSession().createCriteria(HandTagging.class).
-			add(Expression.eq("resource", resource)).
-			add(Expression.eq("user", user)).
+			add(Restrictions.eq("resource", resource)).
+			add(Restrictions.eq("user", user)).
 			setCacheable(true).
 			list();
 		return handTaggings;

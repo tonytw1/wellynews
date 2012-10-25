@@ -4,7 +4,7 @@ import nz.co.searchwellington.model.Supression;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +34,7 @@ public class SupressionDAO {
     }
     
     public boolean isSupressed(String url) {
-        Supression existingSupression = (Supression) sessionFactory.getCurrentSession().createCriteria(Supression.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult(); 
+        Supression existingSupression = (Supression) sessionFactory.getCurrentSession().createCriteria(Supression.class).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult(); 
         if (existingSupression != null) {
             return true;
         }        
@@ -43,7 +43,7 @@ public class SupressionDAO {
     
     @Transactional
     public void removeSupressionForUrl(String url) {
-        Supression existingSupression = (Supression) sessionFactory.getCurrentSession().createCriteria(Supression.class).add(Expression.eq("url", url)).setMaxResults(1).uniqueResult();
+        Supression existingSupression = (Supression) sessionFactory.getCurrentSession().createCriteria(Supression.class).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult();
         if (existingSupression != null) {
             sessionFactory.getCurrentSession().delete(existingSupression);
         }

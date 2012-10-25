@@ -6,7 +6,7 @@ import java.util.List;
 import nz.co.searchwellington.model.User;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,7 +26,7 @@ public class HibernateBackedUserDAO {
     }
           
     public User getUserByOpenId(String openId) {
-    	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("openId", openId)).uniqueResult();     
+    	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("openId", openId)).uniqueResult();     
     }
     
     @SuppressWarnings("unchecked")
@@ -43,15 +43,15 @@ public class HibernateBackedUserDAO {
     }
 
 	public User getUserByProfileName(String profilename) {
-	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("profilename", profilename)).uniqueResult();     	    
+	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("profilename", profilename)).uniqueResult();     	    
 	}
 	
 	public User getUserByTwitterId(int twitterId) {
-	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("twitterId", twitterId)).uniqueResult();     	    
+	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("twitterId", twitterId)).uniqueResult();     	    
 	}
 	
 	public User getUserByApiKey(String apiKey) {
-	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Expression.eq("apikey", apiKey)).uniqueResult();     	    
+	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("apikey", apiKey)).uniqueResult();     	    
 	}
 
 	// TODO fails of no users
