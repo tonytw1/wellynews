@@ -171,11 +171,10 @@ public class HibernateResourceDAO {
         setMaxResults(maxItems).
         list();
     }
-	
+
 	public int getOwnedByUserCount(User user) {
-        return ((Long) sessionFactory.getCurrentSession().
-        		iterate("select count(*) from ResourceImpl where owner = " + user.getId()).
-        		next()).intValue();
+		return ((Long) sessionFactory.getCurrentSession().createQuery(
+				"select count(*) from ResourceImpl where owner = " + user.getId()).iterate().next()).intValue();
 	}
     
 	public Resource loadResourceById(int resourceID) {

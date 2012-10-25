@@ -6,8 +6,8 @@ import java.util.List;
 import nz.co.searchwellington.model.User;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +56,7 @@ public class HibernateBackedUserDAO {
 
 	// TODO fails of no users
 	public int getNextAvailableAnonUserNumber() {
-		Iterator iterate = sessionFactory.getCurrentSession().iterate("select max(id) from UserImpl");
+		Iterator iterate = sessionFactory.getCurrentSession().createQuery("select max(id) from UserImpl").iterate();
 		if (iterate != null && iterate.hasNext()) {
 			Integer next = (Integer) iterate.next();
 			if (next != null) {
