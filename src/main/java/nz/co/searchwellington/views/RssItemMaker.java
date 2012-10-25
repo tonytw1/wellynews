@@ -1,12 +1,13 @@
 package nz.co.searchwellington.views;
 
-import org.springframework.stereotype.Component;
-
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
+
+import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
@@ -75,7 +76,7 @@ public class RssItemMaker {
         if (content.getLastChanged() != null) {
             // TODO this is abit odd; suggests RSS should not be on the model.
             DateFormatter dateFormatter = new DateFormatter();
-            rssItem.setTitle(content.getName() + " - " + dateFormatter.formatDate(content.getLastChanged(), "d MMM yyyy"));
+            rssItem.setTitle(content.getName() + " - " + dateFormatter.dayMonthYearTime(content.getLastChanged()));
         }
         return rssItem;
     }

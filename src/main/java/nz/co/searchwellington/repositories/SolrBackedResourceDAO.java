@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
@@ -281,10 +280,8 @@ public class SolrBackedResourceDAO {
 	}
 
 	public List<ArchiveLink> getArchiveMonths(boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type(
-				"N").toQuery();
-		query.addFacetField("month"); // TODO can't solr create this facet
-										// automagically from the date field?
+		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();
+		// TODO reimplement as a range facet
 		query.setFacetMinCount(1);
 		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_ARCHIVE_MONTHS);
@@ -314,14 +311,10 @@ public class SolrBackedResourceDAO {
 		return getAllPublishersWithContentCounts(shouldShowBroken, mustHaveNewsitems);
 	}
 	
-	public List<FrontendResource> getNewsitemsForMonth(Date month,
-			boolean showBroken) {
-		final String monthString = new DateFormatter().formatDate(month,
-				DateFormatter.MONTH_FACET);
-		SolrQuery query = new SolrQueryBuilder().month(monthString).type("N")
-				.showBroken(showBroken).toQuery();
+	public List<FrontendResource> getNewsitemsForMonth(Date month, boolean showBroken) {
+		SolrQuery query = new SolrQueryBuilder().type("N")	// TODO implement date range query
+			.showBroken(showBroken).toQuery();
 		setDateDescendingOrder(query);
-		;
 		query.setRows(MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE);
 		return getQueryResults(query);
 	}

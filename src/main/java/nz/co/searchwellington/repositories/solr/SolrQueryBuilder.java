@@ -95,6 +95,7 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
+	@Deprecated // TODO implement as a prior date range
 	public SolrQueryBuilder month(String monthString) {
 		if (monthString != null) {
 			sb.append(" +month:" + monthString);

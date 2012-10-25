@@ -8,7 +8,6 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
@@ -16,6 +15,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 @Component
 public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBuilder {
@@ -43,9 +44,9 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 			Date month = getArchiveDateFromPath(request.getPathInfo());
 			if (month != null) {
 	            log.info("Archive month is: " + month);
-	            final String monthLabel = new DateFormatter().formatDate(month, DateFormatter.MONTH_YEAR_FORMAT);
+	            final String monthLabel = new DateFormatter().fullMonthYear(month);
 	            
-				ModelAndView mv = new ModelAndView();				
+	            final ModelAndView mv = new ModelAndView();				
 				mv.addObject("heading", monthLabel);				
 				mv.addObject("description", "Archived newsitems for the month of " + monthLabel);				
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsForMonth(month));				

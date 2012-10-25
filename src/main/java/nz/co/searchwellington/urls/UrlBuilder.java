@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
@@ -20,6 +19,8 @@ import nz.co.searchwellington.twitter.CachingTwitterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
+
 @Component
 public class UrlBuilder {
 
@@ -28,10 +29,10 @@ public class UrlBuilder {
 	private DateFormatter dateFormatter;
 	
 	@Autowired
-	public UrlBuilder(SiteInformation siteInformation, CachingTwitterService twitterService, DateFormatter dateFormatter) {		
+	public UrlBuilder(SiteInformation siteInformation, CachingTwitterService twitterService) {		
 		this.siteInformation = siteInformation;
 		this.twitterService = twitterService;
-		this.dateFormatter = dateFormatter;
+		dateFormatter = new DateFormatter();
 	}
 	
 	public String getHomeUrl() {
@@ -139,7 +140,7 @@ public class UrlBuilder {
 	}
 	
 	public String getArchiveLinkUrl(Date date) {
-		return siteInformation.getUrl() + "/archive/" + dateFormatter.formatDate(date, "yyyy") + "/" + dateFormatter.formatDate(date, "MMM").toLowerCase();		
+		return siteInformation.getUrl() + "/archive/" + dateFormatter.yearMonthUrlStub(date);
 	}
 	
 	public String getOpenIDCallbackUrl() {

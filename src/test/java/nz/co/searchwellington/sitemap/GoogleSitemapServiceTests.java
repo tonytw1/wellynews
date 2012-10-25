@@ -4,12 +4,10 @@ import static org.mockito.Mockito.when;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import junit.framework.TestCase;
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
@@ -19,8 +17,11 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.joda.time.DateTime;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 import com.google.common.collect.Lists;
 
@@ -52,8 +53,8 @@ public class GoogleSitemapServiceTests extends TestCase {
 		
 		when(tagDAO.getAllTags()).thenReturn(tags);
 		
-		Date today = Calendar.getInstance().getTime();
-		when(dateFormatter.formatW3CDate(today)).thenReturn("today");
+		final Date today = DateTime.now().toDate();
+		when(dateFormatter.w3cDateTime(today)).thenReturn("today");
 		
 		when(contentRetrievalService.getLastLiveTimeForTag(apples)).thenReturn(today);
 		when(contentRetrievalService.getLastLiveTimeForTag(bananas)).thenReturn(null);
@@ -61,7 +62,7 @@ public class GoogleSitemapServiceTests extends TestCase {
 		when(urlBuilder.getTagUrl(apples)).thenReturn("http://apples");
 		when(urlBuilder.getTagUrl(bananas)).thenReturn("http://bananas");
 		
-		service = new GoogleSitemapService(contentRetrievalService, dateFormatter, urlBuilder, tagDAO);        
+		service = new GoogleSitemapService(contentRetrievalService, urlBuilder, tagDAO);        
 	}
 		
     public void testShouldRenderTagPagesWithLastModifiedTime() throws Exception {              

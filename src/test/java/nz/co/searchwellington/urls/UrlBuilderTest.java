@@ -2,7 +2,6 @@ package nz.co.searchwellington.urls;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
@@ -23,8 +22,7 @@ public class UrlBuilderTest {
 	
 	@Mock SiteInformation siteInformation;
 	@Mock CachingTwitterService twitterService;
-	@Mock DateFormatter dateFormatter;
-
+	
 	private UrlBuilder urlBuilder;
 	private FrontendNewsitemImpl frontendNewsitem;
 	private FrontendFeedImpl frontendFeed;
@@ -34,7 +32,7 @@ public class UrlBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		urlBuilder = new UrlBuilder(siteInformation, twitterService, dateFormatter);		
+		urlBuilder = new UrlBuilder(siteInformation, twitterService);		
 
 		frontendNewsitem = new FrontendNewsitemImpl();
 		frontendNewsitem.setName("Quick brown fox jumps over lazy dog");

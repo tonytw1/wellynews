@@ -3,7 +3,6 @@ package nz.co.searchwellington.feeds;
 import java.util.Calendar;
 import java.util.List;
 
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -21,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 @Component
 public class FeedReader {
@@ -45,7 +46,7 @@ public class FeedReader {
 	public FeedReader(HibernateResourceDAO resourceDAO,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			FeedAcceptanceDecider feedAcceptanceDecider,
-			DateFormatter dateFormatter, UrlCleaner urlCleaner,
+			UrlCleaner urlCleaner,
 			SuggestionDAO suggestionDAO,
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor,
@@ -54,7 +55,6 @@ public class FeedReader {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
-		this.dateFormatter = dateFormatter;
 		this.urlCleaner = urlCleaner;
 		this.suggestionDAO = suggestionDAO;
 		this.contentUpdateService = contentUpdateService;
@@ -62,6 +62,7 @@ public class FeedReader {
 		this.autoTagger= autoTagger;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
 		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
+		dateFormatter = new DateFormatter();
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -77,8 +78,10 @@ public class FeedReader {
 	}
 	
     private void processFeed(Feed feed, User feedReaderUser, String acceptancePolicy) {		    	
-    	log.info("Processing feed: " + feed.getName() + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.formatDate(feed.getLastRead(), DateFormatter.TIME_DAY_MONTH_YEAR_FORMAT));
-    	
+		log.info("Processing feed: " + feed.getName()
+				+ " using acceptance policy '" + acceptancePolicy
+				+ "'. Last read: " + dateFormatter.timeSince(feed.getLastRead()));
+
     	// TODO can this move onto the enum?
 		final boolean shouldLookAtFeed =  acceptancePolicy != null && acceptancePolicy.equals("accept") 
         	|| acceptancePolicy.equals("accept_without_dates")

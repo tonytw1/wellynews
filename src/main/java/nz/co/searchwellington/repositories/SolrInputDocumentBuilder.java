@@ -3,7 +3,6 @@ package nz.co.searchwellington.repositories;
 import java.util.List;
 import java.util.Set;
 
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Feed;
@@ -53,7 +52,6 @@ public class SolrInputDocumentBuilder {
 		inputDocument.addField("description", resource.getDescription());
 		
 		inputDocument.addField("date", resource.getDate());
-		inputDocument.addField("month", new DateFormatter().formatDate(resource.getDate(), DateFormatter.MONTH_FACET));
 		inputDocument.addField("lastLive", resource.getLiveTime());
 		inputDocument.addField("embargoedUntil", resource.getEmbargoedUntil());
 		inputDocument.addField("held", resource.isHeld());

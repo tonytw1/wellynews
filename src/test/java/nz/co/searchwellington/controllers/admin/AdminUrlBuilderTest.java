@@ -30,7 +30,7 @@ public class AdminUrlBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, null, null));
+		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, null));
 		
 		frontendWebsite = new FrontendWebsiteImpl();
 		frontendWebsite.setId(123);

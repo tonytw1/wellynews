@@ -2,7 +2,6 @@ package nz.co.searchwellington.sitemap;
 
 import java.util.Date;
 
-import nz.co.searchwellington.dates.DateFormatter;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
@@ -16,6 +15,8 @@ import org.dom4j.QName;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.common.dates.DateFormatter;
+
 @Component
 public class GoogleSitemapService {
     
@@ -27,11 +28,11 @@ public class GoogleSitemapService {
     private TagDAO tagDAO;
     
     @Autowired
-    public GoogleSitemapService(ContentRetrievalService contentRetrivalService, DateFormatter dateFormatter, UrlBuilder urlBuilder, TagDAO tagDAO) {        
+    public GoogleSitemapService(ContentRetrievalService contentRetrivalService, UrlBuilder urlBuilder, TagDAO tagDAO) {        
         this.contentRetrivalService = contentRetrivalService;
-        this.dateFormatter = dateFormatter;
         this.urlBuilder = urlBuilder;
         this.tagDAO = tagDAO;
+        dateFormatter = new DateFormatter();
     }
     
     public String render(String siteLocation) {
@@ -49,9 +50,9 @@ public class GoogleSitemapService {
         String lastmod = null;        
         Date lastUpdated = contentRetrivalService.getLastLiveTimeForTag(tag);
         if (lastUpdated != null) {
-        	lastmod = dateFormatter.formatW3CDate(lastUpdated);
+        	lastmod = dateFormatter.w3cDateTime(lastUpdated);
         }
-        addUrlElement(root, url, lastmod);       
+        addUrlElement(root, url, lastmod);
     }
     
 	private void addUrlElement(Element root, final String url, final String dateString) {
