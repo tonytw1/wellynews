@@ -27,13 +27,12 @@ import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.RangeFacet;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.FacetParams;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -51,24 +50,22 @@ public class SolrBackedResourceDAO {
 	private static final int MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE = 1000;
 	private static final int TAG_TWITTER_OF_INTEREST_THRESHOLD = 2;
 	
+	private SolrQueryBuilderFactory solrQueryBuilderFactory;
 	private SolrQueryService solrQueryService;
 	private TagDAO tagDAO;
 	private SolrResourceHydrator resourceHydrator;
 
-	@Value("#{config['solr.ur']}")
+	@Value("#{config['solr.url']}")
 	private String solrUrl;
 
 	@Autowired
-	public SolrBackedResourceDAO(SolrQueryService solrQueryService, TagDAO tagDAO, SolrResourceHydrator resourceHydrator) {
+	public SolrBackedResourceDAO(SolrQueryBuilderFactory solrQueryBuilderFactory, SolrQueryService solrQueryService, TagDAO tagDAO, SolrResourceHydrator resourceHydrator) {
+		this.solrQueryBuilderFactory = solrQueryBuilderFactory;
 		this.solrQueryService = solrQueryService;
 		this.tagDAO = tagDAO;
 		this.resourceHydrator = resourceHydrator;
 	}
-
-	public void setSolrUrl(String solrUrl) {
-		this.solrUrl = solrUrl;
-	}
-
+	
 	public List<FrontendResource> getAllFeeds(boolean showBroken,
 			boolean orderByLatestItemDate) {
 		SolrQuery query = new SolrQueryBuilder().type("F").showBroken(
@@ -280,30 +277,23 @@ public class SolrBackedResourceDAO {
 	}
 
 	public List<ArchiveLink> getArchiveMonths(boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();
-		// TODO reimplement as a range facet
+		final SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type("N").toQuery();		
+		query.addDateRangeFacet("date", new DateTime(1990, 1, 1, 0, 0).toDate(), DateTime.now().toDate(), "+1MONTH");
 		query.setFacetMinCount(1);
 		query.setFacetSort(FacetParams.FACET_SORT_INDEX);
 		query.setFacetLimit(MAXIMUM_ARCHIVE_MONTHS);
-
+		
 		final List<ArchiveLink> archiveLinks = Lists.newArrayList();
-		QueryResponse response = solrQueryService.querySolr(query);
-		if (response != null) {
-			FacetField facetField = response.getFacetField("month");
-			if (facetField != null && facetField.getValues() != null) {
-				log.debug("Found facet field: " + facetField);
-				List<Count> values = facetField.getValues();
-				Collections.reverse(values);
-				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyyMM");
-				for (Count count : values) {
-					final String monthString = count.getName();
-					DateTime month = fmt.parseDateTime(monthString);
-					final Long relatedItemCount = count.getCount();
-					archiveLinks.add(new ArchiveLink(month.toDate(),
-							relatedItemCount.intValue()));
-				}
-			}
-		}
+		final QueryResponse response = solrQueryService.querySolr(query);
+		if (response != null && response.getFacetRanges() != null) {
+              for (RangeFacet rangeFacet : response.getFacetRanges()) {
+                      for (RangeFacet.Count count : (List<RangeFacet.Count>) rangeFacet.getCounts()) {
+                    	  final String dateRange = count.getValue();
+          					DateTime month = new DateTime(dateRange);
+                          	archiveLinks.add(new ArchiveLink(month.toDate(), count.getCount()));                          	
+                      }
+              }
+		} 		
 		return archiveLinks;
 	}
 
@@ -312,8 +302,15 @@ public class SolrBackedResourceDAO {
 	}
 	
 	public List<FrontendResource> getNewsitemsForMonth(Date month, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().type("N")	// TODO implement date range query
-			.showBroken(showBroken).toQuery();
+		final SolrQueryBuilder solrQueryBuilder = new SolrQueryBuilderFactory().makeNewBuilder();
+		final DateTime startOfMonth = new DateTime(new DateTime(month).toDateMidnight()).withDayOfMonth(1);
+		final SolrQuery query = solrQueryBuilder.
+			type("N").
+			startDate(startOfMonth).
+			endDate(startOfMonth.plusMonths(1)).
+			showBroken(showBroken).
+			toQuery();
+		
 		setDateDescendingOrder(query);
 		query.setRows(MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE);
 		return getQueryResults(query);

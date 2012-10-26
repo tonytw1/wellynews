@@ -8,17 +8,19 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
 
 import org.apache.solr.client.solrj.SolrQuery;
+import org.joda.time.DateTime;
 
 public class SolrQueryBuilder {
 		
 	private StringBuilder sb;
 	private Integer startIndex;
 	private Integer maxItems;
+	private DateTime startDate;		// TODO
+	private DateTime endDate;	// TODO
+
 		
 	public SolrQueryBuilder() {	
 		this.sb = new StringBuilder();
-		this.startIndex = null;
-		this.maxItems = null;	
 	}
 
 	public SolrQueryBuilder tag(Tag tag) {
@@ -145,6 +147,16 @@ public class SolrQueryBuilder {
 
 	public SolrQueryBuilder owningUser(User user) {
 		sb.append(" +owner:" + user.getId());
+		return this;
+	}
+
+	public SolrQueryBuilder startDate(DateTime startDate) {
+		this.startDate = startDate;
+		return this;
+	}
+	
+	public SolrQueryBuilder endDate(DateTime endDate) {
+		this.endDate = endDate;
 		return this;
 	}
 	

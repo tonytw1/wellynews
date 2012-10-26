@@ -25,11 +25,13 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
     	
 	private ContentRetrievalService contentRetrievalService;
 	private ArchiveLinksService archiveLinksService;
+	private DateFormatter dateFormatter;
 
 	@Autowired
 	public ArchiveModelBuilder(ContentRetrievalService contentRetrievalService, ArchiveLinksService archiveLinksService) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.archiveLinksService = archiveLinksService;
+		this.dateFormatter = new DateFormatter();
 	}
 	
 	@Override
@@ -40,15 +42,15 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building archive page model");			
-			Date month = getArchiveDateFromPath(request.getPathInfo());
+			log.info("Building archive page model");
+			final Date month = getArchiveDateFromPath(request.getPathInfo());
 			if (month != null) {
 	            log.info("Archive month is: " + month);
 	            final String monthLabel = new DateFormatter().fullMonthYear(month);
 	            
 	            final ModelAndView mv = new ModelAndView();				
-				mv.addObject("heading", monthLabel);				
-				mv.addObject("description", "Archived newsitems for the month of " + monthLabel);				
+				mv.addObject("heading", monthLabel);
+				mv.addObject("description", "Archived newsitems for the month of " + dateFormatter.fullMonthYear(month));				
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsForMonth(month));				
 				return mv;
 			}
