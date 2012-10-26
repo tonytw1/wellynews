@@ -24,12 +24,12 @@ public class UrlWordsGeneratorTest {
 		publisher.setName("Island Bay school");
 		newsitem.setPublisher(publisher);
 		
-		assertEquals("/island-bay-school/2010/apr/02/some-thing-happening", UrlWordsGenerator.markUrlForNewsitem(newsitem));
+		assertEquals("/island-bay-school/2010/apr/2/some-thing-happening", UrlWordsGenerator.markUrlForNewsitem(newsitem));
 	}
 	
 	@Test
 	public void urlWordshouldBeDateAndHeadlineIfPublisherIsNotSet() throws Exception {
-		assertEquals("/2010/apr/02/some-thing-happening", UrlWordsGenerator.markUrlForNewsitem(newsitem));
+		assertEquals("/2010/apr/2/some-thing-happening", UrlWordsGenerator.markUrlForNewsitem(newsitem));
 	}
 	
 }

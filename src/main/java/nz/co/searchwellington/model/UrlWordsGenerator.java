@@ -25,7 +25,7 @@ public class UrlWordsGenerator {
 		
 		final DateFormatter dateFormatter = new DateFormatter();
 		if (newsitem.getDate() != null) {
-			uri.append(dateFormatter.yearMonthDayUrlStub(newsitem.getDate()));
+			uri.append("/" + dateFormatter.yearMonthDayUrlStub(newsitem.getDate()));
 			uri.append("/" + makeUrlWordsFromName(newsitem.getName()));
 			return uri.toString();
 		}
