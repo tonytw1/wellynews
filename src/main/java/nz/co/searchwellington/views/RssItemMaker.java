@@ -63,11 +63,6 @@ public class RssItemMaker {
 	        rssItem.getModules().add(geoRSSModule); 
 		}
 		
-		// TODO reimplement
-//	    WellynewsRssModule myModule = new WellynewsRssModule();
-	    //myModule.setCommented(Boolean.toString(!content.getComments().isEmpty()));
-	//    rssItem.getModules().add(myModule);
-	    
 		return rssItem;
 	}
 	
