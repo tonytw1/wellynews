@@ -20,11 +20,20 @@ public class DataStoreFactory {
     @Value("#{config['mongo.hostname']}")
 	private String hostname;
 	
-	public DataStoreFactory() throws UnknownHostException, MongoException {
+	public DataStoreFactory() {
 		Morphia morphia = new Morphia();
 		morphia.map(Snapshot.class);
-		Mongo m = new Mongo(hostname);
-		ds = morphia.createDatastore(m, "searchwellington");
+		Mongo m;
+		try {
+			m = new Mongo(hostname);
+			ds = morphia.createDatastore(m, "searchwellington");			
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MongoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public void setHostname(String hostname) {
