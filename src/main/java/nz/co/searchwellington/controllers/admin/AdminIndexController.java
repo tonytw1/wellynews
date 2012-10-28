@@ -15,7 +15,7 @@ public class AdminIndexController {
 	public AdminIndexController() {
 	}
 	
-	@RequestMapping("/admin/index")
+	@RequestMapping("/admin")
 	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		final ModelAndView mv = new ModelAndView("adminindex");
 		mv.addObject("heading", "Admin index");	
