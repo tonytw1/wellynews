@@ -313,7 +313,7 @@ public class SolrBackedResourceDAO {
 			showBroken(showBroken).
 			toQuery();
 		
-		setDateDescendingOrder(query);
+		setDateDescendingOrder(query);	// TODO needs to be on the query builder.
 		query.setRows(MAXIMUM_NEWSITEMS_ON_MONTH_ARCHIVE);
 		return getQueryResults(query);
 	}
