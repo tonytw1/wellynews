@@ -7,17 +7,22 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
 
+import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 public class SolrQueryBuilder {
 		
-	private StringBuilder sb;
+	private static Logger log = Logger.getLogger(SolrQueryBuilder.class);
+	
+	private StringBuilder sb;	// TODO should be done in build method.
 	private Integer startIndex;
 	private Integer maxItems;
-	private DateTime startDate;		// TODO
-	private DateTime endDate;	// TODO
-
+	private DateTime startDate;
+	private DateTime endDate;
 		
 	public SolrQueryBuilder() {	
 		this.sb = new StringBuilder();
@@ -111,13 +116,20 @@ public class SolrQueryBuilder {
 	}
 	
 	public SolrQuery toQuery() {
-		SolrQuery query = new SolrQuery(sb.toString().trim());
+		String queryString = sb.toString().trim();		
+		if (startDate != null && endDate != null) {
+			final DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime();
+			queryString = queryString + " +date:[" + dateFormatter.print(startDate) + " TO " + dateFormatter.print(endDate) + "]";
+		}
+		
+		log.debug("Solr query: " + queryString);
+		final SolrQuery query = new SolrQuery(queryString);
 		if (startIndex != null) {
 			query.setStart(startIndex);
 		}
 		if (maxItems != null) {
 			query.setRows(maxItems);
-		}		
+		}
 		return query;		
 	}
 	
@@ -151,12 +163,12 @@ public class SolrQueryBuilder {
 	}
 
 	public SolrQueryBuilder startDate(DateTime startDate) {
-		this.startDate = startDate;
+		this.startDate = startDate.withZone(DateTimeZone.UTC);
 		return this;
 	}
 	
 	public SolrQueryBuilder endDate(DateTime endDate) {
-		this.endDate = endDate;
+		this.endDate = endDate.withZone(DateTimeZone.UTC);
 		return this;
 	}
 	

@@ -98,7 +98,6 @@
    <field name="bodytext" type="text" indexed="true" stored="true"/>
 
    <field name="date" type="date" indexed="true" stored="true"/>
-   <field name="month" type="text" indexed="true" stored="true"/>
    <field name="lastChanged" type="date" indexed="true" stored="true"/>
    <field name="lastLive" type="date" indexed="true" stored="true"/>
    

@@ -293,7 +293,9 @@ public class SolrBackedResourceDAO {
                           	archiveLinks.add(new ArchiveLink(month.toDate(), count.getCount()));                          	
                       }
               }
-		} 		
+		}
+		
+		Collections.reverse(archiveLinks);
 		return archiveLinks;
 	}
 
@@ -302,7 +304,7 @@ public class SolrBackedResourceDAO {
 	}
 	
 	public List<FrontendResource> getNewsitemsForMonth(Date month, boolean showBroken) {
-		final SolrQueryBuilder solrQueryBuilder = new SolrQueryBuilderFactory().makeNewBuilder();
+		final SolrQueryBuilder solrQueryBuilder = solrQueryBuilderFactory.makeNewBuilder();
 		final DateTime startOfMonth = new DateTime(new DateTime(month).toDateMidnight()).withDayOfMonth(1);
 		final SolrQuery query = solrQueryBuilder.
 			type("N").
