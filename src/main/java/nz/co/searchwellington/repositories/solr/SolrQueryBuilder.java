@@ -18,53 +18,130 @@ public class SolrQueryBuilder {
 		
 	private static Logger log = Logger.getLogger(SolrQueryBuilder.class);
 	
-	private StringBuilder sb;	// TODO should be done in build method.
 	private Integer startIndex;
 	private Integer maxItems;
 	private DateTime startDate;
 	private DateTime endDate;
+	private String type;
+	private Boolean commented;
+	private Website publisher;
+	private Boolean geotagged;
+	private User owner;
+	private User taggingUser;
+	private Integer twitterCount;
+	private Tag tag;
+	private Double latitude;
+	private Double longitude;
+	private Double radius;
+	private Boolean showBroken;
+	private Boolean publishedTypesOnly;
+	private String pageUrl;
+	
+	public SolrQuery toQuery() {
+		final StringBuilder sb = new StringBuilder();
+		if (type != null) {	
+			sb.append(" +type:" + type);
+		}
+		if (publisher != null) {
+			sb.append(" +" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":\"" + publisher.getName() + "\"");
+		}
+		if (twitterCount != null) {
+			sb.append(" +twitterCount:[" + twitterCount + " TO *]");
+		}
+		if (commented != null && commented) {
+			sb.append(" +commented:1");		
+		}
+		if (geotagged != null && geotagged) {
+			sb.append(" +geotagged:true");
+		}
+		if (taggingUser != null) {
+			sb.append(" +handTaggingUsers:" + taggingUser.getId());
+		}
+		if (owner != null) {
+			sb.append(" +owner:" + owner.getId());
+		}
+		if (tag != null) {
+			sb.append(" +tags:" + tag.getId());
+		}
+		if (pageUrl != null) {
+			sb.append(" +pageUrl:'" + pageUrl + "'");
+		}
 		
-	public SolrQueryBuilder() {	
-		this.sb = new StringBuilder();
-	}
-
-	public SolrQueryBuilder tag(Tag tag) {
-		sb.append(" +tags:" + tag.getId());
-		return this;
-	}
-
-	public SolrQueryBuilder showBroken(boolean showBroken) {
-		if (!showBroken) {
+		if (showBroken != null && !showBroken) {
 			sb.append(" +httpStatus:200");
 			sb.append(" -embargoedUntil:[NOW TO *]");
 			sb.append(" -held:true");
 		}
+		
+		String queryString = sb.toString().trim();		
+		if (startDate != null && endDate != null) {
+			final DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime();
+			queryString = queryString + " +date:[" + dateFormatter.print(startDate) + " TO " + dateFormatter.print(endDate) + "]";
+		}
+		
+		final SolrQuery query = new SolrQuery(queryString);
+		if (startIndex != null) {
+			query.setStart(startIndex);
+		}
+		if (maxItems != null) {
+			query.setRows(maxItems);
+		}
+		
+		if (latitude != null && longitude != null && radius != null) {
+			query.setFilterQueries("{!geofilt}");
+			query.setParam("sfield", "position");
+			query.setParam("pt", latitude + "," + longitude);
+			query.setParam("d", Double.toString(radius));		
+		}
+		
+		if (publishedTypesOnly != null && publishedTypesOnly) {
+			sb.append(" +type:[F TO N]");
+		}
+		
+		log.debug("Solr query: " + queryString);
+		return query;		
+	}
+	
+	// TODO convience methods should be pushed up into the content retrival service
+	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, double radius, boolean showBroken, int startIndex, int maxItems) {				
+		return new SolrQueryBuilder().type("N").showBroken(showBroken).near(
+				latitude, longitude, radius).startIndex(startIndex).maxItems(
+				maxItems).toQuery();
+	}
+	
+	@Deprecated // TODO make a straight database call
+	public SolrQueryBuilder pageUrl(String pageUrl) {
+		this.pageUrl = pageUrl;
 		return this;
 	}
 	
-	
-	public SolrQueryBuilder isBroken() {
-		sb.append(" -httpStatus:200");
+	public SolrQueryBuilder allPublishedTypes() {
+		this.publishedTypesOnly = true;
 		return this;
 	}
 	
+	public SolrQueryBuilder showBroken(boolean showBroken) {	// TODO push up out of the builder
+		this.showBroken = showBroken;	
+		return this;
+	}
+	
+	private SolrQueryBuilder near(double latitude, double longitude, double radius) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.radius = radius;
+		return this;
+	}
+
+	public SolrQueryBuilder tag(Tag tag) {
+		this.tag = tag;
+		return this;
+	}
 	
 	public SolrQueryBuilder type(String type) {
-		sb.append(" +type:" + type);		
+		this.type = type;
 		return this;
 	}
 	
-	public SolrQueryBuilder allContentTypes() {
-		sb.append(" +type:[F TO W]");		
-		return this;
-	}
-	
-
-	public SolrQueryBuilder allPublishedTypes() {
-		sb.append(" +type:[F TO N]");		
-		return this;
-	}
-		
 	public SolrQueryBuilder tags(Set<Tag> tags) {
 		for (Tag tag : tags) {
 			this.tag(tag);
@@ -73,21 +150,18 @@ public class SolrQueryBuilder {
 	}
 
 	public SolrQueryBuilder commented(boolean commented) {
-		if (commented) {
-			sb.append(" +commented:1");		
-		}
+		this.commented = commented;
 		return this;
 	}
 
 	public SolrQueryBuilder dateRange(int daysAgo) {
-		sb.append(" +date:[NOW-" + daysAgo + "DAY TO NOW]");
+		this.endDate = DateTime.now();
+		this.startDate = DateTime.now().minus(daysAgo);
 		return this;
 	}
 	
 	public SolrQueryBuilder publisher(Website publisher) {
-		if (publisher != null) {
-			sb.append(" +" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":\"" + publisher.getName() + "\"");
-		}
+		this.publisher = publisher;		
 		return this;
 	}
 
@@ -96,69 +170,28 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
-
 	public SolrQueryBuilder maxItems(int maxItems) {
 		this.maxItems = maxItems;
 		return this;
 	}
 	
-	@Deprecated // TODO implement as a prior date range
-	public SolrQueryBuilder month(String monthString) {
-		if (monthString != null) {
-			sb.append(" +month:" + monthString);
-		}
-		return this;
-	}
-		
 	public SolrQueryBuilder geotagged() {
-		sb.append(" +geotagged:true");
+		this.geotagged = true;
 		return this;
-	}
-	
-	public SolrQuery toQuery() {
-		String queryString = sb.toString().trim();		
-		if (startDate != null && endDate != null) {
-			final DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime();
-			queryString = queryString + " +date:[" + dateFormatter.print(startDate) + " TO " + dateFormatter.print(endDate) + "]";
-		}
-		
-		log.debug("Solr query: " + queryString);
-		final SolrQuery query = new SolrQuery(queryString);
-		if (startIndex != null) {
-			query.setStart(startIndex);
-		}
-		if (maxItems != null) {
-			query.setRows(maxItems);
-		}
-		return query;		
-	}
-	
-	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, double radius, boolean showBroken, int startIndex, int maxItems) {		
-		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).geotagged().startIndex(startIndex).maxItems(maxItems).toQuery();
-		query.setFilterQueries("{!geofilt}");
-		query.setParam("sfield", "position");
-		query.setParam("pt", latitude + "," + longitude);
-		query.setParam("d", Double.toString(radius));			
-		return query;
 	}
 	
 	public SolrQueryBuilder minTwitterCount(int count) {
-		sb.append(" +twitterCount:[" + count + " TO *]");
+		this.twitterCount = count;
 		return this;
 	}
 
 	public SolrQueryBuilder taggingUser(User user) {
-		sb.append(" +handTaggingUsers:" + user.getId());
-		return this;
-	}
-
-	public SolrQueryBuilder pageUrl(String pageUrl) {
-		sb.append(" +pageUrl:'" + pageUrl + "'");
+		this.taggingUser = user;
 		return this;
 	}
 
 	public SolrQueryBuilder owningUser(User user) {
-		sb.append(" +owner:" + user.getId());
+		this.owner = user;
 		return this;
 	}
 

@@ -96,6 +96,7 @@ public class SolrBackedResourceDAO {
 		return getQueryCount(query);
 	}
 
+	
 	public FrontendNewsitem getNewspage(String pageUrl, boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().showBroken(showBroken).type(
 				"N").pageUrl(pageUrl).toQuery();
@@ -299,8 +300,8 @@ public class SolrBackedResourceDAO {
 		return archiveLinks;
 	}
 
-	public List<PublisherContentCount> getAllPublishers(boolean shouldShowBroken, boolean mustHaveNewsitems) {
-		return getAllPublishersWithContentCounts(shouldShowBroken, mustHaveNewsitems);
+	public List<PublisherContentCount> getAllPublishers(boolean shouldShowBroken) {
+		return getAllPublishersWithContentCounts(shouldShowBroken);
 	}
 	
 	public List<FrontendResource> getNewsitemsForMonth(Date month, boolean showBroken) {
@@ -334,14 +335,7 @@ public class SolrBackedResourceDAO {
 		query.setSortField("lastChanged", ORDER.desc);
 		return getQueryResults(query);
 	}
-
-	public List<FrontendResource> getBrokenSites() {
-		SolrQuery query = new SolrQueryBuilder().type("W").maxItems(255)
-				.isBroken().toQuery();
-		query.setSortField("titleSort", ORDER.asc);
-		return getQueryResults(query);
-	}
-
+	
 	public List<FrontendResource> getCalendarFeedsForTag(Tag tag,
 			boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().type("C").showBroken(
@@ -406,7 +400,7 @@ public class SolrBackedResourceDAO {
 																			// a
 																			// null
 																			// query
-		SolrQuery query = new SolrQueryBuilder().allContentTypes().showBroken(
+		SolrQuery query = new SolrQueryBuilder().showBroken(
 				showBroken).maxItems(0).toQuery();
 		SolrServer solr;
 		try {
@@ -519,9 +513,8 @@ public class SolrBackedResourceDAO {
 		return tagDAO.loadTagsById(tagIds);
 	}
 
-	// TODO nothing actually uses the counts; only using the sorting
-	// functionaility - could remove
-	private List<PublisherContentCount> getAllPublishersWithContentCounts(boolean showBroken, boolean mustHaveNewsitems) {
+	// TODO nothing actually uses the counts; only using the sorting functionaility - could remove
+	private List<PublisherContentCount> getAllPublishersWithContentCounts(boolean showBroken) {
 		SolrQuery query = new SolrQueryBuilder().allPublishedTypes().showBroken(showBroken).toQuery();
 		query.addFacetField(SolrInputDocumentBuilder.PUBLISHER_NAME);
 		query.setFacetMinCount(1);

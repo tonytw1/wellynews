@@ -110,18 +110,6 @@ public class SimplePageController {
 		mv.addObject("rss_url", url);
 	}
     
-    @RequestMapping("/broken")
-    public ModelAndView broken(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();
-        urlStack.setUrlStack(request);
-        commonModelObjectsService.populateCommonLocal(mv);
-        
-        mv.addObject("heading", "Broken sites");             
-        mv.addObject("main_content", contentRetrievalService.getBrokenSites());
-        mv.setViewName("browse");
-        return mv;
-    }
-    
     @RequestMapping("/feeds/discovered")
     public ModelAndView discovered(HttpServletRequest request, HttpServletResponse response) throws IOException {
         ModelAndView mv = new ModelAndView();

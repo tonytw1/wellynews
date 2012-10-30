@@ -72,7 +72,7 @@ public class ContentRetrievalService {
 	}
 	
 	public List<PublisherContentCount> getAllPublishers() {
-		return solrBackedResourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken(), false);
+		return solrBackedResourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<Tag> getTopLevelTags() {
@@ -251,10 +251,6 @@ public class ContentRetrievalService {
 		Set<Tag> tags = new HashSet<Tag>();
 		tags.add(tag);
 		return solrBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
-	}
-
-	public List<FrontendResource> getBrokenSites() {
-		return solrBackedResourceDAO.getBrokenSites();	
 	}
 
 	public List<FrontendResource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, int maxNewsitems) {
