@@ -102,13 +102,6 @@ public class SolrQueryBuilder {
 		return query;		
 	}
 	
-	// TODO convience methods should be pushed up into the content retrival service
-	public SolrQuery toNewsitemsNearQuery(double latitude, double longitude, double radius, boolean showBroken, int startIndex, int maxItems) {				
-		return new SolrQueryBuilder().type("N").showBroken(showBroken).near(
-				latitude, longitude, radius).startIndex(startIndex).maxItems(
-				maxItems).toQuery();
-	}
-	
 	@Deprecated // TODO make a straight database call
 	public SolrQueryBuilder pageUrl(String pageUrl) {
 		this.pageUrl = pageUrl;
@@ -125,7 +118,7 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
-	private SolrQueryBuilder near(double latitude, double longitude, double radius) {
+	public SolrQueryBuilder near(double latitude, double longitude, double radius) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.radius = radius;

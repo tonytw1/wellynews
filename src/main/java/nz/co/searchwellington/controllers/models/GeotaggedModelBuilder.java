@@ -122,12 +122,12 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		} else {
 			final Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);
 			if (userSuppliedLocation.isValid()) {
-				List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedLocation, REFINEMENTS_TO_SHOW);
+				List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedLocation, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
 				if (relatedTagLinks.size() > 0) {
 					mv.addObject("related_tags", relatedTagLinks);
 				}
 
-				List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedLocation, REFINEMENTS_TO_SHOW);
+				List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedLocation, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
 				if (relatedPublisherLinks.size() > 0) {
 					mv.addObject("related_publishers", relatedPublisherLinks);
 				}

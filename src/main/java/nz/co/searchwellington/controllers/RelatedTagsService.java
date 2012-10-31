@@ -65,9 +65,9 @@ public class RelatedTagsService {
 		return relatedTagLinks;
 	}
 	
-	public List<TagContentCount> getRelatedTagsForLocation(Geocode location, int maxItems) {
+	public List<TagContentCount> getRelatedTagsForLocation(Geocode location, double radius, int maxItems) {
 		log.info("Querying for location related tags: " + location.getAddress());
-		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, showBrokenDecisionService.shouldShowBroken());
+		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, radius, showBrokenDecisionService.shouldShowBroken());
 		List<TagContentCount> loadedTagFacet = solrFacetLoader.loadTagFacet(facetResults.get("tags"));
 		log.info("Found facet count: " + loadedTagFacet.size());
 		if (loadedTagFacet.size() > maxItems) {
@@ -76,9 +76,9 @@ public class RelatedTagsService {
 		return loadedTagFacet;
 	}
 	
-	public List<PublisherContentCount> getRelatedPublishersForLocation(Geocode location, int maxItems) {
+	public List<PublisherContentCount> getRelatedPublishersForLocation(Geocode location, double radius, int maxItems) {
 		log.info("Querying for location related publishers: " + location.getAddress());
-		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, showBrokenDecisionService.shouldShowBroken());
+		Map<String, List<Count>> facetResults = queryForLocationRelatedTagAndPublisherFacets(location, radius, showBrokenDecisionService.shouldShowBroken());
 		List<PublisherContentCount> loadedFacet = solrFacetLoader.loadPublisherFacet(facetResults.get(SolrInputDocumentBuilder.PUBLISHER_NAME));
 		log.info("Found facet count: " + loadedFacet.size());
 		if (loadedFacet.size() > maxItems) {
@@ -123,8 +123,12 @@ public class RelatedTagsService {
 		return facetResults;
 	}
 
-	private Map<String, List<Count>> queryForLocationRelatedTagAndPublisherFacets(Geocode location, boolean showBroken) {
-		SolrQuery query = new SolrQueryBuilder().toNewsitemsNearQuery(location.getLatitude(), location.getLongitude(), 1.0, showBroken, 0, 1500);	// TODO push radius up
+	private Map<String, List<Count>> queryForLocationRelatedTagAndPublisherFacets(Geocode location, double radius, boolean showBroken) {		
+		final SolrQuery query = new SolrQueryBuilder().type("N").
+		near(location.getLatitude(), location.getLongitude(), radius).
+		showBroken(showBroken).
+		startIndex(0).maxItems(1500).toQuery();
+		
 		query.addFacetField("tags");
 		query.addFacetField(SolrInputDocumentBuilder.PUBLISHER_NAME);
 		query.setFacetMinCount(1);	

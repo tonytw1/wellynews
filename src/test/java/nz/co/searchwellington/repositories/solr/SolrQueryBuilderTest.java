@@ -8,8 +8,9 @@ public class SolrQueryBuilderTest {
 	@Test
 	public void canBuildNearByQuery() throws Exception {
 		SolrQueryBuilder solrQueryBuilder = new SolrQueryBuilder();
-		SolrQuery newsitemsNearQuery = solrQueryBuilder.toNewsitemsNearQuery(1, 2, 2, false, 0, 5000);
+		SolrQuery newsitemsNearQuery = solrQueryBuilder.near(1, 2, 2).toQuery();
 		System.out.println(newsitemsNearQuery.toString());
+		// TODO asserts
 	}
 	
 }
