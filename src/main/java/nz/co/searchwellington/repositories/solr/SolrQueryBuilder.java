@@ -9,6 +9,7 @@ import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
@@ -36,6 +37,7 @@ public class SolrQueryBuilder {
 	private Boolean showBroken;
 	private Boolean publishedTypesOnly;
 	private String pageUrl;
+	private String order;
 	
 	public SolrQuery toQuery() {
 		final StringBuilder sb = new StringBuilder();
@@ -97,11 +99,37 @@ public class SolrQueryBuilder {
 		if (publishedTypesOnly != null && publishedTypesOnly) {
 			sb.append(" +type:[F TO N]");
 		}
+				
+		if (order != null && order.equals("dateDescending")) {			
+			query.setSortField("date", ORDER.desc);
+			query.addSortField("id", ORDER.desc);
+		}
+		if (order != null && order.equals("title")) {
+			query.setSortField("titleSort", ORDER.asc);
+		}
+		if (order != null && order.equals("feedLatestItemDate")) {
+			query.setSortField("feedLatestItemDate", ORDER.desc);
+		}
 		
 		log.debug("Solr query: " + queryString);
 		return query;		
 	}
 	
+	public SolrQueryBuilder setDateDescendingOrder() {
+		this.order = "dateDescending";
+		return this;
+	}
+
+	public SolrQueryBuilder setTitleSortOrder() {
+		this.order = "title";
+		return this;
+	}
+
+	public SolrQueryBuilder setFeedLatestItemOrder() {	// TODO used by who?
+		this.order = "feedLatestItemDate";
+		return this;
+	}
+		
 	@Deprecated // TODO make a straight database call
 	public SolrQueryBuilder pageUrl(String pageUrl) {
 		this.pageUrl = pageUrl;
@@ -113,7 +141,7 @@ public class SolrQueryBuilder {
 		return this;
 	}
 	
-	public SolrQueryBuilder showBroken(boolean showBroken) {	// TODO push up out of the builder
+	public SolrQueryBuilder showBroken(boolean showBroken) {
 		this.showBroken = showBroken;	
 		return this;
 	}
