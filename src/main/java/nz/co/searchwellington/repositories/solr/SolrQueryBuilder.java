@@ -40,13 +40,8 @@ public class SolrQueryBuilder {
 	private String order;
 	
 	public SolrQuery toQuery() {
-		final StringBuilder sb = new StringBuilder();
-		if (type != null) {	
-			sb.append(" +type:" + type);
-		}
-		if (publisher != null) {
-			sb.append(" +" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":\"" + publisher.getName() + "\"");
-		}
+		final StringBuilder sb = new StringBuilder();	
+		
 		if (twitterCount != null) {
 			sb.append(" +twitterCount:[" + twitterCount + " TO *]");
 		}
@@ -75,13 +70,23 @@ public class SolrQueryBuilder {
 			sb.append(" -held:true");
 		}
 		
-		String queryString = sb.toString().trim();		
 		if (startDate != null && endDate != null) {
 			final DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime();
-			queryString = queryString + " +date:[" + dateFormatter.print(startDate) + " TO " + dateFormatter.print(endDate) + "]";
+			sb.append(" +date:[" + dateFormatter.print(startDate) + " TO " + dateFormatter.print(endDate) + "]");
 		}
 		
-		final SolrQuery query = new SolrQuery(queryString);
+		if (publishedTypesOnly != null && publishedTypesOnly) {
+			sb.append(" +type:[F TO N]");
+		}
+		
+		final SolrQuery query = new SolrQuery(sb.toString().trim());		
+		if (type != null) {
+			query.addFilterQuery("+type:" + type);          
+		}
+		if (publisher != null) {
+			query.addFilterQuery("+" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":\"" +  publisher.getName() + "\"");
+		}
+		
 		if (startIndex != null) {
 			query.setStart(startIndex);
 		}
@@ -96,10 +101,6 @@ public class SolrQueryBuilder {
 			query.setParam("d", Double.toString(radius));		
 		}
 		
-		if (publishedTypesOnly != null && publishedTypesOnly) {
-			sb.append(" +type:[F TO N]");
-		}
-				
 		if (order != null && order.equals("dateDescending")) {			
 			query.setSortField("date", ORDER.desc);
 			query.addSortField("id", ORDER.desc);
@@ -111,7 +112,7 @@ public class SolrQueryBuilder {
 			query.setSortField("feedLatestItemDate", ORDER.desc);
 		}
 		
-		log.debug("Solr query: " + queryString);
+		log.debug("Solr query: " + sb.toString().trim());
 		return query;		
 	}
 	
