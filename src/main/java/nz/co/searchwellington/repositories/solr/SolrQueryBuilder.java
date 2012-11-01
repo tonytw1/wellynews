@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.solr;
 
+import java.util.List;
 import java.util.Set;
 
 import nz.co.searchwellington.model.Tag;
@@ -14,6 +15,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+
+import com.google.common.collect.Lists;
 
 public class SolrQueryBuilder {
 		
@@ -38,6 +41,12 @@ public class SolrQueryBuilder {
 	private Boolean publishedTypesOnly;
 	private String pageUrl;
 	private String order;
+
+	private List<String> facetFields;
+	
+	public SolrQueryBuilder() {
+		facetFields = Lists.newArrayList();
+	}
 	
 	public SolrQuery toQuery() {
 		final StringBuilder sb = new StringBuilder();	
@@ -64,12 +73,6 @@ public class SolrQueryBuilder {
 			sb.append(" +pageUrl:'" + pageUrl + "'");
 		}
 		
-		if (showBroken != null && !showBroken) {
-			sb.append(" +httpStatus:200");
-			sb.append(" -embargoedUntil:[NOW TO *]");
-			sb.append(" -held:true");
-		}
-		
 		if (startDate != null && endDate != null) {
 			final DateTimeFormatter dateFormatter = ISODateTimeFormat.dateTime();
 			sb.append(" +date:[" + dateFormatter.print(startDate) + " TO " + dateFormatter.print(endDate) + "]");
@@ -78,13 +81,23 @@ public class SolrQueryBuilder {
 		if (publishedTypesOnly != null && publishedTypesOnly) {
 			sb.append(" +type:[F TO N]");
 		}
+				
+		if (sb.length() == 0) {
+			sb.append("*:*");
+		}
 		
 		final SolrQuery query = new SolrQuery(sb.toString().trim());		
 		if (type != null) {
-			query.addFilterQuery("+type:" + type);          
+			query.addFilterQuery("+" + SolrInputDocumentBuilder.TYPE + ":" + type);          
 		}
 		if (publisher != null) {
 			query.addFilterQuery("+" + SolrInputDocumentBuilder.PUBLISHER_NAME + ":\"" +  publisher.getName() + "\"");
+		}
+		
+		if (showBroken != null && !showBroken) {
+			query.addFilterQuery("+" + SolrInputDocumentBuilder.HTTP_STATUS + ":200");
+			query.addFilterQuery("-embargoedUntil:[NOW TO *]");
+			query.addFilterQuery("-held:true");
 		}
 		
 		if (startIndex != null) {
@@ -111,7 +124,18 @@ public class SolrQueryBuilder {
 		if (order != null && order.equals("feedLatestItemDate")) {
 			query.setSortField("feedLatestItemDate", ORDER.desc);
 		}
-		
+		if (order != null && order.equals("lastLive")) {
+			query.setSortField("lastLive", ORDER.desc);
+		}
+		if (order != null && order.equals("lastChanged")) {
+			query.setSortField("lastChanged", ORDER.desc);
+		}
+
+		query.setFacetMinCount(1);
+		for (String facetField: facetFields) {
+			query.addFacetField(facetField);			
+		}
+				
 		log.debug("Solr query: " + sb.toString().trim());
 		return query;		
 	}
@@ -123,6 +147,16 @@ public class SolrQueryBuilder {
 
 	public SolrQueryBuilder setTitleSortOrder() {
 		this.order = "title";
+		return this;
+	}
+	
+	public SolrQueryBuilder setLastLiveOrder() {
+		this.order = "lastLive";
+		return this;
+	}
+	
+	public SolrQueryBuilder setLastChangedOrder() {
+		this.order = "lastChanged";
 		return this;
 	}
 
@@ -224,6 +258,11 @@ public class SolrQueryBuilder {
 	
 	public SolrQueryBuilder endDate(DateTime endDate) {
 		this.endDate = endDate.withZone(DateTimeZone.UTC);
+		return this;
+	}
+
+	public SolrQueryBuilder facetField(String facetField) {
+		facetFields.add(facetField);
 		return this;
 	}
 	

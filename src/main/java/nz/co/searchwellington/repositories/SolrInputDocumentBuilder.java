@@ -24,6 +24,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class SolrInputDocumentBuilder {
 	
+	public static final String HTTP_STATUS = "httpStatus";
+	public static final String TYPE = "type";
+	public static final String TAGS = "tags";
 	public static final String PUBLISHER_NAME = "publisherName";
 			
 	private SnapshotBodyExtractor snapshotBodyExtractor;
@@ -47,8 +50,8 @@ public class SolrInputDocumentBuilder {
 		inputDocument.addField("id", resource.getId());
 		inputDocument.addField("title", resource.getName());
 		inputDocument.addField("url", resource.getUrl());
-		inputDocument.addField("type", resource.getType());
-		inputDocument.addField("httpStatus", resource.getHttpStatus());
+		inputDocument.addField(TYPE, resource.getType());
+		inputDocument.addField(HTTP_STATUS, resource.getHttpStatus());
 		inputDocument.addField("description", resource.getDescription());
 		
 		inputDocument.addField("date", resource.getDate());
@@ -109,7 +112,7 @@ public class SolrInputDocumentBuilder {
 		
 		final Set<Tag> indexTagsForResource = taggingReturnsService.getIndexTagsForResource(resource);
 		for(Tag tag: indexTagsForResource) {
-			inputDocument.addField("tags", tag.getId());
+			inputDocument.addField(TAGS, tag.getId());
 		}
 		
 		inputDocument = new SolrGeotagHandler(taggingReturnsService).processGeotags(resource, inputDocument);	// TODO inject
