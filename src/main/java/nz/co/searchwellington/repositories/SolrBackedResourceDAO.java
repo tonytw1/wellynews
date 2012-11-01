@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.SolrQuery.ORDER;
 import org.apache.solr.client.solrj.impl.CommonsHttpSolrServer;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
@@ -128,11 +127,9 @@ public class SolrBackedResourceDAO {
 	}
 
 	public Date getLastLiveTimeForTag(Tag tag) {
-		SolrQuery latestItemForTagQuery = new SolrQueryBuilder().tag(tag)
-				.showBroken(false).maxItems(1).toQuery();
-		latestItemForTagQuery.setSortField("lastLive", ORDER.desc);	// TODO push to solr query builder
-		List<FrontendResource> resources = getQueryResults(latestItemForTagQuery);
-		if (resources.size() == 1) {
+		final List<FrontendResource> resources = getQueryResults(new SolrQueryBuilder().tag(tag)
+				.showBroken(false).maxItems(1).setLastLiveOrder().toQuery());
+		if (!resources.isEmpty()) {
 			return resources.get(0).getLiveTime(); // TODO Do this as a specific
 													// API call, so that this
 													// doesn't have to be
@@ -255,13 +252,11 @@ public class SolrBackedResourceDAO {
 		return getQueryCount(new SolrQueryBuilder().showBroken(showBroken)
 				.type("N").publisher(publisher).toQuery());
 	}
-
+	
 	// TODO need a paginating method
+	// TODO make this limit to things which changed in the last week.
 	public List<FrontendResource> getAllWatchlists(boolean showBroken) {
-		// TODO make this limit to things which changed in the last week.
-		SolrQuery query = new SolrQueryBuilder().type("L").maxItems(255).showBroken(showBroken).toQuery();
-		query.setSortField("lastChanged", ORDER.desc);	// TODO move to query builder
-		return getQueryResults(query);
+		return getQueryResults(new SolrQueryBuilder().type("L").maxItems(255).showBroken(showBroken).setLastChangedOrder().toQuery());
 	}
 	
 	public List<FrontendResource> getCalendarFeedsForTag(Tag tag, boolean showBroken) {
