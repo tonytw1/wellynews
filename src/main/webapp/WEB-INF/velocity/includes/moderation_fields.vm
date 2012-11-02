@@ -1,6 +1,6 @@
 #if ($user.isAdmin())
 	<label for="embargo_date">Embargo date: </label>
-	<input name="embargo_date" #if($resource.embargoedUntil) value="$dateFormatter.canGenerateDayMonthYearTimeFormat($resource.embargoedUntil)" #end />
+	<input name="embargo_date" #if($resource.embargoedUntil) value="$dateFormatter.dayMonthYearTime($resource.embargoedUntil)" #end />
 	$resource.isHeld()
 	<label for="held">Held: </label>
 	<input type="hidden" name="has_held" value="1" />
