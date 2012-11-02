@@ -28,10 +28,10 @@ public class AdminUrlBuilder {
 	public String getResourceEditUrl(FrontendResource resource) {
 		final String resourceUrl = urlBuilder.getResourceUrl(resource);
 		
+		// TODO pick one of these - remove the other
 		if (resource instanceof FrontendNewsitem) {
 			return siteInformation.getUrl() + "/edit/edit?resource=" + resource.getId();
-		}
-		
+		}		
 		if (resourceUrl != null) {
 			return resourceUrl + "/edit";
 		}		

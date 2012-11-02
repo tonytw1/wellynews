@@ -6,17 +6,12 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.SupressionDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.collect.Lists;
 
 @Component
 public class RssfeedNewsitemService {
@@ -25,19 +20,18 @@ public class RssfeedNewsitemService {
 
 	private CachingRssfeedNewsitemService cachingRssfeedNewsitemService;
 	private HibernateResourceDAO resourceDAO;
-	private SupressionDAO suppressionDAO;
 	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	
 	@Autowired
-	public RssfeedNewsitemService(CachingRssfeedNewsitemService cachingRssfeedNewsitemService,
-			HibernateResourceDAO resourceDAO, SupressionDAO suppressionDAO,
+	public RssfeedNewsitemService(
+			CachingRssfeedNewsitemService cachingRssfeedNewsitemService,
+			HibernateResourceDAO resourceDAO,
 			FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
 		this.cachingRssfeedNewsitemService = cachingRssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
-		this.suppressionDAO = suppressionDAO;
 		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 	}
-	
+
 	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
 		return cachingRssfeedNewsitemService.getFeedNewsitems(feed);
 	}
@@ -76,26 +70,6 @@ public class RssfeedNewsitemService {
 			}
 		}
 		return null;
-	}
-	
-	// TODO This is probably a seperate class as it has nothing todo with looking through the feed item cache for items.
-	public List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
-		final List<FrontendFeedNewsitem> decoratedFeednewsitems = Lists.newArrayList();
-		for (FeedNewsitem feedNewsitem : feedNewsitems) {
-
-			FrontendFeedNewsitem frontendFeedNewsitem = new FrontendFeedNewsitem(feedNewsitem);
-			if (feedNewsitem.getUrl() != null) {
-				
-				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());	// TODO expensive?
-				if (localCopy != null) {
-					frontendFeedNewsitem.setLocalCopy(localCopy.getId());
-				}
-				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
-				frontendFeedNewsitem.setSuppressed(isSuppressed);						
-			}
-			decoratedFeednewsitems.add(frontendFeedNewsitem);
-		}
-		return decoratedFeednewsitems;
 	}
 	
 	public boolean isUrlInAcceptedFeeds(String url) {

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Feed;
@@ -37,15 +38,18 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private FlickrService flickrService;
+	private FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 	
 	public TagModelBuilder() {
 	}
 	
 	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
-			RelatedTagsService relatedTagsService,
-			ConfigDAO configDAO, RssfeedNewsitemService rssfeedNewsitemService,
-			ContentRetrievalService contentRetrievalService, FlickrService flickrService) {
+			RelatedTagsService relatedTagsService, ConfigDAO configDAO,
+			RssfeedNewsitemService rssfeedNewsitemService,
+			ContentRetrievalService contentRetrievalService,
+			FlickrService flickrService,
+			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -53,6 +57,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.flickrService = flickrService;
+		this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator;
 	}
 	
 	@Override
@@ -207,7 +212,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
             mv.addObject("related_feed", relatedFeed);
             
             List<FeedNewsitem> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);            
-            mv.addObject("related_feed_items", rssfeedNewsitemService.addSupressionAndLocalCopyInformation(relatedFeedItems));
+            mv.addObject("related_feed_items", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(relatedFeedItems));
             
         } else {
             log.debug("No related feed.");

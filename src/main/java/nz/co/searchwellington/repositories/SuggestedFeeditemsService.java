@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories;
 
 import java.util.List;
 
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
@@ -15,22 +15,22 @@ public class SuggestedFeeditemsService {
 
 	private SuggestionDAO suggestionDAO;
 	private AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService;
-	private RssfeedNewsitemService rssfeedNewsitemService;
-
+	private FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
+	
 	@Autowired
 	public SuggestedFeeditemsService(
 			SuggestionDAO suggestionDAO,
 			AvailableSuggestedFeeditemsService availableSuggestedFeeditemsService,
-			RssfeedNewsitemService rssfeedNewsitemService) {
+			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator) {
 		this.suggestionDAO = suggestionDAO;
 		this.availableSuggestedFeeditemsService = availableSuggestedFeeditemsService;
-		this.rssfeedNewsitemService = rssfeedNewsitemService;
+		this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator;
 	}
-
+	
 	public List<FrontendFeedNewsitem> getSuggestionFeednewsitems(int maxItems) {
 		List<Suggestion> bareSuggestions = suggestionDAO.getSuggestions(maxItems);
 		List<FeedNewsitem> suggestedFeeditems = availableSuggestedFeeditemsService.getAvailableSuggestedFeeditems(bareSuggestions, maxItems);
-		return rssfeedNewsitemService.addSupressionAndLocalCopyInformation(suggestedFeeditems);
+		return feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(suggestedFeeditems);
 	}
 	
 }

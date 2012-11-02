@@ -9,6 +9,7 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Tag;
@@ -36,17 +37,21 @@ public class TagModelBuilderTest {
 	@Mock ConfigDAO configDAO;
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock FlickrService flickrService;
+	@Mock FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 
-	private MockHttpServletRequest  request;
 	@Mock List<FrontendResource> tagNewsitems;	
 	@Mock Tag tag;
+	private MockHttpServletRequest  request;
 
 	private TagModelBuilder modelBuilder;
+
 
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, configDAO, rssfeedNewsitemService, contentRetrievalService, flickrService);
+		modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder,
+				relatedTagsService, configDAO, rssfeedNewsitemService,
+				contentRetrievalService, flickrService, feedItemLocalCopyDecorator);
 		request = new MockHttpServletRequest();
 		Mockito.when(tag.getDisplayName()).thenReturn(TAG_DISPLAY_NAME);
 	}

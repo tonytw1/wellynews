@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -24,6 +25,7 @@ public class FeedModelBuilderTest {
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
+	@Mock FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 	
 	@Mock Feed feed;
 	@Mock List<FeedNewsitem> feedNewsitems;
@@ -37,14 +39,14 @@ public class FeedModelBuilderTest {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);		
 		when(rssfeedNewsitemService.getFeedNewsitems(feed)).thenReturn(feedNewsitems);
-		when(rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation);
+		when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation);
 		when(feedNewsitems.size()).thenReturn(10);
 		
 		request = new MockHttpServletRequest();
 		request.setAttribute("feedAttribute", feed);
 		request.setPathInfo("/feed/someonesfeed");
 		
-		modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor);
+		modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor, feedItemLocalCopyDecorator);
 	}
 	
 	@Test

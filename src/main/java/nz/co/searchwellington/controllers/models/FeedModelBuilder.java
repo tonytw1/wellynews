@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -21,16 +22,19 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
+	private FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 		
 	@Autowired
 	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
-			GeotaggedNewsitemExtractor geotaggedNewsitemExtractor) {
+			GeotaggedNewsitemExtractor geotaggedNewsitemExtractor,
+			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;
+		this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator;
 	}
-	
+
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getAttribute(FEED_ATTRIBUTE) != null;
@@ -65,7 +69,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	private void populateFeedItems(ModelAndView mv, Feed feed) {
 		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);		
 		if (feedNewsitems != null && !feedNewsitems.isEmpty()) {
-			mv.addObject("main_content", rssfeedNewsitemService.addSupressionAndLocalCopyInformation(feedNewsitems));
+			mv.addObject("main_content", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems));
 		}
 	}
 	
