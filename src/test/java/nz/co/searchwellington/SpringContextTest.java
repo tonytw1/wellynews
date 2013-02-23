@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import nz.co.searchwellington.controllers.models.ModelBuilder;
 import nz.co.searchwellington.controllers.models.TagModelBuilder;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.filters.RequestFilter;
@@ -14,8 +15,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.sun.tools.internal.ws.processor.modeler.annotation.ModelBuilder;
 
 public class SpringContextTest {
 

@@ -2,17 +2,8 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
-import org.bson.types.ObjectId;
-
-import com.google.code.morphia.annotations.Entity;
-import com.google.code.morphia.annotations.Id;
-
-@Entity("snapshots")
 public class Snapshot {
-
-	@Id
-	ObjectId objectId;
-
+	
 	private String url;
 	private Date date;
 	private String body;

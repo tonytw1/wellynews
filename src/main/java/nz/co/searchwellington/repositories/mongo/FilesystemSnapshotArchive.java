@@ -20,6 +20,7 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.log4j.Logger;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,11 +31,16 @@ public class FilesystemSnapshotArchive implements SnapshotArchive {
 	private static final DateTimeFormatter DATE_TIME_NO_MILLIS = ISODateTimeFormat.dateTimeNoMillis();
 	private static final String BODY_HTML = "body.html";
 	
-	private String archiveRootPath = "/tmp";
+    @Value("#{config['snapshot.archive.path']}")
+	private String archiveRootPath;
 
 	@Override
 	public Snapshot getLatestFor(String url) {
 		File snapshotFolderForUrl = new File(folderPathForUrl(url));
+		if (!(snapshotFolderForUrl.exists() && snapshotFolderForUrl.canRead())) {
+			log.debug("No existing snapshot for url: " + url);
+			return null;
+		}
 		
 		final List<File> folders = new ArrayList<File>(FileUtils.listFilesAndDirs(snapshotFolderForUrl, FalseFileFilter.INSTANCE , DirectoryFileFilter.INSTANCE));
 		Collections.sort(folders);

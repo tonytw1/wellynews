@@ -2,7 +2,7 @@ package nz.co.searchwellington.htmlparsing;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
+import nz.co.searchwellington.repositories.mongo.SnapshotArchive;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
@@ -19,10 +19,10 @@ public class SnapshotBodyExtractor {
 	
     private static Logger log = Logger.getLogger(SnapshotBodyExtractor.class);
     
-    private MongoSnapshotDAO snapshotDAO;
+    private SnapshotArchive snapshotDAO;
     
     @Autowired
-    public SnapshotBodyExtractor(MongoSnapshotDAO snapshotDAO) {	
+    public SnapshotBodyExtractor(SnapshotArchive snapshotDAO) {	
 		this.snapshotDAO = snapshotDAO;
 	}
 

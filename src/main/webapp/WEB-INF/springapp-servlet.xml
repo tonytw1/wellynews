@@ -101,7 +101,7 @@
 	</bean>
 	<bean id="linkCheckerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail" ref="linkCheckerJobRun" />
-		<property name="startDelay" value="600000" />
+		<property name="startDelay" value="60000" />
 		<property name="repeatInterval" value="60000" />
 	</bean>
 	<bean name="linkCheckerScheduler" class="nz.co.searchwellington.jobs.LinkCheckerScheduler">
@@ -149,7 +149,7 @@
 	</bean>
 	<bean id="expiredCheckerSchedulerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
 		<property name="jobDetail" ref="expiredCheckerSchedulerRun" />
-		<property name="startDelay" value="3600000" />
+		<property name="startDelay" value="60000" />
 		<property name="repeatInterval" value="60000" />
 	</bean>
 	

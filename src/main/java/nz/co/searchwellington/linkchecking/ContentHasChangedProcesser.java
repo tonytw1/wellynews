@@ -2,7 +2,7 @@ package nz.co.searchwellington.linkchecking;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
+import nz.co.searchwellington.repositories.mongo.SnapshotArchive;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
@@ -15,10 +15,10 @@ public class ContentHasChangedProcesser implements LinkCheckerProcessor {
 
 	private static Logger log = Logger.getLogger(ContentHasChangedProcesser.class);
 	
-	private MongoSnapshotDAO snapshotDAO;
+	private SnapshotArchive snapshotDAO;
 	
 	@Autowired
-	public ContentHasChangedProcesser(MongoSnapshotDAO snapshotDAO) {		
+	public ContentHasChangedProcesser(SnapshotArchive snapshotDAO) {		
 		this.snapshotDAO = snapshotDAO;
 	}
 

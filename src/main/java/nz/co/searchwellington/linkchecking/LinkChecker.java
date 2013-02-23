@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.mongo.MongoSnapshotDAO;
+import nz.co.searchwellington.repositories.mongo.SnapshotArchive;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 
@@ -25,7 +25,7 @@ public class LinkChecker {
     private static final int CANT_CONNECT = -1;
     
     private HibernateResourceDAO resourceDAO;
-	private MongoSnapshotDAO snapshotDAO;
+	private SnapshotArchive snapshotDAO;
 	private ContentUpdateService contentUpdateService;
 	private HttpFetcher httpFetcher;
     private LinkCheckerProcessor[] processers;
@@ -34,7 +34,7 @@ public class LinkChecker {
     }
 	
 	@Autowired
-	public LinkChecker(HibernateResourceDAO resourceDAO, MongoSnapshotDAO snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
+	public LinkChecker(HibernateResourceDAO resourceDAO, SnapshotArchive snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
 		this.resourceDAO = resourceDAO;
 		this.snapshotDAO = snapshotDAO;
 		this.contentUpdateService = contentUpdateService;
@@ -64,7 +64,9 @@ public class LinkChecker {
 						
 			log.debug("Saving resource and updating snapshot");
 			resource.setLastScanned(new DateTime().toDate());
-			snapshotDAO.put(new Snapshot(resource.getUrl(), DateTime.now().toDate(), pageContent));
+			if (pageContent != null) {
+				snapshotDAO.put(new Snapshot(resource.getUrl(), DateTime.now().toDate(), pageContent));
+			}
 			contentUpdateService.update(resource);
 			
         } else {
