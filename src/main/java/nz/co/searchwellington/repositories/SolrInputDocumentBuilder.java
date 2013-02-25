@@ -33,16 +33,18 @@ public class SolrInputDocumentBuilder {
 	private TaggingReturnsOfficerService taggingReturnsService;
 	private HandTaggingDAO handTaggingDAO;
 	private SolrTweetsHandler tweetsHandler;
+	private SolrGeotagHandler solrGeotagHandler;
 	
 	@Autowired
 	public SolrInputDocumentBuilder(
 			SnapshotBodyExtractor snapshotBodyExtractor,
 			TaggingReturnsOfficerService taggingReturnsService,
-			HandTaggingDAO handTaggingDAO, SolrTweetsHandler tweetsHandler) {
+			HandTaggingDAO handTaggingDAO, SolrTweetsHandler tweetsHandler, SolrGeotagHandler solrGeotagHandler) {
 		this.snapshotBodyExtractor = snapshotBodyExtractor;
 		this.taggingReturnsService = taggingReturnsService;
 		this.handTaggingDAO = handTaggingDAO;
 		this.tweetsHandler = tweetsHandler;
+		this.solrGeotagHandler = solrGeotagHandler;
 	}
 
 	public SolrInputDocument buildResouceInputDocument(Resource resource) {
@@ -115,7 +117,7 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField(TAGS, tag.getId());
 		}
 		
-		inputDocument = new SolrGeotagHandler(taggingReturnsService).processGeotags(resource, inputDocument);	// TODO inject
+		inputDocument = solrGeotagHandler.processGeotags(resource, inputDocument);
 		
 		Website publisher = getIndexPublisherForResource(resource);
 		if (publisher != null) {

@@ -6,13 +6,17 @@ import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 
 import org.apache.log4j.Logger;
 import org.apache.solr.common.SolrInputDocument;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class SolrGeotagHandler {
 	
 	private static Logger log = Logger.getLogger(SolrGeotagHandler.class);
 	
-	TaggingReturnsOfficerService taggingReturnsOfficerService;
+	private TaggingReturnsOfficerService taggingReturnsOfficerService;
 	
+	@Autowired
 	public SolrGeotagHandler(TaggingReturnsOfficerService taggingReturnsOfficerService) {
 		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
 	}
