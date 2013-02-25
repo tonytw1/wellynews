@@ -2,7 +2,7 @@ package nz.co.searchwellington.htmlparsing;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.repositories.mongo.SnapshotArchive;
+import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;

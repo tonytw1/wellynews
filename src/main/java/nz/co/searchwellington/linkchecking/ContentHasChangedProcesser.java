@@ -2,7 +2,7 @@ package nz.co.searchwellington.linkchecking;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.repositories.mongo.SnapshotArchive;
+import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;

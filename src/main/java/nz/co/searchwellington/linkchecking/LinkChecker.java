@@ -6,7 +6,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Snapshot;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.mongo.SnapshotArchive;
+import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 

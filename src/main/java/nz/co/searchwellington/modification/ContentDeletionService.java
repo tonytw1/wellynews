@@ -12,7 +12,7 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.mongo.SnapshotArchive;
+import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
