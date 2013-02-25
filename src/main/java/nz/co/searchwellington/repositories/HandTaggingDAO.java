@@ -40,11 +40,6 @@ public class HandTaggingDAO {
 		return handTaggings;
 	}
 	
-	public void save(HandTagging handTagging) {
-		// TODO Auto-generated method stub
-		
-	}
-	
 	@Transactional
 	public void delete(HandTagging handTagging) {
 		sessionFactory.getCurrentSession().delete(handTagging);
