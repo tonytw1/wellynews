@@ -5,13 +5,15 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.OsmId;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.geo.LatLong;
+import uk.co.eelpieconsulting.common.geo.Place;
 
 @Component
 @Scope(value = "request")
@@ -47,37 +49,36 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			final String osm = request.getParameter(OSM);
 			final OsmId osmId = new OsmId(Long.parseLong(osm.split("/")[0]), osm.split("/")[1]);			
 			
-			final Geocode resolvedOsmPlace = geoCodeService.resolveOsmId(osmId);			
-			log.info("OSM id '" + osmId + "' resolved to: " + resolvedOsmPlace);
-			if (resolvedOsmPlace == null) {
+			final Place resolvedPlace = geoCodeService.resolveOsmId(osmId);			
+			log.info("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
+			if (resolvedPlace == null) {
 				throw new RuntimeException("OSM place could not be resolved");	// TODO 404 in this use case
 			}
 			
-			request.setAttribute(LOCATION, resolvedOsmPlace);
+			request.setAttribute(LOCATION, resolvedPlace);
 		}
 		
 		if(request.getParameter(LOCATION) != null) {
 			final String location = request.getParameter(LOCATION);
-			List<Geocode> resolvedGeocode = geoCodeService.resolveAddress(location);
-			if (resolvedGeocode != null && !resolvedGeocode.isEmpty() && resolvedGeocode.get(0).isValid()) {
-				final Geocode firstMatch = resolvedGeocode.get(0);
-				log.info("User supplied location '" + location + "' resolved to point: " + firstMatch.getLatitude() + ", " + firstMatch.getLongitude());				
+			List<Place> matchingPlaces = geoCodeService.resolveAddress(location);
+			if (!matchingPlaces.isEmpty()) {
+				final Place firstMatch = matchingPlaces.get(0);
+				log.info("User supplied location '" + location + "' resolved to point: " + firstMatch.getLatLong());				
 				request.setAttribute(LOCATION, firstMatch);
 				
 			} else {
-				log.info("User supplied location '" + location + "' could not be resolved to a point; marking as invalid");
-				request.setAttribute(LOCATION, new Geocode(location, null, null));
+				log.info("User supplied location '" + location + "' could not be resolved to a point");
+				throw new RuntimeException("Could not resolve place name to lat long");
 			}
-			return;
 		}
 		
 		final Double latitude = processDoubleParameter(request, LATITUDE);
 		final Double longitude = processDoubleParameter(request, LONGITUDE);
 		if (latitude != null && longitude != null) {
 			// TODO Should try todo a reverse lookup to name this location.
-			final Geocode specificPointGeocode = new Geocode(latitude, longitude);
-			request.setAttribute(LOCATION, specificPointGeocode);
-		}		
+			LatLong latLong = new LatLong(latitude, longitude);
+			request.setAttribute(LOCATION, new Place(latLong.toString(), latLong, null));
+		}
 	}
 	
 	private Double processDoubleParameter(HttpServletRequest request, String parameterName) {

@@ -2,11 +2,12 @@ package nz.co.searchwellington.geocoding.osm;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.OsmId;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.geo.Place;
 
 @Component
 public class CachingNominatimGeocodingService implements GeoCodeService {
@@ -21,12 +22,12 @@ public class CachingNominatimGeocodingService implements GeoCodeService {
 	}
 
 	@Override
-	public List<Geocode> resolveAddress(String address) {
+	public List<Place> resolveAddress(String address) {
 		return cachingNominatimResolveAddressService.callService(address);
 	}
 	
 	@Override
-	public Geocode resolveOsmId(OsmId osmId) {
+	public Place resolveOsmId(OsmId osmId) {
 		return cachingNominatimResolveOsmIdService.callService(osmId);
 	}
 	

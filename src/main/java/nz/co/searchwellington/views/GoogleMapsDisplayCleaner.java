@@ -2,13 +2,16 @@ package nz.co.searchwellington.views;
 
 import java.util.List;
 
-import nz.co.searchwellington.geo.DistanceMeasuringService;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService;
+import uk.co.eelpieconsulting.common.geo.LatLong;
 
 import com.google.common.collect.Lists;
 
@@ -20,16 +23,16 @@ public class GoogleMapsDisplayCleaner {
     private final DistanceMeasuringService distanceMeasuringService;
     
     @Autowired
-    public GoogleMapsDisplayCleaner(DistanceMeasuringService distanceMeasuringService) {
-		this.distanceMeasuringService = distanceMeasuringService;
+    public GoogleMapsDisplayCleaner() {
+		this.distanceMeasuringService = new DistanceMeasuringService();
 	}
-
+    
 	public List<FrontendResource> dedupe(List<FrontendResource> geocoded) {
         return dedupe(geocoded, null);
     }
 
     public List<FrontendResource> dedupe(List<FrontendResource> geocoded, Resource selected) {      
-        log.info("Deduping collection with " + geocoded.size() + " items");
+        log.debug("Deduping collection with " + geocoded.size() + " items");
         final List<FrontendResource> deduped = Lists.newArrayList();
         if (selected != null && selected.getGeocode() != null) {
             deduped.add(selected);
@@ -50,12 +53,18 @@ public class GoogleMapsDisplayCleaner {
     
     private boolean listAlreadyContainsResourceWithThisLocation(List<FrontendResource> deduped, FrontendResource candidiate) {
         for (FrontendResource resource : deduped) {
-            if (distanceMeasuringService.areSameLocation(resource.getGeocode(), candidiate.getGeocode())) {
+            if (areSameOrOverlappingLocations(resource.getGeocode(), candidiate.getGeocode())) {
                 log.debug("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
                 return true;
             }
         }
         return false;
     }
+
+	private boolean areSameOrOverlappingLocations(Geocode geocode, Geocode geocode2) {
+		final double distanceBetween = distanceMeasuringService.getDistanceBetween(new LatLong(geocode.getLatitude(), geocode.getLongitude()), 
+				new LatLong(geocode2.getLatitude(), geocode2.getLongitude()));
+		return distanceBetween < 0.1;
+	}
     
 }

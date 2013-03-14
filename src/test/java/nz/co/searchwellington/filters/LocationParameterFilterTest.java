@@ -16,6 +16,9 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 
+import uk.co.eelpieconsulting.common.geo.LatLong;
+import uk.co.eelpieconsulting.common.geo.Place;
+
 import com.google.common.collect.Lists;
 
 public class LocationParameterFilterTest {
@@ -26,7 +29,7 @@ public class LocationParameterFilterTest {
 	@Mock private CachingNominatimGeocodingService geocodeService;
 	
 	private MockHttpServletRequest request;
-	private Geocode petoneStation;
+	private Place petoneStation;
 	
 	private LocationParameterFilter filter;
 	
@@ -35,13 +38,13 @@ public class LocationParameterFilterTest {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		filter = new LocationParameterFilter(geocodeService);
-		petoneStation = new Geocode(VALID_LOCATION, 1.1, 2.2);
+		petoneStation = new Place(VALID_LOCATION, new LatLong(1.1, 2.2), null);
 	}
 
 	@Test
 	public void canResolveNamedPlaceAsLocation() throws Exception {
 		request.setParameter("location", VALID_LOCATION);
-		List<Geocode> results = Lists.newArrayList();
+		List<Place> results = Lists.newArrayList();
 		results.add(petoneStation);
 		Mockito.when(geocodeService.resolveAddress(VALID_LOCATION)).thenReturn(results);
 		

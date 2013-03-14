@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import nz.co.searchwellington.geo.DistanceMeasuringService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Resource;
@@ -45,7 +44,7 @@ public class GoogleMapsDisplayCleanerTest {
         thirdNewsitem.setGeocode(alsoHere);        
         geocoded.addAll(Arrays.asList(firstNewsitem, secondNewsitem, thirdNewsitem));
         
-       cleaner = new GoogleMapsDisplayCleaner(new DistanceMeasuringService());
+        cleaner = new GoogleMapsDisplayCleaner();
     }
     
     @Test

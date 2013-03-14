@@ -11,6 +11,7 @@ import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -82,9 +83,13 @@ public class ApiController {
 	        
 	        submissionProcessingService.processUrl(request, resource);	         
 	    	submissionProcessingService.processTitle(request, resource);
-	    	log.info("Calling geocode");
-	    	resource.setGeocode(submissionProcessingService.processGeocode(request));
-	    	submissionProcessingService.processDate(request, resource);
+
+	    	final Geocode geocode = submissionProcessingService.processGeocode(request);
+	    	if (geocode != null) {
+	    		resource.setGeocode(geocode);
+	    	}
+	    	
+			submissionProcessingService.processDate(request, resource);
 	    	submissionProcessingService.processDescription(request, resource);
 	    	submissionProcessingService.processTags(request, resource, loggedInUser);
 	    	submissionProcessingService.processPublisher(request, resource);
