@@ -12,7 +12,6 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.apache.log4j.Logger;
@@ -28,7 +27,6 @@ public class ContentDeletionService {
 	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private HibernateResourceDAO resourceDAO;
-	private SnapshotArchive snapshotDAO;
 	private SolrQueryService solrQueryService;
 	private HandTaggingDAO handTaggingDAO;
 	private TagDAO tagDAO;
@@ -39,13 +37,12 @@ public class ContentDeletionService {
 	@Autowired
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			HibernateResourceDAO resourceDAO, SnapshotArchive snapshotDAO,
-			SolrQueryService solrQueryService, HandTaggingDAO handTaggingDAO,
+			HibernateResourceDAO resourceDAO, SolrQueryService solrQueryService, 
+			HandTaggingDAO handTaggingDAO,
 			TagDAO tagDAO) {
 		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
-		this.snapshotDAO = snapshotDAO;
 		this.solrQueryService = solrQueryService;
 		this.handTaggingDAO = handTaggingDAO;
 		this.tagDAO = tagDAO;
@@ -75,7 +72,6 @@ public class ContentDeletionService {
 			}
 		}
 		
-		//snapshotDAO.evict(resource.getUrl());
 		solrQueryService.deleteResourceFromIndex(resource.getId());
 		resourceDAO.deleteResource(resource);
 	}

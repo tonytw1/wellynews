@@ -1,8 +1,6 @@
 package nz.co.searchwellington.linkchecking;
 
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
@@ -10,16 +8,19 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.archiving.Snapshot;
+import uk.co.eelpieconsulting.archiving.SnapshotArchive;
+
 @Component
 public class ContentHasChangedProcesser implements LinkCheckerProcessor {
 
 	private static Logger log = Logger.getLogger(ContentHasChangedProcesser.class);
 	
-	private SnapshotArchive snapshotDAO;
+	private SnapshotArchive snapshotArchive;
 	
 	@Autowired
-	public ContentHasChangedProcesser(SnapshotArchive snapshotDAO) {		
-		this.snapshotDAO = snapshotDAO;
+	public ContentHasChangedProcesser(SnapshotArchive snapshotArchive) {		
+		this.snapshotArchive = snapshotArchive;
 	}
 
 	@Override
@@ -31,7 +32,7 @@ public class ContentHasChangedProcesser implements LinkCheckerProcessor {
     private void checkForChangeUsingSnapshots(Resource checkResource, String after) {             
     	log.debug("Comparing content before and after snapshots from content change.");
     	
-    	Snapshot snapshotBeforeHttpCheck = snapshotDAO.getLatestFor(checkResource.getUrl());
+    	Snapshot snapshotBeforeHttpCheck = snapshotArchive.getLatestFor(checkResource.getUrl());
     	final String pageContentBeforeHttpCheck = snapshotBeforeHttpCheck != null ? snapshotBeforeHttpCheck.getBody() : null;						     		
         boolean contentChanged = contentChanged(pageContentBeforeHttpCheck, after);                   
         if (contentChanged) {

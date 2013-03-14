@@ -25,8 +25,6 @@ public abstract class ResourceImpl implements Resource {
     protected Date embargoedUntil;
     protected boolean held;
     
-    protected Snapshot snapshot;
-
     protected String urlWords;
     
     protected Set<DiscoveredFeed> discoveredFeeds;
@@ -81,7 +79,6 @@ public abstract class ResourceImpl implements Resource {
         this.lastScanned = lastScanned;
     }
     
- 
     public Date getLastChanged() {
         return lastChanged;
     }
@@ -89,13 +86,6 @@ public abstract class ResourceImpl implements Resource {
         this.lastChanged = lastChanged;
     }
     
-    public Snapshot getSnapshot() {
-        return snapshot;
-    }
-    public void setSnapshot(Snapshot snapshot) {
-        this.snapshot = snapshot;
-    }
-     
     public Set<DiscoveredFeed> getDiscoveredFeeds() {
         return discoveredFeeds;
     }

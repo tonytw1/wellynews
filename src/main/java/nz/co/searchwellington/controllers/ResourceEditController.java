@@ -164,7 +164,7 @@ public class ResourceEditController {
     		mv.addObject("heading", "Resource snapshot");
     		
             mv.addObject("resource", editResource);
-            mv.addObject("body", snapBodyExtractor.extractSnapshotBodyTextFor(editResource));
+            mv.addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource));
             
             mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource)));
             mv.addObject("show_additional_tags", 1);

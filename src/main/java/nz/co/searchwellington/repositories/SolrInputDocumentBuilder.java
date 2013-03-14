@@ -124,7 +124,7 @@ public class SolrInputDocumentBuilder {
 			inputDocument.addField(PUBLISHER_NAME, publisher.getName());
 		}
 		
-		final String bodyText = snapshotBodyExtractor.extractSnapshotBodyTextFor(resource);
+		final String bodyText = snapshotBodyExtractor.extractLatestSnapshotBodyTextFor(resource);
 		if (bodyText != null) {
 			inputDocument.addField("bodytext", bodyText);
 		}

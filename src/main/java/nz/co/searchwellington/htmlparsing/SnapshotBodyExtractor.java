@@ -1,8 +1,6 @@
 package nz.co.searchwellington.htmlparsing;
 
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Snapshot;
-import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
@@ -14,24 +12,27 @@ import org.htmlparser.util.ParserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.archiving.Snapshot;
+import uk.co.eelpieconsulting.archiving.SnapshotArchive;
+
 @Component
 public class SnapshotBodyExtractor {
 	
     private static Logger log = Logger.getLogger(SnapshotBodyExtractor.class);
     
-    private SnapshotArchive snapshotDAO;
+    private SnapshotArchive snapshotArchive;
     
     @Autowired
-    public SnapshotBodyExtractor(SnapshotArchive snapshotDAO) {	
-		this.snapshotDAO = snapshotDAO;
+    public SnapshotBodyExtractor(SnapshotArchive snapshotArchive) {	
+		this.snapshotArchive = snapshotArchive;
 	}
 
-	public String extractSnapshotBodyTextFor(Resource resource) {
+	public String extractLatestSnapshotBodyTextFor(Resource resource) {
     	if (resource.getUrl() == null) {
     		return null;
     	}
     	
-    	final Snapshot latestFor = snapshotDAO.getLatestFor(resource.getUrl());
+    	final Snapshot latestFor = snapshotArchive.getLatestFor(resource.getUrl());
 		final String content = latestFor != null ? latestFor.getBody() : null;
     	if (content != null) {
     		return extractBodyText(content);

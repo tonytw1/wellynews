@@ -16,7 +16,6 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 import nz.co.searchwellington.repositories.solr.SolrQueryService;
 
 import org.mockito.Mock;
@@ -29,7 +28,6 @@ public class ContentDeletionServiceTest extends TestCase {
 	@Mock SupressionService supressionService;	
 	@Mock HibernateResourceDAO resourceDAO;
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
-	@Mock SnapshotArchive snapshotDAO;
 	@Mock SolrQueryService solrQueryService;
 	@Mock HandTaggingDAO handTaggingDAO;
 	@Mock TagDAO tagDAO;
@@ -46,7 +44,7 @@ public class ContentDeletionServiceTest extends TestCase {
 		resource = new NewsitemImpl();
 		resource.setId(123);
 		resource.setUrl("http://blah/test");
-		service = new ContentDeletionService(supressionService, rssfeedNewsitemService, resourceDAO, snapshotDAO, solrQueryService, handTaggingDAO, tagDAO);
+		service = new ContentDeletionService(supressionService, rssfeedNewsitemService, resourceDAO, solrQueryService, handTaggingDAO, tagDAO);
 	}
 	
 	public void testShouldDeleteFromSolrIndex() throws Exception {

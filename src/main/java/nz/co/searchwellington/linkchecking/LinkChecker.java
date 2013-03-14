@@ -3,10 +3,8 @@ package nz.co.searchwellington.linkchecking;
 import java.io.IOException;
 
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Snapshot;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.snapshots.SnapshotArchive;
 import nz.co.searchwellington.utils.HttpFetchResult;
 import nz.co.searchwellington.utils.HttpFetcher;
 
@@ -17,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.eelpieconsulting.archiving.Snapshot;
+import uk.co.eelpieconsulting.archiving.SnapshotArchive;
+
 @Component
 public class LinkChecker {
     
@@ -25,7 +26,7 @@ public class LinkChecker {
     private static final int CANT_CONNECT = -1;
     
     private HibernateResourceDAO resourceDAO;
-	private SnapshotArchive snapshotDAO;
+	private SnapshotArchive snapshotArchive;
 	private ContentUpdateService contentUpdateService;
 	private HttpFetcher httpFetcher;
     private LinkCheckerProcessor[] processers;
@@ -34,9 +35,9 @@ public class LinkChecker {
     }
 	
 	@Autowired
-	public LinkChecker(HibernateResourceDAO resourceDAO, SnapshotArchive snapshotDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
+	public LinkChecker(HibernateResourceDAO resourceDAO, SnapshotArchive snapshotArchive, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
 		this.resourceDAO = resourceDAO;
-		this.snapshotDAO = snapshotDAO;
+		this.snapshotArchive = snapshotArchive;
 		this.contentUpdateService = contentUpdateService;
 		this.httpFetcher = httpFetcher;
 		this.processers = processers;
@@ -65,7 +66,7 @@ public class LinkChecker {
 			log.debug("Saving resource and updating snapshot");
 			resource.setLastScanned(new DateTime().toDate());
 			if (pageContent != null) {
-				snapshotDAO.put(new Snapshot(resource.getUrl(), DateTime.now().toDate(), pageContent));
+				snapshotArchive.put(new Snapshot(resource.getUrl(), DateTime.now().toDate(), pageContent));
 			}
 			contentUpdateService.update(resource);
 			
