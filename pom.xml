@@ -75,12 +75,7 @@
 		<repository>
 			<id>local-dependencies</id>
 			<url>file:${basedir}/lib/repository</url>
-		</repository>
-		<repository>
-			<id>morphia.googlecode.com</id>
-			<name>Morphia Repo at Google Code</name>
-			<url>http://morphia.googlecode.com/svn/mavenrepo</url>
-		</repository>
+		</repository>		
 	</repositories>
 
 	<dependencies>
@@ -102,6 +97,12 @@
 			<groupId>uk.co.eelpieconsulting.common</groupId>
 			<artifactId>common-dates</artifactId>
 			<version>1.0.4</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>uk.co.eelpieconsulting.common</groupId>
+			<artifactId>common-geo</artifactId>
+			<version>1.0.0</version>
 		</dependency>
 		
 		<dependency>
