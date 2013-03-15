@@ -50,8 +50,7 @@ public class LocationParameterFilterTest {
 		
 		filter.filter(request);
 		
-		Geocode locationAttribute = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);	
-		assertTrue(locationAttribute.isValid());
+		final Place locationAttribute = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
 		assertEquals(VALID_LOCATION, locationAttribute.getAddress());
 	}
 	
@@ -69,10 +68,9 @@ public class LocationParameterFilterTest {
 		
 		filter.filter(request);
 		
-		Geocode locationAttribute = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);	
-		assertTrue(locationAttribute.isValid());
-		assertEquals(51.2, locationAttribute.getLatitude(), 0);
-		assertEquals(-0.1, locationAttribute.getLongitude(), 0);
+		final Place locationAttribute = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
+		assertEquals(51.2, locationAttribute.getLatLong().getLatitude(), 0);
+		assertEquals(-0.1, locationAttribute.getLatLong().getLongitude(), 0);
 	}
 	
 	@Test
@@ -81,8 +79,7 @@ public class LocationParameterFilterTest {
 		
 		filter.filter(request);
 
-		Geocode locationAttribute = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);	
-		assertFalse(locationAttribute.isValid());
+		final Place locationAttribute = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
 		assertEquals(INVALID_LOCATION, locationAttribute.getAddress());
 	}
 	
