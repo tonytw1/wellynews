@@ -1,13 +1,10 @@
 package nz.co.searchwellington.filters;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
-import nz.co.searchwellington.model.Geocode;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +21,6 @@ import com.google.common.collect.Lists;
 public class LocationParameterFilterTest {
 	
 	private static final String VALID_LOCATION = "Petone Station";
-	private static final String INVALID_LOCATION = "Twickenham Station, Wellington";
 	
 	@Mock private CachingNominatimGeocodingService geocodeService;
 	
@@ -71,16 +67,6 @@ public class LocationParameterFilterTest {
 		final Place locationAttribute = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
 		assertEquals(51.2, locationAttribute.getLatLong().getLatitude(), 0);
 		assertEquals(-0.1, locationAttribute.getLatLong().getLongitude(), 0);
-	}
-	
-	@Test
-	public void locationAttributeShouldBeMarkedAsInvalidIfLocationCouldNotBeResolved() throws Exception {
-		request.setParameter("location", INVALID_LOCATION);
-		
-		filter.filter(request);
-
-		final Place locationAttribute = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
-		assertEquals(INVALID_LOCATION, locationAttribute.getAddress());
 	}
 	
 }

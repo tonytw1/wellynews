@@ -23,7 +23,7 @@ public class SolrQueryFunctionalIT {
 	}
 
 	@Test
-	public void testCanMakeLocatioBasedQuery() throws Exception {				
+	public void testCanMakeLocationBasedQuery() throws Exception {				
 		final SolrQuery newsitemsNearQuery = new SolrQueryBuilder().near(-41.33, 174.77, 5).showBroken(true).startIndex(0).maxItems(2).toQuery();
         QueryResponse response = timeSolrCall(newsitemsNearQuery, solr);
         response = timeSolrCall(newsitemsNearQuery, solr);
