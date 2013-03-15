@@ -16,8 +16,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-import uk.co.eelpieconsulting.common.geo.LatLong;
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.google.common.collect.Lists;
 

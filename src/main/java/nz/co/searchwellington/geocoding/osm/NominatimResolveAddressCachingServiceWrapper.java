@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachableService;
 import uk.co.eelpieconsulting.common.geo.NominatimGeocodingService;
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class NominatimResolveAddressCachingServiceWrapper implements CachableService<String, List<Place>> {

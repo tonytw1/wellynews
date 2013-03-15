@@ -34,7 +34,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class SubmissionProcessingService {

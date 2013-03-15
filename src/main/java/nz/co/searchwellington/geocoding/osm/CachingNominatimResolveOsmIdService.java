@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 
 import uk.co.eelpieconsulting.common.caching.CachingServiceWrapper;
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Controller
 public class CachingNominatimResolveOsmIdService extends CachingServiceWrapper<OsmId, Place> {

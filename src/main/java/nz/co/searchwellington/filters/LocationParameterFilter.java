@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import uk.co.eelpieconsulting.common.geo.LatLong;
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 @Scope(value = "request")

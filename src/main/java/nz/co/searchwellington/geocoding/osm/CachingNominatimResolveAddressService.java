@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachingServiceWrapper;
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class CachingNominatimResolveAddressService extends CachingServiceWrapper<String, List<Place>> {

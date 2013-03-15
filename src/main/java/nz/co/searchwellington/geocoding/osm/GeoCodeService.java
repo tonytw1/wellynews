@@ -3,7 +3,7 @@ package nz.co.searchwellington.geocoding.osm;
 import java.util.List;
 
 import nz.co.searchwellington.model.OsmId;
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public interface GeoCodeService {
 

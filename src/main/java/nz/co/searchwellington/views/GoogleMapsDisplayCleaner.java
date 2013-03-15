@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService;
-import uk.co.eelpieconsulting.common.geo.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
 
 import com.google.common.collect.Lists;
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachableService;
 import uk.co.eelpieconsulting.common.geo.NominatimGeocodingService;
-import uk.co.eelpieconsulting.common.geo.Place;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class NominatimResolveOsmIdCachingServiceWrapper implements CachableService<OsmId, Place> {
@@ -25,7 +25,7 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 
 	@Override
 	public Place callService(OsmId osmId) {
-		return nominatimGeocodingService.loadPlaceByOsmId(new uk.co.eelpieconsulting.common.geo.OsmId(osmId.getId(), osmId.getType()));
+		return nominatimGeocodingService.loadPlaceByOsmId(new uk.co.eelpieconsulting.common.geo.model.OsmId(osmId.getId(), osmId.getType()));
 	}
 
 	@Override
