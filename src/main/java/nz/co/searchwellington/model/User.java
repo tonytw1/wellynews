@@ -9,8 +9,8 @@ public interface User extends TaggingVoter {
     
     public String getOpenId();
     public void setOpenId(String openID);
-    public Integer getTwitterId();
-	public void setTwitterId(Integer twitterid);
+    public Long getTwitterId();
+	public void setTwitterId(long twitterid);
 	
 	public boolean isAdmin();
 	public void setAdmin(boolean admin);

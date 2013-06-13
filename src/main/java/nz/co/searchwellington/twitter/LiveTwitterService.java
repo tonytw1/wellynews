@@ -1,6 +1,7 @@
 package nz.co.searchwellington.twitter;
 
 import java.util.List;
+import java.util.Map;
 
 import nz.co.searchwellington.model.Twit;
 
@@ -73,7 +74,7 @@ public class LiveTwitterService implements TwitterService {
 		log.info("Fetching profile image url for: " + twitterUsername);
     	Twitter api = twitterApiFactory.getOauthedTwitterApi();
     	try {
-			final String result = api.showUser(twitterUsername).getProfileImageURL().toExternalForm();
+			final String result = api.showUser(twitterUsername).getProfileImageURL().toString();
 			logRateLimitingInformation(api);
 			return result;
 			
@@ -109,8 +110,8 @@ public class LiveTwitterService implements TwitterService {
 	}
 	
 	private void logRateLimitingInformation(Twitter api) throws TwitterException {
-		final RateLimitStatus rateLimitStatus = api.getRateLimitStatus();
-		log.info("Rate limiting information: limit=" + rateLimitStatus.getHourlyLimit() + ", remaining=" + rateLimitStatus.getRemainingHits());
+		final Map<String, RateLimitStatus> rateLimitStatus = api.getRateLimitStatus();
+		log.info("Rate limiting information: " + rateLimitStatus);
 	}
 	
 }

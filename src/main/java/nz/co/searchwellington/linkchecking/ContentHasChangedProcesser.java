@@ -42,8 +42,7 @@ public class ContentHasChangedProcesser implements LinkCheckerProcessor {
             log.info("No change in content detected.");
         }
     }
-    
-        
+            
     private boolean contentChanged(String before, String after) {
         boolean contentChanged = false;
         if (before != null && after != null) {

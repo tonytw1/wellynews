@@ -6,7 +6,7 @@ public class UserImpl implements User {
 
     int id;
     String openid;
-    Integer twitterId;
+    Long twitterId;
     String profilename;
     String url;
     String name;
@@ -25,7 +25,7 @@ public class UserImpl implements User {
     	this.openid = openid;
 	}
     
-	public UserImpl(int twitterId) {		
+	public UserImpl(long twitterId) {		
 		this.twitterId = twitterId;
 	}
 
@@ -46,12 +46,12 @@ public class UserImpl implements User {
     }
 
 	@Override
-	public Integer getTwitterId() {
+	public Long getTwitterId() {
 		return twitterId;
 	}
 
 	@Override
-	public void setTwitterId(Integer twitterid) {
+	public void setTwitterId(long twitterid) {
 		this.twitterId = twitterid;
 	}
 

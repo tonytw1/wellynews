@@ -46,7 +46,7 @@ public class HibernateBackedUserDAO {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("profilename", profilename)).uniqueResult();     	    
 	}
 	
-	public User getUserByTwitterId(int twitterId) {
+	public User getUserByTwitterId(long twitterId) {
 	  	return (User) sessionFactory.getCurrentSession().createCriteria(User.class).add(Restrictions.eq("twitterId", twitterId)).uniqueResult();     	    
 	}
 	

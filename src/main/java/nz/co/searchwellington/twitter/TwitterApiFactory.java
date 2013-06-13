@@ -5,8 +5,8 @@ import org.springframework.stereotype.Component;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
+import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.http.AccessToken;
 
 @Component
 public class TwitterApiFactory {
@@ -25,12 +25,12 @@ public class TwitterApiFactory {
     
 	public Twitter getOauthedTwitterApiForAccessToken(String token, String secret) {
 		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
-		return new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(token, secret));
+		return new TwitterFactory(configBuilder.build()).getInstance(new AccessToken(token, secret));
 	}
 	
 	public Twitter getOauthedTwitterApi() {
 		ConfigurationBuilder configBuilder = new ConfigurationBuilder().setOAuthConsumerKey(consumerKey).setOAuthConsumerSecret(consumerSecret);
-		return new TwitterFactory(configBuilder.build()).getOAuthAuthorizedInstance(new AccessToken(accessToken, accessSecret));
+		return new TwitterFactory(configBuilder.build()).getInstance(new AccessToken(accessToken, accessSecret));
 	}
 	
 }
