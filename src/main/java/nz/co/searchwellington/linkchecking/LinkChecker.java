@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive;
 import uk.co.eelpieconsulting.archiving.Snapshot;
 import uk.co.eelpieconsulting.archiving.SnapshotArchive;
 
@@ -35,9 +36,9 @@ public class LinkChecker {
     }
 	
 	@Autowired
-	public LinkChecker(HibernateResourceDAO resourceDAO, SnapshotArchive snapshotArchive, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
+	public LinkChecker(HibernateResourceDAO resourceDAO, ContentUpdateService contentUpdateService, HttpFetcher httpFetcher, LinkCheckerProcessor... processers) {
 		this.resourceDAO = resourceDAO;
-		this.snapshotArchive = snapshotArchive;
+		this.snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots");
 		this.contentUpdateService = contentUpdateService;
 		this.httpFetcher = httpFetcher;
 		this.processers = processers;

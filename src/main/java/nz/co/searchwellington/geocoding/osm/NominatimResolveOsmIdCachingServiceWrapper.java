@@ -3,7 +3,6 @@ package nz.co.searchwellington.geocoding.osm;
 import nz.co.searchwellington.model.OsmId;
 
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachableService;
@@ -18,9 +17,8 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 	
 	private NominatimGeocodingService nominatimGeocodingService;
 	
-	@Autowired
-	public NominatimResolveOsmIdCachingServiceWrapper(NominatimGeocodingService nominatimGeocodingService) {
-		this.nominatimGeocodingService = nominatimGeocodingService;
+	public NominatimResolveOsmIdCachingServiceWrapper() {
+		this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", "http://nominatim.openstreetmap.org/");
 	}
 
 	@Override

@@ -7,7 +7,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService;
@@ -22,7 +21,6 @@ public class GoogleMapsDisplayCleaner {
     
     private final DistanceMeasuringService distanceMeasuringService;
     
-    @Autowired
     public GoogleMapsDisplayCleaner() {
 		this.distanceMeasuringService = new DistanceMeasuringService();
 	}

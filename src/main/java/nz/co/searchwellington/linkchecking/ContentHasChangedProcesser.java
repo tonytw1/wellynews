@@ -5,9 +5,9 @@ import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive;
 import uk.co.eelpieconsulting.archiving.Snapshot;
 import uk.co.eelpieconsulting.archiving.SnapshotArchive;
 
@@ -18,9 +18,8 @@ public class ContentHasChangedProcesser implements LinkCheckerProcessor {
 	
 	private SnapshotArchive snapshotArchive;
 	
-	@Autowired
-	public ContentHasChangedProcesser(SnapshotArchive snapshotArchive) {		
-		this.snapshotArchive = snapshotArchive;
+	public ContentHasChangedProcesser() {		
+		this.snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots");
 	}
 
 	@Override

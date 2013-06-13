@@ -9,9 +9,9 @@ import org.htmlparser.Parser;
 import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive;
 import uk.co.eelpieconsulting.archiving.Snapshot;
 import uk.co.eelpieconsulting.archiving.SnapshotArchive;
 
@@ -22,9 +22,8 @@ public class SnapshotBodyExtractor {
     
     private SnapshotArchive snapshotArchive;
     
-    @Autowired
-    public SnapshotBodyExtractor(SnapshotArchive snapshotArchive) {	
-		this.snapshotArchive = snapshotArchive;
+    public SnapshotBodyExtractor() {	
+		this.snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots");
 	}
 
 	public String extractLatestSnapshotBodyTextFor(Resource resource) {
