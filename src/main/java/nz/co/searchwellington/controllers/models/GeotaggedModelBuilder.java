@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.geo.model.Place;
+
 @Component
 public class GeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
@@ -120,7 +122,11 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
 			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());			
 		} else {
-			final Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);
+			final Place userSuppliedPlace = (Place) request.getAttribute(LocationParameterFilter.LOCATION);
+			final Geocode userSuppliedLocation = new Geocode(userSuppliedPlace.getAddress(),
+					userSuppliedPlace.getLatLong().getLatitude(), 
+					userSuppliedPlace.getLatLong().getLongitude());	// TODO Geocode or place? what is there relationship?
+			
 			if (userSuppliedLocation.isValid()) {
 				List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedLocation, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
 				if (relatedTagLinks.size() > 0) {
