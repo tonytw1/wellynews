@@ -14,10 +14,8 @@ public class UserImpl implements User {
 
     String apikey;
     
-    
     boolean admin;
     
-  
     public UserImpl() {
     }
     
@@ -25,7 +23,7 @@ public class UserImpl implements User {
     	this.openid = openid;
 	}
     
-	public UserImpl(long twitterId) {		
+	public UserImpl(Long twitterId) {		
 		this.twitterId = twitterId;
 	}
 
