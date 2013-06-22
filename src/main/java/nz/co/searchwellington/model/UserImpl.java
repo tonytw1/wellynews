@@ -49,7 +49,7 @@ public class UserImpl implements User {
 	}
 
 	@Override
-	public void setTwitterId(long twitterid) {
+	public void setTwitterId(Long twitterid) {
 		this.twitterId = twitterid;
 	}
 
