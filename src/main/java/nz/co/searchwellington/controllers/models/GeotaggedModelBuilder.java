@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+import sun.net.www.content.text.plain;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -56,7 +57,11 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("description", "Geotagged newsitems");
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
-			final Geocode userSuppliedLocation = (Geocode) request.getAttribute(LocationParameterFilter.LOCATION);						
+			final Place userSuppliedPlace = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
+			final Geocode userSuppliedLocation = new Geocode(userSuppliedPlace.getAddress(), 
+					userSuppliedPlace.getLatLong().getLatitude(), 
+					userSuppliedPlace.getLatLong().getLongitude());
+			
 			final boolean hasUserSuppliedALocation = userSuppliedLocation != null;
 			if (hasUserSuppliedALocation) {
 				if (userSuppliedLocation.isValid()) {
