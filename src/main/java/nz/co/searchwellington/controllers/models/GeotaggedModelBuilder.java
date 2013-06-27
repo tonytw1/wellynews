@@ -80,8 +80,6 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				populatePagination(mv, startIndex, totalNearbyCount);
 				
 				mv.addObject("location", userSuppliedLocation);
-				mv.addObject("latitude", latitude);	// TODO Are these used in the view?
-				mv.addObject("longitude", longitude);
 				
 				log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
