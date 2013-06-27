@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
-import sun.net.www.content.text.plain;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -58,42 +57,39 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
 			final Place userSuppliedPlace = (Place) request.getAttribute(LocationParameterFilter.LOCATION);	
-			final Geocode userSuppliedLocation = new Geocode(userSuppliedPlace.getAddress(), 
-					userSuppliedPlace.getLatLong().getLatitude(), 
-					userSuppliedPlace.getLatLong().getLongitude());
 			
-			final boolean hasUserSuppliedALocation = userSuppliedLocation != null;
+			final boolean hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong() != null;
 			if (hasUserSuppliedALocation) {
-				if (userSuppliedLocation.isValid()) {
-					
-					final double latitude = userSuppliedLocation.getLatitude();
-					final double longitude = userSuppliedLocation.getLongitude();
-					log.info("Location is set to: " + latitude + ", " + longitude);
-					
-					final int page = getPage(request);
-					mv.addObject("page", page);
-					final int startIndex = getStartIndex(page);
-					
-					final double radius = getLocationSearchRadius(request);					
-					final int totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, radius);
-					if (startIndex > totalNearbyCount) {
-						return null;
-					}
-					populatePagination(mv, startIndex, totalNearbyCount);
-					
-					mv.addObject("location", userSuppliedLocation);
-					mv.addObject("latitude", latitude);	// TODO Are these used in the view?
-					mv.addObject("longitude", longitude);
-					
-					log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
-					mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
+				final Geocode userSuppliedLocation = new Geocode(userSuppliedPlace.getAddress(), 
+						userSuppliedPlace.getLatLong().getLatitude(),
+						userSuppliedPlace.getLatLong().getLongitude());
 				
-					if (userSuppliedLocation.getAddress() != null) {
-						mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation));
-					}			
-					setRssForLocation(mv, userSuppliedLocation);
+				final double latitude = userSuppliedLocation.getLatitude();
+				final double longitude = userSuppliedLocation.getLongitude();
+				log.info("Location is set to: " + latitude + ", " + longitude);
 				
-				}				
+				final int page = getPage(request);
+				mv.addObject("page", page);
+				final int startIndex = getStartIndex(page);
+				
+				final double radius = getLocationSearchRadius(request);					
+				final int totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, radius);
+				if (startIndex > totalNearbyCount) {
+					return null;
+				}
+				populatePagination(mv, startIndex, totalNearbyCount);
+				
+				mv.addObject("location", userSuppliedLocation);
+				mv.addObject("latitude", latitude);	// TODO Are these used in the view?
+				mv.addObject("longitude", longitude);
+				
+				log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
+				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
+			
+				if (userSuppliedLocation.getAddress() != null) {
+					mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation));
+				}			
+				setRssForLocation(mv, userSuppliedLocation);							
 				return mv;				
 			}
 			

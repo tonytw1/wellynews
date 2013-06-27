@@ -9,7 +9,6 @@ import java.util.List;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -69,7 +68,7 @@ public class GeotaggedModelBuilderTest {
 		assertTrue(modelBuilder.isValid(request));
 	}
 	
-	//@Test
+	@Test
 	public void geotaggedNewsitemsPageShouldHavePaginationInformation() throws Exception {
 		request.setPathInfo("/geotagged");				
 		Mockito.when(contentRetrievalService.getGeotaggedCount()).thenReturn(TOTAL_GEOTAGGED_COUNT);
@@ -130,15 +129,14 @@ public class GeotaggedModelBuilderTest {
 		assertEquals(newsitemsNearPetoneStationSecondPage, modelAndView.getModel().get("main_content"));
 	}
 	
-	//@Test
-	public void locationSearchShouldNotSetMainContentIfTheLocationWasInvalid() throws Exception {
+	@Test
+	public void locationSearchShouldNotSetLocationWasInvalid() throws Exception {
 		request.setPathInfo("/geotagged");
-		//Mockito.when(invalidLocation.isValid()).thenReturn(false);
+		Mockito.when(invalidLocation.getLatLong()).thenReturn(null);
 		request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation);
 				
 		ModelAndView modelAndView = modelBuilder.populateContentModel(request);
 
-		assertNull(modelAndView.getModel().get("main_content"));
 		assertNull(modelAndView.getModel().get("location"));
 	}
 	
