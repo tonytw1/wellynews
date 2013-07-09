@@ -158,13 +158,7 @@
 			<version>0.2.1</version>
 			<type>jar</type>
 		</dependency>
-
-		<dependency>
-			<groupId>org.scribe</groupId>
-			<artifactId>scribe</artifactId>
-			<version>1.2.3</version>
-		</dependency>
-
+			
 		<dependency>
 			<groupId>org.twitter4j</groupId>
 			<artifactId>twitter4j-core</artifactId>
