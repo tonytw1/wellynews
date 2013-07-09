@@ -55,7 +55,7 @@ public class TwitterLoginHandler implements SigninHandler {
 			log.info("Got request token: " + requestToken.getToken());
 			tokens.put(requestToken.getToken(), requestToken);
 				
-			final String authorizeUrl = requestToken.getAuthorizationURL();
+			final String authorizeUrl = requestToken.getAuthenticationURL();
 			log.info("Redirecting user to authorize url : " + authorizeUrl);
 			return new ModelAndView(new RedirectView(authorizeUrl));			
 			
