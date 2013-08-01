@@ -147,7 +147,6 @@ public class SubmissionProcessingService {
         } else {
         	log.debug("No additional tag string found.");
         }    
-        trimTags(editResource, 4);               
     }
 	
 	@SuppressWarnings("unchecked")
@@ -232,30 +231,14 @@ public class SubmissionProcessingService {
         }
     }
     
+    private boolean isValidTagName(String field) {
+    	return field != null && field.length() > 0 && field.matches("[a-zA-Z0-9]*");
+    }
+    
     private String cleanTagName(String field) {
     	field = StringUtils.strip(field);
         field = StringUtils.remove(field, " ");    
         return field.toLowerCase().trim();
-    }
-    
-    protected void trimTags(Resource editResource, int maxTags) { // TODO reimplement
-   /*     if (editResource.getTags().size() > maxTags) {
-            Set <Tag> tagsToKeep = new HashSet<Tag>();
-            int counter = 0;
-            for (Iterator<Tag> iter = editResource.getTags().iterator(); iter.hasNext();) {
-                Tag toKeep= iter.next();
-                counter++;
-                if (counter <= 4) {
-                    tagsToKeep.add(toKeep);
-                }
-            }
-            editResource.setTags(tagsToKeep);
-    	}
-    */ 
-    }
-
-    protected boolean isValidTagName(String field) {
-        return field != null && field.length() > 0 && field.matches("[a-zA-Z0-9]*");
     }
     
 }
