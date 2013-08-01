@@ -34,6 +34,8 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -91,12 +93,14 @@ public class SubmissionProcessingService {
 		if (req.getParameter(REQUEST_SELECTED_GEOCODE) != null) {
 	    	final String selectedGeocode = new String(req.getParameter(REQUEST_SELECTED_GEOCODE));
 	        log.info("Found selected geocode: " + selectedGeocode);
-	        if (selectedGeocode != null && !selectedGeocode.trim().equals("")) {	        	
+	        if (!Strings.isNullOrEmpty(selectedGeocode)) {
 				final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);				
 
 				final Place resolvedPlace = nominatimGeocodeService.resolveOsmId(osmId);
 	            log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedPlace);
-	            return new Geocode(resolvedPlace.getAddress(), resolvedPlace.getLatLong().getLatitude(), resolvedPlace.getLatLong().getLongitude());
+	            return new Geocode(resolvedPlace.getAddress(),
+	            		resolvedPlace.getLatLong().getLatitude(), resolvedPlace.getLatLong().getLongitude(), 
+	            		osmId.getId(), osmId.getType());
 	        }
 		}
 		return null;
