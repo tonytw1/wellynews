@@ -87,18 +87,17 @@ public class SubmissionProcessingService {
 	
 	public Geocode processGeocode(HttpServletRequest req) {      
 		log.info("Starting processing of geocode.");
-		if (req.getParameter(REQUEST_SELECTED_GEOCODE) != null) {
-	    	final String selectedGeocode = new String(req.getParameter(REQUEST_SELECTED_GEOCODE));
+		if (!Strings.isNullOrEmpty(req.getParameter(REQUEST_SELECTED_GEOCODE))) {
+	    	final String selectedGeocode = new String(req.getParameter(REQUEST_SELECTED_GEOCODE).trim());
 	        log.info("Found selected geocode: " + selectedGeocode);
-	        if (!Strings.isNullOrEmpty(selectedGeocode)) {
-				final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);				
+			final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);				
 
-				final Place resolvedPlace = nominatimGeocodeService.resolveOsmId(osmId);
-	            log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedPlace);
-	            return new Geocode(resolvedPlace.getAddress(),
-	            		resolvedPlace.getLatLong().getLatitude(), resolvedPlace.getLatLong().getLongitude(), 
-	            		osmId.getId(), osmId.getType());
-	        }
+			final Place resolvedPlace = nominatimGeocodeService.resolveOsmId(osmId);
+			log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedPlace);
+			
+			return new Geocode(resolvedPlace.getAddress(), 
+					resolvedPlace.getLatLong().getLatitude(), resolvedPlace.getLatLong().getLongitude(), 
+					osmId.getId(), osmId.getType());	       
 		}
 		return null;
 	}
