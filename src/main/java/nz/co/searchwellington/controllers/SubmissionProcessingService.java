@@ -8,7 +8,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import nz.co.searchwellington.controllers.submission.SubmissionProcessor;
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
 import nz.co.searchwellington.model.Feed;
@@ -24,7 +23,6 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 
 import org.apache.commons.lang.StringEscapeUtils;
@@ -34,9 +32,9 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-
 import uk.co.eelpieconsulting.common.geo.model.Place;
+
+import com.google.common.base.Strings;
 
 @Component
 public class SubmissionProcessingService {
@@ -48,20 +46,20 @@ public class SubmissionProcessingService {
 	private static final String REQUEST_EMBARGO_DATE_NAME = "embargo_date";
     
     private Logger log = Logger.getLogger(SubmissionProcessingService.class);
-        
-    private UrlCleaner urlCleaner;
+    
     private CachingNominatimGeocodingService nominatimGeocodeService;
     private TagDAO tagDAO;
     private HandTaggingDAO tagVoteDAO;
 	private HibernateResourceDAO resourceDAO;
+	private UrlProcessor urlProcessor;
 	
 	@Autowired
-	public SubmissionProcessingService(UrlCleaner urlCleaner, CachingNominatimGeocodingService nominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO) {
-		this.urlCleaner = urlCleaner;
+	public SubmissionProcessingService(CachingNominatimGeocodingService nominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO, UrlProcessor urlProcessor) {
 		this.nominatimGeocodeService = nominatimGeocodingService;
 		this.tagDAO = tagDAO;
 		this.tagVoteDAO = tagVoteDAO;
 		this.resourceDAO = resourceDAO;
+		this.urlProcessor = urlProcessor;
 	}
 	
 	public void processTitle(HttpServletRequest req, Resource editResource) {           
@@ -79,7 +77,6 @@ public class SubmissionProcessingService {
     }
 	
 	public void processUrl(HttpServletRequest request, Resource editResource) {		
-		SubmissionProcessor urlProcessor = new UrlProcessor(urlCleaner);	// TODO inject
 		urlProcessor.process(request, editResource);
 	}
 		
