@@ -11,6 +11,8 @@ import nz.co.searchwellington.utils.UrlCleaner;
 @Component
 public class UrlProcessor implements SubmissionProcessor {
 	
+	private static final String URL = "url";
+	
 	private UrlCleaner urlCleaner;
 
 	@Autowired
@@ -20,8 +22,8 @@ public class UrlProcessor implements SubmissionProcessor {
 
 	@Override
 	public void process(HttpServletRequest request, Resource editResource) {
-		if (request.getParameter("url") != null) {
-			String url = request.getParameter("url");
+		if (request.getParameter(URL) != null) {
+			String url = request.getParameter(URL);
 			editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
 		}
 	}
