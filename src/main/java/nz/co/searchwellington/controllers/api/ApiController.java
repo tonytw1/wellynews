@@ -117,29 +117,6 @@ public class ApiController {
     }
     
     @Transactional
-    @RequestMapping("/api/accept")
-    public ModelAndView accept(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
-    	ModelAndView mv = new ModelAndView();
-
-    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
-    	if (isAuthorised(loggedInUser)) { 
-    		if (request.getParameter("url") != null) {    			
-    			final String url = request.getParameter("url");
-    			log.info("Attempting to accept feed item with url: " + url);
-    			Newsitem newsitemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(url);
-    			if (newsitemToAccept != null) {
-    				feedItemAcceptor.acceptFeedItem(loggedInUser, newsitemToAccept);
-    				autoTagger.autotag(newsitemToAccept);   // TODO in the wrong place - should be behind the content update service?
-    				contentUpdateService.update(newsitemToAccept);
-    			}
-    		}
-    	}
-    	
- 		mv.setViewName("apiResponseERROR");
-		return mv;
-    }
-    
-    @Transactional
     @RequestMapping("/api/changeurl")
     public ModelAndView changeUrl(HttpServletRequest request, HttpServletResponse response) throws IOException {    		
     	 ModelAndView mv = new ModelAndView();
