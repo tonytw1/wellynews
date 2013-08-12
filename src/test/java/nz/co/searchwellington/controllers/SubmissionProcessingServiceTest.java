@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers;
 
 import java.util.Date;
 
+import nz.co.searchwellington.controllers.submission.UrlProcessor;
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
@@ -23,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 public class SubmissionProcessingServiceTest {
 
 	private static final String FEED_NAME = "A feed";
+	
 	@Mock UrlCleaner urlCleaner;
 	@Mock CachingNominatimGeocodingService geocodeService;
 	@Mock TagDAO tagDAO;
@@ -31,6 +33,8 @@ public class SubmissionProcessingServiceTest {
 	@Mock Newsitem resource;
 	@Mock Feed feed;
 	@Mock User loggedInUser;	
+	@Mock UrlProcessor urlProcessor;
+	@Mock private CachingNominatimGeocodingService nominatimGeocodingService;
 	
 	private MockHttpServletRequest request;
 	private SubmissionProcessingService submissionProcessingService;
@@ -40,7 +44,7 @@ public class SubmissionProcessingServiceTest {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		Mockito.when(feed.getName()).thenReturn(FEED_NAME);
-		submissionProcessingService = new SubmissionProcessingService(urlCleaner, geocodeService, tagDAO, tagVoteDAO, resourceDAO);
+		submissionProcessingService = new SubmissionProcessingService(nominatimGeocodingService, tagDAO, tagVoteDAO, resourceDAO, urlProcessor);
 	}
 	
 	@Test
