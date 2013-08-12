@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
 import nz.co.searchwellington.signin.SigninHandler;
 import nz.co.searchwellington.twitter.TwitterApiFactory;
+import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,12 +31,15 @@ public class TwitterLoginHandler implements SigninHandler {
 	
 	private HibernateBackedUserDAO userDAO;
 	private TwitterApiFactory twitterApiFactory;
+	private final UrlBuilder urlBuilder;
+
 	private Map<String, RequestToken> tokens;
 	
 	@Autowired
-	public TwitterLoginHandler(HibernateBackedUserDAO userDAO, TwitterApiFactory twitterApiFactory) {
+	public TwitterLoginHandler(HibernateBackedUserDAO userDAO, TwitterApiFactory twitterApiFactory, UrlBuilder urlBuilder) {
 		this.userDAO = userDAO;
 		this.twitterApiFactory = twitterApiFactory;
+		this.urlBuilder = urlBuilder;
 		this.tokens = Maps.newConcurrentMap();
 	}
 	
@@ -51,7 +55,7 @@ public class TwitterLoginHandler implements SigninHandler {
 			
 			final Twitter twitterApi = twitterApiFactory.getTwitterApi();
 			
-			final RequestToken requestToken = twitterApi.getOAuthRequestToken();
+			final RequestToken requestToken = twitterApi.getOAuthRequestToken(urlBuilder.getHomeUrl() + "/twitter/callback");
 			log.info("Got request token: " + requestToken.getToken());
 			tokens.put(requestToken.getToken(), requestToken);
 				
