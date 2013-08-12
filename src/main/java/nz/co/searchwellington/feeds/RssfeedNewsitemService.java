@@ -6,7 +6,6 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
@@ -20,7 +19,6 @@ public class RssfeedNewsitemService {
 
 	private CachingRssfeedNewsitemService cachingRssfeedNewsitemService;
 	private HibernateResourceDAO resourceDAO;
-	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	
 	@Autowired
 	public RssfeedNewsitemService(
@@ -29,7 +27,6 @@ public class RssfeedNewsitemService {
 			FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
 		this.cachingRssfeedNewsitemService = cachingRssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
-		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 	}
 
 	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
@@ -45,19 +42,6 @@ public class RssfeedNewsitemService {
 			}
 		}
 		return latestPublicationDate;
-	}
-	
-	public Newsitem getFeedNewsitemByUrl(String url) {
-		log.info("Looking for feed news items by url: " + url);
-		for(Feed feed : resourceDAO.getAllFeeds()) {
-			List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
-			for (FeedNewsitem feedNewsitem : feednewsItems) {                	
-				if (feedNewsitem.getUrl().equals(url)) {
-					return feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feedNewsitem);
-				}
-			}
-		}
-		return null;
 	}
 	
 	public FeedNewsitem getFeedNewsitemByUrl(Feed feed, String url) {
