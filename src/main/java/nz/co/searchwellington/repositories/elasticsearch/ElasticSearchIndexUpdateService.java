@@ -132,7 +132,7 @@ public class ElasticSearchIndexUpdateService {
 		}
 		frontendContentItem.setTags(tags);
 		
-		final Geocode contentItemGeocode = contentItem.getGeocode();
+		final Geocode contentItemGeocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem);
 		if (contentItemGeocode != null) {
 			LatLong latLong = null;
 			if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
