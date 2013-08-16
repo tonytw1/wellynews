@@ -10,7 +10,6 @@
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="true">
 		<property name="mappingResources">
     		<list>
-        		<value>nz/co/searchwellington/model/Config.hbm.xml</value>
        			<value>nz/co/searchwellington/model/Comment.hbm.xml</value>
       			<value>nz/co/searchwellington/model/CommentFeed.hbm.xml</value>	
       			<value>nz/co/searchwellington/model/DiscoveredFeed.hbm.xml</value>

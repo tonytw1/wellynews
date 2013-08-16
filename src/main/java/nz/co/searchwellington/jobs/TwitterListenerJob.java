@@ -5,7 +5,6 @@ import java.util.List;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService;
 import nz.co.searchwellington.twitter.TwitterService;
 
@@ -18,32 +17,29 @@ public class TwitterListenerJob {
     
     private TwitterService twitterService;
     private TwitterNewsitemMentionsFinderService twitterMentionFinder;
-    private ConfigDAO configDAO;
     private ContentUpdateService contentUpdateService;
-    
-    
+
+	private boolean isTwitterListenerEnabled = true;	// TODO push to properties file
+	
     public TwitterListenerJob() {
     }
-
     
     public TwitterListenerJob(TwitterService twitterService,
 			TwitterNewsitemMentionsFinderService twitterMentionFinder,
-			ConfigDAO configDAO,
 			ContentUpdateService contentUpdateService) {
 		super();
 		this.twitterService = twitterService;
 		this.twitterMentionFinder = twitterMentionFinder;
-		this.configDAO = configDAO;
 		this.contentUpdateService = contentUpdateService;
 	}
-
     
 	@Transactional
     public void run() {
-        if (!configDAO.isTwitterListenerEnabled()) {
+        if (!isTwitterListenerEnabled) {
         	log.info("Twitter listener is not enabled");
         	return;
-        }        
+        }
+        
         log.info("Running Twitter listener");
         if (twitterService.isConfigured()) {        	
         	fetchMentions();			
@@ -51,9 +47,8 @@ public class TwitterListenerJob {
 			log.warn("Twitter service is not configured; not running");
 		}
         log.info("Twitter listener completed.");
-    }
-
-    	
+	}
+	
 	private void fetchMentions() {
 		List<TwitterMention> newsitemMentions = twitterMentionFinder.getNewsitemMentions();
 		for (TwitterMention reTwit : newsitemMentions) {

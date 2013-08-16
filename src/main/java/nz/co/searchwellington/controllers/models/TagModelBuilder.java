@@ -16,7 +16,6 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -34,7 +33,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
-	private ConfigDAO configDAO;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentRetrievalService contentRetrievalService;
 	private FlickrService flickrService;
@@ -45,7 +43,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
-			RelatedTagsService relatedTagsService, ConfigDAO configDAO,
+			RelatedTagsService relatedTagsService,
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
 			FlickrService flickrService,
@@ -53,7 +51,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
-		this.configDAO = configDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.flickrService = flickrService;
@@ -173,7 +170,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
  		
     private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
     	mv.addObject("flickr_count", flickrService.getFlickrPhotoCountFor(tag));
-    	mv.addObject("escaped_flickr_group_id", UrlFilters.encode(configDAO.getFlickrPoolGroupId()));	// TODO double call to the config doa
+    	mv.addObject("escaped_flickr_group_id", UrlFilters.encode(flickrService.getPoolId()));
     }
     
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag) {

@@ -2,7 +2,6 @@ package nz.co.searchwellington.flickr;
 
 import static org.junit.Assert.assertEquals;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ConfigDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +19,6 @@ public class FlickrServiceTest {
 	private static final String TAG_DISPLAY_NAME = "Trolley Buses";
 
 	@Mock FlickrApi flickrApi;
-	@Mock ConfigDAO configDAO;
 	@Mock MemcachedCache cache;
 	
 	private FlickrService flickrService;
@@ -29,8 +27,7 @@ public class FlickrServiceTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(configDAO.getFlickrPoolGroupId()).thenReturn(FLICKR_POOL_ID);
-		flickrService = new FlickrService(flickrApi, configDAO, cache);
+		flickrService = new FlickrService(flickrApi, cache);
 		tag = new Tag();
 		tag.setDisplayName(TAG_DISPLAY_NAME);
 	}

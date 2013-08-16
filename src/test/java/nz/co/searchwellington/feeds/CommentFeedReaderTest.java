@@ -6,7 +6,6 @@ import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
-import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.junit.Before;
@@ -22,7 +21,6 @@ public class CommentFeedReaderTest {
 	@Mock CommentFeedService commentFeedService;
 	@Mock HibernateResourceDAO resourceDAO;
 	@Mock ContentUpdateService contentUpdateService;
-	@Mock ConfigDAO configDAO;
 	
 	private ArrayList<CommentFeed> commentFeedsToCheck;
 	@Mock CommentFeed commentFeed;
@@ -33,7 +31,6 @@ public class CommentFeedReaderTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		Mockito.when(configDAO.isFeedReadingEnabled()).thenReturn(true);
 		
 		Mockito.when(commentFeed.getNewsitem()).thenReturn(newsitem);
 		commentFeedsToCheck = Lists.newArrayList();
@@ -43,7 +40,7 @@ public class CommentFeedReaderTest {
 		}		
 		Mockito.when(resourceDAO.getCommentFeedsToCheck(30)).thenReturn(commentFeedsToCheck);
 		
-		commentFeedReader = new CommentFeedReader(resourceDAO, commentFeedService, contentUpdateService, configDAO);
+		commentFeedReader = new CommentFeedReader(resourceDAO, commentFeedService, contentUpdateService);
 	}
     
 	@Test

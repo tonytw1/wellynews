@@ -14,7 +14,6 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -34,7 +33,6 @@ public class TagModelBuilderTest {
 	@Mock RssUrlBuilder rssUrlBuilder;
 	@Mock UrlBuilder urlBuilder;
 	@Mock RelatedTagsService relatedTagsService;
-	@Mock ConfigDAO configDAO;
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock FlickrService flickrService;
 	@Mock FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
@@ -50,7 +48,7 @@ public class TagModelBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder,
-				relatedTagsService, configDAO, rssfeedNewsitemService,
+				relatedTagsService, rssfeedNewsitemService,
 				contentRetrievalService, flickrService, feedItemLocalCopyDecorator);
 		request = new MockHttpServletRequest();
 		Mockito.when(tag.getDisplayName()).thenReturn(TAG_DISPLAY_NAME);

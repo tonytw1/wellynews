@@ -5,7 +5,6 @@ import java.util.List;
 import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedReaderRunner;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
@@ -23,7 +22,8 @@ public class RssNewsitemPrefetcher {
 	private HibernateResourceDAO resourceDAO;
 	private CachingRssfeedNewsitemService cachingRssfeedNewsitemService;
 	private FeedReaderRunner feedReaderRunner;
-	private ConfigDAO configDAO;
+
+	private boolean isFeedReadingEnabled = true;
 	
 	public RssNewsitemPrefetcher() {		
 	}
@@ -31,19 +31,15 @@ public class RssNewsitemPrefetcher {
 	@Autowired
 	public RssNewsitemPrefetcher(HibernateResourceDAO resourceDAO,
 			CachingRssfeedNewsitemService cachingRssfeedNewsitemService,
-			FeedReaderRunner feedReaderRunner,
-			ConfigDAO configDAO) {
+			FeedReaderRunner feedReaderRunner) {
 		this.resourceDAO = resourceDAO;
 		this.cachingRssfeedNewsitemService = cachingRssfeedNewsitemService;
 		this.feedReaderRunner = feedReaderRunner;
-		this.configDAO = configDAO;
 	}
 	
     @Transactional
-	public void run() {
-    	
-    	boolean feedsAreEnabled = configDAO.isFeedReadingEnabled();
-    	if (!feedsAreEnabled) {
+	public void run() {    	
+    	if (!isFeedReadingEnabled) {
     		log.info("Not prefetching feeds as feeds are disabled by config.");
     		return;
     	}

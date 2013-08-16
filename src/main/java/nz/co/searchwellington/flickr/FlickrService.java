@@ -1,13 +1,14 @@
 package nz.co.searchwellington.flickr;
 
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.ConfigDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
+
+import com.google.common.base.Strings;
 
 @Component
 public class FlickrService {
@@ -17,20 +18,22 @@ public class FlickrService {
 	private static Logger log = Logger.getLogger(FlickrService.class);
 
     private FlickrApi flickerApiService;
-    private ConfigDAO configDAO;
 	private MemcachedCache cache;
+
+	private String poolGroupId = "41894169203@N01";
     
 	@Autowired
-    public FlickrService(FlickrApi flickrApi, ConfigDAO configDAO, MemcachedCache cache) {
+    public FlickrService(FlickrApi flickrApi, MemcachedCache cache) {
         this.flickerApiService = flickrApi;
-        this.configDAO = configDAO;
         this.cache = cache;
     }    
     
     public int getFlickrPhotoCountFor(Tag tag) {
-        log.info("Running Flickr tag photo count for tag: " + tag.getDisplayName());
-        
-        final String poolGroupId = configDAO.getFlickrPoolGroupId();   
+    	if (!Strings.isNullOrEmpty(poolGroupId)) {
+    		log.info("No Flickr pool group id defined; returning 0");
+    	}
+    	
+        log.info("Running Flickr tag photo count for tag: " + tag.getDisplayName());        
         final String cacheKey = "flickrphotocount:" + poolGroupId + ":" + tag.getDisplayName().replaceAll("\\s", "");
         
         final Integer cachedCount = (Integer) cache.get(cacheKey);
@@ -46,5 +49,9 @@ public class FlickrService {
         cache.put(cacheKey, ONE_DAY, poolPhotoCountForTag);
 		return poolPhotoCountForTag;
     }
+
+	public String getPoolId() {
+		return poolGroupId;
+	}
 
 }

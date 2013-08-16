@@ -10,7 +10,6 @@ import nz.co.searchwellington.annotations.Timed;
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.TagDAO;
 
@@ -37,7 +36,7 @@ public class SimplePageController {
 			DiscoveredFeedRepository discoveredFeedRepository, TagDAO tagDAO,
 			RssUrlBuilder rssUrlBuilder,
 			CommonModelObjectsService commonModelObjectsService,
-			UrlStack urlStack, ConfigDAO configDAO,
+			UrlStack urlStack,
 			ContentRetrievalService contentRetrievalService) {
 		this.discoveredFeedRepository = discoveredFeedRepository;
 		this.tagDAO = tagDAO;

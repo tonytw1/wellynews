@@ -9,7 +9,6 @@ import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedReaderRunner;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedImpl;
-import nz.co.searchwellington.repositories.ConfigDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.junit.Before;
@@ -23,7 +22,6 @@ public class RssPrefetcherTest {
 	
 	@Mock private HibernateResourceDAO resourceDAO;
 	@Mock private CachingRssfeedNewsitemService cachingRssfeedNewsiemService;
-	@Mock private ConfigDAO configDAO;
 	@Mock private FeedReaderRunner feedReaderRunner;
 	
 	Feed firstFeed;
@@ -46,10 +44,9 @@ public class RssPrefetcherTest {
 		feeds.add(firstFeed);
 		feeds.add(secondFeed);
 
-		when(configDAO.isFeedReadingEnabled()).thenReturn(true);
 		when(resourceDAO.getAllFeeds()).thenReturn(feeds);
 		
-		prefetcher = new RssNewsitemPrefetcher(resourceDAO, cachingRssfeedNewsiemService, feedReaderRunner, configDAO);
+		prefetcher = new RssNewsitemPrefetcher(resourceDAO, cachingRssfeedNewsiemService, feedReaderRunner);
 	}
 	
 	@Test

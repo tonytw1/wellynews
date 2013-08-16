@@ -1,15 +1,10 @@
 package nz.co.searchwellington.model;
 
-import nz.co.searchwellington.repositories.ConfigDAO;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SiteInformation {
-
-	private ConfigDAO configDAO;
 	
     @Value("#{config['areaname']}")
 	private String areaname;
@@ -34,12 +29,7 @@ public class SiteInformation {
     
     public SiteInformation() {
 	}
-    
-    @Autowired
-	public SiteInformation(ConfigDAO configDAO) {	
-		this.configDAO = configDAO;
-	}
-    
+        
     public String getAreaname() {
 		return areaname;
 	}
@@ -63,12 +53,7 @@ public class SiteInformation {
     public String getGoogleMapsApiKey() {
         return googleMapsApiKey;
     }
-
-
-    public String getTrackingCode() {
-    	return configDAO.getConfig().getStatsTracking();
-    }
-
+    
 	public String getStaticRoot() {
 		return staticRoot;
 	}
