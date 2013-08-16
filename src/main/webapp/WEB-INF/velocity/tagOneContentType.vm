@@ -27,7 +27,7 @@
 		#parse("includes/tag_admin_links.vm")
 
 		#parse("includes/child_tags.vm")
-
+		
 		#if($tag.description) 
 			<p>$escape.html($tag.description)</p>
 		#end

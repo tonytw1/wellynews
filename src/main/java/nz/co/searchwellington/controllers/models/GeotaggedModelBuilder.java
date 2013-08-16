@@ -18,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -79,7 +81,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				}
 				populatePagination(mv, startIndex, totalNearbyCount);
 				
-				mv.addObject("location", userSuppliedLocation);
+				mv.addObject("location", mapGeocodeToPlace(userSuppliedLocation));
 				
 				log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
@@ -117,7 +119,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	}
 	
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
 		if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
 			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());			
 		} else {
@@ -154,6 +156,20 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		} else {
 			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
 		}
+	}
+	
+	private Place mapGeocodeToPlace(final Geocode contentItemGeocode) {	// TODO duplication
+		LatLong latLong = null;
+		if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
+			latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
+		}
+		OsmId osmId = null;
+		if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
+			osmId = new OsmId(contentItemGeocode.getOsmId(), contentItemGeocode.getOsmType());
+		}
+		String displayName = contentItemGeocode.getDisplayName();
+		Place place = new Place(displayName, latLong, osmId);
+		return place;
 	}
 	
 }

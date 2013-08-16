@@ -60,7 +60,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 		
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
 		Website publisher = (Website) request.getAttribute("publisher");
 		
 		mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher));

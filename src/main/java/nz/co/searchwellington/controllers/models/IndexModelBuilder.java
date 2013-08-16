@@ -67,7 +67,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	}
 	
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {		
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {		
 		populateCommentedNewsitems(mv);
 		populateSecondaryJustin(mv);
 		populateGeocoded(mv);

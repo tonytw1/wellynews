@@ -66,7 +66,7 @@ public class ContentModelBuilderService {
 				}
 				
 				if (mv != null) {
-					modelBuilder.populateExtraModelConent(request, mv);
+					modelBuilder.populateExtraModelContent(request, mv);
 					mv.setViewName(modelBuilder.getViewName(mv));
 					commonModelObjectsService.populateCommonLocal(mv);
 					return mv;

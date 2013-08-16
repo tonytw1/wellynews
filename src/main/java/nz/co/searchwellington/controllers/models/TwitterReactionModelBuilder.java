@@ -48,7 +48,7 @@ public class TwitterReactionModelBuilder extends AbstractModelBuilder implements
 	}
 
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
 	}
 	
 }

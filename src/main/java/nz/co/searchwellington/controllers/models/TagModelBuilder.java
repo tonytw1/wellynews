@@ -11,6 +11,7 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -24,6 +25,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
+
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
@@ -68,8 +73,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-			Tag tag = tags.get(0);
+			final List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+			final Tag tag = tags.get(0);
 			int page = getPage(request);
 			return populateTagPageModelAndView(tag, page, request.getPathInfo());
 		}
@@ -78,7 +83,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
 		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 		Tag tag = tags.get(0);
 		
@@ -140,6 +145,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 		
 		mv.addObject("tag", tag);
+		
+		if (tag.getGeocode() != null) {			
+			final Place tagPlace = mapGeocodeToPlace(tag.getGeocode());			
+			mv.addObject("tagPlace", tagPlace);			
+		}
+		
 		mv.addObject("heading", tag.getDisplayName());        		
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
@@ -154,6 +165,20 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 		
 		return mv;
+	}
+	
+	private Place mapGeocodeToPlace(final Geocode contentItemGeocode) {	// TODO duplication
+		LatLong latLong = null;
+		if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
+			latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
+		}
+		OsmId osmId = null;
+		if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
+			osmId = new OsmId(contentItemGeocode.getOsmId(), contentItemGeocode.getOsmType());
+		}
+		String displayName = contentItemGeocode.getDisplayName();
+		Place place = new Place(displayName, latLong, osmId);
+		return place;
 	}
 	
 	private void populateRecentlyTwittered(ModelAndView mv, Tag tag) {

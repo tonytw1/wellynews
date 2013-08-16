@@ -134,21 +134,26 @@ public class ElasticSearchIndexUpdateService {
 		
 		final Geocode contentItemGeocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem);
 		if (contentItemGeocode != null) {
-			LatLong latLong = null;
-			if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
-				latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
-			}
-			OsmId osmId = null;
-			if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
-				osmId = new OsmId(contentItemGeocode.getOsmId(), contentItemGeocode.getOsmType());
-			}
-			String displayName = contentItemGeocode.getDisplayName();
-			Place place = new Place(displayName, latLong, osmId);
+			Place place = mapGeocodeToPlace(contentItemGeocode);
 			frontendContentItem.setPlace(place);
 		}
 		
 		final String json = mapper.writeValueAsString(frontendContentItem);
 		return client.prepareIndex(INDEX, TYPE, Integer.toString(contentItem.getId())).setSource(json);
+	}
+
+	private Place mapGeocodeToPlace(final Geocode contentItemGeocode) {	// TODO duplication
+		LatLong latLong = null;
+		if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
+			latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
+		}
+		OsmId osmId = null;
+		if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
+			osmId = new OsmId(contentItemGeocode.getOsmId(), contentItemGeocode.getOsmType());
+		}
+		String displayName = contentItemGeocode.getDisplayName();
+		Place place = new Place(displayName, latLong, osmId);
+		return place;
 	}
 	
 }

@@ -11,15 +11,19 @@
 
 	var zoom = 13;
 	
-	#if ($selected) 	
-	var centrePoint = new GLatLng($selected.getGeocode().getLatitude(), $selected.getGeocode().getLongitude());
-	zoom = 15;
-	#elseif ($latitude && $longitude)
-	var centrePoint = new GLatLng($latitude, $longitude);
+	// Push calculation to Java
+	#if ($selected) 
+		var centrePoint = new GLatLng($selected.getGeocode().getLatitude(), $selected.getGeocode().getLongitude());
+		zoom = 15;
+	
+	#elseif ($location)
+		var centrePoint = new GLatLng($location.latLong.latitude, $location.latLong.longitude);
+		zoom = 15;
+			
 	#elseif ($geocoded.size() > 0 )
-	var centrePoint = new GLatLng($geocoded.get(0).getGeocode().getLatitude(), $geocoded.get(0).getGeocode().getLongitude());
+		var centrePoint = new GLatLng($geocoded.get(0).getGeocode().getLatitude(), $geocoded.get(0).getGeocode().getLongitude());
 	#else
-	var centrePoint = new GLatLng(-41.19, 174.95);
+		var centrePoint = new GLatLng(-41.19, 174.95);
 	#end	
 	map.setCenter(centrePoint, zoom);
 	

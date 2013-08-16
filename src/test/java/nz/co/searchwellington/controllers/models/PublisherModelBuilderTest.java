@@ -57,7 +57,7 @@ public class PublisherModelBuilderTest {
 		publisherNewsitems.add(geotaggedNewsitem);
 		
 		mv.addObject("main_content", publisherNewsitems);		
-		modelBuilder.populateExtraModelConent(request, mv);
+		modelBuilder.populateExtraModelContent(request, mv);
 		
 		List<FrontendNewsitem> geotaggedPublisherNewsitems = (List<FrontendNewsitem>) mv.getModel().get("geocoded");
 		assertEquals(1, geotaggedPublisherNewsitems.size());

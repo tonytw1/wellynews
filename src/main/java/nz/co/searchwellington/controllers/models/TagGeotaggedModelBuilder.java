@@ -56,12 +56,12 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 	}
 	
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {	
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {	
 	}
 	
 	@Override
 	public String getViewName(ModelAndView mv) {
-		return "geotagged";
+		return "tagGeotagged";
 	}
 	
 	private ModelAndView populateTagCommentPageModelAndView(Tag tag) {		

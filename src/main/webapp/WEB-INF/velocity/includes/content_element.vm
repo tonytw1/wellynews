@@ -126,17 +126,7 @@
 			
 			
 			#if ($item.place)
-				#if ($editPermissionService.canEdit($item)) 
-					<li #if ($item.geocode.isValid()) class="geocode-valid" #else class="geocode-invalid" #end >
-				#else 
-					</li>
-				#end
-									
-				#if ($item.place)
-					<a href="$urlBuilder.getLocationUrlFor($item.place)">#parse("includes/geotag_icon.vm")</a>					
-				#end
-					
-				$item.place.address</li>
+				<a href="$urlBuilder.getLocationUrlFor($item.place)">#parse("includes/geotag_icon.vm")</a> $item.place.address</li>
 			#end
 							
 			#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	

@@ -58,7 +58,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	}
 	
 	@Override
-	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
 		populateSecondaryFeeds(mv);
 	}
 	
