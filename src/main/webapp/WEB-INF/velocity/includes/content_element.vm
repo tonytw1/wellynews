@@ -132,16 +132,10 @@
 				#else 
 					</li>
 				#end
-					
-				#if ($item.geocode.isValid())
-					#if ($item.id > 0) 
-						<a href="$urlBuilder.getLocationUrlFor($item.geocode)">#parse("includes/geotag_icon.vm")</a>						
-					#else
-						#parse("includes/geotag_icon.vm")
-					#end
-				#else
-					#parse("includes/geotag_icon.vm") 
-				#end
+									
+				#if ($item.place)
+					<a href="$urlBuilder.getLocationUrlFor($item.place)">#parse("includes/geotag_icon.vm")</a>					
+				#
 					
 				$item.geocode.address</li>
 			#end

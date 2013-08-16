@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
@@ -19,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class UrlBuilder {
@@ -169,9 +169,9 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/twitter/callback";
 	}
 
-	public String getLocationUrlFor(Geocode somewhere) {
-		if (somewhere.getOsmPlaceId() != null) {
-			return siteInformation.getUrl() + "/geotagged?osm=" + urlEncode(somewhere.getOsmPlaceId());
+	public String getLocationUrlFor(Place somewhere) {
+		if (somewhere.getOsmId() != null) {
+			return siteInformation.getUrl() + "/geotagged?osm=" + urlEncode(somewhere.getOsmId().getId() + "/" + somewhere.getOsmId().getType());
 		}
 		return siteInformation.getUrl() + "/geotagged?location=" + urlEncode(somewhere.getAddress());
 	}

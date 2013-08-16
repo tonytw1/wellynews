@@ -16,6 +16,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
+import uk.co.eelpieconsulting.common.geo.model.Place;
+
 public class UrlBuilderTest {
 
 	private static final String SITE_URL = "http://siteurl.test";
@@ -56,13 +60,13 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canCreateLocationSearchUrlFromGeotag() throws Exception {
-		Geocode somewhere = new Geocode("Somewhere,Far away", 3.1, 4.2);
+		final Place somewhere = new Place("Somewhere,Far away", new LatLong(3.1, 4.2), null);
 		assertEquals(SITE_URL + "/geotagged?location=Somewhere%2CFar+away", urlBuilder.getLocationUrlFor(somewhere));
 	}
 	
 	@Test
 	public void locationsShouldBeLinkedByOSMIdIfAvailable() throws Exception {
-		final Geocode somewhereWithOSMid= new Geocode("Somewhere,Far away", 3.1, 4.2, 12345L, "node");
+		final Place somewhereWithOSMid= new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, "N"));
 		assertEquals("http://siteurl.test/geotagged?osm=12345%2FN", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
 	}
 	
