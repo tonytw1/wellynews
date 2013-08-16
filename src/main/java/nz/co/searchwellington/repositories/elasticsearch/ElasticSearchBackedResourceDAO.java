@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -23,6 +24,8 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.common.collect.Maps;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -203,12 +206,25 @@ public class ElasticSearchBackedResourceDAO {
 		return deserializeFrontendResourceHits(response.getHits());
 	}
 
-	public List<FrontendResource> getValidGeotagged(int startIndex, int maxItems, boolean shouldShowBroken) {
-		return Lists.newArrayList();	// TODO implement
+	public List<FrontendResource> getGeotagged(int startIndex, int maxItems, boolean shouldShowBroken) {		
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(geotaggedNewsitems(shouldShowBroken)).
+			setFrom(startIndex).
+			setSize(maxItems);
+		
+		addDateDescendingOrder(searchRequestBuilder);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return deserializeFrontendResourceHits(response.getHits());
 	}
 
-	public int getGeotaggedCount(boolean shouldShowBroken) {
-		return 0;	// TODO implement
+	public long getGeotaggedCount(boolean shouldShowBroken) {
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+		setQuery(geotaggedNewsitems(shouldShowBroken)).
+		setSize(0);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return response.getHits().getTotalHits();
 	}
 
 	public List<PublisherContentCount> getAllPublishers(boolean shouldShowBroken) {		
@@ -301,7 +317,8 @@ public class ElasticSearchBackedResourceDAO {
 		for (org.elasticsearch.search.facet.datehistogram.DateHistogramFacet.Entry entry : dateFacet.getEntries()) {
 			final DateTime monthDate = new DateTime(entry.getTime(), DateTimeZone.UTC);		
 			archiveMonths.add(new ArchiveLink(monthDate.toDate(), entry.getCount()));
-		}	
+		}		
+		Collections.reverse(archiveMonths);
 		return archiveMonths;
 	}
 	
@@ -383,6 +400,14 @@ public class ElasticSearchBackedResourceDAO {
 	
 		addDateDescendingOrder(searchRequestBuilder);
 		return searchRequestBuilder;
+	}
+	
+	private FilteredQueryBuilder geotaggedNewsitems(boolean shouldShowBroken) {
+		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
+		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
+				
+		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, FilterBuilders.existsFilter("place"));
+		return geocodedNewitemsQuery;
 	}
 
 	private TermQueryBuilder hasPublisher(Website publisher) {

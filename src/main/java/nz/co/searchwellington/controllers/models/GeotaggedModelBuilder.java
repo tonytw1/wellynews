@@ -94,7 +94,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			final int page = getPage(request);
 			mv.addObject("page", page);	// TODO push to populate pagination.
 			final int startIndex = getStartIndex(page);
-			final int totalGeotaggedCount = contentRetrievalService.getGeotaggedCount();
+			final long totalGeotaggedCount = contentRetrievalService.getGeotaggedCount();
 			if (startIndex > totalGeotaggedCount) {
 				return null;
 			}

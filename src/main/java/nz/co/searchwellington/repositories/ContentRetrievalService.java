@@ -62,10 +62,10 @@ public class ContentRetrievalService {
 	}
 	
 	public List<FrontendResource> getGeocoded(int startIndex, int maxItems) {		
-		return elasticSearchBackedResourceDAO.getValidGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
+		return elasticSearchBackedResourceDAO.getGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
-	public int getGeotaggedCount() {
+	public long getGeotaggedCount() {
 		return elasticSearchBackedResourceDAO.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken());
 	}
 	

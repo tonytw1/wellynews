@@ -22,7 +22,10 @@ public class Tag {
 	private String secondaryImage;
 	
 	private Feed relatedFeed;
+	
+	@Deprecated
 	private String relatedTwitter;
+	
     private String autotagHints;
     private Geocode geocode;
             
