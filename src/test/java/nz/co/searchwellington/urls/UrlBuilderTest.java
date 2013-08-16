@@ -2,7 +2,6 @@ package nz.co.searchwellington.urls;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
@@ -41,7 +40,7 @@ public class UrlBuilderTest {
 		frontendNewsitem = new FrontendNewsitemImpl();
 		frontendNewsitem.setName("Quick brown fox jumps over lazy dog");
 		frontendNewsitem.setDate(new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate());
-		
+		frontendNewsitem.setUrlWords("/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog");
 		frontendFeed = new FrontendFeedImpl();
 		
 		tag = new Tag();
@@ -71,15 +70,9 @@ public class UrlBuilderTest {
 	}
 	
 	@Test
-	public void canContstructPageUrlForFrontendNewsitem() throws Exception {		
+	public void shouldConstructPageUrlForFrontendResourceFromResourcesUrlWords() throws Exception {		
 		assertNull(frontendNewsitem.getPublisherName());		
 		assertEquals(SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem));
-	}
-	
-	@Test
-	public void shouldPrefixPageUrlWithPublisherWordsForUrlIfNewsitemHasPublisherSet() throws Exception {
-		frontendNewsitem.setPublisherName("Local sports club");
-		assertEquals(SITE_URL + "/local-sports-club/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem));
 	}
 	
 	@Test
