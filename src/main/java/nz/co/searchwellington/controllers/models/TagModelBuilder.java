@@ -99,7 +99,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateRelatedFeed(mv, tag);
 		populateGeocoded(mv, tag);		
 		populateTagFlickrPool(mv, tag);		
-		populateTagRelatedTwitter(mv, tag);		
 		populateRecentlyTwittered(mv, tag);
 
 		mv.addObject("tag_watchlist", contentRetrievalService.getTagWatchlist(tag));		
@@ -161,13 +160,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("recently_twittered", contentRetrievalService.getRecentedTwitteredNewsitemsForTag(2, tag));
 	}
 	
-	private void populateTagRelatedTwitter(ModelAndView mv, Tag tag) {
-		if (tag.getRelatedTwitter() != null && !tag.getRelatedTwitter().equals("")) {
-			log.info("Setting related twitter to: " + tag.getRelatedTwitter());
-			mv.addObject("twitterUsername", tag.getRelatedTwitter());
-		}
-	}
- 		
     private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
     	mv.addObject("flickr_count", flickrService.getFlickrPhotoCountFor(tag));
     	mv.addObject("escaped_flickr_group_id", UrlFilters.encode(flickrService.getPoolId()));
