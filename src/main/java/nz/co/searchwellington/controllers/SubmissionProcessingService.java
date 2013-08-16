@@ -85,19 +85,21 @@ public class SubmissionProcessingService {
     	editResource.setImage(image);
     }
 	
-	public Geocode processGeocode(HttpServletRequest req) {      
-		log.info("Starting processing of geocode.");
-		if (!Strings.isNullOrEmpty(req.getParameter(REQUEST_SELECTED_GEOCODE))) {
-	    	final String selectedGeocode = new String(req.getParameter(REQUEST_SELECTED_GEOCODE).trim());
-	        log.info("Found selected geocode: " + selectedGeocode);
-			final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);				
-
+	public Geocode processGeocode(HttpServletRequest request) {      
+		if (!Strings.isNullOrEmpty(request.getParameter(REQUEST_SELECTED_GEOCODE))) {
+	    	final String selectedGeocode = new String(request.getParameter(REQUEST_SELECTED_GEOCODE).trim());
+			final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);
+			
 			final Place resolvedPlace = nominatimGeocodeService.resolveOsmId(osmId);
 			log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedPlace);
 			
-			return new Geocode(resolvedPlace.getAddress(), 
+			if (resolvedPlace != null) {
+				return new Geocode(resolvedPlace.getAddress(), 
 					resolvedPlace.getLatLong().getLatitude(), resolvedPlace.getLatLong().getLongitude(), 
-					osmId.getId(), osmId.getType());	       
+					osmId.getId(), osmId.getType());
+			}
+			
+			log.warn("Could not resolve OSM id: " + osmId);		
 		}
 		return null;
 	}
