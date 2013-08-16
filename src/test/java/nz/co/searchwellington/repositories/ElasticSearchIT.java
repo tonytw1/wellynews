@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.Iterator;
 import java.util.List;
@@ -13,6 +14,7 @@ import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdat
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -26,6 +28,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -51,6 +54,35 @@ public class ElasticSearchIT {
 			SearchHit next = iterator.next();
 			System.out.println(next.getSourceAsString());
 			resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendResourceImpl.class));
+		}
+		
+		System.out.println(resources);
+	}
+	
+	@Test
+	public void canQueryForGeocodedNewsitems() throws Exception {
+		final Client client = new ElasticSearchClientFactory().getClient();
+		final SearchRequestBuilder requestBuilder = client.prepareSearch(
+				ElasticSearchIndexUpdateService.INDEX).setTypes(
+				ElasticSearchIndexUpdateService.TYPE);
+				
+		final SearchResponse response = requestBuilder.setQuery(
+				QueryBuilders.filtered(QueryBuilders.termQuery("type", "N"), FilterBuilders.existsFilter("place"))).
+				execute().actionGet();
+		
+		SearchHits hits = response.getHits();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		final List<FrontendResourceImpl> resources = Lists.newArrayList();
+		Iterator<SearchHit> iterator = hits.iterator();
+		while (iterator.hasNext()) {
+			SearchHit next = iterator.next();
+			System.out.println(next.getSourceAsString());
+			FrontendResourceImpl resource = objectMapper.readValue(next.getSourceAsString(), FrontendResourceImpl.class);
+			assertNotNull(resource.getPlace());
+			System.out.println(resource.getPlace());
+			resources.add(resource);			
 		}
 		
 		System.out.println(resources);

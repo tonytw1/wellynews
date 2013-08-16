@@ -26,7 +26,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public class GeotaggedModelBuilderTest {
 	
-	private static final int TOTAL_GEOTAGGED_COUNT = 512;
+	private static final long TOTAL_GEOTAGGED_COUNT = 512;
 	private static final int LOCATION_RESULTS_COUNT = 33;
 	
 	@Mock ContentRetrievalService contentRetrievalService;
