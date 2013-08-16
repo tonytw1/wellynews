@@ -3,10 +3,10 @@
 	
 	#set($deduped = $googleMapCleaner.dedupe($geocoded))
 	#foreach($item in $deduped)
-	showAddress($item.geocode.latitude, $item.geocode.longitude,
-		"$escape.javascript($item.name)",
-		"$escape.javascript($item.url)",
-		"$escape.javascript($item.description)");		
+		showAddress($item.place.latLong.latitude, $item.place.latLong.longitude,
+			"$escape.javascript($item.name)",
+			"$escape.javascript($item.url)",
+			"$escape.javascript($item.description)");		
 	#end
 
 	var zoom = 13;
