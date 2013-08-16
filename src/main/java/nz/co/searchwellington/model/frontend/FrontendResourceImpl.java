@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import uk.co.eelpieconsulting.common.geo.model.Place;
+
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Tag;
 
@@ -14,6 +16,7 @@ public class FrontendResourceImpl implements FrontendResource {
 	private static final long serialVersionUID = 1L;
 	
 	private int id;
+	private String urlWords;
     private String type;
     private String name;
     private String url;
@@ -21,10 +24,11 @@ public class FrontendResourceImpl implements FrontendResource {
     private Date date;
     private String description;    
     private Date liveTime;
-    private List<Tag> tags;
+    private List<FrontendTag> tags;
     private List<Tag> handTags;
     private Geocode geocode;
     private Integer ownerId;
+    private Place place;
 	
 	final public int getId() {
 		return id;
@@ -74,10 +78,10 @@ public class FrontendResourceImpl implements FrontendResource {
 	final public void setLiveTime(Date liveTime) {
 		this.liveTime = liveTime;
 	}
-	final public List<Tag> getTags() {
+	final public List<FrontendTag> getTags() {
 		return tags;
 	}
-	final public void setTags(List<Tag> tags) {
+	final public void setTags(List<FrontendTag> tags) {
 		this.tags = tags;
 	}
 	final public List<Tag> getHandTags() {
@@ -98,27 +102,17 @@ public class FrontendResourceImpl implements FrontendResource {
 	final public void setOwnerId(Integer ownerId) {
 		this.ownerId = ownerId;
 	}
-	
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + id;
-		return result;
+	public String getUrlWords() {
+		return urlWords;
 	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		FrontendResourceImpl other = (FrontendResourceImpl) obj;
-		if (id != other.id)
-			return false;
-		return true;
+	public void setUrlWords(String urlWords) {
+		this.urlWords = urlWords;
+	}
+	public Place getPlace() {
+		return place;
+	}
+	public void setPlace(Place place) {
+		this.place = place;
 	}
 	
 }

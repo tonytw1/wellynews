@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Tag;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public interface FrontendResource extends Serializable {
 
@@ -18,10 +18,12 @@ public interface FrontendResource extends Serializable {
 	public String getDescription();
 	public Date getLiveTime();
 	
-	public Geocode getGeocode();
-	
-	public List<Tag> getTags();
+	public List<FrontendTag> getTags();
 	public List<Tag> getHandTags();
 	public Integer getOwnerId();
+	public String getUrlWords();
+	public void setUrlWords(String urlWords);
+	public Place getPlace();
+	public void setPlace(Place place);
 	
 }

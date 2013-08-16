@@ -38,6 +38,7 @@ public class TagEditController {
     private EditPermissionService editPermissionService;
     private SubmissionProcessingService submissionProcessingService;
     private CommonModelObjectsService commonModelObjectsService;
+	private UrlWordsGenerator urlWordsGenerator;
     
     public TagEditController() {       
     }
@@ -49,7 +50,8 @@ public class TagEditController {
 			LoggedInUserFilter loggedInUserFilter,
 			EditPermissionService editPermissionService,
 			SubmissionProcessingService submissionProcessingService,
-			CommonModelObjectsService commonModelObjectsService) {
+			CommonModelObjectsService commonModelObjectsService,
+			UrlWordsGenerator urlWordsGenerator) {
 		this.requestFilter = requestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
 		this.urlStack = urlStack;
@@ -59,6 +61,7 @@ public class TagEditController {
 		this.editPermissionService = editPermissionService;
 		this.submissionProcessingService = submissionProcessingService;
 		this.commonModelObjectsService = commonModelObjectsService;
+		this.urlWordsGenerator = urlWordsGenerator;
 	}
     
 	@Transactional	// TODO required? read only?
@@ -123,7 +126,7 @@ public class TagEditController {
           
           final String displayName = request.getParameter("displayName");
           if (displayName != null) {        	  
-        	  String tagUrlWords = UrlWordsGenerator.makeUrlWordsFromName(displayName);
+        	  String tagUrlWords = urlWordsGenerator.makeUrlWordsFromName(displayName);
         	  if (tagDAO.loadTagByName(tagUrlWords) == null) {
         		  Tag newTag = tagDAO.createNewTag(tagUrlWords, displayName);        		  
         		  log.info("Adding new tag: " + tagUrlWords);

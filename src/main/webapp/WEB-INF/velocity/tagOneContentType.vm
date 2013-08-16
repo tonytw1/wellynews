@@ -37,8 +37,11 @@
 		<div class="main_content">
 			#if ($main_content.empty)
 				#set($main_content = $websites)
-			#end
-			#parse("includes/main_content.vm")
+				#parse("includes/main_content.vm")
+			#else
+				#parse("includes/main_content.vm")
+				#parse("includes/tag_page_links.vm")
+			#end						
 		</div>
 	</div>
 

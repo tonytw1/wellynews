@@ -1,12 +1,13 @@
 package nz.co.searchwellington.model;
 
+import nz.co.searchwellington.model.frontend.FrontendTag;
+
 public class TagContentCount {
     
-    private Tag tag;
+    private FrontendTag tag;
     private int count;
     
-        
-    public TagContentCount(Tag tag, int count) {
+    public TagContentCount(FrontendTag tag, int count) {
         this.tag = tag;
         this.count = count;
     }
@@ -17,11 +18,16 @@ public class TagContentCount {
     public void setCount(int count) {
         this.count = count;
     }
-    public Tag getTag() {
+    public FrontendTag getTag() {
         return tag;
     }
-    public void setTag(Tag tag) {
+    public void setTag(FrontendTag tag) {
         this.tag = tag;
     }
+
+	@Override
+	public String toString() {
+		return "TagContentCount [count=" + count + ", tag=" + tag + "]";
+	}
     
 }

@@ -99,7 +99,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 		
 		populateCommentedTaggedNewsitems(mv, tag);
-		mv.addObject("last_changed", contentRetrievalService.getLastLiveTimeForTag(tag));
 		populateRelatedFeed(mv, tag);
 		populateGeocoded(mv, tag);		
 		populateTagFlickrPool(mv, tag);		
@@ -139,7 +138,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("page", page);
 		
 		int startIndex = getStartIndex(page);
-		int totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
+		long totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
 		if (startIndex > totalNewsitemCount) {
 			return null;
 		}

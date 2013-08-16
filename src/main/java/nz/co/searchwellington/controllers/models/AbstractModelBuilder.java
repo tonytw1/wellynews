@@ -43,11 +43,11 @@ public abstract class AbstractModelBuilder {
 		mv.addObject("rss_url", url);
 	}
 	
-	protected void populatePagination(ModelAndView mv, int startIndex, int totalNewsitemCount) {
+	protected void populatePagination(ModelAndView mv, int startIndex, long totalNewsitemCount) {
 		mv.addObject("main_content_total", totalNewsitemCount);
 		mv.addObject("max_page_number", ((totalNewsitemCount / 30) + 1));
 		
-		int endIndex = startIndex + MAX_NEWSITEMS > totalNewsitemCount ? totalNewsitemCount : startIndex + MAX_NEWSITEMS;		
+		long endIndex = startIndex + MAX_NEWSITEMS > totalNewsitemCount ? totalNewsitemCount : startIndex + MAX_NEWSITEMS;		
 		mv.addObject("start_index", startIndex + 1);
 		mv.addObject("end_index", endIndex);
 	}

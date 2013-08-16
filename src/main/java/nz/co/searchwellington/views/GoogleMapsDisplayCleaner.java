@@ -2,7 +2,6 @@ package nz.co.searchwellington.views;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
@@ -10,14 +9,16 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.geo.DistanceMeasuringService;
-import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.google.common.collect.Lists;
 
 @Component
 public class GoogleMapsDisplayCleaner {
         
-    private static Logger log = Logger.getLogger(GoogleMapsDisplayCleaner.class);
+    private static final double ONE_HUNDRED_METERS = 0.1;
+
+	private static Logger log = Logger.getLogger(GoogleMapsDisplayCleaner.class);
     
     private final DistanceMeasuringService distanceMeasuringService;
     
@@ -37,7 +38,7 @@ public class GoogleMapsDisplayCleaner {
         }
         
         for (FrontendResource resource : geocoded) {
-        	if (resource.getGeocode() != null) {
+        	if (resource.getPlace() != null) {
         		boolean isUnique = !listAlreadyContainsResourceWithThisLocation(deduped, resource);
         		if (isUnique) {
         			deduped.add(resource);
@@ -51,18 +52,17 @@ public class GoogleMapsDisplayCleaner {
     
     private boolean listAlreadyContainsResourceWithThisLocation(List<FrontendResource> deduped, FrontendResource candidiate) {
         for (FrontendResource resource : deduped) {
-            if (areSameOrOverlappingLocations(resource.getGeocode(), candidiate.getGeocode())) {
-                log.debug("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getGeocode().getAddress() + " / " + candidiate.getGeocode().getAddress());
+            if (areSameOrOverlappingLocations(resource.getPlace(), candidiate.getPlace())) {
+                log.debug("Rejected " + candidiate.getName() + " as it overlaps more recent item: " + resource.getPlace().getAddress() + " / " + candidiate.getPlace().getAddress());
                 return true;
             }
         }
         return false;
     }
 
-	private boolean areSameOrOverlappingLocations(Geocode geocode, Geocode geocode2) {
-		final double distanceBetween = distanceMeasuringService.getDistanceBetween(new LatLong(geocode.getLatitude(), geocode.getLongitude()), 
-				new LatLong(geocode2.getLatitude(), geocode2.getLongitude()));
-		return distanceBetween < 0.1;
+	private boolean areSameOrOverlappingLocations(Place here, Place there) {
+		final double distanceBetweenHereAndThere = distanceMeasuringService.getDistanceBetween(here.getLatLong(), there.getLatLong());
+		return distanceBetweenHereAndThere < ONE_HUNDRED_METERS;
 	}
     
 }

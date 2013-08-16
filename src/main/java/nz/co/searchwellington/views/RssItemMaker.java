@@ -1,6 +1,5 @@
 package nz.co.searchwellington.views;
 
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Watchlist;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
@@ -8,6 +7,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
 import com.sun.syndication.feed.module.georss.W3CGeoModuleImpl;
@@ -18,7 +18,7 @@ import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 
 @Component
-public class RssItemMaker {
+public class RssItemMaker {	// TODO can replace with common views?
 	
 	public SyndEntry makeRssItem(FrontendResource content) {
 		// TODO validate - must have urls etc.
@@ -54,12 +54,12 @@ public class RssItemMaker {
 		if (content.getPublisherName() != null) {
 			rssItem.setAuthor(content.getPublisherName());
 		}
-		final Geocode geocode = content.getGeocode();
-		if (geocode != null && geocode.isValid()) {            
+		final Place geocode = content.getPlace();
+		if (geocode != null) {            
 			GeoRSSModule geoRSSModule = new W3CGeoModuleImpl();
 			geoRSSModule.setPosition(new Position());
-	        geoRSSModule.getPosition().setLatitude(geocode.getLatitude());
-	        geoRSSModule.getPosition().setLongitude(geocode.getLongitude());
+	        geoRSSModule.getPosition().setLatitude(geocode.getLatLong().getLatitude());
+	        geoRSSModule.getPosition().setLongitude(geocode.getLatLong().getLongitude());
 	        rssItem.getModules().add(geoRSSModule); 
 		}
 		

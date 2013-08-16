@@ -51,11 +51,8 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getViewSnapshotUrl(FrontendResource resource) throws UnsupportedEncodingException {
-		final String resourceUrl = urlBuilder.getResourceUrl(resource);
-		if (resourceUrl != null) {
-			return resourceUrl + "/viewsnapshot";
-		}
-		return null;
+		final String resourceUrl = siteInformation.getUrl() + "/" + resource.getUrlWords();
+		return resourceUrl + "/viewsnapshot";	
 	}
 	
 	public String getFeednewsItemAcceptUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {

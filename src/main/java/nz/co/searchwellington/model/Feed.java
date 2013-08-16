@@ -19,5 +19,9 @@ public interface Feed extends PublishedResource, FrontendFeed {
     public void setLastRead(Date lastRead);
         
     public String getUrlWords();
+
+	public String getWhakaokoId();
+
+	public void setWhakaokoId(String whakaokoId);
 	
 }

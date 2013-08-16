@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import nz.co.searchwellington.model.frontend.FrontendTag;
+
 import com.google.common.collect.Lists;
 
 public abstract class ResourceImpl implements Resource {
@@ -137,7 +139,7 @@ public abstract class ResourceImpl implements Resource {
 	}
 	
 	@Override
-	public List<Tag> getTags() {
+	public List<FrontendTag> getTags() {
 		return Lists.newArrayList();
 	}
 	

@@ -35,6 +35,7 @@ public class SubmissionProcessingServiceTest {
 	@Mock User loggedInUser;	
 	@Mock UrlProcessor urlProcessor;
 	@Mock private CachingNominatimGeocodingService nominatimGeocodingService;
+	@Mock private UrlWordsGenerator urlWordsGenerator;
 	
 	private MockHttpServletRequest request;
 	private SubmissionProcessingService submissionProcessingService;
@@ -68,7 +69,7 @@ public class SubmissionProcessingServiceTest {
 	
 	@Test
 	public void shouldPopulateAcceptanceFieldsOnInitalSubmission() throws Exception {
-		request.addParameter("acceptedFromFeed", UrlWordsGenerator.makeUrlWordsFromName(FEED_NAME));	
+		request.addParameter("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(FEED_NAME));	
 		Mockito.when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(feed);
 		
 		submissionProcessingService.processAcceptance(request, resource, loggedInUser);

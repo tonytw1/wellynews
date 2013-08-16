@@ -3,7 +3,7 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 import java.util.Set;
 
-
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public class WebsiteImpl extends ResourceImpl implements Website {
 	
@@ -55,5 +55,17 @@ public class WebsiteImpl extends ResourceImpl implements Website {
     public void setCalendars(Set<CalendarFeed> calendars) {
         this.calendars = calendars;
     }
+
+	@Override
+	public Place getPlace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPlace(Place place) {
+		// TODO Auto-generated method stub
+		
+	}
         
 }

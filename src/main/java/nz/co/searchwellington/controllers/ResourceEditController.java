@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
 import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
+import nz.co.searchwellington.feeds.FeednewsItemToNewsitemService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
@@ -61,6 +62,8 @@ public class ResourceEditController {
 	private CommonModelObjectsService commonModelObjectsService;
 	private LoggedInUserFilter loggedInUserFilter;
 	private UrlStack urlStack;
+	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
+	private UrlWordsGenerator urlWordsGenerator;
 	
 	public ResourceEditController() {
 	}
@@ -81,7 +84,9 @@ public class ResourceEditController {
 			AnonUserService anonUserService,
 			HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor,
 			ResourceFactory resourceFactory,
-			CommonModelObjectsService commonModelObjectsService) {
+			CommonModelObjectsService commonModelObjectsService,
+			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
+			UrlWordsGenerator urlWordsGenerator) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -100,6 +105,8 @@ public class ResourceEditController {
 		this.feedItemAcceptor = feedItemAcceptor;
 		this.resourceFactory = resourceFactory;
 		this.commonModelObjectsService = commonModelObjectsService;
+		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
+		this.urlWordsGenerator = urlWordsGenerator;
 	}
     
     @Transactional	
@@ -195,8 +202,9 @@ public class ResourceEditController {
         	return null;
 		}
     	
-		Newsitem acceptedNewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(url);        	
-        if (acceptedNewsitem == null) {
+		Feed feed = null;	// TODO Must specify feed when accepting feed item
+		Newsitem acceptedNewsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url));
+		if (acceptedNewsitem == null) {
         	log.warn("No matching newsitem found for url: " + url);
         	response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         	return null;
@@ -209,7 +217,7 @@ public class ResourceEditController {
 		modelAndView.addObject("resource", acceptedNewsitem);
 		modelAndView.addObject("publisher_select", "1");
 		modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
-		modelAndView.addObject("acceptedFromFeed", UrlWordsGenerator.makeUrlWordsFromName(acceptedNewsitem.getAcceptedFromFeedName()));
+		modelAndView.addObject("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(acceptedNewsitem.getAcceptedFromFeedName()));
 		return modelAndView;
     }
     
@@ -373,7 +381,7 @@ public class ResourceEditController {
                              
             // Update urlwords.
             if (editResource.getType().equals("W") || editResource.getType().equals("F")) {
-            	editResource.setUrlWords(UrlWordsGenerator.makeUrlWordsFromName(editResource.getName()));            	
+            	editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(editResource.getName()));            	
             }
                         
                       

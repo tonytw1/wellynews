@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import uk.co.eelpieconsulting.common.geo.model.Place;
+
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 import com.google.common.collect.ImmutableList;
@@ -114,6 +116,18 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
 			return acceptedBy.getProfilename();
 		}
 		return null;
+	}
+
+	@Override
+	public Place getPlace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPlace(Place place) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

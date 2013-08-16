@@ -6,7 +6,6 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -20,6 +19,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.geo.model.Place;
+
 import com.google.common.collect.Lists;
 
 public class PublisherModelBuilderTest {
@@ -32,7 +33,7 @@ public class PublisherModelBuilderTest {
 	@Mock Website publisher;
 	@Mock FrontendNewsitem newsitem;
 	@Mock FrontendNewsitem geotaggedNewsitem;
-	@Mock Geocode geotag;
+	@Mock Place geotag;
 	
 	MockHttpServletRequest request;
 	
@@ -41,8 +42,7 @@ public class PublisherModelBuilderTest {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		request.setAttribute("publisher", publisher);
-		Mockito.when(geotag.isValid()).thenReturn(true);
-		Mockito.when(geotaggedNewsitem.getGeocode()).thenReturn(geotag);
+		Mockito.when(geotaggedNewsitem.getPlace()).thenReturn(geotag);
 	}
 	
 	@SuppressWarnings("unchecked")

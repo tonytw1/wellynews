@@ -12,7 +12,7 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionService;
 import nz.co.searchwellington.repositories.TagDAO;
-import nz.co.searchwellington.repositories.solr.SolrQueryService;
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ public class ContentDeletionService {
 	private SupressionService supressionService;
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private HibernateResourceDAO resourceDAO;
-	private SolrQueryService solrQueryService;
 	private HandTaggingDAO handTaggingDAO;
 	private TagDAO tagDAO;
+	private ElasticSearchIndexUpdateService elasticSearchIndexUpdateService;
 	
 	public ContentDeletionService() {
 	}
@@ -37,15 +37,16 @@ public class ContentDeletionService {
 	@Autowired
 	public ContentDeletionService(SupressionService supressionService,
 			RssfeedNewsitemService rssfeedNewsitemService,
-			HibernateResourceDAO resourceDAO, SolrQueryService solrQueryService, 
+			HibernateResourceDAO resourceDAO,
 			HandTaggingDAO handTaggingDAO,
-			TagDAO tagDAO) {
+			TagDAO tagDAO,
+			ElasticSearchIndexUpdateService elasticSearchIndexUpdateService) {
 		this.supressionService = supressionService;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
-		this.solrQueryService = solrQueryService;
 		this.handTaggingDAO = handTaggingDAO;
 		this.tagDAO = tagDAO;
+		this.elasticSearchIndexUpdateService = elasticSearchIndexUpdateService;
 	}
 
 	@Transactional
@@ -72,7 +73,7 @@ public class ContentDeletionService {
 			}
 		}
 		
-		solrQueryService.deleteResourceFromIndex(resource.getId());
+		elasticSearchIndexUpdateService.deleteResourceFromIndex(resource.getId());
 		resourceDAO.deleteResource(resource);
 	}
 	

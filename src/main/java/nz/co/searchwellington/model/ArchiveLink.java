@@ -5,14 +5,14 @@ import java.util.Date;
 public class ArchiveLink {
     
     private Date month;
-    private int count;
+    private long count;
     
-    public ArchiveLink(Date month, int count) {       
+    public ArchiveLink(Date month, long count) {       
         this.month = month;
         this.count = count;
     }
     
-    public int getCount() {
+    public long getCount() {
         return count;
     }
     

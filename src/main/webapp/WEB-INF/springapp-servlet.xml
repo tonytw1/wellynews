@@ -82,18 +82,7 @@
 		<property name="startDelay" value="3600000" />
 		<property name="repeatInterval" value="3600000" />
 	</bean>
-
-	<bean id="solrUpdateJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" ref="solrUpdateJob" />
-		<property name="targetMethod" value="run" />
-		<property name="concurrent" value="false" />
-	</bean>
-	<bean id="solrUpdateTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-		<property name="jobDetail" ref="solrUpdateJobRun" />
-		<property name="startDelay" value="60000" />
-		<property name="repeatInterval" value="60000" />
-	</bean>
-
+	
 	<bean id="linkCheckerJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
 		<property name="targetObject" ref="linkCheckerJob" />
 		<property name="targetMethod" value="run" />
@@ -176,17 +165,11 @@
 		<constructor-arg ref="linkCheckerQueue" />
 		<constructor-arg ref="linkChecker" />
 	</bean>
-
-	<bean name="solrUpdateJob" class="nz.co.searchwellington.jobs.SolrUpdateJob">
-		<constructor-arg ref="solrUpdateQueue" />
-		<constructor-arg ref="solrQueryService" />
-	</bean>
-
+	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
 				<ref bean="linkCheckerTrigger" />
-				<ref bean="solrUpdateTrigger" />
 				<ref bean="commentReaderTrigger" />
 				<ref bean="feedCheckerSchedulerTrigger" />
 				<ref bean="watchlistCheckerSchedulerTrigger" />

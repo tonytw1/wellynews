@@ -7,6 +7,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.modification.TagModificationService;
 import nz.co.searchwellington.repositories.TagDAO;
 import nz.co.searchwellington.widgets.TagsWidgetFactory;
@@ -33,6 +34,7 @@ public class TagEditControllerTest {
 	@Mock EditPermissionService editPermissionService;
 	@Mock SubmissionProcessingService submissionProcessingService;
 	@Mock CommonModelObjectsService commonModelObjectsService;
+	@Mock UrlWordsGenerator urlWordsGenerator;
 
 	@Mock Tag newTag;
 	@Mock Tag existingTag;
@@ -41,6 +43,7 @@ public class TagEditControllerTest {
 	private MockHttpServletResponse response;
 	private TagEditController controller;
 
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);				
@@ -48,7 +51,7 @@ public class TagEditControllerTest {
 		controller = new TagEditController(requestFilter, tagWidgetFactory,
 				urlStack, tagDAO, tagModifcationService, loggedInUserFilter,
 				editPermissionService, submissionProcessingService,
-				commonModelObjectsService);
+				commonModelObjectsService, urlWordsGenerator);
 	}
 
 	@Test

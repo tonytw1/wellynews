@@ -39,9 +39,5 @@
    			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
   		</property>
 	</bean>
-	
-	<bean id="solrServer" class="org.apache.solr.client.solrj.impl.CommonsHttpSolrServer">
-		<constructor-arg value="${solr.url}" />
-	</bean>
-					
+						
 </beans>

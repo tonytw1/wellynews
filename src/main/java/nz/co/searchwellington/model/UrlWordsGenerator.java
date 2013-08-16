@@ -1,11 +1,14 @@
 package nz.co.searchwellington.model;
 
+import org.springframework.stereotype.Component;
+
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
+@Component
 public class UrlWordsGenerator {
 		
-	public static String makeUrlWordsFromName(String name) {	// TODO why is this static?
+	public String makeUrlWordsFromName(String name) {
 		String urlWords = new String(name);		
 		return urlWords.
 			replaceAll("\\(.*?\\)", "").
@@ -17,7 +20,7 @@ public class UrlWordsGenerator {
 			toLowerCase();
 	}
 	
-	public static String markUrlForNewsitem(FrontendNewsitem newsitem) { // TODO why is this static?
+	public String markUrlForNewsitem(FrontendNewsitem newsitem) {
 		StringBuilder uri = new StringBuilder();
 		if (newsitem.getPublisherName() != null) {
 			uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName()));

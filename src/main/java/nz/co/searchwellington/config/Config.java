@@ -1,5 +1,6 @@
 package nz.co.searchwellington.config;
 
+@Deprecated	//TODO No need for runtime config now that environment specific properties files are working nicely.
 public class Config {
     
     private int id;  

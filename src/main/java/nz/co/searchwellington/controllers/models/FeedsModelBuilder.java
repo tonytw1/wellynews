@@ -26,12 +26,10 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 		this.urlBuilder = urlBuilder;
 	}
 	
-
 	@Override
 	public boolean isValid(HttpServletRequest request) {
 		return request.getPathInfo().matches("^/feeds(/(rss|json))?$");
 	}
-
 	
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
@@ -46,7 +44,6 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 		}
 		return null;
 	}
-
 	
 	@Override
 	public void populateExtraModelConent(HttpServletRequest request, ModelAndView mv) {
@@ -54,7 +51,6 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 		mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6));
 		mv.addObject("discovered_feeds", contentRetrievalService.getDiscoveredFeeds());
 	}
-	
 	
 	@Override
 	public String getViewName(ModelAndView mv) {

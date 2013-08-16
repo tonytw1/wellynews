@@ -64,11 +64,11 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 			logger.info("Putting newsitem onto page: " + newsitem.getName());
 			mv.addObject("item", newsitem);
 			mv.addObject("heading", newsitem.getName());
-			if (newsitem.getGeocode() != null && newsitem.getGeocode().isValid()) {
+			if (newsitem.getPlace() != null) {
 				mv.addObject("geocoded", Arrays.asList(newsitem));
 			}
-    
-			Resource resource = resourceDAO.loadResourceById(newsitem.getId());	// TODO Caused by model confusion
+			
+			final Resource resource = resourceDAO.loadResourceById(newsitem.getId());	// TODO Caused by model confusion
 			mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));
 			mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource));            
             mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));

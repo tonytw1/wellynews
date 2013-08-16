@@ -11,9 +11,8 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
-import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.model.frontend.FrontendWebsite;
+import nz.co.searchwellington.model.frontend.FrontendTag;
 import nz.co.searchwellington.twitter.CachingTwitterService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +26,14 @@ public class UrlBuilder {
 	private SiteInformation siteInformation;
 	private CachingTwitterService twitterService;	// TODO This is an odd injection
 	private DateFormatter dateFormatter;
+	private UrlWordsGenerator urlWordsGenerator;
 	
 	@Autowired
 	public UrlBuilder(SiteInformation siteInformation, CachingTwitterService twitterService) {		
 		this.siteInformation = siteInformation;
 		this.twitterService = twitterService;
-		dateFormatter = new DateFormatter();
+		this.dateFormatter = new DateFormatter();
+		this.urlWordsGenerator = new UrlWordsGenerator();
 	}
 	
 	public String getHomeUrl() {
@@ -59,12 +60,12 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/twitter";
 	}
 	
-	public String getFeedUrl(FrontendFeed feed) {		
+	public String getFeedUrl(FrontendFeed feed) {
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
 	
 	public String getFeedUrlFromFeedName(String feedname) {		
-		return siteInformation.getUrl() + "/feed/" + UrlWordsGenerator.makeUrlWordsFromName(feedname);
+		return siteInformation.getUrl() + "/feed/" + urlWordsGenerator.makeUrlWordsFromName(feedname);
 	}
 	
 	public String getFeedsInboxUrl() {
@@ -79,6 +80,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/" + tag.getName();
 	}
 	
+	public String getTagUrl(FrontendTag tag) {
+		return siteInformation.getUrl() + "/" + tag.getId();
+	}
+	
 	public String getAutoTagUrl(Tag tag) {
 		return siteInformation.getUrl() + "/" + tag.getName() + "/autotag";
 	}
@@ -91,19 +96,19 @@ public class UrlBuilder {
 		return getTagUrl(tag) + "?keywords=" + urlEncode(keywords);
 	}
 	
-	public String getLocalPageUrl(FrontendNewsitem newsitem) {
-		return siteInformation.getUrl() + UrlWordsGenerator.markUrlForNewsitem(newsitem);
+	public String getLocalPageUrl(FrontendResource resource) {
+		return siteInformation.getUrl() + resource.getUrlWords();
 	}
 	
 	public String getPublisherUrl(String publisherName) {
 		if (publisherName != null) {
-			return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(publisherName);
+			return siteInformation.getUrl() + "/" + urlWordsGenerator.makeUrlWordsFromName(publisherName);
 		}
 		return null;
 	}
 
 	public String getPublisherCombinerUrl(String publisherName, Tag tag) {
-		return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(publisherName) + "+" + tag.getName();
+		return siteInformation.getUrl() + "/" + urlWordsGenerator.makeUrlWordsFromName(publisherName) + "+" + tag.getName();
 	}
 
 	public String getTagCommentUrl(Tag tag) {
@@ -131,8 +136,8 @@ public class UrlBuilder {
 	}
 	
 	@Deprecated // TODO Inline
-	public String getTaggingUrl(FrontendNewsitem newsitem) {
-		return this.getLocalPageUrl(newsitem);
+	public String getTaggingUrl(FrontendResource resource) {
+		return this.getLocalPageUrl(resource);
 	}
 	
 	public String getArchiveUrl() {
@@ -204,16 +209,7 @@ public class UrlBuilder {
 	}
 
 	public String getResourceUrl(FrontendResource resource) {
-		if (resource instanceof FrontendNewsitem) {
-			return getLocalPageUrl((FrontendNewsitem) resource);
-		}
-		if (resource instanceof FrontendFeed) {
-			return getFeedUrl((FrontendFeed) resource);
-		}
-		if (resource instanceof FrontendWebsite) {
-			return siteInformation.getUrl() + "/" + UrlWordsGenerator.makeUrlWordsFromName(resource.getName());
-		}
-		return null;
+		return getLocalPageUrl(resource);		
 	}
 	
 }

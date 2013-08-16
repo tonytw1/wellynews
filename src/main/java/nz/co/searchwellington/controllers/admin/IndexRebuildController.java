@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.SolrIndexRebuildService;
+import nz.co.searchwellington.repositories.ElasticSearchIndexRebuildService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,15 +17,12 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class IndexRebuildController {
     
-	private SolrIndexRebuildService solrIndexRebuildService;
-	private LoggedInUserFilter loggedInUserFilter;
-	
-	public IndexRebuildController() {
-	}
+	private final ElasticSearchIndexRebuildService elasticSearchIndexUpdateService;
+	private final LoggedInUserFilter loggedInUserFilter;
 	
 	@Autowired
-    public IndexRebuildController(SolrIndexRebuildService solrIndexRebuildService, LoggedInUserFilter loggedInUserFilter) {       
-        this.solrIndexRebuildService = solrIndexRebuildService;
+    public IndexRebuildController(ElasticSearchIndexRebuildService elasticSearchIndexUpdateService, LoggedInUserFilter loggedInUserFilter) {       
+		this.elasticSearchIndexUpdateService = elasticSearchIndexUpdateService;
         this.loggedInUserFilter = loggedInUserFilter;
     }
     
@@ -37,19 +34,23 @@ public class IndexRebuildController {
         	return null;
     	}
     	
-        ModelAndView mv = new ModelAndView();                
-        mv.setViewName("luceneIndexBuilder");
-                
+        
         boolean deleteAll = false;
 		if (request.getParameter("delete") != null) {
 			deleteAll = true;
 		}
         
+		/*
         if (solrIndexRebuildService.buildIndex(deleteAll)) {
         	mv.addObject("message", "Created new index");
         } else {
         	mv.addObject("message", "Index rebuild failed");
         }
+        */
+		
+		elasticSearchIndexUpdateService.buildIndex(deleteAll);
+		
+		final ModelAndView mv = new ModelAndView("luceneIndexBuilder");
         return mv;
     }
     

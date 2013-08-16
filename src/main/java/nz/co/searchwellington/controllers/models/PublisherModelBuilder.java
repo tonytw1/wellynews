@@ -94,7 +94,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		mv.addObject("publisher", frontendPublisher);
 		
 		int startIndex = getStartIndex(page);
-		final int mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);
+		final long mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);
 		if (mainContentTotal > 0) {			
 			final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex);		
 			mv.addObject("main_content", publisherNewsitems);
@@ -111,7 +111,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		if (mainContent != null) {
 			final List<FrontendNewsitem> geotaggedNewsitems = Lists.newArrayList();
 			for (FrontendNewsitem feedNewsitem : mainContent) {
-				if (feedNewsitem.getGeocode() != null && feedNewsitem.getGeocode().isValid()) {
+				if (feedNewsitem.getPlace() != null) {
 					geotaggedNewsitems.add(feedNewsitem);
 				}
 			}

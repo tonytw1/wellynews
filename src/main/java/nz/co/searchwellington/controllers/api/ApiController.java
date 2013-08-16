@@ -33,8 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sun.syndication.io.FeedException;
-
 @Controller
 public class ApiController {
 

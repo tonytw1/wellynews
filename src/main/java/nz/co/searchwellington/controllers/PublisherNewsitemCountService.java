@@ -1,15 +1,8 @@
 package nz.co.searchwellington.controllers;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import nz.co.searchwellington.repositories.SolrInputDocumentBuilder;
-import nz.co.searchwellington.repositories.solr.SolrQueryBuilder;
-import nz.co.searchwellington.repositories.solr.SolrQueryService;
-
-import org.apache.solr.client.solrj.SolrQuery;
-import org.apache.solr.client.solrj.response.FacetField.Count;
+import org.elasticsearch.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -20,7 +13,6 @@ import org.springframework.stereotype.Component;
 public class PublisherNewsitemCountService {
 	
 	private LoggedInUserFilter loggedInFilter;
-	private SolrQueryService solrQueryService;
 	
 	private Map<String, Integer> newsitemCounts;
 	
@@ -28,9 +20,8 @@ public class PublisherNewsitemCountService {
 	}
 	
 	@Autowired
-	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter, SolrQueryService solrQueryService) {
+	public PublisherNewsitemCountService(LoggedInUserFilter loggedInFilter) {
 		this.loggedInFilter = loggedInFilter;
-		this.solrQueryService = solrQueryService;
 	}
 	
 	public int getNewsitemCount(String publisherName) {	
@@ -53,6 +44,7 @@ public class PublisherNewsitemCountService {
 	}
 	
 	private Map<String, Integer> populatePublisherNewsitemCounts(boolean showBroken) {
+		/*
 		SolrQuery query = new SolrQueryBuilder().type("N").showBroken(showBroken).toQuery();
 		query.addFacetField(SolrInputDocumentBuilder.PUBLISHER_NAME);
 		query.setFacetMinCount(1);
@@ -69,6 +61,8 @@ public class PublisherNewsitemCountService {
 			return newsitemCounts;
 		}
 		return null;
+		*/
+		return Maps.newHashMap();	// TODO implement
     }
 
 }

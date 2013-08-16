@@ -3,7 +3,10 @@ package nz.co.searchwellington.model;
 import java.util.Date;
 import java.util.List;
 
+import uk.co.eelpieconsulting.common.geo.model.Place;
+
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendTag;
 
 public class FrontendFeedNewsitem implements FrontendNewsitem {
 
@@ -13,6 +16,7 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 	private boolean isSuppressed;
 	private Suggestion suggestion;
 	Integer localCopy;
+	private String urlWords;
 	
     public FrontendFeedNewsitem(FeedNewsitem feedNewsitem) {
     	this.feedNewsitem = feedNewsitem;
@@ -87,7 +91,7 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 	}
 
 	@Override
-	public List<Tag> getTags() {
+	public List<FrontendTag> getTags() {
 		return feedNewsitem.getTags();
 
 	}
@@ -125,6 +129,26 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 	@Override
 	public Integer getOwnerId() {
 		return null;
+	}
+
+	public String getUrlWords() {
+		return urlWords;
+	}
+
+	public void setUrlWords(String urlWords) {
+		this.urlWords = urlWords;
+	}
+
+	@Override
+	public Place getPlace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPlace(Place place) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

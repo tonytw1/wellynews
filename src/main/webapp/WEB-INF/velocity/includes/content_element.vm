@@ -4,11 +4,12 @@
 		#if ($item.image) 
 			<img src="$item.image.url" align="right" vspace="10">
 		#end
-			
-		#set($itemUrl = $item.url)
+					
+		#set($itemUrl = $item.url) 				
 		#if ($item.type == ('F'))
-			#set($itemUrl = $urlBuilder.getFeedUrl($item))
+			#set($itemUrl = $item.urlWords)			
 		#end
+		
 		<h5><a href="$itemUrl">$escape.html($item.name)</a></h5>
 							
 		<ul>
@@ -77,32 +78,26 @@
 				#parse('includes/accepted_details.vm')
 				</li>
 			#end
-			
-			#if ($item.handTags)
-						
-				#if ($item.handTags.size() > 0)
-					<li class="tagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Tagged as</a>:</li>
-					#foreach ($tag in $item.handTags)
-						#if (!$tag.hidden)							
-							<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
+							
+			#if ($item.handTags.size() > 0)
+				<li class="tagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Tagged as</a>:</li>
+				#foreach ($tag in $item.handTags)
+					#if (!$tag.hidden)							
+						<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name.toLowerCase()</a></li>
+					#end
+				#end					
+			#else 
+				#if ($item.tags && $item.tags.size() > 0)
+					<li class="autotagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Automatically tagged as</a>:</li>					
+					#foreach ($tag in $item.tags)
+						#if (!$tag.hidden)
+							<li class="autotagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name.toLowerCase()</a></li>
 						#end
 					#end
-					
-				#else 
-				
-					#if ($item.tags && $item.tags.size() > 0)
-						<li class="autotagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Automatically tagged as</a>:</li>					
-						#foreach ($tag in $item.tags)
-							#if (!$tag.hidden)
-								<li class="autotagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
-							#end
-						#end
-					#else
-						<li class="tagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Not tagged</a></li>
-					#end
-															
-				#end	
-			#end
+				#else
+					<li class="tagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Not tagged</a></li>
+				#end															
+			#end				
 								
 			#if ($item.comments && $item.comments.size() > 0) 
 				<li class="commented">
@@ -128,6 +123,8 @@
 			#if ($item.suggestion && $item.suggestion.firstSeen) 
 				<li class="firstseen">First noticed $dateFormatter.timeSince($item.suggestion.firstSeen)</li>				
 			#end
+			
+			$item.place
 			
 			#if ($item.geocode && $item.geocode.address)
 				#if ($editPermissionService.canEdit($item)) 

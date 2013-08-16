@@ -2,6 +2,8 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
+import uk.co.eelpieconsulting.common.geo.model.Place;
+
 public class FeedImpl extends PublishedResourceImpl implements Feed {
 	
 	private static final long serialVersionUID = 1L;
@@ -10,6 +12,7 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
     String acceptancePolicy;
     Date latestItemDate;
     Date lastRead;
+    private String whakaokoId;
     
     public FeedImpl() {
     }
@@ -54,5 +57,27 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
     public boolean isScreenScraped() {
     	return url.startsWith("http://brownbag.wellington.gen.nz/");    	
     }
-    
+
+    @Override
+	public String getWhakaokoId() {
+		return whakaokoId;
+	}
+
+    @Override
+	public void setWhakaokoId(String whakaokoId) {
+		this.whakaokoId = whakaokoId;
+	}
+
+	@Override
+	public Place getPlace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setPlace(Place place) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }
