@@ -157,7 +157,6 @@
 	<bean id="twitterListenerJob" class="nz.co.searchwellington.jobs.TwitterListenerJob">
 		<constructor-arg ref="cachingTwitterService" />
 		<constructor-arg ref="twitterNewsitemMentionsFinderService" />
-		<constructor-arg ref="configDAO" />
 		<constructor-arg ref="contentUpdateService" />
 	</bean>
 
