@@ -14,44 +14,40 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.views.ViewFactory;
+
 @Controller
 public class IndexRebuildController {
     
 	private final ElasticSearchIndexRebuildService elasticSearchIndexUpdateService;
 	private final LoggedInUserFilter loggedInUserFilter;
+	private final ViewFactory viewFactory;
 	
 	@Autowired
-    public IndexRebuildController(ElasticSearchIndexRebuildService elasticSearchIndexUpdateService, LoggedInUserFilter loggedInUserFilter) {       
+    public IndexRebuildController(ElasticSearchIndexRebuildService elasticSearchIndexUpdateService,
+    		LoggedInUserFilter loggedInUserFilter,
+    		ViewFactory viewFactory) {       
 		this.elasticSearchIndexUpdateService = elasticSearchIndexUpdateService;
         this.loggedInUserFilter = loggedInUserFilter;
+		this.viewFactory = viewFactory;
     }
     
     @RequestMapping("/admin/indexbuilder")
     public ModelAndView build(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	User loggedInUser = loggedInUserFilter.getLoggedInUser();
+    	final User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null || !loggedInUser.isAdmin()) {
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         	return null;
     	}
-    	
-        
+    	        
         boolean deleteAll = false;
 		if (request.getParameter("delete") != null) {
 			deleteAll = true;
 		}
-        
-		/*
-        if (solrIndexRebuildService.buildIndex(deleteAll)) {
-        	mv.addObject("message", "Created new index");
-        } else {
-        	mv.addObject("message", "Index rebuild failed");
-        }
-        */
 		
 		elasticSearchIndexUpdateService.buildIndex(deleteAll);
 		
-		final ModelAndView mv = new ModelAndView("luceneIndexBuilder");
-        return mv;
+		return new ModelAndView(viewFactory.getJsonView()).addObject("data", "ok");
     }
     
 }

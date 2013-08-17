@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
-public class LinkCheckerController {
+public class LinkCheckerController {	// TODO move to resource controller
 
 	private static Logger log = Logger.getLogger(LinkCheckerController.class);
     

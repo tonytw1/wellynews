@@ -3,31 +3,17 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
-
-
-
-
 
 <div class="main">
 
 <h2>$heading</h2>
 
-	<p><a href="/admin/config/edit">Config</a></p>
-
-	<p><a href="/admin/linkchecker/status">Link checker status</a></p>
-
-	<p><a href="/admin/indexbuilder">Rebuild solr index</a></p>
-
-	<p>Key store size: $keystorecount</p>
+	<p><a href="/admin/indexbuilder">Rebuild elastic search index</a></p>
 
 </div>
-
-
 
 <div class="right">
 
@@ -37,7 +23,6 @@
 <br clear="all"/>
 
 </div>
-
 
 </div>
 
