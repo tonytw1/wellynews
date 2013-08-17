@@ -20,8 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.collect.Lists;
-
 @Component
 public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
@@ -31,13 +29,16 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private RelatedTagsService relatedTagsService;
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
+	private final GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 	
 	@Autowired
-	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder) {
+	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService, 
+			UrlBuilder urlBuilder, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
+		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;
 	}
 	
 	@Override
@@ -109,13 +110,8 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	// TODO duplication with feed model builder
 	private void populateGeotaggedItems(ModelAndView mv) {
 		List<FrontendNewsitem> mainContent = (List<FrontendNewsitem>) mv.getModel().get("main_content");
-		if (mainContent != null) {
-			final List<FrontendNewsitem> geotaggedNewsitems = Lists.newArrayList();
-			for (FrontendNewsitem feedNewsitem : mainContent) {
-				if (feedNewsitem.getPlace() != null) {
-					geotaggedNewsitems.add(feedNewsitem);
-				}
-			}
+		if (mainContent != null) {			
+			final List<FrontendNewsitem> geotaggedNewsitems  = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent);						
 			if (!geotaggedNewsitems.isEmpty()) {
 				mv.addObject("geocoded", geotaggedNewsitems);
 			}

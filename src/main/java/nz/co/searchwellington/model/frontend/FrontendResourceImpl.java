@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.Tag;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 

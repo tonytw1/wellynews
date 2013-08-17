@@ -8,8 +8,8 @@ import java.util.List;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class SuggestedFeeditemsServiceTest {
 
 	@Mock List<Suggestion> allSuggestions;
 	@Mock List<FeedNewsitem> availableSuggestedFeedItems;
-	@Mock List<FrontendFeedNewsitem> frontendFeednewsitems;
+	@Mock List<FrontendNewsitem> frontendFeednewsitems;
 
 	@Before
 	public void setup() {

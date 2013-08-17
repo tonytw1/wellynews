@@ -10,7 +10,7 @@ import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.junit.Before;
@@ -29,8 +29,8 @@ public class FeedModelBuilderTest {
 	
 	@Mock Feed feed;
 	@Mock List<FeedNewsitem> feedNewsitems;
-	@Mock List<FrontendFeedNewsitem> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
-	@Mock List<FrontendFeedNewsitem> geotaggedFeedNewsitems;
+	@Mock List<FrontendNewsitem> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
+	@Mock List<FrontendNewsitem> geotaggedFeedNewsitems;
 	
 	MockHttpServletRequest request;
 	ModelBuilder modelBuilder;
@@ -68,7 +68,7 @@ public class FeedModelBuilderTest {
 	
 	@Test
 	public void shouldPushGeotaggedFeeditemsOntoTheModelSeperately() throws Exception {
-		when(geotaggedNewsitemExtractor.extractGeotaggedFeeditems(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)).thenReturn(geotaggedFeedNewsitems);		
+		when(geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)).thenReturn(geotaggedFeedNewsitems);		
 		ModelAndView mv = modelBuilder.populateContentModel(request);
 		modelBuilder.populateExtraModelContent(request, mv);
 		assertEquals(geotaggedFeedNewsitems, mv.getModel().get("geocoded"));

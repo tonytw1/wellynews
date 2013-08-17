@@ -8,7 +8,7 @@ import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,9 +75,12 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	@SuppressWarnings("unchecked")
 	private void populateGeotaggedFeedItems(ModelAndView mv) {
-		List<FrontendFeedNewsitem> mainContent = (List<FrontendFeedNewsitem>) mv.getModel().get("main_content");
+		List<FrontendNewsitem> mainContent = (List<FrontendNewsitem>) mv.getModel().get("main_content");
 		if (mainContent != null) {
-			mv.addObject("geocoded", geotaggedNewsitemExtractor.extractGeotaggedFeeditems(mainContent));
+			final List<FrontendNewsitem> geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent);
+			if (!geotaggedItems.isEmpty()) {
+				mv.addObject("geocoded", geotaggedItems);				
+			}
 		}
 	}
 	

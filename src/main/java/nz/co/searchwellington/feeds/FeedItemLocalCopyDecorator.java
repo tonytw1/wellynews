@@ -5,6 +5,7 @@ import java.util.List;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;
 
@@ -25,8 +26,8 @@ public class FeedItemLocalCopyDecorator {
 		this.suppressionDAO = suppressionDAO;
 	}
 	
-	public List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
-		final List<FrontendFeedNewsitem> decoratedFeednewsitems = Lists.newArrayList();
+	public List<FrontendNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+		final List<FrontendNewsitem> decoratedFeednewsitems = Lists.newArrayList();
 		for (FeedNewsitem feedNewsitem : feedNewsitems) {
 
 			FrontendFeedNewsitem frontendFeedNewsitem = new FrontendFeedNewsitem(feedNewsitem);
