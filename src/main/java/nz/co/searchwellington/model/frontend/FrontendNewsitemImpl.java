@@ -67,4 +67,9 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 		this.accepted = accepted;
 	}
 	
+	@Override
+	public String getAuthor() {
+		return publisherName;
+	}
+	
 }
