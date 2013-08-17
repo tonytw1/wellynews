@@ -13,6 +13,7 @@ import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
 import nz.co.searchwellington.model.frontend.FrontendTag;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.bulk.BulkRequestBuilder;
@@ -21,10 +22,6 @@ import org.elasticsearch.client.Client;
 import org.elasticsearch.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import uk.co.eelpieconsulting.common.geo.model.LatLong;
-import uk.co.eelpieconsulting.common.geo.model.OsmId;
-import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MapperFeature;
@@ -42,14 +39,17 @@ public class ElasticSearchIndexUpdateService {
 	private final TaggingReturnsOfficerService taggingReturnsOfficerService;
 	private final ObjectMapper mapper;
 	private final UrlWordsGenerator urlWordsGenerator;
+	private final GeocodeToPlaceMapper geocodeToPlaceMapper;
 	
 	@Autowired
 	public ElasticSearchIndexUpdateService(ElasticSearchClientFactory elasticSearchClientFactory, 
 			TaggingReturnsOfficerService taggingReturnsOfficerService,
-			UrlWordsGenerator urlWordsGenerator) {
+			UrlWordsGenerator urlWordsGenerator, GeocodeToPlaceMapper geocodeToPlaceMapper) {
 		this.elasticSearchClientFactory = elasticSearchClientFactory;
 		this.taggingReturnsOfficerService = taggingReturnsOfficerService;
 		this.urlWordsGenerator = urlWordsGenerator;
+		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
+		
 		this.mapper = new ObjectMapper();
 	    this.mapper.configure(MapperFeature.USE_ANNOTATIONS, true);	    
 	}
@@ -135,27 +135,12 @@ public class ElasticSearchIndexUpdateService {
 		
 		final Geocode contentItemGeocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem);
 		if (contentItemGeocode != null) {
-			Place place = mapGeocodeToPlace(contentItemGeocode);
-			frontendContentItem.setPlace(place);
+			frontendContentItem.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(contentItemGeocode));
 		}
 				
 		final String json = mapper.writeValueAsString(frontendContentItem);
 		log.debug("Updating elastic search with json: " + json);
 		return client.prepareIndex(INDEX, TYPE, Integer.toString(contentItem.getId())).setSource(json);
-	}
-
-	private Place mapGeocodeToPlace(final Geocode contentItemGeocode) {	// TODO duplication
-		LatLong latLong = null;
-		if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
-			latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
-		}
-		OsmId osmId = null;
-		if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
-			osmId = new OsmId(contentItemGeocode.getOsmId(), contentItemGeocode.getOsmType());
-		}
-		String displayName = contentItemGeocode.getDisplayName();
-		Place place = new Place(displayName, latLong, osmId);
-		return place;
 	}
 	
 }

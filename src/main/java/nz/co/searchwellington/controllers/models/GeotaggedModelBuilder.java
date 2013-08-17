@@ -12,14 +12,13 @@ import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
-import uk.co.eelpieconsulting.common.geo.model.LatLong;
-import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -34,13 +33,16 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
 	private RelatedTagsService relatedTagsService;
+	private GeocodeToPlaceMapper geocodeToPlaceMapper;
 	
 	@Autowired
-	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService) {
+	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, 
+			RelatedTagsService relatedTagsService, GeocodeToPlaceMapper geocodeToPlaceMapper) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;
+		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
 	}
 
 	@Override
@@ -81,7 +83,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				}
 				populatePagination(mv, startIndex, totalNearbyCount);
 				
-				mv.addObject("location", mapGeocodeToPlace(userSuppliedLocation));
+				mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(userSuppliedLocation));
 				
 				log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
@@ -156,20 +158,6 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		} else {
 			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
 		}
-	}
-	
-	private Place mapGeocodeToPlace(final Geocode contentItemGeocode) {	// TODO duplication
-		LatLong latLong = null;
-		if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
-			latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
-		}
-		OsmId osmId = null;
-		if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
-			osmId = new OsmId(contentItemGeocode.getOsmId(), contentItemGeocode.getOsmType());
-		}
-		String displayName = contentItemGeocode.getDisplayName();
-		Place place = new Place(displayName, latLong, osmId);
-		return place;
 	}
 	
 }

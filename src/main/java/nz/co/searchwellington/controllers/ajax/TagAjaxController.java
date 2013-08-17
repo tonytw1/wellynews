@@ -23,9 +23,6 @@ public class TagAjaxController extends BaseAjaxController {
 
     private ContentRetrievalService contentRetrievalService;
     
-    public TagAjaxController() {
-	}
-    
     @Autowired
     public TagAjaxController(ViewFactory viewFactory, ContentRetrievalService contentRetrievalService) {
     	this.viewFactory = viewFactory;

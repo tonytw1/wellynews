@@ -11,7 +11,6 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -20,15 +19,12 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.utils.UrlFilters;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
-
-import uk.co.eelpieconsulting.common.geo.model.LatLong;
-import uk.co.eelpieconsulting.common.geo.model.OsmId;
-import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
@@ -42,9 +38,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private ContentRetrievalService contentRetrievalService;
 	private FlickrService flickrService;
 	private FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
-	
-	public TagModelBuilder() {
-	}
+	private GeocodeToPlaceMapper geocodeToPlaceMapper;
 	
 	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
@@ -52,7 +46,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
 			FlickrService flickrService,
-			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator) {
+			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator,
+			GeocodeToPlaceMapper geocodeToPlaceMapper) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -60,6 +55,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.contentRetrievalService = contentRetrievalService;
 		this.flickrService = flickrService;
 		this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator;
+		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
 	}
 	
 	@Override
@@ -147,8 +143,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("tag", tag);
 		
 		if (tag.getGeocode() != null) {			
-			final Place tagPlace = mapGeocodeToPlace(tag.getGeocode());			
-			mv.addObject("tagPlace", tagPlace);			
+			mv.addObject("tagPlace", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode()));			
 		}
 		
 		mv.addObject("heading", tag.getDisplayName());        		
@@ -165,20 +160,6 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		}
 		
 		return mv;
-	}
-	
-	private Place mapGeocodeToPlace(final Geocode contentItemGeocode) {	// TODO duplication
-		LatLong latLong = null;
-		if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
-			latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
-		}
-		OsmId osmId = null;
-		if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
-			osmId = new OsmId(contentItemGeocode.getOsmId(), contentItemGeocode.getOsmType());
-		}
-		String displayName = contentItemGeocode.getDisplayName();
-		Place place = new Place(displayName, latLong, osmId);
-		return place;
 	}
 	
 	private void populateRecentlyTwittered(ModelAndView mv, Tag tag) {

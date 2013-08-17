@@ -16,6 +16,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,20 +37,20 @@ public class TagModelBuilderTest {
 	@Mock RssfeedNewsitemService rssfeedNewsitemService;
 	@Mock FlickrService flickrService;
 	@Mock FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
-
+	@Mock GeocodeToPlaceMapper geocodeToPlaceMapper;
+	
 	@Mock List<FrontendResource> tagNewsitems;	
 	@Mock Tag tag;
-	private MockHttpServletRequest  request;
+	MockHttpServletRequest  request;
 
 	private TagModelBuilder modelBuilder;
-
-
+	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder,
 				relatedTagsService, rssfeedNewsitemService,
-				contentRetrievalService, flickrService, feedItemLocalCopyDecorator);
+				contentRetrievalService, flickrService, feedItemLocalCopyDecorator, geocodeToPlaceMapper);
 		request = new MockHttpServletRequest();
 		Mockito.when(tag.getDisplayName()).thenReturn(TAG_DISPLAY_NAME);
 	}

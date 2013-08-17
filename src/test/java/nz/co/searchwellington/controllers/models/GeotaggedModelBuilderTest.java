@@ -12,6 +12,7 @@ import nz.co.searchwellington.filters.LocationParameterFilter;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,6 +33,8 @@ public class GeotaggedModelBuilderTest {
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock UrlBuilder urlBuilder;
 	@Mock RssUrlBuilder rssUrlBuilder;
+	@Mock GeocodeToPlaceMapper geocodeToPlaceMapper;
+	
 	@Mock List<FrontendResource> newsitemsNearPetoneStationFirstPage;
 	@Mock List<FrontendResource> newsitemsNearPetoneStationSecondPage;
 	
@@ -47,7 +50,7 @@ public class GeotaggedModelBuilderTest {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		validLocation = new Place("Petone Station", new LatLong(1.1, 2.2), null);
-		modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService);
+		modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService, geocodeToPlaceMapper);
 	}
 	
 	@Test
