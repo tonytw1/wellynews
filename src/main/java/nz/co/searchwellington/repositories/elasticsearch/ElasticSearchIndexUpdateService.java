@@ -126,12 +126,15 @@ public class ElasticSearchIndexUpdateService {
 		
 		final List<FrontendTag> tags = Lists.newArrayList();
 		for (Tag tag : Lists.newArrayList(taggingReturnsOfficerService.getIndexTagsForResource(contentItem))) {
-			final FrontendTag frontendTag = new FrontendTag();
-			frontendTag.setId(tag.getName());
-			frontendTag.setName(tag.getDisplayName());
-			tags.add(frontendTag);
+			tags.add(mapTagToFrontendTag(tag));
 		}
 		frontendContentItem.setTags(tags);
+		
+		final List<FrontendTag> handTags = Lists.newArrayList();
+		for (Tag tag : taggingReturnsOfficerService.getHandTagsForResource(contentItem)) {
+			handTags.add(mapTagToFrontendTag(tag));
+		}
+		frontendContentItem.setHandTags(handTags);
 		
 		final Geocode contentItemGeocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem);
 		if (contentItemGeocode != null) {
@@ -141,6 +144,13 @@ public class ElasticSearchIndexUpdateService {
 		final String json = mapper.writeValueAsString(frontendContentItem);
 		log.debug("Updating elastic search with json: " + json);
 		return client.prepareIndex(INDEX, TYPE, Integer.toString(contentItem.getId())).setSource(json);
+	}
+
+	private FrontendTag mapTagToFrontendTag(Tag tag) {
+		final FrontendTag frontendTag = new FrontendTag();
+		frontendTag.setId(tag.getName());
+		frontendTag.setName(tag.getDisplayName());
+		return frontendTag;
 	}
 	
 }

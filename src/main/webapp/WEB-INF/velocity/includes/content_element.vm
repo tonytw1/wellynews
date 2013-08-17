@@ -78,7 +78,7 @@
 				#parse('includes/accepted_details.vm')
 				</li>
 			#end
-							
+										
 			#if ($item.handTags && $item.handTags.size() > 0)
 				<li class="tagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Tagged as</a>:</li>
 				#foreach ($tag in $item.handTags)

@@ -97,7 +97,7 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 	}
 
 	@Override
-	public List<Tag> getHandTags() {
+	public List<FrontendTag> getHandTags() {
 		return feedNewsitem.getHandTags();
 	}
 

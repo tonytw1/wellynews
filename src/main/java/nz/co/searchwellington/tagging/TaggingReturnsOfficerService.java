@@ -78,7 +78,7 @@ public class TaggingReturnsOfficerService {
 			if (((PublishedResource) resource).getPublisher() != null) {
 				Website publisher = ((PublishedResource) resource).getPublisher();
 				if (publisher.getGeocode() != null && publisher.getGeocode().isValid()) {
-					log.info("Adding publisher geotag: " + publisher.getGeocode().toString());
+					log.debug("Adding publisher geotag: " + publisher.getGeocode().toString());
 					votes.add(new GeotaggingVote(publisher.getGeocode(), new PublishersTagsVoter(), 1));
 				}
 			}
@@ -150,7 +150,7 @@ public class TaggingReturnsOfficerService {
 	private Geocode getGeotagFromFirstResourceTagWithLocation(Set<Tag> indexTagsForResource) {
 		for (Tag tag : indexTagsForResource) {
 			if (tag.getGeocode() != null && tag.getGeocode().isValid()) {
-				log.info("Found subsitute geotag for resource on resource index tag: " + tag.getName());
+				log.debug("Found subsitute geotag for resource on resource index tag: " + tag.getName());
 				return tag.getGeocode();
 			}
 		}

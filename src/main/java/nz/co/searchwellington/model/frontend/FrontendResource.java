@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-import nz.co.searchwellington.model.Tag;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public interface FrontendResource extends Serializable {
@@ -19,7 +18,7 @@ public interface FrontendResource extends Serializable {
 	public Date getLiveTime();
 	
 	public List<FrontendTag> getTags();
-	public List<Tag> getHandTags();
+	public List<FrontendTag> getHandTags();
 	public Integer getOwnerId();
 	public String getUrlWords();
 	public void setUrlWords(String urlWords);

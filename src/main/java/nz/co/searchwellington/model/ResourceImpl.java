@@ -144,7 +144,7 @@ public abstract class ResourceImpl implements Resource {
 	}
 	
 	@Override
-	public List<Tag> getHandTags() {
+	public List<FrontendTag> getHandTags() {
 		return Lists.newArrayList();
 	}
 	

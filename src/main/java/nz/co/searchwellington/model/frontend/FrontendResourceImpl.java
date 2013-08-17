@@ -27,7 +27,7 @@ public class FrontendResourceImpl implements FrontendResource, RssFeedable {
     private String description;    
     private Date liveTime;
     private List<FrontendTag> tags;
-    private List<Tag> handTags;
+    private List<FrontendTag> handTags;
     private Geocode geocode;
     private Integer ownerId;
     private Place place;
@@ -86,10 +86,10 @@ public class FrontendResourceImpl implements FrontendResource, RssFeedable {
 	final public void setTags(List<FrontendTag> tags) {
 		this.tags = tags;
 	}
-	final public List<Tag> getHandTags() {
+	final public List<FrontendTag> getHandTags() {
 		return handTags;
 	}
-	final public void setHandTags(List<Tag> handTags) {
+	final public void setHandTags(List<FrontendTag> handTags) {
 		this.handTags = handTags;
 	}
 	final public Geocode getGeocode() {
