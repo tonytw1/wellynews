@@ -82,7 +82,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	}
 	
 	private ModelAndView populatePublisherPageModelAndView(Website publisher, int page) {
-		ModelAndView mv = new ModelAndView();
+		final ModelAndView mv = new ModelAndView();
 		mv.addObject("heading", publisher.getName());
 		mv.addObject("description", publisher.getName() + " newsitems");
 		mv.addObject("link", urlBuilder.getPublisherUrl(publisher.getName()));
@@ -90,7 +90,8 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		// TODO hack - fronendpublisher / publisher mismatch
 		FrontendWebsiteImpl frontendPublisher = new FrontendWebsiteImpl();
 		frontendPublisher.setName(publisher.getName());
-		frontendPublisher.setUrlWords(publisher.getUrlWords());			
+		frontendPublisher.setUrlWords(publisher.getUrlWords());
+		frontendPublisher.setUrl(publisher.getUrl());
 		mv.addObject("publisher", frontendPublisher);
 		
 		int startIndex = getStartIndex(page);
