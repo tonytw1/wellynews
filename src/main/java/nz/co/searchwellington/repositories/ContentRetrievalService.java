@@ -17,7 +17,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendTag;
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchBackedResourceDAO;
@@ -289,7 +288,7 @@ public class ContentRetrievalService {
 		return resourceDAO.getOwnedByUserCount(loggedInUser);
 	}
 
-	public FrontendNewsitem getNewsPage(String pathInfo) {
+	public FrontendResource getNewsPage(String pathInfo) {
 		return elasticSearchBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken());
 	}
 

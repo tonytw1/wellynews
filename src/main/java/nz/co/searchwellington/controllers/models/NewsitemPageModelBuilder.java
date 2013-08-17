@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
@@ -59,19 +59,20 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		logger.info("Retrieving newsitem for path: " + request.getPathInfo());
 		ModelAndView mv = new ModelAndView();				
-		FrontendNewsitem newsitem = contentRetrievalService.getNewsPage(request.getPathInfo());
-		if (newsitem != null) {
-			logger.info("Putting newsitem onto page: " + newsitem.getName());
-			mv.addObject("item", newsitem);
-			mv.addObject("heading", newsitem.getName());
-			if (newsitem.getPlace() != null) {
-				mv.addObject("geocoded", Arrays.asList(newsitem));
+		final FrontendResource frontendResource = contentRetrievalService.getNewsPage(request.getPathInfo());
+		if (frontendResource != null) {
+			logger.info("Putting newsitem onto page: " + frontendResource.getName());
+			mv.addObject("item", frontendResource);
+			mv.addObject("heading", frontendResource.getName());
+			if (frontendResource.getPlace() != null) {
+				mv.addObject("geocoded", Arrays.asList(frontendResource));
 			}
 			
-			final Resource resource = resourceDAO.loadResourceById(newsitem.getId());	// TODO Caused by model confusion
-			mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));
-			mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource));            
-            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));
+			// TODO restore
+			//final Resource resource = resourceDAO.loadResourceById(frontendResource.getId());	// TODO Caused by model confusion
+			//mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));
+			//mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource));            
+            //mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));
 			return mv;
 		}
 		return null;
