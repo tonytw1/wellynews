@@ -108,6 +108,7 @@ public class ElasticSearchIndexUpdateService {
 			frontendContentItem = frontendFeed;
 		}
 		
+		frontendContentItem.setId(contentItem.getId());
 		frontendContentItem.setType(contentItem.getType());
 		frontendContentItem.setName(contentItem.getName());
 		frontendContentItem.setUrl(contentItem.getUrl());

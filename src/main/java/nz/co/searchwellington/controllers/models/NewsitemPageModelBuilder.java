@@ -68,11 +68,10 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 				mv.addObject("geocoded", Arrays.asList(frontendResource));
 			}
 			
-			// TODO restore
-			//final Resource resource = resourceDAO.loadResourceById(frontendResource.getId());	// TODO Caused by model confusion
-			//mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));
-			//mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource));            
-            //mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));
+			final Resource resource = resourceDAO.loadResourceById(frontendResource.getId());	// TODO Caused by model confusion Null safe
+			mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));
+			mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource));            
+            mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));
 			return mv;
 		}
 		return null;
