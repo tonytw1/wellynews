@@ -123,8 +123,7 @@
 			#if ($item.suggestion && $item.suggestion.firstSeen) 
 				<li class="firstseen">First noticed $dateFormatter.timeSince($item.suggestion.firstSeen)</li>				
 			#end
-			
-			
+					
 			#if ($item.place)
 				<a href="$urlBuilder.getLocationUrlFor($item.place)">#parse("includes/geotag_icon.vm")</a> $item.place.address</li>
 			#end

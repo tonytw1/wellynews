@@ -1,20 +1,21 @@
 package nz.co.searchwellington.feeds;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public class FeednewsItemToNewsitemServiceTest {
 
-	@Mock Geocode geocode;
+	@Mock Place place;
 	@Mock private Feed feed;
 	
 	FeednewsItemToNewsitemService service;
@@ -27,13 +28,13 @@ public class FeednewsItemToNewsitemServiceTest {
 	
 	@Test
 	public void shouldSetGeocodeWhenAcceptingFeedNewsitem() throws Exception {
-		fail();
+		Mockito.when(place.getAddress()).thenReturn("A place");
 		FeedNewsitem feedNewsitem = new FeedNewsitem();
-		//feedNewsitem.setGeocode(geocode);	
+		feedNewsitem.setPlace(place);
 		
 		Newsitem newsitem = service.makeNewsitemFromFeedItem(feed, feedNewsitem);
 		
-		assertEquals(geocode, newsitem.getGeocode());
+		assertEquals("A place", newsitem.getGeocode().getAddress());
 	}
 	
 }
