@@ -3,8 +3,6 @@ package nz.co.searchwellington.model.frontend;
 import java.util.Date;
 import java.util.List;
 
-import nz.co.searchwellington.model.Geocode;
-
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
@@ -27,7 +25,6 @@ public class FrontendResourceImpl implements FrontendResource, RssFeedable {
     private Date liveTime;
     private List<FrontendTag> tags;
     private List<FrontendTag> handTags;
-    private Geocode geocode;
     private Integer ownerId;
     private Place place;
 	
@@ -90,12 +87,6 @@ public class FrontendResourceImpl implements FrontendResource, RssFeedable {
 	}
 	final public void setHandTags(List<FrontendTag> handTags) {
 		this.handTags = handTags;
-	}
-	final public Geocode getGeocode() {
-		return geocode;
-	}
-	final public void setGeocode(Geocode geocode) {
-		this.geocode = geocode;
 	}	
 	final public Integer getOwnerId() {
 		return ownerId;

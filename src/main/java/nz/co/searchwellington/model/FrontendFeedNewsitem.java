@@ -8,7 +8,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendTag;
 
-public class FrontendFeedNewsitem implements FrontendNewsitem {
+public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related to FeedNewsitem how? Both are frontend classes?
 
 	private static final long serialVersionUID = 1L;
 
@@ -69,10 +69,6 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 
 	public final String getDescription() {
 		return feedNewsitem.getDescription();
-	}
-
-	public final Geocode getGeocode() {
-		return feedNewsitem.getGeocode();
 	}
 	
 	@Override
@@ -141,8 +137,7 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 
 	@Override
 	public Place getPlace() {
-		// TODO Auto-generated method stub
-		return null;
+		return feedNewsitem.getPlace();
 	}
 
 	@Override

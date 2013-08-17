@@ -22,7 +22,7 @@ public class FeednewsItemToNewsitemService {
 	    newsitem.setImage(feedNewsitem.getImage());
 	    newsitem.setFeed(feed);
 	    newsitem.setPublisher(feed.getPublisher());
-	    newsitem.setGeocode(feedNewsitem.getGeocode());
+	    newsitem.setPlace(feedNewsitem.getPlace());	// TODO needs to be a Geocode to be persisted
 	    return newsitem;
 	}
 	

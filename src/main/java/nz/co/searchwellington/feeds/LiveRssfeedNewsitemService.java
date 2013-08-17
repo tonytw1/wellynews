@@ -12,6 +12,7 @@ import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachableService;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.google.common.collect.Lists;
 import com.sun.syndication.feed.module.georss.GeoRSSModule;
@@ -45,12 +47,15 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fe
     private UrlCleaner urlCleaner;
 	private RssHttpFetcher rssFetcher;
     private TextTrimmer textTrimmer;
+	private GeocodeToPlaceMapper geocodeToPlaceMapper;
 	
     @Autowired
-    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer, FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
+    public LiveRssfeedNewsitemService(UrlCleaner urlCleaner, RssHttpFetcher rssFetcher, TextTrimmer textTrimmer, 
+    		FeednewsItemToNewsitemService feednewsItemToNewsitemService, GeocodeToPlaceMapper geocodeToPlaceMapper) {
 		this.urlCleaner = urlCleaner;
 		this.rssFetcher = rssFetcher;
 		this.textTrimmer = textTrimmer;
+		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
 	}
 
     @Override
@@ -117,22 +122,22 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fe
         feedItem.setDescription(description);
         feedItem.setDate(itemDate);
         feedItem.setPublisherName(feed.getPublisherName());
-        feedItem.setImage(extractThumbnail(feed, item));
-        feedItem.setGeocode(extractGeocode(feed, item));      
+        feedItem.setImage(extractThumbnail(item));
+        feedItem.setPlace(extractPlace(item));      
         return feedItem;
 	}
 
-	private Geocode extractGeocode(Feed feed, SyndEntry item) {
+	private Place extractPlace(SyndEntry item) {
 		GeoRSSModule geoModule = (GeoRSSModule) GeoRSSUtils.getGeoRSS(item);
 		if (geoModule != null) {
 			final String address = geoModule.getPosition().getLatitude() + ", " + geoModule.getPosition().getLongitude();
 			log.debug("Location is: " + address);
-			return new Geocode(address, geoModule.getPosition().getLatitude(), geoModule.getPosition().getLongitude());
+			return geocodeToPlaceMapper.mapGeocodeToPlace(new Geocode(address, geoModule.getPosition().getLatitude(), geoModule.getPosition().getLongitude()));
 		}
 		return null;
 	}
 	
-	private Image extractThumbnail(Feed feed, SyndEntry item) {		
+	private Image extractThumbnail(SyndEntry item) {		
         MediaEntryModuleImpl mediaModule = (MediaEntryModuleImpl) item.getModule(MediaModule.URI);
         if (mediaModule != null) {
         	log.debug("Found media module for item: " + item.getTitle());

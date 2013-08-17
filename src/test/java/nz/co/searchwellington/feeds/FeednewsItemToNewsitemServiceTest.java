@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
@@ -25,9 +26,10 @@ public class FeednewsItemToNewsitemServiceTest {
 	}
 	
 	@Test
-	public void shouldSetGeocodeWhenAcceptingFeedNewsitem() throws Exception {		
+	public void shouldSetGeocodeWhenAcceptingFeedNewsitem() throws Exception {
+		fail();
 		FeedNewsitem feedNewsitem = new FeedNewsitem();
-		feedNewsitem.setGeocode(geocode);
+		//feedNewsitem.setGeocode(geocode);	
 		
 		Newsitem newsitem = service.makeNewsitemFromFeedItem(feed, feedNewsitem);
 		
