@@ -8,30 +8,29 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.views.RssView;
-import nz.co.searchwellington.views.RssViewFactory;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import uk.co.eelpieconsulting.common.views.ViewFactory;
 import uk.co.eelpieconsulting.common.views.json.JsonView;
+import uk.co.eelpieconsulting.common.views.rss.RssView;
 
 public class ContentModelBuilderServiceTest {
 	
-	@Mock RssViewFactory rssViewFactory;
 	@Mock ViewFactory viewFactory;
 	@Mock JsonCallbackNameValidator jsonCallbackNameValidator;
 	@Mock CommonModelObjectsService commonModelObjectsService;
 	ModelBuilder[] modelBuilders;
 	
 	MockHttpServletRequest request;
-	@Mock RssView rssView;
 	@Mock JsonView jsonView;
+	@Mock RssView rssView;
 	@Mock List<Tag> featuredTags;
 	@Mock List<Tag> topLevelTags;
 	
@@ -56,8 +55,7 @@ public class ContentModelBuilderServiceTest {
 		when(validModelBuilder.isValid(request)).thenReturn(true);
 		when(validModelBuilder.populateContentModel(request)).thenReturn(validModelAndView);
 
-		contentModelBuilderService = new ContentModelBuilderService(rssViewFactory, 
-				viewFactory, 
+		contentModelBuilderService = new ContentModelBuilderService(viewFactory, 
 				jsonCallbackNameValidator,
 				commonModelObjectsService,
 				modelBuilders);
@@ -76,7 +74,7 @@ public class ContentModelBuilderServiceTest {
 	
 	@Test
 	public void rssSuffixedRequestsShouldBeGivenTheRssView() throws Exception {
-		when(rssViewFactory.makeView()).thenReturn(rssView);
+		when(viewFactory.getRssView(Mockito.anyString(), Mockito.anyString(), Mockito.anyString())).thenReturn(rssView);
 		request.setPathInfo("/something/rss");
 		assertEquals(rssView, contentModelBuilderService.populateContentModel(request).getView());
 	}
@@ -86,11 +84,6 @@ public class ContentModelBuilderServiceTest {
 		when(viewFactory.getJsonView()).thenReturn(jsonView);
 		request.setPathInfo("/something/json");
 		assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).getView());
-	}
-	
-	@Test
-	public void commonModelElementsShouldBeAddedToHtmlViews() throws Exception {		
-		// TODO how to cover?
 	}
 	
 	@Test

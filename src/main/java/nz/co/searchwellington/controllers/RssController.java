@@ -7,43 +7,42 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
-import nz.co.searchwellington.views.RssItemMaker;
-import nz.co.searchwellington.views.RssView;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.views.ViewFactory;
+import uk.co.eelpieconsulting.common.views.rss.RssView;
+
 import com.google.common.collect.Maps;
 
-@Controller
+@Controller	// TODO doesn't need to be a special case?
 public class RssController {
 	    
     private static final int MAX_RSS_ITEMS = 30;	// TODO move this knowledge towards the CRS
     
     private SiteInformation siteInformation;
 	private ContentRetrievalService contentRetrievalService;
-	private RssItemMaker rssItemMaker;
-	private RssUrlBuilder rssUrlBuilder;
+	private ViewFactory viewFactory;
 	
 	@Autowired
-    public RssController(SiteInformation siteInformation, ContentRetrievalService contentRetrievalService, RssItemMaker rssItemMaker, RssUrlBuilder rssUrlBuilder) {
+    public RssController(SiteInformation siteInformation, ContentRetrievalService contentRetrievalService, RssUrlBuilder rssUrlBuilder, ViewFactory viewFactory) {
         this.siteInformation = siteInformation;
         this.contentRetrievalService = contentRetrievalService;
-        this.rssItemMaker = rssItemMaker;
-        this.rssUrlBuilder = rssUrlBuilder;
+		this.viewFactory = viewFactory;
     }
     
     @RequestMapping("/rss")
     public ModelAndView mainRss(HttpServletRequest request, HttpServletResponse response) throws Exception {    	
-		final Map<String, Object> model = Maps.newHashMap();
-		model.put("heading", siteInformation.getAreaname() + " Newslog");
-		model.put("link", siteInformation.getUrl());
-        model.put("description", "Links to " + siteInformation.getAreaname() + " related newsitems.");
-        model.put("main_content", contentRetrievalService.getLatestNewsitems(MAX_RSS_ITEMS));
+		final Map<String, Object> model = Maps.newHashMap();		
+		String title = siteInformation.getAreaname() + " Newslog";
+		String link = siteInformation.getUrl();
+        String description = "Links to " + siteInformation.getAreaname() + " related newsitems.";
+        model.put("data", contentRetrievalService.getLatestNewsitems(MAX_RSS_ITEMS));
         
-        final RssView rssView = new RssView(rssItemMaker, rssUrlBuilder);	// TODO use viewfactory
+        final RssView rssView = viewFactory.getRssView(title, link, description);
         return new ModelAndView(rssView, model);        
     }
     

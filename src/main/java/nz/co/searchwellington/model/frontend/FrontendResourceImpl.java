@@ -8,10 +8,12 @@ import nz.co.searchwellington.model.Tag;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.geo.model.Place;
+import uk.co.eelpieconsulting.common.views.rss.RssFeedable;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class FrontendResourceImpl implements FrontendResource {
+public class FrontendResourceImpl implements FrontendResource, RssFeedable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -119,6 +121,31 @@ public class FrontendResourceImpl implements FrontendResource {
 		if (place != null && place.getLatLong() != null) {
 			return place.getLatLong().getLatitude() + "," + place.getLatLong().getLongitude();
 		}
+		return null;
+	}
+	
+	@Override
+	public String getHeadline() {
+		return name;
+	}
+	
+	@Override
+	public String getImageUrl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	@Override
+	public LatLong getLatLong() {
+		return place != null ? place.getLatLong() : null;	
+	}
+	
+	@Override
+	public String getWebUrl() {
+		return url;
+	}
+	
+	@Override
+	public String getAuthor() {
 		return null;
 	}
 	

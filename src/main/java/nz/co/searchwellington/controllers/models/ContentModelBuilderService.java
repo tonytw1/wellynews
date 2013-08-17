@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.models;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.CommonModelObjectsService;
-import nz.co.searchwellington.views.RssViewFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ public class ContentModelBuilderService {
 
 	private static final String JSON_CALLBACK_PARAMETER = "callback";
 	
-	private RssViewFactory rssViewFactory;
 	private ViewFactory viewFactory;
 	private JsonCallbackNameValidator jsonCallbackNameValidator;
 	private CommonModelObjectsService commonModelObjectsService;
@@ -30,12 +28,10 @@ public class ContentModelBuilderService {
 	}
 
 	@Autowired
-	public ContentModelBuilderService(RssViewFactory rssViewFactory,
-			ViewFactory viewFactory,
+	public ContentModelBuilderService(ViewFactory viewFactory,
 			JsonCallbackNameValidator jsonCallbackNameValidator,
 			CommonModelObjectsService commonModelObjectsService,
 			ModelBuilder[] modelBuilders) {
-		this.rssViewFactory = rssViewFactory;
 		this.viewFactory = viewFactory;
 		this.jsonCallbackNameValidator = jsonCallbackNameValidator;
 		this.commonModelObjectsService = commonModelObjectsService;
@@ -53,7 +49,10 @@ public class ContentModelBuilderService {
 				final String path = request.getPathInfo();
 				if (path.endsWith("/rss")) {
 					logger.info("Selecting rss view for path: " + path);
-					mv.setView(rssViewFactory.makeView());
+					mv.setView(viewFactory.getRssView((String) mv.getModel().get("heading"), 
+							(String) mv.getModel().get("link"), 
+							(String) mv.getModel().get("description")));
+					mv.addObject("data", mv.getModel().get("main_content"));
 					return mv;
 				}				
 				if (path.endsWith("/json")) {
