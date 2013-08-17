@@ -69,9 +69,9 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	@Override
 	@SuppressWarnings("unchecked")
 	public String getViewName(ModelAndView mv) {
-		int taggedNewsitemsCount = (Integer) mv.getModel().get("main_content_total");
-		List<Resource> taggedWebsites = (List<Resource>) mv.getModel().get("websites");
-		boolean isOneContentType = taggedNewsitemsCount == 0 || taggedWebsites.size() == 0;
+		final long taggedNewsitemsCount = (Long) mv.getModel().get("main_content_total");
+		final List<Resource> taggedWebsites = (List<Resource>) mv.getModel().get("websites");
+		final boolean isOneContentType = taggedNewsitemsCount == 0 || taggedWebsites.size() == 0;
 		if (isOneContentType) {
 			return "tagCombinedOneContentType";
 		}
@@ -79,16 +79,16 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	}
 	
 	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, int page) {
-		ModelAndView mv = new ModelAndView();		
-		final Tag firstTag = tags.get(0);
-		final Tag secondTag = tags.get(1);
-		
 		final int startIndex = getStartIndex(page);
-		final int totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(new HashSet<Tag>(tags));
+		final long totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags);
 		if (startIndex > totalNewsitemCount) {
 			return null;
 		}
 		
+		final Tag firstTag = tags.get(0);
+		final Tag secondTag = tags.get(1);
+		
+		final ModelAndView mv = new ModelAndView();		
 		mv.addObject("tag", firstTag);
 		mv.addObject("tags", tags);
 		
@@ -98,7 +98,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		
 		if (totalNewsitemCount > 0) {			
 			populatePagination(mv, startIndex, totalNewsitemCount);			
-			final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(new HashSet<Tag>(tags), startIndex, MAX_NEWSITEMS);		
+			final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, MAX_NEWSITEMS);		
 			mv.addObject("main_content", taggedNewsitems);
 			 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
 			 return mv;

@@ -220,11 +220,13 @@ public class ContentRetrievalService {
 		return elasticSearchBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken(), maxItems);
 	}
 
-	public int getTaggedNewsitemsCount(Set<Tag> tags) {
-		return elasticSearchBackedResourceDAO.getTaggedNewsitemsCount(tags, showBrokenDecisionService.shouldShowBroken());
+	public long getTaggedNewsitemsCount(List<Tag> tags) {
+		long taggedNewsitemsCount = elasticSearchBackedResourceDAO.getTaggedNewsitemsCount(tags, showBrokenDecisionService.shouldShowBroken());
+		System.out.println(taggedNewsitemsCount);
+		return taggedNewsitemsCount;
 	}
 	
-	public List<FrontendResource> getTaggedNewsitems(HashSet<Tag> tags, int startIndex, int maxItems) {
+	public List<FrontendResource> getTaggedNewsitems(List<Tag> tags, int startIndex, int maxItems) {
 		return elasticSearchBackedResourceDAO.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken(), startIndex, maxItems);
 	}
 	

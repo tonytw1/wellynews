@@ -356,17 +356,22 @@ public class ElasticSearchBackedResourceDAO {
 		// TODO Auto-generated method stub
 		return Lists.newArrayList();	// TODO implement
 	}
-
-	public int getTaggedNewsitemsCount(Set<Tag> tags, boolean shouldShowBroken) {
-		// TODO Auto-generated method stub
-		return 0;
+	
+	public List<FrontendResource> getTaggedNewsitems(List<Tag> tags, boolean shouldShowBroken, int startIndex, int maxNewsitems) {
+		final SearchRequestBuilder searchRequestBuilder = tagCombinerQuery(tags, shouldShowBroken, maxNewsitems);
+		
+		addNameOrder(searchRequestBuilder);
+	
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return deserializeFrontendResourceHits(response.getHits());
 	}
 
-	public List<FrontendResource> getTaggedNewsitems(Set<Tag> tags, boolean shouldShowBroken, int startIndex, int maxNewsitems) {
-		// TODO Auto-generated method stub
-		return Lists.newArrayList();	// TODO implement
+	public long getTaggedNewsitemsCount(List<Tag> tags, boolean shouldShowBroken) {
+		final SearchRequestBuilder searchRequestBuilder = tagCombinerQuery(tags, shouldShowBroken, 0);			
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return response.getHits().getTotalHits();
 	}
-
+	
 	public List<FrontendResource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean shouldShowBroken, int maxNewsitems) {
 		// TODO Auto-generated method stub
 		return Lists.newArrayList();	// TODO implement
@@ -429,6 +434,20 @@ public class ElasticSearchBackedResourceDAO {
 			setSize(maxItems);
 	
 		addDateDescendingOrder(searchRequestBuilder);
+		return searchRequestBuilder;
+	}
+	
+	private SearchRequestBuilder tagCombinerQuery(List<Tag> tags, boolean shouldShowBroken, int maxNewsitems) {
+		final BoolQueryBuilder taggedNewsitems = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(TYPE, "N"));
+		for (Tag tag : tags) {
+			taggedNewsitems.must(hasTag(tag));
+		}
+		
+		addShouldShowBrokenClause(taggedNewsitems, shouldShowBroken);
+		
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(taggedNewsitems).
+			setSize(maxNewsitems);
 		return searchRequestBuilder;
 	}
 	

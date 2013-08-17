@@ -88,6 +88,10 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/" + tag.getName() + "/autotag";
 	}
 	
+	public String getTagCombinerUrl(Tag firstTag, FrontendTag secondTag) {
+		return siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getId();
+	}
+	
 	public String getTagCombinerUrl(Tag firstTag, Tag secondTag) {
 		return siteInformation.getUrl() + "/" + firstTag.getName() + "+" + secondTag.getName();
 	}

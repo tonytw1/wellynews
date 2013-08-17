@@ -1,5 +1,4 @@
 #parse("includes/header.vm")
-
 <div class="page">
 #parse("includes/topbar.vm")
 
@@ -7,45 +6,32 @@
 
 #parse("includes/related_tags.vm")
 
-
 #parse("includes/tag_tree.vm")
 
 #parse("includes/sibling_tags.vm")
 </div>
-
-
-
 
 <div class="main">
 <div class="rss">
 #parse("includes/rss_widget_for_tag.vm")
 </div>
 
-
-
-
-
 <h2>
   	#set ($counter = 1)
-        #foreach ($dtag in $tags)
-                <a href="$dtag.name">$dtag.displayName</a>
-                #if ($counter < $tags.size())
-                and
-                #end
-                #set( $counter = $counter + 1 )
-   		#end
-   	</h2>
-
-
-
+    #foreach ($dtag in $tags)
+            <a href="$dtag.name">$dtag.displayName</a>
+            #if ($counter < $tags.size())
+            and
+            #end
+            #set( $counter = $counter + 1 )
+	#end
+</h2>
 
 #parse("includes/tag_admin_links.vm")
-
 
 #parse("includes/child_tags.vm")
 
 #parse("includes/search_widget.vm")
-
 
 <div class="main_content">
 	#if ($main_content.empty) 
@@ -54,14 +40,11 @@
 	#parse("includes/main_content.vm")
 </div>
 
-
 </div>
 
 <div class="right">
 
 #parse("includes/flickr_group_tag.vm")
-
-
 
 <div class="box">
 #parse("includes/latest_newsitems.vm")
@@ -72,10 +55,6 @@
 
 </div>
 
-
-
-
 </div>
-
 
 #parse("includes/footer.vm")
