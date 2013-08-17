@@ -75,7 +75,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				final int startIndex = getStartIndex(page);
 				
 				final double radius = getLocationSearchRadius(request);					
-				final int totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, radius);
+				final long totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, radius);
 				if (startIndex > totalNearbyCount) {
 					return null;
 				}

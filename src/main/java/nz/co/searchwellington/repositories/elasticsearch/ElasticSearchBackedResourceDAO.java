@@ -228,14 +228,8 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, double radius, boolean shouldShowBroken, int startIndex, int maxItems) {
-		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
-		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
-				
-		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter("location").distance("5km").point(latitude, longitude);
-		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, nearFilter);
-		
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
-			setQuery(geocodedNewitemsQuery).
+			setQuery(geotaggedNearQuery(latitude, longitude, radius, shouldShowBroken)).
 			setFrom(startIndex).
 			setSize(maxItems);
 		
@@ -243,6 +237,15 @@ public class ElasticSearchBackedResourceDAO {
 		return deserializeFrontendResourceHits(response.getHits());
 	}
 	
+	public long getGeotaggedNewsitemsNearCount(double latitude, double longitude, double radius, boolean shouldShowBroken) {
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(geotaggedNearQuery(latitude, longitude, radius, shouldShowBroken)).
+			setSize(0);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return response.getHits().getTotalHits();
+	}
+
 	public List<PublisherContentCount> getAllPublishers(boolean shouldShowBroken) {		
 		final SearchResponse searchResponse = searchRequestBuilder().setSize(0).
 			addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).
@@ -277,10 +280,6 @@ public class ElasticSearchBackedResourceDAO {
 		return Lists.newArrayList();	// TODO implement
 	}
 	
-	public int getGeotaggedNewsitemsNearCount(double latitude, double longitude, double radius, boolean shouldShowBroken) {
-		return 0;	// TODO implement
-	}
-
 	public List<Tag> getGeotaggedTags(boolean shouldShowBroken) {
 		return Lists.newArrayList();	// TODO implement
 	}
@@ -393,6 +392,15 @@ public class ElasticSearchBackedResourceDAO {
 		return null;
 	}
 	
+	private FilteredQueryBuilder geotaggedNearQuery(double latitude, double longitude, double radius, boolean shouldShowBroken) {
+		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
+		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
+		
+		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter("location").distance(Double.toString(radius) + "km").point(latitude, longitude);
+		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, nearFilter);
+		return geocodedNewitemsQuery;
+	}
+
 	private Map<String, Integer> tagNewsitemsFacet(Tag tag, String facetField) {
 		final SearchResponse searchResponse = searchRequestBuilder().setQuery(tagNewsitemsQuery(tag)).
 			addFacet(FacetBuilders.termsFacet(facetField).field(facetField).order(ComparatorType.COUNT).size(10)).
