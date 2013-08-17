@@ -24,9 +24,6 @@ public class SiteInformation {
     @Value("#{config['staticroot']}")
     private String staticRoot;
     
-    @Value("#{config['feedburner.url']}")
-    private String feedburnerUrl;
-    
     public SiteInformation() {
 	}
         
@@ -57,11 +54,7 @@ public class SiteInformation {
 	public String getStaticRoot() {
 		return staticRoot;
 	}
-
-	public String getFeedburnerUrl() {
-		return feedburnerUrl;
-	}
-
+	
 	public String getImageRoot() {
 		return imageRoot;
 	}

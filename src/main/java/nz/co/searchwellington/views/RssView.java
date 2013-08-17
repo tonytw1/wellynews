@@ -15,7 +15,7 @@ import org.springframework.web.servlet.View;
 import com.google.common.collect.Lists;
 import com.sun.syndication.feed.synd.SyndEntry;
 
-public class RssView implements View {
+public class RssView implements View {	// TODO replace with commons views
 	
 	private static Logger log = Logger.getLogger(RssView.class);
 	
