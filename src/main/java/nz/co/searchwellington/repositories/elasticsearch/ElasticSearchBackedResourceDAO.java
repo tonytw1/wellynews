@@ -373,8 +373,18 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	public List<FrontendResource> getPublisherTagCombinerNewsitems(Website publisher, Tag tag, boolean shouldShowBroken, int maxNewsitems) {
-		// TODO Auto-generated method stub
-		return Lists.newArrayList();	// TODO implement
+		final BoolQueryBuilder publishertaggedNewsitems = QueryBuilders.boolQuery().must(QueryBuilders.termQuery(TYPE, "N"));
+		publishertaggedNewsitems.must(hasTag(tag));
+		publishertaggedNewsitems.must(hasPublisher(publisher));
+		
+		addShouldShowBrokenClause(publishertaggedNewsitems, shouldShowBroken);
+		
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(publishertaggedNewsitems).
+			setSize(maxNewsitems);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return deserializeFrontendResourceHits(response.getHits());
 	}
 
 	public List<FrontendResource> getHandTaggingsForUser(User user, boolean shouldShowBroken) {
