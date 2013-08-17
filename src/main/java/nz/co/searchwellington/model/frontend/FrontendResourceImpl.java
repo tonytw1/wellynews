@@ -3,12 +3,12 @@ package nz.co.searchwellington.model.frontend;
 import java.util.Date;
 import java.util.List;
 
+import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.Tag;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import uk.co.eelpieconsulting.common.geo.model.Place;
-
-import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.Tag;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class FrontendResourceImpl implements FrontendResource {
@@ -113,6 +113,13 @@ public class FrontendResourceImpl implements FrontendResource {
 	}
 	public void setPlace(Place place) {
 		this.place = place;
+	}
+	
+	public String getLocation() {
+		if (place != null && place.getLatLong() != null) {
+			return place.getLatLong().getLatitude() + "," + place.getLatLong().getLongitude();
+		}
+		return null;
 	}
 	
 }

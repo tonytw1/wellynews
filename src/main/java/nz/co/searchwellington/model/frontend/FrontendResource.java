@@ -26,4 +26,6 @@ public interface FrontendResource extends Serializable {
 	public Place getPlace();
 	public void setPlace(Place place);
 	
+	public String getLocation();	// TODO elastic search use only
+	
 }

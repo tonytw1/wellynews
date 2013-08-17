@@ -11,6 +11,7 @@ import java.util.Set;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
@@ -26,6 +27,7 @@ import org.elasticsearch.common.collect.Maps;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
+import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -226,7 +228,23 @@ public class ElasticSearchBackedResourceDAO {
 		final SearchResponse response = searchRequestBuilder.execute().actionGet();
 		return response.getHits().getTotalHits();
 	}
-
+	
+	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, double radius, boolean shouldShowBroken, int startIndex, int maxItems) {
+		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
+		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
+				
+		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter("location").distance("5km").point(latitude, longitude);
+		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, nearFilter);
+		
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(geocodedNewitemsQuery).
+			setFrom(startIndex).
+			setSize(maxItems);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return deserializeFrontendResourceHits(response.getHits());
+	}
+	
 	public List<PublisherContentCount> getAllPublishers(boolean shouldShowBroken) {		
 		final SearchResponse searchResponse = searchRequestBuilder().setSize(0).
 			addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).
@@ -260,11 +278,7 @@ public class ElasticSearchBackedResourceDAO {
 	public List<FrontendResource> getTaggedGeotaggedNewsitems(Tag tag, int maxItems, boolean shouldShowBroken) {
 		return Lists.newArrayList();	// TODO implement
 	}
-
-	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, double radius, boolean shouldShowBroken, int startIndex, int maxNewsitems) {
-		return Lists.newArrayList();	// TODO implement
-	}
-
+	
 	public int getGeotaggedNewsitemsNearCount(double latitude, double longitude, double radius, boolean shouldShowBroken) {
 		return 0;	// TODO implement
 	}
@@ -366,9 +380,19 @@ public class ElasticSearchBackedResourceDAO {
 		return Lists.newArrayList();	// TODO implement
 	}
 
-	public FrontendNewsitem getNewspage(String pathInfo, boolean shouldShowBroken) {
-		// TODO Auto-generated method stub
-		return null;	// TODO implement
+	public FrontendResource getNewspage(String urlWords, boolean shouldShowBroken) {		
+		final BoolQueryBuilder urlWordsQuery = QueryBuilders.boolQuery().must(QueryBuilders.termQuery("urlWords", urlWords));		
+		addShouldShowBrokenClause(urlWordsQuery, shouldShowBroken);
+		
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(urlWordsQuery).
+			setSize(1);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		if (response.getHits().getTotalHits() > 0) {
+			return deserializeFrontendResourceHits(response.getHits()).get(0);
+		}
+		return null;
 	}
 	
 	private Map<String, Integer> tagNewsitemsFacet(Tag tag, String facetField) {

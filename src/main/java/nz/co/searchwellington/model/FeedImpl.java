@@ -79,5 +79,11 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -150,5 +150,11 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -129,5 +129,11 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem, Fro
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

@@ -34,5 +34,11 @@ public class Watchlist extends PublishedResourceImpl {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 }

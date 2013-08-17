@@ -15,6 +15,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.index.query.FilterBuilders;
+import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -86,8 +87,43 @@ public class ElasticSearchIT {
 		}
 		
 		System.out.println(resources);
+	}    
+    
+    @Test
+	public void canQueryForGeocodedNewsitemsNearPoint() throws Exception {
+		final Client client = new ElasticSearchClientFactory().getClient();
+		final SearchRequestBuilder requestBuilder = client.prepareSearch(
+				ElasticSearchIndexUpdateService.INDEX).setTypes(
+				ElasticSearchIndexUpdateService.TYPE);
+		
+		final GeoDistanceFilterBuilder geoFilter = FilterBuilders.geoDistanceFilter("location").distance("5km").point(-41.19, 174.95);
+		
+		final SearchResponse response = requestBuilder.setQuery(
+				QueryBuilders.filtered(QueryBuilders.termQuery("type", "N"), geoFilter)).
+				execute().actionGet();
+		
+		SearchHits hits = response.getHits();
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+		final List<FrontendResourceImpl> resources = Lists.newArrayList();
+		Iterator<SearchHit> iterator = hits.iterator();
+		while (iterator.hasNext()) {
+			SearchHit next = iterator.next();
+			System.out.println(next.getSourceAsString());
+			FrontendResourceImpl resource = objectMapper.readValue(next.getSourceAsString(), FrontendResourceImpl.class);
+			assertNotNull(resource.getPlace());
+			System.out.println(resource.getPlace());
+			resources.add(resource);			
+		}
+		
+		System.out.println(resources);
 	}
 	
+    
+    
+    
+    
 	@Test
 	public void canFetchFacets() throws Exception {		
 		final Client client = new ElasticSearchClientFactory().getClient();

@@ -31,5 +31,11 @@ public class CalendarFeed extends PublishedResourceImpl implements PublishedReso
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
     
 }

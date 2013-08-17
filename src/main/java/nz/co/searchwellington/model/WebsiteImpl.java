@@ -67,5 +67,11 @@ public class WebsiteImpl extends ResourceImpl implements Website {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return null;
+	}
         
 }
