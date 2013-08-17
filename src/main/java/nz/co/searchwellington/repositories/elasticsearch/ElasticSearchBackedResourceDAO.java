@@ -454,8 +454,11 @@ public class ElasticSearchBackedResourceDAO {
 		return QueryBuilders.termQuery(TYPE, "F");
 	}
 	
-	private BoolQueryBuilder addShouldShowBrokenClause(final BoolQueryBuilder query, boolean shouldShowBroken) {
-		return query.must(QueryBuilders.termQuery("httpStatus", "200")); 	// TODO owner clause as well
+	private void addShouldShowBrokenClause(BoolQueryBuilder query, boolean shouldShowBroken) {
+		if (!shouldShowBroken) {
+			query = query.must(QueryBuilders.termQuery("httpStatus", "200")); 	// TODO owner clause as well
+		}
+		return;
 	}
 
 	private void addDateDescendingOrder(final SearchRequestBuilder searchRequestBuilder) {

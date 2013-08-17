@@ -20,7 +20,7 @@ public class FrontendContentUpdater {
 	}
 	
 	public void update(Resource updatedResource) {
-		log.info("Adding resource to frontend update queue: " + updatedResource.getName());
+		log.info("Updating elastic search record for resource: " + updatedResource.getName());
 		elasticSearchIndexUpdateService.updateSingleContentItem(updatedResource);
 	}
 

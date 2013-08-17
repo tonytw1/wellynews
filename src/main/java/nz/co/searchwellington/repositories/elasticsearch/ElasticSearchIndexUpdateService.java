@@ -138,8 +138,9 @@ public class ElasticSearchIndexUpdateService {
 			Place place = mapGeocodeToPlace(contentItemGeocode);
 			frontendContentItem.setPlace(place);
 		}
-		
+				
 		final String json = mapper.writeValueAsString(frontendContentItem);
+		log.debug("Updating elastic search with json: " + json);
 		return client.prepareIndex(INDEX, TYPE, Integer.toString(contentItem.getId())).setSource(json);
 	}
 
