@@ -72,8 +72,8 @@ public class ElasticSearchIndexRebuildService {
 			Resource resource = resourceDAO.loadResourceById(id);
 			log.debug("Adding solr record: " + resource.getId() + " - " + resource.getName() + " - " + resource.getType());			
 			resources.add(resource);			
-			elasticSearchIndexUpdateService.updateMultipleContentItems(resources);			
 		}
+		elasticSearchIndexUpdateService.updateMultipleContentItems(resources);			
 	}
 	
 }
