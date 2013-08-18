@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.twitter.CachingTwitterService;
@@ -28,7 +29,7 @@ public class UrlBuilderTest {
 	
 	private UrlBuilder urlBuilder;
 	private FrontendNewsitemImpl frontendNewsitem;
-	private FrontendFeedImpl frontendFeed;
+	private FrontendFeed frontendFeed;
 	private Tag tag;
 	
 	@Before
