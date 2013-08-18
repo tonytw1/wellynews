@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch;
 import java.util.List;
 
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -94,7 +95,9 @@ public class ElasticSearchIndexUpdateService {
 		FrontendResourceImpl frontendContentItem = new FrontendResourceImpl();
 		if (contentItem.getType().equals("N")) {
 			FrontendNewsitemImpl frontendNewsitem = new FrontendNewsitemImpl();
-			frontendNewsitem.setPublisherName(((PublishedResource) contentItem).getPublisherName());			
+			frontendNewsitem.setPublisherName(((PublishedResource) contentItem).getPublisherName());
+			frontendNewsitem.setAcceptedFromFeedName(((Newsitem) contentItem).getAcceptedFromFeedName());
+			frontendNewsitem.setAcceptedByProfilename(((Newsitem) contentItem).getAcceptedByProfilename());
 			frontendContentItem = frontendNewsitem;
 		}
 		

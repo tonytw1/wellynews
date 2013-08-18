@@ -37,7 +37,7 @@
 					<li class="bodytext">$escape.html($snippet)</li>
 				#end
 			#end
-								
+											
 			#if ($item.type == ('F'))				
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
@@ -73,7 +73,7 @@
 				#end
 			#end
 						
-			#if ($item.type == "N" && $item.accepted) 
+			#if ($item.type == "N" && $item.acceptedFromFeedName) 
 				<li>
 				#parse('includes/accepted_details.vm')
 				</li>

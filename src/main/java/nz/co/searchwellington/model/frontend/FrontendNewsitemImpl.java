@@ -71,5 +71,24 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 	public String getAuthor() {
 		return publisherName;
 	}
+
+	@Override
+	public String toString() {
+		return "FrontendNewsitemImpl [accepted=" + accepted
+				+ ", acceptedByProfilename=" + acceptedByProfilename
+				+ ", acceptedFromFeedName=" + acceptedFromFeedName
+				+ ", comments=" + comments + ", publisherName=" + publisherName
+				+ ", retweets=" + retweets + ", getDate()=" + getDate()
+				+ ", getDescription()=" + getDescription() + ", getHandTags()="
+				+ getHandTags() + ", getHeadline()=" + getHeadline()
+				+ ", getHttpStatus()=" + getHttpStatus() + ", getId()="
+				+ getId() + ", getImageUrl()=" + getImageUrl()
+				+ ", getLatLong()=" + getLatLong() + ", getLiveTime()="
+				+ getLiveTime() + ", getName()=" + getName()
+				+ ", getOwnerId()=" + getOwnerId() + ", getPlace()="
+				+ getPlace() + ", getTags()=" + getTags() + ", getType()="
+				+ getType() + ", getUrl()=" + getUrl() + ", getUrlWords()="
+				+ getUrlWords() + ", getWebUrl()=" + getWebUrl() + "]";
+	}
 	
 }
