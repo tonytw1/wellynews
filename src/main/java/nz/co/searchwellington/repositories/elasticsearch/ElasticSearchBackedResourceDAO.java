@@ -41,6 +41,8 @@ import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -229,9 +231,9 @@ public class ElasticSearchBackedResourceDAO {
 		return response.getHits().getTotalHits();
 	}
 	
-	public List<FrontendResource> getGeotaggedNewsitemsNear(double latitude, double longitude, double radius, boolean shouldShowBroken, int startIndex, int maxItems) {
+	public List<FrontendResource> getGeotaggedNewsitemsNear(LatLong latLong, double radius, boolean shouldShowBroken, int startIndex, int maxItems) {
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
-			setQuery(geotaggedNearQuery(latitude, longitude, radius, shouldShowBroken)).
+			setQuery(geotaggedNearQuery(latLong, radius, shouldShowBroken)).
 			setFrom(startIndex).
 			setSize(maxItems);
 		
@@ -239,9 +241,9 @@ public class ElasticSearchBackedResourceDAO {
 		return deserializeFrontendResourceHits(response.getHits());
 	}
 	
-	public long getGeotaggedNewsitemsNearCount(double latitude, double longitude, double radius, boolean shouldShowBroken) {
+	public long getGeotaggedNewsitemsNearCount(LatLong latLong, double radius, boolean shouldShowBroken) {
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
-			setQuery(geotaggedNearQuery(latitude, longitude, radius, shouldShowBroken)).
+			setQuery(geotaggedNearQuery(latLong, radius, shouldShowBroken)).
 			setSize(0);
 		
 		final SearchResponse response = searchRequestBuilder.execute().actionGet();
@@ -409,11 +411,14 @@ public class ElasticSearchBackedResourceDAO {
 		return null;
 	}
 	
-	private FilteredQueryBuilder geotaggedNearQuery(double latitude, double longitude, double radius, boolean shouldShowBroken) {
+	private FilteredQueryBuilder geotaggedNearQuery(LatLong latLong, double radius, boolean shouldShowBroken) {
 		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
 		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
 		
-		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter("location").distance(Double.toString(radius) + "km").point(latitude, longitude);
+		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter("location").
+			distance(Double.toString(radius) + "km").
+			point(latLong.getLatitude(), latLong.getLongitude());
+		
 		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, nearFilter);
 		return geocodedNewitemsQuery;
 	}

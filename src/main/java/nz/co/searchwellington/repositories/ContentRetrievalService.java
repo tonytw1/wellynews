@@ -25,6 +25,8 @@ import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+
 import com.google.common.collect.Lists;
 
 @Component
@@ -100,12 +102,12 @@ public class ContentRetrievalService {
 		return elasticSearchBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
-	public List<FrontendResource> getNewsitemsNear(double latitude, double longitude, double radius, int startIndex, int maxNewsitems) {
-		return elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNear(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
+	public List<FrontendResource> getNewsitemsNear(LatLong latLong, double radius, int startIndex, int maxNewsitems) {
+		return elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNear(latLong, radius, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
 	}
 	
-	public long getNewsitemsNearCount(double latitude, double longitude, double radius) {
-		return elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNearCount(latitude, longitude, radius, showBrokenDecisionService.shouldShowBroken());
+	public long getNewsitemsNearCount(LatLong latLong, double radius) {
+		return elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNearCount(latLong, radius, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<Tag> getGeotaggedTags() {

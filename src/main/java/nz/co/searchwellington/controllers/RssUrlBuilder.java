@@ -1,12 +1,15 @@
 package nz.co.searchwellington.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class RssUrlBuilder {
@@ -116,24 +119,26 @@ public class RssUrlBuilder {
 		return "Feed newsitem suggestions";
 	}
 	
-	public String getRssUrlForGeotagged(Double latitude, Double longitude) {
-		return getRssUrlForGeotagged() + "?latitude=" + latitude + "&longitude=" + longitude;
-	}
-
-	public String getRssTitleForGeotagged(Geocode userSuppliedLocation) {
-		return "Newsitems near " + userSuppliedLocation.getDisplayName();
+	public String getRssTitleForPlace(Place place) {
+		return "Newsitems near " + place.getAddress();
 	}
 	
-	public String getRssUrlForGeotagged(String location) {
-		return getRssUrlForGeotagged() + "?location=" + location;
-	}
-
 	public String getRssTitleForGeotagged() {
 		return "Geotagged newsitems";
 	}
 	
 	public String getRssHeadingForGivenHeading(String heading) {
 		return heading + " - " + siteInformation.getSitename();
+	}
+
+	public String getRssUrlForOsmId(OsmId osmId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getRssUrlForLatLong(LatLong latLong) {
+		return getRssUrlForGeotagged() + "?latitude=" + latLong.getLatitude() + "&longitude=" + latLong.getLongitude();
+
 	}
 		
 }

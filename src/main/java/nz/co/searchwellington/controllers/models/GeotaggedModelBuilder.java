@@ -7,19 +7,20 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
-import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
+import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.geo.model.Place;
+
+import com.google.common.base.Strings;
 
 @Component
 public class GeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
@@ -33,16 +34,14 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
 	private RelatedTagsService relatedTagsService;
-	private GeocodeToPlaceMapper geocodeToPlaceMapper;
 	
 	@Autowired
 	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, 
-			RelatedTagsService relatedTagsService, GeocodeToPlaceMapper geocodeToPlaceMapper) {
+			RelatedTagsService relatedTagsService) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;
-		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
 	}
 
 	@Override
@@ -64,34 +63,29 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			
 			final boolean hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong() != null;
 			if (hasUserSuppliedALocation) {
-				final Geocode userSuppliedLocation = new Geocode(userSuppliedPlace.getAddress(), 
-						userSuppliedPlace.getLatLong().getLatitude(),
-						userSuppliedPlace.getLatLong().getLongitude());
-				
-				final double latitude = userSuppliedLocation.getLatitude();
-				final double longitude = userSuppliedLocation.getLongitude();
-				log.info("Location is set to: " + latitude + ", " + longitude);
+				final LatLong latLong = userSuppliedPlace.getLatLong();
+				log.info("Location is set to: " + userSuppliedPlace.getLatLong());
 				
 				final int page = getPage(request);
 				mv.addObject("page", page);
 				final int startIndex = getStartIndex(page);
 				
 				final double radius = getLocationSearchRadius(request);					
-				final long totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latitude, longitude, radius);
+				final long totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius);
 				if (startIndex > totalNearbyCount) {
 					return null;
 				}
 				populatePagination(mv, startIndex, totalNearbyCount);
 				
-				mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(userSuppliedLocation));
+				mv.addObject("location", userSuppliedPlace);
 				
-				log.info("Populating main content with newsitems near: " + latitude + ", " + longitude + " (radius: " + radius + ")");
-				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latitude, longitude, radius, startIndex, MAX_NEWSITEMS));
+				log.info("Populating main content with newsitems near: " + latLong + " (radius: " + radius + ")");
+				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS));
 			
-				if (userSuppliedLocation.getAddress() != null) {
-					mv.addObject("heading", rssUrlBuilder.getRssTitleForGeotagged(userSuppliedLocation));
+				if (!Strings.isNullOrEmpty(userSuppliedPlace.getAddress())) {
+					mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace));
 				}			
-				setRssForLocation(mv, userSuppliedLocation);							
+				setRssUrlForLocation(mv, userSuppliedPlace);							
 				return mv;				
 			}
 			
@@ -123,25 +117,21 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	@Override
 	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
 		if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
-			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());			
-		} else {
-			final Place userSuppliedPlace = (Place) request.getAttribute(LocationParameterFilter.LOCATION);
-			final Geocode userSuppliedLocation = new Geocode(userSuppliedPlace.getAddress(),
-					userSuppliedPlace.getLatLong().getLatitude(), 
-					userSuppliedPlace.getLatLong().getLongitude());	// TODO Geocode or place? what is there relationship?
+			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());
 			
-			if (userSuppliedLocation.isValid()) {
-				List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedLocation, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
-				if (relatedTagLinks.size() > 0) {
-					mv.addObject("related_tags", relatedTagLinks);
-				}
+		} else {
+			final Place userSuppliedPlace = (Place) request.getAttribute(LocationParameterFilter.LOCATION);			
+			final List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
+			if (!relatedTagLinks.isEmpty()) {
+				mv.addObject("related_tags", relatedTagLinks);
+			}
 
-				List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedLocation, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
-				if (relatedPublisherLinks.size() > 0) {
-					mv.addObject("related_publishers", relatedPublisherLinks);
-				}
+			List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
+			if (!relatedPublisherLinks.isEmpty()) {
+				mv.addObject("related_publishers", relatedPublisherLinks);
 			}			
 		}
+		
 		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
 	
@@ -150,13 +140,11 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		return "geocoded";
 	}
 
-	private void setRssForLocation(ModelAndView mv, Geocode location) {
-		final double latitude = location.getLatitude();
-		final double longitude = location.getLongitude();
-		if (location.getAddress() != null) {		
-			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(location.getAddress()));					
-		} else {
-			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(location), rssUrlBuilder.getRssUrlForGeotagged(latitude, longitude));
+	private void setRssUrlForLocation(ModelAndView mv, Place userSuppliedPlace) {	// TODO push to url builder - needed in content_element view
+		if (userSuppliedPlace.getOsmId() != null) {		
+			setRss(mv, rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace), rssUrlBuilder.getRssUrlForOsmId(userSuppliedPlace.getOsmId()));					
+		} else if (userSuppliedPlace.getLatLong() != null) {
+			setRss(mv, rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace), rssUrlBuilder.getRssUrlForLatLong(userSuppliedPlace.getLatLong()));
 		}
 	}
 	

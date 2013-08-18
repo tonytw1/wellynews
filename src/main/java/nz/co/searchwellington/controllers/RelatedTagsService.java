@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers;	// TODO move out of controllers pack
 import java.util.List;
 import java.util.Map;
 
-import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
@@ -14,6 +13,8 @@ import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchBackedReso
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -40,11 +41,11 @@ public class RelatedTagsService {
 		return Lists.newArrayList();	// TODO implement
 	}
 	
-	public List<TagContentCount> getRelatedTagsForLocation(Geocode location, double radius, int maxItems) {
+	public List<TagContentCount> getRelatedTagsForLocation(Place place, double radius, int maxItems) {
 		return Lists.newArrayList();	// TODO implement
 	}
 	
-	public List<PublisherContentCount> getRelatedPublishersForLocation(Geocode location, double radius, int maxItems) {
+	public List<PublisherContentCount> getRelatedPublishersForLocation(Place place, double radius, int maxItems) {
 		return Lists.newArrayList();	// TODO implement
 	}
 	
