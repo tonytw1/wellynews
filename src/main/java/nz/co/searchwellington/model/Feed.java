@@ -4,7 +4,7 @@ import java.util.Date;
 
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 
-public interface Feed extends PublishedResource, FrontendFeed {
+public interface Feed extends PublishedResource, FrontendFeed {	// TODO persisted classses shouldn't need to implement frontend interfaces
 
     public String getAcceptancePolicy();
 

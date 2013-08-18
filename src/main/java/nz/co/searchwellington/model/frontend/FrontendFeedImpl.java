@@ -1,11 +1,14 @@
 package nz.co.searchwellington.model.frontend;
 
+import java.util.Date;
+
 public class FrontendFeedImpl extends FrontendResourceImpl implements FrontendFeed {
 
 	private static final long serialVersionUID = 1L;
 	
 	private String publisherName;
 	private String urlWords;
+	private Date latestItemDate;
 	
 	final public String getPublisherName() {
 		return publisherName;
@@ -21,6 +24,14 @@ public class FrontendFeedImpl extends FrontendResourceImpl implements FrontendFe
 
 	final public void setUrlWords(String urlWords) {
 		this.urlWords = urlWords;
+	}
+	
+	final public Date getLatestItemDate() {
+		return latestItemDate;
+	}
+	
+	final public void setLatestItemDate(Date latestItemDate) {
+		this.latestItemDate = latestItemDate;	
 	}
 	
 }

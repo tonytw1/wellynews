@@ -2,9 +2,9 @@ package nz.co.searchwellington.repositories.elasticsearch;
 
 import java.util.List;
 
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
@@ -31,8 +31,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class ElasticSearchIndexUpdateService {
 
-	public static final String INDEX = "searchwellington";
-	public static final String TYPE = "resources";
+	public static final String INDEX = "searchwellington";	// TODO config
+	public static final String TYPE = "resources";	// TODO config
 	
 	private static Logger log = Logger.getLogger(ElasticSearchIndexUpdateService.class);
 	
@@ -94,16 +94,20 @@ public class ElasticSearchIndexUpdateService {
 	private IndexRequestBuilder prepateUpdateFor(Resource contentItem, Client client) throws JsonProcessingException {
 		FrontendResourceImpl frontendContentItem = new FrontendResourceImpl();
 		if (contentItem.getType().equals("N")) {
+			final Newsitem contentItemNewsitem = (Newsitem) contentItem;
 			FrontendNewsitemImpl frontendNewsitem = new FrontendNewsitemImpl();
-			frontendNewsitem.setPublisherName(((PublishedResource) contentItem).getPublisherName());
-			frontendNewsitem.setAcceptedFromFeedName(((Newsitem) contentItem).getAcceptedFromFeedName());
-			frontendNewsitem.setAcceptedByProfilename(((Newsitem) contentItem).getAcceptedByProfilename());
+			frontendNewsitem.setPublisherName(contentItemNewsitem.getPublisherName());
+			frontendNewsitem.setAcceptedFromFeedName(contentItemNewsitem.getAcceptedFromFeedName());
+			frontendNewsitem.setAcceptedByProfilename(contentItemNewsitem.getAcceptedByProfilename());
+			frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted());
 			frontendContentItem = frontendNewsitem;
 		}
 		
 		if (contentItem.getType().equals("F")) {
 			FrontendFeedImpl frontendFeed = new FrontendFeedImpl();
-			frontendFeed.setPublisherName(((PublishedResource) contentItem).getPublisherName());			
+			Feed contentItemFeed = (Feed) contentItem;
+			frontendFeed.setPublisherName(contentItemFeed.getPublisherName());	
+			frontendFeed.setLatestItemDate(contentItemFeed.getLatestItemDate());
 			frontendContentItem = frontendFeed;
 		}
 		
