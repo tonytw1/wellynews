@@ -73,7 +73,7 @@ public class ContentDeletionService {
 			}
 		}
 		
-		elasticSearchIndexUpdateService.deleteResourceFromIndex(resource.getId());
+		elasticSearchIndexUpdateService.deleteContentItem(resource.getId());
 		resourceDAO.deleteResource(resource);
 	}
 	

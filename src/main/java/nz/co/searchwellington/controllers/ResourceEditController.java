@@ -110,7 +110,7 @@ public class ResourceEditController {
 	}
     
     @Transactional	
-	@RequestMapping("/*/edit")
+	@RequestMapping("/edit")
     public ModelAndView edit(HttpServletRequest request, HttpServletResponse response) {
     	log.info("Starting resource edit method");
         response.setCharacterEncoding("UTF-8");
@@ -287,7 +287,7 @@ public class ResourceEditController {
     }
     
     @Transactional
-    @RequestMapping("/edit/delete")
+    @RequestMapping("/delete")
     public ModelAndView delete(HttpServletRequest request, HttpServletResponse response) {    
         ModelAndView modelAndView = new ModelAndView("deletedResource");
         commonModelObjectsService.populateCommonLocal(modelAndView);
@@ -311,7 +311,7 @@ public class ResourceEditController {
     }
     
 	@Transactional
-	@RequestMapping(value="/*/save", method=RequestMethod.POST)
+	@RequestMapping(value="/save", method=RequestMethod.POST)
     public ModelAndView save(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {       
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");

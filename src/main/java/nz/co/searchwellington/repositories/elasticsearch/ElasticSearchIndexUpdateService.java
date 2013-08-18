@@ -64,9 +64,9 @@ public class ElasticSearchIndexUpdateService {
 		}
 	}
 	
-	public void deleteContentItem(String contentId) {
-		log.debug("Deleting content item: " + contentId);
-		elasticSearchClientFactory.getClient().prepareDelete(INDEX, TYPE, contentId).setOperationThreaded(false).execute().actionGet();
+	public void deleteContentItem(Integer id) {
+		log.info("Deleting content item: " + id);
+		elasticSearchClientFactory.getClient().prepareDelete(INDEX, TYPE, Integer.toString(id)).setOperationThreaded(false).execute().actionGet();
 	}
 	
 	public void updateMultipleContentItems(List<Resource> contentItems) {
@@ -88,10 +88,6 @@ public class ElasticSearchIndexUpdateService {
 		
 		log.info("Executing bulk request with " + bulkRequest.numberOfActions() + " actions");
 		bulkRequest.execute().actionGet();		
-	}
-
-	public void deleteResourceFromIndex(int id) {
-		// TODO Auto-generated method stub		
 	}
 	
 	private IndexRequestBuilder prepateUpdateFor(Resource contentItem, Client client) throws JsonProcessingException {

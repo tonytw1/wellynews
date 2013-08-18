@@ -26,22 +26,15 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getResourceEditUrl(FrontendResource resource) {
-		final String resourceUrl = urlBuilder.getResourceUrl(resource);
-		
-		// TODO pick one of these - remove the other
 		if (resource instanceof FrontendNewsitem) {
-			return siteInformation.getUrl() + "/edit/edit?resource=" + resource.getId();
-		}		
-		if (resourceUrl != null) {
-			return resourceUrl + "/edit";
-		}		
+			return siteInformation.getUrl() + "/edit?resource=" + resource.getId();
+		}				
 		return null;
 	}
 	
 	public String getResourceDeleteUrl(FrontendResource resource) {
-		final String resourceUrl = urlBuilder.getResourceUrl(resource);
-		if (resourceUrl != null) {
-			return resourceUrl + "/delete";
+		if (resource instanceof FrontendNewsitem) {
+			return siteInformation.getUrl() + "/delete?resource=" + resource.getId();
 		}
 		return null;
 	}
