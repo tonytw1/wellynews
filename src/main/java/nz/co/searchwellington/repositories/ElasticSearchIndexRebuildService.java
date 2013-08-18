@@ -38,13 +38,19 @@ public class ElasticSearchIndexRebuildService {
 		}
 		
 		running = true;
-		List<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
-		log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
+		
+		try {
+			List<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
+			log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
 
-		if (resourceIdsToIndex.size() > 0) {
-			reindexResources(resourceIdsToIndex);
-			running = false;
-			return true;
+			if (resourceIdsToIndex.size() > 0) {
+				reindexResources(resourceIdsToIndex);
+				running = false;
+				return true;
+			}
+			
+		} catch (Exception e) {
+			log.error("Unexpected error while reindexing", e);
 		}
 		
 		running = false;
