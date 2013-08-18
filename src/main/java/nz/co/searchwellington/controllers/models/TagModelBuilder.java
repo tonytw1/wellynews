@@ -119,7 +119,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 
 		final boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || !tagFeeds.isEmpty();		
 		final boolean isOneContentType = mainContent.isEmpty() || !hasSecondaryContent;		
-		Integer page = (Integer) mv.getModel().get("page");
+		final Integer page = (Integer) mv.getModel().get("page");
 		if (page != null && page > 0) {
 			mv.addObject("page", page);
 			return "tagNewsArchive";

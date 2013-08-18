@@ -86,6 +86,7 @@ public class ElasticSearchBackedResourceDAO {
 		
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
 			setQuery(tagNewsitemsQuery).
+			setFrom(startIndex).
 			setSize(maxItems);
 		
 		addDateDescendingOrder(searchRequestBuilder);
@@ -95,12 +96,12 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	public List<FrontendResource> getPublisherNewsitems(Website publisher, int maxItems, boolean shouldShowBroken, int startIndex) {
-		final SearchResponse response = publisherNewsitemsRequest(publisher, maxItems, shouldShowBroken).execute().actionGet();
+		final SearchResponse response = publisherNewsitemsRequest(publisher, maxItems, shouldShowBroken, startIndex).execute().actionGet();
 		return deserializeFrontendResourceHits(response.getHits());
 	}
 
 	public long getPublisherNewsitemsCount(Website publisher, boolean shouldShowBroken) {
-		final SearchResponse response = publisherNewsitemsRequest(publisher, 0, shouldShowBroken).execute().actionGet();
+		final SearchResponse response = publisherNewsitemsRequest(publisher, 0, shouldShowBroken, 0).execute().actionGet();
 		return response.getHits().getTotalHits();
 	}
 	
@@ -434,13 +435,14 @@ public class ElasticSearchBackedResourceDAO {
 		return tagNewsitems;
 	}
 	
-	private SearchRequestBuilder publisherNewsitemsRequest(Website publisher, int maxItems, boolean shouldShowBroken) {
+	private SearchRequestBuilder publisherNewsitemsRequest(Website publisher, int maxItems, boolean shouldShowBroken, int startIndex) {
 		final BoolQueryBuilder publisherNewsitemsQuery = QueryBuilders.boolQuery();
 		publisherNewsitemsQuery.must(isNewsitem()).must(hasPublisher(publisher));
 		addShouldShowBrokenClause(publisherNewsitemsQuery, shouldShowBroken);
 		
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
 			setQuery(publisherNewsitemsQuery).
+			setFrom(startIndex).
 			setSize(maxItems);
 	
 		addDateDescendingOrder(searchRequestBuilder);
