@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 public class StandardHttpFetcher implements HttpFetcher {	// TODO migrate to common http
 
@@ -75,12 +77,12 @@ public class StandardHttpFetcher implements HttpFetcher {	// TODO migrate to com
 	}
 	
 	private HttpClient setupClient() {
-		HttpClient client = new HttpClient();
-		if (userAgent != null) {
+		final HttpClient client = new HttpClient();
+		if (!Strings.isNullOrEmpty(userAgent)) {
 			client.getParams().setParameter(HttpClientParams.USER_AGENT, userAgent);
 		}
 		
-		if (httpProxyHostname != null && !httpProxyHostname.isEmpty()) {
+		if (!Strings.isNullOrEmpty(httpProxyHostname)) {
 			client.getHostConfiguration().setProxy(httpProxyHostname, httpProxyPort);
 		}
 		
