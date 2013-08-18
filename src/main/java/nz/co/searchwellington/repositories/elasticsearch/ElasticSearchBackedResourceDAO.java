@@ -55,6 +55,7 @@ public class ElasticSearchBackedResourceDAO {
 	private static final String DATE = "date";
 	private static final String NAME = "name";
 	private static final String TYPE = "type";
+	private static final String LATEST_ITEM_DATE = "latestItemDate";
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final ObjectMapper objectMapper;
@@ -507,7 +508,7 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	private void addLatestFeedItemOrder(SearchRequestBuilder searchRequestBuilder) {
-		searchRequestBuilder.addSort(NAME, SortOrder.ASC);	// TODO implement
+		searchRequestBuilder.addSort(LATEST_ITEM_DATE, SortOrder.DESC);
 	}
 	
 	private SearchRequestBuilder searchRequestBuilder() {
