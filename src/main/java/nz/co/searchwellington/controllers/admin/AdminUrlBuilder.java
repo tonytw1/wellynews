@@ -3,15 +3,14 @@ package nz.co.searchwellington.controllers.admin;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.urls.UrlBuilder;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AdminUrlBuilder {
@@ -26,17 +25,11 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getResourceEditUrl(FrontendResource resource) {
-		if (resource instanceof FrontendNewsitem) {
-			return siteInformation.getUrl() + "/edit?resource=" + resource.getId();
-		}				
-		return null;
+		return siteInformation.getUrl() + "/edit?resource=" + resource.getId();						
 	}
 	
 	public String getResourceDeleteUrl(FrontendResource resource) {
-		if (resource instanceof FrontendNewsitem) {
-			return siteInformation.getUrl() + "/delete?resource=" + resource.getId();
-		}
-		return null;
+		return siteInformation.getUrl() + "/delete?resource=" + resource.getId();		
 	}
 	
 	public String getResourceCheckUrl(FrontendResource resource) {
