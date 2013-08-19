@@ -157,7 +157,6 @@
 
 
 		<subclass name="nz.co.searchwellington.model.FeedImpl" proxy="nz.co.searchwellington.model.Feed" discriminator-value="F">
-
 			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="feed_publisher" />
 			
 			<property name="acceptancePolicy" type="text">
@@ -172,11 +171,10 @@
         		<column name="last_read"/>
         	</property>
         	
+        	<property name="whakaokoId">
+        		<column name="whakaoko_id"/>
+        	</property>        	
 		</subclass>
-
-
-		
-
 	</class>
 
 </hibernate-mapping>
