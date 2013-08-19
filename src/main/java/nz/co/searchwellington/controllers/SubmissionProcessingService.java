@@ -183,7 +183,7 @@ public class SubmissionProcessingService {
 	
 	public void processAcceptance(HttpServletRequest request, Resource editResource, User loggedInUser) {
 		if (editResource instanceof Newsitem) {
-			if (request.getParameter("acceptedFromFeed") != null && !request.getParameter("acceptedFromFeed").equals("")) {			
+			if (!Strings.isNullOrEmpty(request.getParameter("acceptedFromFeed"))) {			
 				final String acceptedFromFeedUrlWords = request.getParameter("acceptedFromFeed");
 				log.info("Item was accepted from a feed with url words: " + acceptedFromFeedUrlWords);
 				Feed feed = resourceDAO.loadFeedByUrlWords(acceptedFromFeedUrlWords);
