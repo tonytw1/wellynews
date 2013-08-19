@@ -124,7 +124,7 @@ public class ElasticSearchIndexUpdateService {
 		if (frontendContentItem.getType().equals("N")) {
 			frontendContentItem.setUrlWords(urlWordsGenerator.markUrlForNewsitem((FrontendNewsitem) frontendContentItem));
 		} else if (frontendContentItem.getType().equals("F")) {
-			frontendContentItem.setUrlWords("feed/" + urlWordsGenerator.makeUrlWordsFromName(contentItem.getName()));
+			frontendContentItem.setUrlWords("/feed/" + urlWordsGenerator.makeUrlWordsFromName(contentItem.getName()));
 		}
 		
 		final List<FrontendTag> tags = Lists.newArrayList();

@@ -28,7 +28,7 @@
 	#end
 	<li class="feedlist">
 		<ul>
-			<li><a href="$urlBuilder.getFeedUrl($feed)">$feed.name</a></li>
+			<li><a href="$urlBuilder.getLocalPageUrl($feed)">$feed.name</a></li>
 			#if ($feed.publisherName) <li class="publisher">$feed.publisherName</li> #end
 		</ul>
 	</li>

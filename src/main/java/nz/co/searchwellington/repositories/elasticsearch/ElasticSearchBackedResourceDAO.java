@@ -201,9 +201,9 @@ public class ElasticSearchBackedResourceDAO {
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().setQuery(isFeed()).setSize(ALL);
 		
 		if (latestFirst) {
-			addNameOrder(searchRequestBuilder);
-		} else {
 			addLatestFeedItemOrder(searchRequestBuilder);
+		} else {
+			addNameOrder(searchRequestBuilder);
 		}
 		
 		final SearchResponse response = searchRequestBuilder.execute().actionGet();
