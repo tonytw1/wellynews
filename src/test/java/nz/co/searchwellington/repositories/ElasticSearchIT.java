@@ -27,6 +27,7 @@ import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.ISODateTimeFormat;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -36,9 +37,15 @@ import com.google.common.collect.Maps;
 
 public class ElasticSearchIT {
 
+	private Client client;
+	
+	@Before
+	public void setup() {
+		client = new ElasticSearchClientFactory("elasticsearch", "ubuntu.local").getClient();
+	}
+
 	@Test
 	public void canQuery() throws Exception {
-		final Client client = new ElasticSearchClientFactory().getClient();
 		final SearchRequestBuilder requestBuilder = client.prepareSearch(
 				ElasticSearchIndexUpdateService.INDEX).setTypes(
 				ElasticSearchIndexUpdateService.TYPE);
@@ -62,7 +69,6 @@ public class ElasticSearchIT {
 	
 	@Test
 	public void canQueryForGeocodedNewsitems() throws Exception {
-		final Client client = new ElasticSearchClientFactory().getClient();
 		final SearchRequestBuilder requestBuilder = client.prepareSearch(
 				ElasticSearchIndexUpdateService.INDEX).setTypes(
 				ElasticSearchIndexUpdateService.TYPE);
@@ -91,7 +97,6 @@ public class ElasticSearchIT {
     
     @Test
 	public void canQueryForGeocodedNewsitemsNearPoint() throws Exception {
-		final Client client = new ElasticSearchClientFactory().getClient();
 		final SearchRequestBuilder requestBuilder = client.prepareSearch(
 				ElasticSearchIndexUpdateService.INDEX).setTypes(
 				ElasticSearchIndexUpdateService.TYPE);
@@ -126,7 +131,6 @@ public class ElasticSearchIT {
     
 	@Test
 	public void canFetchFacets() throws Exception {		
-		final Client client = new ElasticSearchClientFactory().getClient();
 		final SearchRequestBuilder requestBuilder = client.prepareSearch(
 				ElasticSearchIndexUpdateService.INDEX).setTypes(
 				ElasticSearchIndexUpdateService.TYPE);
@@ -148,7 +152,6 @@ public class ElasticSearchIT {
 	
 	@Test
 	public void canFetchDateFacets() throws Exception {
-		final Client client = new ElasticSearchClientFactory().getClient();
 		final SearchRequestBuilder requestBuilder = client.prepareSearch(
 				ElasticSearchIndexUpdateService.INDEX).setTypes(
 				ElasticSearchIndexUpdateService.TYPE);
