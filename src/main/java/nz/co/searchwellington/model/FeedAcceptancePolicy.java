@@ -7,8 +7,8 @@ public enum FeedAcceptancePolicy {
     SUGGEST("suggest", "Suggest"),
     ACCEPT_EVEN_WITHOUT_DATES("accept_without_dates", "Accept even without dates.");
     
-    String name;
-    String label;
+    private String name;
+    private String label;
 
     private FeedAcceptancePolicy(String name, String label) {
         this.name = name;
