@@ -42,7 +42,7 @@ import org.springframework.web.servlet.view.RedirectView;
 @Controller
 public class ResourceEditController {
     
-   private static Logger log = Logger.getLogger(ResourceEditController.class);
+	private static Logger log = Logger.getLogger(ResourceEditController.class);
            
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
@@ -201,8 +201,12 @@ public class ResourceEditController {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         	return null;
 		}
-    	
-		Feed feed = null;	// TODO Must specify feed when accepting feed item
+		
+		final Feed feed = (Feed) request.getAttribute("feedAttribute");
+		if (feed == null) {
+			throw new RuntimeException("Could not find feed");
+		}
+		
 		Newsitem acceptedNewsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url));
 		if (acceptedNewsitem == null) {
         	log.warn("No matching newsitem found for url: " + url);

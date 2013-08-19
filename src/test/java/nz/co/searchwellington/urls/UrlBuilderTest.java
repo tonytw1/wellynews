@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
@@ -36,8 +37,8 @@ public class UrlBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		urlBuilder = new UrlBuilder(siteInformation, twitterService);		
-
+		urlBuilder = new UrlBuilder(siteInformation, twitterService, new UrlWordsGenerator());
+		
 		frontendNewsitem = new FrontendNewsitemImpl();
 		frontendNewsitem.setName("Quick brown fox jumps over lazy dog");
 		frontendNewsitem.setDate(new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate());

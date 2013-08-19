@@ -110,19 +110,15 @@ public class AdminRequestFilter {
     	resourceParameterFilter.filter(request);
     	
 		if (request.getParameter("feed") != null) {
-			String feedParameter = request.getParameter("feed");			
-			try {
-        		final int feedID = Integer.parseInt(feedParameter);
-        		if (feedID > 0) {
-        			Resource feed = resourceDAO.loadResourceById(feedID);
-        			if (feed != null) {                	
-        				log.info("Found feed: " + feed.getName());
-        				request.setAttribute("feedAttribute", feed);        			
-        			}
-        		}
-        	} catch (NumberFormatException e) {
-        		log.debug("Invalid feed id given: " + feedParameter);
-        	}
+			final String feedParameter = request.getParameter("feed");
+			log.info("Loading feed by url words: " + feedParameter);		
+    		final Resource feed = resourceDAO.loadFeedByUrlWords(feedParameter);
+    		if (feed != null) {           	
+    			log.info("Found feed: " + feed.getName());
+    			request.setAttribute("feedAttribute", feed);        				
+    		} else {
+    			log.info("Could not find feed: " + feed);
+    		}
 		}
 		
         if (request.getParameter("parent") != null) {

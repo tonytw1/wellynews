@@ -29,11 +29,11 @@ public class UrlBuilder {
 	private UrlWordsGenerator urlWordsGenerator;
 	
 	@Autowired
-	public UrlBuilder(SiteInformation siteInformation, CachingTwitterService twitterService) {		
+	public UrlBuilder(SiteInformation siteInformation, CachingTwitterService twitterService, UrlWordsGenerator urlWordsGenerator) {		
 		this.siteInformation = siteInformation;
 		this.twitterService = twitterService;
+		this.urlWordsGenerator = urlWordsGenerator;
 		this.dateFormatter = new DateFormatter();
-		this.urlWordsGenerator = new UrlWordsGenerator();
 	}
 	
 	public String getHomeUrl() {

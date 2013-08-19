@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.admin;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import nz.co.searchwellington.model.SiteInformation;
+import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
@@ -30,7 +31,7 @@ public class AdminUrlBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, null));
+		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, null, new UrlWordsGenerator()));
 		
 		frontendWebsite = new FrontendWebsiteImpl();
 		frontendWebsite.setId(123);

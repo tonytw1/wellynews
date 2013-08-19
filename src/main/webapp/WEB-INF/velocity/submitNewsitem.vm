@@ -11,7 +11,7 @@
 	<div class="main">
 		<h2>Submitting a Newsitem</h2>
 		
-		<form id="editForm" action="$site_information.url/edit/save" method="POST">
+		<form id="editForm" action="$site_information.url/save" method="POST">
 			<fieldset>
 									
 				#parse("includes/form_resource_title_and_url.vm")				
