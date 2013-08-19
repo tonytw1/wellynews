@@ -204,16 +204,17 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/edit/submit/feed";
 	}
 	
-	private String urlEncode(String keywords) {
+
+	public String getResourceUrl(FrontendResource resource) {
+		return getLocalPageUrl(resource);		
+	}
+	
+	private String urlEncode(String keywords) {	// TODO duplication  - push to sepeate class
 		try {
 			return URLEncoder.encode(keywords, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}
-	}
-
-	public String getResourceUrl(FrontendResource resource) {
-		return getLocalPageUrl(resource);		
 	}
 	
 }

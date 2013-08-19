@@ -1,5 +1,8 @@
 package nz.co.searchwellington.controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -120,7 +123,16 @@ public class RssUrlBuilder {
 	}
 	
 	public String getRssTitleForPlace(Place place) {
-		return "Newsitems near " + place.getAddress();
+		return "Newsitems near " + place.toString();	// TODO needs to be human readable
+	}
+	
+	public String getRssUrlForPlace(Place place) {
+		if (place.getOsmId() != null) {		
+			return getRssUrlForOsmId(place.getOsmId());					
+		} else if (place.getLatLong() != null) {
+			return getRssUrlForLatLong(place.getLatLong());
+		}
+		return null;		
 	}
 	
 	public String getRssTitleForGeotagged() {
@@ -132,13 +144,19 @@ public class RssUrlBuilder {
 	}
 
 	public String getRssUrlForOsmId(OsmId osmId) {
-		// TODO Auto-generated method stub
-		return null;
+		return getRssUrlForGeotagged() + "?osm=" + urlEncode(osmId.getId() + "/" + osmId.getType());
 	}
 
 	public String getRssUrlForLatLong(LatLong latLong) {
 		return getRssUrlForGeotagged() + "?latitude=" + latLong.getLatitude() + "&longitude=" + latLong.getLongitude();
-
+	}
+	
+	private String urlEncode(String keywords) {	// TODO duplication  - push to sepeate class
+		try {
+			return URLEncoder.encode(keywords, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
 	}
 		
 }

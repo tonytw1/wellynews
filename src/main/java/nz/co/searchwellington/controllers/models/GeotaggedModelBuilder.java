@@ -140,12 +140,12 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		return "geocoded";
 	}
 
-	private void setRssUrlForLocation(ModelAndView mv, Place userSuppliedPlace) {	// TODO push to url builder - needed in content_element view
-		if (userSuppliedPlace.getOsmId() != null) {		
-			setRss(mv, rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace), rssUrlBuilder.getRssUrlForOsmId(userSuppliedPlace.getOsmId()));					
-		} else if (userSuppliedPlace.getLatLong() != null) {
-			setRss(mv, rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace), rssUrlBuilder.getRssUrlForLatLong(userSuppliedPlace.getLatLong()));
+	private void setRssUrlForLocation(ModelAndView mv, Place place) {	// TODO push to url builder - needed in content_element view
+		final String rssUrlForPlace = rssUrlBuilder.getRssUrlForPlace(place);
+		if (rssUrlForPlace == null) {
+			return;
 		}
+		setRss(mv, rssUrlBuilder.getRssTitleForPlace(place), rssUrlForPlace);							
 	}
 	
 }
