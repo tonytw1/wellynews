@@ -14,6 +14,8 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
+import com.google.common.base.Strings;
+
 @Component
 public class RssUrlBuilder {
     
@@ -123,7 +125,13 @@ public class RssUrlBuilder {
 	}
 	
 	public String getRssTitleForPlace(Place place) {
-		return "Newsitems near " + place.toString();	// TODO needs to be human readable
+		String placeLabel = place.toString();
+		if (!Strings.isNullOrEmpty(place.getAddress())) {
+			placeLabel = place.getAddress();
+		} else if (place.getLatLong() != null) {
+			placeLabel = place.getLatLong().toString();
+		}
+		return "Newsitems near " + placeLabel;
 	}
 	
 	public String getRssUrlForPlace(Place place) {
