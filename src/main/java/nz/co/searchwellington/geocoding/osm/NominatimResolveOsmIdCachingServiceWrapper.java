@@ -1,12 +1,11 @@
 package nz.co.searchwellington.geocoding.osm;
 
-import nz.co.searchwellington.model.OsmId;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachableService;
 import uk.co.eelpieconsulting.common.geo.NominatimGeocodingService;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -23,7 +22,7 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 
 	@Override
 	public Place callService(OsmId osmId) {
-		return nominatimGeocodingService.loadPlaceByOsmId(new uk.co.eelpieconsulting.common.geo.model.OsmId(osmId.getId(), osmId.getType()));
+		return nominatimGeocodingService.loadPlaceByOsmId(osmId);
 	}
 
 	@Override

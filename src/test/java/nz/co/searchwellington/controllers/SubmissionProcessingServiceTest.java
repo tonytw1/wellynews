@@ -4,6 +4,7 @@ import java.util.Date;
 
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
+import nz.co.searchwellington.geocoding.osm.OsmIdParser;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.UrlWordsGenerator;
@@ -36,6 +37,7 @@ public class SubmissionProcessingServiceTest {
 	@Mock UrlProcessor urlProcessor;
 	@Mock private CachingNominatimGeocodingService nominatimGeocodingService;
 	@Mock private UrlWordsGenerator urlWordsGenerator;
+	@Mock private OsmIdParser osmIdParser;
 	
 	private MockHttpServletRequest request;
 	private SubmissionProcessingService submissionProcessingService;
@@ -45,7 +47,7 @@ public class SubmissionProcessingServiceTest {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		Mockito.when(feed.getName()).thenReturn(FEED_NAME);
-		submissionProcessingService = new SubmissionProcessingService(nominatimGeocodingService, tagDAO, tagVoteDAO, resourceDAO, urlProcessor);
+		submissionProcessingService = new SubmissionProcessingService(nominatimGeocodingService, tagDAO, tagVoteDAO, resourceDAO, urlProcessor, osmIdParser);
 	}
 	
 	@Test

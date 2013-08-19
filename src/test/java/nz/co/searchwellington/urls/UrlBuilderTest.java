@@ -19,6 +19,7 @@ import org.mockito.MockitoAnnotations;
 
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.geo.model.OsmId;
+import uk.co.eelpieconsulting.common.geo.model.OsmType;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public class UrlBuilderTest {
@@ -67,8 +68,8 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void locationsShouldBeLinkedByOSMIdIfAvailable() throws Exception {
-		final Place somewhereWithOSMid= new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, "N"));
-		assertEquals("http://siteurl.test/geotagged?osm=12345%2FN", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
+		final Place somewhereWithOSMid= new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, OsmType.node));
+		assertEquals("http://siteurl.test/geotagged?osm=12345%2Fnode", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
 	}
 	
 	@Test

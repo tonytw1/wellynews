@@ -39,7 +39,7 @@ public class FeednewsItemToNewsitemService {
 				place.getLatLong() != null ? place.getLatLong().getLatitude() : null, 
 				place.getLatLong() != null ? place.getLatLong().getLongitude() : null,
 				place.getOsmId() != null ? place.getOsmId().getId() : null,
-				place.getOsmId() != null ? place.getOsmId().getType() : null);
+				place.getOsmId() != null ? place.getOsmId().getType().toString() : null);
 		return geocode;
 	}
 	

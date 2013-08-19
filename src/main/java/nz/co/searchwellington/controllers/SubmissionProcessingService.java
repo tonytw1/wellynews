@@ -10,11 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.submission.UrlProcessor;
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
+import nz.co.searchwellington.geocoding.osm.OsmIdParser;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.OsmId;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
@@ -32,6 +32,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import com.google.common.base.Strings;
@@ -52,14 +53,17 @@ public class SubmissionProcessingService {
     private HandTaggingDAO tagVoteDAO;
 	private HibernateResourceDAO resourceDAO;
 	private UrlProcessor urlProcessor;
+	private OsmIdParser osmIdParser;
 	
 	@Autowired
-	public SubmissionProcessingService(CachingNominatimGeocodingService nominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, HibernateResourceDAO resourceDAO, UrlProcessor urlProcessor) {
+	public SubmissionProcessingService(CachingNominatimGeocodingService nominatimGeocodingService, TagDAO tagDAO, HandTaggingDAO tagVoteDAO, 
+			HibernateResourceDAO resourceDAO, UrlProcessor urlProcessor, OsmIdParser osmIdParser) {
 		this.nominatimGeocodeService = nominatimGeocodingService;
 		this.tagDAO = tagDAO;
 		this.tagVoteDAO = tagVoteDAO;
 		this.resourceDAO = resourceDAO;
 		this.urlProcessor = urlProcessor;
+		this.osmIdParser = osmIdParser;
 	}
 	
 	public void processTitle(HttpServletRequest req, Resource editResource) {           
@@ -87,16 +91,16 @@ public class SubmissionProcessingService {
 	
 	public Geocode processGeocode(HttpServletRequest request) {      
 		if (!Strings.isNullOrEmpty(request.getParameter(REQUEST_SELECTED_GEOCODE))) {
-	    	final String selectedGeocode = new String(request.getParameter(REQUEST_SELECTED_GEOCODE).trim());
-			final OsmId osmId = new OsmId(Long.parseLong(selectedGeocode.split("/")[0]), selectedGeocode.split("/")[1]);
+	    	final String osmIdString = new String(request.getParameter(REQUEST_SELECTED_GEOCODE).trim());
+			final OsmId osmId = osmIdParser.parseOsmId(osmIdString);
 			
 			final Place resolvedPlace = nominatimGeocodeService.resolveOsmId(osmId);
-			log.info("Selected geocode " + selectedGeocode + " resolved to: " + resolvedPlace);
+			log.info("Selected geocode " + osmIdString + " resolved to: " + resolvedPlace);
 			
 			if (resolvedPlace != null) {
 				return new Geocode(resolvedPlace.getAddress(), 
 					resolvedPlace.getLatLong().getLatitude(), resolvedPlace.getLatLong().getLongitude(), 
-					osmId.getId(), osmId.getType());
+					osmId.getId(), osmId.getType().toString());
 			}
 			
 			log.warn("Could not resolve OSM id: " + osmId);		

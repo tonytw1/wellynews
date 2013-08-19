@@ -5,7 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
-import nz.co.searchwellington.model.OsmId;
+import nz.co.searchwellington.geocoding.osm.OsmIdParser;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -29,13 +30,15 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	private static final String OSM = "osm";	
 
 	private CachingNominatimGeocodingService geoCodeService;
+	private OsmIdParser osmIdParser;
 	
 	public LocationParameterFilter() {
 	}
 	
 	@Autowired
-	public LocationParameterFilter(CachingNominatimGeocodingService geoCodeService) {
+	public LocationParameterFilter(CachingNominatimGeocodingService geoCodeService, OsmIdParser osmIdParser) {
 		this.geoCodeService = geoCodeService;
+		this.osmIdParser = osmIdParser;
 	}
 	
 	public void filter(HttpServletRequest request) {		
@@ -46,8 +49,8 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		}
 		
 		if(request.getParameter(OSM) != null) {
-			final String osm = request.getParameter(OSM);
-			final OsmId osmId = new OsmId(Long.parseLong(osm.split("/")[0]), osm.split("/")[1]);			
+			final String osmIdString = request.getParameter(OSM);
+			final OsmId osmId = osmIdParser.parseOsmId(osmIdString);			
 			
 			final Place resolvedPlace = geoCodeService.resolveOsmId(osmId);			
 			log.info("OSM id '" + osmId + "' resolved to: " + resolvedPlace);

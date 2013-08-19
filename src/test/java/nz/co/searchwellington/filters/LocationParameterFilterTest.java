@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.List;
 
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
+import nz.co.searchwellington.geocoding.osm.OsmIdParser;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +34,7 @@ public class LocationParameterFilterTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
-		filter = new LocationParameterFilter(geocodeService);
+		filter = new LocationParameterFilter(geocodeService, new OsmIdParser());
 		petoneStation = new Place(VALID_LOCATION, new LatLong(1.1, 2.2), null);
 	}
 
