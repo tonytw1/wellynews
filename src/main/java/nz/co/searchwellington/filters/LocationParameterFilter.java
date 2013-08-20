@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
@@ -25,8 +27,8 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	public static final String LOCATION = "location";
 	public static String RADIUS = "radius";
 	
-	private static final String LONGITUDE = "longitude";
 	private static final String LATITUDE = "latitude";	
+	private static final String LONGITUDE = "longitude";
 	private static final String OSM = "osm";	
 
 	private CachingNominatimGeocodingService geoCodeService;
@@ -48,7 +50,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			request.setAttribute(RADIUS, radius);
 		}
 		
-		if(request.getParameter(OSM) != null) {
+		if(!Strings.isNullOrEmpty(request.getParameter(OSM))) {
 			final String osmIdString = request.getParameter(OSM);
 			final OsmId osmId = osmIdParser.parseOsmId(osmIdString);			
 			
@@ -57,8 +59,18 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			if (resolvedPlace == null) {
 				throw new RuntimeException("OSM place could not be resolved");	// TODO 404 in this use case
 			}
-			
 			request.setAttribute(LOCATION, resolvedPlace);
+			return;
+		}
+				
+		if (!Strings.isNullOrEmpty(request.getParameter("latitude")) && !Strings.isNullOrEmpty(request.getParameter("longitude"))) {
+			final LatLong latLong = new LatLong(Double.parseDouble((String) request.getParameter(LATITUDE)), 
+					Double.parseDouble((String) request.getParameter(LONGITUDE)));
+			final String latLongLabel = latLong.getLatitude() + ", " + latLong.getLongitude(); 
+			// TODO - is you wanted to, you could resolve for a name, but don't alter the user supplied lat/long values.
+			// TODO lat, long isn't really an address - this should be something like a display method on latLong or the view which gives a sensible output when address is null.
+			request.setAttribute(LOCATION, new Place(latLongLabel, latLong, null));
+			return;
 		}
 		
 		if(request.getParameter(LOCATION) != null) {
@@ -73,14 +85,6 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 				log.info("User supplied location '" + location + "' could not be resolved to a point");
 				throw new RuntimeException("Could not resolve place name to lat long");
 			}
-		}
-		
-		final Double latitude = processDoubleParameter(request, LATITUDE);
-		final Double longitude = processDoubleParameter(request, LONGITUDE);
-		if (latitude != null && longitude != null) {
-			// TODO Should try todo a reverse lookup to name this location.
-			LatLong latLong = new LatLong(latitude, longitude);
-			request.setAttribute(LOCATION, new Place(latLong.toString(), latLong, null));
 		}
 	}
 	
