@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
+import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
@@ -215,6 +216,10 @@ public class UrlBuilder {
 		} catch (UnsupportedEncodingException e) {
 			return null;
 		}
+	}
+
+	public String getOsmWebsiteUrl(OsmId osmId) {
+		return "http://www.openstreetmap.org/browse/" + osmId.getType() + "/" + osmId.getId();
 	}
 	
 }

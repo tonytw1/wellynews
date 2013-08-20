@@ -94,4 +94,10 @@ public class UrlBuilderTest {
 		assertEquals(SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed));
 	}
 	
+	@Test
+	public void canComposeOsmWebsiteLinkforOsmIds() throws Exception {		
+		final OsmId osmId = new OsmId(24724709, OsmType.way);
+		assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId));
+	}
+	
 }
