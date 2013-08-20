@@ -174,11 +174,14 @@ public class UrlBuilder {
 		return siteInformation.getUrl() + "/twitter/callback";
 	}
 
-	public String getLocationUrlFor(Place somewhere) {
-		if (somewhere.getOsmId() != null) {
-			return siteInformation.getUrl() + "/geotagged?osm=" + urlEncode(somewhere.getOsmId().getId() + "/" + somewhere.getOsmId().getType());
+	public String getLocationUrlFor(Place place) {
+		if (place.getOsmId() != null) {
+			return siteInformation.getUrl() + "/geotagged?osm=" + urlEncode(place.getOsmId().getId() + "/" + place.getOsmId().getType());
 		}
-		return siteInformation.getUrl() + "/geotagged?location=" + urlEncode(somewhere.getAddress());
+		if (place.getLatLong() != null) {
+			return siteInformation.getUrl() + "/geotagged?latitude=" + place.getLatLong().getLatitude() + "&longitude=" + place.getLatLong().getLongitude();
+		}
+		return null;
 	}
 	
 	public String getSearchUrlFor(String keywords) {
