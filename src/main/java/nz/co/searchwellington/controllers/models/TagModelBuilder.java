@@ -143,7 +143,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("tag", tag);
 		
 		if (tag.getGeocode() != null) {			
-			mv.addObject("tagPlace", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode()));			
+			mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode()));			
 		}
 		
 		mv.addObject("heading", tag.getDisplayName());        		
