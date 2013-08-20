@@ -29,7 +29,7 @@ public class FeednewsItemToNewsitemServiceTest {
 	@Test
 	public void shouldSetGeocodeWhenAcceptingFeedNewsitem() throws Exception {
 		Mockito.when(place.getAddress()).thenReturn("A place");
-		FeedNewsitem feedNewsitem = new FeedNewsitem();
+		FeedNewsitem feedNewsitem = new FeedNewsitem(feed);
 		feedNewsitem.setPlace(place);
 		
 		Newsitem newsitem = service.makeNewsitemFromFeedItem(feed, feedNewsitem);

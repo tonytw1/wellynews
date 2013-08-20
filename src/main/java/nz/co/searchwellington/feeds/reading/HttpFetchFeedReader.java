@@ -101,7 +101,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 	}
 	
 	private FeedNewsitem makeFeednewsitemFromSyndEntry(Feed feed, SyndEntry item, String description, Date itemDate, String url) {
-		FeedNewsitem feedItem = new FeedNewsitem();
+		FeedNewsitem feedItem = new FeedNewsitem(feed);
         feedItem.setName(item.getTitle().trim());
         feedItem.setUrl(url);
         feedItem.setDescription(description);

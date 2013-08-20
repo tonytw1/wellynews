@@ -23,6 +23,10 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related 
         this.isSuppressed = false;
     }
     
+	public Feed getFeed() {
+		return feedNewsitem.getFeed();
+	}
+	
 	public Integer getLocalCopy() {
 		return localCopy;
 	}
@@ -150,6 +154,13 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related 
 	public String getLocation() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return "FrontendFeedNewsitem [feedNewsitem=" + feedNewsitem
+				+ ", isSuppressed=" + isSuppressed + ", localCopy=" + localCopy
+				+ ", suggestion=" + suggestion + ", urlWords=" + urlWords + "]";
 	}
 	
 }
