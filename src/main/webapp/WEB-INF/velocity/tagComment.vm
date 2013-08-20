@@ -20,7 +20,7 @@
 
 <h2><a href="$site_information.url/comment">Comment</a> / <a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></h2> 
 
-#parse("includes/tag_geocode.vm")
+#parse("includes/place.vm")
 
 #parse("includes/tag_admin_links.vm")
 

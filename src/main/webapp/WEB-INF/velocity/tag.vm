@@ -47,7 +47,7 @@
 				<h2>$tag.displayName</h2>
 			#end
 			
-			#parse("includes/tag_geocode.vm")
+			#parse("includes/place.vm")
 				
 			#parse("includes/tag_admin_links.vm")	
 			

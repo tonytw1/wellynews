@@ -18,14 +18,8 @@
 
 <h2>$heading</h2>
 
-#if ($location.osmId) 
-	<p><a href="$urlBuilder.getOsmWebsiteUrl($location.osmId)">$location.osmId</a></p>
-#end
-
+#parse("includes/place.vm")
 <br clear="all" />
-
-
-
 
 #parse("includes/nearme.vm")
 			
@@ -55,7 +49,6 @@
 #end
 
 </div>
-
 
 <div class="right">
 #parse("includes/about_geotagging.vm")

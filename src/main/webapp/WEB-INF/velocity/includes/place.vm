@@ -1,0 +1,13 @@
+#if ($location)	
+	<p>
+	#if($urlBuilder.getLocationUrlFor($location)) 
+		<a href="$urlBuilder.getLocationUrlFor($location)">#parse("includes/geotag_icon.vm")</a>
+	#else
+		#parse("includes/geotag_icon.vm")
+	#end
+	$location.address
+	#if ($location.osmId)
+		<br/><a href="$urlBuilder.getOsmWebsiteUrl($location.osmId)">$location.osmId</a>
+	#end
+	</p>	
+#end
