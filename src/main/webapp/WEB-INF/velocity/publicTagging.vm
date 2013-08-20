@@ -29,7 +29,7 @@ ie. Thorndon Tennis Club might be tagged with tennis and thorndon.
 </ul>
 
 
-<form action="save" method="POST" > 
+<form action="/save" method="POST" > 
 		<fieldset>
 						
 		#parse("includes/tag_edit_fields.vm")

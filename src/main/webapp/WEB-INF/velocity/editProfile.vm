@@ -20,7 +20,7 @@
 
 #if ($user)
 			
-	<form action="save" method="POST"> 
+	<form action="/save" method="POST"> 
 		<fieldset>
 		
 			<label for="name">Your name (optional): </label>

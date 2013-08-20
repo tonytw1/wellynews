@@ -4,7 +4,6 @@
 <div id="map_canvas" style="width: 250px; height: 260px"></div></a>
 #parse("includes/geocodedjs.vm")
 
-
 #if($tag) 
 	<p><a href="$urlBuilder.getTagGeocodedUrl($tag)">More...</a></p>
 #else

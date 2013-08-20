@@ -15,7 +15,7 @@
 <h2>Editing Configuration</h2>
 
 
-<form action="save" method="POST"> 
+<form action="/save" method="POST"> 
 		<fieldset>
 			
 		<p><label for="name">Statitics Tracking code: </label>
