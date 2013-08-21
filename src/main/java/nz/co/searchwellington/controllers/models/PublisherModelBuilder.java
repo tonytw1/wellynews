@@ -14,7 +14,9 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
+import org.apache.ecs.xhtml.p;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,20 +27,22 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	
 	private static Logger logger = Logger.getLogger(PublisherModelBuilder.class);
 	
-	private RssUrlBuilder rssUrlBuilder;
-	private RelatedTagsService relatedTagsService;
-	private ContentRetrievalService contentRetrievalService;
-	private UrlBuilder urlBuilder;
+	private final RssUrlBuilder rssUrlBuilder;
+	private final RelatedTagsService relatedTagsService;
+	private final ContentRetrievalService contentRetrievalService;
+	private final UrlBuilder urlBuilder;
 	private final GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
+	private final GeocodeToPlaceMapper geocodeToPlaceMapper;
 	
 	@Autowired
 	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService, 
-			UrlBuilder urlBuilder, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor) {
+			UrlBuilder urlBuilder, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor, GeocodeToPlaceMapper geocodeToPlaceMapper) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;
+		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
 	}
 	
 	@Override
@@ -53,7 +57,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	public ModelAndView populateContentModel(HttpServletRequest request) {				
 		if (isValid(request)) {
 			logger.info("Building publisher page model");
-			Website publisher = (Website) request.getAttribute("publisher");	// TODO needs to be a frontend Website
+			final Website publisher = (Website) request.getAttribute("publisher");	// TODO needs to be a frontend Website
 			int page = getPage(request);
 			return populatePublisherPageModelAndView(publisher, page);			
 		}
@@ -92,8 +96,13 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		FrontendWebsiteImpl frontendPublisher = new FrontendWebsiteImpl();
 		frontendPublisher.setName(publisher.getName());
 		frontendPublisher.setUrlWords(publisher.getUrlWords());
-		frontendPublisher.setUrl(publisher.getUrl());
+		frontendPublisher.setUrl(publisher.getUrl());		
+		if (publisher.getGeocode() != null) {
+			frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(publisher.getGeocode()));
+		}
+		
 		mv.addObject("publisher", frontendPublisher);
+		mv.addObject("location", frontendPublisher.getPlace());
 		
 		int startIndex = getStartIndex(page);
 		final long mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);

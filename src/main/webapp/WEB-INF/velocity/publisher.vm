@@ -33,6 +33,7 @@
 	<h2>$heading</h2>
 #end
 
+#parse("includes/place.vm")
 
 #parse("includes/search_widget.vm")
 
