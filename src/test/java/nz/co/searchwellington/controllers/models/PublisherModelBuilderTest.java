@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,7 @@ public class PublisherModelBuilderTest {
 	@Mock RelatedTagsService relatedTagsService;
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
+	@Mock GeocodeToPlaceMapper geocodeToPlaceMapper;
 	
 	@Mock Website publisher;
 	@Mock FrontendNewsitem newsitem;
@@ -59,7 +61,8 @@ public class PublisherModelBuilderTest {
 
 		Mockito.when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems);
 		
-		PublisherModelBuilder modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor);
+		PublisherModelBuilder modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, 
+				contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor, geocodeToPlaceMapper);
 		
 		final ModelAndView mv = new ModelAndView();
 		
