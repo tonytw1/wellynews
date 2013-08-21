@@ -12,7 +12,7 @@
 		<h2>Editing a Tag</h2>
 
 		#if ($tag)
-			<form action="/save" method="POST"> 
+			<form action="/edit/tag/save" method="POST"> 
 				<input name="tag" type="hidden" value="$!tag.name" />
 				<fieldset>
 					
