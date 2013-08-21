@@ -16,7 +16,6 @@ import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
-import org.apache.ecs.xhtml.p;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
