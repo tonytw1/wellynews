@@ -5,7 +5,6 @@ import java.net.URLEncoder;
 
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
@@ -13,6 +12,8 @@ import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.google.common.base.Strings;
 
 @Component
 public class AdminUrlBuilder {
@@ -27,7 +28,12 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getResourceEditUrl(FrontendResource resource) {
-		return siteInformation.getUrl() + "/edit?resource=" + resource.getId();						
+		if (resource.getId() > 0) {
+			return siteInformation.getUrl() + "/edit?resource=" + resource.getId();
+		} else if (!Strings.isNullOrEmpty(resource.getUrlWords())) {
+			return siteInformation.getUrl() + "/edit?resource=" + URLEncoder.encode(resource.getUrlWords());
+		}
+		return null;
 	}
 	
 	public String getResourceDeleteUrl(FrontendResource resource) {
