@@ -9,6 +9,8 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
+import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -101,7 +103,9 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 	}
 	
 	private FeedNewsitem makeFeednewsitemFromSyndEntry(Feed feed, SyndEntry item, String description, Date itemDate, String url) {
-		FeedNewsitem feedItem = new FeedNewsitem(feed);
+		FrontendFeed frontendFeed = new FrontendFeedImpl();
+		frontendFeed.setUrlWords(feed.getUrlWords());
+		FeedNewsitem feedItem = new FeedNewsitem(frontendFeed);
         feedItem.setName(item.getTitle().trim());
         feedItem.setUrl(url);
         feedItem.setDescription(description);

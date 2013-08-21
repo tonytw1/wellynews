@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model;
 
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 
@@ -7,10 +8,10 @@ public class FeedNewsitem extends FrontendNewsitemImpl implements FrontendNewsit
 	
 	private static final long serialVersionUID = 1L;
 	
-	private final Feed feed;
+	private final FrontendFeed feed;
 	private Image image;
 	
-	public FeedNewsitem(Feed feed) {
+	public FeedNewsitem(FrontendFeed feed) {
 		this.feed = feed;
 	}
 
@@ -27,7 +28,7 @@ public class FeedNewsitem extends FrontendNewsitemImpl implements FrontendNewsit
 		this.image = image;
 	}
 	
-	public Feed getFeed() {
+	public FrontendFeed getFeed() {
 		return feed;
 	}
 

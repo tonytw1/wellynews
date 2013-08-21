@@ -5,6 +5,7 @@ import java.util.List;
 
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendTag;
 
@@ -23,10 +24,14 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related 
         this.isSuppressed = false;
     }
     
-	public Feed getFeed() {
+	public FrontendFeed getFeed() {
 		return feedNewsitem.getFeed();
 	}
 	
+	public Image getImage() {
+		return feedNewsitem.getImage();
+	}
+
 	public Integer getLocalCopy() {
 		return localCopy;
 	}

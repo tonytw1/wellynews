@@ -1,10 +1,6 @@
 	
-	<li>		
-				
-		#if ($item.image) 
-			<img src="$item.image.url" align="right" vspace="10">
-		#end
-					
+	<li>
+						
 		#set($itemUrl = $item.url) 				
 		#if ($item.type == ('F'))
 			#set($itemUrl = $item.urlWords)			
@@ -36,6 +32,10 @@
 				#foreach($snippet in $item.bodytext)
 					<li class="bodytext">$escape.html($snippet)</li>
 				#end
+			#end
+			
+			#if ($item.image) 
+				<p><img src="$item.image.url"></p>
 			#end
 											
 			#if ($item.type == ('F'))				
