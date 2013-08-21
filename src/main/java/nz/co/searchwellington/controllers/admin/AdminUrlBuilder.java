@@ -3,10 +3,10 @@ package nz.co.searchwellington.controllers.admin;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.UrlWordsGenerator;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -43,8 +43,8 @@ public class AdminUrlBuilder {
 		return resourceUrl + "/viewsnapshot";	
 	}
 	
-	public String getFeednewsItemAcceptUrl(Feed feed, FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/edit/accept?feed=" + new UrlWordsGenerator().makeUrlWordsFromName(feed.getName()) + "&url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");		
+	public String getFeednewsItemAcceptUrl(FrontendFeed feed, FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
+		return siteInformation.getUrl() + "/edit/accept?feed=" + feed.getUrlWords() + "&url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");		
 	}
 	
 	public String getFeedNewsitemSuppressUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
