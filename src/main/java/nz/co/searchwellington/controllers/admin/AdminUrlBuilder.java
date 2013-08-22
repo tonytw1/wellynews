@@ -1,8 +1,5 @@
 package nz.co.searchwellington.controllers.admin;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
@@ -10,6 +7,7 @@ import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.urls.UrlBuilder;
+import nz.co.searchwellington.urls.UrlParameterEncoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,7 +30,7 @@ public class AdminUrlBuilder {
 		if (resource.getId() > 0) {
 			return siteInformation.getUrl() + "/edit?resource=" + resource.getId();
 		} else if (!Strings.isNullOrEmpty(resource.getUrlWords())) {
-			return siteInformation.getUrl() + "/edit?resource=" + URLEncoder.encode(resource.getUrlWords());
+			return siteInformation.getUrl() + "/edit?resource=" + UrlParameterEncoder.encode(resource.getUrlWords());
 		}
 		return null;
 	}
@@ -45,13 +43,13 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/admin/linkchecker/add?resource=" + resource.getId();
 	}
 	
-	public String getViewSnapshotUrl(FrontendResource resource) throws UnsupportedEncodingException {
+	public String getViewSnapshotUrl(FrontendResource resource) {
 		final String resourceUrl = siteInformation.getUrl() + "/" + resource.getUrlWords();
 		return resourceUrl + "/viewsnapshot";	
 	}
 	
-	public String getFeednewsItemAcceptUrl(FrontendFeed feed, FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/edit/accept?feed=" + feed.getUrlWords() + "&url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");		
+	public String getFeednewsItemAcceptUrl(FrontendFeed feed, FrontendFeedNewsitem feednewsitem) {
+		return siteInformation.getUrl() + "/edit/accept?feed=" + feed.getUrlWords() + "&url=" + UrlParameterEncoder.encode(feednewsitem.getUrl());		
 	}
 	
 	public String getAcceptAllFromFeed(Feed feed) {
@@ -62,15 +60,15 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/admin/feed/decache?feed=" + feed.getUrlWords();		
 	}
 	
-	public String getFeedNewsitemSuppressUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/supress/supress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
+	public String getFeedNewsitemSuppressUrl(FrontendFeedNewsitem feednewsitem) {
+		return siteInformation.getUrl() + "/supress/supress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl());
 	}
 	
-	public String getFeedNewsitemUnsuppressUrl(FrontendFeedNewsitem feednewsitem) throws UnsupportedEncodingException {
-		return siteInformation.getUrl() + "/supress/unsupress?url=" + URLEncoder.encode(feednewsitem.getUrl(), "UTF-8");
+	public String getFeedNewsitemUnsuppressUrl(FrontendFeedNewsitem feednewsitem) {
+		return siteInformation.getUrl() + "/supress/unsupress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl());
 	}
 	
-	public String getPublisherAutoGatherUrl(FrontendWebsite resource) throws UnsupportedEncodingException {
+	public String getPublisherAutoGatherUrl(FrontendWebsite resource) {
 		final String resourceUrl = urlBuilder.getResourceUrl(resource);
 		if (resourceUrl != null) {
 			return resourceUrl + "/gather";
@@ -78,8 +76,8 @@ public class AdminUrlBuilder {
 		return null;
 	}
 	
-	public String getAddTagUrl() throws UnsupportedEncodingException {
+	public String getAddTagUrl() {
 		return siteInformation.getUrl() + "/edit/tag/submit";
 	}
-		
+	
 }

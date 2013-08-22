@@ -18,7 +18,7 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
-import nz.co.searchwellington.utils.UrlFilters;
+import nz.co.searchwellington.urls.UrlParameterEncoder;
 import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
 import org.apache.log4j.Logger;
@@ -168,7 +168,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
     private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
     	mv.addObject("flickr_count", flickrService.getFlickrPhotoCountFor(tag));
-    	mv.addObject("escaped_flickr_group_id", UrlFilters.encode(flickrService.getPoolId()));
+    	mv.addObject("escaped_flickr_group_id", UrlParameterEncoder.encode(flickrService.getPoolId()));
     }
     
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag) {

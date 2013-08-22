@@ -1,11 +1,9 @@
 package nz.co.searchwellington.controllers;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.urls.UrlParameterEncoder;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -152,19 +150,11 @@ public class RssUrlBuilder {
 	}
 
 	public String getRssUrlForOsmId(OsmId osmId) {
-		return getRssUrlForGeotagged() + "?osm=" + urlEncode(osmId.getId() + "/" + osmId.getType());
+		return getRssUrlForGeotagged() + "?osm=" + UrlParameterEncoder.encode(osmId.getId() + "/" + osmId.getType());
 	}
 
 	public String getRssUrlForLatLong(LatLong latLong) {
 		return getRssUrlForGeotagged() + "?latitude=" + latLong.getLatitude() + "&longitude=" + latLong.getLongitude();
 	}
 	
-	private String urlEncode(String keywords) {	// TODO duplication  - push to sepeate class
-		try {
-			return URLEncoder.encode(keywords, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
-		
 }

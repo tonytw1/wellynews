@@ -1,7 +1,5 @@
 package nz.co.searchwellington.urls;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Date;
 
 import nz.co.searchwellington.model.Resource;
@@ -98,7 +96,7 @@ public class UrlBuilder {
 	}
 	
 	public String getTagSearchUrl(Tag tag, String keywords) {
-		return getTagUrl(tag) + "?keywords=" + urlEncode(keywords);
+		return getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords);
 	}
 	
 	public String getLocalPageUrl(FrontendResource resource) {
@@ -163,7 +161,7 @@ public class UrlBuilder {
 	}
 	
 	public String getProfileUrlFromProfileName(String username) {
-		return siteInformation.getUrl() + "/profiles/" + urlEncode(username);
+		return siteInformation.getUrl() + "/profiles/" + UrlParameterEncoder.encode(username);
 	}
 
 	public String getWatchlistUrl() {
@@ -176,7 +174,7 @@ public class UrlBuilder {
 
 	public String getLocationUrlFor(Place place) {
 		if (place.getOsmId() != null) {
-			return siteInformation.getUrl() + "/geotagged?osm=" + urlEncode(place.getOsmId().getId() + "/" + place.getOsmId().getType());
+			return siteInformation.getUrl() + "/geotagged?osm=" + UrlParameterEncoder.encode(place.getOsmId().getId() + "/" + place.getOsmId().getType());
 		}
 		if (place.getLatLong() != null) {
 			return siteInformation.getUrl() + "/geotagged?latitude=" + place.getLatLong().getLatitude() + "&longitude=" + place.getLatLong().getLongitude();
@@ -185,11 +183,11 @@ public class UrlBuilder {
 	}
 	
 	public String getSearchUrlFor(String keywords) {
-		return siteInformation.getUrl() + "/search?keywords=" + urlEncode(keywords);
+		return siteInformation.getUrl() + "/search?keywords=" + UrlParameterEncoder.encode(keywords);
 	}
 	
 	public String getTagSearchUrlFor(String keywords, Tag tag) {
-		return getTagUrl(tag) + "?keywords=" + urlEncode(keywords);
+		return getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords);
 	}
 	
 	public String getTwitterProfileImageUrlFor(String twitterUsername) {
@@ -213,14 +211,6 @@ public class UrlBuilder {
 		return getLocalPageUrl(resource);		
 	}
 	
-	private String urlEncode(String keywords) {	// TODO duplication  - push to sepeate class
-		try {
-			return URLEncoder.encode(keywords, "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			return null;
-		}
-	}
-
 	public String getOsmWebsiteUrl(OsmId osmId) {
 		return "http://www.openstreetmap.org/browse/" + osmId.getType() + "/" + osmId.getId();
 	}
