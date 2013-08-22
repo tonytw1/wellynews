@@ -23,7 +23,7 @@
 </ul>
 </div>
 		
-<p>You may continue to <a href="$site_information.url/edit/edit?resource=$item.id">edit this listing</a>.</p>
+<p>You may continue to <a href="$site_information.url/edit?resource=$item.id">edit this listing</a>.</p>
 
 
 <form action="$site_information.url/cancel" method="POST">
