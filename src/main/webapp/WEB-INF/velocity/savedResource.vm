@@ -22,15 +22,12 @@
 #parse("includes/content_element.vm")
 </ul>
 </div>
-		
-<p>You may continue to <a href="$site_information.url/edit?resource=$item.id">edit this listing</a>.</p>
 
+<p>You may continue to <a href="$adminUrlBuilder.getResourceEditUrl($item)">edit this listing</a>.</p>
 
 <form action="$site_information.url/cancel" method="POST">
 	<input type="submit" value="Done" />
 </form>
-
-
 
 #if ($prompt_for_additional_information) 
 <h3>But wait - there's more!</h3>

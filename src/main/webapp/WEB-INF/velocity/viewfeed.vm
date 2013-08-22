@@ -17,8 +17,9 @@
 		
 		<ul>
 			#if ($editPermissionService.canEdit($feed)) 
-				<li class="admin"><a href="${site_information.url}/edit?resource=$feed.id">Edit</a></li>
-				<li class="admin"><a href="${site_information.url}/delete?resource=$feed.id">Delete</a></li>			
+				
+				<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($feed)">Edit</a></li>
+				<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($feed)">Delete</a></li>			
 			#end
 		
 			#if ($editPermissionService.canDecache($feed))
