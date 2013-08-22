@@ -30,7 +30,15 @@ import org.springframework.web.servlet.ModelAndView;
 public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(TagModelBuilder.class);
-    	
+
+	private static final String MAIN_CONTENT = "main_content";
+	private static final String PAGE = "page";
+	private static final String TAG = "tag";
+	private static final String TAGS = "tags";
+	private static final String TAG_WATCHLIST = "tag_watchlist";
+	private static final String TAG_FEEDS = "tag_feeds";
+	private static final String WEBSITES = "websites";
+	
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
@@ -61,7 +69,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
-		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+		List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 		return tags != null && tags.size() == 1;
 	}
 	
@@ -69,7 +77,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			final List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+			final List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 			final Tag tag = tags.get(0);
 			int page = getPage(request);
 			return populateTagPageModelAndView(tag, page, request.getPathInfo());
@@ -80,11 +88,11 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@Override
 	@SuppressWarnings("unchecked")
 	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
-		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-		Tag tag = tags.get(0);
+		final List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
+		final Tag tag = tags.get(0);
 		
 		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
-		mv.addObject("websites", taggedWebsites);
+		mv.addObject(WEBSITES, taggedWebsites);
 		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8);
 		if (relatedTagLinks.size() > 0) {
@@ -102,8 +110,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateTagFlickrPool(mv, tag);		
 		populateRecentlyTwittered(mv, tag);
 
-		mv.addObject("tag_watchlist", contentRetrievalService.getTagWatchlist(tag));		
-		mv.addObject("tag_feeds", contentRetrievalService.getTaggedFeeds(tag));
+		mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag));		
+		mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag));
 		
         mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
@@ -111,17 +119,17 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	@Override
 	@SuppressWarnings("unchecked")
 	public String getViewName(ModelAndView mv) {		
-		List<Resource> mainContent = (List<Resource>) mv.getModel().get("main_content");
+		List<Resource> mainContent = (List<Resource>) mv.getModel().get(MAIN_CONTENT);
 		
-		List<Resource> taggedWebsites = (List<Resource>) mv.getModel().get("websites");
-		List<Resource> tagWatchlist = (List<Resource>) mv.getModel().get("tag_watchlist");
-		List<Resource> tagFeeds = (List<Resource>) mv.getModel().get("tag_feeds");
+		List<Resource> taggedWebsites = (List<Resource>) mv.getModel().get(WEBSITES);
+		List<Resource> tagWatchlist = (List<Resource>) mv.getModel().get(TAG_WATCHLIST);
+		List<Resource> tagFeeds = (List<Resource>) mv.getModel().get(TAG_FEEDS);
 
 		final boolean hasSecondaryContent = !taggedWebsites.isEmpty() || !tagWatchlist.isEmpty() || !tagFeeds.isEmpty();		
 		final boolean isOneContentType = mainContent.isEmpty() || !hasSecondaryContent;		
-		final Integer page = (Integer) mv.getModel().get("page");
+		final Integer page = (Integer) mv.getModel().get(PAGE);
 		if (page != null && page > 0) {
-			mv.addObject("page", page);
+			mv.addObject(PAGE, page);
 			return "tagNewsArchive";
 
 		} else if (isOneContentType) {
@@ -132,7 +140,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	
 	private ModelAndView populateTagPageModelAndView(Tag tag, int page, String path) {
 		ModelAndView mv = new ModelAndView();				
-		mv.addObject("page", page);
+		mv.addObject(PAGE, page);
 		
 		int startIndex = getStartIndex(page);
 		long totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
@@ -140,7 +148,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			return null;
 		}
 		
-		mv.addObject("tag", tag);
+		mv.addObject(TAG, tag);
 		
 		if (tag.getGeocode() != null) {			
 			mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode()));			
@@ -151,7 +159,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
 		final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);		
-		mv.addObject("main_content", taggedNewsitems);		
+		mv.addObject(MAIN_CONTENT, taggedNewsitems);		
 		
 		populatePagination(mv, startIndex, totalNewsitemCount);
 		
