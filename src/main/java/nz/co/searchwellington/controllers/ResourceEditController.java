@@ -381,13 +381,13 @@ public class ResourceEditController {
             	submissionProcessingService.processAcceptance(request, editResource, loggedInUser);
             }
                         
-            processFeedAcceptancePolicy(request, editResource);
                              
             // Update urlwords.
             if (editResource.getType().equals("W") || editResource.getType().equals("F")) {
             	editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(editResource.getName()));            	
             }
                         
+            processFeedAcceptancePolicy(request, editResource);
                       
             SpamFilter spamFilter = new SpamFilter();
             boolean isSpamUrl = spamFilter.isSpam(editResource);
