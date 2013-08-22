@@ -46,7 +46,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 			Feed feed = (Feed) request.getAttribute(FEED_ATTRIBUTE);
 			if (feed != null) {
 				ModelAndView mv = new ModelAndView();
-				mv.addObject("feed", feed);				
+				mv.addObject("feed", feed);	// TODO wants to be a frontend feed				
 				populateFeedItems(mv, feed);
 				setRss(mv, feed.getName(), feed.getUrl());		       
 				return mv;
