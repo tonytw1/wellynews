@@ -35,7 +35,7 @@
 			#end
 			
 			#if ($item.image) 
-				<p><img src="$item.image.url"></p>
+				<p><a href="$item.url"><img src="$item.image.url" style="width: 100%; background-size: contain;" border="0"></a></p>
 			#end
 											
 			#if ($item.type == ('F'))				

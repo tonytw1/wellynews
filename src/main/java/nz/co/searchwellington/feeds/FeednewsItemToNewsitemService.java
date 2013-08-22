@@ -2,10 +2,6 @@ package nz.co.searchwellington.feeds;
 
 import java.util.HashSet;
 
-import org.springframework.stereotype.Component;
-
-import uk.co.eelpieconsulting.common.geo.model.Place;
-
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
@@ -13,6 +9,10 @@ import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Twit;
+
+import org.springframework.stereotype.Component;
+
+import uk.co.eelpieconsulting.common.geo.model.Place;
 
 @Component
 public class FeednewsItemToNewsitemService {
@@ -29,6 +29,10 @@ public class FeednewsItemToNewsitemService {
 	    final Place place = feedNewsitem.getPlace();
 	    if (place != null) {
 			newsitem.setGeocode(mapPlaceToGeocode(place));
+	    }
+	    
+	    if (feedNewsitem.getImage() != null) {
+			newsitem.setImage(feedNewsitem.getImage());
 	    }
 	    
 	    return newsitem;

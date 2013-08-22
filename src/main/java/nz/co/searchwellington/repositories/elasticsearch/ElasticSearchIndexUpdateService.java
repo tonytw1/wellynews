@@ -100,6 +100,7 @@ public class ElasticSearchIndexUpdateService {
 			frontendNewsitem.setAcceptedFromFeedName(contentItemNewsitem.getAcceptedFromFeedName());
 			frontendNewsitem.setAcceptedByProfilename(contentItemNewsitem.getAcceptedByProfilename());
 			frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted());
+			// TODO set newsitem image
 			frontendContentItem = frontendNewsitem;
 		}
 		
