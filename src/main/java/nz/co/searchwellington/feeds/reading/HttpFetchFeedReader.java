@@ -8,9 +8,9 @@ import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
-import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
+import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
@@ -126,7 +126,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 		return null;
 	}
 	
-	private Image extractThumbnail(SyndEntry item) {		
+	private FrontendImage extractThumbnail(SyndEntry item) {		
         MediaEntryModuleImpl mediaModule = (MediaEntryModuleImpl) item.getModule(MediaModule.URI);
         if (mediaModule != null) {
         	log.debug("Found media module for item: " + item.getTitle());
@@ -140,7 +140,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 				if (thumbnails.length > 0) {
 					Thumbnail thumbnail = thumbnails[0];		
 					log.info("Took first thumbnail on first mediaContent: " + thumbnail.getUrl());
-					return new Image(thumbnail.getUrl().toExternalForm(), null);
+					return new FrontendImage(thumbnail.getUrl().toExternalForm());
 				}
 				
 				if (mediaContent.getReference() != null) {
@@ -148,7 +148,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 					if (reference.toString().endsWith(".jpg")) {
 						log.info("Took image reference from first MediaContent: " + reference);						
 					}
-					return new Image(reference.toString(), null);
+					return new FrontendImage(reference.toString());
 				}
 				log.info(mediaContent.getReference());
 			}
@@ -157,7 +157,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 			if (thumbnails.length > 0) {					
 				Thumbnail thumbnail = thumbnails[0];
 				log.info("Took first thumbnail from module metadata: " + thumbnail.getUrl());
-				return new Image(thumbnail.getUrl().toExternalForm(), null);				
+				return new FrontendImage(thumbnail.getUrl().toExternalForm());				
 			}
 			
         }	

@@ -59,7 +59,7 @@
 		</form>
 	#else
 		<p>There was a problem loading this resource for editing. You may 
-		not have permission to edit this paricular listing.</p>
+		not have permission to edit this particular listing.</p>
 	#end
 
 	<form action="$site_information.url/cancel" method="POST">

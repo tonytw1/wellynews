@@ -34,8 +34,13 @@
 				#end
 			#end
 			
+			
+			#if ($item.frontendImage) 
+				<p><a href="$item.url"><img src="$item.frontendImage.url" border="0"></a></p>
+			#end
+			
 			#if ($item.image) 
-				<p><a href="$item.url"><img src="$item.image.url" style="width: 100%; background-size: contain;" border="0"></a></p>
+				<p><a href="$item.url"><img src="$item.image.url" border="0"></a></p>
 			#end
 											
 			#if ($item.type == ('F'))				

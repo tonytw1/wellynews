@@ -9,6 +9,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
+import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
@@ -100,7 +101,9 @@ public class ElasticSearchIndexUpdateService {
 			frontendNewsitem.setAcceptedFromFeedName(contentItemNewsitem.getAcceptedFromFeedName());
 			frontendNewsitem.setAcceptedByProfilename(contentItemNewsitem.getAcceptedByProfilename());
 			frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted());
-			// TODO set newsitem image
+			if (contentItemNewsitem.getImage() != null) {
+				frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage().getUrl()));
+			}
 			frontendContentItem = frontendNewsitem;
 		}
 		

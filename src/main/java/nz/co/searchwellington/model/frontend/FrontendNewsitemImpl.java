@@ -16,6 +16,7 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 	private String acceptedByProfilename;
 	private List<Comment> comments;
 	private Date accepted;
+	private FrontendImage image;
 	
 	public String getPublisherName() {
 		return publisherName;
@@ -70,6 +71,14 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 	@Override
 	public String getAuthor() {
 		return publisherName;
+	}
+	
+	public FrontendImage getFrontendImage() {
+		return image;
+	}
+
+	public void setFrontendImage(FrontendImage image) {
+		this.image = image;
 	}
 
 	@Override

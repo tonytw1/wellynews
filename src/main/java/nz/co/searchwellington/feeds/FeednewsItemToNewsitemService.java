@@ -6,6 +6,7 @@ import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
+import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Twit;
@@ -22,7 +23,7 @@ public class FeednewsItemToNewsitemService {
 		// TODO why are we newing up an instance of our superclass?
 	    final String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : "";
 		final Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(), new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
-	    newsitem.setImage(feedNewsitem.getImage());
+	    newsitem.setImage(new Image(feedNewsitem.getImage().getUrl(), null));
 	    newsitem.setFeed(feed);
 	    newsitem.setPublisher(feed.getPublisher());
 	    
@@ -32,7 +33,7 @@ public class FeednewsItemToNewsitemService {
 	    }
 	    
 	    if (feedNewsitem.getImage() != null) {
-			newsitem.setImage(feedNewsitem.getImage());
+			newsitem.setImage(new Image(feedNewsitem.getImage().getUrl(), ""));
 	    }
 	    
 	    return newsitem;

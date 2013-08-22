@@ -6,6 +6,7 @@ import java.util.List;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 
 import nz.co.searchwellington.model.frontend.FrontendFeed;
+import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendTag;
 
@@ -28,7 +29,7 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related 
 		return feedNewsitem.getFeed();
 	}
 	
-	public Image getImage() {
+	public FrontendImage getFrontendImage() {
 		return feedNewsitem.getImage();
 	}
 
@@ -151,8 +152,7 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related 
 
 	@Override
 	public void setPlace(Place place) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override

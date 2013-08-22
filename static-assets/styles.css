@@ -526,5 +526,13 @@ select {
 	}
 
 
+img {
+	max-width: 320px
+}
 
-
+.righthand_one img {
+	max-width: 120px
+}
+.righthand_two img {
+	max-width: 120px
+}

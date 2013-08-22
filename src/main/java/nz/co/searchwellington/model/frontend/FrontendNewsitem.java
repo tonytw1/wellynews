@@ -14,5 +14,6 @@ public interface FrontendNewsitem extends FrontendResource {
 	public String getAcceptedByProfilename();
 	public List<Comment> getComments();
 	public Date getAccepted();
+	public FrontendImage getFrontendImage();
 	
 }
