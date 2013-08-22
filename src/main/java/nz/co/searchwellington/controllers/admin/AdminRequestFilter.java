@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.filters.ResourceParameterFilter;
 import nz.co.searchwellington.filters.TagsParameterFilter;
+import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
@@ -24,6 +25,7 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.clutch.dates.StringToTime;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 @Component
@@ -77,7 +79,12 @@ public class AdminRequestFilter {
     	if (twitterId != null) {
     		request.setAttribute("twitterId", twitterId);
     	}
-        		
+    	
+    	final String image = (String) request.getParameter("image");
+		if (!Strings.isNullOrEmpty(image)) {
+    		request.setAttribute("image", new Image(image, null));
+    	}
+		
 		log.info("Looking for date field");
 		if (request.getParameter(DATE_FIELD) != null && !request.getParameter(DATE_FIELD).isEmpty()) {
 			final String dateString = (String) request.getParameter(DATE_FIELD);

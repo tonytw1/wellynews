@@ -36,6 +36,12 @@
 						#end
 					#end
 					
+					#if ($resource.image)
+						<img src="$resource.image.url" align="right" vspace="10">
+						<br>
+						<input name="image" value="$resource.image.url" />
+					#end
+												
 					#parse("includes/tag_edit_fields.vm")
 					
 					#set($geocode = $resource.geocode)								

@@ -30,10 +30,12 @@
 		
 		<p>Accepting from: $resource.feed.name</p>
 		<input name="acceptedFromFeed" value="$resource.feed.urlWords" type="hidden" />
-										
+												
 		#if ($resource.image)
 			<img src="$resource.image.url" align="right" vspace="10">
-		#end	
+			<br>
+			<input name="image" value="$resource.image.url" />
+		#end
 		
 		#parse("includes/tag_edit_fields.vm")
 						
