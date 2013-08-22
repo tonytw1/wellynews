@@ -63,8 +63,8 @@ public class ProfileControllerTest {
 	public void usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService() throws Exception {
 		request.setPathInfo("/profiles/" + VALID_PROFILE_NAME);
 		when(userDao.getUserByProfileName(VALID_PROFILE_NAME)).thenReturn(existingUser);
-		when(contentRetrievalService.getOwnedBy(existingUser, 30)).thenReturn(existingUsersSubmittedItems);
-		when(contentRetrievalService.getTaggedBy(existingUser, 30)).thenReturn(existingUsersTaggedItems);
+		when(contentRetrievalService.getOwnedBy(existingUser)).thenReturn(existingUsersSubmittedItems);
+		when(contentRetrievalService.getTaggedBy(existingUser)).thenReturn(existingUsersTaggedItems);
 
 		ModelAndView mv = controller.view(request, response);
 		

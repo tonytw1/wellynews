@@ -24,8 +24,6 @@ import org.springframework.web.servlet.view.RedirectView;
 public class ProfileController {
     
 	private static Logger log = Logger.getLogger(ProfileController.class);
-
-    public final static  int MAX_NEWSITEMS = 30;	// TODO move to config
     
     private HibernateBackedUserDAO userDAO;
     private LoggedInUserFilter loggerInUserFilter;
@@ -110,8 +108,8 @@ public class ProfileController {
 				commonModelObjectsService.populateCommonLocal(mv);
 				mv.addObject("profileuser", user);
 
-				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, MAX_NEWSITEMS));
-				mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, MAX_NEWSITEMS));
+				mv.addObject("submitted", contentRetrievalService.getOwnedBy(user));
+				mv.addObject("tagged", contentRetrievalService.getTaggedBy(user));
 				return mv;
 			}
 		}

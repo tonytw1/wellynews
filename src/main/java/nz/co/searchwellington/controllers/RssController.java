@@ -20,9 +20,7 @@ import com.google.common.collect.Maps;
 
 @Controller	// TODO doesn't need to be a special case?
 public class RssController {
-	    
-    private static final int MAX_RSS_ITEMS = 30;	// TODO move this knowledge towards the CRS
-    
+	
     private SiteInformation siteInformation;
 	private ContentRetrievalService contentRetrievalService;
 	private ViewFactory viewFactory;
@@ -40,7 +38,7 @@ public class RssController {
 		String title = siteInformation.getAreaname() + " Newslog";
 		String link = siteInformation.getUrl();
         String description = "Links to " + siteInformation.getAreaname() + " related newsitems.";
-        model.put("data", contentRetrievalService.getLatestNewsitems(MAX_RSS_ITEMS));
+        model.put("data", contentRetrievalService.getLatestNewsitems());
         
         final RssView rssView = viewFactory.getRssView(title, link, description);
         return new ModelAndView(rssView, model);        

@@ -32,7 +32,7 @@ import com.google.common.collect.Lists;
 @Component
 public class ContentRetrievalService {
 	
-	final protected int MAX_NEWSITEMS_TO_SHOW = 30;
+	public static final int MAX_NEWSITEMS_TO_SHOW = 30;
         
 	private HibernateResourceDAO resourceDAO;
 	private KeywordSearchService keywordSearchService;
@@ -126,10 +126,14 @@ public class ContentRetrievalService {
 		return elasticSearchBackedResourceDAO.getCommentedTags(showBrokenDecisionService.shouldShowBroken());
 	}
 
-	public List<FrontendResource> getLatestNewsitems(int maxItems) {
-		return elasticSearchBackedResourceDAO.getLatestNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken());
+	public List<FrontendResource> getLatestNewsitems() {
+		return getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW);
 	}
-
+	
+	public List<FrontendResource> getLatestNewsitems(int maxNumber) {
+		return elasticSearchBackedResourceDAO.getLatestNewsitems(maxNumber, showBrokenDecisionService.shouldShowBroken());
+	}
+	
 	public List<FrontendResource> getLatestWebsites(int maxItems) {
 		return elasticSearchBackedResourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
@@ -272,11 +276,11 @@ public class ContentRetrievalService {
 		return discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds();
 	}
 
-	public List<Resource> getOwnedBy(User loggedInUser, int maxItems) {
-		return resourceDAO.getOwnedBy(loggedInUser, maxItems);
+	public List<Resource> getOwnedBy(User loggedInUser) {
+		return resourceDAO.getOwnedBy(loggedInUser, MAX_NEWSITEMS_TO_SHOW);
 	}
 	
-	public List<FrontendResource> getTaggedBy(User user, int maxItems) {
+	public List<FrontendResource> getTaggedBy(User user) {
 		return elasticSearchBackedResourceDAO.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken());
 	}
 	

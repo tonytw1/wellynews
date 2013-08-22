@@ -75,7 +75,7 @@ public class ElasticSearchBackedResourceDAO {
 				
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
 			setQuery(latestNewsitems).
-			setSize(30);
+			setSize(maxItems);
 		
 		addDateDescendingOrder(searchRequestBuilder);
 		
