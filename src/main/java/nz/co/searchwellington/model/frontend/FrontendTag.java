@@ -5,7 +5,6 @@ public class FrontendTag {
 	private String id, name;
 	
 	public FrontendTag() {
-		// TODO Auto-generated constructor stub
 	}
 	
 	public String getId() {
