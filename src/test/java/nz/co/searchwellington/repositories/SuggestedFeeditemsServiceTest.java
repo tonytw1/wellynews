@@ -7,8 +7,8 @@ import java.util.List;
 
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 import org.junit.Before;

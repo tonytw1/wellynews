@@ -2,10 +2,10 @@ package nz.co.searchwellington.feeds;
 
 import static org.junit.Assert.assertEquals;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
 import org.junit.Before;
 import org.junit.Test;

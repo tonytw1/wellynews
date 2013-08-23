@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

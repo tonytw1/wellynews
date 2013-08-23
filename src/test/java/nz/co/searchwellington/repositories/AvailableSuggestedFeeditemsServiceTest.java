@@ -6,8 +6,8 @@ import java.util.List;
 
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
 import org.joda.time.DateTime;
 import org.junit.Before;

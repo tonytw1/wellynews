@@ -6,10 +6,10 @@ import java.util.List;
 
 import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
@@ -106,8 +106,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 		FrontendFeed frontendFeed = new FrontendFeedImpl();
 		frontendFeed.setUrlWords(feed.getUrlWords());
 		FrontendFeedNewsitem feedItem = new FrontendFeedNewsitem();
-		feedItem.setFeed(frontendFeed);
-		
+		feedItem.setFeed(frontendFeed);		
         feedItem.setName(item.getTitle().trim());
         feedItem.setUrl(url);
         feedItem.setDescription(description);

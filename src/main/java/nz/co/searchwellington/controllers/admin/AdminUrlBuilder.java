@@ -1,9 +1,9 @@
 package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.urls.UrlBuilder;

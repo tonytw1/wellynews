@@ -3,10 +3,10 @@ package nz.co.searchwellington.feeds;
 import java.sql.Date;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,9 +1,6 @@
-package nz.co.searchwellington.model;	// TODO move to frontend package
+package nz.co.searchwellington.model.frontend;	// TODO move to frontend package
 
-import nz.co.searchwellington.model.frontend.FrontendFeed;
-import nz.co.searchwellington.model.frontend.FrontendImage;
-import nz.co.searchwellington.model.frontend.FrontendNewsitem;
-import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
+import nz.co.searchwellington.model.Suggestion;
 
 public class FrontendFeedNewsitem extends FrontendNewsitemImpl implements FrontendNewsitem {
 
@@ -18,6 +15,7 @@ public class FrontendFeedNewsitem extends FrontendNewsitemImpl implements Fronte
 	private String publisherName;
 	
     public FrontendFeedNewsitem() {
+    	setType("FNI");
         this.isSuppressed = false;
     }
     

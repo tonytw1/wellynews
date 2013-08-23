@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 

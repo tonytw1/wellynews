@@ -4,12 +4,12 @@ import java.util.HashSet;
 
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Twit;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
 import org.springframework.stereotype.Component;
 

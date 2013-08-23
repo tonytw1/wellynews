@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds.reading;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
 public interface FeedItemFetcher {
 

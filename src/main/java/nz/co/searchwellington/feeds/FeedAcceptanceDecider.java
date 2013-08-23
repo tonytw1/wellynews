@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;

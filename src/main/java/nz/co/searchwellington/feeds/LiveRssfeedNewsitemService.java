@@ -5,7 +5,7 @@ import java.util.List;
 import nz.co.searchwellington.feeds.reading.FeedItemFetcher;
 import nz.co.searchwellington.feeds.reading.HttpFetchFeedReader;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FrontendFeedNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
