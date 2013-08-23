@@ -35,6 +35,10 @@ public class AdminUrlBuilder {
 		return null;
 	}
 	
+	public String getResourceEditUrl(int resourceId) {
+		return siteInformation.getUrl() + "/edit?resource=" + resourceId;		
+	}
+	
 	public String getResourceDeleteUrl(FrontendResource resource) {
 		return siteInformation.getUrl() + "/delete?resource=" + resource.getId();		
 	}

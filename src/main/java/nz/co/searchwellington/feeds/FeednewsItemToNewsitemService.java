@@ -23,7 +23,7 @@ public class FeednewsItemToNewsitemService {
 		// TODO why are we newing up an instance of our superclass?
 	    final String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : "";
 		final Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(), new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
-	    newsitem.setImage(new Image(feedNewsitem.getFrontendImage().getUrl(), null));
+	    newsitem.setImage(feedNewsitem.getFrontendImage() != null ? new Image(feedNewsitem.getFrontendImage().getUrl(), null) : null);
 	    newsitem.setFeed(feed);
 	    newsitem.setPublisher(feed.getPublisher());
 	    
