@@ -123,10 +123,6 @@ public class ElasticSearchIT {
 		
 		System.out.println(resources);
 	}
-	
-    
-    
-    
     
 	@Test
 	public void canFetchFacets() throws Exception {		

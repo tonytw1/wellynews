@@ -356,8 +356,23 @@ public class ElasticSearchBackedResourceDAO {
 	}
 
 	public List<FrontendResource> getNewsitemsForMonth(Date month, boolean shouldShowBroken) {
-		// TODO Auto-generated method stub
-		return Lists.newArrayList();	// TODO implement
+		DateTime monthDateTime = new DateTime(month);
+		DateTime startOfMonth = monthDateTime.minusDays(monthDateTime.getDayOfMonth());	// TODO not quite right - off by a day.
+		DateTime endOfMonth = startOfMonth.plusMonths(1);
+		
+		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem()).
+			must(QueryBuilders.rangeQuery(DATE).from(Long.toString(startOfMonth.toDate().getTime()))).
+			must(QueryBuilders.rangeQuery(DATE).to(Long.toString(endOfMonth.toDate().getTime())));
+		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
+				
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(latestNewsitems).
+			setSize(ALL);
+		
+		addDateDescendingOrder(searchRequestBuilder);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return deserializeFrontendResourceHits(response.getHits());
 	}
 	
 	public List<FrontendResource> getTaggedNewsitems(List<Tag> tags, boolean shouldShowBroken, int startIndex, int maxNewsitems) {
