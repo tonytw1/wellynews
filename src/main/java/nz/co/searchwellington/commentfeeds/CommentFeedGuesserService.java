@@ -1,9 +1,9 @@
 package nz.co.searchwellington.commentfeeds;
 
+import nz.co.searchwellington.commentfeeds.guessers.CommentFeedGuesser;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import nz.co.searchwellington.commentfeeds.guessers.CommentFeedGuesser;
 
 @Component
 public class CommentFeedGuesserService {

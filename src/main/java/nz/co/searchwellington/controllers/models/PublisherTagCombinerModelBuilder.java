@@ -10,7 +10,7 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -56,7 +56,7 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 			ModelAndView mv = new ModelAndView();	
 			
 			// TODO hack - fronendpublisher / publisher mismatch
-			FrontendWebsiteImpl frontendPublisher = new FrontendWebsiteImpl();
+			FrontendWebsite frontendPublisher = new FrontendWebsite();
 			frontendPublisher.setName(publisher.getName());
 			frontendPublisher.setUrlWords(publisher.getUrlWords());			
 			mv.addObject("publisher", frontendPublisher);

@@ -18,10 +18,10 @@ public class FrontendNewsitemTest {
 		mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-		final FrontendNewsitemImpl newsitem = new FrontendNewsitemImpl();
+		final FrontendNewsitem newsitem = new FrontendNewsitem();
 		newsitem.setFrontendImage(new FrontendImage(URL));
 		final String json = mapper.writeValueAsString(newsitem);		
-		final FrontendNewsitemImpl result = mapper.readValue(json, FrontendNewsitemImpl.class);
+		final FrontendNewsitem result = mapper.readValue(json, FrontendNewsitem.class);
 
 		assertNotNull(result.getFrontendImage());
 	}

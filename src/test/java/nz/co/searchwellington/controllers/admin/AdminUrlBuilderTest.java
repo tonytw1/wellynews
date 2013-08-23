@@ -4,9 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.UrlWordsGenerator;
-import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
-import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
-import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.urls.UrlBuilder;
 
 import org.joda.time.DateTime;
@@ -21,9 +21,9 @@ public class AdminUrlBuilderTest {
 	
 	@Mock SiteInformation siteInformation;
 	
-	private FrontendWebsiteImpl frontendWebsite;
-	private FrontendFeedImpl frontendFeed;
-	private FrontendNewsitemImpl frontendNewsitem;
+	private FrontendWebsite frontendWebsite;
+	private FrontendFeed frontendFeed;
+	private FrontendNewsitem frontendNewsitem;
 	
 	private AdminUrlBuilder adminUrlBuilder;
 	
@@ -33,20 +33,20 @@ public class AdminUrlBuilderTest {
 		when(siteInformation.getUrl()).thenReturn(SITE_URL);
 		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, null, new UrlWordsGenerator()));
 		
-		frontendWebsite = new FrontendWebsiteImpl();
+		frontendWebsite = new FrontendWebsite();
 		frontendWebsite.setId(123);
 		frontendWebsite.setType("W");
 		frontendWebsite.setName("My local sports team");
 		frontendWebsite.setUrlWords("my-local-sports-team");
 		
-		frontendNewsitem = new FrontendNewsitemImpl();
+		frontendNewsitem = new FrontendNewsitem();
 		frontendNewsitem.setId(123);
 		frontendNewsitem.setType("N");
 		frontendNewsitem.setName("A news item");
 		frontendNewsitem.setPublisherName("My local sports team");
 		frontendNewsitem.setDate(new DateTime(2011, 5, 20, 0, 0, 0, 0).toDate());
 		
-		frontendFeed = new FrontendFeedImpl();
+		frontendFeed = new FrontendFeed();
 		frontendFeed.setId(124);
 		frontendFeed.setType("F");
 		frontendFeed.setUrlWords("my-local-sports-team-news");

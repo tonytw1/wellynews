@@ -3,13 +3,13 @@ package nz.co.searchwellington.twitter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.google.common.base.Strings;
-
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
+
+import com.google.common.base.Strings;
 
 @Component
 public class TwitterApiFactory {

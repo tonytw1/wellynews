@@ -13,10 +13,9 @@ import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
-import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
 
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
@@ -530,11 +529,11 @@ public class ElasticSearchBackedResourceDAO {
 			try {
 				final String typeField = next.getSource().get(TYPE).toString();
 				if (typeField.equals("N")) {
-					resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendNewsitemImpl.class));
+					resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendNewsitem.class));
 				} else if (typeField.equals("F")) {
-					resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendFeedImpl.class));
+					resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendFeed.class));
 				} else {
-					resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendResourceImpl.class));
+					resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendResource.class));
 				}
 				
 			} catch (JsonParseException e) {

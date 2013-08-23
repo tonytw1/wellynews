@@ -11,7 +11,7 @@ import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-import nz.co.searchwellington.model.frontend.FrontendWebsiteImpl;
+import nz.co.searchwellington.model.frontend.FrontendWebsite;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 import nz.co.searchwellington.views.GeocodeToPlaceMapper;
@@ -92,7 +92,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		mv.addObject("link", urlBuilder.getPublisherUrl(publisher.getName()));
 		
 		// TODO hack - fronendpublisher / publisher mismatch
-		FrontendWebsiteImpl frontendPublisher = new FrontendWebsiteImpl();
+		FrontendWebsite frontendPublisher = new FrontendWebsite();
 		frontendPublisher.setName(publisher.getName());
 		frontendPublisher.setUrlWords(publisher.getUrlWords());
 		frontendPublisher.setUrl(publisher.getUrl());		

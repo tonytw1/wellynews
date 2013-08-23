@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchClientFactory;
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService;
 
@@ -56,12 +56,12 @@ public class ElasticSearchIT {
 		SearchHits hits = response.getHits();
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		List<FrontendResourceImpl> resources = Lists.newArrayList();
+		List<FrontendResource> resources = Lists.newArrayList();
 		Iterator<SearchHit> iterator = hits.iterator();
 		while (iterator.hasNext()) {
 			SearchHit next = iterator.next();
 			System.out.println(next.getSourceAsString());
-			resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendResourceImpl.class));
+			resources.add(objectMapper.readValue(next.getSourceAsString(), FrontendResource.class));
 		}
 		
 		System.out.println(resources);
@@ -81,12 +81,12 @@ public class ElasticSearchIT {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-		final List<FrontendResourceImpl> resources = Lists.newArrayList();
+		final List<FrontendResource> resources = Lists.newArrayList();
 		Iterator<SearchHit> iterator = hits.iterator();
 		while (iterator.hasNext()) {
 			SearchHit next = iterator.next();
 			System.out.println(next.getSourceAsString());
-			FrontendResourceImpl resource = objectMapper.readValue(next.getSourceAsString(), FrontendResourceImpl.class);
+			FrontendResource resource = objectMapper.readValue(next.getSourceAsString(), FrontendResource.class);
 			assertNotNull(resource.getPlace());
 			System.out.println(resource.getPlace());
 			resources.add(resource);			
@@ -111,12 +111,11 @@ public class ElasticSearchIT {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-		final List<FrontendResourceImpl> resources = Lists.newArrayList();
+		final List<FrontendResource> resources = Lists.newArrayList();
 		Iterator<SearchHit> iterator = hits.iterator();
 		while (iterator.hasNext()) {
 			SearchHit next = iterator.next();
-			System.out.println(next.getSourceAsString());
-			FrontendResourceImpl resource = objectMapper.readValue(next.getSourceAsString(), FrontendResourceImpl.class);
+			FrontendResource resource = objectMapper.readValue(next.getSourceAsString(), FrontendResource.class);
 			assertNotNull(resource.getPlace());
 			System.out.println(resource.getPlace());
 			resources.add(resource);			

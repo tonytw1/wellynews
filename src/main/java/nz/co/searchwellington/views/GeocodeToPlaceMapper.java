@@ -1,8 +1,9 @@
 package nz.co.searchwellington.views;
 
+import nz.co.searchwellington.model.Geocode;
+
 import org.springframework.stereotype.Component;
 
-import nz.co.searchwellington.model.Geocode;
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.OsmType;

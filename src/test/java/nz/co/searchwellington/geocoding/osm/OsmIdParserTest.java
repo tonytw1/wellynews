@@ -2,8 +2,6 @@ package nz.co.searchwellington.geocoding.osm;
 
 import static org.junit.Assert.assertEquals;
 
-import nz.co.searchwellington.geocoding.osm.OsmIdParser;
-
 import org.junit.Test;
 
 import uk.co.eelpieconsulting.common.geo.model.OsmId;

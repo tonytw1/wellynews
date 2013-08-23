@@ -1,9 +1,10 @@
 package nz.co.searchwellington.model;
 
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
-import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 @Component
 public class UrlWordsGenerator {

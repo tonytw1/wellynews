@@ -3,9 +3,9 @@ package nz.co.searchwellington.signin;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.servlet.ModelAndView;
-
 import nz.co.searchwellington.model.User;
+
+import org.springframework.web.servlet.ModelAndView;
 
 public interface SigninHandler {
 

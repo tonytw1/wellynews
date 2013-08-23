@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.views.GoogleMapsDisplayCleaner;
 
@@ -25,22 +25,22 @@ public class GoogleMapsDisplayCleanerTest {
 	private Place alsoHere = new Place("here", new LatLong(1.1, 1.1), null);
     
 	private List<FrontendResource> geocoded; 
-	private FrontendNewsitemImpl firstNewsitem;
-	private FrontendNewsitemImpl secondNewsitem;
-	private FrontendNewsitemImpl thirdNewsitem;
+	private FrontendNewsitem firstNewsitem;
+	private FrontendNewsitem secondNewsitem;
+	private FrontendNewsitem thirdNewsitem;
             
     private GoogleMapsDisplayCleaner cleaner;
     
     @Before
     public void setup() throws Exception {
         geocoded = Lists.newArrayList();
-        firstNewsitem = new FrontendNewsitemImpl();
+        firstNewsitem = new FrontendNewsitem();
         firstNewsitem.setName("First");
         firstNewsitem.setPlace(here);
-        secondNewsitem = new FrontendNewsitemImpl();
+        secondNewsitem = new FrontendNewsitem();
         secondNewsitem.setName("Second");
         secondNewsitem.setPlace(there);
-        thirdNewsitem = new FrontendNewsitemImpl();
+        thirdNewsitem = new FrontendNewsitem();
         thirdNewsitem.setName("Third");
         thirdNewsitem.setPlace(alsoHere);        
         geocoded.addAll(Arrays.asList(firstNewsitem, secondNewsitem, thirdNewsitem));
@@ -57,7 +57,7 @@ public class GoogleMapsDisplayCleanerTest {
     
     @Test
     public void shouldPutSelectedItemInFirst() throws Exception {        
-        FrontendNewsitemImpl selected = new FrontendNewsitemImpl();
+        FrontendNewsitem selected = new FrontendNewsitem();
         selected.setPlace(there);
         
         List<FrontendResource> deduped = cleaner.dedupe(geocoded, selected);

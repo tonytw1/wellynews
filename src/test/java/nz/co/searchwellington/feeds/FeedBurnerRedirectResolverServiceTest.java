@@ -1,8 +1,8 @@
 package nz.co.searchwellington.feeds;
 
+import junit.framework.TestCase;
 import nz.co.searchwellington.urls.FeedBurnerRedirectResolver;
 import nz.co.searchwellington.urls.RedirectingUrlResolver;
-import junit.framework.TestCase;
 
 public class FeedBurnerRedirectResolverServiceTest extends TestCase {
 

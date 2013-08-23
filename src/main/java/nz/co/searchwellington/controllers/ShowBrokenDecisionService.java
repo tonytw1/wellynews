@@ -1,9 +1,9 @@
 package nz.co.searchwellington.controllers;
 
+import nz.co.searchwellington.model.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import nz.co.searchwellington.model.User;
 
 @Component
 public class ShowBrokenDecisionService {

@@ -8,7 +8,6 @@ import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
-import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.utils.TextTrimmer;
@@ -103,7 +102,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 	}
 	
 	private FrontendFeedNewsitem makeFeednewsitemFromSyndEntry(Feed feed, SyndEntry item, String description, Date itemDate, String url) {
-		FrontendFeed frontendFeed = new FrontendFeedImpl();
+		FrontendFeed frontendFeed = new FrontendFeed();
 		frontendFeed.setUrlWords(feed.getUrlWords());
 		FrontendFeedNewsitem feedItem = new FrontendFeedNewsitem();
 		feedItem.setFeed(frontendFeed);		

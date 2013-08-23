@@ -2,15 +2,14 @@ package nz.co.searchwellington.controllers.submission;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.utils.UrlCleaner;
 
 
 public class UrlProcessorTest {

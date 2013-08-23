@@ -1,6 +1,5 @@
 package nz.co.searchwellington.model;
 
-import nz.co.searchwellington.model.User;
 
 public class UserImpl implements User {
 

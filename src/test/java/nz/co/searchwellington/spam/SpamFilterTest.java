@@ -1,8 +1,8 @@
 package nz.co.searchwellington.spam;
 
+import junit.framework.TestCase;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.WebsiteImpl;
-import junit.framework.TestCase;
 
 public class SpamFilterTest extends TestCase {
     

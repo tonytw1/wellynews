@@ -3,8 +3,8 @@ package nz.co.searchwellington.controllers;
 import static org.mockito.Mockito.verify;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HandTaggingService;
-import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.junit.Before;
 import org.junit.Test;

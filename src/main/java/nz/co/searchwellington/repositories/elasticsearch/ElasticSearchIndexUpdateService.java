@@ -8,11 +8,10 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
-import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
+import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
-import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
-import nz.co.searchwellington.model.frontend.FrontendResourceImpl;
+import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendTag;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.views.GeocodeToPlaceMapper;
@@ -93,10 +92,10 @@ public class ElasticSearchIndexUpdateService {
 	}
 	
 	private IndexRequestBuilder prepateUpdateFor(Resource contentItem, Client client) throws JsonProcessingException {
-		FrontendResourceImpl frontendContentItem = new FrontendResourceImpl();
+		FrontendResource frontendContentItem = new FrontendResource();
 		if (contentItem.getType().equals("N")) {
 			final Newsitem contentItemNewsitem = (Newsitem) contentItem;
-			FrontendNewsitemImpl frontendNewsitem = new FrontendNewsitemImpl();
+			FrontendNewsitem frontendNewsitem = new FrontendNewsitem();
 			frontendNewsitem.setPublisherName(contentItemNewsitem.getPublisherName());
 			frontendNewsitem.setAcceptedFromFeedName(contentItemNewsitem.getFeed() != null ? contentItemNewsitem.getFeed().getName() : null);
 			frontendNewsitem.setAcceptedByProfilename(contentItemNewsitem.getAcceptedBy() != null ? contentItemNewsitem.getAcceptedBy().getProfilename() : null);
@@ -108,7 +107,7 @@ public class ElasticSearchIndexUpdateService {
 		}
 		
 		if (contentItem.getType().equals("F")) {
-			FrontendFeedImpl frontendFeed = new FrontendFeedImpl();
+			FrontendFeed frontendFeed = new FrontendFeed();
 			Feed contentItemFeed = (Feed) contentItem;
 			frontendFeed.setPublisherName(contentItemFeed.getPublisherName());	
 			frontendFeed.setLatestItemDate(contentItemFeed.getLatestItemDate());

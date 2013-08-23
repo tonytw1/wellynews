@@ -1,8 +1,8 @@
-package nz.co.searchwellington.model.frontend;	// TODO move to frontend package
+package nz.co.searchwellington.model.frontend;
 
 import nz.co.searchwellington.model.Suggestion;
 
-public class FrontendFeedNewsitem extends FrontendNewsitemImpl implements FrontendNewsitem {
+public class FrontendFeedNewsitem extends FrontendNewsitem {
 
 	private static final long serialVersionUID = 1L;
 
@@ -21,6 +21,10 @@ public class FrontendFeedNewsitem extends FrontendNewsitemImpl implements Fronte
     
 	public FrontendFeed getFeed() {
 		return feed;
+	}
+	
+	public void setFeed(FrontendFeed feed) {
+		this.feed = feed;
 	}
 	
 	public FrontendImage getFrontendImage() {
@@ -57,10 +61,6 @@ public class FrontendFeedNewsitem extends FrontendNewsitemImpl implements Fronte
 
 	public void setImage(FrontendImage image) {
 		this.image = image;
-	}
-
-	public void setFeed(FrontendFeed feed) {
-		this.feed = feed;
 	}
 	
 }

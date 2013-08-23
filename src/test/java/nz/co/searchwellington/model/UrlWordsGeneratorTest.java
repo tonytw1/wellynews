@@ -1,7 +1,7 @@
 package nz.co.searchwellington.model;
 
 import static org.junit.Assert.assertEquals;
-import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
+import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -11,11 +11,11 @@ public class UrlWordsGeneratorTest {
 
 	private UrlWordsGenerator urlWordsGenerator;
 	
-	private FrontendNewsitemImpl newsitem;
+	private FrontendNewsitem newsitem;
 	
 	@Before
 	public void setup() {
-		newsitem = new FrontendNewsitemImpl();
+		newsitem = new FrontendNewsitem();
 		newsitem.setName("Some thing happening");
 		DateTime pubdate = new DateTime(2010, 4, 2, 0, 0, 0, 0);
 		newsitem.setDate(pubdate.toDate());

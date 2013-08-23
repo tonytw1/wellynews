@@ -2,12 +2,12 @@ package nz.co.searchwellington.filters;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.repositories.TagDAO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.repositories.TagDAO;
 
 // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
 // Used by the rssfeeds index page?
