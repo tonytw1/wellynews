@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
@@ -67,7 +67,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	}
 	
 	private void populateFeedItems(ModelAndView mv, Feed feed) {
-		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);		
+		List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);		
 		if (feedNewsitems != null && !feedNewsitems.isEmpty()) {
 			mv.addObject("main_content", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems));
 		}

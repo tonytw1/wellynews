@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
@@ -29,14 +29,14 @@ public class RssfeedNewsitemService {
 		this.resourceDAO = resourceDAO;
 	}
 
-	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
+	public List<FrontendFeedNewsitem> getFeedNewsitems(Feed feed) {
 		return cachingRssfeedNewsitemService.getFeedNewsitems(feed);
 	}
 	
 	public final Date getLatestPublicationDate(Feed feed) {
 		Date latestPublicationDate = null;
-		List<FeedNewsitem> feeditems = getFeedNewsitems(feed);
-		for (FeedNewsitem feeditem : feeditems) {
+		List<FrontendFeedNewsitem> feeditems = getFeedNewsitems(feed);
+		for (FrontendFeedNewsitem feeditem : feeditems) {
 			if (feeditem.getDate() != null && (latestPublicationDate == null || feeditem.getDate().after(latestPublicationDate))) {
 				latestPublicationDate = feeditem.getDate();           
 			}
@@ -44,11 +44,11 @@ public class RssfeedNewsitemService {
 		return latestPublicationDate;
 	}
 	
-	public FeedNewsitem getFeedNewsitemByUrl(Feed feed, String url) {
-		List<FeedNewsitem> feedNewsitems = this.getFeedNewsitems(feed);
-		Iterator<FeedNewsitem> i = feedNewsitems.iterator();
+	public FrontendFeedNewsitem getFeedNewsitemByUrl(Feed feed, String url) {
+		List<FrontendFeedNewsitem> feedNewsitems = this.getFeedNewsitems(feed);
+		Iterator<FrontendFeedNewsitem> i = feedNewsitems.iterator();
 		while (i.hasNext()) {
-			FeedNewsitem feedNewsitem = i.next();
+			FrontendFeedNewsitem feedNewsitem = i.next();
 			if (feedNewsitem.getUrl() != null && feedNewsitem.getUrl().equals(url)) {
 				return feedNewsitem;
 			}
@@ -61,8 +61,8 @@ public class RssfeedNewsitemService {
 		for(Feed feed : resourceDAO.getAllFeeds()) {
 			if (feed.getAcceptancePolicy().equals("accept") || feed.getAcceptancePolicy().equals("accept_without_dates")) {
 				log.debug("Checking feed: " + feed.getName());
-				List <FeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
-				for (FeedNewsitem feedNewsitem : feednewsItems) {
+				List <FrontendFeedNewsitem> feednewsItems = this.getFeedNewsitems(feed);
+				for (FrontendFeedNewsitem feedNewsitem : feednewsItems) {
 					log.debug("Checking feeditem: " + feedNewsitem.getUrl());
 					if (feedNewsitem.getUrl().equals(url)) {
 						log.info("Found: " + url);

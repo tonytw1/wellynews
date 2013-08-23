@@ -2,8 +2,6 @@ package nz.co.searchwellington.model;
 
 import java.util.Set;
 
-import uk.co.eelpieconsulting.common.geo.model.Place;
-
 public class Watchlist extends PublishedResourceImpl {
 	
 	private static final long serialVersionUID = 1L;
@@ -22,23 +20,5 @@ public class Watchlist extends PublishedResourceImpl {
     public String getType() {
         return "L";
     }
-
-	@Override
-	public Place getPlace() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setPlace(Place place) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getLocation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
     
 }

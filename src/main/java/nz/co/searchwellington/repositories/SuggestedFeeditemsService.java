@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories;
 import java.util.List;
 
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
@@ -29,7 +29,7 @@ public class SuggestedFeeditemsService {
 	
 	public List<FrontendNewsitem> getSuggestionFeednewsitems(int maxItems) {
 		List<Suggestion> bareSuggestions = suggestionDAO.getSuggestions(maxItems);
-		List<FeedNewsitem> suggestedFeeditems = availableSuggestedFeeditemsService.getAvailableSuggestedFeeditems(bareSuggestions, maxItems);
+		List<FrontendFeedNewsitem> suggestedFeeditems = availableSuggestedFeeditemsService.getAvailableSuggestedFeeditems(bareSuggestions, maxItems);
 		return feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(suggestedFeeditems);
 	}
 	

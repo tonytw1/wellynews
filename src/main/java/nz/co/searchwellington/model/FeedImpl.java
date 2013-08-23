@@ -2,8 +2,6 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
-import uk.co.eelpieconsulting.common.geo.model.Place;
-
 public class FeedImpl extends PublishedResourceImpl implements Feed {
 	
 	private static final long serialVersionUID = 1L;
@@ -67,23 +65,5 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
 	public void setWhakaokoId(String whakaokoId) {
 		this.whakaokoId = whakaokoId;
 	}
-
-	@Override
-	public Place getPlace() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setPlace(Place place) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getLocation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
+    
 }

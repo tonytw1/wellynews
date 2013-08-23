@@ -6,7 +6,7 @@ import java.util.List;
 
 import nz.co.searchwellington.feeds.rss.RssHttpFetcher;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedImpl;
@@ -61,15 +61,15 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 	/* (non-Javadoc)
 	 * @see nz.co.searchwellington.feeds.reading.FeedItemFetcher#fetchFeedItems(nz.co.searchwellington.model.Feed)
 	 */
-	public List<FeedNewsitem> fetchFeedItems(Feed feed) {
-		final List<FeedNewsitem> feedNewsitems = Lists.newArrayList();
+	public List<FrontendFeedNewsitem> fetchFeedItems(Feed feed) {
+		final List<FrontendFeedNewsitem> feedNewsitems = Lists.newArrayList();
 		final SyndFeed syndfeed = rssFetcher.httpFetch(feed.getUrl());
         if (syndfeed != null) {
             List entires = syndfeed.getEntries();
             for (Iterator iter = entires.iterator(); iter.hasNext();) {
             	try {
             		SyndEntry item = (SyndEntry) iter.next();
-            		FeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
+            		FrontendFeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
             		feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));	// TODO this is in the wrong place - should be an acceptance step
             		feedNewsitems.add(feedItem);
             		
@@ -86,7 +86,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
         return feedNewsitems;
 	}
 	
-	private FeedNewsitem extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
+	private FrontendFeedNewsitem extractNewsitemFromFeedEntire(Feed feed, SyndEntry item) {
         final String description = getBodyFromSyndItem(item);
         
         Date itemDate = null;
@@ -102,10 +102,12 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
 	    return makeFeednewsitemFromSyndEntry(feed, item, description, itemDate, url);
 	}
 	
-	private FeedNewsitem makeFeednewsitemFromSyndEntry(Feed feed, SyndEntry item, String description, Date itemDate, String url) {
+	private FrontendFeedNewsitem makeFeednewsitemFromSyndEntry(Feed feed, SyndEntry item, String description, Date itemDate, String url) {
 		FrontendFeed frontendFeed = new FrontendFeedImpl();
 		frontendFeed.setUrlWords(feed.getUrlWords());
-		FeedNewsitem feedItem = new FeedNewsitem(frontendFeed);
+		FrontendFeedNewsitem feedItem = new FrontendFeedNewsitem();
+		feedItem.setFeed(frontendFeed);
+		
         feedItem.setName(item.getTitle().trim());
         feedItem.setUrl(url);
         feedItem.setDescription(description);

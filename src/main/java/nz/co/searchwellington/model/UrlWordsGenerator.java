@@ -20,7 +20,7 @@ public class UrlWordsGenerator {
 			toLowerCase();
 	}
 	
-	public String markUrlForNewsitem(FrontendNewsitem newsitem) {
+	public String makeUrlForNewsitem(FrontendNewsitem newsitem) {
 		StringBuilder uri = new StringBuilder();
 		if (newsitem.getPublisherName() != null) {
 			uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName()));

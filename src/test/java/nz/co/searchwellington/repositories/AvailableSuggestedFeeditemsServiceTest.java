@@ -6,7 +6,7 @@ import java.util.List;
 
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
 
 import org.joda.time.DateTime;
@@ -29,10 +29,10 @@ public class AvailableSuggestedFeeditemsServiceTest {
 	
 	private List<Suggestion> allSuggestions;
 	@Mock Feed feed;
-	@Mock FeedNewsitem feedNewsitemOne;
-	@Mock FeedNewsitem feedNewsitemTwo;
-	@Mock FeedNewsitem feedNewsitemThree;
-	@Mock FeedNewsitem feedNewsitemFour;
+	@Mock FrontendFeedNewsitem feedNewsitemOne;
+	@Mock FrontendFeedNewsitem feedNewsitemTwo;
+	@Mock FrontendFeedNewsitem feedNewsitemThree;
+	@Mock FrontendFeedNewsitem feedNewsitemFour;
 	private AvailableSuggestedFeeditemsService service;
 	
 	@Before
@@ -54,7 +54,7 @@ public class AvailableSuggestedFeeditemsServiceTest {
 	
 	@Test
 	public void shouldReturnSuggestedFeeditemsWhichAreCurrentlyAvaileableTrimmedToMaxItems() throws Exception {		
-		List<FeedNewsitem> suggestionFeednewsitems = service.getAvailableSuggestedFeeditems(allSuggestions, 3);
+		List<FrontendFeedNewsitem> suggestionFeednewsitems = service.getAvailableSuggestedFeeditems(allSuggestions, 3);
 		assertEquals(3, suggestionFeednewsitems.size());
 	}
 	
@@ -62,7 +62,7 @@ public class AvailableSuggestedFeeditemsServiceTest {
 	public void shouldOmitSuggestionsIfTheFeedItemIsNoLongerAvailableIfTheFeedItemCache() throws Exception {
 		Mockito.when(rssfeedNewsitemService.getFeedNewsitemByUrl(feed, FEED_ITEM_URL_1)).thenReturn(null);
 		Mockito.when(rssfeedNewsitemService.getFeedNewsitemByUrl(feed, FEED_ITEM_URL_2)).thenReturn(null);
-		List<FeedNewsitem> suggestionFeednewsitems = service.getAvailableSuggestedFeeditems(allSuggestions, 3);
+		List<FrontendFeedNewsitem> suggestionFeednewsitems = service.getAvailableSuggestedFeeditems(allSuggestions, 3);
 		assertEquals(2, suggestionFeednewsitems.size());
 	}
 	

@@ -1,38 +1,34 @@
-package nz.co.searchwellington.model;
-
-import java.util.Date;
-import java.util.List;
-
-import uk.co.eelpieconsulting.common.geo.model.Place;
+package nz.co.searchwellington.model;	// TODO move to frontend package
 
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
-import nz.co.searchwellington.model.frontend.FrontendTag;
+import nz.co.searchwellington.model.frontend.FrontendNewsitemImpl;
 
-public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related to FeedNewsitem how? Both are frontend classes?
+public class FrontendFeedNewsitem extends FrontendNewsitemImpl implements FrontendNewsitem {
 
 	private static final long serialVersionUID = 1L;
 
-	FeedNewsitem feedNewsitem;
 	private boolean isSuppressed;
 	private Suggestion suggestion;
-	Integer localCopy;
-	private String urlWords;
+	private Integer localCopy;
+	private FrontendFeed feed;
+	private FrontendImage image;
+
+	private String publisherName;
 	
-    public FrontendFeedNewsitem(FeedNewsitem feedNewsitem) {
-    	this.feedNewsitem = feedNewsitem;
+    public FrontendFeedNewsitem() {
         this.isSuppressed = false;
     }
     
 	public FrontendFeed getFeed() {
-		return feedNewsitem.getFeed();
+		return feed;
 	}
 	
 	public FrontendImage getFrontendImage() {
-		return feedNewsitem.getImage();
+		return image;
 	}
-
+	
 	public Integer getLocalCopy() {
 		return localCopy;
 	}
@@ -58,114 +54,15 @@ public class FrontendFeedNewsitem implements FrontendNewsitem {	// TODO related 
 	}
 
 	public String getPublisherName() {
-		return feedNewsitem.getPublisherName();
+		return publisherName;
 	}
 
-	public final int getId() {
-		return feedNewsitem.getId();
+	public void setImage(FrontendImage image) {
+		this.image = image;
 	}
 
-	public final String getName() {
-		return feedNewsitem.getName();
-	}
-
-	public final String getUrl() {
-		return feedNewsitem.getUrl();
-	}
-
-	public final Date getDate() {
-		return feedNewsitem.getDate();
-	}
-
-	public final String getDescription() {
-		return feedNewsitem.getDescription();
-	}
-	
-	@Override
-	public String getType() {
-		return feedNewsitem.getType();
-	}
-
-	@Override
-	public int getHttpStatus() {
-		return feedNewsitem.getHttpStatus();
-	}
-
-	@Override
-	public Date getLiveTime() {
-		return feedNewsitem.getLiveTime();
-	}
-
-	@Override
-	public List<FrontendTag> getTags() {
-		return feedNewsitem.getTags();
-
-	}
-
-	@Override
-	public List<FrontendTag> getHandTags() {
-		return feedNewsitem.getHandTags();
-	}
-
-	@Override
-	public List<Twit> getRetweets() {
-		return feedNewsitem.getRetweets();
-	}
-
-	@Override
-	public String getAcceptedFromFeedName() {
-		return feedNewsitem.getAcceptedFromFeedName();
-	}
-
-	@Override
-	public String getAcceptedByProfilename() {
-		return feedNewsitem.getAcceptedByProfilename();
-	}
-
-	@Override
-	public List<Comment> getComments() {
-		return feedNewsitem.getComments();
-	}
-
-	@Override
-	public Date getAccepted() {
-		return feedNewsitem.getAccepted();
-	}
-
-	@Override
-	public Integer getOwnerId() {
-		return null;
-	}
-
-	public String getUrlWords() {
-		return urlWords;
-	}
-
-	public void setUrlWords(String urlWords) {
-		this.urlWords = urlWords;
-	}
-
-	@Override
-	public Place getPlace() {
-		return feedNewsitem.getPlace();
-	}
-
-	@Override
-	public void setPlace(Place place) {
-		// TODO Auto-generated method stub		
-	}
-
-	@Override
-	public String getLocation() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String toString() {
-		return "FrontendFeedNewsitem [feedNewsitem=" + feedNewsitem
-				+ ", isSuppressed=" + isSuppressed + ", localCopy=" + localCopy
-				+ ", suggestion=" + suggestion + ", urlWords=" + urlWords + "]";
+	public void setFeed(FrontendFeed feed) {
+		this.feed = feed;
 	}
 	
 }

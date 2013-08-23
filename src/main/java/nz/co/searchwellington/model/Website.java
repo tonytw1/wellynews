@@ -1,9 +1,8 @@
 package nz.co.searchwellington.model;
+
 import java.util.Set;
 
-import nz.co.searchwellington.model.frontend.FrontendWebsite;
-
-public interface Website extends Resource, FrontendWebsite {
+public interface Website extends Resource {
 	
     public Set<Feed> getFeeds();
  

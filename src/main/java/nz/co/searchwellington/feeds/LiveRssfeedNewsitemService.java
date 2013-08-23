@@ -5,7 +5,7 @@ import java.util.List;
 import nz.co.searchwellington.feeds.reading.FeedItemFetcher;
 import nz.co.searchwellington.feeds.reading.HttpFetchFeedReader;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import uk.co.eelpieconsulting.common.caching.CachableService;
 
 @Component
-public class LiveRssfeedNewsitemService implements CachableService<Feed, List<FeedNewsitem>> {
+public class LiveRssfeedNewsitemService implements CachableService<Feed, List<FrontendFeedNewsitem>> {
 		
     private static final int ONE_DAY = 60 * 60 * 24;
     
@@ -26,7 +26,7 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fe
 	}
 
     @Override
-	public List<FeedNewsitem> callService(Feed feed) {
+	public List<FrontendFeedNewsitem> callService(Feed feed) {
 		return getFeedNewsitems(feed);
 	}
 
@@ -40,7 +40,7 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fe
 		return ONE_DAY;
 	}
     
-	public List<FeedNewsitem> getFeedNewsitems(Feed feed) {
+	public List<FrontendFeedNewsitem> getFeedNewsitems(Feed feed) {
 		return httpFetchFeedReader.fetchFeedItems(feed);
     }
 	

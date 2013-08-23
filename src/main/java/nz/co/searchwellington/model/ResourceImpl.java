@@ -1,12 +1,7 @@
 package nz.co.searchwellington.model;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
-
-import nz.co.searchwellington.model.frontend.FrontendTag;
-
-import com.google.common.collect.Lists;
 
 public abstract class ResourceImpl implements Resource {
 	
@@ -136,16 +131,6 @@ public abstract class ResourceImpl implements Resource {
 	}
 	public void setHeld(boolean held) {
 		this.held = held;
-	}
-	
-	@Override
-	public List<FrontendTag> getTags() {
-		return Lists.newArrayList();
-	}
-	
-	@Override
-	public List<FrontendTag> getHandTags() {
-		return Lists.newArrayList();
 	}
 	
 	final public Integer getOwnerId() {

@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Suggestion;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +22,13 @@ public class AvailableSuggestedFeeditemsService {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 	}
 	
-	public List<FeedNewsitem> getAvailableSuggestedFeeditems(List<Suggestion> bareSuggestions, int maxItems) {
-		final List<FeedNewsitem> suggestions = Lists.newArrayList();
+	public List<FrontendFeedNewsitem> getAvailableSuggestedFeeditems(List<Suggestion> bareSuggestions, int maxItems) {
+		final List<FrontendFeedNewsitem> suggestions = Lists.newArrayList();
 		Iterator<Suggestion> bareSuggestionsIterator = bareSuggestions.iterator();		
 		while (suggestions.size() < maxItems && bareSuggestionsIterator.hasNext()) {
 			Suggestion suggestion = bareSuggestionsIterator.next();
 			if (suggestion.getFeed() != null) {
-				FeedNewsitem feednewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(suggestion.getFeed(), suggestion.getUrl());
+				FrontendFeedNewsitem feednewsitem = rssfeedNewsitemService.getFeedNewsitemByUrl(suggestion.getFeed(), suggestion.getUrl());
 				if (feednewsitem != null) {
 					suggestions.add(feednewsitem);
 				}

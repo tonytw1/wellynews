@@ -1,6 +1,5 @@
 package nz.co.searchwellington.model;
 
-import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public class CalendarFeed extends PublishedResourceImpl implements PublishedResource {
 	
@@ -18,24 +17,6 @@ public class CalendarFeed extends PublishedResourceImpl implements PublishedReso
 	
     public String getType() {
 		return "C";
-	}
-
-	@Override
-	public Place getPlace() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setPlace(Place place) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getLocation() {
-		// TODO Auto-generated method stub
-		return null;
 	}
     
 }

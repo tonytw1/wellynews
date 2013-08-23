@@ -2,6 +2,7 @@ package nz.co.searchwellington.urls;
 
 import java.util.Date;
 
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.SiteInformation;
 import nz.co.searchwellington.model.Tag;
@@ -60,6 +61,10 @@ public class UrlBuilder {
 	}
 	
 	public String getFeedUrl(FrontendFeed feed) {
+		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
+	}
+	
+	public String getFeedUrl(Feed feed) {
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
 	

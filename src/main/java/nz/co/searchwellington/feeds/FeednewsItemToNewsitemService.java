@@ -4,7 +4,7 @@ import java.util.HashSet;
 
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Image;
 import nz.co.searchwellington.model.Newsitem;
@@ -19,11 +19,11 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 public class FeednewsItemToNewsitemService {
 	
 	// TODO merge with addSuppressAndLocalCopyInformation?
-	public Newsitem makeNewsitemFromFeedItem(Feed feed, FeedNewsitem feedNewsitem) {
+	public Newsitem makeNewsitemFromFeedItem(Feed feed, FrontendFeedNewsitem feedNewsitem) {
 		// TODO why are we newing up an instance of our superclass?
 	    final String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : "";
 		final Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(), new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
-	    newsitem.setImage(new Image(feedNewsitem.getImage().getUrl(), null));
+	    newsitem.setImage(new Image(feedNewsitem.getFrontendImage().getUrl(), null));
 	    newsitem.setFeed(feed);
 	    newsitem.setPublisher(feed.getPublisher());
 	    
@@ -32,8 +32,8 @@ public class FeednewsItemToNewsitemService {
 			newsitem.setGeocode(mapPlaceToGeocode(place));
 	    }
 	    
-	    if (feedNewsitem.getImage() != null) {
-			newsitem.setImage(new Image(feedNewsitem.getImage().getUrl(), ""));
+	    if (feedNewsitem.getFrontendImage() != null) {
+			newsitem.setImage(new Image(feedNewsitem.getFrontendImage().getUrl(), ""));
 	    }
 	    
 	    return newsitem;

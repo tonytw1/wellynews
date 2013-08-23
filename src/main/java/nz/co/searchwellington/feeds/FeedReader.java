@@ -5,7 +5,7 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.modification.ContentUpdateService;
@@ -103,10 +103,11 @@ public class FeedReader {
     }
 	
 	private void processFeedItems(Feed feed, User feedReaderUser, String acceptancePolicy) {		
-		List<FeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
+		List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (!feedNewsitems.isEmpty()) {
 			feed.setHttpStatus(200);			
-			for (FeedNewsitem feednewsitem : feedNewsitems) {
+			for (FrontendFeedNewsitem feednewsitem : feedNewsitems) {
+				// TODO new up a new copy before modifying
 				String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
 				feednewsitem.setUrl(cleanSubmittedItemUrl);
 		    

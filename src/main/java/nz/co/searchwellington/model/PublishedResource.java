@@ -4,6 +4,7 @@ public interface PublishedResource extends Resource {
     
     public Website getPublisher();   
     public void setPublisher(Website publisher);
-    
+  
     public String getPublisherName();
+    
 }

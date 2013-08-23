@@ -215,13 +215,14 @@ public class ResourceEditController {
         }
         
         acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, acceptedNewsitem);
-		ModelAndView modelAndView = new ModelAndView("acceptResource");
+		
+        final ModelAndView modelAndView = new ModelAndView("acceptResource");
 		commonModelObjectsService.populateCommonLocal(modelAndView);
 		modelAndView.addObject("heading", "Accepting a submission");
 		modelAndView.addObject("resource", acceptedNewsitem);
 		modelAndView.addObject("publisher_select", "1");
 		modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(new HashSet<Tag>()));
-		modelAndView.addObject("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(acceptedNewsitem.getAcceptedFromFeedName()));
+		modelAndView.addObject("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(acceptedNewsitem.getFeed() != null ? acceptedNewsitem.getFeed().getName() : null));				
 		return modelAndView;
     }
     

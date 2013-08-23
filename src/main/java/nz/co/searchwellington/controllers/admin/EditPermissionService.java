@@ -1,7 +1,9 @@
 package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
+import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
+import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
@@ -24,22 +26,40 @@ public class EditPermissionService {
 		return isAdminOrOwner(resource, loggedInUser);
 	}
 	
+	public boolean canEdit(Resource resource) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return isAdminOrOwner(resource, loggedInUser);
+	}
 	
 	public boolean canDelete(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return isAdminOrOwner(resource, loggedInUser);
 	}
 	
+	public boolean canDelete(Resource resource) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return isAdminOrOwner(resource, loggedInUser);
+	}
+
 	public boolean canDecache(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
+	
+	public boolean canDecache(Feed feed) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return loggedInUser != null && loggedInUser.isAdmin();
+	}	
 	
 	public boolean canAcceptAllFrom(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}
 
+	public boolean canAcceptAllFrom(Feed feed) {
+		User loggedInUser = loggedInUserFilter.getLoggedInUser();
+		return loggedInUser != null && loggedInUser.isAdmin();
+	}
 	
 	public boolean canCheck(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
@@ -85,7 +105,20 @@ public class EditPermissionService {
 		}
 		return false;
 	}
-
+	
+	private boolean isAdminOrOwner(Resource resource, User loggedInUser) {
+		if (loggedInUser == null) {
+			return false;
+		}
+		if (loggedInUser.isAdmin()) {
+			return true;
+		}	
+		if (resource.getOwner() != null && loggedInUser.getId() == resource.getOwner().getId()) {
+			return true;
+		}
+		return false;
+	}
+	
 	public boolean canAcceptFeedItems(User loggedInUser) {
 		return loggedInUser != null && loggedInUser.isAdmin();
 	}

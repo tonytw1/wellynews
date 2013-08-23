@@ -98,8 +98,8 @@ public class ElasticSearchIndexUpdateService {
 			final Newsitem contentItemNewsitem = (Newsitem) contentItem;
 			FrontendNewsitemImpl frontendNewsitem = new FrontendNewsitemImpl();
 			frontendNewsitem.setPublisherName(contentItemNewsitem.getPublisherName());
-			frontendNewsitem.setAcceptedFromFeedName(contentItemNewsitem.getAcceptedFromFeedName());
-			frontendNewsitem.setAcceptedByProfilename(contentItemNewsitem.getAcceptedByProfilename());
+			frontendNewsitem.setAcceptedFromFeedName(contentItemNewsitem.getFeed() != null ? contentItemNewsitem.getFeed().getName() : null);
+			frontendNewsitem.setAcceptedByProfilename(contentItemNewsitem.getAcceptedBy() != null ? contentItemNewsitem.getAcceptedBy().getProfilename() : null);
 			frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted());
 			if (contentItemNewsitem.getImage() != null) {
 				frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage().getUrl()));
@@ -121,12 +121,11 @@ public class ElasticSearchIndexUpdateService {
 		frontendContentItem.setUrl(contentItem.getUrl());
 		frontendContentItem.setDate(contentItem.getDate());
 		frontendContentItem.setDescription(contentItem.getDescription());
-		frontendContentItem.setTags(contentItem.getTags());
 		frontendContentItem.setHttpStatus(contentItem.getHttpStatus());
 		
 		frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(contentItem.getName()));
 		if (frontendContentItem.getType().equals("N")) {
-			frontendContentItem.setUrlWords(urlWordsGenerator.markUrlForNewsitem((FrontendNewsitem) frontendContentItem));
+			frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlForNewsitem((FrontendNewsitem) frontendContentItem));
 		} else if (frontendContentItem.getType().equals("F")) {
 			frontendContentItem.setUrlWords("/feed/" + urlWordsGenerator.makeUrlWordsFromName(contentItem.getName()));
 		}

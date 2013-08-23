@@ -2,7 +2,6 @@ package nz.co.searchwellington.feeds;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.FeedNewsitem;
 import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
@@ -26,13 +25,11 @@ public class FeedItemLocalCopyDecorator {
 		this.suppressionDAO = suppressionDAO;
 	}
 	
-	public List<FrontendNewsitem> addSupressionAndLocalCopyInformation(List<FeedNewsitem> feedNewsitems) {
+	public List<FrontendNewsitem> addSupressionAndLocalCopyInformation(List<FrontendFeedNewsitem> feedNewsitems) {
 		final List<FrontendNewsitem> decoratedFeednewsitems = Lists.newArrayList();
-		for (FeedNewsitem feedNewsitem : feedNewsitems) {
-
-			FrontendFeedNewsitem frontendFeedNewsitem = new FrontendFeedNewsitem(feedNewsitem);
-			if (feedNewsitem.getUrl() != null) {
-				
+		for (FrontendFeedNewsitem feedNewsitem : feedNewsitems) {
+			final FrontendFeedNewsitem frontendFeedNewsitem = feedNewsitem;	// TODO new up to keep original clean
+			if (feedNewsitem.getUrl() != null) {				
 				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());	// TODO expensive?
 				if (localCopy != null) {
 					frontendFeedNewsitem.setLocalCopy(localCopy.getId());

@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;
@@ -41,7 +41,7 @@ public class FeedAcceptanceDecider {
     }
     
     @Transactional(propagation = Propagation.REQUIRES_NEW) 
-    public List<String> getAcceptanceErrors(Feed feed, FeedNewsitem feedNewsitem, String feedAcceptancePolicy) {
+    public List<String> getAcceptanceErrors(Feed feed, FrontendFeedNewsitem feedNewsitem, String feedAcceptancePolicy) {
         final List<String> acceptanceErrors = Lists.newArrayList();
         final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl());
 		final boolean isSuppressed = supressionDAO.isSupressed(cleanedUrl);
@@ -63,7 +63,7 @@ public class FeedAcceptanceDecider {
         return acceptanceErrors;        
     }
     
-	public boolean shouldSuggest(FeedNewsitem feednewsitem) {
+	public boolean shouldSuggest(FrontendFeedNewsitem feednewsitem) {
 		String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
 		final boolean isSuppressed = supressionDAO.isSupressed(cleanSubmittedItemUrl);
 		final boolean isAlreadySuggested = suggestionDAO.isSuggested(cleanSubmittedItemUrl);
@@ -76,7 +76,7 @@ public class FeedAcceptanceDecider {
 		return acceptanceErrors.isEmpty();		
 	}
 	
-    private void hasDateInTheFuture(FeedNewsitem resource, List<String> acceptanceErrors) {
+    private void hasDateInTheFuture(FrontendFeedNewsitem resource, List<String> acceptanceErrors) {
     	Calendar oneDayFromNow = Calendar.getInstance();
     	oneDayFromNow.add(Calendar.DATE, 1);  	
         if(resource.getDate() != null && resource.getDate().after(oneDayFromNow.getTime())) {
@@ -87,7 +87,7 @@ public class FeedAcceptanceDecider {
         }    
 	}
     
-	private void alreadyHaveThisFeedItem(FeedNewsitem resourceFromFeed, List<String> acceptanceErrors) {
+	private void alreadyHaveThisFeedItem(FrontendFeedNewsitem resourceFromFeed, List<String> acceptanceErrors) {
         String url = urlCleaner.cleanSubmittedItemUrl(resourceFromFeed.getUrl());
         if (resourceDAO.loadResourceByUrl(url) !=  null) {
             log.debug("A resource with url '" + resourceFromFeed.getUrl() + "' already exists; not accepting.");
@@ -96,14 +96,14 @@ public class FeedAcceptanceDecider {
     }
     
 	// TODO acceptance errors are really moderation votes which human voters should probably be able to overrule.
-	private void alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(FeedNewsitem resource, List<String> acceptanceErrors, Feed feed) {
+	private void alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(FrontendFeedNewsitem resource, List<String> acceptanceErrors, Feed feed) {
 		 if (resourceDAO.loadNewsitemByHeadlineAndPublisherWithinLastMonth(resource.getName(), feed.getPublisher()) !=  null) {
 			 log.info("A recent resource from the same publisher with the same headline '" + resource.getName() + "' already exists; not accepting.");
 			 acceptanceErrors.add("A recent resource from the same publisher with the same headline already exists; not accepting.");
 		 }
 	}
 	
-    private void lessThanOneWeekOld(FeedNewsitem feedNewsitem, String feedAcceptancePolicy, List<String> acceptanceErrors) {      
+    private void lessThanOneWeekOld(FrontendFeedNewsitem feedNewsitem, String feedAcceptancePolicy, List<String> acceptanceErrors) {      
         if (feedAcceptancePolicy != null && feedAcceptancePolicy.equals("accept_without_dates")) {
             return;                        
         }

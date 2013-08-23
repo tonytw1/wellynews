@@ -2,7 +2,6 @@ package nz.co.searchwellington.views;
 
 import java.util.List;
 
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
 import org.apache.log4j.Logger;
@@ -30,10 +29,10 @@ public class GoogleMapsDisplayCleaner {
         return dedupe(geocoded, null);
     }
 
-    public List<FrontendResource> dedupe(List<FrontendResource> geocoded, Resource selected) {      
+    public List<FrontendResource> dedupe(List<FrontendResource> geocoded, FrontendResource selected) {      
         log.debug("Deduping collection with " + geocoded.size() + " items");
         final List<FrontendResource> deduped = Lists.newArrayList();
-        if (selected != null && selected.getGeocode() != null) {
+        if (selected != null && selected.getPlace() != null) {
             deduped.add(selected);
         }
         

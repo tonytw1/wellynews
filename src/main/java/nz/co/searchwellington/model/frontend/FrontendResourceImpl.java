@@ -34,7 +34,7 @@ public class FrontendResourceImpl implements FrontendResource, RssFeedable {
 	final public void setId(int id) {
 		this.id = id;
 	}
-	public String getType() {
+	final public String getType() {
 		return type;
 	}
 	final public void setType(String type) {

@@ -1,11 +1,10 @@
 package nz.co.searchwellington.model;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
-import nz.co.searchwellington.model.frontend.FrontendNewsitem;
-
-public interface Newsitem extends PublishedResource, Commentable, FrontendNewsitem {
+public interface Newsitem extends PublishedResource, Commentable {
 
 	public Image getImage();
 
@@ -21,6 +20,9 @@ public interface Newsitem extends PublishedResource, Commentable, FrontendNewsit
 
 	public void setAccepted(Date accepted);
 
+	public User getAcceptedBy();
 	public void setAcceptedBy(User user);
-	
+
+	public List<Twit> getRetweets();
+		
 }

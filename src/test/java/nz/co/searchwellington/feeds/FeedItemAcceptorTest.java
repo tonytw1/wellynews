@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds;
 import java.sql.Date;
 
 import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedNewsitem;
+import nz.co.searchwellington.model.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
@@ -18,7 +18,7 @@ public class FeedItemAcceptorTest {
 	
 	@Mock Newsitem feednewsitem;
 	@Mock Feed feed;
-	@Mock FeedNewsitem feedNewsitem;
+	@Mock FrontendFeedNewsitem feedNewsitem;
 	@Mock Website publisher;
 	
 	private FeedItemAcceptor feedItemAcceptor;
