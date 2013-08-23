@@ -121,7 +121,6 @@ public class FrontendResourceImpl implements FrontendResource, RssFeedable {
 	
 	@Override
 	public String getImageUrl() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	@Override

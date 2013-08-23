@@ -3,10 +3,12 @@ package nz.co.searchwellington.model.frontend;
 import java.util.Date;
 import java.util.List;
 
+import uk.co.eelpieconsulting.common.views.rss.RssFeedable;
+
 import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.Twit;
 
-public class FrontendNewsitemImpl extends FrontendResourceImpl implements FrontendNewsitem {
+public class FrontendNewsitemImpl extends FrontendResourceImpl implements FrontendNewsitem, RssFeedable {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -73,14 +75,19 @@ public class FrontendNewsitemImpl extends FrontendResourceImpl implements Fronte
 		return publisherName;
 	}
 	
-	public FrontendImage getFrontendImage() {
+	public FrontendImage getFrontendImage() {	// TODO rename to getImage
 		return image;
 	}
 
 	public void setFrontendImage(FrontendImage image) {
 		this.image = image;
 	}
-
+	
+	@Override
+	public String getImageUrl() {
+		return image != null ? image.getUrl() : null;
+	}
+	
 	@Override
 	public String toString() {
 		return "FrontendNewsitemImpl [accepted=" + accepted
