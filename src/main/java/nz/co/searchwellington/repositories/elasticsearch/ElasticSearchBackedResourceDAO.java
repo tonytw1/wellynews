@@ -357,7 +357,7 @@ public class ElasticSearchBackedResourceDAO {
 
 	public List<FrontendResource> getNewsitemsForMonth(Date month, boolean shouldShowBroken) {
 		DateTime monthDateTime = new DateTime(month);
-		DateTime startOfMonth = monthDateTime.minusDays(monthDateTime.getDayOfMonth());	// TODO not quite right - off by a day.
+		DateTime startOfMonth = monthDateTime.toDateMidnight().withDayOfMonth(1).toDateTime();
 		DateTime endOfMonth = startOfMonth.plusMonths(1);
 		
 		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem()).
