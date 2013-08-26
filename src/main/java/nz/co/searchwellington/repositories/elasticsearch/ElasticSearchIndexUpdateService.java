@@ -121,6 +121,7 @@ public class ElasticSearchIndexUpdateService {
 		frontendContentItem.setDate(contentItem.getDate());
 		frontendContentItem.setDescription(contentItem.getDescription());
 		frontendContentItem.setHttpStatus(contentItem.getHttpStatus());
+		frontendContentItem.setHeld(contentItem.isHeld());
 		
 		frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(contentItem.getName()));
 		if (frontendContentItem.getType().equals("N")) {

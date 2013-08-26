@@ -25,6 +25,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -513,7 +514,9 @@ public class ElasticSearchBackedResourceDAO {
 	
 	private void addShouldShowBrokenClause(BoolQueryBuilder query, boolean shouldShowBroken) {
 		if (!shouldShowBroken) {
-			query = query.must(QueryBuilders.termQuery("httpStatus", "200")); 	// TODO owner clause as well
+			// TODO owner clause as well
+			query = query.must(QueryBuilders.termQuery("httpStatus", "200"));
+			query = query.must(QueryBuilders.termQuery("held", false));
 		}
 		return;
 	}

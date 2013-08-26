@@ -28,6 +28,7 @@ public class FrontendResource implements RssFeedable, Serializable {
     private List<FrontendTag> handTags;
     private Integer ownerId;
     private Place place;
+    private boolean held;
 	
 	final public int getId() {
 		return id;
@@ -115,6 +116,13 @@ public class FrontendResource implements RssFeedable, Serializable {
 		return null;
 	}
 	
+	public boolean isHeld() {
+		return held;
+	}
+	public void setHeld(boolean held) {
+		this.held = held;
+	}
+	
 	@Override
 	public String getHeadline() {
 		return name;
@@ -138,5 +146,7 @@ public class FrontendResource implements RssFeedable, Serializable {
 	public String getAuthor() {
 		return null;
 	}
+	
+	
 	
 }
