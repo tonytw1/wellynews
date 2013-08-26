@@ -11,7 +11,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class FrontendResource implements RssFeedable {
+public class FrontendResource implements RssFeedable, Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
