@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model.frontend;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
