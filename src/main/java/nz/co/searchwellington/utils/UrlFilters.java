@@ -5,9 +5,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import uk.co.eelpieconsulting.common.html.HtmlCleaner;
+
 public class UrlFilters {
     
     private static final String HTTP_PREFIX = "http://";
+    
+	private static HtmlCleaner htmlCleaner = new HtmlCleaner();
     
     protected static String stripPhpSession(String url) {	// TODO wants to move to external feed lister service   
         final String PHP_SESSION_REGEX = "[&\\?]PHPSESSID=[0-9|a-f]{32}";
@@ -65,9 +69,8 @@ public class UrlFilters {
         return url;
     }
     
-    public static String stripHtml(String content) {	// TODO available in common-html    
-        Pattern p = Pattern.compile("<.*?>");
-        return p.matcher(content).replaceAll("");    
+    public static String stripHtml(String content) {
+		return htmlCleaner.stripHtml(content);        
     }
     
 	public static String stripFeedburnerParams(String url) {
