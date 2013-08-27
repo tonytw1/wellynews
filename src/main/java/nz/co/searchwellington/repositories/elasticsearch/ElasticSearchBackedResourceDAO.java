@@ -25,7 +25,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -523,6 +522,7 @@ public class ElasticSearchBackedResourceDAO {
 
 	private void addDateDescendingOrder(final SearchRequestBuilder searchRequestBuilder) {
 		searchRequestBuilder.addSort(DATE, SortOrder.DESC);
+		searchRequestBuilder.addSort("id", SortOrder.DESC);
 	}
 
 	private void addNameOrder(final SearchRequestBuilder searchRequestBuilder) {
