@@ -3,7 +3,7 @@ package nz.co.searchwellington.utils;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import nz.co.searchwellington.urls.CachingUrlResolverService;
+import nz.co.searchwellington.urls.shorturls.CachingUrlResolverService;
 
 import org.junit.Before;
 import org.junit.Test;

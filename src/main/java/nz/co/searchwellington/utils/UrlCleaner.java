@@ -1,6 +1,6 @@
 package nz.co.searchwellington.utils;
 
-import nz.co.searchwellington.urls.CachingUrlResolverService;
+import nz.co.searchwellington.urls.shorturls.CachingUrlResolverService;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
