@@ -26,7 +26,7 @@ public class FrontendResource implements RssFeedable, Serializable {
     private Date liveTime;
     private List<FrontendTag> tags;
     private List<FrontendTag> handTags;
-    private Integer ownerId;
+    private String owner;
     private Place place;
     private boolean held;
 	
@@ -90,11 +90,11 @@ public class FrontendResource implements RssFeedable, Serializable {
 	final public void setHandTags(List<FrontendTag> handTags) {
 		this.handTags = handTags;
 	}	
-	final public Integer getOwnerId() {
-		return ownerId;
+	final public String getOwner() {
+		return owner;
 	}
-	final public void setOwnerId(Integer ownerId) {
-		this.ownerId = ownerId;
+	final public void setOwner(String owner) {
+		this.owner = owner;
 	}
 	public String getUrlWords() {
 		return urlWords;
@@ -146,7 +146,5 @@ public class FrontendResource implements RssFeedable, Serializable {
 	public String getAuthor() {
 		return null;
 	}
-	
-	
 	
 }

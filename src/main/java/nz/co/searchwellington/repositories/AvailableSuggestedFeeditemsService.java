@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+@Deprecated
 @Component
 public class AvailableSuggestedFeeditemsService {
 	

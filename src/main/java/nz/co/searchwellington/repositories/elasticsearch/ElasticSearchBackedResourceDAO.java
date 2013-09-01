@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.ArchiveLink;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.Tag;
@@ -17,6 +18,7 @@ import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 
+import org.apache.lucene.queryparser.xml.builders.BooleanQueryBuilder;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.Lists;
@@ -25,6 +27,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
 import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.index.query.TermQueryBuilder;
 import org.elasticsearch.search.SearchHit;
@@ -60,10 +63,12 @@ public class ElasticSearchBackedResourceDAO {
 	
 	private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final ObjectMapper objectMapper;
+	private final LoggedInUserFilter loggedInUserFilter;	// TODO does this cause alot of ESBRDs to be spawned because LIUF is request scoped?
 	
 	@Autowired
-	public ElasticSearchBackedResourceDAO(ElasticSearchClientFactory elasticSearchClientFactory) {
+	public ElasticSearchBackedResourceDAO(ElasticSearchClientFactory elasticSearchClientFactory, LoggedInUserFilter loggedInUserFilter) {
 		this.elasticSearchClientFactory = elasticSearchClientFactory;
+		this.loggedInUserFilter = loggedInUserFilter;
 		this.objectMapper = new ObjectMapper();		
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	   }
@@ -513,9 +518,16 @@ public class ElasticSearchBackedResourceDAO {
 	
 	private void addShouldShowBrokenClause(BoolQueryBuilder query, boolean shouldShowBroken) {
 		if (!shouldShowBroken) {
-			// TODO owner clause as well
-			query = query.must(QueryBuilders.termQuery("httpStatus", "200"));
-			query = query.must(QueryBuilders.termQuery("held", false));
+			final TermQueryBuilder contentIsOk = QueryBuilders.termQuery("httpStatus", "200");
+			final TermQueryBuilder contentIsApproved = QueryBuilders.termQuery("held", false);			
+			final BoolQueryBuilder contentIsPublic = QueryBuilders.boolQuery().must(contentIsOk).must(contentIsApproved);
+			
+			final BoolQueryBuilder userCanViewContent = QueryBuilders.boolQuery().minimumNumberShouldMatch(1).should(contentIsPublic);			
+			if (loggedInUserFilter.getLoggedInUser() != null) {
+				userCanViewContent.should(QueryBuilders.termQuery("owner", loggedInUserFilter.getLoggedInUser().getProfilename()));
+			}
+			
+			query = query.must(userCanViewContent);
 		}
 		return;
 	}

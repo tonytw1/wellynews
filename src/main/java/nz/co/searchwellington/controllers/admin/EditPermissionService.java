@@ -11,6 +11,8 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Component
 public class EditPermissionService {
 	
@@ -100,7 +102,7 @@ public class EditPermissionService {
 		if (loggedInUser.isAdmin()) {
 			return true;
 		}	
-		if (resource.getOwnerId() != null && loggedInUser.getId() == resource.getOwnerId()) {
+		if (!Strings.isNullOrEmpty(resource.getOwner()) && loggedInUser.getProfilename() == resource.getOwner()) {
 			return true;
 		}
 		return false;

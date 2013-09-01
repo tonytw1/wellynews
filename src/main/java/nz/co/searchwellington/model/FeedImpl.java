@@ -10,7 +10,7 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
     String acceptancePolicy;
     Date latestItemDate;
     Date lastRead;
-    private String whakaokoId;
+    String whakaokoId;
     
     public FeedImpl() {
     }
@@ -65,5 +65,12 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
 	public void setWhakaokoId(String whakaokoId) {
 		this.whakaokoId = whakaokoId;
 	}
-    
+
+	@Override
+	public String toString() {
+		return "FeedImpl [acceptancePolicy=" + acceptancePolicy + ", lastRead="
+				+ lastRead + ", latestItemDate=" + latestItemDate
+				+ ", whakaokoId=" + whakaokoId + "]";
+	}
+        
 }

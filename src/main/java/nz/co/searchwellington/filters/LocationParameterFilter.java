@@ -76,7 +76,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 		if(request.getParameter(LOCATION) != null) {
 			final String location = request.getParameter(LOCATION);
 			List<Place> matchingPlaces = geoCodeService.resolveAddress(location);
-			if (!matchingPlaces.isEmpty()) {
+			if (matchingPlaces != null && !matchingPlaces.isEmpty()) {
 				final Place firstMatch = matchingPlaces.get(0);
 				log.info("User supplied location '" + location + "' resolved to point: " + firstMatch.getLatLong());				
 				request.setAttribute(LOCATION, firstMatch);

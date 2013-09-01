@@ -38,24 +38,29 @@ public class ContentUpdateService {
 	@Transactional
 	public void update(Resource resource) {
 		log.info("Updating content for: " + resource.getName());
-		boolean resourceUrlHasChanged = false;
-		boolean newSubmission = resource.getId() == 0;
-		if (!newSubmission) {
-			Resource existingResource = resourceDAO.loadResourceById(resource.getId());
-			resourceUrlHasChanged = !resource.getUrl().equals(existingResource.getUrl());			
+		try {
+			boolean resourceUrlHasChanged = false;
+			boolean newSubmission = resource.getId() == 0;
+			if (!newSubmission) {
+				Resource existingResource = resourceDAO.loadResourceById(resource.getId());
+				resourceUrlHasChanged = !resource.getUrl().equals(existingResource.getUrl());			
+			}
+			
+			if (newSubmission || resourceUrlHasChanged) {
+				resource.setHttpStatus(0);
+			}
+			
+			final boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
+	
+			save(resource);
+			
+			if (needsLinkCheck) {
+				linkCheckerQueue.add(resource);
+			}
+			
+		} catch (Exception e) {
+			log.error("Error: ", e);
 		}
-		
-		if (newSubmission || resourceUrlHasChanged) {
-			resource.setHttpStatus(0);
-		}
-		
-		final boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
-
-		save(resource);
-		
-		if (needsLinkCheck) {
-			linkCheckerQueue.add(resource);
-		}		
 	}
 	
 	@Transactional

@@ -12,6 +12,8 @@ import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.FeednewsItemToNewsitemService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
+import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader;
+import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
 import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
@@ -39,6 +41,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
+import uk.co.eelpieconsulting.common.http.HttpFetchException;
+import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
+import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
+import uk.co.eelpieconsulting.whakaoro.client.WhakaoroClient;
+import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException;
+import uk.co.eelpieconsulting.whakaoro.client.model.Subscription;
+
+import com.google.common.base.Strings;
+
 @Controller
 public class ResourceEditController {
     
@@ -64,6 +76,7 @@ public class ResourceEditController {
 	private UrlStack urlStack;
 	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	private UrlWordsGenerator urlWordsGenerator;
+	private WhakaoroClientFactory whakaoroClientFactory;
 	
 	public ResourceEditController() {
 	}
@@ -86,7 +99,8 @@ public class ResourceEditController {
 			ResourceFactory resourceFactory,
 			CommonModelObjectsService commonModelObjectsService,
 			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
-			UrlWordsGenerator urlWordsGenerator) {
+			UrlWordsGenerator urlWordsGenerator, 
+			WhakaoroClientFactory whakaoroClientFactory) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -107,6 +121,7 @@ public class ResourceEditController {
 		this.commonModelObjectsService = commonModelObjectsService;
 		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 		this.urlWordsGenerator = urlWordsGenerator;
+		this.whakaoroClientFactory = whakaoroClientFactory;
 	}
     
     @Transactional	
@@ -397,6 +412,12 @@ public class ResourceEditController {
             if (isPublicSubmission) {
             	log.info("This is a public submission; marking as held");
             	editResource.setHeld(true);
+            }
+            
+            if (editResource.getType().equals("F") && !Strings.isNullOrEmpty(editResource.getUrl())) {
+            	// TODO deletes and renames
+            	String createFeedSubscription = whakaoroClientFactory.createFeedSubscription(editResource.getUrl());
+            	((Feed) editResource).setWhakaokoId(createFeedSubscription);				
             }
             
             boolean okToSave = !newSubmission || !isSpamUrl || loggedInUser != null;

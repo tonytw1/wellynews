@@ -120,8 +120,12 @@ public class ElasticSearchIndexUpdateService {
 		frontendContentItem.setUrl(contentItem.getUrl());
 		frontendContentItem.setDate(contentItem.getDate());
 		frontendContentItem.setDescription(contentItem.getDescription());
+		
 		frontendContentItem.setHttpStatus(contentItem.getHttpStatus());
 		frontendContentItem.setHeld(contentItem.isHeld());
+		if (contentItem.getOwner() != null) {	// TODO should never be null
+			frontendContentItem.setOwner(contentItem.getOwner().getProfilename());
+		}
 		
 		frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(contentItem.getName()));
 		if (frontendContentItem.getType().equals("N")) {

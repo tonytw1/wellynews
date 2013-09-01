@@ -204,6 +204,10 @@ public class HibernateResourceDAO {
 		return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();
 	}
 	
+	public Feed loadFeedByWhakaoroId(String whakaoroId) {
+		return (Feed) sessionFactory.getCurrentSession().createCriteria(Feed.class).add(Restrictions.eq("whakaokoId", whakaoroId)).setMaxResults(1).uniqueResult();
+	}
+	
 	public Resource loadByUrlWords(String urlWords) {
 		return (Resource) sessionFactory.getCurrentSession().createCriteria(Resource.class).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult();
 	}
@@ -242,7 +246,7 @@ public class HibernateResourceDAO {
 			// TODO can this be done for just the publisher only?
 			sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds");
 		}
-
+		
 		// TODO for related tags, can we be abit more subtle than this?
 		// Clear related tags query.
 		// sessionFactory.evictQueries();

@@ -62,6 +62,8 @@
 				#parse("includes/geocodedjs.vm")
 			#end
 			
+			Whakaoko id: $feed.whakaokoId
+			
 			#parse("includes/main_content.vm")
 						
 		#else 

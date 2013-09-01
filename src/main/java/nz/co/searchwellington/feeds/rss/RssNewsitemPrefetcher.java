@@ -2,8 +2,8 @@ package nz.co.searchwellington.feeds.rss;
 
 import java.util.List;
 
-import nz.co.searchwellington.feeds.CachingRssfeedNewsitemService;
 import nz.co.searchwellington.feeds.FeedReaderRunner;
+import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
+import com.google.common.base.Strings;
 
 @Component
 public class RssNewsitemPrefetcher {
@@ -20,52 +20,45 @@ public class RssNewsitemPrefetcher {
 	private static Logger log = Logger.getLogger(RssNewsitemPrefetcher.class);
 
 	private HibernateResourceDAO resourceDAO;
-	private CachingRssfeedNewsitemService cachingRssfeedNewsitemService;
+	private WhakaoroClientFactory whakaoroClientFactory;
 	private FeedReaderRunner feedReaderRunner;
-
-	private boolean isFeedReadingEnabled = true;
 	
 	public RssNewsitemPrefetcher() {		
 	}
 	
 	@Autowired
-	public RssNewsitemPrefetcher(HibernateResourceDAO resourceDAO,
-			CachingRssfeedNewsitemService cachingRssfeedNewsitemService,
-			FeedReaderRunner feedReaderRunner) {
-		this.resourceDAO = resourceDAO;
-		this.cachingRssfeedNewsitemService = cachingRssfeedNewsitemService;
+	public RssNewsitemPrefetcher(HibernateResourceDAO resourceDAO, WhakaoroClientFactory whakaoroClientFactory, FeedReaderRunner feedReaderRunner) {
+		this.resourceDAO = resourceDAO;	
+		this.whakaoroClientFactory = whakaoroClientFactory;
 		this.feedReaderRunner = feedReaderRunner;
 	}
 	
     @Transactional
-	public void run() {    	
-    	if (!isFeedReadingEnabled) {
-    		log.info("Not prefetching feeds as feeds are disabled by config.");
-    		return;
-    	}
-    	
+	public void run() {
 		final List<Feed> allFeeds = resourceDAO.getAllFeeds();
-		for (Feed feed : decideWhichFeedsToDecache(allFeeds)) {
-			cachingRssfeedNewsitemService.getFeedNewsitems(feed);
+    	registerFeedWithWhakaoko(allFeeds);
+    	feedReaderRunner.readAllFeeds(allFeeds);
+    }
+
+    @Transactional
+	private void registerFeedWithWhakaoko(List<Feed> allFeeds) {
+		log.info("Registering whakaoro feeds");
+		for (Feed feed : (allFeeds)) {
+			if (!Strings.isNullOrEmpty(feed.getUrl())) {
+				log.info("Registering feed: " + feed.getName());
+				final String createdSubscriptionId = whakaoroClientFactory.createFeedSubscription(feed.getUrl());
+
+				log.info("Setting feed whakaoko id to: " + createdSubscriptionId);
+				feed.setWhakaokoId(createdSubscriptionId);				
+				resourceDAO.saveResource(feed);
+				log.info(feed.getClass());
+				log.info(feed.toString());
+			}		
 		}
-		
-		feedReaderRunner.readAllFeeds(allFeeds);
-	}
-    
-    // TODO implement something other than all here
-	private List<Feed> decideWhichFeedsToDecache(List<Feed> allFeeds) {
-		final List<Feed> feedsToDecache = Lists.newArrayList();
-		log.info("Deciding which feeds to decache");
-		for (Feed feed : allFeeds) {
-			log.debug("Feed '" + feed.getName() + "' was last read at: " + feed.getLastRead());
-			feedsToDecache.add(feed);
-		}
-		return feedsToDecache;
 	}
 
 	public void decacheAndLoad(Feed feed) {
-		cachingRssfeedNewsitemService.decache(feed);
-		cachingRssfeedNewsitemService.getFeedNewsitems(feed);
+		// TODO Auto-generated method stub
 	}
 	
 }

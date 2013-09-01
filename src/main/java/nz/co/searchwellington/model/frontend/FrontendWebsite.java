@@ -16,18 +16,19 @@ public class FrontendWebsite extends FrontendResource {
 
 	@Override
 	public String toString() {
-		return "FrontendWebsiteImpl [urlWords=" + urlWords + ", getAuthor()="
-				+ getAuthor() + ", getDate()=" + getDate()
-				+ ", getDescription()=" + getDescription() + ", getHandTags()="
-				+ getHandTags() + ", getHeadline()=" + getHeadline()
-				+ ", getHttpStatus()=" + getHttpStatus() + ", getId()="
-				+ getId() + ", getImageUrl()=" + getImageUrl()
-				+ ", getLatLong()=" + getLatLong() + ", getLiveTime()="
-				+ getLiveTime() + ", getLocation()=" + getLocation()
-				+ ", getName()=" + getName() + ", getOwnerId()=" + getOwnerId()
-				+ ", getPlace()=" + getPlace() + ", getTags()=" + getTags()
-				+ ", getType()=" + getType() + ", getUrl()=" + getUrl()
-				+ ", getWebUrl()=" + getWebUrl() + "]";
+		return "FrontendWebsite [urlWords=" + urlWords + ", getUrlWords()="
+				+ getUrlWords() + ", getAuthor()=" + getAuthor()
+				+ ", getDate()=" + getDate() + ", getDescription()="
+				+ getDescription() + ", getHandTags()=" + getHandTags()
+				+ ", getHeadline()=" + getHeadline() + ", getHttpStatus()="
+				+ getHttpStatus() + ", getId()=" + getId() + ", getImageUrl()="
+				+ getImageUrl() + ", getLatLong()=" + getLatLong()
+				+ ", getLiveTime()=" + getLiveTime() + ", getLocation()="
+				+ getLocation() + ", getName()=" + getName() + ", getOwner()="
+				+ getOwner() + ", getPlace()=" + getPlace() + ", getTags()="
+				+ getTags() + ", getType()=" + getType() + ", getUrl()="
+				+ getUrl() + ", getWebUrl()=" + getWebUrl() + ", isHeld()="
+				+ isHeld() + "]";
 	}
 	
 }

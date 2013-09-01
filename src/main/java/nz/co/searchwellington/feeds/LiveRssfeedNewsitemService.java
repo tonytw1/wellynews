@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds;
 import java.util.List;
 
 import nz.co.searchwellington.feeds.reading.FeedItemFetcher;
-import nz.co.searchwellington.feeds.reading.HttpFetchFeedReader;
+import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 
@@ -21,7 +21,7 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fr
 	private final FeedItemFetcher httpFetchFeedReader;
 	
     @Autowired
-    public LiveRssfeedNewsitemService(HttpFetchFeedReader httpFetchFeedReader) {
+    public LiveRssfeedNewsitemService(WhakaokoFeedReader httpFetchFeedReader) {
 		this.httpFetchFeedReader = httpFetchFeedReader;
 	}
 

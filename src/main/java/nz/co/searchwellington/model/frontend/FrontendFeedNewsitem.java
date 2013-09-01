@@ -11,8 +11,6 @@ public class FrontendFeedNewsitem extends FrontendNewsitem {
 	private Integer localCopy;
 	private FrontendFeed feed;
 	private FrontendImage image;
-
-	private String publisherName;
 	
     public FrontendFeedNewsitem() {
     	setType("FNI");
@@ -53,10 +51,6 @@ public class FrontendFeedNewsitem extends FrontendNewsitem {
 
 	public void setSuggestion(Suggestion suggestion) {
 		this.suggestion = suggestion;
-	}
-
-	public String getPublisherName() {
-		return publisherName;
 	}
 
 	public void setImage(FrontendImage image) {

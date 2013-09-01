@@ -84,24 +84,32 @@ public class FrontendNewsitem extends FrontendResource implements RssFeedable {
 	public String getImageUrl() {
 		return image != null ? image.getUrl() : null;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "FrontendNewsitemImpl [accepted=" + accepted
+		return "FrontendNewsitem [accepted=" + accepted
 				+ ", acceptedByProfilename=" + acceptedByProfilename
 				+ ", acceptedFromFeedName=" + acceptedFromFeedName
-				+ ", comments=" + comments + ", publisherName=" + publisherName
-				+ ", retweets=" + retweets + ", getDate()=" + getDate()
-				+ ", getDescription()=" + getDescription() + ", getHandTags()="
-				+ getHandTags() + ", getHeadline()=" + getHeadline()
-				+ ", getHttpStatus()=" + getHttpStatus() + ", getId()="
-				+ getId() + ", getImageUrl()=" + getImageUrl()
-				+ ", getLatLong()=" + getLatLong() + ", getLiveTime()="
-				+ getLiveTime() + ", getName()=" + getName()
-				+ ", getOwnerId()=" + getOwnerId() + ", getPlace()="
+				+ ", comments=" + comments + ", image=" + image
+				+ ", publisherName=" + publisherName + ", retweets=" + retweets
+				+ ", getAccepted()=" + getAccepted()
+				+ ", getAcceptedByProfilename()=" + getAcceptedByProfilename()
+				+ ", getAcceptedFromFeedName()=" + getAcceptedFromFeedName()
+				+ ", getAuthor()=" + getAuthor() + ", getComments()="
+				+ getComments() + ", getFrontendImage()=" + getFrontendImage()
+				+ ", getImageUrl()=" + getImageUrl() + ", getPublisherName()="
+				+ getPublisherName() + ", getRetweets()=" + getRetweets()
+				+ ", getDate()=" + getDate() + ", getDescription()="
+				+ getDescription() + ", getHandTags()=" + getHandTags()
+				+ ", getHeadline()=" + getHeadline() + ", getHttpStatus()="
+				+ getHttpStatus() + ", getId()=" + getId() + ", getLatLong()="
+				+ getLatLong() + ", getLiveTime()=" + getLiveTime()
+				+ ", getLocation()=" + getLocation() + ", getName()="
+				+ getName() + ", getOwner()=" + getOwner() + ", getPlace()="
 				+ getPlace() + ", getTags()=" + getTags() + ", getType()="
 				+ getType() + ", getUrl()=" + getUrl() + ", getUrlWords()="
-				+ getUrlWords() + ", getWebUrl()=" + getWebUrl() + "]";
+				+ getUrlWords() + ", getWebUrl()=" + getWebUrl()
+				+ ", isHeld()=" + isHeld() + "]";
 	}
 	
 }
