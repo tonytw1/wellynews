@@ -31,6 +31,8 @@ public class WhakaokoFeedItemMapper {
 		if (feedItem.getImageUrl() != null) {
 			frontendFeedNewsitem.setImage(new FrontendImage(feedItem.getImageUrl()));
 		}
+		
+		frontendFeedNewsitem.setPlace(feedItem.getPlace());		
 		return frontendFeedNewsitem;
 	}
 	
