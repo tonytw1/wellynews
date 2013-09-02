@@ -30,9 +30,9 @@
 		#end
 	</div>
 
-	<div class="right">		
+	<div class="right">
 		<div class="box">
-			#parse("includes/latest_newsitems.vm")
+			#parse("includes/righthand_content.vm")
 		</div>
 	</div>
 
