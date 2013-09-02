@@ -50,10 +50,8 @@ public class RssNewsitemPrefetcher {
 
 				log.info("Setting feed whakaoko id to: " + createdSubscriptionId);
 				feed.setWhakaokoId(createdSubscriptionId);				
-				resourceDAO.saveResource(feed);
-				log.info(feed.getClass());
-				log.info(feed.toString());
-			}		
+				resourceDAO.saveResource(feed);				
+			}
 		}
 	}
 
