@@ -43,11 +43,9 @@ public class SuggestedFeeditemsService {
 	}
 	
 	public List<FrontendNewsitem> getSuggestionFeednewsitems(int maxItems) {
-		List<FeedItem> channelFeedItems;
 		try {
-			channelFeedItems = whakaoroClientFactory.getClient().getChannelFeedItems(whakaoroClientFactory.getChannel());
 			List<FrontendFeedNewsitem> suggestions = Lists.newArrayList();
-			for (FeedItem feedItem : channelFeedItems) {
+			for (FeedItem feedItem : whakaoroClientFactory.getChannelFeedItems()) {
 				Feed feed = resourceDAO.loadFeedByWhakaoroId(feedItem.getSubscriptionId());
 				suggestions.add(whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem));
 			}			
