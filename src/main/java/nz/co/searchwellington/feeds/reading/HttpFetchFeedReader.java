@@ -10,7 +10,6 @@ import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendImage;
-import nz.co.searchwellington.utils.TextTrimmer;
 import nz.co.searchwellington.utils.UrlCleaner;
 import nz.co.searchwellington.utils.UrlFilters;
 import nz.co.searchwellington.views.GeocodeToPlaceMapper;
@@ -39,27 +38,18 @@ import com.sun.syndication.feed.synd.SyndFeed;
 public class HttpFetchFeedReader implements FeedItemFetcher {
 	
 	private final Logger log = Logger.getLogger(HttpFetchFeedReader.class);
-	
-    private static final int MAXIMUM_BODY_LENGTH = 400;
-	
+		
 	private RssHttpFetcher rssFetcher;
-    private TextTrimmer textTrimmer;
 	private GeocodeToPlaceMapper geocodeToPlaceMapper;
 	private UrlCleaner urlCleaner;
 	
 	@Autowired
-	public HttpFetchFeedReader(RssHttpFetcher rssFetcher,
-			TextTrimmer textTrimmer, GeocodeToPlaceMapper geocodeToPlaceMapper,
-			UrlCleaner urlCleaner) {
+	public HttpFetchFeedReader(RssHttpFetcher rssFetcher, GeocodeToPlaceMapper geocodeToPlaceMapper, UrlCleaner urlCleaner) {
 		this.rssFetcher = rssFetcher;
-		this.textTrimmer = textTrimmer;
 		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
 		this.urlCleaner = urlCleaner;
 	}
-
-	/* (non-Javadoc)
-	 * @see nz.co.searchwellington.feeds.reading.FeedItemFetcher#fetchFeedItems(nz.co.searchwellington.model.Feed)
-	 */
+	
 	public List<FrontendFeedNewsitem> fetchFeedItems(Feed feed) {
 		final List<FrontendFeedNewsitem> feedNewsitems = Lists.newArrayList();
 		final SyndFeed syndfeed = rssFetcher.httpFetch(feed.getUrl());
@@ -69,7 +59,6 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
             	try {
             		SyndEntry item = (SyndEntry) iter.next();
             		FrontendFeedNewsitem feedItem = extractNewsitemFromFeedEntire(feed, item);                
-            		feedItem.setDescription(textTrimmer.trimToCharacterCount(feedItem.getDescription(), MAXIMUM_BODY_LENGTH));	// TODO this is in the wrong place - should be an acceptance step
             		feedNewsitems.add(feedItem);
             		
             	} catch (Exception e) {
@@ -95,7 +84,7 @@ public class HttpFetchFeedReader implements FeedItemFetcher {
                 
         String url = item.getLink();
         if (url != null) {        	
-            url = urlCleaner.cleanSubmittedItemUrl(url);
+            url = urlCleaner.cleanSubmittedItemUrl(url);	// TODO move to whakaoko
         }
         // TODO feed decision maker and feedreader and user submissions should share the same title cleaning logic
 	    return makeFeednewsitemFromSyndEntry(feed, item, description, itemDate, url);

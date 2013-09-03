@@ -10,7 +10,9 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.NewsitemImpl;
 import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
+import nz.co.searchwellington.utils.TextTrimmer;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.geo.model.Place;
@@ -18,10 +20,19 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 @Component
 public class FeednewsItemToNewsitemService {
 	
+    private static final int MAXIMUM_BODY_LENGTH = 400;
+    
+    private TextTrimmer textTrimmer;
+    
+    @Autowired
+	public FeednewsItemToNewsitemService(TextTrimmer textTrimmer) {
+		this.textTrimmer = textTrimmer;
+	}
+
 	// TODO merge with addSuppressAndLocalCopyInformation?
 	public Newsitem makeNewsitemFromFeedItem(Feed feed, FrontendFeedNewsitem feedNewsitem) {
 		// TODO why are we newing up an instance of our superclass?
-	    final String description =  feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : "";
+	    final String description =  composeDescription(feedNewsitem);
 		final Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(), new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
 	    newsitem.setImage(feedNewsitem.getFrontendImage() != null ? new Image(feedNewsitem.getFrontendImage().getUrl(), null) : null);
 	    newsitem.setFeed(feed);
@@ -39,6 +50,12 @@ public class FeednewsItemToNewsitemService {
 	    return newsitem;
 	}
 
+	private String composeDescription(FrontendFeedNewsitem feedNewsitem) {
+		String description = feedNewsitem.getDescription() != null ? feedNewsitem.getDescription() : "";
+		description = textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH);
+		return description;
+	}
+	
 	private Geocode mapPlaceToGeocode(final Place place) {
 		final Geocode geocode = new Geocode(place.getAddress(), 
 				place.getLatLong() != null ? place.getLatLong().getLatitude() : null, 
