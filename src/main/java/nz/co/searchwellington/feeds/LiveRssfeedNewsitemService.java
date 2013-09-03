@@ -16,7 +16,7 @@ import uk.co.eelpieconsulting.common.caching.CachableService;
 @Component
 public class LiveRssfeedNewsitemService implements CachableService<Feed, List<FrontendFeedNewsitem>> {
 		
-    private static final int ONE_DAY = 60 * 60 * 24;
+    private static final int FIVE_MINUTES = 60 * 5;
     
 	private final FeedItemFetcher httpFetchFeedReader;
 	
@@ -29,7 +29,7 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fr
 	public List<FrontendFeedNewsitem> callService(Feed feed) {
 		return getFeedNewsitems(feed);
 	}
-
+    
 	@Override
 	public String getCacheKeyFor(Feed feed) {
 		return "feednewsitems" + DigestUtils.md5Hex(feed.getUrl());
@@ -37,7 +37,7 @@ public class LiveRssfeedNewsitemService implements CachableService<Feed, List<Fr
 
 	@Override
 	public int getTTL() {
-		return ONE_DAY;
+		return FIVE_MINUTES;
 	}
     
 	public List<FrontendFeedNewsitem> getFeedNewsitems(Feed feed) {

@@ -103,31 +103,24 @@ public class FeedReader {
     }
 	
 	private void processFeedItems(Feed feed, User feedReaderUser, String acceptancePolicy) {		
-		List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
+		final List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (!feedNewsitems.isEmpty()) {
 			feed.setHttpStatus(200);			
 			for (FrontendFeedNewsitem feednewsitem : feedNewsitems) {
 				// TODO new up a new copy before modifying
 				String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
 				feednewsitem.setUrl(cleanSubmittedItemUrl);
-		    
+				
 				if (acceptancePolicy.startsWith("accept")) {
-					boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy).isEmpty();
+					final boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy).isEmpty();
 					if (acceptThisItem) {
-						Newsitem newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
-						feedItemAcceptor.acceptFeedItem(feedReaderUser, newsitem);
-						
-						log.info("Geocode of accepted newsitem after accept feed item: " + newsitem.getGeocode());
-						
-						contentUpdateService.create(newsitem);
-						autoTagger.autotag(newsitem);
-						contentUpdateService.update(newsitem);
+						log.info("Accepting newsitem: " + feednewsitem.getUrl());
+						acceptNewsitem(feed, feedReaderUser, feednewsitem);
 					}
 					
-				} else {                	
+				} else {
 					if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
-						log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
-						suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl(), new DateTime().toDate()));
+						suggestNewsitem(feed, feednewsitem);	// TODO suggestions should be worked out on the fly
 					}
 				}
 			}
@@ -136,6 +129,20 @@ public class FeedReader {
          	log.warn("Incoming feed '" + feed.getName() + "' contained no items");
          	feed.setHttpStatus(-3);
          }
+	}
+	
+	private void acceptNewsitem(Feed feed, User feedReaderUser, FrontendFeedNewsitem feednewsitem) {
+		final Newsitem newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
+		feedItemAcceptor.acceptFeedItem(feedReaderUser, newsitem);
+								
+		contentUpdateService.create(newsitem);
+		autoTagger.autotag(newsitem);
+		contentUpdateService.update(newsitem);
+	}
+	
+	private void suggestNewsitem(Feed feed, FrontendFeedNewsitem feednewsitem) {
+		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
+		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl(), new DateTime().toDate()));
 	}
 	
 }
