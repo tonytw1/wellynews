@@ -524,10 +524,9 @@ select {
 	padding-left: 0;
 	display: inline;
 	}
-
-
-img {
-	max-width: 320px
+	
+.main_content_item img {
+    max-width: 320px
 }
 
 .righthand_one img {
