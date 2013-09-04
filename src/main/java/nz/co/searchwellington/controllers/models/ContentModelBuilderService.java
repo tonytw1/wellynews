@@ -42,13 +42,13 @@ public class ContentModelBuilderService {
 		for (int i = 0; i < modelBuilders.length; i++) {
 			ModelBuilder modelBuilder = modelBuilders[i];
 			if (modelBuilder.isValid(request)) {
-				logger.info("Using " + modelBuilder.getClass().getName() + " to serve path: " + request.getPathInfo());
+				logger.debug("Using " + modelBuilder.getClass().getName() + " to serve path: " + request.getPathInfo());
 				
 				ModelAndView mv = modelBuilder.populateContentModel(request);
 				
 				final String path = request.getPathInfo();
 				if (path.endsWith("/rss")) {
-					logger.info("Selecting rss view for path: " + path);
+					logger.debug("Selecting rss view for path: " + path);
 					mv.setView(viewFactory.getRssView((String) mv.getModel().get("heading"), 
 							(String) mv.getModel().get("link"), 
 							(String) mv.getModel().get("description")));
@@ -56,7 +56,7 @@ public class ContentModelBuilderService {
 					return mv;
 				}				
 				if (path.endsWith("/json")) {
-					logger.info("Selecting json view for path: " + path);
+					logger.debug("Selecting json view for path: " + path);
 					final JsonView jsonView = viewFactory.getJsonView();
 					jsonView.setDataField("main_content");
 					mv.setView(jsonView);					
@@ -81,7 +81,7 @@ public class ContentModelBuilderService {
 		if(request.getParameter(JSON_CALLBACK_PARAMETER) != null) {
 			final String callback = request.getParameter(JSON_CALLBACK_PARAMETER);
 			if (jsonCallbackNameValidator.isValidCallbackName(callback)) {
-				logger.info("Adding callback to model:" + callback);
+				logger.debug("Adding callback to model:" + callback);
 				mv.addObject(JSON_CALLBACK_PARAMETER, callback);
 			}	 
 		}

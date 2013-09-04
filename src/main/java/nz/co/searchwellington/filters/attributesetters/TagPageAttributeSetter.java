@@ -40,11 +40,11 @@ public class TagPageAttributeSetter implements AttributeSetter {
 				log.debug("Looking for tag '" + match + "'");
 				Tag tag = tagDAO.loadTagByName(match);
 				if (tag != null) {
-					log.info("Setting tag: " + tag.getName());
+					log.debug("Setting tag: " + tag.getName());
 					request.setAttribute("tag", tag); // TODO deprecate
 					List<Tag> tags = Lists.newArrayList();
 					tags.add(tag);
-					log.info("Setting tags: " + tags);
+					log.debug("Setting tags: " + tags);
 					request.setAttribute("tags", tags);
 					return true;
 				}
