@@ -28,7 +28,7 @@ public class WhakaoroClientFactory {
 	
 	@Autowired
 	public WhakaoroClientFactory(@Value("#{config['whakaoko.url']}") String url,
-			@Value("#{config['whakaoko.usernamel']}") String username,
+			@Value("#{config['whakaoko.username']}") String username,
 			@Value("#{config['whakaoko.channel']}") String channel) {
 		this.url = url;
 		this.username = username;
