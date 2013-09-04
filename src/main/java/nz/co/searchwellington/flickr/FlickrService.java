@@ -30,26 +30,26 @@ public class FlickrService {
     
     public int getFlickrPhotoCountFor(Tag tag) {
     	if (!Strings.isNullOrEmpty(poolGroupId)) {
-    		log.info("No Flickr pool group id defined; returning 0");
+    		log.debug("No Flickr pool group id defined; returning 0");
     	}
     	
-        log.info("Running Flickr tag photo count for tag: " + tag.getDisplayName());        
+        log.debug("Running Flickr tag photo count for tag: " + tag.getDisplayName());        
         final String cacheKey = "flickrphotocount:" + poolGroupId + ":" + tag.getDisplayName().replaceAll("\\s", "");
         
         final Integer cachedCount = (Integer) cache.get(cacheKey);
         if (cachedCount != null) {
-        	log.info("Returning cached count: " + cachedCount);
+        	log.debug("Returning cached count: " + cachedCount);
         	return cachedCount;
         }
         
         final int poolPhotoCountForTag = flickerApiService.getPoolPhotoCountForTag(tag.getDisplayName(), poolGroupId);
-        log.info("Got pool photo count of " + poolPhotoCountForTag + " for tag '" + tag.getDisplayName() + "'");
+        log.debug("Got pool photo count of " + poolPhotoCountForTag + " for tag '" + tag.getDisplayName() + "'");
         
-        log.info("Caching count for tag: " + tag.getDisplayName());
+        log.debug("Caching count for tag: " + tag.getDisplayName());
         cache.put(cacheKey, ONE_DAY, poolPhotoCountForTag);
 		return poolPhotoCountForTag;
     }
-
+    
 	public String getPoolId() {
 		return poolGroupId;
 	}
