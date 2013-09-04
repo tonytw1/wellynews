@@ -77,29 +77,34 @@ public class FeedReader {
 		processFeed(feed, loggedInUser, feed.getAcceptancePolicy());		
 	}
 	
-    private void processFeed(Feed feed, User feedReaderUser, String acceptancePolicy) {		    	
-		log.info("Processing feed: " + feed.getName()
-				+ " using acceptance policy '" + acceptancePolicy
-				+ "'. Last read: " + dateFormatter.timeSince(feed.getLastRead()));
+    private void processFeed(Feed feed, User feedReaderUser, String acceptancePolicy) {
+    	try {
+			log.info("Processing feed: " + feed.getName()
+					+ " using acceptance policy '" + acceptancePolicy
+					+ "'. Last read: " + dateFormatter.timeSince(feed.getLastRead()));
+	
+	    	// TODO can this move onto the enum?
+			final boolean shouldLookAtFeed =  acceptancePolicy != null && acceptancePolicy.equals("accept") 
+	        	|| acceptancePolicy.equals("accept_without_dates")
+	        	|| acceptancePolicy.equals("suggest");
+	
+	        if (shouldLookAtFeed) {
+	          processFeedItems(feed, feedReaderUser, acceptancePolicy);
+	        } else {
+	        	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept or suggest");
+	        }
+	        
+	        feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
+	        log.info("Feed latest item publication date is: " + feed.getLatestItemDate());                    
+	        feed.setLastRead(Calendar.getInstance().getTime());
+	        contentUpdateService.update(feed);
+	
+	        log.info("Done processing feed.");
 
-    	// TODO can this move onto the enum?
-		final boolean shouldLookAtFeed =  acceptancePolicy != null && acceptancePolicy.equals("accept") 
-        	|| acceptancePolicy.equals("accept_without_dates")
-        	|| acceptancePolicy.equals("suggest");
-
-        if (shouldLookAtFeed) {
-          processFeedItems(feed, feedReaderUser, acceptancePolicy);
-        } else {
-        	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept or suggest");
-        }
-        
-        feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
-        log.info("Feed latest item publication date is: " + feed.getLatestItemDate());                    
-        feed.setLastRead(Calendar.getInstance().getTime());
-        contentUpdateService.update(feed);
-
-        log.info("Done processing feed.");
-        return;
+    	} catch (Exception e) {
+    		log.error(e);
+    	}
+    	return;
     }
 	
 	private void processFeedItems(Feed feed, User feedReaderUser, String acceptancePolicy) {		
