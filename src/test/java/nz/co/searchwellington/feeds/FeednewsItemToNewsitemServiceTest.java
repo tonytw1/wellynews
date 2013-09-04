@@ -5,6 +5,7 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
+import nz.co.searchwellington.utils.TextTrimmer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,8 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public class FeednewsItemToNewsitemServiceTest {
 
+	@Mock  TextTrimmer textTrimmer;
+	
 	@Mock Place place;
 	@Mock private Feed feed;
 	
@@ -24,7 +27,7 @@ public class FeednewsItemToNewsitemServiceTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		service = new FeednewsItemToNewsitemService();
+		service = new FeednewsItemToNewsitemService(textTrimmer);
 	}
 	
 	@Test
