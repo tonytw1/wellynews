@@ -9,8 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
-import nz.co.searchwellington.feeds.FeedItemAcceptor;
-import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
@@ -23,7 +21,6 @@ import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.repositories.SupressionService;
-import nz.co.searchwellington.tagging.AutoTaggingService;
 
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
@@ -42,33 +39,34 @@ public class ApiController {
 	private AdminRequestFilter requestFilter;
 	private LoggedInUserFilter loggedInUserFilter;
 	private SupressionService suppressionService;
-	private RssfeedNewsitemService rssfeedNewsitemService;
 	private ContentUpdateService contentUpdateService;
 	private SubmissionProcessingService submissionProcessingService;
-	private AutoTaggingService autoTagger;
 	private HandTaggingDAO tagVoteDAO;
 	private ResourceFactory resourceFactory;
-	private FeedItemAcceptor feedItemAcceptor;
 	
 	public ApiController() {
 	}
 	
 	@Autowired
-    public ApiController(HibernateResourceDAO resourceDAO, AdminRequestFilter requestFilter, LoggedInUserFilter loggedInUserFilter, SupressionService suppressionService, RssfeedNewsitemService rssfeedNewsitemService, ContentUpdateService contentUpdateService, SubmissionProcessingService submissionProcessingService, AutoTaggingService autoTagger, HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor, ResourceFactory resourceFactory) {
+    public ApiController(HibernateResourceDAO resourceDAO,
+			AdminRequestFilter requestFilter,
+			LoggedInUserFilter loggedInUserFilter,
+			SupressionService suppressionService,
+			ContentUpdateService contentUpdateService,
+			SubmissionProcessingService submissionProcessingService,
+			HandTaggingDAO tagVoteDAO, ResourceFactory resourceFactory) {
+		super();
 		this.resourceDAO = resourceDAO;
 		this.requestFilter = requestFilter;
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.suppressionService = suppressionService;
-		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentUpdateService = contentUpdateService;
 		this.submissionProcessingService = submissionProcessingService;
-		this.autoTagger = autoTagger;
 		this.tagVoteDAO = tagVoteDAO;
-		this.feedItemAcceptor = feedItemAcceptor;
 		this.resourceFactory = resourceFactory;
 	}
-    
-    @Transactional
+	
+	@Transactional
     @RequestMapping("/api/submit/newsitem")
     public ModelAndView submit(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
     	ModelAndView mv = new ModelAndView();
