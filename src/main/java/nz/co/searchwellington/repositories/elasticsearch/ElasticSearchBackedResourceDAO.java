@@ -51,6 +51,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Component
 public class ElasticSearchBackedResourceDAO {
 
+	private static final String ID = "id";
+	private static final String OWNER = "owner";
+	private static final String HELD = "held";
+	private static final String HTTP_STATUS = "httpStatus";
+	private static final String PLACE = "place";
+	private static final String LOCATION = "location";
 	private static final int ALL = 1000;
 	private static final String PUBLISHER_NAME = "publisherName";
 	private static final String INDEX_TAGS = "tags.id";
@@ -432,7 +438,7 @@ public class ElasticSearchBackedResourceDAO {
 		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
 		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
 		
-		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter("location").
+		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter(LOCATION).
 			distance(Double.toString(radius) + "km").
 			point(latLong.getLatitude(), latLong.getLongitude());
 		
@@ -490,7 +496,7 @@ public class ElasticSearchBackedResourceDAO {
 		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
 		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
 				
-		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, FilterBuilders.existsFilter("place"));
+		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, FilterBuilders.existsFilter(PLACE));
 		return geocodedNewitemsQuery;
 	}
 
@@ -516,13 +522,13 @@ public class ElasticSearchBackedResourceDAO {
 	
 	private void addShouldShowBrokenClause(BoolQueryBuilder query, boolean shouldShowBroken) {
 		if (!shouldShowBroken) {
-			final TermQueryBuilder contentIsOk = QueryBuilders.termQuery("httpStatus", "200");
-			final TermQueryBuilder contentIsApproved = QueryBuilders.termQuery("held", false);			
+			final TermQueryBuilder contentIsOk = QueryBuilders.termQuery(HTTP_STATUS, "200");
+			final TermQueryBuilder contentIsApproved = QueryBuilders.termQuery(HELD, false);			
 			final BoolQueryBuilder contentIsPublic = QueryBuilders.boolQuery().must(contentIsOk).must(contentIsApproved);
 			
 			final BoolQueryBuilder userCanViewContent = QueryBuilders.boolQuery().minimumNumberShouldMatch(1).should(contentIsPublic);			
 			if (loggedInUserFilter.getLoggedInUser() != null) {
-				userCanViewContent.should(QueryBuilders.termQuery("owner", loggedInUserFilter.getLoggedInUser().getProfilename()));
+				userCanViewContent.should(QueryBuilders.termQuery(OWNER, loggedInUserFilter.getLoggedInUser().getProfilename()));
 			}
 			
 			query = query.must(userCanViewContent);
@@ -532,7 +538,7 @@ public class ElasticSearchBackedResourceDAO {
 
 	private void addDateDescendingOrder(final SearchRequestBuilder searchRequestBuilder) {
 		searchRequestBuilder.addSort(DATE, SortOrder.DESC);
-		searchRequestBuilder.addSort("id", SortOrder.DESC);
+		searchRequestBuilder.addSort(ID, SortOrder.DESC);
 	}
 
 	private void addNameOrder(final SearchRequestBuilder searchRequestBuilder) {
