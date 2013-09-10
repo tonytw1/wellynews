@@ -12,9 +12,7 @@ import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.FeednewsItemToNewsitemService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader;
 import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
-import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
@@ -41,14 +39,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
-import uk.co.eelpieconsulting.common.http.HttpFetchException;
-import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
-import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
-import uk.co.eelpieconsulting.whakaoro.client.WhakaoroClient;
-import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException;
-import uk.co.eelpieconsulting.whakaoro.client.model.Subscription;
-
 import com.google.common.base.Strings;
 
 @Controller
@@ -61,7 +51,6 @@ public class ResourceEditController {
     private TagsWidgetFactory tagWidgetFactory;
     private AutoTaggingService autoTagger;
     private AcceptanceWidgetFactory acceptanceWidgetFactory;
-    private RssNewsitemPrefetcher rssPrefetcher;
     private EditPermissionService editPermissionService;
     private SubmissionProcessingService submissionProcessingService;
     private ContentUpdateService contentUpdateService;
@@ -87,7 +76,6 @@ public class ResourceEditController {
 			AdminRequestFilter adminRequestFilter,
 			TagsWidgetFactory tagWidgetFactory, AutoTaggingService autoTagger,
 			AcceptanceWidgetFactory acceptanceWidgetFactory,
-			RssNewsitemPrefetcher rssPrefetcher,
 			LoggedInUserFilter loggedInUserFilter,
 			EditPermissionService editPermissionService, UrlStack urlStack,
 			SubmissionProcessingService submissionProcessingService,
@@ -106,7 +94,6 @@ public class ResourceEditController {
 		this.tagWidgetFactory = tagWidgetFactory;
 		this.autoTagger = autoTagger;
 		this.acceptanceWidgetFactory = acceptanceWidgetFactory;
-		this.rssPrefetcher = rssPrefetcher;
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.editPermissionService = editPermissionService;
 		this.urlStack = urlStack;
@@ -396,9 +383,7 @@ public class ResourceEditController {
             	submissionProcessingService.processImage(request, (Newsitem) editResource, loggedInUser);
             	submissionProcessingService.processAcceptance(request, editResource, loggedInUser);
             }
-                        
-                             
-            // Update urlwords.
+            
             if (editResource.getType().equals("W") || editResource.getType().equals("F")) {
             	editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(editResource.getName()));            	
             }
@@ -420,12 +405,8 @@ public class ResourceEditController {
             	((Feed) editResource).setWhakaokoId(createFeedSubscription);				
             }
             
-            boolean okToSave = !newSubmission || !isSpamUrl || loggedInUser != null;
-            // TODO validate. - what exactly?
-            if (okToSave) {
-            	// TODO could be a collection?  			 
-                
-            	
+            boolean okToSave = !newSubmission || !isSpamUrl || loggedInUser != null;	// TODO validate. - what exactly?
+            if (okToSave) {                       	
             	saveResource(request, loggedInUser, editResource);
             	log.info("Saved resource; id is now: " + editResource.getId());
 
@@ -435,6 +416,8 @@ public class ResourceEditController {
                     autoTagger.autotag(editResource);
                 }
 
+            	saveResource(request, loggedInUser, editResource);	// TODO with the tags votes do sticking to an unsaved resource - transaction boundary issue?
+            	
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
             }
@@ -466,7 +449,6 @@ public class ResourceEditController {
 			   ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
 			   log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
 		   }
-		   rssPrefetcher.decacheAndLoad((Feed) editResource);
 	   }
    	}
    
