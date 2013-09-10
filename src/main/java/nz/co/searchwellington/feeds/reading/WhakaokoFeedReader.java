@@ -14,7 +14,6 @@ import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
 import uk.co.eelpieconsulting.common.http.HttpNotFoundException;
-import uk.co.eelpieconsulting.whakaoro.client.WhakaoroClient;
 import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem;
 
