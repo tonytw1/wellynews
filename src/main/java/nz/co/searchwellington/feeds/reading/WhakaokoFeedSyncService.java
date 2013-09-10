@@ -1,9 +1,8 @@
-package nz.co.searchwellington.feeds.rss;
+package nz.co.searchwellington.feeds.reading;
 
 import java.util.List;
 
 import nz.co.searchwellington.feeds.FeedReaderRunner;
-import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
@@ -16,19 +15,19 @@ import org.springframework.scheduling.annotation.Scheduled;
 import com.google.common.base.Strings;
 
 @Component
-public class RssNewsitemPrefetcher {
+public class WhakaokoFeedSyncService {
 	
-	private static Logger log = Logger.getLogger(RssNewsitemPrefetcher.class);
+	private static Logger log = Logger.getLogger(WhakaokoFeedSyncService.class);
 
 	private HibernateResourceDAO resourceDAO;
 	private WhakaoroClientFactory whakaoroClientFactory;
 	private FeedReaderRunner feedReaderRunner;
 	
-	public RssNewsitemPrefetcher() {		
+	public WhakaokoFeedSyncService() {		
 	}
 	
 	@Autowired
-	public RssNewsitemPrefetcher(HibernateResourceDAO resourceDAO, WhakaoroClientFactory whakaoroClientFactory, FeedReaderRunner feedReaderRunner) {
+	public WhakaokoFeedSyncService(HibernateResourceDAO resourceDAO, WhakaoroClientFactory whakaoroClientFactory, FeedReaderRunner feedReaderRunner) {
 		this.resourceDAO = resourceDAO;	
 		this.whakaoroClientFactory = whakaoroClientFactory;
 		this.feedReaderRunner = feedReaderRunner;
@@ -44,21 +43,17 @@ public class RssNewsitemPrefetcher {
 
     @Transactional
 	private void registerFeedWithWhakaoko(List<Feed> allFeeds) {
-		log.info("Registering whakaoro feeds");
+		log.info("Registering feeds with whakaoro");
 		for (Feed feed : (allFeeds)) {
 			if (!Strings.isNullOrEmpty(feed.getUrl())) {
 				log.info("Registering feed: " + feed.getName());
 				final String createdSubscriptionId = whakaoroClientFactory.createFeedSubscription(feed.getUrl());
-
 				log.info("Setting feed whakaoko id to: " + createdSubscriptionId);
-				feed.setWhakaokoId(createdSubscriptionId);				
-				resourceDAO.saveResource(feed);				
+				feed.setWhakaokoId(createdSubscriptionId);
+				resourceDAO.saveResource(feed);
 			}
 		}
+		log.info("Finished registering feeds with whakaoro");
 	}
-
-	public void decacheAndLoad(Feed feed) {
-		// TODO Auto-generated method stub
-	}
-	
+    
 }

@@ -42,16 +42,6 @@ public class EditPermissionService {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
 		return isAdminOrOwner(resource, loggedInUser);
 	}
-
-	public boolean canDecache(FrontendResource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return loggedInUser != null && loggedInUser.isAdmin();
-	}
-	
-	public boolean canDecache(Feed feed) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return loggedInUser != null && loggedInUser.isAdmin();
-	}	
 	
 	public boolean canAcceptAllFrom(FrontendResource resource) {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();

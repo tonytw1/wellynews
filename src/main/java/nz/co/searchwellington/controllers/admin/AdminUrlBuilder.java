@@ -60,10 +60,6 @@ public class AdminUrlBuilder {
 		return siteInformation.getUrl() + "/admin/feed/acceptall?feed=" + feed.getUrlWords();		
 	}
 	
-	public String getDecacheFeed(Feed feed) {
-		return siteInformation.getUrl() + "/admin/feed/decache?feed=" + feed.getUrlWords();		
-	}
-	
 	public String getFeedNewsitemSuppressUrl(FrontendFeedNewsitem feednewsitem) {
 		return siteInformation.getUrl() + "/supress/supress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl());
 	}

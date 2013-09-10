@@ -20,10 +20,6 @@
 				<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($feed)">Edit</a></li>
 				<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($feed)">Delete</a></li>			
 			#end
-		
-			#if ($editPermissionService.canDecache($feed))
-				<li class="admin"><a href="$adminUrlBuilder.getDecacheFeed($feed)">Decache</a></li>
-			#end
 					
 			#if ($editPermissionService.canAcceptAllFrom($feed))			
 				<li class="admin"><a href="$adminUrlBuilder.getAcceptAllFromFeed($feed)">Accept all</a></li>

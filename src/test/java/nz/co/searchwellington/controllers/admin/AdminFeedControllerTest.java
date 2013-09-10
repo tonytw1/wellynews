@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.feeds.FeedReader;
-import nz.co.searchwellington.feeds.rss.RssNewsitemPrefetcher;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.User;
@@ -22,7 +21,6 @@ public class AdminFeedControllerTest {
 	
 	@Mock AdminRequestFilter requestFilter;
 	@Mock FeedReader feedReader;
-	@Mock RssNewsitemPrefetcher rssPrefetcher;
 	@Mock UrlBuilder urlBuilder;
 	@Mock EditPermissionService permissionService;
 	@Mock LoggedInUserFilter loggedInUserFilter;
@@ -47,7 +45,7 @@ public class AdminFeedControllerTest {
 	public void manualFeedReaderRunsShouldBeAttributedToTheUserWhoKicksThemOffAndShouldAcceptAllEvenIfNoDateIsGivenOfNotCurrent() throws Exception {		
 		Mockito.when(loggedInUserFilter.getLoggedInUser()).thenReturn(loggedInUser);
 		Mockito.when(permissionService.canAcceptAllFrom(feed)).thenReturn(true);		
-		AdminFeedController controller = new AdminFeedController(requestFilter, feedReader, rssPrefetcher, urlBuilder, permissionService, loggedInUserFilter);
+		AdminFeedController controller = new AdminFeedController(requestFilter, feedReader, urlBuilder, permissionService, loggedInUserFilter);
 		
 		request.setAttribute("feedAttribute", feed);
 		controller.acceptAllFrom(request, response);
