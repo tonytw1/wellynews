@@ -422,7 +422,7 @@ public class ResourceEditController {
                 log.info("Could not save resource. Spam question not answered?");                
             }
            
-            modelAndView.addObject("item", editResource);
+            modelAndView.addObject("item", editResource);	// TODO this wants to be a frontend resource
             
         } else {
             log.warn("No edit resource could be setup.");
