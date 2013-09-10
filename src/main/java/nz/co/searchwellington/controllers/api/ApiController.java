@@ -34,6 +34,11 @@ import org.springframework.web.servlet.ModelAndView;
 public class ApiController {
 
 	private static Logger log = Logger.getLogger(ApiController.class);
+
+	private static final String TAG = "tag";
+	private static final String NEWURL = "newurl";
+	private static final String PUBLISHER = "publisher";
+	private static final String URL = "url";
 	
 	private HibernateResourceDAO resourceDAO;
 	private AdminRequestFilter requestFilter;
@@ -97,7 +102,7 @@ public class ApiController {
 	    	// Set publisher field.
 	    	boolean isPublishedResource = resource instanceof PublishedResource;
 	    	if (isPublishedResource) {
-	    		((PublishedResource) resource).setPublisher((Website) request.getAttribute("publisher"));           
+	    		((PublishedResource) resource).setPublisher((Website) request.getAttribute(PUBLISHER));           
 	    	}
 	    	
 	    	log.info("Saving api submitted newsitem: " + resource.getName());
@@ -119,8 +124,8 @@ public class ApiController {
          User loggedInUser = loggedInUserFilter.getLoggedInUser();
          if (isAuthorised(loggedInUser)) {                
          	requestFilter.loadAttributesOntoRequest(request);        
-         	final String resourceUrl = request.getParameter("url");
-         	final String newUrl = (String) request.getAttribute("newurl");
+         	final String resourceUrl = request.getParameter(URL);
+         	final String newUrl = (String) request.getAttribute(NEWURL);
          	
          	if (resourceUrl != null && newUrl != null) {
          		Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
@@ -150,7 +155,7 @@ public class ApiController {
     	ModelAndView mv = new ModelAndView();	
     	User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (isAuthorised(loggedInUser)) {                
-    		final String urlToSupress = request.getParameter("url");    	    		
+    		final String urlToSupress = request.getParameter(URL);    	    		
     		if (urlToSupress != null) {    			 
     			suppressionService.suppressUrl(urlToSupress);
     			mv.setViewName("apiResponseOK");
@@ -171,8 +176,8 @@ public class ApiController {
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         if (isAuthorised(loggedInUser)) {                
         	requestFilter.loadAttributesOntoRequest(request);        
-        	final String resourceUrl = request.getParameter("url");
-        	final Tag tag = (Tag) request.getAttribute("tag");
+        	final String resourceUrl = request.getParameter(URL);
+        	final Tag tag = (Tag) request.getAttribute(TAG);
         	
         	if (resourceUrl != null && tag != null) {
         		Resource resource = resourceDAO.loadResourceByUniqueUrl(resourceUrl);
