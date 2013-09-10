@@ -21,6 +21,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper;
 import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
@@ -66,6 +67,7 @@ public class ResourceEditController {
 	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	private UrlWordsGenerator urlWordsGenerator;
 	private WhakaoroClientFactory whakaoroClientFactory;
+	private FrontendResourceMapper frontendResourceMapper;
 	
 	public ResourceEditController() {
 	}
@@ -88,7 +90,8 @@ public class ResourceEditController {
 			CommonModelObjectsService commonModelObjectsService,
 			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
 			UrlWordsGenerator urlWordsGenerator, 
-			WhakaoroClientFactory whakaoroClientFactory) {
+			WhakaoroClientFactory whakaoroClientFactory,
+			FrontendResourceMapper frontendResourceMapper) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -109,6 +112,7 @@ public class ResourceEditController {
 		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 		this.urlWordsGenerator = urlWordsGenerator;
 		this.whakaoroClientFactory = whakaoroClientFactory;
+		this.frontendResourceMapper = frontendResourceMapper;
 	}
     
     @Transactional	
@@ -390,7 +394,7 @@ public class ResourceEditController {
                         
             processFeedAcceptancePolicy(request, editResource);
                       
-            SpamFilter spamFilter = new SpamFilter();
+            SpamFilter spamFilter = new SpamFilter();	// TODO inject
             boolean isSpamUrl = spamFilter.isSpam(editResource);
             
             boolean isPublicSubmission = loggedInUser == null || (loggedInUser.isUnlinkedAccount());
@@ -422,7 +426,7 @@ public class ResourceEditController {
                 log.info("Could not save resource. Spam question not answered?");                
             }
            
-            modelAndView.addObject("item", editResource);	// TODO this wants to be a frontend resource
+            modelAndView.addObject("item", frontendResourceMapper.createFrontendResourceFrom(editResource));
             
         } else {
             log.warn("No edit resource could be setup.");
