@@ -159,8 +159,11 @@
 		<subclass name="nz.co.searchwellington.model.FeedImpl" proxy="nz.co.searchwellington.model.Feed" discriminator-value="F">
 			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="feed_publisher" />
 			
-			<property name="acceptancePolicy" type="text">
-  				<column name="acceptance" length="10" not-null="false"/>
+			<property name="acceptancePolicy">
+  				<column name="acceptance" length="10" not-null="true"/>
+				<type name="org.hibernate.type.EnumType">
+    				<param name="enumClass">nz.co.searchwellington.model.FeedAcceptancePolicy</param>
+  				</type>  
 			</property>
 			
 			<property name="latestItemDate" type="date">
