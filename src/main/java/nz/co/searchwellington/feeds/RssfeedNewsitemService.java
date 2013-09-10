@@ -38,7 +38,7 @@ public class RssfeedNewsitemService {
 		List<FrontendFeedNewsitem> feeditems = getFeedNewsitems(feed);
 		for (FrontendFeedNewsitem feeditem : feeditems) {
 			if (feeditem.getDate() != null && (latestPublicationDate == null || feeditem.getDate().after(latestPublicationDate))) {
-				latestPublicationDate = feeditem.getDate();           
+				latestPublicationDate = feeditem.getDate();
 			}
 		}
 		return latestPublicationDate;

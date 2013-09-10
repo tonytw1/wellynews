@@ -4,9 +4,9 @@ import java.util.Date;
 
 public interface Feed extends PublishedResource {	// TODO persisted classses shouldn't need to implement frontend interfaces
 
-    public String getAcceptancePolicy();
+    public FeedAcceptancePolicy getAcceptancePolicy();
 
-    public void setAcceptancePolicy(String acceptancePolicy);
+    public void setAcceptancePolicy(FeedAcceptancePolicy acceptancePolicy);
 
     public void setLatestItemDate(Date latestPublicationDate);
 

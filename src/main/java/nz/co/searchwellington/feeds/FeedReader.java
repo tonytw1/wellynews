@@ -66,18 +66,18 @@ public class FeedReader {
 	}
 	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public void processFeed(int feedId, User loggedInUser, FeedAcceptancePolicy manuallySpecifiedAcceptancePolicy) {
+	public void processFeed(int feedId, User loggedInUser, FeedAcceptancePolicy manuallySpecifiedAcceptancePolicy) {	// TODO interface should be feeds not feed ids?
 		Feed feed = (Feed) resourceDAO.loadResourceById(feedId); 
-		processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy.getName());		
+		processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy);		
 	}
-
+	
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void processFeed(int feedId, User loggedInUser) {
 		Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
 		processFeed(feed, loggedInUser, feed.getAcceptancePolicy());		
 	}
 	
-    private void processFeed(Feed feed, User feedReaderUser, String acceptancePolicy) {
+    private void processFeed(Feed feed, User feedReaderUser, FeedAcceptancePolicy acceptancePolicy) {
     	try {
 			log.info("Processing feed: " + feed.getName()
 					+ " using acceptance policy '" + acceptancePolicy
@@ -107,7 +107,7 @@ public class FeedReader {
     	return;
     }
 	
-	private void processFeedItems(Feed feed, User feedReaderUser, String acceptancePolicy) {		
+	private void processFeedItems(Feed feed, User feedReaderUser, FeedAcceptancePolicy acceptancePolicy) {		
 		final List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (!feedNewsitems.isEmpty()) {
 			feed.setHttpStatus(200);			
@@ -116,7 +116,7 @@ public class FeedReader {
 				String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
 				feednewsitem.setUrl(cleanSubmittedItemUrl);
 				
-				if (acceptancePolicy.startsWith("accept")) {
+				if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT || acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) { // TODO move to enum method
 					final boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy).isEmpty();
 					if (acceptThisItem) {
 						log.info("Accepting newsitem: " + feednewsitem.getUrl());

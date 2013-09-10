@@ -9,20 +9,19 @@ import org.springframework.stereotype.Component;
 @Component
 public class AcceptanceWidgetFactory {
              
-    public String createAcceptanceSelect(String acceptancePolicy) {
+    public String createAcceptanceSelect(FeedAcceptancePolicy feedAcceptancePolicy) {
         Select acceptanceSelect = new Select("acceptance");
                 
         for (FeedAcceptancePolicy policy : FeedAcceptancePolicy.values()) {      
             Option policyOption = new Option(policy.getName());
             policyOption.setFilterState(true);
             policyOption.addElement(policy.getLabel());
-            if (policy.getName().equals(acceptancePolicy)) {
+            if (policy == feedAcceptancePolicy) {
                 policyOption.setSelected(true);
             }
-
             acceptanceSelect.addElement(policyOption);
         }
-      
+        
         return acceptanceSelect.toString();  
     }
     

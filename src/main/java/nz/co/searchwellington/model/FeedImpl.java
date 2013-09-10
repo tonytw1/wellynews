@@ -2,20 +2,24 @@ package nz.co.searchwellington.model;
 
 import java.util.Date;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 public class FeedImpl extends PublishedResourceImpl implements Feed {
 	
 	private static final long serialVersionUID = 1L;
 	
-	// TODO migrate acceptance options to Enums.
-    String acceptancePolicy;
-    Date latestItemDate;
-    Date lastRead;
-    String whakaokoId;
+	@Enumerated(EnumType.STRING)
+    private FeedAcceptancePolicy acceptancePolicy;
+	
+	private Date latestItemDate;
+	private Date lastRead;
+	private String whakaokoId;
     
     public FeedImpl() {
     }
         
-    public FeedImpl(int id, String name, String url, String description, Website publisher, String acceptancePolicy) {
+    public FeedImpl(int id, String name, String url, String description, Website publisher, FeedAcceptancePolicy acceptancePolicy) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -28,11 +32,11 @@ public class FeedImpl extends PublishedResourceImpl implements Feed {
     	return "F";
     }
     
-    public String getAcceptancePolicy() {
+    public FeedAcceptancePolicy getAcceptancePolicy() {
         return acceptancePolicy;
     }
     
-    public void setAcceptancePolicy(String acceptancePolicy) {
+    public void setAcceptancePolicy(FeedAcceptancePolicy acceptancePolicy) {
         this.acceptancePolicy = acceptancePolicy;
     }
     

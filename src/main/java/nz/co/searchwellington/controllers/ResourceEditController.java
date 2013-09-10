@@ -15,6 +15,7 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.PublishedResource;
 import nz.co.searchwellington.model.Resource;
@@ -46,7 +47,9 @@ import com.google.common.base.Strings;
 public class ResourceEditController {
     
 	private static Logger log = Logger.getLogger(ResourceEditController.class);
-           
+	
+	private static final String ACCEPTANCE = "acceptance";
+	
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
     private TagsWidgetFactory tagWidgetFactory;
@@ -450,9 +453,9 @@ public class ResourceEditController {
    // TODO move to submission handling service.
    private void processFeedAcceptancePolicy(HttpServletRequest request, Resource editResource) {
 	   if (editResource.getType().equals("F")) {		   
-		   ((Feed) editResource).setAcceptancePolicy("ignore");
-		   if (request.getParameter("acceptance") != null) {
-			   ((Feed) editResource).setAcceptancePolicy(request.getParameter("acceptance"));
+		   ((Feed) editResource).setAcceptancePolicy(FeedAcceptancePolicy.IGNORE);
+		   if (request.getParameter(ACCEPTANCE) != null) {
+			   ((Feed) editResource).setAcceptancePolicy(FeedAcceptancePolicy.valueOf(request.getParameter(ACCEPTANCE)));
 			   log.debug("Feed acceptance policy set to: " + ((Feed) editResource).getAcceptancePolicy());
 		   }
 	   }

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SuggestionDAO;
@@ -41,7 +42,7 @@ public class FeedAcceptanceDecider {
     }
     
     @Transactional(propagation = Propagation.REQUIRES_NEW) 
-    public List<String> getAcceptanceErrors(Feed feed, FrontendFeedNewsitem feedNewsitem, String feedAcceptancePolicy) {
+    public List<String> getAcceptanceErrors(Feed feed, FrontendFeedNewsitem feedNewsitem, FeedAcceptancePolicy acceptancePolicy) {
         final List<String> acceptanceErrors = Lists.newArrayList();
         final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl());
 		final boolean isSuppressed = supressionDAO.isSupressed(cleanedUrl);
@@ -55,7 +56,7 @@ public class FeedAcceptanceDecider {
             acceptanceErrors.add("Item has no title");
         }
            
-        lessThanOneWeekOld(feedNewsitem, feedAcceptancePolicy, acceptanceErrors);
+        lessThanOneWeekOld(feedNewsitem, acceptancePolicy, acceptanceErrors);
         hasDateInTheFuture(feedNewsitem, acceptanceErrors);                
         alreadyHaveThisFeedItem(feedNewsitem, acceptanceErrors);
         alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(feedNewsitem, acceptanceErrors, feed);
@@ -103,11 +104,12 @@ public class FeedAcceptanceDecider {
 		 }
 	}
 	
-    private void lessThanOneWeekOld(FrontendFeedNewsitem feedNewsitem, String feedAcceptancePolicy, List<String> acceptanceErrors) {      
-        if (feedAcceptancePolicy != null && feedAcceptancePolicy.equals("accept_without_dates")) {
+    private void lessThanOneWeekOld(FrontendFeedNewsitem feedNewsitem, FeedAcceptancePolicy acceptancePolicy, List<String> acceptanceErrors) {      
+        if (acceptancePolicy != null && acceptancePolicy.equals(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)) {
             return;                        
         }
-        Calendar oneWeekAgo = Calendar.getInstance();
+        
+        final Calendar oneWeekAgo = Calendar.getInstance();	// TODO use Joda time
         oneWeekAgo.add(Calendar.DATE, -7);
         if (!(feedNewsitem.getDate() != null && feedNewsitem.getDate().after(oneWeekAgo.getTime()))) {
             acceptanceErrors.add("Item is more than one week old");            
