@@ -63,7 +63,7 @@ public class SuggestedFeeditemsService {
 			log.error(e);
 		}
 		
-		throw new RuntimeException();		
+		return Lists.newArrayList();
 	}
 	
 }
