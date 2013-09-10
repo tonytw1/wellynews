@@ -13,6 +13,7 @@ import nz.co.searchwellington.repositories.SupressionDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.common.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -105,15 +106,22 @@ public class FeedAcceptanceDecider {
 	}
 	
     private void lessThanOneWeekOld(FrontendFeedNewsitem feedNewsitem, FeedAcceptancePolicy acceptancePolicy, List<String> acceptanceErrors) {      
-        if (acceptancePolicy != null && acceptancePolicy.equals(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)) {
-            return;                        
+        if (acceptancePolicy.equals(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)) {
+            return;
         }
         
-        final Calendar oneWeekAgo = Calendar.getInstance();	// TODO use Joda time
-        oneWeekAgo.add(Calendar.DATE, -7);
-        if (!(feedNewsitem.getDate() != null && feedNewsitem.getDate().after(oneWeekAgo.getTime()))) {
-            acceptanceErrors.add("Item is more than one week old");            
+        if (feedNewsitem.getDate() == null) {
+        	acceptanceErrors.add("Item has no date and feed acceptance policy is not accept even without dates");
+        	return;
         }
+        
+        final DateTime oneWeekAgo = DateTime.now().minusWeeks(1);        
+        new DateTime(feedNewsitem).isBefore(oneWeekAgo);
+        
+        final boolean isMoreThanOneWeekOld = new DateTime(feedNewsitem).isBefore(oneWeekAgo);
+		if (isMoreThanOneWeekOld) {
+            acceptanceErrors.add("Item is more than one week old");            
+        }		
     }
     
 }
