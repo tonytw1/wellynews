@@ -8,22 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class SupressionService {
 
 	private SupressionDAO suppressionDAO;
-	private SuggestionDAO suggestionDAO;
 	
 	public SupressionService() {
 	}
 	
 	@Autowired
-	public SupressionService(SupressionDAO suppressionDAO, SuggestionDAO suggestionDAO) {		
+	public SupressionService(SupressionDAO suppressionDAO) {		
 		this.suppressionDAO = suppressionDAO;
-		this.suggestionDAO = suggestionDAO;
 	}
 	
 	@Transactional
 	public void suppressUrl(String urlToSupress) {		
 		if (!suppressionDAO.isSupressed(urlToSupress)) {
 			suppressionDAO.addSuppression(urlToSupress);
-          	suggestionDAO.removeSuggestion(urlToSupress);
 		}		
 	}
 	

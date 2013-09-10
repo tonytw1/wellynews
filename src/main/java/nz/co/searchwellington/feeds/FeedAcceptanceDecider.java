@@ -8,7 +8,6 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
@@ -29,17 +28,15 @@ public class FeedAcceptanceDecider {
     private HibernateResourceDAO resourceDAO;
     private SupressionDAO supressionDAO;
     private UrlCleaner urlCleaner;
-	private SuggestionDAO suggestionDAO;
- 	
+    
     public FeedAcceptanceDecider() {
 	}
     
     @Autowired
-	public FeedAcceptanceDecider(HibernateResourceDAO resourceDAO, SupressionDAO supressionDAO, UrlCleaner urlCleaner, SuggestionDAO suggestionDAO) {
+	public FeedAcceptanceDecider(HibernateResourceDAO resourceDAO, SupressionDAO supressionDAO, UrlCleaner urlCleaner) {
         this.resourceDAO = resourceDAO;
         this.supressionDAO = supressionDAO;
         this.urlCleaner = urlCleaner;
-        this.suggestionDAO = suggestionDAO;
     }
     
     @Transactional(propagation = Propagation.REQUIRES_NEW) 
@@ -68,8 +65,7 @@ public class FeedAcceptanceDecider {
 	public boolean shouldSuggest(FrontendFeedNewsitem feednewsitem) {
 		String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
 		final boolean isSuppressed = supressionDAO.isSupressed(cleanSubmittedItemUrl);
-		final boolean isAlreadySuggested = suggestionDAO.isSuggested(cleanSubmittedItemUrl);
-		if (isSuppressed || isAlreadySuggested) {
+		if (isSuppressed) {
 			return false;
 		}
 		

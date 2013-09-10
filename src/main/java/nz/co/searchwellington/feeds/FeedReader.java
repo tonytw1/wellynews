@@ -10,12 +10,10 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.SuggestionDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -33,7 +31,6 @@ public class FeedReader {
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
-    private SuggestionDAO suggestionDAO;
     private ContentUpdateService contentUpdateService;
 	private FeedItemAcceptor feedItemAcceptor;
     private AutoTaggingService autoTagger;
@@ -47,7 +44,6 @@ public class FeedReader {
 			RssfeedNewsitemService rssfeedNewsitemService,
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			UrlCleaner urlCleaner,
-			SuggestionDAO suggestionDAO,
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor,
 			AutoTaggingService autoTagger,
@@ -56,7 +52,6 @@ public class FeedReader {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
 		this.urlCleaner = urlCleaner;
-		this.suggestionDAO = suggestionDAO;
 		this.contentUpdateService = contentUpdateService;
 		this.feedItemAcceptor = feedItemAcceptor;
 		this.autoTagger= autoTagger;
@@ -121,12 +116,7 @@ public class FeedReader {
 					if (acceptThisItem) {
 						log.info("Accepting newsitem: " + feednewsitem.getUrl());
 						acceptNewsitem(feed, feedReaderUser, feednewsitem);
-					}
-					
-				} else {
-					if (feedAcceptanceDecider.shouldSuggest(feednewsitem)) {
-						suggestNewsitem(feed, feednewsitem);	// TODO suggestions should be worked out on the fly
-					}
+					}					
 				}
 			}
 			
@@ -143,11 +133,6 @@ public class FeedReader {
 		contentUpdateService.create(newsitem);
 		autoTagger.autotag(newsitem);
 		contentUpdateService.update(newsitem);
-	}
-	
-	private void suggestNewsitem(Feed feed, FrontendFeedNewsitem feednewsitem) {
-		log.info("Suggesting: " + feed.getName() + ": " + feednewsitem.getName());
-		suggestionDAO.addSuggestion(suggestionDAO.createSuggestion(feed, feednewsitem.getUrl(), new DateTime().toDate()));
 	}
 	
 }

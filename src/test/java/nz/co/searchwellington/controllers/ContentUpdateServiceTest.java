@@ -7,7 +7,6 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.FrontendContentUpdater;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.SuggestionDAO;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +16,6 @@ import org.mockito.MockitoAnnotations;
 public class ContentUpdateServiceTest {
 
 	@Mock private HibernateResourceDAO resourceDAO;
-	@Mock private SuggestionDAO suggestionsDAO;
 	@Mock private LinkCheckerQueue linkCheckerQueue;
 	
 	@Mock private Newsitem exitingResource;
@@ -44,36 +42,30 @@ public class ContentUpdateServiceTest {
 		
 		when(resourceDAO.loadResourceById(1)).thenReturn(updatedResource);
 		
-		service = new ContentUpdateService(resourceDAO, suggestionsDAO, linkCheckerQueue, frontendContentUpdater);
+		service = new ContentUpdateService(resourceDAO, linkCheckerQueue, frontendContentUpdater);
 	}
 	
 	@Test
-	public void testShouldSaveThroughTheHibernateDAO() throws Exception {		
+	public void shouldSaveThroughTheHibernateDAO() throws Exception {		
 		service.update(updatedResource);
 		verify(resourceDAO).saveResource(updatedResource);
 	}
 	
 	@Test
-	public void testShouldUpdateTheFrontendSolrIndexOnSave() throws Exception {
+	public void shouldUpdateTheFrontendSolrIndexOnSave() throws Exception {
 		service.update(updatedResource);
 		verify(frontendContentUpdater).update(updatedResource);
 	}
-
-	@Test
-	public void testShouldRemoveSuggestionsForNewsitems() throws Exception {		
-		service.update(updatedResource);
-		verify(suggestionsDAO).removeSuggestion("http://test/123");
-	}
 	
 	@Test
-	public void testShouldInitHttpStatusOwnerAndQueueLinkCheckForNewSubmissions() throws Exception {		
+	public void shouldInitHttpStatusOwnerAndQueueLinkCheckForNewSubmissions() throws Exception {		
 		service.update(newResource);
 		verify(newResource).setHttpStatus(0);
 		verify(linkCheckerQueue).add(newResource);
 	}
 	
 	@Test
-	public void testShouldInitHttpStatusAndQueueLinkCheckWhenUrlChanges() throws Exception {	
+	public void shouldInitHttpStatusAndQueueLinkCheckWhenUrlChanges() throws Exception {	
 		when(resourceDAO.loadResourceById(1)).thenReturn(exitingResource);
 		service.update(updatedResource);
 		verify(updatedResource).setHttpStatus(0);

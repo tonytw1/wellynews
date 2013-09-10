@@ -1,13 +1,10 @@
 package nz.co.searchwellington.model.frontend;
 
-import nz.co.searchwellington.model.Suggestion;
-
 public class FrontendFeedNewsitem extends FrontendNewsitem {
 
 	private static final long serialVersionUID = 1L;
 
 	private boolean isSuppressed;
-	private Suggestion suggestion;
 	private Integer localCopy;
 	private FrontendFeed feed;
 	private FrontendImage image;
@@ -43,14 +40,6 @@ public class FrontendFeedNewsitem extends FrontendNewsitem {
 
 	public void setSuppressed(boolean isSuppressed) {
 		this.isSuppressed = isSuppressed;
-	}
-
-	public Suggestion getSuggestion() {
-		return suggestion;
-	}
-
-	public void setSuggestion(Suggestion suggestion) {
-		this.suggestion = suggestion;
 	}
 
 	public void setImage(FrontendImage image) {

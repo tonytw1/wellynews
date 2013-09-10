@@ -4,7 +4,6 @@ import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.repositories.FrontendContentUpdater;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.SuggestionDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ public class ContentUpdateService {
 	private static Logger log = Logger.getLogger(ContentUpdateService.class);
 	
 	private HibernateResourceDAO resourceDAO;
-	private SuggestionDAO suggestionsDAO;
 	private LinkCheckerQueue linkCheckerQueue;
 	private FrontendContentUpdater frontendContentUpdater;
 	
@@ -26,11 +24,9 @@ public class ContentUpdateService {
 	
 	@Autowired
 	public ContentUpdateService(HibernateResourceDAO resourceDAO,
-			SuggestionDAO suggestionsDAO,
 			LinkCheckerQueue linkCheckerQueue,
 			FrontendContentUpdater frontendContentUpdater) {
 		this.resourceDAO = resourceDAO;
-		this.suggestionsDAO = suggestionsDAO;
 		this.linkCheckerQueue = linkCheckerQueue;
 		this.frontendContentUpdater = frontendContentUpdater;
 	}
@@ -73,9 +69,6 @@ public class ContentUpdateService {
 	private void save(Resource resource) {
 		resourceDAO.saveResource(resource);
 		frontendContentUpdater.update(resource);
-		if (resource.getType().equals("N")) {
-			suggestionsDAO.removeSuggestion(resource.getUrl());
-		}
 	}
 	
 }
