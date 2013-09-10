@@ -141,18 +141,6 @@
 		<property name="startDelay" value="60000" />
 		<property name="repeatInterval" value="60000" />
 	</bean>
-	
-	<bean id="rssPrefetcherRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" ref="rssNewsitemPrefetcher" />
-		<property name="targetMethod" value="run" />
-		<property name="concurrent" value="false" />
-	</bean>
-
-	<bean id="rssPrefetcherTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-		<property name="jobDetail" ref="rssPrefetcherRun" />
-		<property name="startDelay" value="60000" />
-		<property name="repeatInterval" value="7200000" />
-	</bean>
 
 	<bean id="twitterListenerJob" class="nz.co.searchwellington.jobs.TwitterListenerJob">
 		<constructor-arg ref="cachingTwitterService" />
@@ -174,7 +162,6 @@
 				<ref bean="watchlistCheckerSchedulerTrigger" />
 				<ref bean="expiredCheckerSchedulerTrigger" />
 				<ref bean="twitterListenerJobTrigger" />
-				<ref bean="rssPrefetcherTrigger" />
 			</list>
 		</property>
 	</bean>			  

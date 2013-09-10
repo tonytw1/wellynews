@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import com.google.common.base.Strings;
 
@@ -33,6 +34,7 @@ public class RssNewsitemPrefetcher {
 		this.feedReaderRunner = feedReaderRunner;
 	}
 	
+    @Scheduled(fixedRate=3600000)
     @Transactional
 	public void run() {
 		final List<Feed> allFeeds = resourceDAO.getAllFeeds();
