@@ -2,21 +2,15 @@ package nz.co.searchwellington.model;
 
 public enum FeedAcceptancePolicy {
         
-    ACCEPT("accept", "Accept"),
-    IGNORE("ignore", "Ignore"),
-    SUGGEST("suggest", "Suggest"),
-    ACCEPT_EVEN_WITHOUT_DATES("accept_without_dates", "Accept even without dates.");
+    ACCEPT("Accept"),
+    IGNORE("Ignore"),
+    SUGGEST("Suggest"),
+    ACCEPT_EVEN_WITHOUT_DATES("Accept even without dates.");
     
-    private String name;
     private String label;
 
-    private FeedAcceptancePolicy(String name, String label) {
-        this.name = name;
+    private FeedAcceptancePolicy(String label) {
         this.label = label;
-    }
-    
-    public String getName() {
-        return name;
     }
     
     public String getLabel() {
