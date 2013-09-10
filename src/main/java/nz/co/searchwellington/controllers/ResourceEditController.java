@@ -68,6 +68,7 @@ public class ResourceEditController {
 	private UrlWordsGenerator urlWordsGenerator;
 	private WhakaoroClientFactory whakaoroClientFactory;
 	private FrontendResourceMapper frontendResourceMapper;
+	private SpamFilter spamFilter;
 	
 	public ResourceEditController() {
 	}
@@ -91,7 +92,8 @@ public class ResourceEditController {
 			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
 			UrlWordsGenerator urlWordsGenerator, 
 			WhakaoroClientFactory whakaoroClientFactory,
-			FrontendResourceMapper frontendResourceMapper) {
+			FrontendResourceMapper frontendResourceMapper,
+			SpamFilter spamFilter) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -113,6 +115,7 @@ public class ResourceEditController {
 		this.urlWordsGenerator = urlWordsGenerator;
 		this.whakaoroClientFactory = whakaoroClientFactory;
 		this.frontendResourceMapper = frontendResourceMapper;
+		this.spamFilter = spamFilter;
 	}
     
     @Transactional	
@@ -394,7 +397,6 @@ public class ResourceEditController {
                         
             processFeedAcceptancePolicy(request, editResource);
                       
-            SpamFilter spamFilter = new SpamFilter();	// TODO inject
             boolean isSpamUrl = spamFilter.isSpam(editResource);
             
             boolean isPublicSubmission = loggedInUser == null || (loggedInUser.isUnlinkedAccount());

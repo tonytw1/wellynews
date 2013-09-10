@@ -1,7 +1,10 @@
 package nz.co.searchwellington.spam;
 
+import org.springframework.stereotype.Component;
+
 import nz.co.searchwellington.model.Resource;
 
+@Component
 public class SpamFilter {
     
     public boolean isSpam(Resource editResource) {
