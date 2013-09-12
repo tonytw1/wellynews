@@ -57,7 +57,15 @@ public class FeednewsItemToNewsitemService {
 	}
 	
 	private Geocode mapPlaceToGeocode(final Place place) {
-		final Geocode geocode = new Geocode(place.getAddress(), 
+		String address = place.getAddress();
+		if (address == null && place.getLatLong() != null) {
+			address = place.getLatLong().getLatitude() + ", " + place.getLatLong().getLongitude();
+		}
+		if (address == null) {
+			return null;
+		}
+		
+		final Geocode geocode = new Geocode(address, 
 				place.getLatLong() != null ? place.getLatLong().getLatitude() : null, 
 				place.getLatLong() != null ? place.getLatLong().getLongitude() : null,
 				place.getOsmId() != null ? place.getOsmId().getId() : null,
