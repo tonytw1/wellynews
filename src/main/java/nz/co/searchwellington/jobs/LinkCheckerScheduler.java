@@ -8,42 +8,29 @@ import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Component
 public class LinkCheckerScheduler {
     
-    Logger log = Logger.getLogger(LinkCheckerScheduler.class);
+	private final static Logger log = Logger.getLogger(LinkCheckerScheduler.class);
     
     private HibernateResourceDAO resourceDAO;
     private LinkCheckerQueue linkCheckerQueue;
-
-
     
     public LinkCheckerScheduler() {        
     }
     
-    
-    
+    @Autowired
     public LinkCheckerScheduler(HibernateResourceDAO resourceDAO, LinkCheckerQueue linkCheckerQueue) {
-        super();
         this.resourceDAO = resourceDAO;
         this.linkCheckerQueue = linkCheckerQueue;
     }
     
-    
-    @Transactional()
-    public void queueFeeds() {
-        log.info("Queuing feeds for checking.");
-        for (Resource resource : resourceDAO.getAllFeeds()) {
-            log.info("Queuing feed item for checking: " + resource.getName());
-            linkCheckerQueue.add(resource.getId());
-        }
-    }
-
-
-    
-    // Run every 24 hours.
+    @Scheduled(fixedRate=86400000)
     @Transactional()
     public void queueWatchlistItems() {    
         log.info("Queuing watchlist items for checking.");
@@ -52,12 +39,12 @@ public class LinkCheckerScheduler {
             linkCheckerQueue.add(resource.getId());
         }       
     }
-
     
+    @Scheduled(fixedRate=3600000)
     @Transactional()
     public void queueExpiredItems() {  
-        final int numberOfItemsToQueue = 10;
-
+        final int numberOfItemsToQueue = 10;	// TODO queue them all
+        
         log.info("Queuing items launched within the last 24 hours with but not scanned within the last 4 hours");
         Date oneDayAgo = new DateTime().minusDays(1).toDate();
         Date fourHoursAgo = new DateTime().minusHours(4).toDate();

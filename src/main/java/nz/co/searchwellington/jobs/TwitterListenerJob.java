@@ -9,6 +9,7 @@ import nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService;
 import nz.co.searchwellington.twitter.TwitterService;
 
 import org.apache.log4j.Logger;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
 public class TwitterListenerJob {
@@ -33,6 +34,7 @@ public class TwitterListenerJob {
 		this.contentUpdateService = contentUpdateService;
 	}
     
+    @Scheduled(fixedRate=3600000)
 	@Transactional
     public void run() {
         if (!isTwitterListenerEnabled) {
