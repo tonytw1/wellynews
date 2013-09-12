@@ -112,9 +112,7 @@ public class FeedAcceptanceDecider {
         }
         
         final DateTime oneWeekAgo = DateTime.now().minusWeeks(1);        
-        new DateTime(feedNewsitem).isBefore(oneWeekAgo);
-        
-        final boolean isMoreThanOneWeekOld = new DateTime(feedNewsitem).isBefore(oneWeekAgo);
+        final boolean isMoreThanOneWeekOld = new DateTime(feedNewsitem.getDate()).isBefore(oneWeekAgo);
 		if (isMoreThanOneWeekOld) {
             acceptanceErrors.add("Item is more than one week old");            
         }		
