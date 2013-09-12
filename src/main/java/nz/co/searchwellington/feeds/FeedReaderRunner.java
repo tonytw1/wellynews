@@ -5,10 +5,13 @@ import java.util.List;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class FeedReaderRunner {
@@ -19,19 +22,30 @@ public class FeedReaderRunner {
 	
 	private FeedReader feedReader;
 	private HibernateBackedUserDAO userDAO;
+	private HibernateResourceDAO resourceDAO;
 	
-	@Autowired
-	public FeedReaderRunner(FeedReader feedReader, HibernateBackedUserDAO userDAO) {		
-		this.feedReader = feedReader;
-		this.userDAO = userDAO;
+	public FeedReaderRunner() {
 	}
 	
+	@Autowired
+	public FeedReaderRunner(FeedReader feedReader, HibernateBackedUserDAO userDAO, HibernateResourceDAO resourceDAO) {		
+		this.feedReader = feedReader;
+		this.userDAO = userDAO;
+		this.resourceDAO = resourceDAO;
+	}
+	
+	@Transactional
+	@Scheduled(fixedRate=1200000)
+	public void readFeeds() {
+		log.info("Running feed reader.");
+		readAllFeeds(resourceDAO.getAllFeeds());
+		log.info("Finished reading feeds.");
+	}
+		
 	public void readAllFeeds(List<Feed> feeds) {
-		log.info("Running Reader.");
 		for (Feed feed: feeds) {      
 			this.feedReader.processFeed(feed.getId(), getFeedReaderUser());
 		}
-		log.info("Finished reading feeds.");		
 	}
 
 	private User getFeedReaderUser() {
