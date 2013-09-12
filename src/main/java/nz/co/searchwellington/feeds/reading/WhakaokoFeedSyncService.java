@@ -2,15 +2,14 @@ package nz.co.searchwellington.feeds.reading;
 
 import java.util.List;
 
-import nz.co.searchwellington.feeds.FeedReaderRunner;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import com.google.common.base.Strings;
 
@@ -21,16 +20,14 @@ public class WhakaokoFeedSyncService {
 
 	private HibernateResourceDAO resourceDAO;
 	private WhakaoroClientFactory whakaoroClientFactory;
-	private FeedReaderRunner feedReaderRunner;
 	
 	public WhakaokoFeedSyncService() {		
 	}
 	
 	@Autowired
-	public WhakaokoFeedSyncService(HibernateResourceDAO resourceDAO, WhakaoroClientFactory whakaoroClientFactory, FeedReaderRunner feedReaderRunner) {
+	public WhakaokoFeedSyncService(HibernateResourceDAO resourceDAO, WhakaoroClientFactory whakaoroClientFactory) {
 		this.resourceDAO = resourceDAO;	
 		this.whakaoroClientFactory = whakaoroClientFactory;
-		this.feedReaderRunner = feedReaderRunner;
 	}
 	
     @Scheduled(fixedRate=3600000)
@@ -38,7 +35,6 @@ public class WhakaokoFeedSyncService {
 	public void run() {
 		final List<Feed> allFeeds = resourceDAO.getAllFeeds();
     	registerFeedWithWhakaoko(allFeeds);
-    	feedReaderRunner.readAllFeeds(allFeeds);
     }
 
     @Transactional
