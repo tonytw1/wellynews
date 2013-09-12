@@ -79,12 +79,10 @@ public class FeedReader {
 					+ "'. Last read: " + dateFormatter.timeSince(feed.getLastRead()));
 	
 	    	// TODO can this move onto the enum?
-			final boolean shouldLookAtFeed =  acceptancePolicy != null && acceptancePolicy.equals("accept") 
-	        	|| acceptancePolicy.equals("accept_without_dates")
-	        	|| acceptancePolicy.equals("suggest");
-	
+			final boolean shouldLookAtFeed =  acceptancePolicy == FeedAcceptancePolicy.ACCEPT || acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES || acceptancePolicy == FeedAcceptancePolicy.SUGGEST; 	        
 	        if (shouldLookAtFeed) {
 	          processFeedItems(feed, feedReaderUser, acceptancePolicy);
+	          
 	        } else {
 	        	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept or suggest");
 	        }
@@ -97,7 +95,7 @@ public class FeedReader {
 	        log.info("Done processing feed.");
 
     	} catch (Exception e) {
-    		log.error(e);
+    		log.error(e, e);
     	}
     	return;
     }
@@ -105,19 +103,30 @@ public class FeedReader {
 	private void processFeedItems(Feed feed, User feedReaderUser, FeedAcceptancePolicy acceptancePolicy) {		
 		final List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
 		if (!feedNewsitems.isEmpty()) {
-			feed.setHttpStatus(200);			
-			for (FrontendFeedNewsitem feednewsitem : feedNewsitems) {
-				// TODO new up a new copy before modifying
-				String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
-				feednewsitem.setUrl(cleanSubmittedItemUrl);
-				
-				if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT || acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) { // TODO move to enum method
-					final boolean acceptThisItem = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy).isEmpty();
+			log.info("Feed contains " + feedNewsitems.size() + " items");
+			feed.setHttpStatus(200);
+			
+			if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT || acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) { // TODO move to enum method
+				log.info ("Accepting feed items");
+
+				for (FrontendFeedNewsitem feednewsitem : feedNewsitems) {
+					// TODO new up a new copy before modifying
+					String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
+					feednewsitem.setUrl(cleanSubmittedItemUrl);				
+					
+					final List<String> acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy);
+					final boolean acceptThisItem = acceptanceErrors.isEmpty();
 					if (acceptThisItem) {
 						log.info("Accepting newsitem: " + feednewsitem.getUrl());
 						acceptNewsitem(feed, feedReaderUser, feednewsitem);
-					}					
+						
+					} else {
+						log.info("Not accepting " + feednewsitem.getUrl() + " due to acceptance errors: " + acceptanceErrors);
+					}
 				}
+				
+			} else {
+				log.info("Feed acceptance is: " + acceptancePolicy + "; ignoring");
 			}
 			
 		 } else {
