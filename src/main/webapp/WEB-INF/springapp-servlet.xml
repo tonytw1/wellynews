@@ -83,16 +83,6 @@
 		<property name="repeatInterval" value="3600000" />
 	</bean>
 	
-	<bean id="linkCheckerJobRun" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-		<property name="targetObject" ref="linkCheckerJob" />
-		<property name="targetMethod" value="run" />
-		<property name="concurrent" value="false" />
-	</bean>
-	<bean id="linkCheckerTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-		<property name="jobDetail" ref="linkCheckerJobRun" />
-		<property name="startDelay" value="60000" />
-		<property name="repeatInterval" value="60000" />
-	</bean>
 	<bean name="linkCheckerScheduler" class="nz.co.searchwellington.jobs.LinkCheckerScheduler">
 		<constructor-arg ref="hibernateResourceDAO" />
 		<constructor-arg ref="linkCheckerQueue" />
@@ -147,16 +137,10 @@
 		<constructor-arg ref="twitterNewsitemMentionsFinderService" />
 		<constructor-arg ref="contentUpdateService" />
 	</bean>
-
-	<bean name="linkCheckerJob" class="nz.co.searchwellington.jobs.LinkCheckerJob">
-		<constructor-arg ref="linkCheckerQueue" />
-		<constructor-arg ref="linkChecker" />
-	</bean>
 	
 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
 		<property name="triggers">
 			<list>
-				<ref bean="linkCheckerTrigger" />
 				<ref bean="commentReaderTrigger" />
 				<ref bean="feedCheckerSchedulerTrigger" />
 				<ref bean="watchlistCheckerSchedulerTrigger" />

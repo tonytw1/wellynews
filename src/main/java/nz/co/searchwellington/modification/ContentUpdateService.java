@@ -1,7 +1,7 @@
 package nz.co.searchwellington.modification;
 
-import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.queues.LinkCheckerQueue;
 import nz.co.searchwellington.repositories.FrontendContentUpdater;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
@@ -49,9 +49,10 @@ public class ContentUpdateService {
 			final boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
 	
 			save(resource);
-			
+			frontendContentUpdater.update(resource);
+
 			if (needsLinkCheck) {
-				linkCheckerQueue.add(resource);
+				linkCheckerQueue.add(resource.getId());
 			}
 			
 		} catch (Exception e) {
@@ -63,7 +64,7 @@ public class ContentUpdateService {
 	public void create(Resource resource) {
 		resource.setHttpStatus(0);
 		save(resource);		
-		linkCheckerQueue.add(resource);	
+		linkCheckerQueue.add(resource.getId());	
 	}
 	
 	private void save(Resource resource) {

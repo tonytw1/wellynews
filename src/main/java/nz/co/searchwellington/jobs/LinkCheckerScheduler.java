@@ -2,8 +2,8 @@ package nz.co.searchwellington.jobs;
 
 import java.util.Date;
 
-import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.queues.LinkCheckerQueue;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
@@ -37,7 +37,7 @@ public class LinkCheckerScheduler {
         log.info("Queuing feeds for checking.");
         for (Resource resource : resourceDAO.getAllFeeds()) {
             log.info("Queuing feed item for checking: " + resource.getName());
-            linkCheckerQueue.add(resource);
+            linkCheckerQueue.add(resource.getId());
         }
     }
 
@@ -49,7 +49,7 @@ public class LinkCheckerScheduler {
         log.info("Queuing watchlist items for checking.");
         for (Resource resource : resourceDAO.getAllWatchlists()) {
             log.info("Queuing watchlist item for checking: " + resource.getName());
-            linkCheckerQueue.add(resource);
+            linkCheckerQueue.add(resource.getId());
         }       
     }
 
@@ -65,7 +65,7 @@ public class LinkCheckerScheduler {
         for (Resource resource: resourceDAO.getNotCheckedSince(oneDayAgo, fourHoursAgo, numberOfItemsToQueue)) {
         	if (resource.getType().equals("N")) {
         		log.info("Queying recent newsitem for checking: " + resource.getName() + " - " + resource.getLastScanned());
-        		linkCheckerQueue.add(resource);
+        		linkCheckerQueue.add(resource.getId());
         	}
         }
         
@@ -73,7 +73,7 @@ public class LinkCheckerScheduler {
         Date oneMonthAgo = new DateTime().minusMonths(1).toDate();
         for (Resource resource: resourceDAO.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue)) {
             log.info("Queuing for scheduled checking: " + resource.getName() + " - " + resource.getLastScanned());	// TODO time since on this log entire.
-            linkCheckerQueue.add(resource);
+            linkCheckerQueue.add(resource.getId());
         }                
     }
     

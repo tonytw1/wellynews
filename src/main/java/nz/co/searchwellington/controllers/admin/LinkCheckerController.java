@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.UrlStack;
-import nz.co.searchwellington.model.LinkCheckerQueue;
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.queues.LinkCheckerQueue;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,8 @@ public class LinkCheckerController {	// TODO move to resource controller
         if (request.getAttribute("resource") != null) {
             Resource resource = (Resource) request.getAttribute("resource");
             log.info("Adding resource to queue: " + resource.getUrl() + "(" + resource.getId() + ")");
-            queue.add(resource); 
+            queue.add(resource.getId());
+            
         } else {
         	log.warn("No resource found on request; not adding to queue");
         }
