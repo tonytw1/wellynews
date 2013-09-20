@@ -91,9 +91,4 @@ public class CachingTwitterService implements TwitterService {
 		return twitterProfileImageUrlFor;
 	}
 	
-	@Override
-	public boolean isConfigured() {
-		return twitterService.isConfigured();
-	}
-	
 }

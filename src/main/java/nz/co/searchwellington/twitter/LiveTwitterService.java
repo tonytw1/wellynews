@@ -84,11 +84,6 @@ public class LiveTwitterService implements TwitterService {
 		}
 	}
 	
-	@Override
-	public boolean isConfigured() {
-		return true; // TODO	Move to factory
-	}
-	
 	private List<Twit> getRetweets() {
 		log.info("Getting twitter retweets from live api");
 		final List<Twit> all = Lists.newArrayList();

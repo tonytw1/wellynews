@@ -6,7 +6,6 @@ import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.TwitterMention;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.twitter.TwitterNewsitemMentionsFinderService;
-import nz.co.searchwellington.twitter.TwitterService;
 
 import org.apache.log4j.Logger;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -16,7 +15,6 @@ public class TwitterListenerJob {
 
     static Logger log = Logger.getLogger(TwitterListenerJob.class);
     
-    private TwitterService twitterService;
     private TwitterNewsitemMentionsFinderService twitterMentionFinder;
     private ContentUpdateService contentUpdateService;
 
@@ -25,11 +23,8 @@ public class TwitterListenerJob {
     public TwitterListenerJob() {
     }
     
-    public TwitterListenerJob(TwitterService twitterService,
-			TwitterNewsitemMentionsFinderService twitterMentionFinder,
+    public TwitterListenerJob(TwitterNewsitemMentionsFinderService twitterMentionFinder,
 			ContentUpdateService contentUpdateService) {
-		super();
-		this.twitterService = twitterService;
 		this.twitterMentionFinder = twitterMentionFinder;
 		this.contentUpdateService = contentUpdateService;
 	}
@@ -43,11 +38,8 @@ public class TwitterListenerJob {
         }
         
         log.info("Running Twitter listener");
-        if (twitterService.isConfigured()) {        	
-        	fetchMentions();			
-		} else {
-			log.warn("Twitter service is not configured; not running");
-		}
+        fetchMentions();
+        
         log.info("Twitter listener completed.");
 	}
 	

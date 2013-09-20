@@ -10,6 +10,4 @@ public interface TwitterService {
 	public Twit getTwitById(long twitterId);
 	public String getTwitterProfileImageUrlFor(String twitterUsername);
 	
-	public boolean isConfigured();	// TODO don't like this - should be factories problem.
-
 }
