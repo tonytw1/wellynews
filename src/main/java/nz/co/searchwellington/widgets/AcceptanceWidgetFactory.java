@@ -13,7 +13,7 @@ public class AcceptanceWidgetFactory {
         Select acceptanceSelect = new Select("acceptance");
                 
         for (FeedAcceptancePolicy policy : FeedAcceptancePolicy.values()) {      
-            Option policyOption = new Option(policy.toString(), policy.getLabel());
+            Option policyOption = new Option(policy.getLabel(), policy.toString());
             policyOption.setFilterState(true);
             policyOption.addElement(policy.getLabel());
             if (policy == feedAcceptancePolicy) {
