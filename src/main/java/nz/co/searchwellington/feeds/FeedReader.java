@@ -3,7 +3,6 @@ package nz.co.searchwellington.feeds;
 import java.util.Calendar;
 import java.util.List;
 
-import nz.co.searchwellington.linkchecking.LinkChecker;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.Newsitem;
