@@ -435,14 +435,14 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	private FilteredQueryBuilder geotaggedNearQuery(LatLong latLong, double radius, boolean shouldShowBroken) {
-		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
-		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
+		final BoolQueryBuilder geotaggedNear = QueryBuilders.boolQuery().must(isNewsitem());
+		addShouldShowBrokenClause(geotaggedNear, shouldShowBroken);
 		
 		final GeoDistanceFilterBuilder nearFilter = FilterBuilders.geoDistanceFilter(LOCATION).
 			distance(Double.toString(radius) + "km").
 			point(latLong.getLatitude(), latLong.getLongitude());
 		
-		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, nearFilter);
+		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(geotaggedNear, nearFilter);
 		return geocodedNewitemsQuery;
 	}
 
@@ -493,10 +493,10 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	private FilteredQueryBuilder geotaggedNewsitems(boolean shouldShowBroken) {
-		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
-		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
+		final BoolQueryBuilder geotaggedNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
+		addShouldShowBrokenClause(geotaggedNewsitems, shouldShowBroken);
 				
-		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(latestNewsitems, FilterBuilders.existsFilter(PLACE));
+		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(geotaggedNewsitems, FilterBuilders.existsFilter(PLACE));
 		return geocodedNewitemsQuery;
 	}
 
