@@ -245,6 +245,8 @@ public class ElasticSearchBackedResourceDAO {
 			setFrom(startIndex).
 			setSize(maxItems);
 		
+		addDateDescendingOrder(searchRequestBuilder);
+		
 		final SearchResponse response = searchRequestBuilder.execute().actionGet();
 		return deserializeFrontendResourceHits(response.getHits());
 	}
