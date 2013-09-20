@@ -336,16 +336,15 @@ public class ResourceEditController {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
 
-        ModelAndView modelAndView = new ModelAndView("savedResource");
+        final ModelAndView modelAndView = new ModelAndView("savedResource");
         commonModelObjectsService.populateCommonLocal(modelAndView);       
         modelAndView.addObject("heading", "Resource Saved");
         
         User loggedInUser = loggedInUserFilter.getLoggedInUser();
         
+        adminRequestFilter.loadAttributesOntoRequest(request);
+        
         Resource editResource = null;
-        adminRequestFilter.loadAttributesOntoRequest(request);   
-        
-        
         if (request.getAttribute("resource") != null) {
             editResource = (Resource) request.getAttribute("resource");
             
