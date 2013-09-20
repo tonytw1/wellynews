@@ -26,7 +26,10 @@ public class LinkCheckerQueue {
     public void add(int id) {
         log.debug("Adding resource id to queue: " + id);
         try {
-			channel.basicPublish("", QUEUE_NAME, null, Integer.toString(id).getBytes());			
+			channel.basicPublish("", QUEUE_NAME, null, Integer.toString(id).getBytes());
+			final int messageCount = channel.queueDeclarePassive(QUEUE_NAME).getMessageCount();
+			log.info("There are currently " + messageCount + " items in the link checker queue");	// TODO doesn't seem to work
+			
 		} catch (IOException e) {
 			log.error(e);
 		}	    

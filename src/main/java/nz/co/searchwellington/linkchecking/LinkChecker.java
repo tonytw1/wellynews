@@ -46,30 +46,31 @@ public class LinkChecker {
 	
 	@Transactional
     public void scanResource(int checkResourceId) {
-        Resource resource = resourceDAO.loadResourceById(checkResourceId);         
+        final Resource resource = resourceDAO.loadResourceById(checkResourceId);         
         if (resource != null) {
 	        log.info("Checking: " + resource.getName() + " (" + resource.getUrl() + ")");        
-			log.debug("Before status: " + resource.getHttpStatus());      
 			
 			final String pageContent = httpCheck(resource);
 
-			log.info("Running linkchecking processors");
 			for (LinkCheckerProcessor processor : processers) {
-				log.info("Running processor: " + processor.getClass().toString());
+				log.debug("Running processor: " + processor.getClass().toString());
 				try {
 					processor.process(resource, pageContent);	// TODO should any of these run if the page content is null?
+					
 				} catch (Exception e) {
 					log.error("An exception occured while running a link checker processor", e);
 				}
 			}
-			log.info("Finished linkchecking");
 						
 			log.debug("Saving resource and updating snapshot");
-			resource.setLastScanned(new DateTime().toDate());
+			resource.setLastScanned(DateTime.now().toDate());
+			
 			if (pageContent != null) {
 				snapshotArchive.put(new Snapshot(resource.getUrl(), DateTime.now().toDate(), pageContent));
 			}
+			
 			contentUpdateService.update(resource);
+			log.info("Finished linkchecking");
 			
         } else {
         	log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database");

@@ -46,14 +46,8 @@ public class ContentUpdateService {
 				resource.setHttpStatus(0);
 			}
 			
-			final boolean needsLinkCheck = resourceUrlHasChanged || newSubmission;
-	
-			save(resource);
+			resourceDAO.saveResource(resource);
 			frontendContentUpdater.update(resource);
-
-			if (needsLinkCheck) {
-				linkCheckerQueue.add(resource.getId());
-			}
 			
 		} catch (Exception e) {
 			log.error("Error: ", e);
@@ -63,13 +57,8 @@ public class ContentUpdateService {
 	@Transactional
 	public void create(Resource resource) {
 		resource.setHttpStatus(0);
-		save(resource);		
+		resourceDAO.saveResource(resource);		
 		linkCheckerQueue.add(resource.getId());	
-	}
-	
-	private void save(Resource resource) {
-		resourceDAO.saveResource(resource);
-		frontendContentUpdater.update(resource);
 	}
 	
 }

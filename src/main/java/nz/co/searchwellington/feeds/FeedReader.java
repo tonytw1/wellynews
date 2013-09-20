@@ -3,12 +3,14 @@ package nz.co.searchwellington.feeds;
 import java.util.Calendar;
 import java.util.List;
 
+import nz.co.searchwellington.linkchecking.LinkChecker;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
+import nz.co.searchwellington.queues.LinkCheckerQueue;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
@@ -35,6 +37,7 @@ public class FeedReader {
 	private FeedItemAcceptor feedItemAcceptor;
     private AutoTaggingService autoTagger;
     private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
+	private LinkCheckerQueue linkCheckerQueue;
     
     public FeedReader() {        
     }
@@ -47,7 +50,8 @@ public class FeedReader {
 			ContentUpdateService contentUpdateService,
 			FeedItemAcceptor feedItemAcceptor,
 			AutoTaggingService autoTagger,
-			FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
+			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
+			LinkCheckerQueue linkCheckerQueue) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
@@ -57,6 +61,7 @@ public class FeedReader {
 		this.autoTagger= autoTagger;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
 		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
+		this.linkCheckerQueue = linkCheckerQueue;
 		dateFormatter = new DateFormatter();
 	}
 	
@@ -142,6 +147,8 @@ public class FeedReader {
 		contentUpdateService.create(newsitem);
 		autoTagger.autotag(newsitem);
 		contentUpdateService.update(newsitem);
+		
+		linkCheckerQueue.add(newsitem.getId());
 	}
 	
 }
