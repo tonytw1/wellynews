@@ -5,6 +5,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.google.common.base.Strings;
+
 import uk.co.eelpieconsulting.common.html.HtmlCleaner;
 
 public class UrlFilters {
@@ -53,8 +55,7 @@ public class UrlFilters {
     }
     
     public static String addHttpPrefixIfMissing(String url) {
-        if (url != null && !url.equals("") && !hasHttpPrefix(url)) {
-            Logger.getLogger(UrlFilters.class).info("Adding http:// prefix to submitted url: " + url);
+        if (!Strings.isNullOrEmpty(url) && !hasHttpPrefix(url)) {
             url = addHttpPrefix(url);
         }
         return url;

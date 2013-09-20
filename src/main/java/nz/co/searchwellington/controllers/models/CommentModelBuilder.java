@@ -35,7 +35,7 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building comment page model");
+			log.debug("Building comment page model");
 			
 			ModelAndView mv = new ModelAndView();							
 			mv.addObject("heading", "Commented newsitems");        		

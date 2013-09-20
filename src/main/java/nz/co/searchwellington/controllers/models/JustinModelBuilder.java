@@ -39,7 +39,7 @@ public class JustinModelBuilder extends AbstractModelBuilder implements ModelBui
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building justin page model");
+			log.debug("Building justin page model");
 			ModelAndView mv = new ModelAndView();				
 			mv.addObject("heading", "Latest additions");        		
 			mv.addObject("description", "The most recently submitted website listings.");

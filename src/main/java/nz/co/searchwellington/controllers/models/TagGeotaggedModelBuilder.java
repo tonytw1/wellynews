@@ -47,7 +47,7 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building tag geotagged page model");
+			log.debug("Building tag geotagged page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
 			return populateTagCommentPageModelAndView(tag);

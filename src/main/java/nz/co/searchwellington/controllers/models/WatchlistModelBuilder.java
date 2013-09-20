@@ -37,7 +37,7 @@ public class WatchlistModelBuilder extends AbstractModelBuilder implements Model
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building watchlist page model");
+			log.debug("Building watchlist page model");
 			ModelAndView mv = new ModelAndView();				
 			mv.addObject("heading", "News watchlist");        		
 			mv.addObject("description", "The news watchlist");

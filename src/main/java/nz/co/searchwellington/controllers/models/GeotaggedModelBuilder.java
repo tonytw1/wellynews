@@ -52,7 +52,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building geotagged page model");
+			log.debug("Building geotagged page model");
 			
 			ModelAndView mv = new ModelAndView();							
 			mv.addObject("heading", "Geotagged newsitems");
@@ -64,7 +64,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			final boolean hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong() != null;
 			if (hasUserSuppliedALocation) {
 				final LatLong latLong = userSuppliedPlace.getLatLong();
-				log.info("Location is set to: " + userSuppliedPlace.getLatLong());
+				log.debug("Location is set to: " + userSuppliedPlace.getLatLong());
 				
 				final int page = getPage(request);
 				mv.addObject("page", page);
@@ -79,7 +79,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				
 				mv.addObject("location", userSuppliedPlace);
 				
-				log.info("Populating main content with newsitems near: " + latLong + " (radius: " + radius + ")");
+				log.debug("Populating main content with newsitems near: " + latLong + " (radius: " + radius + ")");
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS));
 			
 				if (!Strings.isNullOrEmpty(userSuppliedPlace.getAddress())) {

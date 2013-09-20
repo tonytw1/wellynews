@@ -42,10 +42,10 @@ public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBu
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building archive page model");
+			log.debug("Building archive page model");
 			final Date month = getArchiveDateFromPath(request.getPathInfo());
 			if (month != null) {
-	            log.info("Archive month is: " + month);
+	            log.debug("Archive month is: " + month);
 	            final String monthLabel = new DateFormatter().fullMonthYear(month);
 	            
 	            final ModelAndView mv = new ModelAndView();				

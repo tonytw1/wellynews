@@ -32,7 +32,7 @@ public class PublisherPageAttributeSetter implements AttributeSetter {
 			log.debug("Looking for publisher '" + match + "'");
 			Website publisher = (Website) resourceDAO.getPublisherByUrlWords(match);
 			if (publisher != null) {
-				log.info("Setting publisher: " + publisher.getName());
+				log.debug("Setting publisher: " + publisher.getName());
 				request.setAttribute("publisher", publisher);
 				request.setAttribute("resource", publisher);
 				return true;			

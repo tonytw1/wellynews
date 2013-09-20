@@ -60,7 +60,7 @@ public class AdminRequestFilter {
 	}
 	
 	public void loadAttributesOntoRequest(HttpServletRequest request) {		
-		log.info("Looking for tag parameter");
+		log.debug("Looking for tag parameter");
 		if (request.getParameter("tag") != null) {
 			String tagName = request.getParameter("tag");
 			Tag tag = tagDAO.loadTagByName(tagName);
@@ -75,7 +75,7 @@ public class AdminRequestFilter {
             request.setAttribute("item", item);            
         }
 	    
-	    Long twitterId = parseTwitterIdfromRequest(request);
+	    Long twitterId = parseTwitterIdfromRequest(request);	// TODO what is this used for?
     	if (twitterId != null) {
     		request.setAttribute("twitterId", twitterId);
     	}
@@ -85,7 +85,7 @@ public class AdminRequestFilter {
     		request.setAttribute("image", new Image(image, null));
     	}
 		
-		log.info("Looking for date field");
+		log.debug("Looking for date field");
 		if (request.getParameter(DATE_FIELD) != null && !request.getParameter(DATE_FIELD).isEmpty()) {
 			final String dateString = (String) request.getParameter(DATE_FIELD);
 			SimpleDateFormat df = new SimpleDateFormat("dd MMM yyyy");              
@@ -99,7 +99,7 @@ public class AdminRequestFilter {
 			}        	
 		}		
 		
-		log.info("Looking for embargoed field");
+		log.debug("Looking for embargoed field");
 		if (request.getParameter(EMBARGO_DATE_FIELD) != null && !request.getParameter(EMBARGO_DATE_FIELD).isEmpty()) {
 			request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate((String) request.getParameter(EMBARGO_DATE_FIELD)));
 		}
@@ -118,13 +118,13 @@ public class AdminRequestFilter {
     	
 		if (request.getParameter("feed") != null) {
 			final String feedParameter = request.getParameter("feed");
-			log.info("Loading feed by url words: " + feedParameter);		
+			log.debug("Loading feed by url words: " + feedParameter);		
     		final Resource feed = resourceDAO.loadFeedByUrlWords(feedParameter);
     		if (feed != null) {           	
-    			log.info("Found feed: " + feed.getName());
+    			log.debug("Found feed: " + feed.getName());
     			request.setAttribute("feedAttribute", feed);        				
     		} else {
-    			log.info("Could not find feed: " + feed);
+    			log.debug("Could not find feed: " + feed);
     		}
 		}
 		
@@ -132,13 +132,13 @@ public class AdminRequestFilter {
             String tagName = request.getParameter("parent");
             Tag tag = tagDAO.loadTagByName(tagName);
             if (tag != null) {
-            	log.info("Found parent tag: " + tag.getName());
+            	log.debug("Found parent tag: " + tag.getName());
             	request.setAttribute("parent_tag", tag);
             }
         }
                 
                 
-	    log.info("Looking for edit tags");
+	    log.debug("Looking for edit tags");
         Pattern pattern = Pattern.compile("^/edit/tag/(.*)$");
         Matcher matcher = pattern.matcher(request.getPathInfo());
         if (matcher.matches()) {
@@ -158,7 +158,7 @@ public class AdminRequestFilter {
 					return date;
 				}		
 			} catch (ParseException e) {
-				log.info("Supplied embargo date '" + dateString + "' did not match date format: " + dateFormat.toPattern());
+				log.warn("Supplied embargo date '" + dateString + "' did not match date format: " + dateFormat.toPattern());
 			}
 		}
 		
@@ -173,11 +173,11 @@ public class AdminRequestFilter {
 	
 	private Long parseTwitterIdfromRequest(HttpServletRequest request) {
 		String twitterIdParam = request.getParameter("twitterid");
-		log.info("Twitted id parameter: " + twitterIdParam);
+		log.debug("Twitted id parameter: " + twitterIdParam);
 		if (twitterIdParam != null) {    
 			try {
 				Long twitterId = Long.parseLong(twitterIdParam);
-				log.info("Twitted id parsed to: " + twitterId);
+				log.debug("Twitted id parsed to: " + twitterId);
 				return twitterId;
 			} catch (Exception e) {
         		return null;

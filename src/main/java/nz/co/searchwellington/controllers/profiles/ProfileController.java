@@ -97,7 +97,7 @@ public class ProfileController {
 			final String profilename = path.split("/")[2];	// TODO move to spring path parameters
 			final User user = userDAO.getUserByProfileName(profilename);
 			if (user != null) {
-				log.info("Rendering profile for user: "+ profilename);
+				log.debug("Rendering profile for user: "+ profilename);
 				ModelAndView mv = new ModelAndView("viewProfile");
 				User loggedInUser = loggerInUserFilter.getLoggedInUser();
 				if (loggedInUser != null && loggedInUser.getId() == user.getId()) {

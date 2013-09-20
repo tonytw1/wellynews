@@ -15,13 +15,13 @@ public class ContentDedupingService {
 	private static Logger log = Logger.getLogger(ContentDedupingService.class);
 
     public List<Resource> dedupeNewsitems(List<Resource> latestNewsitems, List<Resource> commentedNewsitems) {
-    	log.info("Called with " + latestNewsitems.size() + " main content items and " + commentedNewsitems.size() + " commented news items");
+    	log.debug("Called with " + latestNewsitems.size() + " main content items and " + commentedNewsitems.size() + " commented news items");
     	final List <Resource> depuded  = Lists.newArrayList(latestNewsitems);
     	depuded.removeAll(commentedNewsitems);
     	if (depuded.size() < latestNewsitems.size()) {
-    		log.info("Removed " + (latestNewsitems.size() - depuded.size()) + " duplicates");
+    		log.debug("Removed " + (latestNewsitems.size() - depuded.size()) + " duplicates");
     	}
-    	log.info("Returning " + depuded.size() + " main content items");
+    	log.debug("Returning " + depuded.size() + " main content items");
     	return depuded;
     }
 

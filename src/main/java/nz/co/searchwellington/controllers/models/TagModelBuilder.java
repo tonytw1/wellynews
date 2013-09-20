@@ -201,7 +201,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	    
     private void populateGeocoded(ModelAndView mv, Tag tag) {
         List<FrontendResource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
-        log.info("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
+        log.debug("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);
         }
@@ -210,7 +210,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     private void populateRelatedFeed(ModelAndView mv, Tag tag) {       
         Feed relatedFeed = tag.getRelatedFeed();
         if (relatedFeed != null) {
-            log.info("Related feed is: " + relatedFeed.getName());
+            log.debug("Related feed is: " + relatedFeed.getName());
             mv.addObject("related_feed", relatedFeed);
             
             List<FrontendFeedNewsitem> relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed);            

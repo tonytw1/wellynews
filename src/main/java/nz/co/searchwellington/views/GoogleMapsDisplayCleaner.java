@@ -45,7 +45,7 @@ public class GoogleMapsDisplayCleaner {
         	}
         }
         
-        log.info("Returning collection with " + deduped.size() + " items");
+        log.debug("Returning collection with " + deduped.size() + " items");
         return deduped;
     }
     

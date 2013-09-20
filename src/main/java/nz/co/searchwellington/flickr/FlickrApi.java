@@ -41,8 +41,9 @@ public class FlickrApi {
         if (groupIdSet) {
             log.info("Checking count for tag " + tagName + " in pool group id " + poolGroupId);
             try {            	
-            	log.info("Building flickr api with key, secret: " + apiKey + ":" + apiSecret);
-                Flickr flickr = new Flickr(apiKey, apiSecret, new REST());
+            	log.debug("Building flickr api with key, secret: " + apiKey + ":" + apiSecret);
+                final Flickr flickr = new Flickr(apiKey, apiSecret, new REST());
+                
                 String[] tags = new String[1];
                 tags[0] = tagName;                
                 PhotoList photos = flickr.getPoolsInterface().getPhotos(poolGroupId, tags, 0, 0);   

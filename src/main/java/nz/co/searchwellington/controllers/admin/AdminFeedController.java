@@ -59,11 +59,11 @@ public class AdminFeedController {
             	return null;
             }
             
-            log.info("Accepting all from feed: " + feed.getName());           
+            log.debug("Accepting all from feed: " + feed.getName());           
             feedReader.processFeed(feed.getId(), loggedInUserFilter.getLoggedInUser(), FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES);
             
         } else {
-            log.info("No feed seen on request; nothing to reread.");
+            log.debug("No feed seen on request; nothing to reread.");
         }        
         return new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)));   
     }

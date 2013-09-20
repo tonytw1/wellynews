@@ -39,9 +39,6 @@ public class AutoTagController {
 	private HandTaggingDAO tagVoteDAO;
 	private LoggedInUserFilter loggedInUserFilter;
 	private CommonModelObjectsService commonModelObjectsService;
-    
-	public AutoTagController() {
-	}
 	
 	@Autowired
 	public AutoTagController(HibernateResourceDAO resourceDAO,
@@ -100,11 +97,10 @@ public class AutoTagController {
         	return null;
         }
         
-        final ModelAndView mv = new ModelAndView();
-        mv.setViewName("autoTagApply");
+        final ModelAndView mv = new ModelAndView("autoTagApply");
         mv.addObject("heading", "Autotagging");
-        commonModelObjectsService.populateCommonLocal(mv);
         mv.addObject("tag", tag);
+        commonModelObjectsService.populateCommonLocal(mv);
         
         final List<Resource> resourcesAutoTagged = Lists.newArrayList();
         String[] autotaggedResourceIds = request.getParameterValues("autotag");
@@ -118,7 +114,8 @@ public class AutoTagController {
         	}
         	contentUpateService.update(resource);
         	resourcesAutoTagged.add(resource);
-        }        
+        }
+        
         mv.addObject("resources_to_tag", resourcesAutoTagged);             
         return mv;
     }

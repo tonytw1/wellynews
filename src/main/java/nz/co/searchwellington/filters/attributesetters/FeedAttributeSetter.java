@@ -34,7 +34,7 @@ public class FeedAttributeSetter implements AttributeSetter {
 			log.debug("Looking for feed '" + match + "'");
 			Feed feed = (Feed) resourceDAO.loadFeedByUrlWords(match);
 			if (feed != null) {
-				log.info("Setting feed: " + feed.getName());
+				log.debug("Setting feed: " + feed.getName());
 				request.setAttribute(FEED_ATTRIBUTE, feed);
 				request.setAttribute("resource", feed);
 				return true;

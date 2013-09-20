@@ -32,8 +32,9 @@ public class PublisherGuessingService {
         List<Resource> possiblePublishers = guessPossiblePublishersForUrl(url);      
         if (possiblePublishers.size() == 1) {
             Website publisher = (Website) possiblePublishers.get(0);
-            log.info("Guessing publisher for " + url + " is: " + publisher.getName());
-            return publisher;           
+            log.debug("Guessing publisher for " + url + " is: " + publisher.getName());
+            return publisher;
+            
         } else if (possiblePublishers.size() > 1) {
         	for (Resource possible : possiblePublishers) {        		
 				if (url.startsWith(possible.getUrl())) {

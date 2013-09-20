@@ -70,7 +70,7 @@ public class ElasticSearchIndexUpdateService {
 			}
 		}
 		
-		log.info("Executing bulk request with " + bulkRequest.numberOfActions() + " actions");
+		log.debug("Executing bulk request with " + bulkRequest.numberOfActions() + " actions");
 		bulkRequest.execute().actionGet();		
 	}
 	

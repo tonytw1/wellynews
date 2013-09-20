@@ -34,8 +34,8 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building feed page model");
-			ModelAndView mv = new ModelAndView();			
+			log.debug("Building feed page model");
+			final ModelAndView mv = new ModelAndView();			
 			mv.addObject("heading", "Feeds");
 			mv.addObject("description", "Incoming feeds");
 			mv.addObject("link", urlBuilder.getFeedsUrl());

@@ -23,7 +23,7 @@ public class CommentFeedDetectorService {
         for (CommentFeedDetector detector : detectors) {
         	log.debug(detector.getClass().getName() + " is checking is comment feed url: " + url);
             if (detector.isValid(url)) {
-            	log.info(detector.getClass().getName() + " detected commnt feed url: " + url);
+            	log.debug(detector.getClass().getName() + " detected commnt feed url: " + url);
                 return true;
             }
         }    

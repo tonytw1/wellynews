@@ -41,8 +41,7 @@ public class ElasticSearchIndexRebuildService {
 		
 		try {
 			List<Integer> resourceIdsToIndex = resourceDAO.getAllResourceIds();
-			log.info("Number of resources to update in solr index: " + resourceIdsToIndex.size());
-
+			log.info("Number of resources to reindex: " + resourceIdsToIndex.size());
 			if (resourceIdsToIndex.size() > 0) {
 				reindexResources(resourceIdsToIndex);
 				running = false;

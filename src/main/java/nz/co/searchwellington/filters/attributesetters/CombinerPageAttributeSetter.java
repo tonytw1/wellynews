@@ -50,7 +50,7 @@ public class CombinerPageAttributeSetter implements AttributeSetter {
 				} else {
 					Tag leftHandTag = tagDAO.loadTagByName(left);
 					if (leftHandTag != null) {
-						log.info("Setting tags '" + leftHandTag.getName() + "', '" + rightHandTag.getName() + "'");
+						log.debug("Setting tags '" + leftHandTag.getName() + "', '" + rightHandTag.getName() + "'");
 						List<Tag> tags = Lists.newArrayList();
 						tags.add(leftHandTag);
 						tags.add(rightHandTag);

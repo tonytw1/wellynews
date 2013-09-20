@@ -36,7 +36,7 @@ public class TagAjaxController extends BaseAjaxController {
 	}
 	
 	protected List<String> getSuggestions(String q) {
-        log.info("Looking up possible tags starting with: " + q);
+        log.debug("Looking up possible tags starting with: " + q);
         return contentRetrievalService.getTagNamesStartingWith(q);
 	}
         

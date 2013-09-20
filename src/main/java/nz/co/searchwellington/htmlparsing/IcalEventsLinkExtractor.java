@@ -26,11 +26,11 @@ public class IcalEventsLinkExtractor implements LinkExtractor {
     
             NodeFilter linksFilter = new LinkRegexFilter("/event/ical", true);
             NodeList icalLinks = parser.extractAllNodesThatMatch(linksFilter);
-            log.info("Found " + icalLinks.size() + " possible ical events links.");
+            log.debug("Found " + icalLinks.size() + " possible ical events links.");
             for (int i = 0; i < icalLinks.size(); i++) {
                 Tag tag = (Tag) icalLinks.elementAt(i);
                 final String feedLink = tag.getAttribute("href");
-                log.info("Found possible ical event link: " + feedLink);
+                log.debug("Found possible ical event link: " + feedLink);
                 links.add(feedLink);
             }
         } catch (ParserException e) {

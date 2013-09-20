@@ -42,7 +42,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	@Override
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building feeds inbox model");
+			log.debug("Building feeds inbox model");
 			ModelAndView mv = new ModelAndView();
 			
 			mv.addObject("main_content", suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)); 

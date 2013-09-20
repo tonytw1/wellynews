@@ -38,7 +38,7 @@ public class PublisherAjaxController extends BaseAjaxController {
 	}
 	
 	protected List<String> getSuggestions(String q) {
-        log.info("Looking up possible publishers starting with: " + q);
+        log.debug("Looking up possible publishers starting with: " + q);
         return contentRetrievalService.getPublisherNamesByStartingLetters(q);    
 	}
     

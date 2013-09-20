@@ -44,7 +44,7 @@ public class ResourceParameterFilter implements RequestAttributeFilter {
 			if (resourceId > 0) {
 				Resource resource = resourceDAO.loadResourceById(resourceId);
 				if (resource != null) {
-					log.info("Found resource: " + resource.getName());
+					log.debug("Found resource: " + resource.getName());
 					request.setAttribute("resource", resource);
 					return;
 				}
@@ -57,7 +57,7 @@ public class ResourceParameterFilter implements RequestAttributeFilter {
 	private void processResourceUrlWords(HttpServletRequest request, String resourceParameter) {
 		final Resource resource = resourceDAO.loadByUrlWords(resourceParameter);
 		if (resource != null) {
-			log.info("Found resourc by urlWords: " + resource.getName());
+			log.debug("Found resource by urlWords: " + resource.getName());
 			request.setAttribute("resource", resource);
 			return;
 		}

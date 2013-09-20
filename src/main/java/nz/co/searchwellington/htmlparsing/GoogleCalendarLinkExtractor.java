@@ -33,7 +33,7 @@ public class GoogleCalendarLinkExtractor implements LinkExtractor {
 
 			NodeFilter googleLinksFilter = new LinkRegexFilter("http://www.google.com/calendar/render", true);
 			NodeList googleLinks = parser.extractAllNodesThatMatch(googleLinksFilter);
-			log.info("Found " + googleLinks.size() + " possible Google Calender links.");
+			log.debug("Found " + googleLinks.size() + " possible Google Calender links.");
 
 			for (int i = 0; i < googleLinks.size(); i++) {
 				Tag tag = (Tag) googleLinks.elementAt(i);

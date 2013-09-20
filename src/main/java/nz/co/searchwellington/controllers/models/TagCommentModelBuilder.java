@@ -44,7 +44,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	@SuppressWarnings("unchecked")
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
-			log.info("Building tag comment page model");
+			log.debug("Building tag comment page model");
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
 			Tag tag = tags.get(0);
 

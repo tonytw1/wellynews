@@ -29,9 +29,9 @@ public class HandTaggingService {
 	}
 	
 	public void clearTaggingsForTag(Tag tag) {
-		log.info("Cleaning tagging votes for tag: " + tag.getName());
-		List<HandTagging> votesForTag = handTaggingDao.getVotesForTag(tag);
-		log.info(votesForTag.size() + " votes will needs to be cleared and the frontend resources updated.");
+		log.debug("Clearing tagging votes for tag: " + tag.getName());
+		final List<HandTagging> votesForTag = handTaggingDao.getVotesForTag(tag);
+		log.debug(votesForTag.size() + " votes will needs to be cleared and the frontend resources updated.");
 		for (HandTagging handTagging : votesForTag) {
 			handTaggingDao.delete(handTagging);
 			frontendContentUpdater.update(handTagging.getResource());

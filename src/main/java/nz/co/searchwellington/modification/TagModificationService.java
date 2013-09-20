@@ -23,7 +23,7 @@ public class TagModificationService {
 	}
 	
 	public void updateTagParent(Tag editTag, Tag parentTag) {
-		log.info("Setting parent tag to: " + parentTag.getName());	
+		log.debug("Setting parent tag to: " + parentTag.getName());	
 		editTag.setParent(parentTag);
 		// TODO should now reindex all resources effected by this.		
 	}

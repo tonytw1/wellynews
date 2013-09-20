@@ -46,7 +46,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 	public void filter(HttpServletRequest request) {		
 		final Double radius = processDoubleParameter(request, RADIUS);
 		if (radius != null && radius > 0) {
-			log.info("Radius attribute set to: " + radius);
+			log.debug("Radius attribute set to: " + radius);
 			request.setAttribute(RADIUS, radius);
 		}
 		
@@ -55,7 +55,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			final OsmId osmId = osmIdParser.parseOsmId(osmIdString);			
 			
 			final Place resolvedPlace = geoCodeService.resolveOsmId(osmId);			
-			log.info("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
+			log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
 			if (resolvedPlace == null) {
 				throw new RuntimeException("OSM place could not be resolved");	// TODO 404 in this use case
 			}
@@ -78,11 +78,11 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			List<Place> matchingPlaces = geoCodeService.resolveAddress(location);
 			if (matchingPlaces != null && !matchingPlaces.isEmpty()) {
 				final Place firstMatch = matchingPlaces.get(0);
-				log.info("User supplied location '" + location + "' resolved to point: " + firstMatch.getLatLong());				
+				log.debug("User supplied location '" + location + "' resolved to point: " + firstMatch.getLatLong());				
 				request.setAttribute(LOCATION, firstMatch);
 				
 			} else {
-				log.info("User supplied location '" + location + "' could not be resolved to a point");
+				log.debug("User supplied location '" + location + "' could not be resolved to a point");
 				throw new RuntimeException("Could not resolve place name to lat long");
 			}
 		}

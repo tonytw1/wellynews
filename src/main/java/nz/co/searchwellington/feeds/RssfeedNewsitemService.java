@@ -57,7 +57,7 @@ public class RssfeedNewsitemService {
 	}
 	
 	public boolean isUrlInAcceptedFeeds(String url) {
-		log.info("Looking for url in accepted feeds: " + url);
+		log.debug("Looking for url in accepted feeds: " + url);
 		for(Feed feed : resourceDAO.getAllFeeds()) {
 			if (feed.getAcceptancePolicy().equals("accept") || feed.getAcceptancePolicy().equals("accept_without_dates")) {
 				log.debug("Checking feed: " + feed.getName());
@@ -65,7 +65,7 @@ public class RssfeedNewsitemService {
 				for (FrontendFeedNewsitem feedNewsitem : feednewsItems) {
 					log.debug("Checking feeditem: " + feedNewsitem.getUrl());
 					if (feedNewsitem.getUrl().equals(url)) {
-						log.info("Found: " + url);
+						log.debug("Found: " + url);
 						return true;
 					}
 				}
