@@ -25,6 +25,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper;
 import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
+import nz.co.searchwellington.queues.LinkCheckerQueue;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.spam.SpamFilter;
@@ -72,6 +73,7 @@ public class ResourceEditController {
 	private WhakaoroClientFactory whakaoroClientFactory;
 	private FrontendResourceMapper frontendResourceMapper;
 	private SpamFilter spamFilter;
+	private LinkCheckerQueue linkCheckerQueue;
 	
 	public ResourceEditController() {
 	}
@@ -96,7 +98,7 @@ public class ResourceEditController {
 			UrlWordsGenerator urlWordsGenerator, 
 			WhakaoroClientFactory whakaoroClientFactory,
 			FrontendResourceMapper frontendResourceMapper,
-			SpamFilter spamFilter) {
+			SpamFilter spamFilter, LinkCheckerQueue linkCheckerQueue) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
@@ -119,6 +121,7 @@ public class ResourceEditController {
 		this.whakaoroClientFactory = whakaoroClientFactory;
 		this.frontendResourceMapper = frontendResourceMapper;
 		this.spamFilter = spamFilter;
+		this.linkCheckerQueue = linkCheckerQueue;
 	}
     
     @Transactional	
@@ -426,6 +429,7 @@ public class ResourceEditController {
                 }
 
             	saveResource(request, loggedInUser, editResource);	// TODO with the tags votes do sticking to an unsaved resource - transaction boundary issue?
+            	linkCheckerQueue.add(editResource.getId());
             	
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
@@ -442,9 +446,8 @@ public class ResourceEditController {
 
 	// TODO duplicated in public tagging
 	private User createAndSetAnonUser(HttpServletRequest request) {
-		User loggedInUser;
 		log.info("Creating new anon user for resource submission");
-		loggedInUser = anonUserService.createAnonUser();
+		final User loggedInUser = anonUserService.createAnonUser();
 		loggedInUserFilter.setLoggedInUser(request, loggedInUser);
 		loggedInUserFilter.loadLoggedInUser(request);
 		return loggedInUser;
@@ -462,7 +465,7 @@ public class ResourceEditController {
    	}
    
 	private void saveResource(HttpServletRequest request, User loggedInUser, Resource editResource) {		
-		contentUpdateService.update(editResource);
+		contentUpdateService.update(editResource);	
 	}
 	
     private boolean userIsAllowedToEdit(Resource editResource, HttpServletRequest request, User loggedInUser) {    
@@ -483,7 +486,7 @@ public class ResourceEditController {
         }
     }
     
-	protected void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) {
+	private void populatePublisherField(ModelAndView modelAndView, boolean userIsLoggedIn, Resource editResource) {
         boolean isPublishedResource = editResource instanceof PublishedResource;  
         if (isPublishedResource) {
             modelAndView.addObject("publisher_select", "1");   
