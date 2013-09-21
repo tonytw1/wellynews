@@ -5,7 +5,6 @@ import java.util.List;
 
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
-import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.modification.ContentUpdateService;
@@ -32,10 +31,8 @@ public class FeedReader {
     private FeedAcceptanceDecider feedAcceptanceDecider;
     private DateFormatter dateFormatter;   
     private UrlCleaner urlCleaner;
-    private ContentUpdateService contentUpdateService;
-	private FeedItemAcceptor feedItemAcceptor;
-    private AutoTaggingService autoTagger;
-    private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
+	private FeedReaderUpdateService feedReaderUpdateService;
+	private ContentUpdateService contentUpdateService;
 	private LinkCheckerQueue linkCheckerQueue;
     
     public FeedReader() {        
@@ -50,27 +47,25 @@ public class FeedReader {
 			FeedItemAcceptor feedItemAcceptor,
 			AutoTaggingService autoTagger,
 			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
-			LinkCheckerQueue linkCheckerQueue) {
+			LinkCheckerQueue linkCheckerQueue, FeedReaderUpdateService feedReaderUpdateService) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
 		this.urlCleaner = urlCleaner;
-		this.contentUpdateService = contentUpdateService;
-		this.feedItemAcceptor = feedItemAcceptor;
-		this.autoTagger= autoTagger;
 		this.feedAcceptanceDecider = feedAcceptanceDecider;
-		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
+		this.feedReaderUpdateService = feedReaderUpdateService;
+		this.contentUpdateService = contentUpdateService;
 		this.linkCheckerQueue = linkCheckerQueue;
 		dateFormatter = new DateFormatter();
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void processFeed(int feedId, User loggedInUser, FeedAcceptancePolicy manuallySpecifiedAcceptancePolicy) {	// TODO interface should be feeds not feed ids?
 		Feed feed = (Feed) resourceDAO.loadResourceById(feedId); 
 		processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy);		
 	}
 	
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Transactional(propagation=Propagation.REQUIRES_NEW)
 	public void processFeed(int feedId, User loggedInUser) {
 		Feed feed = (Feed) resourceDAO.loadResourceById(feedId);
 		processFeed(feed, loggedInUser, feed.getAcceptancePolicy());		
@@ -85,19 +80,14 @@ public class FeedReader {
 	    	// TODO can this move onto the enum?
 			final boolean shouldLookAtFeed =  acceptancePolicy == FeedAcceptancePolicy.ACCEPT || acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES || acceptancePolicy == FeedAcceptancePolicy.SUGGEST; 	        
 	        if (shouldLookAtFeed) {
-	          processFeedItems(feed, feedReaderUser, acceptancePolicy);
-	          
+	        	processFeedItems(feed, feedReaderUser, acceptancePolicy);	          
 	        } else {
 	        	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept or suggest");
 	        }
 	        
-	        feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
-	        log.info("Feed latest item publication date is: " + feed.getLatestItemDate());                    
-	        feed.setLastRead(Calendar.getInstance().getTime());
-	        contentUpdateService.update(feed);
-	
+	        markFeedAsRead(feed);	        
 	        log.info("Done processing feed.");
-
+	        
     	} catch (Exception e) {
     		log.error(e, e);
     	}
@@ -122,8 +112,8 @@ public class FeedReader {
 					final boolean acceptThisItem = acceptanceErrors.isEmpty();
 					if (acceptThisItem) {
 						log.info("Accepting newsitem: " + feednewsitem.getUrl());
-						acceptNewsitem(feed, feedReaderUser, feednewsitem);
-						
+						linkCheckerQueue.add(feedReaderUpdateService.acceptNewsitem(feed, feedReaderUser, feednewsitem));
+
 					} else {
 						log.info("Not accepting " + feednewsitem.getUrl() + " due to acceptance errors: " + acceptanceErrors);
 					}
@@ -139,15 +129,11 @@ public class FeedReader {
          }
 	}
 	
-	private void acceptNewsitem(Feed feed, User feedReaderUser, FrontendFeedNewsitem feednewsitem) {
-		final Newsitem newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
-		feedItemAcceptor.acceptFeedItem(feedReaderUser, newsitem);
-								
-		contentUpdateService.create(newsitem);
-		autoTagger.autotag(newsitem);
-		contentUpdateService.update(newsitem);
-		
-		linkCheckerQueue.add(newsitem.getId());
+	public void markFeedAsRead(Feed feed) {
+		feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed));
+		log.info("Feed latest item publication date is: " + feed.getLatestItemDate());
+		feed.setLastRead(Calendar.getInstance().getTime());
+		contentUpdateService.update(feed);
 	}
 	
 }
