@@ -22,6 +22,7 @@ import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.common.collect.Lists;
 import org.elasticsearch.common.collect.Maps;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.FilteredQueryBuilder;
@@ -32,6 +33,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet;
+import org.elasticsearch.search.facet.geodistance.GeoDistanceFacet;
+import org.elasticsearch.search.facet.geodistance.GeoDistanceFacetBuilder;
 import org.elasticsearch.search.facet.terms.TermsFacet;
 import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
 import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
@@ -249,6 +252,30 @@ public class ElasticSearchBackedResourceDAO {
 		
 		final SearchResponse response = searchRequestBuilder.execute().actionGet();
 		return deserializeFrontendResourceHits(response.getHits());
+	}
+	
+	public Map<Double, Long> getNewsitemsNearDistanceFacet(LatLong latLong, boolean shouldShowBroken) {
+		final GeoDistanceFacetBuilder geoDistanceFacet = FacetBuilders.geoDistanceFacet("distance").field("location").lat(latLong.getLatitude()).lon(latLong.getLongitude());
+		geoDistanceFacet.unit(DistanceUnit.KILOMETERS);
+		for (int i = 1; i <= 9; i++) {
+			geoDistanceFacet.addRange(0, i);			
+		}
+		for (int i = 10; i <= 50; i = i + 10) {
+			geoDistanceFacet.addRange(0, i);			
+		}
+		
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(geotaggedNearQuery(latLong, 1000, shouldShowBroken)).
+			setSize(0).addFacet(geoDistanceFacet);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+				
+		final Map<Double, Long> distanceFacets = Maps.newLinkedHashMap();
+		final GeoDistanceFacet facets = (GeoDistanceFacet) response.getFacets().facetsAsMap().get("distance");
+		for (GeoDistanceFacet.Entry entry : facets) {
+			distanceFacets.put(entry.getTo(), entry.getCount());
+		}
+		return distanceFacets;
 	}
 	
 	public long getGeotaggedNewsitemsNearCount(LatLong latLong, double radius, boolean shouldShowBroken) {

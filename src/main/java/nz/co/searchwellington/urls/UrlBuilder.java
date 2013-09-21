@@ -187,6 +187,17 @@ public class UrlBuilder {
 		return null;
 	}
 	
+	public String getLocationUrlForRadius(Place place, double radius) {
+		if (place.getOsmId() != null) {
+			return siteInformation.getUrl() + "/geotagged?osm=" + UrlParameterEncoder.encode(place.getOsmId().getId() + "/" + place.getOsmId().getType()) + "&radius=" + radius;
+		}
+		if (place.getLatLong() != null) {
+			return siteInformation.getUrl() + "/geotagged?latitude=" + place.getLatLong().getLatitude() + "&longitude=" + place.getLatLong().getLongitude() + "&radius=" + radius;
+		}
+		return null;
+	}
+	
+	
 	public String getSearchUrlFor(String keywords) {
 		return siteInformation.getUrl() + "/search?keywords=" + UrlParameterEncoder.encode(keywords);
 	}

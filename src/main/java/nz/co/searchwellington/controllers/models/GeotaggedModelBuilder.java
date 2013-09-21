@@ -81,7 +81,8 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				
 				log.debug("Populating main content with newsitems near: " + latLong + " (radius: " + radius + ")");
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS));
-			
+				mv.addObject("related_distances", contentRetrievalService.getNewsitemsNearDistanceFacet(latLong));
+				
 				if (!Strings.isNullOrEmpty(userSuppliedPlace.getAddress())) {
 					mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace));
 				}			

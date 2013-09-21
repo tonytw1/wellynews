@@ -106,6 +106,10 @@ public class ContentRetrievalService {
 		return elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNear(latLong, radius, showBrokenDecisionService.shouldShowBroken(), startIndex, maxNewsitems);
 	}
 	
+	public Map<Double, Long> getNewsitemsNearDistanceFacet(LatLong latLong) {
+		return elasticSearchBackedResourceDAO.getNewsitemsNearDistanceFacet(latLong, showBrokenDecisionService.shouldShowBroken());
+	}
+	
 	public long getNewsitemsNearCount(LatLong latLong, double radius) {
 		return elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNearCount(latLong, radius, showBrokenDecisionService.shouldShowBroken());
 	}

@@ -1,0 +1,13 @@
+#if ($related_distances)
+	<h2>Nearby</h2>
+	<ul>
+	#set($last = 0)
+	#foreach ($radius in $related_distances.keySet())
+		#set($count = $related_distances.get($radius))
+		#if ($count > $last)
+	        <li><a href="$urlBuilder.getLocationUrlForRadius($location, $radius)">$radius km</a> ($count)</a></li>
+	  	#end
+	  	#set($last = $count)
+	#end
+	</ul>
+#end
