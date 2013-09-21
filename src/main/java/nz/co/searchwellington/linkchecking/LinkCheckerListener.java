@@ -48,7 +48,14 @@ public class LinkCheckerListener  {
 				try {
 					final QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 					String message = new String(delivery.getBody());
-					log.info("Received: " + message);					
+					log.info("Received: " + message);
+					
+					try {
+						Thread.sleep(3000);	// TODO Hack - queue is firing before the calling code exists it's transaction and commits.
+					} catch (Exception e) {
+						log.warn(e);
+					}
+					
 					linkChecker.scanResource(Integer.parseInt(message));
 					
 				} catch (Exception e) {
