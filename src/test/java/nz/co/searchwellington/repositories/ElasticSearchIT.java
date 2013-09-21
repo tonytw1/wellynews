@@ -14,6 +14,7 @@ import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdat
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
+import org.elasticsearch.common.unit.DistanceUnit;
 import org.elasticsearch.index.query.FilterBuilders;
 import org.elasticsearch.index.query.GeoDistanceFilterBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -21,6 +22,8 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.facet.FacetBuilders;
 import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet;
+import org.elasticsearch.search.facet.geodistance.GeoDistanceFacet;
+import org.elasticsearch.search.facet.geodistance.GeoDistanceFacetBuilder;
 import org.elasticsearch.search.facet.terms.TermsFacet;
 import org.elasticsearch.search.facet.terms.TermsFacet.ComparatorType;
 import org.elasticsearch.search.facet.terms.TermsFacet.Entry;
@@ -122,6 +125,32 @@ public class ElasticSearchIT {
 		}
 		
 		System.out.println(resources);
+    }
+    
+    @Test
+	public void canDistanceFacetOutFromPoint() throws Exception {
+		final SearchRequestBuilder requestBuilder = client.prepareSearch(
+				ElasticSearchIndexUpdateService.INDEX).setTypes(
+				ElasticSearchIndexUpdateService.TYPE);
+		
+		final GeoDistanceFilterBuilder geoFilter = FilterBuilders.geoDistanceFilter("location").distance("1000km").point(-41.19, 174.95);
+		
+		GeoDistanceFacetBuilder geoFacet = FacetBuilders.geoDistanceFacet("distance").field("location").lat(-40.88).lon(175.00);
+		geoFacet.unit(DistanceUnit.KILOMETERS);
+		for (int i = 0; i <= 100; i++) {
+			geoFacet.addRange(0, i);
+			
+		}
+		
+		final SearchResponse response = requestBuilder.setQuery(
+				QueryBuilders.filtered(QueryBuilders.termQuery("type", "N"), geoFilter)).
+				addFacet(geoFacet).
+				execute().actionGet();
+				
+		final GeoDistanceFacet f = (GeoDistanceFacet) response.getFacets().facetsAsMap().get("distance");
+		for (GeoDistanceFacet.Entry entry : f) {
+		    System.out.println(entry.getTo() + ": " + entry.getCount());
+		}
 	}
     
 	@Test
