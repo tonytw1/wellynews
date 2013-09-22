@@ -5,9 +5,9 @@
 #parse("includes/topbar.vm")
 
 <div class="left">
+	#parse("includes/location_related_distances.vm")
 	#parse("includes/location_related_tags.vm")
 	#parse("includes/location_related_publishers.vm")
-	#parse("includes/location_related_distances.vm")
 	#parse("includes/tag_tree.vm")
 </div>
 

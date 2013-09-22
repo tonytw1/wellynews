@@ -83,6 +83,21 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS));
 				mv.addObject("related_distances", contentRetrievalService.getNewsitemsNearDistanceFacet(latLong));
 				
+				if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
+					mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());
+					
+				} else {
+					final List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW);
+					if (!relatedTagLinks.isEmpty()) {
+						mv.addObject("related_tags", relatedTagLinks);
+					}
+					
+					final List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius);
+					if (!relatedPublisherLinks.isEmpty()) {
+						mv.addObject("related_publishers", relatedPublisherLinks);
+					}			
+				}
+								
 				if (!Strings.isNullOrEmpty(userSuppliedPlace.getAddress())) {
 					mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace));
 				}			
@@ -101,6 +116,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			mv.addObject("main_content", contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS));			
 			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
 			
+			
+			
+			
 			populatePagination(mv, startIndex, totalGeotaggedCount);
 			return mv;
 		}
@@ -116,23 +134,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	}
 	
 	@Override
-	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
-		if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
-			mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags());
-			
-		} else {
-			final Place userSuppliedPlace = (Place) request.getAttribute(LocationParameterFilter.LOCATION);			
-			final List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
-			if (!relatedTagLinks.isEmpty()) {
-				mv.addObject("related_tags", relatedTagLinks);
-			}
-
-			List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, HOW_FAR_IS_CLOSE_IN_KILOMETERS, REFINEMENTS_TO_SHOW);
-			if (!relatedPublisherLinks.isEmpty()) {
-				mv.addObject("related_publishers", relatedPublisherLinks);
-			}			
-		}
-		
+	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {		
 		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
 	}
 	

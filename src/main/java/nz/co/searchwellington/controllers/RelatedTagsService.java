@@ -24,11 +24,13 @@ public class RelatedTagsService {
 		
 	private final ElasticSearchBackedResourceDAO elasticSearchBackedResourceDAO;
 	private final TagDAO tagDAO;
+	private final ShowBrokenDecisionService showBrokenDecisionService;
 	
 	@Autowired
-	public RelatedTagsService(ElasticSearchBackedResourceDAO elasticSearchBackedResourceDAO, TagDAO tagDAO) {
+	public RelatedTagsService(ElasticSearchBackedResourceDAO elasticSearchBackedResourceDAO, TagDAO tagDAO, ShowBrokenDecisionService showBrokenDecisionService) {
 		this.elasticSearchBackedResourceDAO = elasticSearchBackedResourceDAO;
 		this.tagDAO = tagDAO;
+		this.showBrokenDecisionService = showBrokenDecisionService;
 	}
 
 	public List<TagContentCount> getRelatedLinksForTag(Tag tag, int maxItems) {
@@ -45,17 +47,22 @@ public class RelatedTagsService {
 		return Lists.newArrayList();	// TODO implement
 	}
 	
-	public List<PublisherContentCount> getRelatedPublishersForLocation(Place place, double radius, int maxItems) {
-		return Lists.newArrayList();	// TODO implement
-	}
-	
 	public List<PublisherContentCount> getRelatedPublishersForTag(Tag tag, int maxItems) {
 		final Map<String, Integer> publisherFacetsForTag = elasticSearchBackedResourceDAO.getPublisherFacetsForTag(tag);
+		return populatePublisherFacets(publisherFacetsForTag);
+	}
+
+	private List<PublisherContentCount> populatePublisherFacets(final Map<String, Integer> publisherFacetsForTag) {
 		final List<PublisherContentCount> publisherFacets = Lists.newArrayList();
 		for (String publisher : publisherFacetsForTag.keySet()) {
 			publisherFacets.add(new PublisherContentCount(publisher, publisherFacetsForTag.get(publisher)));
 		}
 		return publisherFacets;
+	}
+	
+	public List<PublisherContentCount> getRelatedPublishersForLocation(Place place, double radius) {
+		Map<String, Integer> publisherFacetsNear = elasticSearchBackedResourceDAO.getPublisherFacetsNear(place.getLatLong(), radius, showBrokenDecisionService.shouldShowBroken());
+		return populatePublisherFacets(publisherFacetsNear);
 	}
 	
 	public List<TagContentCount> getRelatedLinksForPublisher(Website publisher) {

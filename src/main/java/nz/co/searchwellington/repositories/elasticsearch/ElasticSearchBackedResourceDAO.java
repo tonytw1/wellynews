@@ -50,6 +50,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.regexp.internal.recompile;
 
 @Component
 public class ElasticSearchBackedResourceDAO {
@@ -252,6 +253,19 @@ public class ElasticSearchBackedResourceDAO {
 		
 		final SearchResponse response = searchRequestBuilder.execute().actionGet();
 		return deserializeFrontendResourceHits(response.getHits());
+	}
+	
+	public Map<String, Integer> getPublisherFacetsNear(LatLong latLong, double radius, boolean shouldShowBroken) {
+		final SearchResponse searchResponse = searchRequestBuilder().setQuery(geotaggedNearQuery(latLong, radius, shouldShowBroken)).
+				addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.COUNT).size(10)).
+				execute().actionGet();
+	
+		final Map<String, Integer> facets = Maps.newLinkedHashMap();
+		final TermsFacet facet = (TermsFacet) searchResponse.getFacets().getFacets().get(PUBLISHER_NAME);
+	    for (Entry entry : (List<? extends Entry>) facet.getEntries()) {
+			facets.put(entry.getTerm().string(), entry.getCount());
+	    }
+		return facets;		
 	}
 	
 	public Map<Double, Long> getNewsitemsNearDistanceFacet(LatLong latLong, boolean shouldShowBroken) {
@@ -474,7 +488,7 @@ public class ElasticSearchBackedResourceDAO {
 		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(geotaggedNear, nearFilter);
 		return geocodedNewitemsQuery;
 	}
-
+	
 	private Map<String, Integer> tagNewsitemsFacet(Tag tag, String facetField) {
 		final SearchResponse searchResponse = searchRequestBuilder().setQuery(tagNewsitemsQuery(tag)).
 			addFacet(FacetBuilders.termsFacet(facetField).field(facetField).order(ComparatorType.COUNT).size(10)).
