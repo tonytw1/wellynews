@@ -55,7 +55,6 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 			log.debug("Building geotagged page model");
 			
 			ModelAndView mv = new ModelAndView();							
-			mv.addObject("heading", "Geotagged newsitems");
 			mv.addObject("description", "Geotagged newsitems");
 			mv.addObject("link", urlBuilder.getGeotaggedUrl());
 			
@@ -70,7 +69,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				mv.addObject("page", page);
 				final int startIndex = getStartIndex(page);
 				
-				final double radius = getLocationSearchRadius(request);					
+				final double radius = getLocationSearchRadius(request);
+				mv.addObject("radius", radius);
+				
 				final long totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius);
 				if (startIndex > totalNearbyCount) {
 					return null;
@@ -99,10 +100,10 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				}
 								
 				if (!Strings.isNullOrEmpty(userSuppliedPlace.getAddress())) {
-					mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace));
+					mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius));
 				}			
-				setRssUrlForLocation(mv, userSuppliedPlace);							
-				return mv;				
+				setRssUrlForLocation(mv, userSuppliedPlace, radius);
+				return mv;		
 			}
 			
 			final int page = getPage(request);
@@ -113,6 +114,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				return null;
 			}
 			
+			mv.addObject("heading", "Geotagged newsitems");
 			mv.addObject("main_content", contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS));			
 			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
 			
@@ -143,12 +145,12 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		return "geocoded";
 	}
 
-	private void setRssUrlForLocation(ModelAndView mv, Place place) {	// TODO push to url builder - needed in content_element view
+	private void setRssUrlForLocation(ModelAndView mv, Place place, double radius) {	// TODO push to url builder - needed in content_element view
 		final String rssUrlForPlace = rssUrlBuilder.getRssUrlForPlace(place);
 		if (rssUrlForPlace == null) {
 			return;
 		}
-		setRss(mv, rssUrlBuilder.getRssTitleForPlace(place), rssUrlForPlace);							
+		setRss(mv, rssUrlBuilder.getRssTitleForPlace(place, radius), rssUrlForPlace);							
 	}
 	
 }

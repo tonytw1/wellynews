@@ -122,14 +122,14 @@ public class RssUrlBuilder {
 		return "Feed newsitem suggestions";
 	}
 	
-	public String getRssTitleForPlace(Place place) {
+	public String getRssTitleForPlace(Place place, double radius) {
 		String placeLabel = place.toString();
 		if (!Strings.isNullOrEmpty(place.getAddress())) {
 			placeLabel = place.getAddress();
 		} else if (place.getLatLong() != null) {
 			placeLabel = place.getLatLong().toString();
 		}
-		return "Newsitems near " + placeLabel;
+		return "Newsitems within " + radius + " km of " + placeLabel;
 	}
 	
 	public String getRssUrlForPlace(Place place) {
