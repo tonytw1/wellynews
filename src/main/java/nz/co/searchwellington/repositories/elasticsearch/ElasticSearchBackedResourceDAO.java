@@ -50,7 +50,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.org.apache.regexp.internal.recompile;
 
 @Component
 public class ElasticSearchBackedResourceDAO {
