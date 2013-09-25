@@ -6,6 +6,7 @@ import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.reading.WhakaokoFeedItemMapper;
 import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
@@ -42,14 +43,29 @@ public class SuggestedFeeditemsService {
 		this.resourceDAO = resourceDAO;
 	}
 	
-	public List<FrontendNewsitem> getSuggestionFeednewsitems(int maxItems) {
+	public List<FrontendNewsitem> getSuggestionFeednewsitems(int maxItems) {		// TODO paginate across more than one call
 		try {
-			List<FrontendFeedNewsitem> suggestions = Lists.newArrayList();
+			List<FrontendFeedNewsitem> channelFeedItemsForNotIgnoredFeeds = Lists.newArrayList();
 			for (FeedItem feedItem : whakaoroClientFactory.getChannelFeedItems()) {
 				Feed feed = resourceDAO.loadFeedByWhakaoroId(feedItem.getSubscriptionId());
-				suggestions.add(whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem));
-			}			
-			return feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(suggestions);
+				if (feed.getAcceptancePolicy().equals(FeedAcceptancePolicy.IGNORE)) {
+					continue;
+				}
+				channelFeedItemsForNotIgnoredFeeds.add(whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem));
+			}
+			
+			List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelFeedItemsForNotIgnoredFeeds);
+			
+			List<FrontendNewsitem> suggestions = Lists.newArrayList();
+			for (FrontendFeedNewsitem feedNewsitem : addSupressionAndLocalCopyInformation) {
+				if (feedNewsitem.getLocalCopy() != null) {
+					log.debug("Omitting feed item which already has a local copy: " + feedNewsitem.getHeadline());
+					continue;
+				}
+				suggestions.add(feedNewsitem);
+			}
+			
+			return suggestions;
 			
 		} catch (HttpNotFoundException e) {
 			log.error(e);
