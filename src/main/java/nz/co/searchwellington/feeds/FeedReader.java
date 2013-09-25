@@ -77,12 +77,10 @@ public class FeedReader {
 					+ " using acceptance policy '" + acceptancePolicy
 					+ "'. Last read: " + dateFormatter.timeSince(feed.getLastRead()));
 	
-	    	// TODO can this move onto the enum?
-			final boolean shouldLookAtFeed =  acceptancePolicy == FeedAcceptancePolicy.ACCEPT || acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES || acceptancePolicy == FeedAcceptancePolicy.SUGGEST; 	        
-	        if (shouldLookAtFeed) {
+	        if (acceptancePolicy.shouldReadFeed()) {
 	        	processFeedItems(feed, feedReaderUser, acceptancePolicy);	          
 	        } else {
-	        	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy is not set to accept or suggest");
+	        	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy " + acceptancePolicy + " does not require us to look at the feed item");
 	        }
 	        
 	        markFeedAsRead(feed);	        
