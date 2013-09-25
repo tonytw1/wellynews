@@ -428,7 +428,7 @@ public class ResourceEditController {
                 }
 
             	saveResource(request, loggedInUser, editResource);	// TODO with the tags votes do sticking to an unsaved resource - transaction boundary issue?
-            	linkCheckerQueue.add(editResource.getId());
+            	linkCheckerQueue.add(editResource.getId());	// TODO this link check fails as the queue picks up before the transaction window has closed.
             	
             } else {
                 log.info("Could not save resource. Spam question not answered?");                
