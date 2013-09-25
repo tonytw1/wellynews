@@ -34,7 +34,7 @@ public class LiveTwitterService implements TwitterService {
 		final List<Twit> all = Lists.newArrayList();
         try {
         	Twitter api = twitterApiFactory.getOauthedTwitterApi();
-        	ResponseList<Status> mentions = api.getMentions();
+        	ResponseList<Status> mentions = api.getMentionsTimeline();
         	logRateLimitingInformation(api);
         	
         	log.info("Mentions: " + mentions.toString());
