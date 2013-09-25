@@ -73,16 +73,15 @@ public class FeedReader {
 	
     private void processFeed(Feed feed, User feedReaderUser, FeedAcceptancePolicy acceptancePolicy) {
     	try {
-			log.info("Processing feed: " + feed.getName()
-					+ " using acceptance policy '" + acceptancePolicy
-					+ "'. Last read: " + dateFormatter.timeSince(feed.getLastRead()));
-	
-	        if (acceptancePolicy.shouldReadFeed()) {
-	        	processFeedItems(feed, feedReaderUser, acceptancePolicy);	          
-	        } else {
-	        	log.debug("Ignoring feed " + feed.getName() + "; acceptance policy " + acceptancePolicy + " does not require us to look at the feed item");
-	        }
-	        
+			log.info("Processing feed: " + feed.getName() + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.timeSince(feed.getLastRead()));
+			final List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
+			log.info("Feed contains " + feedNewsitems.size() + " items");			
+			feed.setHttpStatus(!feedNewsitems.isEmpty() ? 200 : -3);
+			
+			if (acceptancePolicy.shouldReadFeed()) {
+				processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems);	          
+			}
+			
 	        markFeedAsRead(feed);	        
 	        log.info("Done processing feed.");
 	        
@@ -92,39 +91,22 @@ public class FeedReader {
     	return;
     }
 	
-	private void processFeedItems(Feed feed, User feedReaderUser, FeedAcceptancePolicy acceptancePolicy) {		
-		final List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);
-		if (!feedNewsitems.isEmpty()) {
-			log.info("Feed contains " + feedNewsitems.size() + " items");
-			feed.setHttpStatus(200);
-			
-			if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT || acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) { // TODO move to enum method
-				log.info ("Accepting feed items");
-
-				for (FrontendFeedNewsitem feednewsitem : feedNewsitems) {
-					// TODO new up a new copy before modifying
-					String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
-					feednewsitem.setUrl(cleanSubmittedItemUrl);				
+	private void processFeedItems(Feed feed, User feedReaderUser, FeedAcceptancePolicy acceptancePolicy, List<FrontendFeedNewsitem> feedNewsitems) {		
+		log.info ("Accepting feed items");
+		for (FrontendFeedNewsitem feednewsitem : feedNewsitems) {
+				// TODO new up a new copy before modifying
+				final String cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl());
+				feednewsitem.setUrl(cleanSubmittedItemUrl);				
 					
-					final List<String> acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy);
-					final boolean acceptThisItem = acceptanceErrors.isEmpty();
-					if (acceptThisItem) {
-						log.info("Accepting newsitem: " + feednewsitem.getUrl());
-						linkCheckerQueue.add(feedReaderUpdateService.acceptNewsitem(feed, feedReaderUser, feednewsitem));
-
-					} else {
-						log.info("Not accepting " + feednewsitem.getUrl() + " due to acceptance errors: " + acceptanceErrors);
-					}
+				final List<String> acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy);
+				final boolean acceptThisItem = acceptanceErrors.isEmpty();
+				if (acceptThisItem) {
+					log.info("Accepting newsitem: " + feednewsitem.getUrl());
+					linkCheckerQueue.add(feedReaderUpdateService.acceptNewsitem(feed, feedReaderUser, feednewsitem));
+				} else {
+					log.info("Not accepting " + feednewsitem.getUrl() + " due to acceptance errors: " + acceptanceErrors);
 				}
-				
-			} else {
-				log.info("Feed acceptance is: " + acceptancePolicy + "; ignoring");
-			}
-			
-		 } else {
-         	log.warn("Incoming feed '" + feed.getName() + "' contained no items");
-         	feed.setHttpStatus(-3);
-         }
+			}		
 	}
 	
 	public void markFeedAsRead(Feed feed) {
