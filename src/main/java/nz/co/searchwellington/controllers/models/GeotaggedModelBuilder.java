@@ -146,7 +146,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	}
 
 	private void setRssUrlForLocation(ModelAndView mv, Place place, double radius) {	// TODO push to url builder - needed in content_element view
-		final String rssUrlForPlace = rssUrlBuilder.getRssUrlForPlace(place);
+		final String rssUrlForPlace = rssUrlBuilder.getRssUrlForPlace(place, radius);
 		if (rssUrlForPlace == null) {
 			return;
 		}

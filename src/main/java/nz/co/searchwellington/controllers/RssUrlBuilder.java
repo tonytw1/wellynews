@@ -132,13 +132,21 @@ public class RssUrlBuilder {
 		return "Newsitems within " + radius + " km of " + placeLabel;
 	}
 	
-	public String getRssUrlForPlace(Place place) {
+	public String getRssUrlForPlace(Place place, double radius) {
+		final String rssUrlForPlace = getRssUrlForPlace(place);
+		if (rssUrlForPlace == null) {
+			return null;
+		}
+		return rssUrlForPlace + "&radius=" + radius;
+	}
+	
+	private String getRssUrlForPlace(Place place) {
 		if (place.getOsmId() != null) {		
-			return getRssUrlForOsmId(place.getOsmId());					
+			return getRssUrlForOsmId(place.getOsmId());
 		} else if (place.getLatLong() != null) {
 			return getRssUrlForLatLong(place.getLatLong());
 		}
-		return null;		
+		return null;
 	}
 	
 	public String getRssTitleForGeotagged() {
