@@ -18,6 +18,7 @@ public class FrontendNewsitem extends FrontendResource implements RssFeedable {
 	private List<Comment> comments;
 	private Date accepted;
 	private FrontendImage image;
+	private List<FrontendTweet> twitterMentions;
 	
 	public String getPublisherName() {
 		return publisherName;
@@ -84,6 +85,14 @@ public class FrontendNewsitem extends FrontendResource implements RssFeedable {
 	public String getImageUrl() {
 		return image != null ? image.getUrl() : null;
 	}
+	
+	public List<FrontendTweet> getTwitterMentions() {
+		return twitterMentions;
+	}
+
+	public void setTwitterMentions(List<FrontendTweet> twitterMentions) {
+		this.twitterMentions = twitterMentions;
+	}
 
 	@Override
 	public String toString() {
@@ -92,24 +101,7 @@ public class FrontendNewsitem extends FrontendResource implements RssFeedable {
 				+ ", acceptedFromFeedName=" + acceptedFromFeedName
 				+ ", comments=" + comments + ", image=" + image
 				+ ", publisherName=" + publisherName + ", retweets=" + retweets
-				+ ", getAccepted()=" + getAccepted()
-				+ ", getAcceptedByProfilename()=" + getAcceptedByProfilename()
-				+ ", getAcceptedFromFeedName()=" + getAcceptedFromFeedName()
-				+ ", getAuthor()=" + getAuthor() + ", getComments()="
-				+ getComments() + ", getFrontendImage()=" + getFrontendImage()
-				+ ", getImageUrl()=" + getImageUrl() + ", getPublisherName()="
-				+ getPublisherName() + ", getRetweets()=" + getRetweets()
-				+ ", getDate()=" + getDate() + ", getDescription()="
-				+ getDescription() + ", getHandTags()=" + getHandTags()
-				+ ", getHeadline()=" + getHeadline() + ", getHttpStatus()="
-				+ getHttpStatus() + ", getId()=" + getId() + ", getLatLong()="
-				+ getLatLong() + ", getLiveTime()=" + getLiveTime()
-				+ ", getLocation()=" + getLocation() + ", getName()="
-				+ getName() + ", getOwner()=" + getOwner() + ", getPlace()="
-				+ getPlace() + ", getTags()=" + getTags() + ", getType()="
-				+ getType() + ", getUrl()=" + getUrl() + ", getUrlWords()="
-				+ getUrlWords() + ", getWebUrl()=" + getWebUrl()
-				+ ", isHeld()=" + isHeld() + "]";
+				+ ", twitterMentions=" + twitterMentions + "]";
 	}
 	
 }

@@ -7,12 +7,14 @@ import nz.co.searchwellington.model.Geocode;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
+import nz.co.searchwellington.model.Twit;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendTag;
+import nz.co.searchwellington.model.frontend.FrontendTweet;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
@@ -48,6 +50,15 @@ public class FrontendResourceMapper {
 			if (contentItemNewsitem.getImage() != null) {
 				frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage().getUrl()));
 			}
+			
+			if (!contentItemNewsitem.getRetweets().isEmpty()) {
+				List<FrontendTweet> twitterMentions = Lists.newArrayList();
+				for (Twit tweet : contentItemNewsitem.getRetweets()) {
+					new FrontendTweet(tweet.getText(), tweet.getAuthor());
+				}
+				frontendNewsitem.setTwitterMentions(twitterMentions);
+			}
+			
 			frontendContentItem = frontendNewsitem;
 		}
 		
@@ -94,7 +105,8 @@ public class FrontendResourceMapper {
 		final Geocode contentItemGeocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem);
 		if (contentItemGeocode != null) {
 			frontendContentItem.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(contentItemGeocode));
-		}
+		}		
+		
 		return frontendContentItem;
 	}
 
