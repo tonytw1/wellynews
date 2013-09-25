@@ -52,14 +52,6 @@ public class RelatedTagsService {
 		return populatePublisherFacets(publisherFacetsForTag);
 	}
 
-	private List<PublisherContentCount> populatePublisherFacets(final Map<String, Integer> publisherFacetsForTag) {
-		final List<PublisherContentCount> publisherFacets = Lists.newArrayList();
-		for (String publisher : publisherFacetsForTag.keySet()) {
-			publisherFacets.add(new PublisherContentCount(publisher, publisherFacetsForTag.get(publisher)));
-		}
-		return publisherFacets;
-	}
-	
 	public List<PublisherContentCount> getRelatedPublishersForLocation(Place place, double radius) {
 		Map<String, Integer> publisherFacetsNear = elasticSearchBackedResourceDAO.getPublisherFacetsNear(place.getLatLong(), radius, showBrokenDecisionService.shouldShowBroken());
 		return populatePublisherFacets(publisherFacetsNear);
@@ -73,6 +65,14 @@ public class RelatedTagsService {
 		return Lists.newArrayList();	// TODO implement
 	}
 		
+	private List<PublisherContentCount> populatePublisherFacets(final Map<String, Integer> publisherFacetsForTag) {
+		final List<PublisherContentCount> publisherFacets = Lists.newArrayList();
+		for (String publisher : publisherFacetsForTag.keySet()) {
+			publisherFacets.add(new PublisherContentCount(publisher, publisherFacetsForTag.get(publisher)));
+		}
+		return publisherFacets;
+	}
+
 	private List<TagContentCount> removeUnsuitableTags(Tag tag, Map<String, Integer> tagFacetsForTag) {
 		List<TagContentCount> suitableTagFacets = Lists.newArrayList();
 		for (String tagId : tagFacetsForTag.keySet()) {
