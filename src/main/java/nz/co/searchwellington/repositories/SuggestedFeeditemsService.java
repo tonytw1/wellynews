@@ -25,7 +25,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem;
 @Component
 public class SuggestedFeeditemsService {
 	
-	private static Logger log = Logger.getLogger(SuggestedFeeditemsService.class);
+	private static final Logger log = Logger.getLogger(SuggestedFeeditemsService.class);
 	
 	private final FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 	private final WhakaoroClientFactory whakaoroClientFactory;

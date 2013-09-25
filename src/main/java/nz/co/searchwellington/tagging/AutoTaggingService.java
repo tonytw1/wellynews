@@ -42,7 +42,7 @@ public class AutoTaggingService {
 		Set<Tag> suggestedTags = placeAutoTagger.suggestTags(resource);
 		suggestedTags.addAll(tagHintAutoTagger.suggestTags(resource));
 
-		log.info("Suggested tags for '" + resource.getName() + "' are: " + suggestedTags.toString());
+		log.debug("Suggested tags for '" + resource.getName() + "' are: " + suggestedTags.toString());
 		if (!suggestedTags.isEmpty()) {
 			handTaggingDAO.setUsersTagVotesForResource(resource, autotaggerUser, suggestedTags);
 		}
