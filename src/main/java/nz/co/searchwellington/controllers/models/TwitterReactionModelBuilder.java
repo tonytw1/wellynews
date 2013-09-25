@@ -35,7 +35,7 @@ public class TwitterReactionModelBuilder extends AbstractModelBuilder implements
 		final int page = getPage(request);
 		mv.addObject("page", page);	// TODO push to populate pagination.
 		final int startIndex = getStartIndex(page);
-		final int totalTwitterReactionCount = contentRetrievalService.getTwitteredNewsitemsCount();
+		final long totalTwitterReactionCount = contentRetrievalService.getTwitteredNewsitemsCount();
 		if (startIndex > totalTwitterReactionCount) {
 			return null;
 		}

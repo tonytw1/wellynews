@@ -353,15 +353,25 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	public List<FrontendResource> getTwitteredNewsitems(int startIndex, int maxItems, boolean shouldShowBroken) {
-		// TODO Auto-generated method stub
-		return Lists.newArrayList();	// TODO implement
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(twitternMentionedNewsitemsQuery(shouldShowBroken)).
+			setSize(maxItems);
+		
+		addDateDescendingOrder(searchRequestBuilder);
+		
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return deserializeFrontendResourceHits(response.getHits());		
 	}
 
-	public int getTwitteredNewsitemsCount(boolean shouldShowBroken) {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getTwitteredNewsitemsCount(boolean shouldShowBroken) {
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
+			setQuery(twitternMentionedNewsitemsQuery(shouldShowBroken)).
+			setSize(0);
+	
+		final SearchResponse response = searchRequestBuilder.execute().actionGet();
+		return response.getHits().getTotalHits();
 	}
-
+	
 	public List<FrontendResource> getRecentTwitteredNewsitemsForTag(int maxItems, boolean shouldShowBroken, Tag tag) {
 		// TODO Auto-generated method stub
 		return Lists.newArrayList();	// TODO implement
@@ -476,6 +486,14 @@ public class ElasticSearchBackedResourceDAO {
 		return null;
 	}
 	
+	private FilteredQueryBuilder twitternMentionedNewsitemsQuery(
+			boolean shouldShowBroken) {
+		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
+		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
+		final FilteredQueryBuilder twitterMentionedNewsitemsQuery = QueryBuilders.filtered(latestNewsitems, FilterBuilders.existsFilter("twitterMentions"));
+		return twitterMentionedNewsitemsQuery;
+	}
+
 	private FilteredQueryBuilder geotaggedNearQuery(LatLong latLong, double radius, boolean shouldShowBroken) {
 		final BoolQueryBuilder geotaggedNear = QueryBuilders.boolQuery().must(isNewsitem());
 		addShouldShowBrokenClause(geotaggedNear, shouldShowBroken);

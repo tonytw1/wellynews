@@ -170,7 +170,7 @@ public class ContentRetrievalService {
 		return elasticSearchBackedResourceDAO.getTwitteredNewsitems(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
 	}
 	
-	public int getTwitteredNewsitemsCount() {
+	public long getTwitteredNewsitemsCount() {
 		return elasticSearchBackedResourceDAO.getTwitteredNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
 	}
 
