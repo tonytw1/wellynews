@@ -10,6 +10,7 @@ import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
+import org.apache.ecs.xhtml.code;
 import org.apache.log4j.Logger;
 import org.elasticsearch.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +48,11 @@ public class SuggestedFeeditemsService {
 		try {
 			List<FrontendFeedNewsitem> channelFeedItemsForNotIgnoredFeeds = Lists.newArrayList();
 			for (FeedItem feedItem : whakaoroClientFactory.getChannelFeedItems()) {
-				Feed feed = resourceDAO.loadFeedByWhakaoroId(feedItem.getSubscriptionId());
+				final Feed feed = resourceDAO.loadFeedByWhakaoroId(feedItem.getSubscriptionId());
+				if (feed == null) {
+					log.info("Ignoring feed item with unknown whakaoro id: " + feedItem.getSubscriptionId());
+					continue;
+				}
 				if (feed.getAcceptancePolicy().equals(FeedAcceptancePolicy.IGNORE)) {
 					continue;
 				}
