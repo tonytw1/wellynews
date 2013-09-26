@@ -2,7 +2,7 @@
 	<li class="tagged" rel="noindex">Tagged as:</li>
 	#foreach ($tag in $page_content.tags)
 		#if (!$tag.hidden)
-			<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName.toLowerCase()</a></li>
+			<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name.toLowerCase()</a></li>
 		#end
 	#end
 #end
