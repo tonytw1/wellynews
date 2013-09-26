@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.elasticsearch.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -62,9 +63,12 @@ public class WhakaoroClientFactory {
 		return getClient().getSubscriptionFeedItems(username, subscriptionId);
 	}
 	
-
 	public List<FeedItem> getChannelFeedItems() throws HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, ParsingException, HttpFetchException {
-		return getClient().getChannelFeedItems(username, channel);
+		List<FeedItem> channelFeedItems = Lists.newArrayList();
+		for (int page = 0; page <= 5; page++) {
+			channelFeedItems.addAll(getClient().getChannelFeedItems(username, channel, page));
+		}
+		return channelFeedItems;
 	}
 	
 	private WhakaoroClient getClient() {
