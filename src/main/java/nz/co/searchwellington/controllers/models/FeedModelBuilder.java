@@ -9,6 +9,7 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,16 +24,19 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	private RssfeedNewsitemService rssfeedNewsitemService;
 	private GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 	private FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
+	private FrontendResourceMapper frontendResourceMapper;
 		
 	@Autowired
 	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
 			GeotaggedNewsitemExtractor geotaggedNewsitemExtractor,
-			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator) {
+			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator, 
+			FrontendResourceMapper frontendResourceMapper) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;
 		this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator;
+		this.frontendResourceMapper = frontendResourceMapper;
 	}
 
 	@Override
@@ -45,10 +49,10 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 		if (isValid(request)) {
 			Feed feed = (Feed) request.getAttribute(FEED_ATTRIBUTE);
 			if (feed != null) {
-				ModelAndView mv = new ModelAndView();
-				mv.addObject("feed", feed);	// TODO wants to be a frontend feed				
+				final ModelAndView mv = new ModelAndView();
+				mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed));			
+				setRss(mv, feed.getName(), feed.getUrl());
 				populateFeedItems(mv, feed);
-				setRss(mv, feed.getName(), feed.getUrl());		       
 				return mv;
 			}
 		}
@@ -57,7 +61,6 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	@Override
 	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
-		populateGeotaggedFeedItems(mv);
 		populateSecondaryFeeds(mv);
 	}
 	
@@ -67,21 +70,18 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	}
 	
 	private void populateFeedItems(ModelAndView mv, Feed feed) {
-		List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);		
+		final List<FrontendFeedNewsitem> feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed);		
 		if (feedNewsitems != null && !feedNewsitems.isEmpty()) {
 			mv.addObject("main_content", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems));
+			populateGeotaggedFeedItems(mv, feedNewsitems);			
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
-	private void populateGeotaggedFeedItems(ModelAndView mv) {
-		List<FrontendNewsitem> mainContent = (List<FrontendNewsitem>) mv.getModel().get("main_content");
-		if (mainContent != null) {
-			final List<FrontendNewsitem> geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent);
-			if (!geotaggedItems.isEmpty()) {
-				mv.addObject("geocoded", geotaggedItems);				
-			}
-		}
+	private void populateGeotaggedFeedItems(ModelAndView mv, List<FrontendFeedNewsitem> feedNewsitems) {
+		final List<FrontendNewsitem> geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems);
+		if (!geotaggedItems.isEmpty()) {
+			mv.addObject("geocoded", geotaggedItems);
+		}		
 	}
 	
 }
