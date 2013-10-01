@@ -54,24 +54,24 @@ public class AdminUrlBuilderTest {
 
 	@Test
 	public void canConstructEditUrlForFrontendWebsite() throws Exception {
-		assertEquals("http://somesite.local/my-local-sports-team/edit", adminUrlBuilder.getResourceEditUrl(frontendWebsite));
+		assertEquals("http://somesite.local/edit?resource=123", adminUrlBuilder.getResourceEditUrl(frontendWebsite));
 	}
 	
 	@Test
 	public void canBuildEditUrlForNewsitems() throws Exception {
 		//assertEquals("http://somesite.local/my-local-sports-team/2011/may/20/a-news-item/edit", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
-		assertEquals("http://somesite.local/edit/edit?resource=123", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
+		assertEquals("http://somesite.local/edit?resource=123", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
 
 	}
 	
 	@Test
 	public void canConstructEditUrlForFrontendFeed() throws Exception {
-		assertEquals("http://somesite.local/feed/my-local-sports-team-news/edit", adminUrlBuilder.getResourceEditUrl(frontendFeed));
+		assertEquals("http://somesite.local/edit?resource=124", adminUrlBuilder.getResourceEditUrl(frontendFeed));
 	}
 	
 	@Test
 	public void canConstructDeleteUrlForFrontendResource() throws Exception {
-		assertEquals("http://somesite.local/my-local-sports-team/delete", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite));
+		assertEquals("http://somesite.local/delete?resource=123", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite));
 	}
 	
 	@Test
