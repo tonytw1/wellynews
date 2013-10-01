@@ -34,7 +34,6 @@ public class AdminRequestFilterTest {
 	@Before
 	public void setUp() throws Exception {
 		when(tagDAO.loadTagByName("transport")).thenReturn(transportTag);
-		when(resourceDAO.loadResourceById(123)).thenReturn(feed);
 		when(resourceDAO.loadResourceById(567)).thenReturn(resource);
 		request = new MockHttpServletRequest();
 		filter = new AdminRequestFilter(resourceDAO, tagDAO, new ResourceParameterFilter(resourceDAO), new TagsParameterFilter(tagDAO));
@@ -122,8 +121,9 @@ public class AdminRequestFilterTest {
 	@Test
 	public void testShouldPopulateFeedAttributeFromParameter() throws Exception {
 		 request.setPathInfo("/edit/tag/save");
-		 request.setParameter("feed", "123");
-
+		 request.setParameter("feed", "a-feed");
+		 when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(feed);
+		 
 		 filter.loadAttributesOntoRequest(request);		 
 		 
 		 assertNotNull(request.getAttribute("feedAttribute"));
