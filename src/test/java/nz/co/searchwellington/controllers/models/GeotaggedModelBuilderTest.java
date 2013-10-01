@@ -32,6 +32,7 @@ public class GeotaggedModelBuilderTest {
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock UrlBuilder urlBuilder;
 	@Mock RssUrlBuilder rssUrlBuilder;
+	@Mock private RelatedTagsService relatedTagsService;
 	
 	@Mock List<FrontendResource> newsitemsNearPetoneStationFirstPage;
 	@Mock List<FrontendResource> newsitemsNearPetoneStationSecondPage;
@@ -41,7 +42,6 @@ public class GeotaggedModelBuilderTest {
 	@Mock Place invalidLocation;
 	
 	private GeotaggedModelBuilder modelBuilder;
-	private RelatedTagsService relatedTagsService;
 	
 	@Before
 	public void setUp() throws Exception {
