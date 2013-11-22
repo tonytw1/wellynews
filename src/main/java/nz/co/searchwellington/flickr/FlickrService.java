@@ -4,6 +4,7 @@ import nz.co.searchwellington.model.Tag;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.MemcachedCache;
@@ -20,17 +21,19 @@ public class FlickrService {
     private FlickrApi flickerApiService;
 	private MemcachedCache cache;
 
-	private String poolGroupId = "41894169203@N01";
-    
+	private String poolGroupId;
+	
 	@Autowired
-    public FlickrService(FlickrApi flickrApi, MemcachedCache cache) {
+    public FlickrService(FlickrApi flickrApi, MemcachedCache cache, @Value("#{config['flickr.poolGroupId']}") String poolGroupId) {
         this.flickerApiService = flickrApi;
         this.cache = cache;
+		this.poolGroupId = poolGroupId;
     }    
     
     public int getFlickrPhotoCountFor(Tag tag) {
-    	if (!Strings.isNullOrEmpty(poolGroupId)) {
+    	if (Strings.isNullOrEmpty(poolGroupId)) {
     		log.debug("No Flickr pool group id defined; returning 0");
+    		return 0;
     	}
     	
         log.debug("Running Flickr tag photo count for tag: " + tag.getDisplayName());        

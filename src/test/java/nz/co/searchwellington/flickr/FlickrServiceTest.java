@@ -27,7 +27,7 @@ public class FlickrServiceTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		flickrService = new FlickrService(flickrApi, cache);
+		flickrService = new FlickrService(flickrApi, cache, FLICKR_POOL_ID);
 		tag = new Tag();
 		tag.setDisplayName(TAG_DISPLAY_NAME);
 	}
