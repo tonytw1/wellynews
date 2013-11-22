@@ -42,7 +42,7 @@ public class UrlBuilderTest {
 		frontendNewsitem = new FrontendNewsitem();
 		frontendNewsitem.setName("Quick brown fox jumps over lazy dog");
 		frontendNewsitem.setDate(new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate());
-		frontendNewsitem.setUrlWords("/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog");
+		frontendNewsitem.setUrlWords("2010/oct/12/quick-brown-fox-jumps-over-lazy-dog");
 		frontendFeed = new FrontendFeed();
 		
 		tag = new Tag();
