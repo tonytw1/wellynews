@@ -54,7 +54,6 @@ public class NewsitemPageModelBuilderTest {
 		builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter, resourceDAO);
 		request = new MockHttpServletRequest();
 		request.setPathInfo(VALID_NEWSITEM_PAGE_PATH);
-		when(frontendNewsitem.getId()).thenReturn(123);
 	}
 	
 	@Test
@@ -84,6 +83,7 @@ public class NewsitemPageModelBuilderTest {
 	
 	@Test
 	public void shouldDisplayGeotaggingVotes() throws Exception {
+		when(frontendNewsitem.getId()).thenReturn(123);		
 		when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(frontendNewsitem);
 		when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(newsitem);
 

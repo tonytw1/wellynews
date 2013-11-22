@@ -30,7 +30,7 @@ public class FrontendResource implements RssFeedable, Serializable {
     private Place place;
     private boolean held;
 	
-	final public int getId() {
+	public int getId() {
 		return id;
 	}
 	final public void setId(int id) {
