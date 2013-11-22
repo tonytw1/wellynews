@@ -2,6 +2,9 @@ package nz.co.searchwellington.controllers.admin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+
 import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
@@ -55,15 +58,16 @@ public class TagEditControllerTest {
 	}
 
 	@Test
-	public void shouldCreateAndSaveNewTagBasedOnDisplayName() throws Exception {				
-		Mockito.when(tagDAO.createNewTag("a-new-tag", NEW_TAG_DISPLAY_NAME)).thenReturn(newTag);	
+	public void shouldCreateAndSaveNewTagBasedOnDisplayName() throws Exception {
+		when(urlWordsGenerator.makeUrlWordsFromName(NEW_TAG_DISPLAY_NAME)).thenReturn("a-new-tag");
+		when(tagDAO.createNewTag("a-new-tag", NEW_TAG_DISPLAY_NAME)).thenReturn(newTag);	
 		request.setParameter("displayName", NEW_TAG_DISPLAY_NAME);
 		
-		ModelAndView mv = controller.add(request, response);
+		final ModelAndView mv = controller.add(request, response);
 				
 		Tag addedTag = (Tag) mv.getModel().get("tag");
 		assertEquals(newTag, addedTag);
-		Mockito.verify(tagDAO).saveTag(newTag);
+		verify(tagDAO).saveTag(newTag);
 	}
 	
 	@Test
