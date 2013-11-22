@@ -60,15 +60,15 @@ public class UrlBuilderTest {
 	}
 	
 	@Test
-	public void canCreateLocationSearchUrlFromGeotag() throws Exception {
+	public void useLatLongWhenBuildingUrlsToPlacesWithNoOsmId() throws Exception {
 		final Place somewhere = new Place("Somewhere,Far away", new LatLong(3.1, 4.2), null);
-		assertEquals(SITE_URL + "/geotagged?location=Somewhere%2CFar+away", urlBuilder.getLocationUrlFor(somewhere));
+		assertEquals(SITE_URL + "/geotagged?latitude=3.1&longitude=4.2", urlBuilder.getLocationUrlFor(somewhere));
 	}
 	
 	@Test
 	public void locationsShouldBeLinkedByOSMIdIfAvailable() throws Exception {
 		final Place somewhereWithOSMid= new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, OsmType.node));
-		assertEquals("http://siteurl.test/geotagged?osm=12345%2Fnode", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
+		assertEquals(SITE_URL + "/geotagged?osm=12345%2Fnode", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
 	}
 	
 	@Test

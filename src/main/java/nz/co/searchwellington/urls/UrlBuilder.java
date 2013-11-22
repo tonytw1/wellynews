@@ -105,7 +105,7 @@ public class UrlBuilder {
 	}
 	
 	public String getLocalPageUrl(FrontendResource resource) {
-		return siteInformation.getUrl() + "/" + resource.getUrlWords();
+		return siteInformation.getUrl() + resource.getUrlWords();
 	}
 	
 	public String getPublisherUrl(String publisherName) {
