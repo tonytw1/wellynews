@@ -128,7 +128,15 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	public List<FrontendResource> getLatestWebsites(int maxItems, boolean shouldShowBroken) {
-		final SearchResponse response = searchRequestBuilder().setQuery(QueryBuilders.termQuery(TYPE, "W")).setSize(maxItems).execute().actionGet();
+		final TermQueryBuilder isWebsite = QueryBuilders.termQuery(TYPE, "W");
+		final BoolQueryBuilder websites = QueryBuilders.boolQuery().must(isWebsite);
+
+		addShouldShowBrokenClause(websites, shouldShowBroken);
+		
+		final SearchRequestBuilder justinWebsites = searchRequestBuilder().setQuery(websites).setSize(maxItems);
+		addDateDescendingOrder(justinWebsites);
+		
+		final SearchResponse response = justinWebsites.execute().actionGet();
 		return deserializeFrontendResourceHits(response.getHits());
 	}
 	
