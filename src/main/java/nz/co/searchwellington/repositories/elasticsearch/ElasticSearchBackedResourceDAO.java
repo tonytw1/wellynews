@@ -510,8 +510,7 @@ public class ElasticSearchBackedResourceDAO {
 			distance(Double.toString(radius) + "km").
 			point(latLong.getLatitude(), latLong.getLongitude());
 		
-		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(geotaggedNear, nearFilter);
-		return geocodedNewitemsQuery;
+		return QueryBuilders.filtered(geotaggedNear, nearFilter);
 	}
 	
 	private Map<String, Integer> tagNewsitemsFacet(Tag tag, String facetField) {
@@ -528,8 +527,7 @@ public class ElasticSearchBackedResourceDAO {
 	}
 	
 	private BoolQueryBuilder tagNewsitemsQuery(Tag tag) {
-		final BoolQueryBuilder tagNewsitems = QueryBuilders.boolQuery().must(hasTag(tag)).must(isNewsitem());
-		return tagNewsitems;
+		return QueryBuilders.boolQuery().must(hasTag(tag)).must(isNewsitem());
 	}
 	
 	private SearchRequestBuilder publisherNewsitemsRequest(Website publisher, int maxItems, boolean shouldShowBroken, int startIndex) {
@@ -564,8 +562,7 @@ public class ElasticSearchBackedResourceDAO {
 		final BoolQueryBuilder geotaggedNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
 		addShouldShowBrokenClause(geotaggedNewsitems, shouldShowBroken);
 				
-		final FilteredQueryBuilder geocodedNewitemsQuery = QueryBuilders.filtered(geotaggedNewsitems, FilterBuilders.existsFilter(PLACE));
-		return geocodedNewitemsQuery;
+		return QueryBuilders.filtered(geotaggedNewsitems, FilterBuilders.existsFilter(PLACE));
 	}
 
 	private TermQueryBuilder hasPublisher(Website publisher) {
