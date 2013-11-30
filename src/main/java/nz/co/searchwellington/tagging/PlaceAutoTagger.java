@@ -44,8 +44,8 @@ public class PlaceAutoTagger {
 
     private boolean checkForMatchingTag(Resource resource, Tag tag) {
         boolean headlineMatchesTag = resource.getName().toLowerCase().contains(tag.getDisplayName().toLowerCase());
-        boolean BodyMatchesTag = resource.getDescription().toLowerCase().contains(tag.getDisplayName().toLowerCase());
-        return headlineMatchesTag || BodyMatchesTag;        
+        boolean bodyMatchesTag = resource.getDescription().toLowerCase().contains(tag.getDisplayName().toLowerCase());
+        return headlineMatchesTag || bodyMatchesTag;        
     }
 
 }

@@ -74,14 +74,12 @@ public class TaggingReturnsOfficerService {
 			votes.add(new GeotaggingVote(resource.getGeocode(), resource.getOwner(), 1));
 		}
 		
-		if (resource.getType().equals("N")) {
-			if (((PublishedResource) resource).getPublisher() != null) {
-				Website publisher = ((PublishedResource) resource).getPublisher();
-				if (publisher.getGeocode() != null && publisher.getGeocode().isValid()) {
-					log.debug("Adding publisher geotag: " + publisher.getGeocode().toString());
-					votes.add(new GeotaggingVote(publisher.getGeocode(), new PublishersTagsVoter(), 1));
-				}
-			}
+		if (resource.getType().equals("N") && ((PublishedResource) resource).getPublisher() != null) {
+			Website publisher = ((PublishedResource) resource).getPublisher();
+			if (publisher.getGeocode() != null && publisher.getGeocode().isValid()) {
+				log.debug("Adding publisher geotag: " + publisher.getGeocode().toString());
+				votes.add(new GeotaggingVote(publisher.getGeocode(), new PublishersTagsVoter(), 1));
+			}			
 		}
 		
 		Geocode tagGeocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource));	// TODO could be made faster by passing in.
