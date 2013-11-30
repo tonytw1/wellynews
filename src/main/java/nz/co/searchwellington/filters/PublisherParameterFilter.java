@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
+
 @Deprecated
 @Component
 @Scope("request")
@@ -23,7 +25,7 @@ public class PublisherParameterFilter implements RequestAttributeFilter {
 	
 	@Override
 	public void filter(HttpServletRequest request) {
-		if (request.getParameter("publisher") != null && !request.getParameter("publisher").equals("")) {
+		if (!Strings.isNullOrEmpty(request.getParameter("publisher"))) {
 			String publisherUrlWords = request.getParameter("publisher");
 			Website publisher = resourceDAO.getPublisherByUrlWords(publisherUrlWords);
 			request.setAttribute("publisher", publisher);

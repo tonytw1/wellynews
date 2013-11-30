@@ -52,7 +52,7 @@ public abstract class AbstractModelBuilder {
 		mv.addObject("end_index", endIndex);
 	}
 	
-	protected final void populateSecondaryFeeds(ModelAndView mv) {      
+	protected final void populateSecondaryFeeds(ModelAndView mv) {	// TODO should be latest news items by default?  
         mv.addObject("righthand_heading", "Local Feeds");                
         mv.addObject("righthand_description", "Recently updated feeds from local organisations.");        
         final List<FrontendResource> allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate();

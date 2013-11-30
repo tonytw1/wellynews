@@ -39,7 +39,7 @@ public class TwitterNewsitemMentionsFinderService {
 	}
 	
 	public List<TwitterMention> getNewsitemMentions() {
-		final List<TwitterMention> RTs = Lists.newArrayList();	
+		final List<TwitterMention> retweets = Lists.newArrayList();	
 		
 		for (Twit status : twitterService.getReplies()) {
 			final String message = status.getText();			
@@ -64,7 +64,7 @@ public class TwitterNewsitemMentionsFinderService {
 					Resource referencedNewsitem = extractReferencedResourceFromMessage(referencedTwitMessage);
 					if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
 						Twit replyTwit = loadOrCreateTwit(status);
-						RTs.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
+						retweets.add(new TwitterMention((Newsitem) referencedNewsitem, replyTwit));
 						log.info("Twit '" + replyTwit + "' is a reply to: " + referencedNewsitem);
 					}
 					
@@ -77,11 +77,11 @@ public class TwitterNewsitemMentionsFinderService {
 				if (referencedNewsitem != null && referencedNewsitem.getType().equals("N")) {
 					log.info("Found RT: " + referencedNewsitem.getName() + ", " + message);
 					Twit tweet = loadOrCreateTwit(status);
-					RTs.add(new TwitterMention((Newsitem) referencedNewsitem, tweet));				
+					retweets.add(new TwitterMention((Newsitem) referencedNewsitem, tweet));				
 				}				
 			}	
 		}
-		return RTs;
+		return retweets;
 	}
 	
 	private Resource extractReferencedResourceFromMessage(String message) {

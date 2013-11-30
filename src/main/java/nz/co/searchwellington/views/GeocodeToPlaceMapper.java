@@ -21,9 +21,7 @@ public class GeocodeToPlaceMapper {
 		if (contentItemGeocode.getOsmId() != null && contentItemGeocode.getOsmType() != null) {
 			osmId = new OsmId(contentItemGeocode.getOsmId(), OsmType.valueOf(contentItemGeocode.getOsmType()));
 		}
-		String displayName = contentItemGeocode.getDisplayName();
-		Place place = new Place(displayName, latLong, osmId);
-		return place;
+		return new Place(contentItemGeocode.getDisplayName(), latLong, osmId);
 	}
 
 }

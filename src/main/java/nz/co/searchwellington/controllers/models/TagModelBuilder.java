@@ -80,7 +80,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			final List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 			final Tag tag = tags.get(0);
 			int page = getPage(request);
-			return populateTagPageModelAndView(tag, page, request.getPathInfo());
+			return populateTagPageModelAndView(tag, page);
 		}
 		return null;
 	}
@@ -95,12 +95,12 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject(WEBSITES, taggedWebsites);
 		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8);
-		if (relatedTagLinks.size() > 0) {
+		if (!relatedTagLinks.isEmpty()) {
 			mv.addObject("related_tags", relatedTagLinks);
 		}
 		
 		List<PublisherContentCount> relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, 8);
-		if (relatedPublisherLinks.size() > 0) {
+		if (!relatedPublisherLinks.isEmpty()) {
 			mv.addObject("related_publishers", relatedPublisherLinks);
 		}
 		
@@ -138,7 +138,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		return "tag";	
 	}
 	
-	private ModelAndView populateTagPageModelAndView(Tag tag, int page, String path) {
+	private ModelAndView populateTagPageModelAndView(Tag tag, int page) {
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject(PAGE, page);
 		

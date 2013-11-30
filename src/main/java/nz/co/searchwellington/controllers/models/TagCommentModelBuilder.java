@@ -17,12 +17,15 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Component
 public class TagCommentModelBuilder extends AbstractModelBuilder implements ModelBuilder {
-		
+	
 	private static Logger log = Logger.getLogger(TagCommentModelBuilder.class);
-    	
-	private ContentRetrievalService contentRetrievalService;
-	private UrlBuilder urlBuilder;
-	private RssUrlBuilder rssUrlBuilder;
+
+	private static final String TAG_COMMENT = "tagComment";
+	private static final String TAGS = "tags";
+	
+	private final ContentRetrievalService contentRetrievalService;
+	private final UrlBuilder urlBuilder;
+	private final RssUrlBuilder rssUrlBuilder;
 	
 	@Autowired
 	public TagCommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {		
@@ -34,7 +37,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
-		List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+		List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 		boolean isSingleTagPage = tags != null && tags.size() == 1;
 		boolean hasCommentPath = request.getPathInfo().matches("^(.*?)/comment(/(rss|json))?$");		
 		return isSingleTagPage && hasCommentPath;
@@ -45,7 +48,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			log.debug("Building tag comment page model");
-			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
+			List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 			Tag tag = tags.get(0);
 
 			int page = getPage(request);
@@ -61,7 +64,7 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	
 	@Override
 	public String getViewName(ModelAndView mv) {
-		return "tagComment";
+		return TAG_COMMENT;
 	}
 	
 	private ModelAndView populateTagCommentPageModelAndView(Tag tag, int startIndex) {		
@@ -77,10 +80,10 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		int count = contentRetrievalService.getCommentedNewsitemsForTagCount(tag);
 		mv.addObject("main_content_total", count);
 		
-		if (allCommentedForTag.size() > 0) {
+		if (!allCommentedForTag.isEmpty()) {
 			setRss(mv, rssUrlBuilder.getRssTitleForTagComment(tag), rssUrlBuilder.getRssUrlForTagComment(tag));
 		}
-		mv.setViewName("tagComment");
+		mv.setViewName(TAG_COMMENT);
 		return mv;
 	}
 	

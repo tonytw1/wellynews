@@ -1,9 +1,9 @@
 package nz.co.searchwellington.utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import org.apache.commons.io.IOUtils;
 
 public class HttpFetchResult {
 	
@@ -16,14 +16,7 @@ public class HttpFetchResult {
 	}
 	
     public String readEncodedResponse(String charSet) throws IOException {
-        BufferedReader d = new BufferedReader(new InputStreamReader(this.inputStream, charSet));        
-        StringBuffer responseBody = new StringBuffer();
-        String input;
-        while ((input = d.readLine()) != null) {                
-            responseBody.append(input);
-            responseBody.append("\n");
-        }
-        return responseBody.toString();            
+    	return IOUtils.toString(this.inputStream);                 
     }
 		
 	public int getStatus() {
@@ -32,13 +25,13 @@ public class HttpFetchResult {
 	public void setStatus(int status) {
 		this.status = status;
 	}
+	
 	public InputStream getInputStream() {
 		return inputStream;
 	}
+	
 	public void setInputStream(InputStream inputStream) {
 		this.inputStream = inputStream;
 	}
 	
-	
-
 }
