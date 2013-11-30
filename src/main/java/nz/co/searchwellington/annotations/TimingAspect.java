@@ -43,9 +43,9 @@ public class TimingAspect {
 			
 			return retVal;
 			
-		} catch (Throwable t) {
-			log.error(t);
-			throw t;
+		} catch (Exception e) {
+			log.error(e);
+			throw e;
 		}
 	}
 
