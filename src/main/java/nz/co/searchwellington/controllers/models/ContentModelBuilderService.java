@@ -35,7 +35,7 @@ public class ContentModelBuilderService {
 		this.viewFactory = viewFactory;
 		this.jsonCallbackNameValidator = jsonCallbackNameValidator;
 		this.commonModelObjectsService = commonModelObjectsService;
-		this.modelBuilders = modelBuilders;
+		this.modelBuilders = modelBuilders.clone();
 	}
 	
 	public ModelAndView populateContentModel(HttpServletRequest request) {
