@@ -16,7 +16,7 @@ public class CompositeLinkExtractor implements LinkExtractor {
     
     @Autowired
     public CompositeLinkExtractor(LinkExtractor[] linkExtractors) {
-		this.linkExtractors = linkExtractors;
+		this.linkExtractors = linkExtractors.clone();
 	}
 
 	public Set<String> extractLinks(String inputHTML) {
