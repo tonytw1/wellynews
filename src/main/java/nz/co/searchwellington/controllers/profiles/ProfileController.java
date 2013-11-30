@@ -118,12 +118,7 @@ public class ProfileController {
 	}
 
 	protected boolean isValidNewProfilename(String profilename) {
-		if (profilename.matches("[a-z|A-Z|0-9]+")) {
-			if (userDAO.getUserByProfileName(profilename) == null) {
-				return true;
-			}
-		}
-		return false;
+		return profilename.matches("[a-z|A-Z|0-9]+") && userDAO.getUserByProfileName(profilename) == null;
 	}
 	
 }
