@@ -1,10 +1,7 @@
-
 package nz.co.searchwellington.model;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
-
 
 // TODO CommentFeeds should subclass Feeds
 public class CommentFeed {
@@ -19,18 +16,14 @@ public class CommentFeed {
     public CommentFeed() {
     }
     
-    public CommentFeed(int id, String url, List<Comment> comments, Newsitem newsitem, Date lastRead, Set<Resource> references) {		
+    public CommentFeed(int id, String url, List<Comment> comments, Newsitem newsitem, Date lastRead) {		
 		this.id = id;
 		this.url = url;
 		this.comments = comments;
 		this.newsitem = newsitem;
 		this.lastRead = lastRead;		
 	}
-
-
-
-
-
+    
 	public int getId() {
         return id;
     }
@@ -54,21 +47,17 @@ public class CommentFeed {
         this.comments = comments;
     }
 
-
     public Newsitem getNewsitem() {
         return newsitem;
     }
 
-
     public void setNewsitem(Newsitem newsitem) {
         this.newsitem = newsitem;
     }
-
-
+    
 	public Date getLastRead() {
 		return lastRead;
 	}
-
 
 	public void setLastRead(Date lastRead) {
 		this.lastRead = lastRead;

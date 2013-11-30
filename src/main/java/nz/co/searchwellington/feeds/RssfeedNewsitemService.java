@@ -23,8 +23,7 @@ public class RssfeedNewsitemService {
 	@Autowired
 	public RssfeedNewsitemService(
 			CachingRssfeedNewsitemService cachingRssfeedNewsitemService,
-			HibernateResourceDAO resourceDAO,
-			FeednewsItemToNewsitemService feednewsItemToNewsitemService) {
+			HibernateResourceDAO resourceDAO) {
 		this.cachingRssfeedNewsitemService = cachingRssfeedNewsitemService;
 		this.resourceDAO = resourceDAO;
 	}

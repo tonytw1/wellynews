@@ -44,9 +44,7 @@ public class FeedReader {
 			FeedAcceptanceDecider feedAcceptanceDecider,
 			UrlCleaner urlCleaner,
 			ContentUpdateService contentUpdateService,
-			FeedItemAcceptor feedItemAcceptor,
 			AutoTaggingService autoTagger,
-			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
 			LinkCheckerQueue linkCheckerQueue, FeedReaderUpdateService feedReaderUpdateService) {
 		this.resourceDAO = resourceDAO;
 		this.rssfeedNewsitemService = rssfeedNewsitemService;

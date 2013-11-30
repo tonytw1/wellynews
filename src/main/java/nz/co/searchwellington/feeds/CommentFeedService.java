@@ -21,7 +21,7 @@ import com.sun.syndication.feed.synd.SyndFeed;
 @Component
 public class CommentFeedService {
     
-    public final static Logger log = Logger.getLogger(CommentFeedService.class);
+    private final static Logger log = Logger.getLogger(CommentFeedService.class);
     
     private RssHttpFetcher rssHttpFetcher;
     

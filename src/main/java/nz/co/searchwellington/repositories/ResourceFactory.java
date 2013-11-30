@@ -45,7 +45,7 @@ public class ResourceFactory {
 	}
 
 	public CommentFeed createNewCommentFeed(String commentFeedUrl) {
-		return new CommentFeed(0, commentFeedUrl, Lists.<Comment>newArrayList(), null, null, new HashSet<Resource>());
+		return new CommentFeed(0, commentFeedUrl, Lists.<Comment>newArrayList(), null, null);
 	}
 
 	public CalendarFeed createNewCalendarFeed(String url) {

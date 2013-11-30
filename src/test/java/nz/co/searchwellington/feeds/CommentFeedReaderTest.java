@@ -36,7 +36,7 @@ public class CommentFeedReaderTest {
 		commentFeedsToCheck = Lists.newArrayList();
 		commentFeedsToCheck.add(commentFeed);
 		for (int i = 0; i < 29; i++) {
-			commentFeedsToCheck.add(new CommentFeed(0, null, Lists.<Comment>newArrayList(), null, null, null));
+			commentFeedsToCheck.add(new CommentFeed(0, null, Lists.<Comment>newArrayList(), null, null));
 		}		
 		Mockito.when(resourceDAO.getCommentFeedsToCheck(30)).thenReturn(commentFeedsToCheck);
 		
