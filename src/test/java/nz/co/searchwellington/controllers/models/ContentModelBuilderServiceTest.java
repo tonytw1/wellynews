@@ -23,10 +23,11 @@ import uk.co.eelpieconsulting.common.views.rss.RssView;
 
 public class ContentModelBuilderServiceTest {
 	
+	private static final String CALLBACK = "callback";
+	
 	@Mock ViewFactory viewFactory;
 	@Mock JsonCallbackNameValidator jsonCallbackNameValidator;
 	@Mock CommonModelObjectsService commonModelObjectsService;
-	ModelBuilder[] modelBuilders;
 	
 	MockHttpServletRequest request;
 	@Mock JsonView jsonView;
@@ -46,9 +47,6 @@ public class ContentModelBuilderServiceTest {
 		request = new MockHttpServletRequest();
 		validModelAndView = new ModelAndView();
 		
-		modelBuilders = new ModelBuilder[2];
-		modelBuilders[0] = invalidModelBuilder;
-		modelBuilders[1] = validModelBuilder;
 		request.setPathInfo("/something");
 		
 		when(invalidModelBuilder.isValid(request)).thenReturn(false);
@@ -58,7 +56,7 @@ public class ContentModelBuilderServiceTest {
 		contentModelBuilderService = new ContentModelBuilderService(viewFactory, 
 				jsonCallbackNameValidator,
 				commonModelObjectsService,
-				modelBuilders);
+				invalidModelBuilder, validModelBuilder);
 	}
 	
 	@Test
@@ -68,7 +66,11 @@ public class ContentModelBuilderServiceTest {
 	
 	@Test
 	public void shouldReturnNullIfNoModelBuilderWasFoundForRequest() throws Exception {
-		modelBuilders[1] = invalidModelBuilder;
+		contentModelBuilderService = new ContentModelBuilderService(viewFactory, 
+				jsonCallbackNameValidator,
+				commonModelObjectsService,
+				invalidModelBuilder);
+		
 		assertNull(contentModelBuilderService.populateContentModel(request));
 	}
 	
@@ -90,20 +92,20 @@ public class ContentModelBuilderServiceTest {
 	public void jsonCallbackShouldBeAddedToJsonModelIfValid() throws Exception {
 		when(viewFactory.getJsonView()).thenReturn(jsonView);
 		request.setPathInfo("/something/json");
-		request.setParameter("callback", "validname");
-		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter("callback"))).thenReturn(true);
+		request.setParameter(CALLBACK, "validname");
+		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter(CALLBACK))).thenReturn(true);
 		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-		assertEquals("validname", mv.getModel().get("callback"));
+		assertEquals("validname", mv.getModel().get(CALLBACK));
 	}
 	
 	@Test
 	public void shouldRejectInvalidCallbackNames() throws Exception {
 		when(viewFactory.getJsonView()).thenReturn(jsonView);
 		request.setPathInfo("/something/json");
-		request.setParameter("callback", "Invalid name!");
-		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter("callback"))).thenReturn(false);
+		request.setParameter(CALLBACK, "Invalid name!");
+		when(jsonCallbackNameValidator.isValidCallbackName(request.getParameter(CALLBACK))).thenReturn(false);
 		ModelAndView mv = contentModelBuilderService.populateContentModel(request);
-		assertNull(mv.getModel().get("callback"));
+		assertNull(mv.getModel().get(CALLBACK));
 	}
 	
 }

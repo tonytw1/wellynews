@@ -31,7 +31,7 @@ public class ContentModelBuilderService {
 	public ContentModelBuilderService(ViewFactory viewFactory,
 			JsonCallbackNameValidator jsonCallbackNameValidator,
 			CommonModelObjectsService commonModelObjectsService,
-			ModelBuilder[] modelBuilders) {
+			ModelBuilder... modelBuilders) {
 		this.viewFactory = viewFactory;
 		this.jsonCallbackNameValidator = jsonCallbackNameValidator;
 		this.commonModelObjectsService = commonModelObjectsService;
