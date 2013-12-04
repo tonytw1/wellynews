@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.exceptions.UnresolvableLocationException;
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService;
 import nz.co.searchwellington.geocoding.osm.OsmIdParser;
 
@@ -57,7 +58,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 			final Place resolvedPlace = geoCodeService.resolveOsmId(osmId);			
 			log.debug("OSM id '" + osmId + "' resolved to: " + resolvedPlace);
 			if (resolvedPlace == null) {
-				throw new RuntimeException("OSM place could not be resolved");	// TODO 404 in this use case
+				throw new UnresolvableLocationException("OSM place could not be resolved");
 			}
 			request.setAttribute(LOCATION, resolvedPlace);
 			return;
@@ -83,7 +84,7 @@ public class LocationParameterFilter implements RequestAttributeFilter {
 				
 			} else {
 				log.debug("User supplied location '" + location + "' could not be resolved to a point");
-				throw new RuntimeException("Could not resolve place name to lat long");
+				throw new UnresolvableLocationException("Could not resolve place name to lat long");
 			}
 		}
 	}
