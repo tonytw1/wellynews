@@ -1,11 +1,10 @@
 package nz.co.searchwellington.repositories;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
+import nz.co.searchwellington.urls.UrlParser;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +16,17 @@ public class PublisherGuessingService {
     private static Logger log = Logger.getLogger(PublisherGuessingService.class);
     
     private HibernateResourceDAO resourceDAO;
+	private UrlParser urlParser;
          
     @Autowired
-    public PublisherGuessingService(HibernateResourceDAO resourceDAO) {    
+    public PublisherGuessingService(HibernateResourceDAO resourceDAO,
+    		UrlParser urlParser) {    
         this.resourceDAO = resourceDAO;
+		this.urlParser = urlParser;
     }
     
     public List<Resource> guessPossiblePublishersForUrl(String url) {
-        final String urlStem = calculateUrlStem(url);      
+        final String urlStem = urlParser.extractHostnameFrom(url);      
         return resourceDAO.getAllPublishersMatchingStem(urlStem, true);
     }
     
@@ -44,18 +46,6 @@ public class PublisherGuessingService {
 			}        	        	
         }
         return null;
-    }
-        
-    private String calculateUrlStem(String fullURL) {
-        String urlStem = null;        
-        try {
-            URL url = new URL(fullURL);
-            String stem = new String(url.getHost());
-            urlStem = stem;        
-        } catch (MalformedURLException e) {
-            urlStem = null;
-        }        
-        return urlStem;
     }
     
 }

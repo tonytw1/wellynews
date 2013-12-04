@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers.admin;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +11,7 @@ import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
+import nz.co.searchwellington.urls.UrlParser;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ public class PublisherAutoGatherController {
     private HibernateResourceDAO resourceDAO;
     private ContentUpdateService contentUpdateService;
     private CommonModelObjectsService commonModelObjectsService;
+	private UrlParser urlParser;
 
     public PublisherAutoGatherController() {
 	}
@@ -40,11 +40,13 @@ public class PublisherAutoGatherController {
 	public PublisherAutoGatherController(AdminRequestFilter requestFilter,
 			HibernateResourceDAO resourceDAO,
 			ContentUpdateService contentUpdateService,
-			CommonModelObjectsService commonModelObjectsService) {
+			CommonModelObjectsService commonModelObjectsService,
+			UrlParser urlParser) {
 		this.requestFilter = requestFilter;
 		this.resourceDAO = resourceDAO;
 		this.contentUpdateService = contentUpdateService;
 		this.commonModelObjectsService = commonModelObjectsService;
+		this.urlParser = urlParser;
 	}
     
 	@RequestMapping("/admin/gather/prompt")
@@ -101,13 +103,11 @@ public class PublisherAutoGatherController {
         return mv;
     }
 	
-	    
     private List<Resource> getPossibleAutotagResources(Resource publisher) {
-		final String publishersUrlStem = calculateUrlStem(publisher.getUrl());
+		final String publishersUrlStem = urlParser.extractHostnameFrom(publisher.getUrl());
 		return resourceDAO.getNewsitemsMatchingStem(publishersUrlStem);
 	}
     
-	
     private boolean needsPublisher(Newsitem resource, Website proposedPublisher) {
     	if (resource.getPublisher() == null) {
     		return true;
@@ -117,19 +117,5 @@ public class PublisherAutoGatherController {
     	}
 		return false;
 	}
-
-        
-    // TODO duplication with Publisher guessing service.
-    private String calculateUrlStem(String fullURL) {
-        String urlStem = null;        
-        try {
-            URL url = new URL(fullURL);
-            String stem = new String(url.getHost());
-            urlStem = stem;        
-        } catch (MalformedURLException e) {
-            urlStem = null;
-        }        
-        return urlStem;
-    }
     
 }
