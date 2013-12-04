@@ -12,9 +12,12 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+@Component
 public class TagPageAttributeSetter implements AttributeSetter {
 	
 	private static Logger log = Logger.getLogger(TagPageAttributeSetter.class);
@@ -23,6 +26,7 @@ public class TagPageAttributeSetter implements AttributeSetter {
 	
 	private TagDAO tagDAO;
 	
+	@Autowired
 	public TagPageAttributeSetter(TagDAO tagDAO) {
 		this.tagDAO = tagDAO;
 	}

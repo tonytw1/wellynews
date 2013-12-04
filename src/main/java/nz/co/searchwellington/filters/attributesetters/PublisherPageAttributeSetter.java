@@ -9,7 +9,10 @@ import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PublisherPageAttributeSetter implements AttributeSetter {
 	
 	private static Logger log = Logger.getLogger(PublisherPageAttributeSetter.class);
@@ -18,6 +21,7 @@ public class PublisherPageAttributeSetter implements AttributeSetter {
 	
 	private HibernateResourceDAO resourceDAO;
 	
+	@Autowired
 	public PublisherPageAttributeSetter(HibernateResourceDAO resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}

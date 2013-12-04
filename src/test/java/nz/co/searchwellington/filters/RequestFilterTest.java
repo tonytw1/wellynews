@@ -7,6 +7,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import nz.co.searchwellington.filters.attributesetters.CombinerPageAttributeSetter;
+import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter;
+import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter;
+import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.Website;
@@ -23,7 +27,7 @@ public class RequestFilterTest {
 	
 	@Mock private HibernateResourceDAO resourceDAO;
 	@Mock private TagDAO tagDAO;
-	
+		
 	@Mock private Tag transportTag;
 	@Mock private Tag soccerTag;
 	@Mock private Website capitalTimesPublisher;
@@ -39,7 +43,8 @@ public class RequestFilterTest {
 		when(tagDAO.loadTagByName("soccer")).thenReturn(soccerTag);
 		when(resourceDAO.getPublisherByUrlWords("capital-times")).thenReturn(capitalTimesPublisher);
 		when(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).thenReturn(feed);
-		filter = new RequestFilter(resourceDAO, tagDAO, filters);
+		filter = new RequestFilter(new CombinerPageAttributeSetter(tagDAO, resourceDAO), 
+	    		 new PublisherPageAttributeSetter(resourceDAO), new FeedAttributeSetter(resourceDAO), new TagPageAttributeSetter(tagDAO), filters);	// TODO suggests test coverage at wrong level
 	}
 	
 	@Test

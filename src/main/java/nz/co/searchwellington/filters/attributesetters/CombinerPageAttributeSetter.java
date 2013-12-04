@@ -12,9 +12,12 @@ import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
 
+@Component
 public class CombinerPageAttributeSetter implements AttributeSetter {
 	
 	private static Logger log = Logger.getLogger(CombinerPageAttributeSetter.class);
@@ -24,6 +27,7 @@ public class CombinerPageAttributeSetter implements AttributeSetter {
 	private TagDAO tagDAO;
 	private HibernateResourceDAO resourceDAO;
 	
+	@Autowired
 	public CombinerPageAttributeSetter(TagDAO tagDAO, HibernateResourceDAO resourceDAO) {
 		this.tagDAO = tagDAO;
 		this.resourceDAO = resourceDAO;

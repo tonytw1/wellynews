@@ -9,7 +9,10 @@ import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class FeedAttributeSetter implements AttributeSetter {
 	
 	private static Logger log = Logger.getLogger(FeedAttributeSetter.class);
@@ -20,6 +23,7 @@ public class FeedAttributeSetter implements AttributeSetter {
 
 	private HibernateResourceDAO resourceDAO;
 	
+	@Autowired
 	public FeedAttributeSetter(HibernateResourceDAO resourceDAO) {
 		this.resourceDAO = resourceDAO;
 	}

@@ -1,6 +1,5 @@
 package nz.co.searchwellington.filters;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -11,8 +10,6 @@ import nz.co.searchwellington.filters.attributesetters.CombinerPageAttributeSett
 import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter;
 import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter;
 import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter;
-import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.TagDAO;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,38 +18,29 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 @Component("requestFilter")
 @Scope(value="request", proxyMode=ScopedProxyMode.TARGET_CLASS)
 public class RequestFilter {
 	
 	private static Logger log = Logger.getLogger(RequestFilter.class);
-	
-    private AttributeSetter combinerPageAttributeSetter;
-    private AttributeSetter tagPageAttibuteSetter;
-    private AttributeSetter publisherPageAttributeSetter;
-    private AttributeSetter feedAttributeSetter;
-    
-	RequestAttributeFilter[] filters;
-	List<AttributeSetter> attributeSetters;
+	 
+	private RequestAttributeFilter[] filters;
+	private List<AttributeSetter> attributeSetters;
 
 	public RequestFilter() {         
     }
     
 	@Autowired
-    public RequestFilter(HibernateResourceDAO resourceDAO, TagDAO tagDAO, RequestAttributeFilter[] filters) {
-        this.filters = filters;
-        this.tagPageAttibuteSetter = new TagPageAttributeSetter(tagDAO);
-        this.publisherPageAttributeSetter = new PublisherPageAttributeSetter(resourceDAO);
-        this.combinerPageAttributeSetter = new CombinerPageAttributeSetter(tagDAO, resourceDAO);	// TODO this is incorrect IoD
-        this.feedAttributeSetter = new FeedAttributeSetter(resourceDAO);
+    public RequestFilter(CombinerPageAttributeSetter combinerPageAttributeSetter, 
+    		PublisherPageAttributeSetter publisherPageAttributeSetter,
+    		FeedAttributeSetter feedAttributeSetter,
+    		TagPageAttributeSetter tagPageAttibuteSetter,
+    		RequestAttributeFilter[] filters) {
         
-        // TODO push to spring.
-        attributeSetters = Lists.newArrayList();
-        attributeSetters.add(tagPageAttibuteSetter);
-        attributeSetters.add(publisherPageAttributeSetter);
-        attributeSetters.add(feedAttributeSetter);
-        attributeSetters.add(combinerPageAttributeSetter);
+		this.attributeSetters = Lists.newArrayList(tagPageAttibuteSetter, publisherPageAttributeSetter, feedAttributeSetter, combinerPageAttributeSetter);        
+        this.filters = filters;
     }
     
 	public void loadAttributesOntoRequest(HttpServletRequest request) {		
@@ -78,7 +66,7 @@ public class RequestFilter {
 	}
 
 	private boolean isReservedPath(String path) {
-    	Set<String> reservedUrlWords = new HashSet<String>();		 // TODO this wants to be in the spring config
+    	Set<String> reservedUrlWords = Sets.newHashSet();		 // TODO this wants to be in the spring config
     	reservedUrlWords.add("/about");
     	reservedUrlWords.add("/api");
     	reservedUrlWords.add("/autotag");
