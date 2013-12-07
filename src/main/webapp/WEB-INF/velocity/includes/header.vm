@@ -17,41 +17,17 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.23/jquery-ui.min.js"></script>
 <script type="text/javascript" src="http://im.wellington.gen.nz/static/autocomplete.js"></script>
 
-#if ($geocoded) 
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=$site_information.googleMapsApiKey" type="text/javascript"></script>
-<script type="text/javascript">
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css" />
+<script src="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"></script>
 
-    var map = null;
-    var geocoder = null;
-
-    function initialize() {
-      if (GBrowserIsCompatible()) {
-        map = new GMap2(document.getElementById("map_canvas"));
-        
-        #if ($selected || $geotags_is_small) 
-	        map.setCenter(new GLatLng(-41.19, 174.95), 14);
-        #else
-    	    map.setCenter(new GLatLng(-41.19, 174.95), 12);        
-		#end
-	        
-        #if (!$geotags_is_small)
-	        map.addControl(new GSmallMapControl());        	
-        #end
-      }
-    }
-
-    function showAddress(lat, long, title, url, description) {
-      	var point = new GLatLng(lat, long); 
-       	var marker = new GMarker(point);
-       	   	
-     	GEvent.addListener(marker, "click", function() {
-       		marker.openInfoWindowHtml("<a href=\"" + url + "\">" + title + "</a>" + "<p>" + description + "</p>");
-      	});
-    
-      	map.addOverlay(marker);
-	}
-	
-	function positionSuccess(position) {
+<script>
+	var markers = [];
+	 
+ 	function showAddress(lat, long, title, url, description) {
+ 		markers.push({lat: lat, long: long, title: title, description: description});
+ 	}
+ 	
+ 	function positionSuccess(position) {
 		if (map) {
 			location = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 			document.location.href = 'geotagged?latitude=' + position.coords.latitude + '&longitude=' + position.coords.longitude;
@@ -69,12 +45,8 @@
   			error('Position is not supported by this browser');
 		}
 	}
+		
 </script>
-#end
 </head>
 
-<body 
-#if ($geocoded)
-onunload="GUnload()"
-#end
->
+<body>

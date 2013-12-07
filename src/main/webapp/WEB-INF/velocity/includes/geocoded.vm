@@ -1,7 +1,7 @@
 #if ($geocoded && $geocoded.size() > 0) 
 <div class="box">
 <h2>Geotagged</h2>
-<div id="map_canvas" style="width: 250px; height: 260px"></div></a>
+<div id="map" style="width: 250px; height: 260px"></div></a>
 #parse("includes/geocodedjs.vm")
 
 #if($tag) 

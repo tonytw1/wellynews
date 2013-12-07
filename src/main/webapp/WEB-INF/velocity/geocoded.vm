@@ -39,7 +39,7 @@
 	</ul>
 #end
 
-<div id="map_canvas" style="width: 520px; height: 520px"></div>
+<div id="map" style="width: 520px; height: 520px"></div>
 #parse("includes/geocodedjs.vm")
 #parse("includes/main_content.vm")
 

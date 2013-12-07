@@ -1,29 +1,9 @@
-<script>
-	initialize();
-		
+<script>		
 	#set($deduped = $googleMapCleaner.dedupe($geocoded))
 	#foreach($item in $deduped)
 		showAddress($item.place.latLong.latitude, $item.place.latLong.longitude,
 			"$escape.javascript($item.name)",
 			"$escape.javascript($item.url)",
 			"$escape.javascript($item.description)");		
-	#end
-
-	var zoom = 13;
-	
-	// TODO Push calculation to Java
-	#if ($selected) 
-		var centrePoint = new GLatLng($selected.getGeocode().getLatitude(), $selected.getGeocode().getLongitude());
-		zoom = 15;
-	
-	#elseif ($location)
-		var centrePoint = new GLatLng($location.latLong.latitude, $location.latLong.longitude);
-		zoom = 15;
-			
-	#elseif ($geocoded.size() > 0 )
-		var centrePoint = new GLatLng($geocoded.get(0).place.latLong.latitude, $geocoded.get(0).place.latLong.longitude);
-	#else
-		var centrePoint = new GLatLng(-41.19, 174.95);
 	#end	
-	map.setCenter(centrePoint, zoom);
 </script>
