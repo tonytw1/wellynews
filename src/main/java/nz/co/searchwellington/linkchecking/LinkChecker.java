@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
+
 import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive;
 import uk.co.eelpieconsulting.archiving.Snapshot;
 import uk.co.eelpieconsulting.archiving.SnapshotArchive;
@@ -47,7 +49,7 @@ public class LinkChecker {
 	@Transactional
     public void scanResource(int checkResourceId) {
         final Resource resource = resourceDAO.loadResourceById(checkResourceId);         
-        if (resource != null) {
+        if (resource != null && !Strings.isNullOrEmpty(resource.getUrl())) {
 	        log.info("Checking: " + resource.getName() + " (" + resource.getUrl() + ")");        
 			
 			final String pageContent = httpCheck(resource);
