@@ -7,7 +7,7 @@
 	<meta name="description" content="$description">
 #end
 <link rel="stylesheet" href="$urlBuilder.getStaticUrl('styles.css')">
-<link rel="stylesheet" href="http://nominatim-ac.eelpieconsulting.co.uk/jquery-ui-1.8.23.custom.css">
+<link rel="stylesheet" href="$urlBuilder.getStaticUrl('jquery-ui-1.8.23.custom.css')">
 
 #if ($rss_url) 
 <link rel="alternate" type="application/rss+xml" title="$rss_title" href="$rss_url">	
