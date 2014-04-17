@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class FrontendContentUpdater {
 	
-	private static Logger log = Logger.getLogger(FrontendContentUpdater.class);
+	private final static Logger log = Logger.getLogger(FrontendContentUpdater.class);
 
 	private final ElasticSearchIndexUpdateService elasticSearchIndexUpdateService;
 	

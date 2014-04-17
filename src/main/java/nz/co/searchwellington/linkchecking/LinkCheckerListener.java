@@ -2,6 +2,7 @@ package nz.co.searchwellington.linkchecking;
 
 import java.io.IOException;
 
+import nz.co.searchwellington.queues.LinkCheckerQueue;
 import nz.co.searchwellington.queues.RabbitConnectionFactory;
 
 import org.apache.log4j.Logger;
@@ -15,9 +16,9 @@ import com.rabbitmq.client.QueueingConsumer;
 @Component
 public class LinkCheckerListener  {
 
-	private static Logger log = Logger.getLogger(LinkCheckerListener.class);
+	private final static Logger log = Logger.getLogger(LinkCheckerListener.class);
         
-	private static final String QUEUE_NAME = "linkchecker";
+	private final static String QUEUE_NAME = LinkCheckerQueue.QUEUE_NAME;
 
     private final LinkChecker linkChecker;
 	private final Channel channel;
@@ -49,6 +50,7 @@ public class LinkCheckerListener  {
 					final QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 					String message = new String(delivery.getBody());
 					log.info("Received: " + message);
+					Thread.sleep(1000);	// TODO Hack - transaction window race condition
 										
 					linkChecker.scanResource(Integer.parseInt(message));
 					

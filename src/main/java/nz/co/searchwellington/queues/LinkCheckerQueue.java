@@ -11,9 +11,9 @@ import com.rabbitmq.client.Channel;
 @Component
 public class LinkCheckerQueue {
     
-	private static Logger log = Logger.getLogger(LinkCheckerQueue.class);
+	private final static Logger log = Logger.getLogger(LinkCheckerQueue.class);
 
-	private static final String QUEUE_NAME = "linkchecker";
+	public static final String QUEUE_NAME = "linkchecker";
 	
 	private final Channel channel;
         

@@ -5,15 +5,18 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.utils.UrlCleaner;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UrlProcessor implements SubmissionProcessor {
 	
-	private static final String URL = "url";
+	private final static Logger log = Logger.getLogger(UrlProcessor.class);
+
+	private final static String URL = "url";
 	
-	private UrlCleaner urlCleaner;
+	private final  UrlCleaner urlCleaner;
 
 	@Autowired
 	public UrlProcessor(UrlCleaner urlCleaner) {
@@ -22,9 +25,13 @@ public class UrlProcessor implements SubmissionProcessor {
 
 	@Override
 	public void process(HttpServletRequest request, Resource editResource) {
-		if (request.getParameter(URL) != null) {
-			String url = request.getParameter(URL);
+		if (request.getParameter(URL) != null) {	
+			final String url = request.getParameter(URL);
+			log.debug("Request url is: " + url);
 			editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
+			log.debug("Resource url set to: " + editResource.getUrl());			
+		} else {
+			log.debug("Url was null");
 		}
 	}
 

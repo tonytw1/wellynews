@@ -27,6 +27,8 @@ import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.queues.LinkCheckerQueue;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
+import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
+import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -35,6 +37,7 @@ import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,9 +50,9 @@ import com.google.common.base.Strings;
 @Controller
 public class ResourceEditController {
     
-	private static Logger log = Logger.getLogger(ResourceEditController.class);
+	private final static Logger log = Logger.getLogger(ResourceEditController.class);
 	
-	private static final String ACCEPTANCE = "acceptance";
+	private final static String ACCEPTANCE = "acceptance";
 	
     private RssfeedNewsitemService rssfeedNewsitemService;
     private AdminRequestFilter adminRequestFilter;    
@@ -428,6 +431,7 @@ public class ResourceEditController {
                 }
 
             	saveResource(request, loggedInUser, editResource);	// TODO with the tags votes do sticking to an unsaved resource - transaction boundary issue?
+            	
             	linkCheckerQueue.add(editResource.getId());	// TODO this link check fails as the queue picks up before the transaction window has closed.
             	
             } else {

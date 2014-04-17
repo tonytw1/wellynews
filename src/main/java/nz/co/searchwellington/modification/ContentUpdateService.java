@@ -8,12 +8,13 @@ import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class ContentUpdateService {
 	
-	private static Logger log = Logger.getLogger(ContentUpdateService.class);
+	private final static Logger log = Logger.getLogger(ContentUpdateService.class);
 	
 	private HibernateResourceDAO resourceDAO;
 	private LinkCheckerQueue linkCheckerQueue;
@@ -33,7 +34,7 @@ public class ContentUpdateService {
 
 	@Transactional
 	public void update(Resource resource) {
-		log.info("Updating content for: " + resource.getName());
+		log.info("Updating content for: " + resource.getName() + " - " + resource.getUrl());
 		try {
 			boolean resourceUrlHasChanged = false;
 			boolean newSubmission = resource.getId() == 0;
