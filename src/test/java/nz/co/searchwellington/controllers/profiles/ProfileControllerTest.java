@@ -9,7 +9,6 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -41,7 +40,7 @@ public class ProfileControllerTest {
 	private List<User> allActiveUsers;
 
 	private ProfileController controller;
-	@Mock List<Resource> existingUsersSubmittedItems;
+	@Mock List<FrontendResource> existingUsersSubmittedItems;
 	@Mock List<FrontendResource> existingUsersTaggedItems;
 	
 	@Before
