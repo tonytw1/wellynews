@@ -19,6 +19,7 @@ import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendTag;
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper;
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchBackedResourceDAO;
 import nz.co.searchwellington.repositories.solr.KeywordSearchService;
 
@@ -41,6 +42,7 @@ public class ContentRetrievalService {
 	private RelatedTagsService relatedTagsService;
 	private DiscoveredFeedRepository discoveredFeedsDAO;
 	private ElasticSearchBackedResourceDAO elasticSearchBackedResourceDAO;
+	private FrontendResourceMapper frontendResourceMapper;
 	
 	@Autowired
 	public ContentRetrievalService(HibernateResourceDAO resourceDAO,
@@ -48,7 +50,8 @@ public class ContentRetrievalService {
 			ShowBrokenDecisionService showBrokenDecisionService, TagDAO tagDAO,
 			RelatedTagsService relatedTagsService,
 			DiscoveredFeedRepository discoveredFeedsDAO,
-			ElasticSearchBackedResourceDAO solrBackedResourceDAO) {
+			ElasticSearchBackedResourceDAO solrBackedResourceDAO,
+			FrontendResourceMapper frontendResourceMapper) {
 		this.resourceDAO = resourceDAO;
 		this.keywordSearchService = keywordSearchService;
 		this.showBrokenDecisionService = showBrokenDecisionService;
@@ -56,6 +59,7 @@ public class ContentRetrievalService {
 		this.relatedTagsService = relatedTagsService;
 		this.discoveredFeedsDAO = discoveredFeedsDAO;
 		this.elasticSearchBackedResourceDAO = solrBackedResourceDAO;
+		this.frontendResourceMapper = frontendResourceMapper;
 	}
 	
 	public List<FrontendResource> getAllWatchlists() {
@@ -280,8 +284,12 @@ public class ContentRetrievalService {
 		return discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds();
 	}
 
-	public List<Resource> getOwnedBy(User loggedInUser) {
-		return resourceDAO.getOwnedBy(loggedInUser, MAX_NEWSITEMS_TO_SHOW);
+	public List<FrontendResource> getOwnedBy(User loggedInUser) {
+		final List<FrontendResource> owned = Lists.newArrayList();		
+		for (Resource resource : resourceDAO.getOwnedBy(loggedInUser, MAX_NEWSITEMS_TO_SHOW)) {
+			owned.add(frontendResourceMapper.createFrontendResourceFrom(resource));
+		}
+		return owned;
 	}
 	
 	public List<FrontendResource> getTaggedBy(User user) {
