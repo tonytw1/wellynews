@@ -26,7 +26,7 @@ $(function() {
 				url: "http://nominatim-ac.eelpieconsulting.co.uk/suggest",
 				dataType: "jsonp",
 				data: {
-					term: request.term
+					q: request.term
 				},
 				success: function( data ) {
 					response( $.map( data, function( item ) {
