@@ -20,7 +20,7 @@ public class StandardHttpFetcher implements HttpFetcher {	// TODO migrate to com
 
 	private static Logger log = Logger.getLogger(StandardHttpFetcher.class);
 	
-    private static final int HTTP_TIMEOUT = 20000;
+    private static final int HTTP_TIMEOUT = 30000;
     
     @Value("#{config['http.useragent']}")
     private String userAgent;
