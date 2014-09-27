@@ -20,7 +20,7 @@ public class StandardHttpFetcher implements HttpFetcher {	// TODO migrate to com
 
 	private static Logger log = Logger.getLogger(StandardHttpFetcher.class);
 	
-    private static final int HTTP_TIMEOUT = 30000;
+    private static final int HTTP_TIMEOUT = 60000;
     
     @Value("#{config['http.useragent']}")
     private String userAgent;
@@ -48,15 +48,19 @@ public class StandardHttpFetcher implements HttpFetcher {	// TODO migrate to com
 			return new HttpFetchResult(method.getStatusCode(), null);
 			
 		} catch (HttpException e) {
-		    log.warn("An exception was thrown will trying to http fetch; see debug log level");
-            log.debug(e);
+		    log.warn("An exception was thrown will trying to http fetch " + url + "; see debug log level");
+            log.info(e);
+            
 		} catch (IOException e) {
             log.warn("An exception was thrown will trying to http fetch; see debug log level");
-            log.debug(e);		
+            log.debug(e);
+            
 		} catch (IllegalStateException e) {
             log.warn("An exception was thrown will trying to http fetch; see debug log level");
             log.debug(e);		        
         }
+		
+		log.info("Setting -1 status code for: " + url);
 		return new HttpFetchResult(-1, null);
 	}
     
