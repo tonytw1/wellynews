@@ -84,7 +84,8 @@ public class LinkChecker {
         	String pageContent = null;
         	HttpFetchResult httpResult = httpFetcher.httpFetch(checkResource.getUrl());
         	checkResource.setHttpStatus(httpResult.getStatus());
-                
+        	log.info("Http status for " + checkResource.getUrl() + " set to: " + checkResource.getHttpStatus());
+        	
         	if (httpResult.getStatus() == HttpStatus.SC_OK) {
         		pageContent = httpResult.readEncodedResponse("UTF-8");
         		return pageContent;
@@ -98,6 +99,7 @@ public class LinkChecker {
         } catch (IOException e) {
         	log.error("Error while checking url: ", e);
         }
+        
         checkResource.setHttpStatus(CANT_CONNECT);
         return null;
     }

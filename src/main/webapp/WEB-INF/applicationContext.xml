@@ -45,5 +45,9 @@
    			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
   		</property>
 	</bean>
-						
+
+	<bean id="memcache" class="uk.co.eelpieconsulting.common.caching.MemcachedCache">
+		<constructor-arg index="0" value="#{config['memcached.urls']}" />
+	</bean>
+  							
 </beans>
