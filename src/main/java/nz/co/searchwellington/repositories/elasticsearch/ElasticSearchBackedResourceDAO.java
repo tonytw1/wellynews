@@ -216,8 +216,11 @@ public class ElasticSearchBackedResourceDAO {
 		return deserializeFrontendResourceHits(response.getHits());
 	}
 	
-	public List<FrontendResource> getAllFeeds(boolean shouldShowBroken, boolean latestFirst) {
-		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().setQuery(isFeed()).setSize(ALL);
+	public List<FrontendResource> getAllFeeds(boolean shouldShowBroken, boolean latestFirst) {		
+		final BoolQueryBuilder feeds = QueryBuilders.boolQuery().must(isFeed());
+		addShouldShowBrokenClause(feeds, shouldShowBroken);
+			
+		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().setQuery(feeds).setSize(ALL);
 		
 		if (latestFirst) {
 			addLatestFeedItemOrder(searchRequestBuilder);
