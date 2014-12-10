@@ -283,7 +283,7 @@ public class ResourceEditController {
     }
     
     @Transactional
-    @RequestMapping("/edit/submit/feed")
+  //  @RequestMapping("/edit/submit/feed")
     public ModelAndView submitFeed(HttpServletRequest request, HttpServletResponse response) {
         ModelAndView modelAndView = new ModelAndView("submitFeed");
         modelAndView.addObject("heading", "Submitting a Feed");
