@@ -235,9 +235,7 @@ public class ContentRetrievalService {
 	}
 
 	public long getTaggedNewsitemsCount(List<Tag> tags) {
-		long taggedNewsitemsCount = elasticSearchBackedResourceDAO.getTaggedNewsitemsCount(tags, showBrokenDecisionService.shouldShowBroken());
-		System.out.println(taggedNewsitemsCount);
-		return taggedNewsitemsCount;
+		return elasticSearchBackedResourceDAO.getTaggedNewsitemsCount(tags, showBrokenDecisionService.shouldShowBroken());
 	}
 	
 	public List<FrontendResource> getTaggedNewsitems(List<Tag> tags, int startIndex, int maxItems) {
