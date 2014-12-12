@@ -35,6 +35,8 @@ public class WhakaokoFeedSyncService {
 	public void run() {
 		final List<Feed> allFeeds = resourceDAO.getAllFeeds();
     	registerFeedWithWhakaoko(allFeeds);
+    	
+    	// TODO needs to purge locally deleted feeds from service
     }
 
     @Transactional
