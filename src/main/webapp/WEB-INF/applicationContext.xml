@@ -19,7 +19,7 @@
 	<util:properties id="config" location="classpath:searchwellington.properties" />
 	
 	<context:annotation-config />
-	<context:component-scan base-package="nz.gen.wellington,nz.co.searchwellington,uk.co.eelpieconsulting.common" />
+	<context:component-scan base-package="nz.co.searchwellington,uk.co.eelpieconsulting.common" />
 	
 	<aop:aspectj-autoproxy />
 		
@@ -48,6 +48,10 @@
 
 	<bean id="memcache" class="uk.co.eelpieconsulting.common.caching.MemcachedCache">
 		<constructor-arg index="0" value="#{config['memcached.urls']}" />
+	</bean>
+
+	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">
+		<constructor-arg ref="tagDAO" />
 	</bean>
   							
 </beans>
