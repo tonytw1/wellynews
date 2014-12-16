@@ -78,9 +78,7 @@ public class RelatedTagsService {
 		for (String tagId : tagFacetsForTag.keySet()) {
 			final Tag facetTag = tagDAO.loadTagByName(tagId);	// TODO null safe
 			if (isTagSuitableRelatedTag(tag, facetTag)) {
-				FrontendTag frontendTag = new FrontendTag();
-				frontendTag.setId(facetTag.getName());
-				frontendTag.setName(facetTag.getDisplayName());
+				FrontendTag frontendTag = new FrontendTag(facetTag.getName(), facetTag.getDisplayName());
 				suitableTagFacets.add(new TagContentCount(frontendTag, tagFacetsForTag.get(tagId)));
 			}
 		}

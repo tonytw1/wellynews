@@ -111,10 +111,7 @@ public class FrontendResourceMapper {
 	}
 
 	private FrontendTag mapTagToFrontendTag(Tag tag) {
-		final FrontendTag frontendTag = new FrontendTag();
-		frontendTag.setId(tag.getName());
-		frontendTag.setName(tag.getDisplayName());
-		return frontendTag;
+		return new FrontendTag(tag.getName(), tag.getDisplayName());
 	}
 	
 }
