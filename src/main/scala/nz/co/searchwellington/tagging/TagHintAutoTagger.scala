@@ -7,8 +7,11 @@ import com.google.common.collect.{Lists, Sets}
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.TagDAO
+import scala.collection.JavaConversions._
 
 class TagHintAutoTagger(tagDAO: TagDAO) {
+
+  val commaSplitter: Splitter = Splitter.on(",")
 
   def suggestTags(resource: Resource) : java.util.Set[Tag] = {
     val suggestedTags: java.util.Set[Tag] = Sets.newHashSet();
@@ -17,23 +20,19 @@ class TagHintAutoTagger(tagDAO: TagDAO) {
     while(it.hasNext()) {
       var tag: Tag = it.next()
       if (!Strings.isNullOrEmpty(tag.getAutotagHints())) {
-        val hints = Lists.newArrayList(Splitter.on(",").split(tag.getAutotagHints()))
-        suggestedTags.addAll(process(resource, tag, hints))
+        suggestedTags.addAll(process(resource, tag, commaSplitter.split(tag.getAutotagHints()).toList))
       }
     }
     return suggestedTags
   }
 
-  def process(resource: Resource, tag: Tag, hints: java.util.List[String]) : java.util.Set[Tag] = {
+  def process(resource: Resource, tag: Tag, hints: List[String]) : java.util.Set[Tag] = {
     val suggestedTags: java.util.Set[Tag] = Sets.newHashSet();
-
-    val it: Iterator[String] = hints.iterator();
-    while(it.hasNext) {
-      val hint = it.next
+    hints.foreach(hint =>
       if (checkForMatch(resource, hint)) {
         suggestedTags.add(tag);
       }
-    }
+    )
     return suggestedTags;
   }
 
