@@ -1,8 +1,6 @@
 package nz.co.searchwellington.tagging
 
 import java.util.Iterator
-import java.util.List
-import java.util.Set
 
 import com.google.common.base.{Splitter, Strings}
 import com.google.common.collect.{Lists, Sets}
@@ -12,8 +10,8 @@ import nz.co.searchwellington.repositories.TagDAO
 
 class TagHintAutoTagger(tagDAO: TagDAO) {
 
-  def suggestTags(resource: Resource) : Set[Tag] = {
-    val suggestedTags: Set[Tag] = Sets.newHashSet();
+  def suggestTags(resource: Resource) : java.util.Set[Tag] = {
+    val suggestedTags: java.util.Set[Tag] = Sets.newHashSet();
 
     val it: Iterator[Tag] = tagDAO.getAllTags().iterator()
     while(it.hasNext()) {
@@ -26,8 +24,8 @@ class TagHintAutoTagger(tagDAO: TagDAO) {
     return suggestedTags
   }
 
-  def process(resource: Resource, tag: Tag, hints: List[String]) : Set[Tag] = {
-    val suggestedTags: Set[Tag] = Sets.newHashSet();
+  def process(resource: Resource, tag: Tag, hints: java.util.List[String]) : java.util.Set[Tag] = {
+    val suggestedTags: java.util.Set[Tag] = Sets.newHashSet();
 
     val it: Iterator[String] = hints.iterator();
     while(it.hasNext) {
