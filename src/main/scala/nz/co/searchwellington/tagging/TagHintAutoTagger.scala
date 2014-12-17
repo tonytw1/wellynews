@@ -15,7 +15,9 @@ class TagHintAutoTagger(tagDAO: TagDAO) {
         tag <- tagDAO.getAllTags()
         if matches(resource, tag)
       } yield tag;
-    return suggestedTags.toSet
+
+    val toSet = suggestedTags.toSet
+    return toSet
   }
 
   private def matches(resource: Resource, tag: Tag) : Boolean = {
