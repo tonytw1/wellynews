@@ -1,7 +1,5 @@
 package nz.co.searchwellington.tagging
 
-import java.util.Iterator
-
 import com.google.common.base.{Splitter, Strings}
 import com.google.common.collect.{Lists, Sets}
 import nz.co.searchwellington.model.Resource
@@ -15,14 +13,11 @@ class TagHintAutoTagger(tagDAO: TagDAO) {
 
   def suggestTags(resource: Resource) : java.util.Set[Tag] = {
     val suggestedTags: java.util.Set[Tag] = Sets.newHashSet();
-
-    val it: Iterator[Tag] = tagDAO.getAllTags().iterator()
-    while(it.hasNext()) {
-      var tag: Tag = it.next()
+    tagDAO.getAllTags().foreach(tag =>
       if (!Strings.isNullOrEmpty(tag.getAutotagHints())) {
         suggestedTags.addAll(process(resource, tag, commaSplitter.split(tag.getAutotagHints()).toList))
       }
-    }
+    )
     return suggestedTags
   }
 
