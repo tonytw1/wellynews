@@ -1,4 +1,4 @@
-$(function() {  	
+ $(function() {  	
 
 	$("#tagName").autocomplete({
 		source: "http://wellington.gen.nz/ajax/tags"});
@@ -23,10 +23,13 @@ $(function() {
 	$("#geocode").autocomplete({
 		source: function( request, response ) {
 			$.ajax({
-				url: "http://nominatim-ac.eelpieconsulting.co.uk/suggest",
+				url: "http://nominatim-ac.eelpieconsulting.co.uk/search",
 				dataType: "jsonp",
 				data: {
-					q: request.term
+					q: request.term,
+					country: 'nz',
+					lat: -41.2889,
+					lon: 174.7772
 				},
 				success: function( data ) {
 					response( $.map( data, function( item ) {
