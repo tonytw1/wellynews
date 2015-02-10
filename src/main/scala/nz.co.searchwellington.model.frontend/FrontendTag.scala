@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model.frontend
 
+@SerialVersionUID(1L)
 class FrontendTag(var id: String, var name: String) {
 
   def this() {
