@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model.frontend
 
+@SerialVersionUID(1L)
 class FrontendImage(var url: String) {
 
   def this() {
