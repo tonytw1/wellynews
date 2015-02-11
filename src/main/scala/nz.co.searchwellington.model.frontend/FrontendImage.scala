@@ -1,7 +1,6 @@
 package nz.co.searchwellington.model.frontend
 
-@SerialVersionUID(1L)
-class FrontendImage(var url: String) {
+class FrontendImage(var url: String) extends java.io.Serializable {
 
   def this() {
     this("")
