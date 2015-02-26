@@ -1,8 +1,0 @@
-The following resource has been submitted:
-
-title: $title
-url: $url
-
-tagged with: #foreach ($tag in $tags) $tag.name #end
-
-description: $description

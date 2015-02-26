@@ -1,8 +1,0 @@
-The following resource has been tagged:
-
-title: $title
-url: $url
-
-tagged with: #foreach ($tag in $tags) $tag.name #end
-
-description: $description
