@@ -132,7 +132,7 @@
 			#end
 					
 			#if ($item.place)
-				<li><<a href="$urlBuilder.getLocationUrlFor($item.place)">#parse("includes/geotag_icon.vm")#if ($item.place.address) $item.place.address #else $item.place.latLong.latitude,  $item.place.latLong.longitude #end</a></li>
+				<li><a href="$urlBuilder.getLocationUrlFor($item.place)">#parse("includes/geotag_icon.vm")#if ($item.place.address) $item.place.address #else $item.place.latLong.latitude,  $item.place.latLong.longitude #end</a></li>
 			#end
 
 			#if ($item.owner && $item.owner.profilename && !$item.owner.isAdmin()) 	
