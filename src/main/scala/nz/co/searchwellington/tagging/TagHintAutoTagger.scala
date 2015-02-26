@@ -4,9 +4,12 @@ import com.google.common.base.{Splitter, Strings}
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.TagDAO
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import scala.collection.JavaConversions._
 
-class TagHintAutoTagger(tagDAO: TagDAO) {
+@Component
+class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
 
   private val commaSplitter: Splitter = Splitter.on(",")
 

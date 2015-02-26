@@ -50,8 +50,4 @@
 		<constructor-arg index="0" value="#{config['memcached.urls']}" />
 	</bean>
 
-	<bean id="tagHintAutoTagger" class="nz.co.searchwellington.tagging.TagHintAutoTagger">
-		<constructor-arg ref="tagDAO" />
-	</bean>
-  							
 </beans>
