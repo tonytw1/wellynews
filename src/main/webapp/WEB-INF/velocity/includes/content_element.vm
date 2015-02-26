@@ -132,6 +132,7 @@
 			#end
 					
 			#if ($item.place)
+				<br/>
 				<a href="$urlBuilder.getLocationUrlFor($item.place)">#parse("includes/geotag_icon.vm")</a> 
 					#if ($item.place.address) $item.place.address #else $item.place.latLong.latitude,  $item.place.latLong.longitude #end</li>
 			#end
