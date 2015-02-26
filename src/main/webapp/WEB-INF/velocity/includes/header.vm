@@ -6,6 +6,8 @@
 #if ($description) 
 	<meta name="description" content="$description">
 #end
+
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="$urlBuilder.getStaticUrl('styles.css')">
 <link rel="stylesheet" href="$urlBuilder.getStaticUrl('jquery-ui-1.8.23.custom.css')">
 
