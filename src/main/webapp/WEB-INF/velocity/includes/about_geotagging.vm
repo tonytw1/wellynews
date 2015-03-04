@@ -1,16 +1,13 @@
 <div class="box">
 <h2>Who, What, When and <i>Where</i>.</h2>
 
-<p>Relevent newsitems in the <i>Welly newslog</i> are now geotagged
-with location information.</p>
+<p>Relevent newsitems are geotagged with location information.</p>
 
 <p>
-#parse("includes/geotag_icon.vm")
- Geotagged newsitems are indicated throughout the site using the geotag icon.
+#parse("includes/geotag_icon.vm") Geotagged newsitems are indicated throughout the site using the geotag icon.
 </p>
 
-<p> Geotags are also embedded in our RSS feeds using the
-<a href="http://georss.org/">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
+<p>Geotags are also export in RSS feeds using the <a href="http://georss.org/">GeoRSS</a> standard. A GeoRSS tagged feed item has this format:</p>
 
 <code>
 	&lt;item&gt;<br/>
@@ -21,9 +18,9 @@ with location information.</p>
 </code>
 
 <p>A feed containing only the geotagged newsitems is also available:</p>
-
 #parse("includes/rss_widget_for_geotagged.vm")
 
-<p>The location resolution service which makes this all possible is provided by the
-<a href="http://code.google.com/apis/maps/index.html">Google Maps API</a>.</p>
+<p>The location information which makes this possible is provided by the
+<a href="http://www.openstreetmap.org">OpenStreetMap</a> and the <a href="http://nominatim-ac.eelpieconsulting.co.uk">Nominatim AC</a> auto-complete tool.
+</p>
 </div>
