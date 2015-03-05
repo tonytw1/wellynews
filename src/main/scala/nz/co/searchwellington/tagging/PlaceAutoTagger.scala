@@ -17,9 +17,7 @@ import scala.collection.JavaConversions._
 
   def suggestTags(resource: Resource): Set[Tag] = {
     val places: util.Set[Tag] = getPlaces
-    places.filter(place => checkForMatchingTag(resource, place))
-
-    val toSet = places.toSet
+    val toSet = places.filter(place => checkForMatchingTag(resource, place))
     return toSet
   }
 
