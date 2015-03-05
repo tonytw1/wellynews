@@ -3,6 +3,7 @@ package nz.co.searchwellington.htmlparsing;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.htmlparser.NodeFilter;
@@ -22,8 +23,8 @@ public class RssLinkExtractor implements LinkExtractor {
 	private static Logger log = Logger.getLogger(RssLinkExtractor.class);
 	
     public Set<String> extractLinks(String inputHTML) {
-    	final Set<String> links = new HashSet<String>();
-        
+    	final Set<String> links = Sets.newHashSet();
+
         Parser parser = new Parser();
         try {            
             parser.setInputHTML(inputHTML);
