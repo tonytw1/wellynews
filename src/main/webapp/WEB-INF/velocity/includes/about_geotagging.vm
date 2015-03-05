@@ -20,7 +20,6 @@
 <p>A feed containing only the geotagged newsitems is also available:</p>
 #parse("includes/rss_widget_for_geotagged.vm")
 
-<p>The location information which makes this possible is provided by the
-<a href="http://www.openstreetmap.org">OpenStreetMap</a> and the <a href="http://nominatim-ac.eelpieconsulting.co.uk">Nominatim AC</a> auto-complete tool.
+<p>The location information which makes this possible is provided by <a href="http://www.openstreetmap.org">OpenStreetMap</a> and the <a href="http://nominatim-ac.eelpieconsulting.co.uk">Nominatim AC</a> auto-complete tool.
 </p>
 </div>
