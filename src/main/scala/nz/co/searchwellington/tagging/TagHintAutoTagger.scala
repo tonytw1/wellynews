@@ -32,9 +32,13 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
   }
 
   private def resourceMatchesHint(resource: Resource, hint: String) : Boolean = {
-    val headlineMatchesHint = resource.getName().toLowerCase().contains(hint.toLowerCase())
-    val bodyMatchesTag = resource.getDescription().toLowerCase().contains(hint.toLowerCase())
+    val headlineMatchesHint = matches(hint, resource.getName())
+    val bodyMatchesTag = matches(hint, resource.getDescription())
     return headlineMatchesHint || bodyMatchesTag;
+  }
+
+  private def matches(hint: String, value: String): Boolean = {
+    !Strings.isNullOrEmpty(value) && value.toLowerCase().contains(hint.toLowerCase())
   }
 
 }
