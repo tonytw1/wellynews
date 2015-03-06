@@ -1,11 +1,11 @@
 package nz.co.searchwellington.tagging
 
 import com.google.common.base.{Splitter, Strings}
-import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.TagDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+
 import scala.collection.JavaConversions._
 
 @Component
@@ -13,14 +13,13 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
 
   private val commaSplitter: Splitter = Splitter.on(",")
 
-  def suggestTags(resource: Resource) : java.util.Set[Tag] = {
+  def suggestTags(resource: Resource) : Set[Tag] = {
     def suggestedTags = for {
         tag <- tagDAO.getAllTags()
         if matches(resource, tag)
       } yield tag;
 
-    val toSet = suggestedTags.toSet
-    return toSet
+    suggestedTags.toSet
   }
 
   private def matches(resource: Resource, tag: Tag) : Boolean = {

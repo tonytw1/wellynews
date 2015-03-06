@@ -1,12 +1,12 @@
 package nz.co.searchwellington.tagging
 
-import java.util.Set
-
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateBackedUserDAO}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+
+import scala.collection.JavaConverters._
 
 @Component class AutoTaggingService @Autowired() (placeAutoTagger: PlaceAutoTagger, tagHintAutoTagger: TagHintAutoTagger, handTaggingDAO: HandTaggingDAO, userDAO: HibernateBackedUserDAO) {
 
@@ -20,11 +20,11 @@ import org.springframework.stereotype.Component
       return
     }
 
-    val suggestedTags: Set[Tag] = placeAutoTagger.suggestTags(resource)
-    suggestedTags.addAll(tagHintAutoTagger.suggestTags(resource))
-    log.debug("Suggested tags for '" + resource.getName + "' are: " + suggestedTags.toString)
+    val suggestedTags: Set[Tag] = placeAutoTagger.suggestTags(resource) ++ tagHintAutoTagger.suggestTags(resource);
+
+    log.debug("Suggested tags for '" + resource.getName + "' are: " + suggestedTags)
     if (!suggestedTags.isEmpty) {
-      handTaggingDAO.setUsersTagVotesForResource(resource, autotaggerUser, suggestedTags)
+      handTaggingDAO.setUsersTagVotesForResource(resource, autotaggerUser, suggestedTags.asJava)
     }
   }
 
