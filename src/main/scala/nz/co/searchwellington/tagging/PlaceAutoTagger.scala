@@ -12,8 +12,7 @@ import scala.collection.JavaConverters._
   private final val PLACES_TAG_NAME: String = "places"
 
   def suggestTags(resource: Resource): Set[Tag] = {
-    val toSet = getPlaces.filter(place => checkForMatchingTag(resource, place))
-    return toSet
+    getPlaces.filter(place => checkForMatchingTag(resource, place))
   }
 
   def getPlaces: Set[Tag] = {
@@ -27,7 +26,7 @@ import scala.collection.JavaConverters._
   private def checkForMatchingTag(resource: Resource, tag: Tag): Boolean = {
     val headlineMatchesTag: Boolean = resource.getName.toLowerCase.contains(tag.getDisplayName.toLowerCase)
     val bodyMatchesTag: Boolean = resource.getDescription.toLowerCase.contains(tag.getDisplayName.toLowerCase)
-    return headlineMatchesTag || bodyMatchesTag
+    headlineMatchesTag || bodyMatchesTag
   }
 
 }
