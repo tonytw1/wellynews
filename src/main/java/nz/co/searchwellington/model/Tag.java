@@ -138,15 +138,21 @@ public class Tag {
 		this.relatedTwitter = relatedTwitter;
 	}
 
-	public void setAutotagHints(String autotagHints) {
+
+    public String getAutotagHints() {
+        return autotagHints;
+    }
+
+    public void setAutotagHints(String autotagHints) {
 		this.autotagHints = autotagHints;
 	}
 
-	public String getAutotagHints() {
-		return autotagHints;
-	}
+    public Tag autotagHints(String autotagHints) {
+        this.autotagHints = autotagHints;
+        return this;
+    }
 
-	 public boolean isHidden() {
+    public boolean isHidden() {
 		 return hidden;
 	}
 	 

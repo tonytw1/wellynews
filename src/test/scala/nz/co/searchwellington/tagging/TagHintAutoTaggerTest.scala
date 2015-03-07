@@ -24,10 +24,9 @@ class TagHintAutoTaggerTest {
   }
 
   @Test def shouldMatchTitlesWhichContainAutotaggingHint {
-    val tag: Tag = new Tag
-    tag.setAutotagHints("fox,animal")
-    val anotherTag: Tag = new Tag
-    anotherTag.setAutotagHints("cat")
+    val tag = new Tag().autotagHints("fox,animal")
+    val anotherTag = new Tag().autotagHints("cat")
+
     val allTags: List[Tag] = Lists.newArrayList(tag, anotherTag)
     when(tagDAO.getAllTags).thenReturn(allTags)
     val resource: Resource = new NewsitemImpl
