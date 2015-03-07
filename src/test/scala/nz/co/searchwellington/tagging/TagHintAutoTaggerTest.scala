@@ -15,7 +15,9 @@ import org.junit.Assert.assertTrue
 import org.mockito.Mockito.when
 
 class TagHintAutoTaggerTest {
+
   @Mock private var tagDAO: TagDAO = null
+
   private var tagHintAutoTagger: TagHintAutoTagger = null
 
   @Before def setup {
@@ -26,13 +28,14 @@ class TagHintAutoTaggerTest {
   @Test def shouldMatchTitlesWhichContainAutotaggingHint {
     val tag = new Tag().autotagHints("fox,animal")
     val anotherTag = new Tag().autotagHints("cat")
+    when(tagDAO.getAllTags).thenReturn(Lists.newArrayList(tag, anotherTag))
 
-    val allTags: List[Tag] = Lists.newArrayList(tag, anotherTag)
-    when(tagDAO.getAllTags).thenReturn(allTags)
-    val resource: Resource = new NewsitemImpl
-    resource.setName("The quick brown fox jumped over the lazy dog")
-    val suggestions: Set[Tag] = tagHintAutoTagger.suggestTags(resource)
+    val resource = new NewsitemImpl().name("The quick brown fox jumped over the lazy dog")
+
+    val suggestions = tagHintAutoTagger.suggestTags(resource)
+
     assertTrue(suggestions.contains(tag))
     assertFalse(suggestions.contains(anotherTag))
   }
+
 }
