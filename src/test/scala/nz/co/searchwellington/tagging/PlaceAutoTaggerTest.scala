@@ -1,9 +1,9 @@
 package nz.co.searchwellington.tagging
 
+import org.junit.Assert._
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.when
 import java.util.HashSet
-import java.util.Set
 import junit.framework.TestCase
 import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.model.NewsitemImpl

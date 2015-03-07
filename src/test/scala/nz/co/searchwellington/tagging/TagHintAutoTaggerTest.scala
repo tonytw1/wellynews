@@ -10,7 +10,6 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import java.util.List
-import java.util.Set
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.mockito.Mockito.when
