@@ -58,10 +58,6 @@ public class Tag {
     public void setName(String name) {
         this.name = name;
     }
-    public Tag name(String name) {
-        this.name = name;
-        return this;
-    }
 
     public String getDisplayName() {
         return displayName;
@@ -69,23 +65,13 @@ public class Tag {
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
     }
-    public Tag displayName(String displayName) {
-        this.displayName = displayName;
-        return this;
-    }
 
     @JsonIgnore
     public Tag getParent() {
         return parent;
     }
-
     public void setParent(Tag parent) {
         this.parent = parent;
-    }
-
-    public Tag parent(Tag parent) {
-        this.parent = parent;
-        return this;
     }
 
     public void setChildren(Set<Tag> children) {
@@ -153,20 +139,13 @@ public class Tag {
 	public void setRelatedTwitter(String relatedTwitter) {
 		this.relatedTwitter = relatedTwitter;
 	}
-
-
+    
     public String getAutotagHints() {
         return autotagHints;
     }
-
     public void setAutotagHints(String autotagHints) {
 		this.autotagHints = autotagHints;
 	}
-
-    public Tag autotagHints(String autotagHints) {
-        this.autotagHints = autotagHints;
-        return this;
-    }
 
     public boolean isHidden() {
 		 return hidden;
