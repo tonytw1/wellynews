@@ -3,6 +3,7 @@ package nz.co.searchwellington.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.google.common.collect.Sets;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
@@ -29,9 +30,10 @@ public class Tag {
     private String autotagHints;
     private Geocode geocode;
             
-    public Tag() {        
+    public Tag() {
+        this.children = Sets.newHashSet();
     }
-        
+
     public Tag(int id, String name, String displayName, Tag parent, Set <Tag> children, int flickrCount, boolean hidden, boolean featured) {  
         this.id = id;
         this.name = name;
@@ -49,11 +51,16 @@ public class Tag {
     public void setId(int id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
     public void setName(String name) {
         this.name = name;
+    }
+    public Tag name(String name) {
+        this.name = name;
+        return this;
     }
 
     public String getDisplayName() {
@@ -61,6 +68,10 @@ public class Tag {
     }
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+    public Tag displayName(String displayName) {
+        this.displayName = displayName;
+        return this;
     }
 
     @JsonIgnore
@@ -71,7 +82,12 @@ public class Tag {
     public void setParent(Tag parent) {
         this.parent = parent;
     }
-    
+
+    public Tag parent(Tag parent) {
+        this.parent = parent;
+        return this;
+    }
+
     public void setChildren(Set<Tag> children) {
         this.children = children;
     }
@@ -138,15 +154,21 @@ public class Tag {
 		this.relatedTwitter = relatedTwitter;
 	}
 
-	public void setAutotagHints(String autotagHints) {
+
+    public String getAutotagHints() {
+        return autotagHints;
+    }
+
+    public void setAutotagHints(String autotagHints) {
 		this.autotagHints = autotagHints;
 	}
 
-	public String getAutotagHints() {
-		return autotagHints;
-	}
+    public Tag autotagHints(String autotagHints) {
+        this.autotagHints = autotagHints;
+        return this;
+    }
 
-	 public boolean isHidden() {
+    public boolean isHidden() {
 		 return hidden;
 	}
 	 

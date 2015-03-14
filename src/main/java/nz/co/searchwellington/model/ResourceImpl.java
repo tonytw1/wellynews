@@ -49,12 +49,20 @@ public abstract class ResourceImpl implements Resource {
     public void setId(int id) {
         this.id = id;
     }
+
     public String getName() {
         return name;
     }
+
     public void setName(String name) {
         this.name = name;
     }
+
+    public Resource name(String name) {
+        this.name = name;
+        return this;
+    }
+
     public String getUrl() {
         return url;
     }
