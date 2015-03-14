@@ -27,7 +27,7 @@ class PlaceAutoTaggerTest extends TestCase {
   }
 
   @throws(classOf[Exception])
-  def testShouldTagNewsitemsWithPlaceTags {
+  def testShouldTagNewsitemWithPlaceTags {
     aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the Aro Valley... Test", null, null, null, null, null)
     val suggestedTags: Set[Tag] = placeAutoTagger.suggestTags(aroValleyNewsitem)
     assertTrue(suggestedTags.contains(aroValleyTag))
@@ -39,4 +39,5 @@ class PlaceAutoTaggerTest extends TestCase {
     val suggestedTags: Set[Tag] = placeAutoTagger.suggestTags(aroValleyNewsitem)
     assertTrue(suggestedTags.contains(aroValleyTag))
   }
+
 }
