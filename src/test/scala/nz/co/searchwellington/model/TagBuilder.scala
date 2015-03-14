@@ -21,7 +21,7 @@ class TagBuilder() {
     this
   }
 
-  def parent(parent: Tag): TagBuilder {
+  def parent(parent: Tag): TagBuilder = {
     this.parent = parent
     this
   }
