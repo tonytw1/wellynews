@@ -1,13 +1,12 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.Date
-import java.util.List
-import nz.co.searchwellington.model.Comment
-import nz.co.searchwellington.model.Twit
+import java.util.{Date, List}
+
+import nz.co.searchwellington.model.{Comment, Twit}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
-@SerialVersionUID(1L)
 class FrontendNewsitem extends FrontendResource with RssFeedable {
+
   private var publisherName: String = null
   private var retweets: List[Twit] = null
   private var acceptedFromFeedName: String = null
@@ -92,4 +91,5 @@ class FrontendNewsitem extends FrontendResource with RssFeedable {
   override def toString: String = {
     return "FrontendNewsitem [accepted=" + accepted + ", acceptedByProfilename=" + acceptedByProfilename + ", acceptedFromFeedName=" + acceptedFromFeedName + ", comments=" + comments + ", image=" + image + ", publisherName=" + publisherName + ", retweets=" + retweets + ", twitterMentions=" + twitterMentions + "]"
   }
+
 }
