@@ -139,7 +139,7 @@ public class Tag {
 	public void setRelatedTwitter(String relatedTwitter) {
 		this.relatedTwitter = relatedTwitter;
 	}
-    
+
     public String getAutotagHints() {
         return autotagHints;
     }
