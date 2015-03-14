@@ -5,7 +5,6 @@ class TagBuilder() {
   var name, autotagHints, displayName: String = null
   var parent: Tag = null
 
-
   def autotagHints(autotagHints: String): TagBuilder = {
     this.autotagHints = autotagHints
     this

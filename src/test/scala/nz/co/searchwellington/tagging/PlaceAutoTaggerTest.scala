@@ -1,14 +1,10 @@
 package nz.co.searchwellington.tagging
 
-import org.junit.Assert._
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.when
-
 import junit.framework.TestCase
-import nz.co.searchwellington.model.{TagBuilder, Newsitem, NewsitemImpl, Tag}
+import nz.co.searchwellington.model.{Newsitem, NewsitemImpl, Tag, TagBuilder}
 import nz.co.searchwellington.repositories.TagDAO
-
-import scala.collection.JavaConverters._
+import org.junit.Assert._
+import org.mockito.Mockito.{mock, when}
 
 class PlaceAutoTaggerTest extends TestCase {
 
