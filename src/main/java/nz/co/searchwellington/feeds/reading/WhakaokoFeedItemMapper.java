@@ -12,28 +12,20 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem;
 public class WhakaokoFeedItemMapper {
 
 	public FrontendFeedNewsitem mapWhakaokoFeeditem(Feed feed, FeedItem feedItem) {
-		FrontendFeedNewsitem frontendFeedNewsitem = new FrontendFeedNewsitem();		
-		if (feed != null) {
-			FrontendFeed frontendFeed = new FrontendFeed();
-			frontendFeed.setUrlWords(feed.getUrlWords());				
-			frontendFeedNewsitem.setFeed(frontendFeed);
-			
-			if (feed.getPublisher() != null) {
-				frontendFeedNewsitem.setPublisherName(feed.getPublisherName());
-			}
-		}
-		
-		frontendFeedNewsitem.setName(feedItem.getTitle());
-		frontendFeedNewsitem.setUrl(feedItem.getUrl());
-		frontendFeedNewsitem.setDate(feedItem.getDate());
-		frontendFeedNewsitem.setDescription(feedItem.getBody());
-		
-		if (feedItem.getImageUrl() != null) {
-			frontendFeedNewsitem.setImage(new FrontendImage(feedItem.getImageUrl()));
-		}
-		
-		frontendFeedNewsitem.setPlace(feedItem.getPlace());		
-		return frontendFeedNewsitem;
+        return new FrontendFeedNewsitem(feedItem.getTitle(),
+            feedItem.getUrl(), feedItem.getDate(), feedItem.getBody(),
+            feedItem.getPlace(), makeFrontendFeed(feed),
+                feed.getPublisher() != null ? feed.getPublisher().getName() : null,
+                feedItem.getImageUrl() != null ? new FrontendImage(feedItem.getImageUrl()): null);
 	}
-	
+
+    private FrontendFeed makeFrontendFeed(Feed feed) {
+        if (feed == null) {
+            return null;
+        }
+        FrontendFeed frontendFeed = new FrontendFeed();
+        frontendFeed.setUrlWords(feed.getUrlWords());
+        return frontendFeed;
+    }
+
 }

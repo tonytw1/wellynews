@@ -1,11 +1,14 @@
 package nz.co.searchwellington.model.frontend
 
-class FrontendFeedNewsitem extends FrontendNewsitem {
+import java.util.Date
+
+import uk.co.eelpieconsulting.common.geo.model.Place
+
+class FrontendFeedNewsitem(name: String, url: String, date: Date, body: String,
+                           place: Place, feed: FrontendFeed, publisherName: String, image: FrontendImage) extends FrontendNewsitem {
 
   private var suppressed: Boolean = false
   private var localCopy: Integer = null
-  private var feed: FrontendFeed = null
-  private var image: FrontendImage = null
 
   def getFeed: FrontendFeed = {
     return feed
