@@ -14,7 +14,7 @@ class FrontendFeedNewsitem(name: String, url: String, date: Date, description: S
   this.setPublisherName(publisherName)
   this.setFrontendImage(image)
   this.setType("FNI")
-  
+
   def getFeed: FrontendFeed = {
     return feed
   }
