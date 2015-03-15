@@ -27,7 +27,7 @@ public class ResourceFactory {
 	public Newsitem createNewNewsitem() {
 		return new NewsitemImpl(0, "", "", "",
 				Calendar.getInstance().getTime(), null,
-				new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
+				new HashSet<DiscoveredFeed>());
 	}
 
 	public Website createNewWebsite() {

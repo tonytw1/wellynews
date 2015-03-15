@@ -14,7 +14,6 @@ import nz.co.searchwellington.model.frontend.FrontendImage;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendTag;
-import nz.co.searchwellington.model.frontend.FrontendTweet;
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService;
 import nz.co.searchwellington.views.GeocodeToPlaceMapper;
 
@@ -50,15 +49,6 @@ public class FrontendResourceMapper {
 			if (contentItemNewsitem.getImage() != null) {
 				frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage().getUrl()));
 			}
-			
-			if (!contentItemNewsitem.getRetweets().isEmpty()) {
-				List<FrontendTweet> twitterMentions = Lists.newArrayList();
-				for (Twit tweet : contentItemNewsitem.getRetweets()) {
-					new FrontendTweet(tweet.getText(), tweet.getAuthor());
-				}
-				frontendNewsitem.setTwitterMentions(twitterMentions);
-			}
-			
 			frontendContentItem = frontendNewsitem;
 		}
 		

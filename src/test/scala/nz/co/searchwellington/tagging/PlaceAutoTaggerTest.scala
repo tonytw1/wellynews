@@ -28,13 +28,13 @@ class PlaceAutoTaggerTest {
   }
 
   @Test def testShouldTagNewsitemWithPlaceTags {
-    aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the Aro Valley... Test", null, null, null, null, null)
+    aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the Aro Valley... Test", null, null, null)
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
     assertTrue(suggestedTags.contains(aroValleyTag))
   }
 
   @Test def testPlaceAutoTaggingShouldBeCaseInsensitive {
-    aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the aro valley... Test", null, null, null, null, null)
+    aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the aro valley... Test", null, null, null)
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
     assertTrue(suggestedTags.contains(aroValleyTag))
   }

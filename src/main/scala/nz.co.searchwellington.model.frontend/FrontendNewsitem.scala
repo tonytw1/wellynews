@@ -8,13 +8,11 @@ import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 class FrontendNewsitem extends FrontendResource with RssFeedable {
 
   private var publisherName: String = null
-  private var retweets: List[Twit] = null
   private var acceptedFromFeedName: String = null
   private var acceptedByProfilename: String = null
   private var comments: List[Comment] = null
   private var accepted: Date = null
   private var image: FrontendImage = null
-  private var twitterMentions: List[FrontendTweet] = null
 
   def getPublisherName: String = {
     return publisherName
@@ -22,14 +20,6 @@ class FrontendNewsitem extends FrontendResource with RssFeedable {
 
   def setPublisherName(publisherName: String) {
     this.publisherName = publisherName
-  }
-
-  def getRetweets: List[Twit] = {
-    return retweets
-  }
-
-  def setRetweets(retweets: List[Twit]) {
-    this.retweets = retweets
   }
 
   def getAcceptedFromFeedName: String = {
@@ -78,18 +68,6 @@ class FrontendNewsitem extends FrontendResource with RssFeedable {
 
   override def getImageUrl: String = {
     return if (image != null) image.getUrl else null
-  }
-
-  def getTwitterMentions: List[FrontendTweet] = {
-    return twitterMentions
-  }
-
-  def setTwitterMentions(twitterMentions: List[FrontendTweet]) {
-    this.twitterMentions = twitterMentions
-  }
-
-  override def toString: String = {
-    return "FrontendNewsitem [accepted=" + accepted + ", acceptedByProfilename=" + acceptedByProfilename + ", acceptedFromFeedName=" + acceptedFromFeedName + ", comments=" + comments + ", image=" + image + ", publisherName=" + publisherName + ", retweets=" + retweets + ", twitterMentions=" + twitterMentions + "]"
   }
 
 }

@@ -33,7 +33,7 @@ public class FeednewsItemToNewsitemService {
 	public Newsitem makeNewsitemFromFeedItem(Feed feed, FrontendFeedNewsitem feedNewsitem) {
 		// TODO why are we newing up an instance of our superclass?
 	    final String description =  composeDescription(feedNewsitem);
-		final Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(), new HashSet<DiscoveredFeed>(), null, new HashSet<Twit>());
+		final Newsitem newsitem = new NewsitemImpl(0, feedNewsitem.getName(), feedNewsitem.getUrl(), description, feedNewsitem.getDate(), feed.getPublisher(), new HashSet<DiscoveredFeed>());
 	    newsitem.setImage(feedNewsitem.getFrontendImage() != null ? new Image(feedNewsitem.getFrontendImage().getUrl(), null) : null);
 	    newsitem.setFeed(feed);
 	    newsitem.setPublisher(feed.getPublisher());

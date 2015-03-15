@@ -16,13 +16,11 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
     Feed feed;
     Date accepted;
     User acceptedBy;
-    
-    private Set<Twit> reTwits;
-    
+
     public NewsitemImpl() {
     }
     
-    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set<DiscoveredFeed> discoveredFeeds, Twit submittingTwit,  Set<Twit> retwits) {
+    public NewsitemImpl(int id, String name, String url, String description, Date date, Website publisher, Set<DiscoveredFeed> discoveredFeeds) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -30,7 +28,6 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
         this.date = date;
         this.publisher = publisher;
         this.discoveredFeeds = discoveredFeeds;
-        this.reTwits = retwits;
         this.feed = null;
     }
     
@@ -59,19 +56,6 @@ public class NewsitemImpl extends PublishedResourceImpl implements Newsitem {
 	
 	public void setImage(Image image) {
 		this.image = image;
-	}
-	
-	public Set<Twit> getReTwits() {
-		return reTwits;
-	}
-	
-	@Override
-	public List<Twit> getRetweets() {
-		return ImmutableList.<Twit>builder().addAll(reTwits).build();
-	}
-	
-	public void addReTwit(Twit retwit) {
-		this.reTwits.add(retwit);
 	}
 
 	public Feed getFeed() {
