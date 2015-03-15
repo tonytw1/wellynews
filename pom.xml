@@ -178,12 +178,6 @@
 		</dependency>
 
 		<dependency>
-			<groupId>net.java.dev.rome</groupId>
-			<artifactId>rome-fetcher</artifactId>
-			<version>1.0.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.geonames</groupId>
 			<artifactId>georss-rome</artifactId>
 			<version>0.9.8</version>
