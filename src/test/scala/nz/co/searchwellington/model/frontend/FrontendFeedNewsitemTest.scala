@@ -1,11 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
-import nz.co.searchwellington.model.TagBuilder
-import nz.co.searchwellington.tagging.PlaceAutoTagger
 import org.junit.Assert._
 import org.junit.{Before, Test}
-import org.mockito.{MockitoAnnotations, Mock}
-import org.mockito.Mockito._
+import org.mockito.{Mock, MockitoAnnotations}
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 class FrontendFeedNewsitemTest {

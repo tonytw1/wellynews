@@ -1,15 +1,12 @@
 package nz.co.searchwellington.tagging
 
 import com.google.common.collect.Lists
-import nz.co.searchwellington.model.{TagBuilder, NewsitemImpl, Resource, Tag}
+import nz.co.searchwellington.model.{NewsitemImpl, Resource, TagBuilder}
 import nz.co.searchwellington.repositories.TagDAO
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import org.junit.Assert.{assertFalse, assertTrue}
+import org.junit.{Before, Test}
 import org.mockito.Mockito.when
+import org.mockito.{Mock, MockitoAnnotations}
 
 class TagHintAutoTaggerTest {
 
