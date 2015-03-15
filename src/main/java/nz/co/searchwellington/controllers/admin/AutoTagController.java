@@ -14,7 +14,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
-import nz.co.searchwellington.repositories.solr.KeywordSearchService;
+import nz.co.searchwellington.repositories.elasticsearch.KeywordSearchService;
 import nz.co.searchwellington.tagging.ImpliedTagService;
 
 import org.apache.log4j.Logger;

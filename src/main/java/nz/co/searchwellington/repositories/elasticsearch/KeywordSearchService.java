@@ -1,4 +1,4 @@
-package nz.co.searchwellington.repositories.solr;
+package nz.co.searchwellington.repositories.elasticsearch;
 
 import java.util.List;
 

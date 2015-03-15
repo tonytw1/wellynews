@@ -21,7 +21,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendTag;
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper;
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchBackedResourceDAO;
-import nz.co.searchwellington.repositories.solr.KeywordSearchService;
+import nz.co.searchwellington.repositories.elasticsearch.KeywordSearchService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
