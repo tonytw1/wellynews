@@ -270,18 +270,6 @@ public class ResourceEditController {
         return modelAndView;
     }
     
-    @Transactional 
-    @RequestMapping("/edit/submit/calendar")
-    public ModelAndView submitCalendar(HttpServletRequest request, HttpServletResponse response) {        
-        ModelAndView modelAndView = new ModelAndView("submitCalendar");
-        modelAndView.addObject("heading", "Submitting a Calendar");
-        Resource editResource = resourceFactory.createNewCalendarFeed("");
-        modelAndView.addObject("resource", editResource);
-        
-        populateSubmitCommonElements(request, modelAndView);        
-        return modelAndView;
-    }
-    
     @Transactional
     @RequestMapping("/edit/submit/feed")
     public ModelAndView submitFeed(HttpServletRequest request, HttpServletResponse response) {
@@ -362,9 +350,7 @@ public class ResourceEditController {
                 } else if (type.equals("F")) {
                     editResource = resourceFactory.createNewFeed();                     
                 } else if (type.equals("L")) {                    
-                    editResource = resourceFactory.createNewWatchlist();                   
-                } else if (type.equals("C")) {
-                    editResource = resourceFactory.createNewCalendarFeed("");                   
+                    editResource = resourceFactory.createNewWatchlist();
                 } else {
                     // TODO this should be a caught error.
                     editResource = resourceFactory.createNewWebsite();

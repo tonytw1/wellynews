@@ -9,12 +9,11 @@ public class WebsiteImpl extends ResourceImpl implements Website {
 	
 	Set <Feed> feeds;
     Set <Watchlist> watchlist;
-    Set <CalendarFeed> calendars;
-    
+
     public WebsiteImpl() {        
     }
     
-	public WebsiteImpl(int id, String name, String url, Date date, String description, Set<Feed> feed, Set<Watchlist> watchlist, Set<DiscoveredFeed> discoveredFeeds, Set<CalendarFeed> calendars) {
+	public WebsiteImpl(int id, String name, String url, Date date, String description, Set<Feed> feed, Set<Watchlist> watchlist, Set<DiscoveredFeed> discoveredFeeds) {
         this.id = id;
 		this.name = name;
         this.url = url;
@@ -22,7 +21,6 @@ public class WebsiteImpl extends ResourceImpl implements Website {
         this.description = description;   
         this.feeds = feed;
         this.watchlist = watchlist;
-        this.calendars = calendars;        
         this.discoveredFeeds = discoveredFeeds;
 	}
 	
@@ -46,13 +44,4 @@ public class WebsiteImpl extends ResourceImpl implements Website {
         this.watchlist = watchlist;
     }
 
-    public Set<CalendarFeed> getCalendars() {
-        return calendars;
-    }
-
-    public void setCalendars(Set<CalendarFeed> calendars) {
-        this.calendars = calendars;
-    }
-    
-    
 }

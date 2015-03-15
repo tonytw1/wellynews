@@ -3,7 +3,6 @@ package nz.co.searchwellington.repositories;
 import java.util.Date;
 import java.util.List;
 
-import nz.co.searchwellington.model.CalendarFeed;
 import nz.co.searchwellington.model.CommentFeed;
 import nz.co.searchwellington.model.DiscoveredFeed;
 import nz.co.searchwellington.model.Feed;
@@ -68,15 +67,7 @@ public class HibernateResourceDAO {
         setCacheable(false).
         list();
     }
-            
-    @SuppressWarnings("unchecked")
-    public List<Resource> getAllCalendarFeeds() {
-        return sessionFactory.getCurrentSession().createCriteria(CalendarFeed.class).       
-        addOrder(Order.asc("name")). 
-        setCacheable(true).
-        list();    
-    }
-        
+
     @SuppressWarnings("unchecked")
     public List<Resource> getAllWatchlists() {
         return sessionFactory.getCurrentSession().createCriteria(Watchlist.class).       

@@ -1,25 +1,11 @@
 package nz.co.searchwellington.repositories;
 
-import java.util.Calendar;
-import java.util.HashSet;
-
-import nz.co.searchwellington.model.CalendarFeed;
-import nz.co.searchwellington.model.Comment;
-import nz.co.searchwellington.model.CommentFeed;
-import nz.co.searchwellington.model.DiscoveredFeed;
-import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.FeedImpl;
-import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.NewsitemImpl;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Twit;
-import nz.co.searchwellington.model.Watchlist;
-import nz.co.searchwellington.model.Website;
-import nz.co.searchwellington.model.WebsiteImpl;
-
+import com.google.common.collect.Lists;
+import nz.co.searchwellington.model.*;
 import org.springframework.stereotype.Component;
 
-import com.google.common.collect.Lists;
+import java.util.Calendar;
+import java.util.HashSet;
 
 @Component
 public class ResourceFactory {
@@ -33,7 +19,7 @@ public class ResourceFactory {
 	public Website createNewWebsite() {
 		return new WebsiteImpl(0, "", "", Calendar.getInstance().getTime(), "",
 				new HashSet<Feed>(), new HashSet<Watchlist>(),
-				new HashSet<DiscoveredFeed>(), new HashSet<CalendarFeed>());
+				new HashSet<DiscoveredFeed>());
 	}
 
 	public Feed createNewFeed() {
@@ -46,10 +32,6 @@ public class ResourceFactory {
 
 	public CommentFeed createNewCommentFeed(String commentFeedUrl) {
 		return new CommentFeed(0, commentFeedUrl, Lists.<Comment>newArrayList(), null, null);
-	}
-
-	public CalendarFeed createNewCalendarFeed(String url) {
-		return new CalendarFeed(0, url, "", "");
 	}
 
 	public DiscoveredFeed createNewDiscoveredFeed(String discoveredUrl) {

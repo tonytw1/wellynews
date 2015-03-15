@@ -8,10 +8,6 @@ public interface Website extends Resource {
  
     public Set<Watchlist> getWatchlist();
 
-    public Set<CalendarFeed> getCalendars();
-
-    public void setCalendars(Set<CalendarFeed> calendars);
-
 	public String getUrlWords();
 	
 }
