@@ -7,6 +7,7 @@ import nz.co.searchwellington.feeds.reading.WhakaokoFeedItemMapper;
 import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
+import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
@@ -58,17 +59,15 @@ public class SuggestedFeeditemsService {
 				channelFeedItemsForNotIgnoredFeeds.add(whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem));
 			}
 			
-			List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelFeedItemsForNotIgnoredFeeds);
+			List<FeedNewsitemForAcceptance> addSupressionAndLocalCopyInformation = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelFeedItemsForNotIgnoredFeeds);
 			
 			List<FrontendNewsitem> suggestions = Lists.newArrayList();
-			for (FrontendFeedNewsitem feedNewsitem : addSupressionAndLocalCopyInformation) {
-				if (feedNewsitem.getLocalCopy() != null) {
-					log.debug("Omitting feed item which already has a local copy: " + feedNewsitem.getHeadline());
+			for (FeedNewsitemForAcceptance feedNewsitemForAcceptance : addSupressionAndLocalCopyInformation) {
+				if (feedNewsitemForAcceptance.getAcceptanceState().getLocalCopy() != null) {
 					continue;
 				}
-				suggestions.add(feedNewsitem);
+				suggestions.add(feedNewsitemForAcceptance.getFeednewsitem());
 			}
-			
 			return suggestions;
 			
 		} catch (HttpNotFoundException e) {

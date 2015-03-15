@@ -3,6 +3,8 @@ package nz.co.searchwellington.feeds;
 import java.util.List;
 
 import nz.co.searchwellington.model.Resource;
+import nz.co.searchwellington.model.frontend.FeedNewsitemAcceptanceState;
+import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.SupressionDAO;
@@ -24,22 +26,26 @@ public class FeedItemLocalCopyDecorator {
 		this.suppressionDAO = suppressionDAO;
 	}
 	
-	public List<FrontendFeedNewsitem> addSupressionAndLocalCopyInformation(List<FrontendFeedNewsitem> feedNewsitems) {
-		final List<FrontendFeedNewsitem> decoratedFeednewsitems = Lists.newArrayList();
+	public List<FeedNewsitemForAcceptance> addSupressionAndLocalCopyInformation(List<FrontendFeedNewsitem> feedNewsitems) {
+		final List<FeedNewsitemForAcceptance> decoratedFeednewsitems = Lists.newArrayList();
 		for (FrontendFeedNewsitem feedNewsitem : feedNewsitems) {
-			final FrontendFeedNewsitem frontendFeedNewsitem = feedNewsitem;	// TODO new up to keep original clean
-			if (feedNewsitem.getUrl() != null) {				
-				Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());	// TODO expensive?
-				if (localCopy != null) {
-					frontendFeedNewsitem.setLocalCopy(localCopy.getId());
-				}
-				boolean isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());					
-				frontendFeedNewsitem.setSuppressed(isSuppressed);						
-			}
-			decoratedFeednewsitems.add(frontendFeedNewsitem);
+            decoratedFeednewsitems.add(new FeedNewsitemForAcceptance(feedNewsitem, determineCurrentAcceptanceStateOf(feedNewsitem)));
 		}
 		return decoratedFeednewsitems;
 	}
-	
+
+    private FeedNewsitemAcceptanceState determineCurrentAcceptanceStateOf(FrontendFeedNewsitem feedNewsitem) {
+        Integer localCopyId = null;
+        boolean isSuppressed = false;
+
+        if (feedNewsitem.getUrl() != null) {
+            Resource localCopy = resourceDAO.loadResourceByUrl(feedNewsitem.getUrl());	// TODO expensive?
+            if (localCopy != null) {
+                localCopyId = localCopy.getId();
+            }
+            isSuppressed = suppressionDAO.isSupressed(feedNewsitem.getUrl());
+        }
+        return new FeedNewsitemAcceptanceState(localCopyId, isSuppressed);
+    }
 
 }

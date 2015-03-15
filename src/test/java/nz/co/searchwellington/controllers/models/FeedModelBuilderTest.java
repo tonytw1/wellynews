@@ -9,6 +9,7 @@ import java.util.List;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
+import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance;
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
@@ -32,7 +33,7 @@ public class FeedModelBuilderTest {
 	
 	@Mock Feed feed;
 	@Mock List<FrontendFeedNewsitem> feedNewsitems;
-	@Mock List<FrontendFeedNewsitem> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
+	@Mock List<FeedNewsitemForAcceptance> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
 	@Mock List<FrontendNewsitem> geotaggedFeedNewsitems;
 	@Mock FrontendResource frontendFeed;
 	

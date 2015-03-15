@@ -1,6 +1,8 @@
 package nz.co.searchwellington.feeds;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.Newsitem;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
@@ -34,12 +36,12 @@ public class FeednewsItemToNewsitemServiceTest {
 	public void shouldSetGeocodeWhenAcceptingFeedNewsitem() throws Exception {
 		Mockito.when(place.getAddress()).thenReturn("A place");
 		FrontendFeed frontendFeed = new FrontendFeed();
-		FrontendFeedNewsitem feedNewsitem = new FrontendFeedNewsitem();
-		feedNewsitem.setFeed(frontendFeed);
-		feedNewsitem.setPlace(place);
-		
+		FrontendFeedNewsitem feedNewsitem = new FrontendFeedNewsitem("Test feed item", "http://localhost", null, null, place, frontendFeed, null, null);
+        System.out.println(feedNewsitem.getName());
+        assertNotNull(feedNewsitem.getPlace());
+
 		Newsitem newsitem = service.makeNewsitemFromFeedItem(feed, feedNewsitem);
-		
+
 		assertEquals("A place", newsitem.getGeocode().getAddress());
 	}
 	
