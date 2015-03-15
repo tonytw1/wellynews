@@ -7,13 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 
 @Component class FeedItemLocalCopyDecorator @Autowired() (resourceDAO: HibernateResourceDAO, suppressionDAO: SupressionDAO) {
 
   def addSupressionAndLocalCopyInformation(feedNewsitems: java.util.List[FrontendFeedNewsitem]): java.util.List[FeedNewsitemForAcceptance] = {
-    val decoratedFeednewsitems: List[FeedNewsitemForAcceptance] = List.empty
+    val decoratedFeednewsitems: mutable.MutableList[FeedNewsitemForAcceptance] = mutable.MutableList.empty
     for (feedNewsitem <- feedNewsitems) {
-      decoratedFeednewsitems.add(new FeedNewsitemForAcceptance(feedNewsitem, determineCurrentAcceptanceStateOf(feedNewsitem)))
+      decoratedFeednewsitems += new FeedNewsitemForAcceptance(feedNewsitem, determineCurrentAcceptanceStateOf(feedNewsitem))
     }
     decoratedFeednewsitems
   }
