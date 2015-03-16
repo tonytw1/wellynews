@@ -7,7 +7,6 @@ import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
-import nz.co.searchwellington.twitter.CachingTwitterService;
 
 import org.joda.time.DateTime;
 import org.junit.Before;
@@ -26,8 +25,7 @@ public class UrlBuilderTest {
 	private static final String SITE_URL = "http://siteurl.test";
 	
 	@Mock SiteInformation siteInformation;
-	@Mock CachingTwitterService twitterService;
-	
+
 	private UrlBuilder urlBuilder;
 	private FrontendNewsitem frontendNewsitem;
 	private FrontendFeed frontendFeed;
@@ -37,7 +35,7 @@ public class UrlBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		Mockito.when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		urlBuilder = new UrlBuilder(siteInformation, twitterService, new UrlWordsGenerator());
+		urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator());
 		
 		frontendNewsitem = new FrontendNewsitem();
 		frontendNewsitem.setName("Quick brown fox jumps over lazy dog");

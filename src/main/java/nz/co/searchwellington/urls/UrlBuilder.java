@@ -1,37 +1,27 @@
 package nz.co.searchwellington.urls;
 
-import java.util.Date;
-
-import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.SiteInformation;
-import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.UrlWordsGenerator;
-import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.*;
 import nz.co.searchwellington.model.frontend.FrontendFeed;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.model.frontend.FrontendTag;
-import nz.co.searchwellington.twitter.CachingTwitterService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 import uk.co.eelpieconsulting.common.geo.model.OsmId;
 import uk.co.eelpieconsulting.common.geo.model.Place;
+
+import java.util.Date;
 
 @Component
 public class UrlBuilder {
 
 	private SiteInformation siteInformation;
-	private CachingTwitterService twitterService;	// TODO This is an odd injection
 	private DateFormatter dateFormatter;
 	private UrlWordsGenerator urlWordsGenerator;
 	
 	@Autowired
-	public UrlBuilder(SiteInformation siteInformation, CachingTwitterService twitterService, UrlWordsGenerator urlWordsGenerator) {		
+	public UrlBuilder(SiteInformation siteInformation, UrlWordsGenerator urlWordsGenerator) {
 		this.siteInformation = siteInformation;
-		this.twitterService = twitterService;
 		this.urlWordsGenerator = urlWordsGenerator;
 		this.dateFormatter = new DateFormatter();
 	}
@@ -196,8 +186,7 @@ public class UrlBuilder {
 		}
 		return null;
 	}
-	
-	
+
 	public String getSearchUrlFor(String keywords) {
 		return siteInformation.getUrl() + "/search?keywords=" + UrlParameterEncoder.encode(keywords);
 	}
@@ -205,11 +194,7 @@ public class UrlBuilder {
 	public String getTagSearchUrlFor(String keywords, Tag tag) {
 		return getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords);
 	}
-	
-	public String getTwitterProfileImageUrlFor(String twitterUsername) {
-		return twitterService.getTwitterProfileImageUrlFor(twitterUsername);
-	}
-	
+
 	public String getSubmitWebsiteUrl() {
 		return siteInformation.getUrl() + "/edit/submit/website";
 	}

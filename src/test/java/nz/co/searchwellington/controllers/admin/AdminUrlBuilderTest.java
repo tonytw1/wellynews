@@ -31,7 +31,7 @@ public class AdminUrlBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		when(siteInformation.getUrl()).thenReturn(SITE_URL);
-		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, null, new UrlWordsGenerator()));
+		adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, new UrlWordsGenerator()));
 		
 		frontendWebsite = new FrontendWebsite();
 		frontendWebsite.setId(123);
