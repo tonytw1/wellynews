@@ -15,10 +15,10 @@ import scala.collection.JavaConversions._
   }
 
   private def decorate(f: FrontendFeedNewsitem): FeedNewsitemForAcceptance = {
-    new FeedNewsitemForAcceptance(f, determineCurrentAcceptanceStateOf(f))
+    new FeedNewsitemForAcceptance(f, acceptanceStateOf(f))
   }
 
-  private def determineCurrentAcceptanceStateOf(feedNewsitem: FrontendFeedNewsitem): FeedNewsitemAcceptanceState = {
+  private def acceptanceStateOf(feedNewsitem: FrontendFeedNewsitem): FeedNewsitemAcceptanceState = {
     var localCopyId: Integer = null
     var isSuppressed: Boolean = false
     if (feedNewsitem.getUrl != null) {

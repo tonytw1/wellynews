@@ -2,11 +2,14 @@ package nz.co.searchwellington.model.frontend
 
 import java.util.Date
 
-class FrontendFeed extends FrontendResource {
+import nz.co.searchwellington.model.FeedAcceptancePolicy
+
+class FrontendFeed extends FrontendResource { // TODO migrate to immutable constructor
 
   private var publisherName: String = null
   private var urlWords: String = null
   private var latestItemDate: Date = null
+  private var acceptancePolicy: FeedAcceptancePolicy = null;
 
   final def getPublisherName: String = {
     return publisherName
@@ -30,6 +33,14 @@ class FrontendFeed extends FrontendResource {
 
   final def setLatestItemDate(latestItemDate: Date) {
     this.latestItemDate = latestItemDate
+  }
+
+  final def setAcceptancePolicy(acceptancePolicy: FeedAcceptancePolicy): Unit = {
+    this.acceptancePolicy = acceptancePolicy
+  }
+
+  final def getAcceptancePolicy: FeedAcceptancePolicy = {
+    return acceptancePolicy
   }
 
 }
