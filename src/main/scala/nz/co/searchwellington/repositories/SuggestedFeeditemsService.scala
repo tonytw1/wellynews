@@ -1,86 +1,61 @@
 package nz.co.searchwellington.repositories
 
-import java.util.List
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator
-import nz.co.searchwellington.feeds.reading.WhakaokoFeedItemMapper
-import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory
-import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.FeedAcceptancePolicy
-import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance
-import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
-import nz.co.searchwellington.model.frontend.FrontendNewsitem
+import nz.co.searchwellington.feeds.reading.{WhakaokoFeedItemMapper, WhakaoroClientFactory}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed, FrontendFeedNewsitem, FrontendNewsitem}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import org.apache.log4j.Logger
-import org.elasticsearch.common.collect.Lists
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.common.http.HttpBadRequestException
-import uk.co.eelpieconsulting.common.http.HttpFetchException
-import uk.co.eelpieconsulting.common.http.HttpForbiddenException
-import uk.co.eelpieconsulting.common.http.HttpNotFoundException
+import uk.co.eelpieconsulting.common.http.{HttpBadRequestException, HttpFetchException, HttpForbiddenException, HttpNotFoundException}
 import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Component object SuggestedFeeditemsService {
+import scala.collection.JavaConversions._
+
+@Component class SuggestedFeeditemsService @Autowired()(whakaoroClientFactory: WhakaoroClientFactory,
+                                                        whakaokoFeedItemMapper: WhakaokoFeedItemMapper, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
+                                                        resourceDAO: HibernateResourceDAO) {
+
   private val log: Logger = Logger.getLogger(classOf[SuggestedFeeditemsService])
-}
-
-@Component class SuggestedFeeditemsService {
-  private final val feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
-  private final val whakaoroClientFactory: WhakaoroClientFactory = null
-  private final val whakaokoFeedItemMapper: WhakaokoFeedItemMapper = null
-  private final val resourceDAO: HibernateResourceDAO = null
-
-  @Autowired def this(whakaoroClientFactory: WhakaoroClientFactory, whakaokoFeedItemMapper: WhakaokoFeedItemMapper, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator, resourceDAO: HibernateResourceDAO) {
-    this()
-    this.whakaoroClientFactory = whakaoroClientFactory
-    this.whakaokoFeedItemMapper = whakaokoFeedItemMapper
-    this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator
-    this.resourceDAO = resourceDAO
-  }
 
   def getSuggestionFeednewsitems(maxItems: Int): List[FrontendNewsitem] = {
     try {
-      val channelFeedItemsForNotIgnoredFeeds: List[FrontendFeedNewsitem] = Lists.newArrayList
-      import scala.collection.JavaConversions._
-      for (feedItem <- whakaoroClientFactory.getChannelFeedItems) {
-        val feed: Feed = resourceDAO.loadFeedByWhakaoroId(feedItem.getSubscriptionId)
-        if (feed == null) {
-          SuggestedFeeditemsService.log.info("Ignoring feed item with unknown whakaoro id: " + feedItem.getSubscriptionId)
-          continue //todo: continue is not supported
-        }
-        if (feed.getAcceptancePolicy == FeedAcceptancePolicy.IGNORE) {
-          continue //todo: continue is not supported
-        }
-        channelFeedItemsForNotIgnoredFeeds.add(whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem))
-      }
-      val addSupressionAndLocalCopyInformation: List[FeedNewsitemForAcceptance] = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelFeedItemsForNotIgnoredFeeds)
-      val suggestions: List[FrontendNewsitem] = Lists.newArrayList
-      import scala.collection.JavaConversions._
-      for (feedNewsitemForAcceptance <- addSupressionAndLocalCopyInformation) {
-        if (feedNewsitemForAcceptance.getAcceptanceState.getLocalCopy != null) {
-          continue //todo: continue is not supported
-        }
-        suggestions.add(feedNewsitemForAcceptance.getFeednewsitem)
-      }
-      return suggestions
+      val channelFeedItems: List[uk.co.eelpieconsulting.whakaoro.client.model.FeedItem] = whakaoroClientFactory.getChannelFeedItems.toList
+      val notIgnoredFeedItems: List[FrontendFeedNewsitem] = channelFeedItems.map(i => fromWhakaoro(i)).filter(i => isNotIgnored(i))
+      val suggestions: List[FeedNewsitemForAcceptance] = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(notIgnoredFeedItems).toList
+      return suggestions.filter(i => noLocalCopy(i))
     }
     catch {
       case e: HttpNotFoundException => {
-        SuggestedFeeditemsService.log.error(e)
+        log.error(e)
       }
       case e: HttpBadRequestException => {
-        SuggestedFeeditemsService.log.error(e)
+        log.error(e)
       }
       case e: HttpForbiddenException => {
-        SuggestedFeeditemsService.log.error(e)
+        log.error(e)
       }
       case e: ParsingException => {
-        SuggestedFeeditemsService.log.error(e)
+        log.error(e)
       }
       case e: HttpFetchException => {
-        SuggestedFeeditemsService.log.error(e)
+        log.error(e)
       }
     }
-    return Lists.newArrayList
+    List.empty
   }
+
+  def fromWhakaoro(feedItem: uk.co.eelpieconsulting.whakaoro.client.model.FeedItem): FrontendFeedNewsitem = {
+    val feed: Feed = resourceDAO.loadFeedByWhakaoroId(feedItem.getSubscriptionId)
+    whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem)
+  }
+
+  def isNotIgnored(feedItem: FrontendFeedNewsitem) : Boolean = {
+    feedItem.getFeed != null && feedItem.getFeed.getAcceptancePolicy != FeedAcceptancePolicy.IGNORE
+  }
+
+  def noLocalCopy(feedItem: FeedNewsitemForAcceptance) : Boolean = {
+    feedItem.getAcceptanceState.getLocalCopy == null
+  }
+
 }

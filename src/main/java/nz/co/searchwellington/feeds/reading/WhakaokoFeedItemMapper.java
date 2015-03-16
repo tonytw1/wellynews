@@ -15,7 +15,7 @@ public class WhakaokoFeedItemMapper {
         return new FrontendFeedNewsitem(feedItem.getTitle(),
             feedItem.getUrl(), feedItem.getDate(), feedItem.getBody(),
             feedItem.getPlace(), makeFrontendFeed(feed),
-                feed.getPublisher() != null ? feed.getPublisher().getName() : null,
+                feed != null && feed.getPublisher() != null ? feed.getPublisher().getName() : null,
                 feedItem.getImageUrl() != null ? new FrontendImage(feedItem.getImageUrl()): null);
 	}
 
