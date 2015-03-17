@@ -169,18 +169,6 @@ public class ContentRetrievalService {
 	public int getNewsitemsMatchingKeywordsCount(String keywords) {
 		return keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken(), null);
 	}
-	
-	public List<FrontendResource> getTwitteredNewsitems(int startIndex, int maxItems) {
-		return elasticSearchBackedResourceDAO.getTwitteredNewsitems(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken());
-	}
-	
-	public long getTwitteredNewsitemsCount() {
-		return elasticSearchBackedResourceDAO.getTwitteredNewsitemsCount(showBrokenDecisionService.shouldShowBroken());
-	}
-
-	public List<FrontendResource> getRecentedTwitteredNewsitemsForTag(int maxItems, Tag tag) {
-		return elasticSearchBackedResourceDAO.getRecentTwitteredNewsitemsForTag(maxItems, showBrokenDecisionService.shouldShowBroken(), tag);
-	}
 
 	public List<FrontendResource> getFeaturedSites() {
 		final Tag featuredTag = tagDAO.loadTagByName("featured");

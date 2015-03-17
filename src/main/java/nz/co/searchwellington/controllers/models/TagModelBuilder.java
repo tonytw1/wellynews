@@ -107,8 +107,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		populateCommentedTaggedNewsitems(mv, tag);
 		populateRelatedFeed(mv, tag);
 		populateGeocoded(mv, tag);		
-		populateTagFlickrPool(mv, tag);		
-		populateRecentlyTwittered(mv, tag);
+		populateTagFlickrPool(mv, tag);
 
 		mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag));		
 		mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag));
@@ -169,11 +168,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		
 		return mv;
 	}
-	
-	private void populateRecentlyTwittered(ModelAndView mv, Tag tag) {
-		mv.addObject("recently_twittered", contentRetrievalService.getRecentedTwitteredNewsitemsForTag(2, tag));
-	}
-	
+
     private void populateTagFlickrPool(ModelAndView mv, Tag tag) {
     	mv.addObject("flickr_count", flickrService.getFlickrPhotoCountFor(tag));
     	mv.addObject("escaped_flickr_group_id", UrlParameterEncoder.encode(flickrService.getPoolId()));

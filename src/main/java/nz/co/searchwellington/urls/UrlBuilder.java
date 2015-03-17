@@ -45,11 +45,7 @@ public class UrlBuilder {
 	public String getTagsAutoCompleteUrl() {
 		return siteInformation.getUrl() + "/ajax/tags";
 	}
-	
-	public String getTwitterReactionsUrl() {
-		return siteInformation.getUrl() + "/twitter";
-	}
-	
+
 	public String getFeedUrl(FrontendFeed feed) {
 		return siteInformation.getUrl() + "/feed/" + feed.getUrlWords();
 	}
