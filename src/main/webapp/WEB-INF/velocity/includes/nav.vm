@@ -1,22 +1,20 @@
 <div class="nav">
-<ul>
-	<li><b><a href="${urlBuilder.homeUrl}">Search $site_information.areaname</a></b></li>
-	<li><a href="${urlBuilder.homeUrl}#submit">Submit</a></li>
-	<li><a href="$site_information.url/feeds">Feeds</a></li>
-	<li><a href="$site_information.url/tags">Tags</a></li>
-	<li><a href="$site_information.url/publishers">Publishers</a></li>
-	<li><a href="$site_information.url/watchlist">Watchlist</a></li>	
-	<li><a href="$site_information.url/about">About</a></li>
-	<li><a href="$site_information.url/about#contact">Contact</a></li>
-</ul>
-<br/>
-
-#if ($featuredTags) 
-<ul class="navtags">
-	#foreach($featuredTag in $featuredTags)
-    <li><a href="$urlBuilder.getTagUrl($featuredTag)">$featuredTag.displayName</a></li>
+	<ul>
+		<li><b><a href="${urlBuilder.homeUrl}">Wellynews</a></b></li>
+		<li><a href="${urlBuilder.homeUrl}#submit">Submit</a></li>
+		<li><a href="$site_information.url/feeds">Feeds</a></li>
+		<li><a href="$site_information.url/tags">Tags</a></li>
+		<li><a href="$site_information.url/publishers">Publishers</a></li>
+		<li><a href="$site_information.url/watchlist">Watchlist</a></li>
+		<li><a href="$site_information.url/about">About</a></li>
+		<li><a href="$site_information.url/about#contact">Contact</a></li>
+	</ul>
+	<br/>
+	#if ($featuredTags)
+	<ul class="navtags">
+		#foreach($featuredTag in $featuredTags)
+		<li><a href="$urlBuilder.getTagUrl($featuredTag)">$featuredTag.displayName</a></li>
+		#end
+	</ul>
 	#end
-</ul>
-#end
-
 </div>
