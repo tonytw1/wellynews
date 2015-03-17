@@ -2,13 +2,11 @@ package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator
 import nz.co.searchwellington.feeds.reading.{WhakaokoFeedItemMapper, WhakaoroClientFactory}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed, FrontendFeedNewsitem, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeedNewsitem, FrontendNewsitem}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.common.http.{HttpBadRequestException, HttpFetchException, HttpForbiddenException, HttpNotFoundException}
-import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException
 
 import scala.collection.JavaConversions._
 
@@ -19,30 +17,13 @@ import scala.collection.JavaConversions._
   private val log: Logger = Logger.getLogger(classOf[SuggestedFeeditemsService])
 
   def getSuggestionFeednewsitems(maxItems: Int): List[FrontendNewsitem] = {
-    try {
       val channelFeedItems: List[uk.co.eelpieconsulting.whakaoro.client.model.FeedItem] = whakaoroClientFactory.getChannelFeedItems.toList
       val notIgnoredFeedItems: List[FrontendFeedNewsitem] = channelFeedItems.map(i => fromWhakaoro(i)).filter(i => isNotIgnored(i))
+
       val suggestions: List[FeedNewsitemForAcceptance] = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(notIgnoredFeedItems).toList
-      return suggestions.filter(i => noLocalCopy(i))
-    }
-    catch {
-      case e: HttpNotFoundException => {
-        log.error(e)
-      }
-      case e: HttpBadRequestException => {
-        log.error(e)
-      }
-      case e: HttpForbiddenException => {
-        log.error(e)
-      }
-      case e: ParsingException => {
-        log.error(e)
-      }
-      case e: HttpFetchException => {
-        log.error(e)
-      }
-    }
-    List.empty
+      val withLocalCopiesFilteredOut: List[FeedNewsitemForAcceptance] = suggestions.filter(i => noLocalCopy(i))
+
+    withLocalCopiesFilteredOut.map(i => i.getFeednewsitem)  // TODO suspect we then redecorate these again?
   }
 
   def fromWhakaoro(feedItem: uk.co.eelpieconsulting.whakaoro.client.model.FeedItem): FrontendFeedNewsitem = {
