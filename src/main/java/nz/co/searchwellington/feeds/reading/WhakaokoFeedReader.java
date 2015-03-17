@@ -37,29 +37,14 @@ public class WhakaokoFeedReader implements FeedItemFetcher {
 		if (feed.getWhakaokoId() == null) {
 			log.warn("Feed has no whakaoro id; skipping: " + feed.getName());
 		}
-		
-		try {
-			final List<FrontendFeedNewsitem> results = Lists.newArrayList();
-			for (FeedItem feedItem : whakaoroService.getSubscriptionFeedItems(feed.getWhakaokoId())) {
-				FrontendFeedNewsitem frontendFeedNewsitem = whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem);				
-				results.add(frontendFeedNewsitem);
-			}
-			log.info("Got " + results.size() + " items from whakaoko");
-			return results;
-			
-		} catch (HttpNotFoundException e) {
-			log.error(e);
-		} catch (HttpBadRequestException e) {
-			log.error(e);
-		} catch (HttpForbiddenException e) {
-			log.error(e);
-		} catch (ParsingException e) {
-			log.error(e);
-		} catch (HttpFetchException e) {
-			log.error(e);
-		}
-		
-		return Lists.newArrayList();		
+
+        final List<FrontendFeedNewsitem> results = Lists.newArrayList();
+        for (FeedItem feedItem : whakaoroService.getSubscriptionFeedItems(feed.getWhakaokoId())) {
+            FrontendFeedNewsitem frontendFeedNewsitem = whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem);
+            results.add(frontendFeedNewsitem);
+        }
+        log.info("Got " + results.size() + " items from whakaoko");
+        return results;
 	}
 	
 }
