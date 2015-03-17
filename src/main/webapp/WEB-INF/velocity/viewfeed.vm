@@ -57,13 +57,28 @@
 				<div id="map" style="width: 520px; height: 520px"></div>
 				#parse("includes/geocodedjs.vm")
 			#end
-			
-			Whakaoko id: $feed.whakaokoId
-			
-			#parse("includes/main_content.vm")
-						
+
+            <div class="section" id="maincontent">
+                <ul class="flat_list">
+					#foreach($item in $main_content)
+                        <li class="content_item">
+                            <ul class="main_content_item">
+								#set($item = $item.getFeednewsitem())
+								#parse("includes/content_element.vm")
+                            </ul>
+                        </li>
+					#end
+					#if ($main_content_moreurl)
+                        <li class="more"><a href="$main_content_moreurl">
+							#if ($main_content_morecount) $main_content_morecount #end
+                            More...</a>
+                        </li>
+					#end
+                </ul>
+            </div>
+
 		#else 
-			<p>There was a problem loading this feed. No newsitems could be displayed.</p>
+			<p>There was a problem loading this feed. No feed newsitems could be displayed.</p>
 		#end
 	</div>
 
