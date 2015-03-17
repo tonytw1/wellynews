@@ -26,16 +26,16 @@ import scala.collection.JavaConversions._
     withLocalCopiesFilteredOut.map(i => i.getFeednewsitem)  // TODO suspect we then redecorate these again?
   }
 
-  def fromWhakaoro(feedItem: uk.co.eelpieconsulting.whakaoro.client.model.FeedItem): FrontendFeedNewsitem = {
+  private def fromWhakaoro(feedItem: uk.co.eelpieconsulting.whakaoro.client.model.FeedItem): FrontendFeedNewsitem = {
     val feed: Feed = resourceDAO.loadFeedByWhakaoroId(feedItem.getSubscriptionId)
     whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem)
   }
 
-  def isNotIgnored(feedItem: FrontendFeedNewsitem) : Boolean = {
+  private def isNotIgnored(feedItem: FrontendFeedNewsitem) : Boolean = {
     feedItem.getFeed != null && feedItem.getFeed.getAcceptancePolicy != FeedAcceptancePolicy.IGNORE
   }
 
-  def noLocalCopy(feedItem: FeedNewsitemForAcceptance) : Boolean = {
+  private def noLocalCopy(feedItem: FeedNewsitemForAcceptance) : Boolean = {
     feedItem.getAcceptanceState.getLocalCopy == null
   }
 
