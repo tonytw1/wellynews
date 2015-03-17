@@ -1,14 +1,10 @@
 package nz.co.searchwellington.feeds.reading;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.elasticsearch.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import uk.co.eelpieconsulting.common.http.HttpBadRequestException;
 import uk.co.eelpieconsulting.common.http.HttpFetchException;
 import uk.co.eelpieconsulting.common.http.HttpForbiddenException;
@@ -18,19 +14,22 @@ import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException;
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem;
 import uk.co.eelpieconsulting.whakaoro.client.model.Subscription;
 
-@Component
-public class WhakaoroClientFactory {
+import java.io.UnsupportedEncodingException;
+import java.util.List;
 
-	private static Logger log = Logger.getLogger(WhakaoroClientFactory.class);
+@Component
+public class WhakaoroService {
+
+	private static Logger log = Logger.getLogger(WhakaoroService.class);
 	
 	private final String url;
 	private final String username;
 	private final String channel;
 	
 	@Autowired
-	public WhakaoroClientFactory(@Value("#{config['whakaoko.url']}") String url,
-			@Value("#{config['whakaoko.username']}") String username,
-			@Value("#{config['whakaoko.channel']}") String channel) {
+	public WhakaoroService(@Value("#{config['whakaoko.url']}") String url,
+                           @Value("#{config['whakaoko.username']}") String username,
+                           @Value("#{config['whakaoko.channel']}") String channel) {
 		this.url = url;
 		this.username = username;
 		this.channel = channel;

@@ -12,7 +12,7 @@ import nz.co.searchwellington.controllers.admin.EditPermissionService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.FeednewsItemToNewsitemService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
-import nz.co.searchwellington.feeds.reading.WhakaoroClientFactory;
+import nz.co.searchwellington.feeds.reading.WhakaoroService;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
@@ -27,8 +27,6 @@ import nz.co.searchwellington.modification.ContentDeletionService;
 import nz.co.searchwellington.modification.ContentUpdateService;
 import nz.co.searchwellington.queues.LinkCheckerQueue;
 import nz.co.searchwellington.repositories.HandTaggingDAO;
-import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
-import nz.co.searchwellington.repositories.HibernateResourceDAO;
 import nz.co.searchwellington.repositories.ResourceFactory;
 import nz.co.searchwellington.spam.SpamFilter;
 import nz.co.searchwellington.tagging.AutoTaggingService;
@@ -37,7 +35,6 @@ import nz.co.searchwellington.widgets.TagsWidgetFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -73,7 +70,7 @@ public class ResourceEditController {
 	private UrlStack urlStack;
 	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	private UrlWordsGenerator urlWordsGenerator;
-	private WhakaoroClientFactory whakaoroClientFactory;
+	private WhakaoroService whakaoroService;
 	private FrontendResourceMapper frontendResourceMapper;
 	private SpamFilter spamFilter;
 	private LinkCheckerQueue linkCheckerQueue;
@@ -99,7 +96,7 @@ public class ResourceEditController {
 			CommonModelObjectsService commonModelObjectsService,
 			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
 			UrlWordsGenerator urlWordsGenerator, 
-			WhakaoroClientFactory whakaoroClientFactory,
+			WhakaoroService whakaoroService,
 			FrontendResourceMapper frontendResourceMapper,
 			SpamFilter spamFilter, LinkCheckerQueue linkCheckerQueue) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
@@ -121,7 +118,7 @@ public class ResourceEditController {
 		this.commonModelObjectsService = commonModelObjectsService;
 		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 		this.urlWordsGenerator = urlWordsGenerator;
-		this.whakaoroClientFactory = whakaoroClientFactory;
+		this.whakaoroService = whakaoroService;
 		this.frontendResourceMapper = frontendResourceMapper;
 		this.spamFilter = spamFilter;
 		this.linkCheckerQueue = linkCheckerQueue;
@@ -401,7 +398,7 @@ public class ResourceEditController {
             
             if (editResource.getType().equals("F") && !Strings.isNullOrEmpty(editResource.getUrl())) {
             	// TODO deletes and renames
-            	String createFeedSubscription = whakaoroClientFactory.createFeedSubscription(editResource.getUrl());
+            	String createFeedSubscription = whakaoroService.createFeedSubscription(editResource.getUrl());
             	((Feed) editResource).setWhakaokoId(createFeedSubscription);				
             }
             

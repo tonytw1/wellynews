@@ -19,15 +19,15 @@ public class WhakaokoFeedSyncService {
 	private static Logger log = Logger.getLogger(WhakaokoFeedSyncService.class);
 
 	private HibernateResourceDAO resourceDAO;
-	private WhakaoroClientFactory whakaoroClientFactory;
+	private WhakaoroService whakaoroService;
 	
 	public WhakaokoFeedSyncService() {		
 	}
 	
 	@Autowired
-	public WhakaokoFeedSyncService(HibernateResourceDAO resourceDAO, WhakaoroClientFactory whakaoroClientFactory) {
+	public WhakaokoFeedSyncService(HibernateResourceDAO resourceDAO, WhakaoroService whakaoroService) {
 		this.resourceDAO = resourceDAO;	
-		this.whakaoroClientFactory = whakaoroClientFactory;
+		this.whakaoroService = whakaoroService;
 	}
 	
     @Scheduled(fixedRate=3600000)
@@ -45,7 +45,7 @@ public class WhakaokoFeedSyncService {
 		for (Feed feed : (allFeeds)) {
 			if (!Strings.isNullOrEmpty(feed.getUrl())) {
 				log.info("Registering feed: " + feed.getName());
-				final String createdSubscriptionId = whakaoroClientFactory.createFeedSubscription(feed.getUrl());
+				final String createdSubscriptionId = whakaoroService.createFeedSubscription(feed.getUrl());
 				log.info("Setting feed whakaoko id to: " + createdSubscriptionId);
 				feed.setWhakaokoId(createdSubscriptionId);
 				resourceDAO.saveResource(feed);

@@ -22,12 +22,12 @@ public class WhakaokoFeedReader implements FeedItemFetcher {
 	
 	private final Logger log = Logger.getLogger(WhakaokoFeedReader.class);
 	
-	private final WhakaoroClientFactory whakaoroClientFactory;
+	private final WhakaoroService whakaoroService;
 	private final WhakaokoFeedItemMapper whakaokoFeedItemMapper;
 	
 	@Autowired
-	public WhakaokoFeedReader(WhakaoroClientFactory whakaoroClientFactory, WhakaokoFeedItemMapper whakaokoFeedItemMapper) {
-		this.whakaoroClientFactory = whakaoroClientFactory;
+	public WhakaokoFeedReader(WhakaoroService whakaoroService, WhakaokoFeedItemMapper whakaokoFeedItemMapper) {
+		this.whakaoroService = whakaoroService;
 		this.whakaokoFeedItemMapper = whakaokoFeedItemMapper;
 	}
 	
@@ -40,7 +40,7 @@ public class WhakaokoFeedReader implements FeedItemFetcher {
 		
 		try {
 			final List<FrontendFeedNewsitem> results = Lists.newArrayList();
-			for (FeedItem feedItem : whakaoroClientFactory.getSubscriptionFeedItems(feed.getWhakaokoId())) {				
+			for (FeedItem feedItem : whakaoroService.getSubscriptionFeedItems(feed.getWhakaokoId())) {
 				FrontendFeedNewsitem frontendFeedNewsitem = whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem);				
 				results.add(frontendFeedNewsitem);
 			}

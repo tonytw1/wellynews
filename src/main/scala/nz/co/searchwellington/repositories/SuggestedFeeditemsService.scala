@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator
-import nz.co.searchwellington.feeds.reading.{WhakaokoFeedItemMapper, WhakaoroClientFactory}
+import nz.co.searchwellington.feeds.reading.{WhakaokoFeedItemMapper, WhakaoroService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeedNewsitem, FrontendNewsitem}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import org.apache.log4j.Logger
@@ -10,14 +10,14 @@ import org.springframework.stereotype.Component
 
 import scala.collection.JavaConversions._
 
-@Component class SuggestedFeeditemsService @Autowired()(whakaoroClientFactory: WhakaoroClientFactory,
+@Component class SuggestedFeeditemsService @Autowired() (whakaoroService: WhakaoroService,
                                                         whakaokoFeedItemMapper: WhakaokoFeedItemMapper, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                                         resourceDAO: HibernateResourceDAO) {
 
   private val log: Logger = Logger.getLogger(classOf[SuggestedFeeditemsService])
 
   def getSuggestionFeednewsitems(maxItems: Int): List[FrontendNewsitem] = {
-      val channelFeedItems: List[uk.co.eelpieconsulting.whakaoro.client.model.FeedItem] = whakaoroClientFactory.getChannelFeedItems.toList
+      val channelFeedItems: List[uk.co.eelpieconsulting.whakaoro.client.model.FeedItem] = whakaoroService.getChannelFeedItems.toList
       val notIgnoredFeedItems: List[FrontendFeedNewsitem] = channelFeedItems.map(i => fromWhakaoro(i)).filter(i => isNotIgnored(i))
 
       val suggestions: List[FeedNewsitemForAcceptance] = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(notIgnoredFeedItems).toList
