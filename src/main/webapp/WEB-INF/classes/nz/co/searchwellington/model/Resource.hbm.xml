@@ -115,15 +115,8 @@
 			<many-to-one name="commentFeed" class="nz.co.searchwellington.model.CommentFeed" 
 				column="comment_feed" cascade="" />
 		            	      
-		    <many-to-one name="image" class="nz.co.searchwellington.model.Image" 
-				column="image_id" cascade="" />
-						            	        	        	      		            	        			    
-        	<set name="reTwits" table="newsitem_retwits" access="field">
-				<cache usage="read-write" />		
-				<key column="resource_id" />
-				<many-to-many class="nz.co.searchwellington.model.Twit" column="twit_id" order-by="date" />
-			</set>
-			
+		    <many-to-one name="image" class="nz.co.searchwellington.model.Image" column="image_id" cascade="" />
+
 			<property name="accepted" type="timestamp">
         		<column name="accepted"/>
         	</property>
