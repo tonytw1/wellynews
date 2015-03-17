@@ -58,16 +58,44 @@ public class WhakaoroService {
 		return null;
 	}
 	
-	public List<FeedItem> getSubscriptionFeedItems(String subscriptionId) throws HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, ParsingException, HttpFetchException {
-		return getClient().getSubscriptionFeedItems(username, subscriptionId);
+	public List<FeedItem> getSubscriptionFeedItems(String subscriptionId) {
+        try {
+    		return getClient().getSubscriptionFeedItems(username, subscriptionId);
+
+        } catch (HttpNotFoundException e) {
+            log.error(e);
+        } catch (HttpBadRequestException e) {
+            log.error(e);
+        } catch (HttpForbiddenException e) {
+            log.error(e);
+        } catch (HttpFetchException e) {
+            log.error(e);
+        } catch (ParsingException e) {
+            log.error(e);
+        }
+        return Lists.newArrayList();
 	}
 	
-	public List<FeedItem> getChannelFeedItems() throws HttpNotFoundException, HttpBadRequestException, HttpForbiddenException, ParsingException, HttpFetchException {
-		List<FeedItem> channelFeedItems = Lists.newArrayList();
-		for (int page = 0; page <= 5; page++) {
-			channelFeedItems.addAll(getClient().getChannelFeedItems(username, channel, page));
-		}
-		return channelFeedItems;
+	public List<FeedItem> getChannelFeedItems() {
+        try {
+    		List<FeedItem> channelFeedItems = Lists.newArrayList();
+	    	for (int page = 0; page <= 5; page++) {
+		    	channelFeedItems.addAll(getClient().getChannelFeedItems(username, channel, page));
+	    	}
+		    return channelFeedItems;
+
+        } catch (HttpNotFoundException e) {
+            log.error(e);
+        } catch (HttpBadRequestException e) {
+            log.error(e);
+        } catch (HttpForbiddenException e) {
+            log.error(e);
+        } catch (HttpFetchException e) {
+            log.error(e);
+        } catch (ParsingException e) {
+            log.error(e);
+        }
+        return Lists.newArrayList();
 	}
 	
 	private WhakaoroClient getClient() {
