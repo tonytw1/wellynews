@@ -93,17 +93,6 @@
 					class="nz.co.searchwellington.model.FeedImpl" />
 			</set>
 
-			<set name="calendars" inverse="true" 
-				cascade="all,delete-orphan">
-						<cache usage="read-write" />
-				
-				<key column="calendar_publisher" />
-				<one-to-many
-					class="nz.co.searchwellington.model.CalendarFeed" />
-			</set>
-	
-
-
 			<set name="watchlist" inverse="true" 
 				cascade="all,delete-orphan">
 						<cache usage="read-write" />
@@ -145,16 +134,6 @@
 		<subclass name="nz.co.searchwellington.model.Watchlist"	discriminator-value="L">
 			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="watchlist_publisher" cascade="" />
 		</subclass>
-
-
-		<subclass name="nz.co.searchwellington.model.CalendarFeed"
-			proxy="nz.co.searchwellington.model.CalendarFeed"
-			discriminator-value="C">
-
-			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl"
-				column="calendar_publisher" cascade="" />				
-		</subclass>
-
 
 		<subclass name="nz.co.searchwellington.model.FeedImpl" proxy="nz.co.searchwellington.model.Feed" discriminator-value="F">
 			<many-to-one name="publisher" class="nz.co.searchwellington.model.WebsiteImpl" column="feed_publisher" />
