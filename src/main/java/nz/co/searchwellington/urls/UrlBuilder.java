@@ -209,7 +209,7 @@ public class UrlBuilder {
 	}
 	
 	public String getOsmWebsiteUrl(OsmId osmId) {
-		return "http://www.openstreetmap.org/browse/" + osmId.getType() + "/" + osmId.getId();
+		return "http://www.openstreetmap.org/browse/" + osmId.getType().toString().toLowerCase() + "/" + osmId.getId();
 	}
 	
 }

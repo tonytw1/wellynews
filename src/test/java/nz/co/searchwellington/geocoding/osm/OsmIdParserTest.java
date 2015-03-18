@@ -13,26 +13,26 @@ public class OsmIdParserTest {
 	public void canParseIdSlashTypeStyleOsmIdString() throws Exception {
 		OsmIdParser parser = new OsmIdParser();
 
-		final OsmId parsedOsmId = parser.parseOsmId("123456/way");
+		final OsmId parsedOsmId = parser.parseOsmId("123456/WAY");
 		
 		assertEquals(123456L, parsedOsmId.getId());
-		assertEquals(OsmType.way, parsedOsmId.getType());
+		assertEquals(OsmType.WAY, parsedOsmId.getType());
 	}
 	
 	@Test
 	public void canAccomodateVaryingLengthsOfTheOsmTypes() throws Exception {
 		OsmIdParser parser = new OsmIdParser();
 
-		final OsmId parsedOsmId = parser.parseOsmId("123456/relation");
+		final OsmId parsedOsmId = parser.parseOsmId("123456/RELATION");
 		
-		assertEquals(OsmType.relation, parsedOsmId.getType());
+		assertEquals(OsmType.RELATION, parsedOsmId.getType());
 	}
 	
 	@Test
 	public void canAccomodateVaryingLengthsOfTheOsmIds() throws Exception {
 		OsmIdParser parser = new OsmIdParser();
 
-		final OsmId parsedOsmId = parser.parseOsmId("123/way");
+		final OsmId parsedOsmId = parser.parseOsmId("123/WAY");
 		
 		assertEquals(123L, parsedOsmId.getId());
 	}

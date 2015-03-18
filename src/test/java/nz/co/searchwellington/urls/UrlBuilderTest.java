@@ -65,8 +65,8 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void locationsShouldBeLinkedByOSMIdIfAvailable() throws Exception {
-		final Place somewhereWithOSMid= new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, OsmType.node));
-		assertEquals(SITE_URL + "/geotagged?osm=12345%2Fnode", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
+		final Place somewhereWithOSMid= new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, OsmType.NODE));
+		assertEquals(SITE_URL + "/geotagged?osm=12345%2FNODE", urlBuilder.getLocationUrlFor(somewhereWithOSMid));
 	}
 	
 	@Test
@@ -88,7 +88,7 @@ public class UrlBuilderTest {
 	
 	@Test
 	public void canComposeOsmWebsiteLinkforOsmIds() throws Exception {		
-		final OsmId osmId = new OsmId(24724709, OsmType.way);
+		final OsmId osmId = new OsmId(24724709, OsmType.WAY);
 		assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId));
 	}
 	
