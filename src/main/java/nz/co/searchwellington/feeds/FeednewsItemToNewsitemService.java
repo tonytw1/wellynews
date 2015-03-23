@@ -21,12 +21,14 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 public class FeednewsItemToNewsitemService {
 	
     private static final int MAXIMUM_BODY_LENGTH = 400;
-    
+
+    private PlaceToGeocodeMapper placeToGeocodeMapper;
     private TextTrimmer textTrimmer;
     
     @Autowired
-	public FeednewsItemToNewsitemService(TextTrimmer textTrimmer) {
+	public FeednewsItemToNewsitemService(TextTrimmer textTrimmer, PlaceToGeocodeMapper placeToGeocodeMapper) {
 		this.textTrimmer = textTrimmer;
+        this.placeToGeocodeMapper = placeToGeocodeMapper;
 	}
 
 	// TODO merge with addSuppressAndLocalCopyInformation?
@@ -40,7 +42,7 @@ public class FeednewsItemToNewsitemService {
 	    
 	    final Place place = feedNewsitem.getPlace();
 	    if (place != null) {
-			newsitem.setGeocode(mapPlaceToGeocode(place));
+			newsitem.setGeocode(placeToGeocodeMapper.mapPlaceToGeocode(place));
 	    }
 	    
 	    if (feedNewsitem.getFrontendImage() != null) {
@@ -55,22 +57,5 @@ public class FeednewsItemToNewsitemService {
 		description = textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH);
 		return description;
 	}
-	
-	private Geocode mapPlaceToGeocode(final Place place) {
-		String address = place.getAddress();
-		if (address == null && place.getLatLong() != null) {
-			address = place.getLatLong().getLatitude() + ", " + place.getLatLong().getLongitude();
-		}
-		if (address == null) {
-			return null;
-		}
-		
-		final Geocode geocode = new Geocode(address, 
-				place.getLatLong() != null ? place.getLatLong().getLatitude() : null, 
-				place.getLatLong() != null ? place.getLatLong().getLongitude() : null,
-				place.getOsmId() != null ? place.getOsmId().getId() : null,
-				place.getOsmId() != null ? place.getOsmId().getType().toString() : null);
-		return geocode;
-	}
-	
+
 }
