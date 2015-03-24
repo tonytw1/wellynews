@@ -19,17 +19,20 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 
 public class FeednewsItemToNewsitemServiceTest {
 
-	@Mock  TextTrimmer textTrimmer;
+	@Mock
+    TextTrimmer textTrimmer;
 	
-	@Mock Place place;
-	@Mock private Feed feed;
+	@Mock
+    Place place;
+	@Mock
+    private Feed feed;
 	
-	FeednewsItemToNewsitemService service;
+	private FeednewsItemToNewsitemService service;
 	
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		service = new FeednewsItemToNewsitemService(textTrimmer);
+		service = new FeednewsItemToNewsitemService(textTrimmer, new PlaceToGeocodeMapper());
 	}
 	
 	@Test
@@ -37,7 +40,6 @@ public class FeednewsItemToNewsitemServiceTest {
 		Mockito.when(place.getAddress()).thenReturn("A place");
 		FrontendFeed frontendFeed = new FrontendFeed();
 		FrontendFeedNewsitem feedNewsitem = new FrontendFeedNewsitem("Test feed item", "http://localhost", null, null, place, frontendFeed, null, null);
-        System.out.println(feedNewsitem.getName());
         assertNotNull(feedNewsitem.getPlace());
 
 		Newsitem newsitem = service.makeNewsitemFromFeedItem(feed, feedNewsitem);
