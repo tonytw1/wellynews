@@ -11,8 +11,6 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.collection.JavaConversions._
-
 @Component object TaggingReturnsOfficerService {
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 }
@@ -121,6 +119,7 @@ import scala.collection.JavaConversions._
   private def addAncestorTagVotes(resource: Resource, votes: List[TaggingVote]) {
     import scala.collection.JavaConversions._
     for (tag <- this.getHandTagsForResource(resource)) {
+      import scala.collection.JavaConversions._
       for (ancestorTag <- tag.getAncestors) {
         votes.add(new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter))
       }
