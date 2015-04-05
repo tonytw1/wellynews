@@ -1,7 +1,5 @@
 package nz.co.searchwellington.tagging
 
-import java.util.{HashSet, List, Set}
-
 import com.google.common.collect.{Lists, Sets}
 import nz.co.searchwellington.model.{Feed, Geocode, Newsitem, PublishedResource, Resource, Tag, Website}
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, HandTagging, TaggingVote}
@@ -11,33 +9,26 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component object TaggingReturnsOfficerService {
+import scala.collection.JavaConversions._
+
+@Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO) {
+
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
-}
 
-@Component class TaggingReturnsOfficerService {
-  private var tagVoteDAO: HandTaggingDAO = null
+  def getHandTagsForResource(resource: Resource): Set[Tag] = {  // TODO no real value added by this method?
+    val tags: Set[Tag] = Set.empty
 
-  @Autowired def this(tagVoteDAO: HandTaggingDAO) {
-    this()
-    this.tagVoteDAO = tagVoteDAO
-  }
-
-  def getHandTagsForResource(resource: Resource): Set[Tag] = {
-    val tags: Set[Tag] = Sets.newHashSet()
-    val handTaggings: List[HandTagging] = tagVoteDAO.getHandTaggingsForResource(resource)
-    import scala.collection.JavaConversions._
+    val handTaggings: java.util.List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource)
     for (tagging <- handTaggings) {
-      tags.add(tagging.getTag)
+      tags.add(tagging.getTag)  // TODO map this
     }
     return tags
   }
 
   def getIndexTagsForResource(resource: Resource): Set[Tag] = {
-    val indexTags: Set[Tag] = new HashSet[Tag]
-    import scala.collection.JavaConversions._
+    val indexTags: Set[Tag] = Set.empty
     for (vote <- complieTaggingVotes(resource)) {
-      if (!indexTags.contains(vote.getTag)) {
+      if (!indexTags.contains(vote.getTag)) { // TODO not strictly needed?
         indexTags.add(vote.getTag)
       }
     }
@@ -60,11 +51,11 @@ import org.springframework.stereotype.Component
     if ((resource.getType == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       if (publisher.getGeocode != null && publisher.getGeocode.isValid) {
-        TaggingReturnsOfficerService.log.debug("Adding publisher geotag: " + publisher.getGeocode.toString)
+        log.debug("Adding publisher geotag: " + publisher.getGeocode.toString)
         votes.add(new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1))
       }
     }
-    val tagGeocode: Geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource))
+    val tagGeocode: Geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource))  // TODO should take them all and let someone else decide?
     if (tagGeocode != null && tagGeocode.isValid) {
       votes.add(new GeotaggingVote(tagGeocode, new AncestorTagVoter, 1))
     }
@@ -72,9 +63,9 @@ import org.springframework.stereotype.Component
   }
 
   def complieTaggingVotes(resource: Resource): List[TaggingVote] = {
-    val votes: List[TaggingVote] = Lists.newArrayList()
+    val votes: List[TaggingVote] = List.empty
     import scala.collection.JavaConversions._
-    for (handTagging <- tagVoteDAO.getHandTaggingsForResource(resource)) {
+    for (handTagging <- handTaggingDAO.getHandTaggingsForResource(resource)) {
       votes.add(handTagging)
     }
     val shouldAppearOnPublisherAndParentTagPages: Boolean = (resource.getType == "L") || (resource.getType == "N") || (resource.getType == "C") || (resource.getType == "F")
@@ -130,10 +121,11 @@ import org.springframework.stereotype.Component
     import scala.collection.JavaConversions._
     for (tag <- indexTagsForResource) {
       if (tag.getGeocode != null && tag.getGeocode.isValid) {
-        TaggingReturnsOfficerService.log.debug("Found subsitute geotag for resource on resource index tag: " + tag.getName)
+        log.debug("Found subsitute geotag for resource on resource index tag: " + tag.getName)
         return tag.getGeocode
       }
     }
     return null
   }
+
 }
