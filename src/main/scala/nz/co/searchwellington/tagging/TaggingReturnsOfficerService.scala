@@ -39,14 +39,14 @@ import scala.collection.JavaConversions._
   }
 
   def getIndexGeocodeForResource(resource: Resource): Geocode = {
-    val votes: List[GeotaggingVote] = getGeotagVotesForResource(resource)
+    val votes: List[GeotaggingVote] = getGeotagVotesForResource(resource).toList
     if (!votes.isEmpty) {
       return votes.get(0).getGeotag
     }
     return null
   }
 
-  def getGeotagVotesForResource(resource: Resource): List[GeotaggingVote] = {
+  def getGeotagVotesForResource(resource: Resource): java.util.List[GeotaggingVote] = {
     val votes: List[GeotaggingVote] = List.empty
     if (resource.getGeocode != null && resource.getGeocode.isValid) {
       votes.add(new GeotaggingVote(resource.getGeocode, resource.getOwner, 1))
@@ -58,8 +58,8 @@ import scala.collection.JavaConversions._
         votes.add(new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1))
       }
     }
-    val tagGeocode: Geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource))  // TODO should take them all and let someone else decide?
-    if (tagGeocode != null && tagGeocode.isValid) {
+    val tagGeocode: Geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource).toSet)  // TODO should take them all and let someone else decide?
+      if (tagGeocode != null && tagGeocode.isValid) {
       votes.add(new GeotaggingVote(tagGeocode, new AncestorTagVoter, 1))
     }
     return votes
@@ -80,7 +80,7 @@ import scala.collection.JavaConversions._
       val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
       if (acceptedFeed != null) {
         val handTags: util.Set[Tag] = this.getHandTagsForResource(acceptedFeed)
-        addAcceptedFromFeedTags(resource, handTags, votes)
+        addAcceptedFromFeedTags(resource, handTags.toSet, votes)
       }
     }
     return votes
