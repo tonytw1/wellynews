@@ -1,5 +1,7 @@
 package nz.co.searchwellington.tagging
 
+import java.util
+
 import com.google.common.collect.{Lists, Sets}
 import nz.co.searchwellington.model.{Feed, Geocode, Newsitem, PublishedResource, Resource, Tag, Website}
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, HandTagging, TaggingVote}
@@ -15,17 +17,18 @@ import scala.collection.JavaConversions._
 
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
-  def getHandTagsForResource(resource: Resource): Set[Tag] = {  // TODO no real value added by this method?
+  def getHandTagsForResource(resource: Resource): java.util.Set[Tag] = {  // TODO no real value added by this method?
     val tags: Set[Tag] = Set.empty
 
     val handTaggings: java.util.List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource)
     for (tagging <- handTaggings) {
       tags.add(tagging.getTag)  // TODO map this
     }
+
     return tags
   }
 
-  def getIndexTagsForResource(resource: Resource): Set[Tag] = {
+  def getIndexTagsForResource(resource: Resource): java.util.Set[Tag] = {
     val indexTags: Set[Tag] = Set.empty
     for (vote <- complieTaggingVotes(resource)) {
       if (!indexTags.contains(vote.getTag)) { // TODO not strictly needed?
@@ -44,7 +47,7 @@ import scala.collection.JavaConversions._
   }
 
   def getGeotagVotesForResource(resource: Resource): List[GeotaggingVote] = {
-    val votes: List[GeotaggingVote] = Lists.newArrayList()
+    val votes: List[GeotaggingVote] = List.empty
     if (resource.getGeocode != null && resource.getGeocode.isValid) {
       votes.add(new GeotaggingVote(resource.getGeocode, resource.getOwner, 1))
     }
@@ -76,7 +79,8 @@ import scala.collection.JavaConversions._
     if (resource.getType == "N") {
       val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
       if (acceptedFeed != null) {
-        addAcceptedFromFeedTags(resource, this.getHandTagsForResource(acceptedFeed), votes)
+        val handTags: util.Set[Tag] = this.getHandTagsForResource(acceptedFeed)
+        addAcceptedFromFeedTags(resource, handTags, votes)
       }
     }
     return votes
@@ -96,10 +100,8 @@ import scala.collection.JavaConversions._
   private def addPublisherDerviedTags(resource: Resource, votes: List[TaggingVote]) {
     if ((resource.asInstanceOf[PublishedResource]).getPublisher != null) {
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
-      import scala.collection.JavaConversions._
       for (publisherTag <- this.getHandTagsForResource(publisher)) {
         votes.add(new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter))
-        import scala.collection.JavaConversions._
         for (publishersAncestor <- publisherTag.getAncestors) {
           votes.add(new GeneratedTaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter))
         }
@@ -108,9 +110,7 @@ import scala.collection.JavaConversions._
   }
 
   private def addAncestorTagVotes(resource: Resource, votes: List[TaggingVote]) {
-    import scala.collection.JavaConversions._
     for (tag <- this.getHandTagsForResource(resource)) {
-      import scala.collection.JavaConversions._
       for (ancestorTag <- tag.getAncestors) {
         votes.add(new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter))
       }
@@ -118,7 +118,6 @@ import scala.collection.JavaConversions._
   }
 
   private def getGeotagFromFirstResourceTagWithLocation(indexTagsForResource: Set[Tag]): Geocode = {
-    import scala.collection.JavaConversions._
     for (tag <- indexTagsForResource) {
       if (tag.getGeocode != null && tag.getGeocode.isValid) {
         log.debug("Found subsitute geotag for resource on resource index tag: " + tag.getName)
