@@ -48,18 +48,18 @@ import scala.collection.mutable
   def getGeotagVotesForResource(resource: Resource): java.util.List[GeotaggingVote] = {
     val votes: mutable.MutableList[GeotaggingVote] = mutable.MutableList.empty
     if (resource.getGeocode != null && resource.getGeocode.isValid) {
-      votes.add(new GeotaggingVote(resource.getGeocode, resource.getOwner, 1))
+      votes += new GeotaggingVote(resource.getGeocode, resource.getOwner, 1)
     }
     if ((resource.getType == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       if (publisher.getGeocode != null && publisher.getGeocode.isValid) {
         log.debug("Adding publisher geotag: " + publisher.getGeocode.toString)
-        votes.add(new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1))
+        votes += new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1)
       }
     }
     val tagGeocode: Geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource).toSet)  // TODO should take them all and let someone else decide?
       if (tagGeocode != null && tagGeocode.isValid) {
-      votes.add(new GeotaggingVote(tagGeocode, new AncestorTagVoter, 1))
+      votes += new GeotaggingVote(tagGeocode, new AncestorTagVoter, 1)
     }
     return votes
   }
@@ -87,10 +87,10 @@ import scala.collection.mutable
 
   private def addAcceptedFromFeedTags(resource: Resource, feedsHandTags: Set[Tag], votes: mutable.MutableList[TaggingVote]) {
     for (tag <- feedsHandTags) {
-      votes.add(new GeneratedTaggingVote(tag, new FeedsTagsTagVoter))
+      votes += new GeneratedTaggingVote(tag, new FeedsTagsTagVoter)
       import scala.collection.JavaConversions._
       for (feedTagAncestor <- tag.getAncestors) {
-        votes.add(new GeneratedTaggingVote(feedTagAncestor, new FeedTagAncestorTagVoter))
+        votes += new GeneratedTaggingVote(feedTagAncestor, new FeedTagAncestorTagVoter)
       }
     }
   }
