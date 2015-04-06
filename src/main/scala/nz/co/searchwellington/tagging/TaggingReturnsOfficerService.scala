@@ -46,7 +46,7 @@ import scala.collection.mutable
   }
 
   def getGeotagVotesForResource(resource: Resource): java.util.List[GeotaggingVote] = {
-    val votes: mutable.MutableList[Nothing] = mutable.MutableList.empty
+    val votes: mutable.MutableList[GeotaggingVote] = mutable.MutableList.empty
     if (resource.getGeocode != null && resource.getGeocode.isValid) {
       votes.add(new GeotaggingVote(resource.getGeocode, resource.getOwner, 1))
     }
