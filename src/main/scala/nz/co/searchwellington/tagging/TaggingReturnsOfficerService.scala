@@ -12,13 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 
 @Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO) {
 
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
   def getHandTagsForResource(resource: Resource): java.util.Set[Tag] = {  // TODO no real value added by this method?
-    val tags: Set[Tag] = Set.empty
+    val tags: scala.collection.mutable.Set[Tag] = scala.collection.mutable.Set.empty
 
     val handTaggings: java.util.List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource)
     for (tagging <- handTaggings) {
@@ -66,11 +67,11 @@ import scala.collection.JavaConversions._
   }
 
   def complieTaggingVotes(resource: Resource): List[TaggingVote] = {
-    val votes: List[TaggingVote] = List.empty
-    import scala.collection.JavaConversions._
+    val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (handTagging <- handTaggingDAO.getHandTaggingsForResource(resource)) {
-      votes.add(handTagging)
+      votes += handTagging
     }
+
     val shouldAppearOnPublisherAndParentTagPages: Boolean = (resource.getType == "L") || (resource.getType == "N") || (resource.getType == "C") || (resource.getType == "F")
     if (shouldAppearOnPublisherAndParentTagPages) {
       addAncestorTagVotes(resource, votes)
@@ -83,10 +84,10 @@ import scala.collection.JavaConversions._
         addAcceptedFromFeedTags(resource, handTags.toSet, votes)
       }
     }
-    return votes
+    return votes.toList
   }
 
-  private def addAcceptedFromFeedTags(resource: Resource, feedsHandTags: Set[Tag], votes: List[TaggingVote]) {
+  private def addAcceptedFromFeedTags(resource: Resource, feedsHandTags: Set[Tag], votes: mutable.MutableList[TaggingVote]) {
     import scala.collection.JavaConversions._
     for (tag <- feedsHandTags) {
       votes.add(new GeneratedTaggingVote(tag, new FeedsTagsTagVoter))
@@ -97,22 +98,22 @@ import scala.collection.JavaConversions._
     }
   }
 
-  private def addPublisherDerviedTags(resource: Resource, votes: List[TaggingVote]) {
+  private def addPublisherDerviedTags(resource: Resource, votes: mutable.MutableList[TaggingVote]) {
     if ((resource.asInstanceOf[PublishedResource]).getPublisher != null) {
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       for (publisherTag <- this.getHandTagsForResource(publisher)) {
-        votes.add(new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter))
+        votes += new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter)
         for (publishersAncestor <- publisherTag.getAncestors) {
-          votes.add(new GeneratedTaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter))
+          votes += new GeneratedTaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter)
         }
       }
     }
   }
 
-  private def addAncestorTagVotes(resource: Resource, votes: List[TaggingVote]) {
+  private def addAncestorTagVotes(resource: Resource, votes: mutable.MutableList[TaggingVote]) {  // TODO Not very functional
     for (tag <- this.getHandTagsForResource(resource)) {
       for (ancestorTag <- tag.getAncestors) {
-        votes.add(new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter))
+        votes += new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)
       }
     }
   }
