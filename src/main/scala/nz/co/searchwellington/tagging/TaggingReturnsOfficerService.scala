@@ -46,7 +46,7 @@ import scala.collection.mutable
   }
 
   def getGeotagVotesForResource(resource: Resource): java.util.List[GeotaggingVote] = {
-    val votes: List[GeotaggingVote] = List.empty
+    val votes: mutable.MutableList[Nothing] = mutable.MutableList.empty
     if (resource.getGeocode != null && resource.getGeocode.isValid) {
       votes.add(new GeotaggingVote(resource.getGeocode, resource.getOwner, 1))
     }
@@ -86,7 +86,6 @@ import scala.collection.mutable
   }
 
   private def addAcceptedFromFeedTags(resource: Resource, feedsHandTags: Set[Tag], votes: mutable.MutableList[TaggingVote]) {
-    import scala.collection.JavaConversions._
     for (tag <- feedsHandTags) {
       votes.add(new GeneratedTaggingVote(tag, new FeedsTagsTagVoter))
       import scala.collection.JavaConversions._
