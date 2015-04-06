@@ -68,7 +68,7 @@ public class NewsitemPageModelBuilder implements ModelBuilder {
 			}
 			
 			final Resource resource = resourceDAO.loadResourceById(frontendResource.getId());	// TODO Caused by model confusion Null safe
-			mv.addObject("votes", taggingReturnsOfficerService.complieTaggingVotes(resource));
+			mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource));
 			mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource));            
             mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser(), resource)));
 			return mv;

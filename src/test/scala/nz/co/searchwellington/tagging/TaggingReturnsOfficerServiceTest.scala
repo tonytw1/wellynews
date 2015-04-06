@@ -42,7 +42,7 @@ class TaggingReturnsOfficerServiceTest {
     assertTrue(taggings.get(0).getTag().equals(aroValleyTag)); // TODO not a great assert
   }
 
-  @Test def indexagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
+  @Test def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
     aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, ".. Student flats in the Aro Valley... Test", null, null, null)
     val handTags: java.util.List[HandTagging] = Lists.newArrayList(new HandTagging(-1, aroValleyNewsitem, null, aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)

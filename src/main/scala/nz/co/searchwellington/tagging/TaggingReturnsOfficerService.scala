@@ -30,11 +30,9 @@ import scala.collection.mutable
   }
 
   def getIndexTagsForResource(resource: Resource): java.util.Set[Tag] = {
-    val indexTags: Set[Tag] = Set.empty
-    for (vote <- complieTaggingVotes(resource)) {
-      if (!indexTags.contains(vote.getTag)) { // TODO not strictly needed?
-        indexTags.add(vote.getTag)
-      }
+    val indexTags: mutable.Set[Tag] = mutable.Set.empty
+    for (vote <- compileTaggingVotes(resource)) {
+      indexTags.add(vote.getTag);
     }
     return indexTags
   }
@@ -66,7 +64,7 @@ import scala.collection.mutable
     return votes
   }
 
-  def complieTaggingVotes(resource: Resource): List[TaggingVote] = {
+  def compileTaggingVotes(resource: Resource): List[TaggingVote] = {
     val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (handTagging <- handTaggingDAO.getHandTaggingsForResource(resource)) {
       votes += handTagging
