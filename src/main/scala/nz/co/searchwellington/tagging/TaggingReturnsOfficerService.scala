@@ -18,23 +18,14 @@ import scala.collection.mutable
 
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
-  def getHandTagsForResource(resource: Resource): java.util.Set[Tag] = {  // TODO no real value added by this method?
-    val tags: scala.collection.mutable.Set[Tag] = scala.collection.mutable.Set.empty
-
-    val handTaggings: java.util.List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource)
-    for (tagging <- handTaggings) {
-      tags.add(tagging.getTag)  // TODO map this
-    }
-
-    return tags
+  def getHandTagsForResource(resource: Resource): java.util.Set[Tag] = {
+    val toSet = handTaggingDAO.getHandTaggingsForResource(resource).toList.map(handTagging => (handTagging.getTag)).distinct.toSet
+    return toSet
   }
 
   def getIndexTagsForResource(resource: Resource): java.util.Set[Tag] = {
-    val indexTags: mutable.Set[Tag] = mutable.Set.empty
-    for (vote <- compileTaggingVotes(resource)) {
-      indexTags.add(vote.getTag);
-    }
-    return indexTags
+    val toSet = compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.getTag)).distinct.toSet
+    return toSet
   }
 
   def getIndexGeocodeForResource(resource: Resource): Geocode = {
