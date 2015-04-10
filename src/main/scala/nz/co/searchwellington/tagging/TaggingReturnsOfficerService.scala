@@ -64,7 +64,7 @@ import scala.collection.mutable
     return votes
   }
 
-  def compileTaggingVotes(resource: Resource): List[TaggingVote] = {
+  def compileTaggingVotes(resource: Resource): java.util.List[TaggingVote] = {
     val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (handTagging <- handTaggingDAO.getHandTaggingsForResource(resource)) {
       votes += handTagging
