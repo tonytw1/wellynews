@@ -36,25 +36,6 @@ import scala.collection.mutable
     return null
   }
 
-  def getGeotagVotesForResource(resource: Resource): java.util.List[GeotaggingVote] = {
-    val votes: mutable.MutableList[GeotaggingVote] = mutable.MutableList.empty
-    if (resource.getGeocode != null && resource.getGeocode.isValid) {
-      votes += new GeotaggingVote(resource.getGeocode, resource.getOwner, 1)
-    }
-    if ((resource.getType == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
-      val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
-      if (publisher.getGeocode != null && publisher.getGeocode.isValid) {
-        log.debug("Adding publisher geotag: " + publisher.getGeocode.toString)
-        votes += new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1)
-      }
-    }
-    val tagGeocode: Geocode = getGeotagFromFirstResourceTagWithLocation(getIndexTagsForResource(resource).toSet)  // TODO should take them all and let someone else decide?
-      if (tagGeocode != null && tagGeocode.isValid) {
-      votes += new GeotaggingVote(tagGeocode, new AncestorTagVoter, 1)
-    }
-    return votes
-  }
-
   def compileTaggingVotes(resource: Resource): java.util.List[TaggingVote] = {
     val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
 
@@ -66,7 +47,7 @@ import scala.collection.mutable
       votes ++= generateAncestorTagVotes(resource)
       votes ++= generatePublisherDerivedTagVotes(resource)
     }
-    
+
     if (resource.getType == "N") {
       val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
       if (acceptedFeed != null) {
@@ -75,6 +56,27 @@ import scala.collection.mutable
       }
     }
     return votes.toList
+  }
+
+  def getGeotagVotesForResource(resource: Resource): java.util.List[GeotaggingVote] = {
+    val votes: mutable.MutableList[GeotaggingVote] = mutable.MutableList.empty
+    if (resource.getGeocode != null && resource.getGeocode.isValid) {
+      votes += new GeotaggingVote(resource.getGeocode, resource.getOwner, 1)
+    }
+
+    if ((resource.getType == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
+      val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
+      if (publisher.getGeocode != null && publisher.getGeocode.isValid) {
+        log.debug("Adding publisher geotag: " + publisher.getGeocode.toString)
+        votes += new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1)
+      }
+    }
+    
+    val tagGeocode: Geocode = getFirstAvailableGeotagFromTags(getIndexTagsForResource(resource).toSet)  // TODO should take them all and let someone else decide?
+    if (tagGeocode != null && tagGeocode.isValid) {
+      votes += new GeotaggingVote(tagGeocode, new AncestorTagVoter, 1)
+    }
+    return votes
   }
 
   private def addAcceptedFromFeedTags(resource: Resource, feedsHandTags: Set[Tag], votes: mutable.MutableList[TaggingVote]) {
@@ -108,14 +110,11 @@ import scala.collection.mutable
     ancestorTagVotes
   }
 
-  private def getGeotagFromFirstResourceTagWithLocation(indexTagsForResource: Set[Tag]): Geocode = {
-    for (tag <- indexTagsForResource) {
-      if (tag.getGeocode != null && tag.getGeocode.isValid) {
-        log.debug("Found subsitute geotag for resource on resource index tag: " + tag.getName)
-        return tag.getGeocode
-      }
+  private def getFirstAvailableGeotagFromTags(tags: Set[Tag]): Geocode = {
+    tags.find(tag => (tag.getGeocode != null && tag.getGeocode.isValid)) match {
+      case None => null
+      case Some(tag) => tag.getGeocode
     }
-    return null
   }
 
 }
