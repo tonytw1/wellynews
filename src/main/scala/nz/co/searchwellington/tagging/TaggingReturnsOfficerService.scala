@@ -57,15 +57,16 @@ import scala.collection.mutable
 
   def compileTaggingVotes(resource: Resource): java.util.List[TaggingVote] = {
     val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
-    for (handTagging <- handTaggingDAO.getHandTaggingsForResource(resource)) {
-      votes += handTagging
-    }
+
+    val handTaggings: List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource).toList
+    votes ++= handTaggings;
 
     val shouldAppearOnPublisherAndParentTagPages: Boolean = (resource.getType == "L") || (resource.getType == "N") || (resource.getType == "C") || (resource.getType == "F")
     if (shouldAppearOnPublisherAndParentTagPages) {
-      addAncestorTagVotes(resource, votes)
-      addPublisherDerviedTags(resource, votes)
+      votes ++= generateAncestorTagVotes(resource)
+      votes ++= generatePublisherDerivedTagVotes(resource)
     }
+    
     if (resource.getType == "N") {
       val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
       if (acceptedFeed != null) {
@@ -86,24 +87,25 @@ import scala.collection.mutable
     }
   }
 
-  private def addPublisherDerviedTags(resource: Resource, votes: mutable.MutableList[TaggingVote]) {
+  private def generatePublisherDerivedTagVotes(resource: Resource): mutable.MutableList[TaggingVote] = {
+    val publisherTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
+
     if ((resource.asInstanceOf[PublishedResource]).getPublisher != null) {
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       for (publisherTag <- this.getHandTagsForResource(publisher)) {
-        votes += new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter)
-        for (publishersAncestor <- publisherTag.getAncestors) {
-          votes += new GeneratedTaggingVote(publishersAncestor, new PublishersTagAncestorTagVoter)
-        }
+        publisherTagVotes += new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter)
+        publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
       }
     }
+    publisherTagVotes;
   }
 
-  private def addAncestorTagVotes(resource: Resource, votes: mutable.MutableList[TaggingVote]) {  // TODO Not very functional
+  private def generateAncestorTagVotes(resource: Resource): mutable.MutableList[TaggingVote] = {
+    val ancestorTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (tag <- this.getHandTagsForResource(resource)) {
-      for (ancestorTag <- tag.getAncestors) {
-        votes += new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)
-      }
+      ancestorTagVotes ++= tag.getAncestors.toList.map(ancestorTag => (new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)))
     }
+    ancestorTagVotes
   }
 
   private def getGeotagFromFirstResourceTagWithLocation(indexTagsForResource: Set[Tag]): Geocode = {
