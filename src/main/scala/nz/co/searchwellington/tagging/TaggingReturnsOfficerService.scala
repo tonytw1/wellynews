@@ -51,10 +51,10 @@ import scala.collection.mutable
     if (resource.getType == "N") {
       val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
       if (acceptedFeed != null) {
-        val handTags: util.Set[Tag] = this.getHandTagsForResource(acceptedFeed)
-        addAcceptedFromFeedTags(resource, handTags.toSet, votes)
+        votes ++= addAcceptedFromFeedTags(this.getHandTagsForResource(acceptedFeed).toSet)
       }
     }
+
     return votes.toList
   }
 
@@ -71,22 +71,18 @@ import scala.collection.mutable
         votes += new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1)
       }
     }
-    
-    val tagGeocode: Geocode = getFirstAvailableGeotagFromTags(getIndexTagsForResource(resource).toSet)  // TODO should take them all and let someone else decide?
-    if (tagGeocode != null && tagGeocode.isValid) {
-      votes += new GeotaggingVote(tagGeocode, new AncestorTagVoter, 1)
-    }
-    return votes
+
+    val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid != null})
+    votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
   }
 
-  private def addAcceptedFromFeedTags(resource: Resource, feedsHandTags: Set[Tag], votes: mutable.MutableList[TaggingVote]) {
+  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): mutable.MutableList[TaggingVote] = {
+    val feedTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (tag <- feedsHandTags) {
-      votes += new GeneratedTaggingVote(tag, new FeedsTagsTagVoter)
-      import scala.collection.JavaConversions._
-      for (feedTagAncestor <- tag.getAncestors) {
-        votes += new GeneratedTaggingVote(feedTagAncestor, new FeedTagAncestorTagVoter)
-      }
+      feedTagVotes += new GeneratedTaggingVote(tag, new FeedsTagsTagVoter)
+      feedTagVotes ++= tag.getAncestors.toList.map(t => {new GeneratedTaggingVote(t, new FeedTagAncestorTagVoter)})
     }
+    feedTagVotes
   }
 
   private def generatePublisherDerivedTagVotes(resource: Resource): mutable.MutableList[TaggingVote] = {
@@ -108,13 +104,6 @@ import scala.collection.mutable
       ancestorTagVotes ++= tag.getAncestors.toList.map(ancestorTag => (new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)))
     }
     ancestorTagVotes
-  }
-
-  private def getFirstAvailableGeotagFromTags(tags: Set[Tag]): Geocode = {
-    tags.find(tag => (tag.getGeocode != null && tag.getGeocode.isValid)) match {
-      case None => null
-      case Some(tag) => tag.getGeocode
-    }
   }
 
 }
