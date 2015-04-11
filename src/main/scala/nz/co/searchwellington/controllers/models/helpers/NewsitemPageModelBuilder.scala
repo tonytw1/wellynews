@@ -29,6 +29,7 @@ import scala.collection.JavaConverters._
   }
 
   def populateContentModel(request: HttpServletRequest): ModelAndView = {
+
     val frontendResource: FrontendResource = contentRetrievalService.getNewsPage(request.getPathInfo)
     if (frontendResource != null) {
       val mv: ModelAndView = new ModelAndView
@@ -37,8 +38,8 @@ import scala.collection.JavaConverters._
       if (frontendResource.getPlace != null) {
         mv.addObject("geocoded", List(frontendResource).asJava)
       }
-      val resource: Resource = resourceDAO.loadResourceById(frontendResource.getId)
 
+      val resource: Resource = resourceDAO.loadResourceById(frontendResource.getId) // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
       mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
       mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
 
