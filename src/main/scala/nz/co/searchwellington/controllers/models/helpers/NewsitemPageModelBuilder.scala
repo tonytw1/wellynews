@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.Arrays
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter
@@ -14,6 +13,8 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
+
+import scala.collection.JavaConverters._
 
 @Component class NewsitemPageModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, taggingReturnsOfficerService: TaggingReturnsOfficerService, tagWidgetFactory: TagsWidgetFactory, tagVoteDAO: HandTaggingDAO, loggedInUserFilter: LoggedInUserFilter, resourceDAO: HibernateResourceDAO) extends ModelBuilder {
 
@@ -34,12 +35,12 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("item", frontendResource)
       mv.addObject("heading", frontendResource.getName)
       if (frontendResource.getPlace != null) {
-        mv.addObject("geocoded", Arrays.asList(frontendResource))
+        mv.addObject("geocoded", List(frontendResource).asJava)
       }
       val resource: Resource = resourceDAO.loadResourceById(frontendResource.getId)
 
-      mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource)) // TODO needs to be cast to a Java list
-      mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource)) // TOOD needs to be cast to a Java list
+      mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
+      mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
 
       mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser, resource)))
       return mv
