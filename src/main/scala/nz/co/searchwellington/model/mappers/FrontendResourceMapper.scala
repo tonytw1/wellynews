@@ -1,19 +1,14 @@
 package nz.co.searchwellington.model.mappers
 
-import java.util.List
-
-import nz.co.searchwellington.model.{Feed, Geocode, Newsitem, Resource, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendImage, FrontendNewsitem, FrontendResource, FrontendTag}
+import nz.co.searchwellington.model.{Feed, Geocode, Newsitem, Resource, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
-import org.elasticsearch.common.collect.Lists
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.collection.JavaConversions._
 import scala.collection.mutable
-
-import scala.collection.JavaConversions._
-import scala.collection.JavaConversions._
 
 @Component class FrontendResourceMapper @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator, geocodeToPlaceMapper: GeocodeToPlaceMapper) {
 
