@@ -1,7 +1,5 @@
 package nz.co.searchwellington.tagging
 
-import java.util
-
 import com.google.common.collect.{Lists, Sets}
 import nz.co.searchwellington.model.{Feed, Geocode, Newsitem, PublishedResource, Resource, Tag, Website}
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, HandTagging, TaggingVote}
@@ -18,12 +16,12 @@ import scala.collection.mutable
 
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
-  def getHandTagsForResource(resource: Resource): java.util.Set[Tag] = {
+  def getHandTagsForResource(resource: Resource): Set[Tag] = {
     val toSet = handTaggingDAO.getHandTaggingsForResource(resource).toList.map(handTagging => (handTagging.getTag)).distinct.toSet
     toSet
   }
 
-  def getIndexTagsForResource(resource: Resource): java.util.Set[Tag] = {
+  def getIndexTagsForResource(resource: Resource): Set[Tag] = {
     val toSet = compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.getTag)).distinct.toSet
     toSet
   }
