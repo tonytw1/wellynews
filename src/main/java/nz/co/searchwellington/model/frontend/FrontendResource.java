@@ -1,16 +1,13 @@
 package nz.co.searchwellington.model.frontend;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
-
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import uk.co.eelpieconsulting.common.geo.model.LatLong;
 import uk.co.eelpieconsulting.common.geo.model.Place;
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
 public class FrontendResource implements RssFeedable, Serializable {
 	
 	private static final long serialVersionUID = 1L;
