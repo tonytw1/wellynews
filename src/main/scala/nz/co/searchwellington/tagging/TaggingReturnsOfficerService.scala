@@ -20,23 +20,23 @@ import scala.collection.mutable
 
   def getHandTagsForResource(resource: Resource): java.util.Set[Tag] = {
     val toSet = handTaggingDAO.getHandTaggingsForResource(resource).toList.map(handTagging => (handTagging.getTag)).distinct.toSet
-    return toSet
+    toSet
   }
 
   def getIndexTagsForResource(resource: Resource): java.util.Set[Tag] = {
     val toSet = compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.getTag)).distinct.toSet
-    return toSet
+    toSet
   }
 
   def getIndexGeocodeForResource(resource: Resource): Geocode = {
-    val votes: List[GeotaggingVote] = getGeotagVotesForResource(resource).toList
+    val votes: List[GeotaggingVote] = getGeotagVotesForResource(resource)
     if (!votes.isEmpty) {
       return votes.get(0).getGeotag
     }
     return null
   }
 
-  def compileTaggingVotes(resource: Resource): java.util.List[TaggingVote] = {
+  def compileTaggingVotes(resource: Resource): List[TaggingVote] = {
     val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
 
     val handTaggings: List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource).toList
@@ -55,10 +55,10 @@ import scala.collection.mutable
       }
     }
 
-    return votes.toList
+    votes.toList
   }
 
-  def getGeotagVotesForResource(resource: Resource): java.util.List[GeotaggingVote] = {
+  def getGeotagVotesForResource(resource: Resource): List[GeotaggingVote] = {
     val votes: mutable.MutableList[GeotaggingVote] = mutable.MutableList.empty
     if (resource.getGeocode != null && resource.getGeocode.isValid) {
       votes += new GeotaggingVote(resource.getGeocode, resource.getOwner, 1)
@@ -72,20 +72,22 @@ import scala.collection.mutable
       }
     }
 
-    val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid != null})
+    val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
     votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
+
+    votes.toList
   }
 
-  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): mutable.MutableList[TaggingVote] = {
+  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): List[TaggingVote] = {
     val feedTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (tag <- feedsHandTags) {
       feedTagVotes += new GeneratedTaggingVote(tag, new FeedsTagsTagVoter)
       feedTagVotes ++= tag.getAncestors.toList.map(t => {new GeneratedTaggingVote(t, new FeedTagAncestorTagVoter)})
     }
-    feedTagVotes
+    feedTagVotes.toList
   }
 
-  private def generatePublisherDerivedTagVotes(resource: Resource): mutable.MutableList[TaggingVote] = {
+  private def generatePublisherDerivedTagVotes(resource: Resource): List[TaggingVote] = {
     val publisherTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
 
     if ((resource.asInstanceOf[PublishedResource]).getPublisher != null) {
@@ -95,15 +97,15 @@ import scala.collection.mutable
         publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
       }
     }
-    publisherTagVotes;
+    publisherTagVotes.toList
   }
 
-  private def generateAncestorTagVotes(resource: Resource): mutable.MutableList[TaggingVote] = {
+  private def generateAncestorTagVotes(resource: Resource): List[TaggingVote] = {
     val ancestorTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (tag <- this.getHandTagsForResource(resource)) {
       ancestorTagVotes ++= tag.getAncestors.toList.map(ancestorTag => (new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)))
     }
-    ancestorTagVotes
+    ancestorTagVotes.toList
   }
 
 }
