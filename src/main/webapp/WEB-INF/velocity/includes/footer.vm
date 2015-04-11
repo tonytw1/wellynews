@@ -17,13 +17,7 @@
 		markers.forEach(function(marker) {
 			mapMarkers.push(L.marker([marker.lat, marker.long]).addTo(map).bindPopup(marker.title));
 	    });
-	    	    
-		#if ($selected) 
-			map.setView([$selected.getGeocode().getLatitude(), $selected.getGeocode().getLongitude()], 13);		
-		#elseif ($location)
-			map.setView([$location.latLong.latitude, $location.latLong.longitude], 13);
-		#end
-	    	
+	    
 	   	map.fitBounds(new L.featureGroup(mapMarkers).getBounds());
     }
 	
