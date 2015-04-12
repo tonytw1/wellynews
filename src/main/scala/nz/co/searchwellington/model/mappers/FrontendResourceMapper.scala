@@ -54,13 +54,13 @@ import scala.collection.mutable
 
     val tags: mutable.MutableList[FrontendTag] = mutable.MutableList.empty
     for (tag <- taggingReturnsOfficerService.getIndexTagsForResource(contentItem)) {
-      tags.add(mapTagToFrontendTag(tag))
+      tags += mapTagToFrontendTag(tag)
     }
     frontendContentItem.setTags(tags)
 
     val handTags: mutable.MutableList[FrontendTag] = mutable.MutableList.empty
     for (tag <- taggingReturnsOfficerService.getHandTagsForResource(contentItem)) {
-      handTags.add(mapTagToFrontendTag(tag))
+      handTags += mapTagToFrontendTag(tag)
     }
     frontendContentItem.setHandTags(handTags)
 
