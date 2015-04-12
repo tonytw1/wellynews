@@ -9,6 +9,7 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
@@ -38,6 +39,7 @@ public class TagModelBuilderTest {
 	@Mock FlickrService flickrService;
 	@Mock FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 	@Mock GeocodeToPlaceMapper geocodeToPlaceMapper;
+    @Mock CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Mock List<FrontendResource> tagNewsitems;	
 	@Mock Tag tag;
@@ -50,7 +52,7 @@ public class TagModelBuilderTest {
 		MockitoAnnotations.initMocks(this);
 		modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder,
 				relatedTagsService, rssfeedNewsitemService,
-				contentRetrievalService, flickrService, feedItemLocalCopyDecorator, geocodeToPlaceMapper);
+				contentRetrievalService, flickrService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder);
 		request = new MockHttpServletRequest();
 		Mockito.when(tag.getDisplayName()).thenReturn(TAG_DISPLAY_NAME);
 	}

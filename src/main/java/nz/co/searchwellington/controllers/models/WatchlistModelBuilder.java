@@ -3,6 +3,7 @@
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
 
@@ -12,21 +13,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class WatchlistModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class WatchlistModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(WatchlistModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Autowired
 	public WatchlistModelBuilder(
 			ContentRetrievalService contentRetrievalService,
-			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder) {
+			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
+            CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -45,7 +49,7 @@ public class WatchlistModelBuilder extends AbstractModelBuilder implements Model
 			
 			mv.addObject("main_content", contentRetrievalService.getRecentlyChangedWatchlistItems());
 			
-			setRss(mv, rssUrlBuilder.getRssTitleForJustin(), rssUrlBuilder.getRssUrlForWatchlist());
+			commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin(), rssUrlBuilder.getRssUrlForWatchlist());
 			return mv;
 		}
 		return null;

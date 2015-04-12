@@ -3,6 +3,7 @@
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class SuggestionsModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class SuggestionsModelBuilder implements ModelBuilder {
 
 	private static Logger log = Logger.getLogger(SuggestionsModelBuilder.class);
 
@@ -22,16 +23,19 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
+    private ContentRetrievalService contentRetrievalService;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Autowired
 	public SuggestionsModelBuilder(
 			SuggestedFeeditemsService suggestedFeeditemsService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
-			ContentRetrievalService contentRetrievalService) {
+			ContentRetrievalService contentRetrievalService, CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.suggestedFeeditemsService = suggestedFeeditemsService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.contentRetrievalService = contentRetrievalService;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -51,7 +55,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 			mv.addObject("link", urlBuilder.getFeedsInboxUrl());
 			mv.addObject("description","Suggested newsitems from local feeds.");  
 			
-			setRss(mv, rssUrlBuilder.getTitleForSuggestions(), rssUrlBuilder.getRssUrlForFeedSuggestions());			
+			commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions(), rssUrlBuilder.getRssUrlForFeedSuggestions());
 			return mv;
 		}
 		return null;
@@ -59,7 +63,7 @@ public class SuggestionsModelBuilder extends AbstractModelBuilder implements Mod
 	
 	@Override
 	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
-		populateSecondaryFeeds(mv);
+		commonAttributesModelBuilder.populateSecondaryFeeds(mv);
 	}
 	
 	@Override

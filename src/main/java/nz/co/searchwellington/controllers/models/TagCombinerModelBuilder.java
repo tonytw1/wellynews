@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
@@ -18,21 +19,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class TagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class TagCombinerModelBuilder implements ModelBuilder {
 	
 	private ContentRetrievalService contentRetrievalService;
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Autowired
 	public TagCombinerModelBuilder(ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
-			RelatedTagsService relatedTagsService) {
+			RelatedTagsService relatedTagsService, CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -48,7 +51,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			List<Tag> tags = (List<Tag>) request.getAttribute("tags");
-			int page = getPage(request);
+			int page = commonAttributesModelBuilder.getPage(request);
 			return populateTagCombinerModelAndView(tags, page);
 		}
 		return null;
@@ -62,7 +65,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, 8));
 		mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5));
 
-		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), MAX_WEBSITES);  
+		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet<Tag>(tags), CommonAttributesModelBuilder.MAX_WEBSITES);
 		mv.addObject("websites", taggedWebsites);
 	}
 	
@@ -79,7 +82,7 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 	}
 	
 	private ModelAndView populateTagCombinerModelAndView(List<Tag> tags, int page) {
-		final int startIndex = getStartIndex(page);
+		final int startIndex = commonAttributesModelBuilder.getStartIndex(page);
 		final long totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags);
 		if (startIndex > totalNewsitemCount) {
 			return null;
@@ -97,10 +100,10 @@ public class TagCombinerModelBuilder extends AbstractModelBuilder implements Mod
 		mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag));
 		
 		if (totalNewsitemCount > 0) {			
-			populatePagination(mv, startIndex, totalNewsitemCount);			
-			final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, MAX_NEWSITEMS);		
+			commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount);
+			final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS);
 			mv.addObject("main_content", taggedNewsitems);
-			 setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
+			 commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)));
 			 return mv;
 		}
 		return null;

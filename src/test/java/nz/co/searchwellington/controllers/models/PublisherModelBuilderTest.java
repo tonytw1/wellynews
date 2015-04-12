@@ -6,6 +6,7 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.Website;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 import nz.co.searchwellington.model.frontend.FrontendResource;
@@ -33,6 +34,7 @@ public class PublisherModelBuilderTest {
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 	@Mock GeocodeToPlaceMapper geocodeToPlaceMapper;
+    @Mock CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Mock Website publisher;
 	@Mock FrontendNewsitem newsitem;
@@ -62,7 +64,7 @@ public class PublisherModelBuilderTest {
 		Mockito.when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems);
 		
 		PublisherModelBuilder modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, 
-				contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor, geocodeToPlaceMapper);
+				contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor, geocodeToPlaceMapper, commonAttributesModelBuilder);
 		
 		final ModelAndView mv = new ModelAndView();
 		

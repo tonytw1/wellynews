@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class IndexModelBuilder implements ModelBuilder {
 	
 	private static final int MAX_OWNED_TO_SHOW_IN_RHS = 4;
 	private static final int NUMBER_OF_COMMENTED_TO_SHOW = 2;
@@ -28,16 +29,19 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	private LoggedInUserFilter loggedInUserFilter;
 	private UrlBuilder urlBuilder;
 	private ArchiveLinksService archiveLinksService;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Autowired
 	public IndexModelBuilder(ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, LoggedInUserFilter loggedInUserFilter,
-			UrlBuilder urlBuilder, ArchiveLinksService archiveLinksService) {
+			UrlBuilder urlBuilder, ArchiveLinksService archiveLinksService,
+            CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.loggedInUserFilter = loggedInUserFilter;
 		this.urlBuilder = urlBuilder;
 		this.archiveLinksService = archiveLinksService;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -49,10 +53,10 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	public ModelAndView populateContentModel(HttpServletRequest request) {
 		if (isValid(request)) {
 			ModelAndView mv = new ModelAndView();		
-			final List<FrontendResource> latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS);                
+			final List<FrontendResource> latestNewsitems = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS);
 			mv.addObject("main_content", latestNewsitems);
 			
-			setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
+			commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle(), rssUrlBuilder.getBaseRssUrl());
 			
 			if (latestNewsitems != null) {
 				Date monthOfLastItem = monthOfLastItem(latestNewsitems);
@@ -118,7 +122,7 @@ public class IndexModelBuilder extends AbstractModelBuilder implements ModelBuil
 	}
 	
 	private void populateGeocoded(ModelAndView mv) {
-        List<FrontendResource> geocoded = contentRetrievalService.getGeocoded(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
+        List<FrontendResource> geocoded = contentRetrievalService.getGeocoded(0, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);
         }

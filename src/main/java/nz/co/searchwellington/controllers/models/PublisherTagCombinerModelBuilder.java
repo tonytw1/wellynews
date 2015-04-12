@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
@@ -20,7 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class PublisherTagCombinerModelBuilder implements ModelBuilder {
 	
 	static Logger logger = Logger.getLogger(PublisherTagCombinerModelBuilder.class);
 	
@@ -28,16 +29,19 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 	private RssUrlBuilder rssUrlBuilder;
 	private UrlBuilder urlBuilder;
 	private RelatedTagsService relatedTagsService;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 		
 	@Autowired
 	public PublisherTagCombinerModelBuilder(
 			ContentRetrievalService contentRetrievalService,
 			RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
-			RelatedTagsService relatedTagsService) {
+			RelatedTagsService relatedTagsService,
+            CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -86,10 +90,10 @@ public class PublisherTagCombinerModelBuilder extends AbstractModelBuilder imple
 
 	// TODO needs pagination
 	private void populatePublisherTagCombinerNewsitems(ModelAndView mv, Website publisher, Tag tag) {		
-		final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS);
+		final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, CommonAttributesModelBuilder.MAX_NEWSITEMS);
 		mv.addObject("main_content", publisherNewsitems);		
 		if (publisherNewsitems.size() > 0) {            
-			setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));
+			commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag));
 		}
 	}
 	

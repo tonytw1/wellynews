@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.model.Website;
@@ -22,7 +23,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class PublisherModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class PublisherModelBuilder implements ModelBuilder {
 	
 	private static Logger logger = Logger.getLogger(PublisherModelBuilder.class);
 	
@@ -32,16 +33,19 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 	private final UrlBuilder urlBuilder;
 	private final GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 	private final GeocodeToPlaceMapper geocodeToPlaceMapper;
+    private final CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Autowired
 	public PublisherModelBuilder(RssUrlBuilder rssUrlBuilder, RelatedTagsService relatedTagsService, ContentRetrievalService contentRetrievalService, 
-			UrlBuilder urlBuilder, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor, GeocodeToPlaceMapper geocodeToPlaceMapper) {
+			UrlBuilder urlBuilder, GeotaggedNewsitemExtractor geotaggedNewsitemExtractor, GeocodeToPlaceMapper geocodeToPlaceMapper,
+            CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;
 		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -57,7 +61,7 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		if (isValid(request)) {
 			logger.info("Building publisher page model");
 			final Website publisher = (Website) request.getAttribute("publisher");	// TODO needs to be a frontend Website
-			int page = getPage(request);
+			int page = commonAttributesModelBuilder.getPage(request);
 			return populatePublisherPageModelAndView(publisher, page);			
 		}
 		return null;
@@ -103,13 +107,13 @@ public class PublisherModelBuilder extends AbstractModelBuilder implements Model
 		mv.addObject("publisher", frontendPublisher);
 		mv.addObject("location", frontendPublisher.getPlace());
 		
-		int startIndex = getStartIndex(page);
+		int startIndex = commonAttributesModelBuilder.getStartIndex(page);
 		final long mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher);
 		if (mainContentTotal > 0) {			
-			final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex);		
+			final List<FrontendResource> publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, CommonAttributesModelBuilder.MAX_NEWSITEMS, startIndex);
 			mv.addObject("main_content", publisherNewsitems);
-			setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));			
-			populatePagination(mv, startIndex, mainContentTotal);
+			commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher));
+			commonAttributesModelBuilder.populatePagination(mv, startIndex, mainContentTotal);
 		}
 		return mv;
 	}

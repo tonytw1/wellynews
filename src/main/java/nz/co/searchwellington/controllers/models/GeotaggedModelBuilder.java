@@ -6,7 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
+import nz.co.searchwellington.model.Comment;
 import nz.co.searchwellington.model.PublisherContentCount;
 import nz.co.searchwellington.model.TagContentCount;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -23,7 +25,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 import com.google.common.base.Strings;
 
 @Component
-public class GeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class GeotaggedModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(GeotaggedModelBuilder.class);
 	
@@ -34,14 +36,16 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
 	private RelatedTagsService relatedTagsService;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Autowired
 	public GeotaggedModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, 
-			RelatedTagsService relatedTagsService) {
+			RelatedTagsService relatedTagsService, CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.relatedTagsService = relatedTagsService;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 
 	@Override
@@ -65,9 +69,9 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				final LatLong latLong = userSuppliedPlace.getLatLong();
 				log.debug("Location is set to: " + userSuppliedPlace.getLatLong());
 				
-				final int page = getPage(request);
+				final int page = commonAttributesModelBuilder.getPage(request);
 				mv.addObject("page", page);
-				final int startIndex = getStartIndex(page);
+				final int startIndex = commonAttributesModelBuilder.getStartIndex(page);
 				
 				final double radius = getLocationSearchRadius(request);
 				mv.addObject("radius", radius);
@@ -76,12 +80,12 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				if (startIndex > totalNearbyCount) {
 					return null;
 				}
-				populatePagination(mv, startIndex, totalNearbyCount);
+				commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNearbyCount);
 				
 				mv.addObject("location", userSuppliedPlace);
 				
 				log.debug("Populating main content with newsitems near: " + latLong + " (radius: " + radius + ")");
-				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS));
+				mv.addObject("main_content", contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS));
 				mv.addObject("related_distances", contentRetrievalService.getNewsitemsNearDistanceFacet(latLong));
 				
 				if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
@@ -106,22 +110,19 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 				return mv;		
 			}
 			
-			final int page = getPage(request);
+			final int page = commonAttributesModelBuilder.getPage(request);
 			mv.addObject("page", page);	// TODO push to populate pagination.
-			final int startIndex = getStartIndex(page);
+			final int startIndex = commonAttributesModelBuilder.getStartIndex(page);
 			final long totalGeotaggedCount = contentRetrievalService.getGeotaggedCount();
 			if (startIndex > totalGeotaggedCount) {
 				return null;
 			}
 			
 			mv.addObject("heading", "Geotagged newsitems");
-			mv.addObject("main_content", contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS));			
-			setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
+			mv.addObject("main_content", contentRetrievalService.getGeocoded(startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS));
+			commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged(), rssUrlBuilder.getRssUrlForGeotagged());
 			
-			
-			
-			
-			populatePagination(mv, startIndex, totalGeotaggedCount);
+			commonAttributesModelBuilder.populatePagination(mv, startIndex, totalGeotaggedCount);
 			return mv;
 		}
 		return null;
@@ -150,7 +151,7 @@ public class GeotaggedModelBuilder extends AbstractModelBuilder implements Model
 		if (rssUrlForPlace == null) {
 			return;
 		}
-		setRss(mv, rssUrlBuilder.getRssTitleForPlace(place, radius), rssUrlForPlace);							
+		commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPlace(place, radius), rssUrlForPlace);
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -14,17 +15,19 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class CommentModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class CommentModelBuilder implements ModelBuilder {
 
 	private static Logger log = Logger.getLogger(CommentModelBuilder.class);
 	
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
-		
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
+
 	@Autowired
-	public CommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder) {		
+	public CommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -42,9 +45,9 @@ public class CommentModelBuilder extends AbstractModelBuilder implements ModelBu
 			mv.addObject("description", "Commented newsitems");
 			mv.addObject("link", urlBuilder.getCommentUrl());	
 						
-			int page = getPage(request);
-			int startIndex = getStartIndex(page);
-			final List<FrontendResource> commentedNewsitms = contentRetrievalService.getCommentedNewsitems(MAX_NEWSITEMS, startIndex);
+			int page = commonAttributesModelBuilder.getPage(request);
+			int startIndex = commonAttributesModelBuilder.getStartIndex(page);
+			final List<FrontendResource> commentedNewsitms = contentRetrievalService.getCommentedNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS, startIndex);
 			mv.addObject("main_content", commentedNewsitms);
 			
 			int commentedCounted = contentRetrievalService.getCommentedNewsitemsCount();

@@ -9,6 +9,7 @@ import java.util.List;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -28,6 +29,8 @@ public class IndexModelBuilderTest {
 	@Mock LoggedInUserFilter loggedInUserFilter;
 	@Mock UrlBuilder urlBuilder;
 	@Mock ArchiveLinksService archiveLinksService;
+    @Mock CommonAttributesModelBuilder commonAttributesModelBuilder;
+
 	MockHttpServletRequest request;
 
 	@Mock List<FrontendResource> latestNewsitems;
@@ -37,7 +40,7 @@ public class IndexModelBuilderTest {
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService);
+		modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder);
 		request = new MockHttpServletRequest();
 		request.setPathInfo("/");
 	}

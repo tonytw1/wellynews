@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class FeedModelBuilder implements ModelBuilder {
 	
 	private static final String FEED_ATTRIBUTE = "feedAttribute";
 	
@@ -25,18 +26,22 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	private GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 	private FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 	private FrontendResourceMapper frontendResourceMapper;
-		
+    private ContentRetrievalService contentRetrievalService;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
+
 	@Autowired
 	public FeedModelBuilder(RssfeedNewsitemService rssfeedNewsitemService,
 			ContentRetrievalService contentRetrievalService,
 			GeotaggedNewsitemExtractor geotaggedNewsitemExtractor,
 			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator, 
-			FrontendResourceMapper frontendResourceMapper) {
+			FrontendResourceMapper frontendResourceMapper,
+            CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.contentRetrievalService = contentRetrievalService;
 		this.geotaggedNewsitemExtractor = geotaggedNewsitemExtractor;
 		this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator;
 		this.frontendResourceMapper = frontendResourceMapper;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 
 	@Override
@@ -51,7 +56,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 			if (feed != null) {
 				final ModelAndView mv = new ModelAndView();
 				mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed));			
-				setRss(mv, feed.getName(), feed.getUrl());
+				commonAttributesModelBuilder.setRss(mv, feed.getName(), feed.getUrl());
 				populateFeedItems(mv, feed);
 				return mv;
 			}
@@ -61,7 +66,7 @@ public class FeedModelBuilder extends AbstractModelBuilder implements ModelBuild
 	
 	@Override
 	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
-		populateSecondaryFeeds(mv);
+        commonAttributesModelBuilder.populateSecondaryFeeds(mv);
 	}
 	
 	@Override

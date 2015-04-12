@@ -12,7 +12,7 @@ public class CommentModelBuilderTest extends TestCase {
 	@Override
 	protected void setUp() throws Exception {
 		request = new MockHttpServletRequest();		
-		modelBuilder = new CommentModelBuilder(null, null);		
+		modelBuilder = new CommentModelBuilder(null, null, null);
 	}
 		
 	public void testShouldBeValidForTagCommentPath() throws Exception {

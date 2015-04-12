@@ -2,6 +2,7 @@
 
 import javax.servlet.http.HttpServletRequest;
 
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
 import nz.co.searchwellington.repositories.SuggestedFeeditemsService;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -12,18 +13,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class FeedsModelBuilder implements ModelBuilder {
 	
 	static Logger log = Logger.getLogger(FeedsModelBuilder.class);
     
 	private SuggestedFeeditemsService suggestedFeeditemsService;
 	private UrlBuilder urlBuilder;
+    private ContentRetrievalService contentRetrievalService;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 		
 	@Autowired
-	public FeedsModelBuilder(ContentRetrievalService contentRetrievalService, SuggestedFeeditemsService suggestedFeeditemsService, UrlBuilder urlBuilder) {		
+	public FeedsModelBuilder(ContentRetrievalService contentRetrievalService, SuggestedFeeditemsService suggestedFeeditemsService,
+                             UrlBuilder urlBuilder, CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.suggestedFeeditemsService = suggestedFeeditemsService;
 		this.urlBuilder = urlBuilder;
+        this.contentRetrievalService = contentRetrievalService;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -47,7 +53,7 @@ public class FeedsModelBuilder extends AbstractModelBuilder implements ModelBuil
 	
 	@Override
 	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
-		populateSecondaryFeeds(mv);
+		commonAttributesModelBuilder.populateSecondaryFeeds(mv);
 		mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6));
 		mv.addObject("discovered_feeds", contentRetrievalService.getDiscoveredFeeds());
 	}

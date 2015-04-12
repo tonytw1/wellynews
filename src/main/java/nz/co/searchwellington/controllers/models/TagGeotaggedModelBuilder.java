@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -16,24 +17,26 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class TagGeotaggedModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(TagGeotaggedModelBuilder.class);
     	
 	private ContentRetrievalService contentRetrievalService;
 	private UrlBuilder urlBuilder;
 	private RssUrlBuilder rssUrlBuilder;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 
 	@Autowired
 	public TagGeotaggedModelBuilder(
 			ContentRetrievalService contentRetrievalService,
-			UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {
+			UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder,
+            CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 
-	
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean isValid(HttpServletRequest request) {
@@ -70,10 +73,10 @@ public class TagGeotaggedModelBuilder extends AbstractModelBuilder implements Mo
 		mv.addObject("heading", tag.getDisplayName() + " geotagged");        		
 		mv.addObject("description", "Geotagged " + tag.getDisplayName() + " newsitems");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));		
-	    final List<FrontendResource> allGeotaggedForTag = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
+	    final List<FrontendResource> allGeotaggedForTag = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
 		mv.addObject("main_content", allGeotaggedForTag);
 		if (allGeotaggedForTag.size() > 0) {
-			 setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag));
+            commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag));
 		}		
 		return mv;
 	}

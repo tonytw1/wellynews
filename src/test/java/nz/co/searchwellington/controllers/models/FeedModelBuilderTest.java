@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.model.Feed;
@@ -30,7 +31,8 @@ public class FeedModelBuilderTest {
 	@Mock GeotaggedNewsitemExtractor geotaggedNewsitemExtractor;
 	@Mock FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 	@Mock FrontendResourceMapper frontendResourceMapper;
-	
+    CommonAttributesModelBuilder commonAttributesModelBuilder;
+
 	@Mock Feed feed;
 	@Mock List<FrontendFeedNewsitem> feedNewsitems;
 	@Mock List<FeedNewsitemForAcceptance> feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation;
@@ -50,8 +52,10 @@ public class FeedModelBuilderTest {
 		request = new MockHttpServletRequest();
 		request.setAttribute("feedAttribute", feed);
 		request.setPathInfo("/feed/someonesfeed");
-		
-		modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor, feedItemLocalCopyDecorator, frontendResourceMapper);
+
+        commonAttributesModelBuilder = new CommonAttributesModelBuilder(contentRetrievalService);
+
+		modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor, feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder);
 	}
 	
 	@Test

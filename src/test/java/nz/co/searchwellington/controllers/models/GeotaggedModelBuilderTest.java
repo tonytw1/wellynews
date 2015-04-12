@@ -8,6 +8,7 @@ import java.util.List;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -32,8 +33,9 @@ public class GeotaggedModelBuilderTest {
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock UrlBuilder urlBuilder;
 	@Mock RssUrlBuilder rssUrlBuilder;
-	@Mock private RelatedTagsService relatedTagsService;
-	
+	@Mock RelatedTagsService relatedTagsService;
+	CommonAttributesModelBuilder commonAttributesModelBuilder;
+
 	@Mock List<FrontendResource> newsitemsNearPetoneStationFirstPage;
 	@Mock List<FrontendResource> newsitemsNearPetoneStationSecondPage;
 	
@@ -48,7 +50,10 @@ public class GeotaggedModelBuilderTest {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
 		validLocation = new Place("Petone Station", new LatLong(1.1, 2.2), null);
-		modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService);
+
+        commonAttributesModelBuilder = new CommonAttributesModelBuilder(contentRetrievalService);
+
+		modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService, commonAttributesModelBuilder);
 	}
 	
 	@Test

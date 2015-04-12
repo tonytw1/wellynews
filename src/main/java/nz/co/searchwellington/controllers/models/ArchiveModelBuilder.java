@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
 
 @Component
-public class ArchiveModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class ArchiveModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(ArchiveModelBuilder.class);
     	

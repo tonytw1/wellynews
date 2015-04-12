@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.flickr.FlickrService;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class TagModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(TagModelBuilder.class);
 
@@ -47,6 +48,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 	private FlickrService flickrService;
 	private FeedItemLocalCopyDecorator feedItemLocalCopyDecorator;
 	private GeocodeToPlaceMapper geocodeToPlaceMapper;
+    private CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Autowired
 	public TagModelBuilder(RssUrlBuilder rssUrlBuilder, UrlBuilder urlBuilder,
@@ -55,7 +57,8 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 			ContentRetrievalService contentRetrievalService,
 			FlickrService flickrService,
 			FeedItemLocalCopyDecorator feedItemLocalCopyDecorator,
-			GeocodeToPlaceMapper geocodeToPlaceMapper) {
+			GeocodeToPlaceMapper geocodeToPlaceMapper,
+            CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.rssUrlBuilder = rssUrlBuilder;
 		this.urlBuilder = urlBuilder;
 		this.relatedTagsService = relatedTagsService;
@@ -64,6 +67,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		this.flickrService = flickrService;
 		this.feedItemLocalCopyDecorator = feedItemLocalCopyDecorator;
 		this.geocodeToPlaceMapper = geocodeToPlaceMapper;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -79,7 +83,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		if (isValid(request)) {
 			final List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 			final Tag tag = tags.get(0);
-			int page = getPage(request);
+			int page = commonAttributesModelBuilder.getPage(request);
 			return populateTagPageModelAndView(tag, page);
 		}
 		return null;
@@ -91,7 +95,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		final List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 		final Tag tag = tags.get(0);
 		
-		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES);
+		final List<FrontendResource> taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, CommonAttributesModelBuilder.MAX_WEBSITES);
 		mv.addObject(WEBSITES, taggedWebsites);
 		
 		List<TagContentCount> relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8);
@@ -141,7 +145,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		ModelAndView mv = new ModelAndView();				
 		mv.addObject(PAGE, page);
 		
-		int startIndex = getStartIndex(page);
+		int startIndex = commonAttributesModelBuilder.getStartIndex(page);
 		long totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag);		// TODO can you get this during the main news solr call, saving a solr round trip?
 		if (startIndex > totalNewsitemCount) {
 			return null;
@@ -157,13 +161,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
 		mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag));
 		mv.addObject("link", urlBuilder.getTagUrl(tag));	
 		
-		final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS);		
+		final List<FrontendResource> taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS);
 		mv.addObject(MAIN_CONTENT, taggedNewsitems);		
 		
-		populatePagination(mv, startIndex, totalNewsitemCount);
+		commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount);
 		
 		if (taggedNewsitems.size() > 0) {
-			 setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
+			 commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag));
 		}
 		
 		return mv;
@@ -175,13 +179,13 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     }
     
     private void populateCommentedTaggedNewsitems(ModelAndView mv, Tag tag) {
-        List<FrontendResource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
+        List<FrontendResource> recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1);
         List<FrontendResource> commentedToShow;
-        if (recentCommentedNewsitems.size() <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
+        if (recentCommentedNewsitems.size() <= CommonAttributesModelBuilder.MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
             commentedToShow = recentCommentedNewsitems;
             
         } else {
-            commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);
+            commentedToShow = recentCommentedNewsitems.subList(0, CommonAttributesModelBuilder.MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS);
         }
         
         final int commentsCount = contentRetrievalService.getCommentedNewsitemsForTagCount(tag);
@@ -195,7 +199,7 @@ public class TagModelBuilder extends AbstractModelBuilder implements ModelBuilde
     }
 	    
     private void populateGeocoded(ModelAndView mv, Tag tag) {
-        List<FrontendResource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
+        List<FrontendResource> geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW);
         log.debug("Found " + geocoded.size() + " valid geocoded resources for tag: " + tag.getName());      
         if (geocoded.size() > 0) {
             mv.addObject("geocoded", geocoded);

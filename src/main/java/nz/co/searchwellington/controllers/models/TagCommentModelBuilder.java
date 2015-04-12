@@ -5,6 +5,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import nz.co.searchwellington.controllers.RssUrlBuilder;
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 @Component
-public class TagCommentModelBuilder extends AbstractModelBuilder implements ModelBuilder {
+public class TagCommentModelBuilder implements ModelBuilder {
 	
 	private static Logger log = Logger.getLogger(TagCommentModelBuilder.class);
 
@@ -26,12 +27,14 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 	private final ContentRetrievalService contentRetrievalService;
 	private final UrlBuilder urlBuilder;
 	private final RssUrlBuilder rssUrlBuilder;
-	
+    private final CommonAttributesModelBuilder commonAttributesModelBuilder;
+
 	@Autowired
-	public TagCommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder) {		
+	public TagCommentModelBuilder(ContentRetrievalService contentRetrievalService, UrlBuilder urlBuilder, RssUrlBuilder rssUrlBuilder, CommonAttributesModelBuilder commonAttributesModelBuilder) {
 		this.contentRetrievalService = contentRetrievalService;
 		this.urlBuilder = urlBuilder;
 		this.rssUrlBuilder = rssUrlBuilder;
+        this.commonAttributesModelBuilder = commonAttributesModelBuilder;
 	}
 	
 	@Override
@@ -51,8 +54,8 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 			List<Tag> tags = (List<Tag>) request.getAttribute(TAGS);
 			Tag tag = tags.get(0);
 
-			int page = getPage(request);
-			int startIndex = getStartIndex(page);
+			int page = commonAttributesModelBuilder.getPage(request);
+			int startIndex = commonAttributesModelBuilder.getStartIndex(page);
 			return populateTagCommentPageModelAndView(tag, startIndex);
 		}
 		return null;
@@ -74,14 +77,14 @@ public class TagCommentModelBuilder extends AbstractModelBuilder implements Mode
 		mv.addObject("description", tag.getDisplayName() + " comment");
 		mv.addObject("link", urlBuilder.getTagCommentUrl(tag));
 		
-		final List<FrontendResource> allCommentedForTag = contentRetrievalService.getCommentedNewsitemsForTag(tag, MAX_NEWSITEMS, startIndex);	   
+		final List<FrontendResource> allCommentedForTag = contentRetrievalService.getCommentedNewsitemsForTag(tag, CommonAttributesModelBuilder.MAX_NEWSITEMS, startIndex);
 		mv.addObject("main_content", allCommentedForTag);
 		
 		int count = contentRetrievalService.getCommentedNewsitemsForTagCount(tag);
 		mv.addObject("main_content_total", count);
 		
 		if (!allCommentedForTag.isEmpty()) {
-			setRss(mv, rssUrlBuilder.getRssTitleForTagComment(tag), rssUrlBuilder.getRssUrlForTagComment(tag));
+			commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagComment(tag), rssUrlBuilder.getRssUrlForTagComment(tag));
 		}
 		mv.setViewName(TAG_COMMENT);
 		return mv;

@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -25,6 +26,7 @@ public class SearchModelBuilderTest {
 	
 	@Mock ContentRetrievalService contentRetrievalService;
 	@Mock UrlBuilder urlBuilder;
+    @Mock CommonAttributesModelBuilder commonAttributesModelBuilder;
 	
 	@Mock Tag tag;
 	private List<Tag> tags;
@@ -37,7 +39,7 @@ public class SearchModelBuilderTest {
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
 		request = new MockHttpServletRequest();
-		modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder);
+		modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, commonAttributesModelBuilder);
 		tags = Lists.newArrayList();
 		tags.add(tag);
 	}
