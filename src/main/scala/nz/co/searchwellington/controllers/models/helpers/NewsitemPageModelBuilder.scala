@@ -16,9 +16,14 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.collection.JavaConverters._
 
-@Component class NewsitemPageModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, taggingReturnsOfficerService: TaggingReturnsOfficerService, tagWidgetFactory: TagsWidgetFactory, tagVoteDAO: HandTaggingDAO, loggedInUserFilter: LoggedInUserFilter, resourceDAO: HibernateResourceDAO) extends ModelBuilder {
+@Component class NewsitemPageModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService,
+                                                       taggingReturnsOfficerService: TaggingReturnsOfficerService,
+                                                       tagWidgetFactory: TagsWidgetFactory,
+                                                       tagVoteDAO: HandTaggingDAO,
+                                                       loggedInUserFilter: LoggedInUserFilter,
+                                                       resourceDAO: HibernateResourceDAO) extends ModelBuilder {
 
-  private var log: Logger = Logger.getLogger(classOf[NewsitemPageModelBuilder])
+  private val log: Logger = Logger.getLogger(classOf[NewsitemPageModelBuilder])
 
   def getViewName(mv: ModelAndView): String = {
     return "newsitemPage"

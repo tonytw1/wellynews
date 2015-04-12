@@ -9,6 +9,7 @@ import java.util.List;
 import nz.co.searchwellington.controllers.RelatedTagsService;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder;
+import nz.co.searchwellington.controllers.models.helpers.GeotaggedModelBuilder;
 import nz.co.searchwellington.filters.LocationParameterFilter;
 import nz.co.searchwellington.model.frontend.FrontendResource;
 import nz.co.searchwellington.repositories.ContentRetrievalService;
@@ -86,7 +87,7 @@ public class GeotaggedModelBuilderTest {
 	
 	@Test
 	public void locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent() throws Exception {
-		Mockito.when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
+		Mockito.when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage);
 		request.setPathInfo("/geotagged");
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		
@@ -110,7 +111,7 @@ public class GeotaggedModelBuilderTest {
 	@Test
 	public void locationSearchesShouldHavePagination() throws Exception {
 		request.setPathInfo("/geotagged");
-		Mockito.when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS)).thenReturn(LOCATION_RESULTS_COUNT);
+		Mockito.when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0)).thenReturn(LOCATION_RESULTS_COUNT);
 		
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 
@@ -123,8 +124,8 @@ public class GeotaggedModelBuilderTest {
 	@Test
 	public void locationSearchesShouldHaveCorrectContentOnSecondPaginationPage() throws Exception {
 		request.setPathInfo("/geotagged");
-		Mockito.when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS)).thenReturn(LOCATION_RESULTS_COUNT);
-		Mockito.when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), GeotaggedModelBuilder.HOW_FAR_IS_CLOSE_IN_KILOMETERS, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage);
+		Mockito.when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0)).thenReturn(LOCATION_RESULTS_COUNT);
+		Mockito.when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage);
 
 		request.setAttribute(LocationParameterFilter.LOCATION, validLocation);
 		request.setAttribute("page", 2);
