@@ -133,11 +133,7 @@ public class RssUrlBuilder {
 	}
 	
 	public String getRssUrlForPlace(Place place, double radius) {
-		final String rssUrlForPlace = getRssUrlForPlace(place);
-		if (rssUrlForPlace == null) {
-			return null;
-		}
-		return rssUrlForPlace + "&radius=" + radius;
+        return getRssUrlForPlace(place) + "&radius=" + radius;
 	}
 	
 	private String getRssUrlForPlace(Place place) {
@@ -146,7 +142,7 @@ public class RssUrlBuilder {
 		} else if (place.getLatLong() != null) {
 			return getRssUrlForLatLong(place.getLatLong());
 		}
-		return null;
+		throw new RuntimeException("No location information attached to place");
 	}
 	
 	public String getRssTitleForGeotagged() {
