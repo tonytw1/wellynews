@@ -23,8 +23,8 @@
         <chmod file="target/package/${package.name}/DEBIAN/*" perm="755"/>
     	
         <echo message="Packaging war file for placement in tomcat webapps" />
-        <mkdir dir="target/package/${package.name}/var/lib/tomcat6/webapps"/>
-        <copy todir="target/package/${package.name}/var/lib/tomcat6/webapps">
+        <mkdir dir="target/package/${package.name}/var/lib/tomcat7/webapps"/>
+        <copy todir="target/package/${package.name}/var/lib/tomcat7/webapps">
         	<fileset file="target/searchwellington-0.0.1-SNAPSHOT.war" />
       	</copy>
 
