@@ -1,4 +1,4 @@
-package nz.co.searchwellington.controllers.models;
+package nz.co.searchwellington.controllers.models.helpers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
