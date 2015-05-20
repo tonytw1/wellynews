@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.RssUrlBuilder;
 import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService;
@@ -33,9 +34,9 @@ public class IndexModelBuilderTest {
 
 	MockHttpServletRequest request;
 
-	@Mock List<FrontendResource> latestNewsitems;
-	
-	private IndexModelBuilder modelBuilder;
+	List<FrontendResource> latestNewsitems;
+
+    private IndexModelBuilder modelBuilder;
 
 	@Before
 	public void setup() {
@@ -43,7 +44,9 @@ public class IndexModelBuilderTest {
 		modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder);
 		request = new MockHttpServletRequest();
 		request.setPathInfo("/");
-	}
+
+        latestNewsitems = Lists.newArrayList(new FrontendResource());
+    }
 	
 	@Test
 	public void isValidForHomePageUrl() throws Exception {
@@ -65,7 +68,7 @@ public class IndexModelBuilderTest {
 	@Test
 	public void indexPageMainContentIsTheLatestNewsitems() throws Exception {
 		Mockito.when(contentRetrievalService.getLatestNewsitems(30)).thenReturn(latestNewsitems);
-		
+
 		ModelAndView mv = modelBuilder.populateContentModel(request);
 		
 		assertEquals(latestNewsitems, mv.getModel().get("main_content"));		
