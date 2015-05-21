@@ -11,7 +11,7 @@
 		<h2>Editing a Resource</h2>
 
 		#if ($resource)
-			<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($resource)" method="POST">
+			<form id="editForm" action="$adminUrlBuilder.getSaveUrl()" method="POST">
 				<input type="hidden" name="resource" value="$resource.id" />
 
 				<fieldset>					

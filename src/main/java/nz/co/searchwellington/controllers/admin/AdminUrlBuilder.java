@@ -40,9 +40,13 @@ public class AdminUrlBuilder {
 	}
 	
 	public String getResourceDeleteUrl(FrontendResource resource) {
-		return siteInformation.getUrl() + "/delete?resource=" + resource.getId();		
-	}
-	
+        return siteInformation.getUrl() + "/delete?resource=" + resource.getId();
+    }
+
+    public String getSaveUrl() {
+        return siteInformation.getUrl() + "/save";
+    }
+
 	public String getResourceCheckUrl(FrontendResource resource) {
 		return siteInformation.getUrl() + "/admin/linkchecker/add?resource=" + resource.getId();
 	}
