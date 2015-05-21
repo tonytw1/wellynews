@@ -108,7 +108,7 @@ public class Geocode implements Serializable {
 	@Deprecated
 	public String getOsmPlaceId() {
 		if (osmId != null && osmType != null) {
-			return osmId + "/" + osmType.substring(0, 1).toUpperCase();
+			return osmId + "/" + osmType;
 		}
 		return null;
 	}
