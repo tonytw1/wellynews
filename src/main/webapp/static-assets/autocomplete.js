@@ -31,12 +31,13 @@ $(function() {
 	}
 
 	if ($('#geocode').length) {
-		$("#geocode").autocomplete({
 
-            itemTypes = {
-                'N': 'NODE',
-                'W', 'WAY',
-                'R', 'RELATIONSHIP'};
+	       itemTypes={
+        	        'N': 'NODE',
+                	'W': 'WAY',
+                	'R': 'RELATIONSHIP'};
+
+		$("#geocode").autocomplete({
 
 			source: function( request, response ) {
 				$.ajax({
@@ -52,7 +53,7 @@ $(function() {
 					},
 					success: function( data ) {
 						response( $.map( data, function( item ) {
-						    itemType = itemTypes{item.type};
+						    itemType = itemTypes[item.type];
 							return {
 								label: (item.address + " (" + item.classification + "/" + itemType + ")"),
 								value: item.address,
@@ -64,7 +65,7 @@ $(function() {
 				});
 			},			
 			select: function( event, ui ) {
-    			itemType = itemTypes{ui.item.osmType};
+				itemType = itemTypes[ui.item.osmType];
 				$("#selectedGeocode").val( ui.item ? ui.item.osmId + "/" + itemType : "");
 			}
 		});
