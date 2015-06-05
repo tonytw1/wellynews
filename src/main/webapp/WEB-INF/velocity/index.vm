@@ -57,7 +57,7 @@
 		#parse("includes/featured.vm")
 			
 		<div class="box">
-			<a name="submit" />
+			<a name="submit"></a>
 			<h2>Submit</h2>
 			<p>Enquiring minds want to know!</p>
 			<p>Submit your $site_information.areaname related listings.</p>
