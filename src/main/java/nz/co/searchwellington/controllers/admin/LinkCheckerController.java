@@ -37,9 +37,7 @@ public class LinkCheckerController {	// TODO move to resource controller
     
     @RequestMapping("/admin/linkchecker/add")
     public ModelAndView addToQueue(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        ModelAndView mv = new ModelAndView();                
-        setRedirect(mv, request);
-        requestFilter.loadAttributesOntoRequest(request);         
+        requestFilter.loadAttributesOntoRequest(request);
         if (request.getAttribute("resource") != null) {
             Resource resource = (Resource) request.getAttribute("resource");
             log.info("Adding resource to queue: " + resource.getUrl() + "(" + resource.getId() + ")");
@@ -48,12 +46,8 @@ public class LinkCheckerController {	// TODO move to resource controller
         } else {
         	log.warn("No resource found on request; not adding to queue");
         }
-        return mv;
+
+        return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)));
     }
-    
-    private void setRedirect(ModelAndView modelAndView, HttpServletRequest request) {
-        String url = urlStack.getExitUrlFromStack(request);                
-        modelAndView.setView(new RedirectView(url));    
-    }
-    
+
 }
