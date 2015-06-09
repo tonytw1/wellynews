@@ -28,7 +28,8 @@ import org.springframework.web.servlet.ModelAndView
   def isValid(request: HttpServletRequest): Boolean = {
     val tag: Tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
-    publisher != null && tag == null
+    val isPublisherPage: Boolean = publisher != null && tag == null
+    return isPublisherPage
   }
 
   def populateContentModel(request: HttpServletRequest): ModelAndView = {
@@ -36,9 +37,9 @@ import org.springframework.web.servlet.ModelAndView
       logger.info("Building publisher page model")
       val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
       val page: Int = commonAttributesModelBuilder.getPage(request)
-      return populatePublisherPageModelAndView(publisher, page)
+      populatePublisherPageModelAndView(publisher, page)
     }
-    return null
+    null
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -62,12 +63,10 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("heading", publisher.getName)
     mv.addObject("description", publisher.getName + " newsitems")
     mv.addObject("link", urlBuilder.getPublisherUrl(publisher.getName))
-
     val frontendPublisher: FrontendWebsite = new FrontendWebsite
     frontendPublisher.setName(publisher.getName)
     frontendPublisher.setUrlWords(publisher.getUrlWords)
     frontendPublisher.setUrl(publisher.getUrl)
-
     if (publisher.getGeocode != null) {
       frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(publisher.getGeocode))
     }
