@@ -54,8 +54,8 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5))
   }
 
-  def getViewName(mv: ModelAndView) = {
-    "publisher"
+  def getViewName(mv: ModelAndView):String = {
+    return "publisher"
   }
 
   private def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
