@@ -30,7 +30,7 @@ import scala.collection.JavaConverters._
   private val HOW_FAR_IS_CLOSE_IN_KILOMETERS: Double = 1.0
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
+    request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest): ModelAndView = {
@@ -41,8 +41,6 @@ import scala.collection.JavaConverters._
 
       val userSuppliedPlace: Place = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
       val hasUserSuppliedALocation: Boolean = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
-
-
 
       val page: Int = commonAttributesModelBuilder.getPage(request)
       mv.addObject("page", page)

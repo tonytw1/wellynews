@@ -22,11 +22,11 @@ import scala.collection.JavaConverters._
   private val NUMBER_OF_COMMENTED_TO_SHOW: Int = 2
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
+    request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    return "index"
+  def getViewName(mv: ModelAndView) = {
+    "index"
   }
 
   def populateContentModel(request: HttpServletRequest): ModelAndView = {
