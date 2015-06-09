@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import java.util.List
 import javax.servlet.http.HttpServletRequest
 
-import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
+import nz.co.searchwellington.controllers.models.{ModelBuilder, GeotaggedNewsitemExtractor}
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.{Tag, TagContentCount, Website}
@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView
                                                      urlBuilder: UrlBuilder,
                                                      geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder){
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
   private val logger: Logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
