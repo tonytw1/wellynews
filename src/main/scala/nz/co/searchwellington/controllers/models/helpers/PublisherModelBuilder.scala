@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView
                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper,
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder){
 
-  private var logger: Logger = Logger.getLogger(classOf[PublisherModelBuilder])
+  private val logger: Logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag: Tag = request.getAttribute("tag").asInstanceOf[Tag]
@@ -37,9 +37,9 @@ import org.springframework.web.servlet.ModelAndView
       logger.info("Building publisher page model")
       val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
       val page: Int = commonAttributesModelBuilder.getPage(request)
-      return populatePublisherPageModelAndView(publisher, page)
+      populatePublisherPageModelAndView(publisher, page)
     }
-    return null
+    null
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -54,8 +54,8 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5))
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    return "publisher"
+  def getViewName(mv: ModelAndView) = {
+    "publisher"
   }
 
   private def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
