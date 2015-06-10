@@ -44,17 +44,28 @@ public class ContentControllerTest {
 	
 	@Test
 	public void should404IfNotModelWasAvailableForThisRequest() throws Exception {
-		Mockito.when(contentModelBuilder.populateContentModel(unknownPathRequest)).thenReturn(null);
+        Mockito.when(contentModelBuilder.populateContentModel(unknownPathRequest)).thenReturn(null);
 
 		contentController.normal(unknownPathRequest, response);
 		
 		Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
-		Mockito.verifyZeroInteractions(urlStack);
 	}
-	
+
+    @Test
+    public void shouldNotPush404sOntoTheReturnToUrlStack() throws Exception {
+        Mockito.when(contentModelBuilder.populateContentModel(unknownPathRequest)).thenReturn(null);
+
+        contentController.normal(unknownPathRequest, response);
+
+        Mockito.verifyZeroInteractions(urlStack);
+    }
+
 	@Test
 	public void htmlPageViewsShouldBePutOntoTheUrlStack() throws Exception {
-		contentController.normal(request, response);
+        ModelAndView expectedModelAndView = new ModelAndView("a-view");
+        Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(expectedModelAndView);
+
+        contentController.normal(request, response);
 
 		Mockito.verify(urlStack).setUrlStack(request);
 	}
