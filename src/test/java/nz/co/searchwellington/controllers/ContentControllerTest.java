@@ -17,38 +17,36 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.servlet.ModelAndView;
 
-public class TagControllerTest {
+public class ContentControllerTest {
 
 	@Mock ContentModelBuilderService contentModelBuilder;
 	@Mock UrlStack urlStack;
-	
-	@Mock List<Tag> featuredTags;
-	@Mock List<Tag> topLevelTags;
-	
-	private TagController tagController;
+
 	private HttpServletRequest request;
 	private HttpServletRequest unknownPathRequest;
 	@Mock HttpServletResponse response;
-	private ModelAndView modelAndHtmlView;
-	
+
+    private ContentController contentController;
+
 	@Before
 	public void setup() {
 		MockitoAnnotations.initMocks(this);
-		modelAndHtmlView = new ModelAndView("a-view");
-		Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(modelAndHtmlView);
-		tagController = new TagController(contentModelBuilder, urlStack);
+		contentController = new ContentController(contentModelBuilder, urlStack);
 	}
-	
+
 	@Test
 	public void shouldDelegateTotTheContentModelBuilderToGetTheModelForThisRequest() throws Exception {
-		assertEquals(modelAndHtmlView, tagController.normal(request, response));
+		ModelAndView expectedModelAndView = new ModelAndView("a-view");
+		Mockito.when(contentModelBuilder.populateContentModel(request)).thenReturn(expectedModelAndView);
+
+		assertEquals(expectedModelAndView, contentController.normal(request, response));
 	}
 	
 	@Test
 	public void should404IfNotModelWasAvailableForThisRequest() throws Exception {
 		Mockito.when(contentModelBuilder.populateContentModel(unknownPathRequest)).thenReturn(null);
 
-		tagController.normal(unknownPathRequest, response);
+		contentController.normal(unknownPathRequest, response);
 		
 		Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND);
 		Mockito.verifyZeroInteractions(urlStack);
@@ -56,7 +54,8 @@ public class TagControllerTest {
 	
 	@Test
 	public void htmlPageViewsShouldBePutOntoTheUrlStack() throws Exception {
-		tagController.normal(request, response);
+		contentController.normal(request, response);
+
 		Mockito.verify(urlStack).setUrlStack(request);
 	}
 	
