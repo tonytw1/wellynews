@@ -1,11 +1,10 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.List
+import java.text.{ParseException, SimpleDateFormat}
+import java.util.{Date, List}
 import javax.servlet.http.HttpServletRequest
-import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService
+
+import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
@@ -14,21 +13,9 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-@Component object ArchiveModelBuilder {
+@Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService, dateFormatter: DateFormatter) extends ModelBuilder {
+
   private var log: Logger = Logger.getLogger(classOf[ArchiveModelBuilder])
-}
-
-@Component class ArchiveModelBuilder extends ModelBuilder {
-  private var contentRetrievalService: ContentRetrievalService = null
-  private var archiveLinksService: ArchiveLinksService = null
-  private var dateFormatter: DateFormatter = null
-
-  @Autowired def this(contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) {
-    this()
-    this.contentRetrievalService = contentRetrievalService
-    this.archiveLinksService = archiveLinksService
-    this.dateFormatter = new DateFormatter
-  }
 
   def isValid(request: HttpServletRequest): Boolean = {
     return request.getPathInfo.matches("^/archive/.*?/.*?$")
@@ -36,10 +23,10 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
   def populateContentModel(request: HttpServletRequest): ModelAndView = {
     if (isValid(request)) {
-      ArchiveModelBuilder.log.debug("Building archive page model")
+      log.debug("Building archive page model")
       val month: Date = getArchiveDateFromPath(request.getPathInfo)
       if (month != null) {
-        ArchiveModelBuilder.log.debug("Archive month is: " + month)
+        log.debug("Archive month is: " + month)
         val monthLabel: String = new DateFormatter().fullMonthYear(month)
         val mv: ModelAndView = new ModelAndView
         mv.addObject("heading", monthLabel)
@@ -102,4 +89,5 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     }
     return null
   }
+
 }
