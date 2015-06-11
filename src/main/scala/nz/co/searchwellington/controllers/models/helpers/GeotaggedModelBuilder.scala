@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 
-import com.google.common.base.Strings
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
