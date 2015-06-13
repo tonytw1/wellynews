@@ -16,7 +16,10 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 	private static final int ONE_DAY = 60 * 60 * 24;
 	
 	private NominatimGeocodingService nominatimGeocodingService;
-	
+
+    public NominatimResolveOsmIdCachingServiceWrapper() {
+    }
+
 	public NominatimResolveOsmIdCachingServiceWrapper(@Value("#{config['nominatim.url']}") String nominatimUrl) {
 		this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", nominatimUrl);
 	}
