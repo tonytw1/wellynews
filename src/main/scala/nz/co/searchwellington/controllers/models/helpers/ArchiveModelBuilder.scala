@@ -13,9 +13,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-@Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService, dateFormatter: DateFormatter) extends ModelBuilder {
+@Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends ModelBuilder {
 
-  private var log: Logger = Logger.getLogger(classOf[ArchiveModelBuilder])
+  private val log: Logger = Logger.getLogger(classOf[ArchiveModelBuilder])
+
+  private val dateFormatter: DateFormatter = new DateFormatter
 
   def isValid(request: HttpServletRequest): Boolean = {
     return request.getPathInfo.matches("^/archive/.*?/.*?$")
