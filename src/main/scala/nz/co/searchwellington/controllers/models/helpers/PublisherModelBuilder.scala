@@ -37,9 +37,9 @@ import org.springframework.web.servlet.ModelAndView
       logger.info("Building publisher page model")
       val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
       val page: Int = commonAttributesModelBuilder.getPage(request)
-      populatePublisherPageModelAndView(publisher, page)
+      return populatePublisherPageModelAndView(publisher, page)
     }
-    null
+    return null
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
