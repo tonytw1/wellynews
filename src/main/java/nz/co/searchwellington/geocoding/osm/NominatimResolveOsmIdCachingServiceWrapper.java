@@ -1,6 +1,7 @@
 package nz.co.searchwellington.geocoding.osm;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.caching.CachableService;
@@ -16,8 +17,8 @@ public class NominatimResolveOsmIdCachingServiceWrapper implements CachableServi
 	
 	private NominatimGeocodingService nominatimGeocodingService;
 	
-	public NominatimResolveOsmIdCachingServiceWrapper() {
-		this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", "http://nominatim.openstreetmap.org/");
+	public NominatimResolveOsmIdCachingServiceWrapper(@Value("#{config['nominatim.url']}") String nominatimUrl) {
+		this.nominatimGeocodingService = new NominatimGeocodingService("tony@eelpieconsulting.co.uk", nominatimUrl);
 	}
 
 	@Override
