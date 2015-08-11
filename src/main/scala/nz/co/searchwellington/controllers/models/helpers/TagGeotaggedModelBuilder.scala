@@ -12,6 +12,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
+import nz.co.searchwellington.controllers.models.ModelBuilder
 
 @Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
