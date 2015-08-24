@@ -11,11 +11,7 @@ import scala.collection.JavaConversions._
 @Component class FeedItemLocalCopyDecorator @Autowired() (resourceDAO: HibernateResourceDAO, suppressionDAO: SupressionDAO) {
 
   def addSupressionAndLocalCopyInformation(feedNewsitems: java.util.List[FrontendFeedNewsitem]): java.util.List[FeedNewsitemForAcceptance] = {
-    feedNewsitems.map(f => decorate(f))
-  }
-
-  private def decorate(f: FrontendFeedNewsitem): FeedNewsitemForAcceptance = {
-    new FeedNewsitemForAcceptance(f, acceptanceStateOf(f))
+    feedNewsitems.map(f => new FeedNewsitemForAcceptance(f, acceptanceStateOf(f)))
   }
 
   private def acceptanceStateOf(feedNewsitem: FrontendFeedNewsitem): FeedNewsitemAcceptanceState = {
