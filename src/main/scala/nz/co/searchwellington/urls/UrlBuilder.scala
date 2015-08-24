@@ -5,9 +5,12 @@ import java.util.Date
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendTag}
 import org.springframework.beans.factory.annotation.Autowired
+import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
 class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator) {
+
+  private val dateFormatter = new DateFormatter();
 
   def getHomeUrl: String = {
     return siteInformation.getUrl
