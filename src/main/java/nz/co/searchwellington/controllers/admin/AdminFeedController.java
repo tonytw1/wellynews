@@ -24,7 +24,7 @@ import com.sun.syndication.io.FeedException;
 @Controller
 public class AdminFeedController {
     
-    private static Logger log = Logger.getLogger(AdminFeedController.class);
+    private static final Logger log = Logger.getLogger(AdminFeedController.class);
     
     private AdminRequestFilter requestFilter;
     private FeedReader feedReader;    
@@ -50,21 +50,18 @@ public class AdminFeedController {
     @RequestMapping("/admin/feed/acceptall")
     public ModelAndView acceptAllFrom(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         requestFilter.loadAttributesOntoRequest(request);
-        Feed feed = null;
-        if (request.getAttribute("feedAttribute") != null) {
-            feed = (Feed) request.getAttribute("feedAttribute");
-            
-            if (!permissionService.canAcceptAllFrom(feed)) {
-            	log.warn("Not allowed to read this feed"); // TODO return http auth error
-            	return null;
-            }
-            
-            log.debug("Accepting all from feed: " + feed.getName());           
-            feedReader.processFeed(feed.getId(), loggedInUserFilter.getLoggedInUser(), FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES);
-            
-        } else {
-            log.debug("No feed seen on request; nothing to reread.");
-        }        
+        if (request.getAttribute("feedAttribute") == null) {
+            throw new RuntimeException("Not found");    // TODO
+        }
+
+        final Feed feed = (Feed) request.getAttribute("feedAttribute");
+        if (!permissionService.canAcceptAllFrom(feed)) {
+           	log.warn("Not allowed to read this feed"); // TODO return http auth error
+            throw new RuntimeException("Not allowed");    // TODO
+        }
+
+        feedReader.processFeed(feed.getId(), loggedInUserFilter.getLoggedInUser(), FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES);
+
         return new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)));   
     }
     
