@@ -15,13 +15,13 @@ import org.springframework.web.servlet.ModelAndView
 
 @Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
-  @SuppressWarnings(Array("unchecked")) def isValid(request: HttpServletRequest): Boolean = {
+  def isValid(request: HttpServletRequest): Boolean = {
     val tags: List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
     val isTagCombinerPage: Boolean = tags != null && tags.size == 2
     return isTagCombinerPage
   }
 
-  @SuppressWarnings(Array("unchecked")) def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): ModelAndView = {
     if (isValid(request)) {
       val tags: List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
       val page: Int = commonAttributesModelBuilder.getPage(request)
@@ -30,7 +30,7 @@ import org.springframework.web.servlet.ModelAndView
     return null
   }
 
-  @SuppressWarnings(Array("unchecked")) def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     val tags: List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
     val tag: Tag = tags.get(0)
     mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, 8))
@@ -39,7 +39,7 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("websites", taggedWebsites)
   }
 
-  @SuppressWarnings(Array("unchecked")) def getViewName(mv: ModelAndView): String = {
+  def getViewName(mv: ModelAndView): String = {
     val taggedNewsitemsCount: Long = mv.getModel.get("main_content_total").asInstanceOf[Long]
     val taggedWebsites: List[Resource] = mv.getModel.get("websites").asInstanceOf[List[Resource]]
     val isOneContentType: Boolean = taggedNewsitemsCount == 0 || taggedWebsites.size == 0

@@ -18,14 +18,14 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
 
   private val log: Logger = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
-  @SuppressWarnings(Array("unchecked")) def isValid(request: HttpServletRequest): Boolean = {
+  def isValid(request: HttpServletRequest): Boolean = {
     val tags: List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
     val isSingleTagPage: Boolean = tags != null && tags.size == 1
     val hasCommentPath: Boolean = request.getPathInfo.matches("^(.*?)/geotagged(/(rss|json))?$")
     return isSingleTagPage && hasCommentPath
   }
 
-  @SuppressWarnings(Array("unchecked")) def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): ModelAndView = {
     if (isValid(request)) {
       log.debug("Building tag geotagged page model")
       val tags: List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]

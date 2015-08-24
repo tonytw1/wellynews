@@ -41,8 +41,6 @@ import scala.collection.JavaConverters._
       val userSuppliedPlace: Place = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
       val hasUserSuppliedALocation: Boolean = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
 
-
-
       val page: Int = commonAttributesModelBuilder.getPage(request)
       mv.addObject("page", page)
       val startIndex: Int = commonAttributesModelBuilder.getStartIndex(page)

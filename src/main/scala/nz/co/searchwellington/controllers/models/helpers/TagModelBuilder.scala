@@ -22,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView
                                               contentRetrievalService: ContentRetrievalService, flickrService: FlickrService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
-
   private val log: Logger = Logger.getLogger(classOf[TagModelBuilder])
 
   private val MAIN_CONTENT: String = "main_content"
@@ -33,12 +32,12 @@ import org.springframework.web.servlet.ModelAndView
   private val TAG_FEEDS: String = "tag_feeds"
   private val WEBSITES: String = "websites"
 
-  @SuppressWarnings(Array("unchecked")) def isValid(request: HttpServletRequest): Boolean = {
+  def isValid(request: HttpServletRequest): Boolean = {
     val tags: List[Tag] = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
     return tags != null && tags.size == 1
   }
 
-  @SuppressWarnings(Array("unchecked")) def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): ModelAndView = {
     if (isValid(request)) {
       val tags: List[Tag] = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
       val tag: Tag = tags.get(0)
@@ -48,7 +47,7 @@ import org.springframework.web.servlet.ModelAndView
     return null
   }
 
-  @SuppressWarnings(Array("unchecked")) def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     val tags: List[Tag] = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
     val tag: Tag = tags.get(0)
     val taggedWebsites: List[FrontendResource] = contentRetrievalService.getTaggedWebsites(tag, CommonAttributesModelBuilder.MAX_WEBSITES)
@@ -70,7 +69,7 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5))
   }
 
-  @SuppressWarnings(Array("unchecked")) def getViewName(mv: ModelAndView): String = {
+  def getViewName(mv: ModelAndView): String = {
     val mainContent: List[Resource] = mv.getModel.get(MAIN_CONTENT).asInstanceOf[List[Resource]]
     val taggedWebsites: List[Resource] = mv.getModel.get(WEBSITES).asInstanceOf[List[Resource]]
     val tagWatchlist: List[Resource] = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[List[Resource]]
