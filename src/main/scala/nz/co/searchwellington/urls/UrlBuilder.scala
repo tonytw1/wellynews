@@ -38,10 +38,6 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
     return siteInformation.getUrl + "/feed/" + feed.getUrlWords
   }
 
-  def getFeedUrl(feed: Feed): String = {
-    return siteInformation.getUrl + "/feed/" + feed.getUrlWords
-  }
-
   def getFeedUrlFromFeedName(feedname: String): String = {
     return siteInformation.getUrl + "/feed/" + urlWordsGenerator.makeUrlWordsFromName(feedname)
   }
