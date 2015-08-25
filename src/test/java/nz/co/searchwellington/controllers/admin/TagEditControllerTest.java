@@ -9,7 +9,7 @@ import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.UrlStack;
-import nz.co.searchwellington.controllers.permissions.EditPermissionService;
+import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
 import nz.co.searchwellington.modification.TagModificationService;
