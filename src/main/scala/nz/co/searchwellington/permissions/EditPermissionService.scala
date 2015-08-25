@@ -10,61 +10,59 @@ import org.springframework.stereotype.Component
 @Component
 class EditPermissionService @Autowired() (loggedInUserFilter: LoggedInUserFilter) {
 
-  def canEdit(resource: FrontendResource): Boolean = {
+  def canEdit(resource: FrontendResource) {
     return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
-  def canEdit(resource: Resource): Boolean = {
+  def canEdit(resource: Resource) {
     return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
-  def canDelete(resource: FrontendResource): Boolean = {
+  def canDelete(resource: FrontendResource) {
     return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
-  def canDelete(resource: Resource): Boolean = {
+  def canDelete(resource: Resource) {
     return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
-  def canAcceptAll: Boolean = {
+  def canAcceptAll {
     return isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  def canAcceptAllFrom(feed: Feed): Boolean = {
+  def canAcceptAllFrom(feed: Feed) {
     return canAcceptAll
   }
 
-  def canCheck(resource: FrontendResource): Boolean = {
+  def canCheck(resource: FrontendResource) {
     return isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  def canSeeLocalPage(newsitem: Newsitem): Boolean = {
+  def canSeeLocalPage(newsitem: Newsitem) {
     return isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  def canEditSuggestions: Boolean = {
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
+  def canEditSuggestions {
+    return isAdmin(loggedInUserFilter.getLoggedInUser)
+  }
+
+  def canAddTag {
+    return isAdmin(loggedInUserFilter.getLoggedInUser)
+  }
+
+  def canEdit(tag: Tag) {
+    return loggedInUserFilter.getLoggedInUser != null && loggedInUserFilter.getLoggedInUser.isAdmin
+  }
+
+  def canAddWatchlistAndTag {
+    return isAdmin(loggedInUserFilter.getLoggedInUser)
+  }
+
+  def canAcceptFeedItems(loggedInUser: User) {
     return isAdmin(loggedInUser)
   }
 
-  def canAddTag: Boolean = {
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
-  }
-
-  def canEdit(tag: Tag): Boolean = {
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
-    return loggedInUser != null && loggedInUser.isAdmin
-  }
-
-  def canAddWatchlistAndTag: Boolean = {
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
-  }
-
-  def canAcceptFeedItems(loggedInUser: User): Boolean = {
-    return isAdmin(loggedInUser)
-  }
-
-  def canDeleteTags(loggedInUser: User): Boolean = {
+  def canDeleteTags(loggedInUser: User) {
     return isAdmin(loggedInUser)
   }
 
@@ -72,30 +70,22 @@ class EditPermissionService @Autowired() (loggedInUserFilter: LoggedInUserFilter
     if (isAdmin(loggedInUser)) {
       return true
     }
-    if (!Strings.isNullOrEmpty(resource.getOwner) && loggedInUser.getProfilename eq resource.getOwner) {
-      return true
-    }
-    return false
+
+    val matchesOwnersName = !Strings.isNullOrEmpty(resource.getOwner) && loggedInUser.getProfilename == resource.getOwner
+    matchesOwnersName
   }
 
   private def isAdmin(loggedInUser: User): Boolean = {
-    if (loggedInUser == null) {
-      return false
-    }
-    return loggedInUser.isAdmin
+    loggedInUser != null && loggedInUser.isAdmin
   }
 
   private def isAdminOrOwner(resource: Resource, loggedInUser: User): Boolean = {
-    if (loggedInUser == null) {
-      return false
-    }
-    if (loggedInUser.isAdmin) {
+    if (isAdmin(loggedInUser)) {
       return true
     }
-    if (resource.getOwner != null && loggedInUser.getId == resource.getOwner.getId) {
-      return true
-    }
-    return false
+
+    val isOwner = resource.getOwner != null && loggedInUser.getId == resource.getOwner.getId
+    isOwner
   }
   
 }
