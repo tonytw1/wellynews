@@ -1,17 +1,11 @@
 package nz.co.searchwellington.controllers.admin;
 
+import com.google.common.base.Strings;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.model.Feed;
-import nz.co.searchwellington.model.Newsitem;
-import nz.co.searchwellington.model.Resource;
-import nz.co.searchwellington.model.Tag;
-import nz.co.searchwellington.model.User;
+import nz.co.searchwellington.model.*;
 import nz.co.searchwellington.model.frontend.FrontendResource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Strings;
 
 @Component
 public class EditPermissionService {
@@ -24,55 +18,44 @@ public class EditPermissionService {
 	}
 	
 	public boolean canEdit(FrontendResource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return isAdminOrOwner(resource, loggedInUser);
+        return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser());
 	}
 	
 	public boolean canEdit(Resource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return isAdminOrOwner(resource, loggedInUser);
+        return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser());
 	}
 	
 	public boolean canDelete(FrontendResource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return isAdminOrOwner(resource, loggedInUser);
+        return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser());
 	}
 	
 	public boolean canDelete(Resource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return isAdminOrOwner(resource, loggedInUser);
+        return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser());
 	}
 	
-	public boolean canAcceptAllFrom(FrontendResource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return loggedInUser != null && loggedInUser.isAdmin();
+	public boolean canAcceptAll() {
+        return isAdmin(loggedInUserFilter.getLoggedInUser());
 	}
 
 	public boolean canAcceptAllFrom(Feed feed) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return loggedInUser != null && loggedInUser.isAdmin();
+        return canAcceptAll();
 	}
 	
 	public boolean canCheck(FrontendResource resource) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return loggedInUser != null && loggedInUser.isAdmin();
+        return isAdmin(loggedInUserFilter.getLoggedInUser());
 	}
-	
-	
+
 	public boolean canSeeLocalPage(Newsitem newsitem) {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return loggedInUser != null && loggedInUser.isAdmin();
+        return isAdmin(loggedInUserFilter.getLoggedInUser());
 	}
-	
-	
+
 	public boolean canEditSuggestions() {
 		User loggedInUser = loggedInUserFilter.getLoggedInUser();
-		return loggedInUser != null && loggedInUser.isAdmin();
+		return isAdmin(loggedInUser);
 	}
 
 	public boolean canAddTag() {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
-		return loggedInUser != null && loggedInUser.isAdmin();
+        return isAdmin(loggedInUserFilter.getLoggedInUser());
 	}
 	
 	public boolean canEdit(Tag tag) {
@@ -81,23 +64,34 @@ public class EditPermissionService {
 	}
 	
 	public boolean canAddWatchlistAndTag() {
-		User loggedInUser = loggedInUserFilter.getLoggedInUser();		
-		return loggedInUser != null && loggedInUser.isAdmin();
+        return isAdmin(loggedInUserFilter.getLoggedInUser());
 	}
+
+    public boolean canAcceptFeedItems(User loggedInUser) {
+        return isAdmin(loggedInUser);
+    }
+
+    public boolean canDeleteTags(User loggedInUser) {
+        return isAdmin(loggedInUser);
+    }
 	
 	private boolean isAdminOrOwner(FrontendResource resource, User loggedInUser) {
-		if (loggedInUser == null) {
-			return false;
-		}
-		if (loggedInUser.isAdmin()) {
-			return true;
-		}	
+        if (isAdmin(loggedInUser)) {
+            return true;
+        }
 		if (!Strings.isNullOrEmpty(resource.getOwner()) && loggedInUser.getProfilename() == resource.getOwner()) {
 			return true;
 		}
 		return false;
 	}
-	
+
+    private boolean isAdmin(User loggedInUser) {
+        if (loggedInUser == null) {
+            return false;
+        }
+        return loggedInUser.isAdmin();
+    }
+
 	private boolean isAdminOrOwner(Resource resource, User loggedInUser) {
 		if (loggedInUser == null) {
 			return false;
@@ -110,13 +104,5 @@ public class EditPermissionService {
 		}
 		return false;
 	}
-	
-	public boolean canAcceptFeedItems(User loggedInUser) {
-		return loggedInUser != null && loggedInUser.isAdmin();
-	}
 
-	public boolean canDeleteTags(User loggedInUser) {
-		return loggedInUser != null && loggedInUser.isAdmin();
-	}
-		
 }
