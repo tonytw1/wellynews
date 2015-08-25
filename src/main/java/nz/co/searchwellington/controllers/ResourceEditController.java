@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.admin.AdminRequestFilter;
-import nz.co.searchwellington.controllers.admin.EditPermissionService;
+import nz.co.searchwellington.controllers.permissions.EditPermissionService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.FeednewsItemToNewsitemService;
 import nz.co.searchwellington.feeds.RssfeedNewsitemService;

@@ -1,4 +1,4 @@
-package nz.co.searchwellington.controllers.admin;
+package nz.co.searchwellington.controllers.permissions;
 
 import com.google.common.base.Strings;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
