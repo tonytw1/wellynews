@@ -12,7 +12,7 @@ import scala.collection.JavaConverters._
   private final val PLACES_TAG_NAME: String = "places"
 
   def suggestTags(resource: Resource): Set[Tag] = {
-    getPlaces.filter(place => checkForMatchingTag(resource, place))
+    getPlaces.filter(p => checkForMatchingTag(resource, p))
   }
 
   def getPlaces: Set[Tag] = {

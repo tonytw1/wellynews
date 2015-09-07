@@ -9,7 +9,7 @@ class ImpliedTagService @Autowired() (taggingReturnsOfficerService: TaggingRetur
 
   def alreadyHasTag(resource: Resource, tag: Tag): Boolean = {
     val isNewsitemWhosPublisherAlreadyHasThisTag = resource.getType == "N" && resource.asInstanceOf[Newsitem].getPublisher != null && taggingReturnsOfficerService.getHandTagsForResource(resource.asInstanceOf[Newsitem].getPublisher).contains(tag)
-    return isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
+    isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
   }
   
 }
