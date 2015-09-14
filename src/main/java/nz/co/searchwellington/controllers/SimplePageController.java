@@ -123,18 +123,6 @@ public class SimplePageController {
         return mv;
     }
 
-    @RequestMapping("/tags")
-    public ModelAndView tags(HttpServletRequest request, HttpServletResponse response) throws IOException {        
-        ModelAndView mv = new ModelAndView();
-        urlStack.setUrlStack(request);
-        commonModelObjectsService.populateCommonLocal(mv);
-     
-        mv.addObject("heading", "All Tags");        
-        mv.addObject("tags", tagDAO.getAllTags());        
-        mv.setViewName("tags");
-        return mv;
-    }
-    
     @RequestMapping("/publishers")
     public ModelAndView publishers(HttpServletRequest request, HttpServletResponse response) {        
         ModelAndView mv = new ModelAndView();

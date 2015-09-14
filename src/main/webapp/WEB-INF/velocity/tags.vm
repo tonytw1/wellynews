@@ -3,8 +3,6 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
@@ -12,10 +10,9 @@
 <div class="main">
 <h2>$heading</h2>
 
-
 <ul>
 #set($letter = "")
-#foreach ($tag in $tags) 
+#foreach ($tag in $main_content)
 	#if (!$tag.hidden)
 		#set($current = $tag.displayName.substring(0, 1).toUpperCase())
 		#if ($current != $letter)
@@ -29,13 +26,7 @@
 #end
 </ul>
 
-
-
-
 </div>
-
-
-
 
 <div class="right">
 
@@ -45,10 +36,7 @@
 <br clear="all"/>
 
 </div>
-
-
 </div>
-
 </div>
 
 #parse("includes/footer.vm")

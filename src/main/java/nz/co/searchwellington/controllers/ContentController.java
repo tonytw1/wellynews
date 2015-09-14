@@ -33,7 +33,7 @@ public class ContentController {
         this.urlStack = urlStack;
     }
 
-    @RequestMapping(value = {"/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/*/json", "/*/rss", "/*/*/*/*/*"})
+    @RequestMapping(value = {"/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/tags", "/tags/json", "/*/json", "/*/rss", "/*/*/*/*/*"})
     @Timed(timingNotes = "")
     public ModelAndView normal(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         final ModelAndView mv = contentModelBuilder.populateContentModel(request);
