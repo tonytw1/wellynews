@@ -3,9 +3,9 @@ package nz.co.searchwellington.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Sets;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "parent"})
 public class Tag {
@@ -78,7 +78,6 @@ public class Tag {
         this.children = children;
     }
     
-    @JsonIgnore
     public Set<Tag> getChildren() {
         return children;
     }

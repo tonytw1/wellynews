@@ -1,13 +1,15 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.awt.Component
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.repositories.TagDAO
 import org.apache.log4j.Logger
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
+import org.springframework.web.servlet.ModelAndView
 
-@Component class TagsModelBuilder @Autowired() (tagDAO: TagDAO) extends ModelBuilder {
+@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO) extends ModelBuilder {
 
   private val log: Logger = Logger.getLogger(classOf[TagsModelBuilder])
 
@@ -34,6 +36,7 @@ import org.apache.log4j.Logger
   private def populateTagsPageModelAndView(): ModelAndView = {
     val mv: ModelAndView = new ModelAndView
     mv.addObject(MAIN_CONTENT, tagDAO.getAllTags)
+    mv.addObject("heading", "All tags")
     return mv
   }
 
