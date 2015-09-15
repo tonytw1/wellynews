@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.google.common.collect.Sets;
 
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "parent"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "parent", "relatedFeed"})
 public class Tag {
     
 	private int id;
