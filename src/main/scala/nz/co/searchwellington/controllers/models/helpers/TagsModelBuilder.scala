@@ -3,11 +3,14 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.frontend.FrontendTag
 import nz.co.searchwellington.repositories.TagDAO
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
+
+import scala.collection.JavaConversions._
 
 @Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO) extends ModelBuilder {
 
@@ -35,7 +38,8 @@ import org.springframework.web.servlet.ModelAndView
 
   private def populateTagsPageModelAndView(): ModelAndView = {
     val mv: ModelAndView = new ModelAndView
-    mv.addObject(MAIN_CONTENT, tagDAO.getAllTags)
+    val allTags = tagDAO.getAllTags.toList
+    mv.addObject(MAIN_CONTENT, allTags.map(t => new FrontendTag(t.getName, t.getDisplayName)))
     mv.addObject("heading", "All tags")
     return mv
   }
