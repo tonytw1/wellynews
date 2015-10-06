@@ -67,7 +67,7 @@ public class IndexModelBuilderTest {
 	
 	@Test
 	public void indexPageMainContentIsTheLatestNewsitems() throws Exception {
-		Mockito.when(contentRetrievalService.getLatestNewsitems(30)).thenReturn(latestNewsitems);
+		Mockito.when(contentRetrievalService.getLatestNewsitems(30, 1)).thenReturn(latestNewsitems);
 
 		ModelAndView mv = modelBuilder.populateContentModel(request);
 		

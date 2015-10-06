@@ -80,12 +80,13 @@ public class ElasticSearchBackedResourceDAO {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	   }
 	
-	public List<FrontendResource> getLatestNewsitems(int maxItems, boolean shouldShowBroken) {
+	public List<FrontendResource> getLatestNewsitems(int maxItems, boolean shouldShowBroken, int from) {
 		final BoolQueryBuilder latestNewsitems = QueryBuilders.boolQuery().must(isNewsitem());
 		addShouldShowBrokenClause(latestNewsitems, shouldShowBroken);
 				
 		final SearchRequestBuilder searchRequestBuilder = searchRequestBuilder().
 			setQuery(latestNewsitems).
+                setFrom(from).
 			setSize(maxItems);
 		
 		addDateDescendingOrder(searchRequestBuilder);

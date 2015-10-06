@@ -135,11 +135,11 @@ public class ContentRetrievalService {
 	}
 
 	public List<FrontendResource> getLatestNewsitems() {
-		return getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW);
+		return getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW, 1);
 	}
 	
-	public List<FrontendResource> getLatestNewsitems(int maxNumber) {
-		return elasticSearchBackedResourceDAO.getLatestNewsitems(maxNumber, showBrokenDecisionService.shouldShowBroken());
+	public List<FrontendResource> getLatestNewsitems(int maxNumber, int page) {
+		return elasticSearchBackedResourceDAO.getLatestNewsitems(maxNumber, showBrokenDecisionService.shouldShowBroken(), (page -1) * maxNumber);
 	}
 	
 	public List<FrontendResource> getLatestWebsites(int maxItems) {

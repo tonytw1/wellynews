@@ -51,7 +51,7 @@ import org.springframework.web.servlet.ModelAndView
     if (relatedTagLinks.size > 0) {
       mv.addObject("related_tags", relatedTagLinks)
     }
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5))
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))
   }
 
   def getViewName(mv: ModelAndView):String = {

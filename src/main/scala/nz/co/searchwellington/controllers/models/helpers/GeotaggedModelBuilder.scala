@@ -93,7 +93,7 @@ import scala.collection.JavaConverters._
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5))
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))
   }
 
   def getViewName(mv: ModelAndView): String = {

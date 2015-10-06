@@ -55,7 +55,7 @@ public class SimplePageController {
         commonModelObjectsService.populateCommonLocal(mv);             
         mv.addObject("heading", "About");        
         mv.setViewName("about");
-        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
+        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1));
         return mv;
     }
         
@@ -132,7 +132,7 @@ public class SimplePageController {
         mv.addObject("heading", "All Publishers");
         mv.addObject("publishers", contentRetrievalService.getAllPublishers());
         mv.setViewName("publishers");
-        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));
+        mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1));
         return mv;
     }
     

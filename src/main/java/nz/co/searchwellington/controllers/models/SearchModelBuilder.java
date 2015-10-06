@@ -84,7 +84,7 @@ public class SearchModelBuilder implements ModelBuilder {
 	
 	@Override
 	public void populateExtraModelContent(HttpServletRequest request, ModelAndView mv) {
-		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5));		
+		mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1));
 	}
 	
 	@Override

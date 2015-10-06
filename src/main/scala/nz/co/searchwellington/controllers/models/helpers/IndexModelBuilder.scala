@@ -34,9 +34,12 @@ import scala.collection.JavaConverters._
       return null;
     }
 
+    val page = if (request.getParameter("page") != null) {Integer.parseInt(request.getParameter("page"))} else {1}
     val mv: ModelAndView = new ModelAndView
-    val latestNewsitems: List[FrontendResource] = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS).toList
+
+    val latestNewsitems: List[FrontendResource] = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS, page).toList
     mv.addObject("main_content", latestNewsitems.asJava)
+
     commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
     if (latestNewsitems != null && !latestNewsitems.isEmpty) {
         mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem(latestNewsitems)))
