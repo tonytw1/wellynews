@@ -98,9 +98,7 @@
 
 
 
-	<div class="right">			
-		#parse("includes/flickr_group_tag.vm")
-					
+	<div class="right">
 		#if($tag.name == 'animals' || $tag.name == 'dogs') 
 			#parse("widgets/spca_widget.vm")
 		#end

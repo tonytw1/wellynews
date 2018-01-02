@@ -26,7 +26,6 @@ class TagModelBuilderTest {
   @Mock private[models] var urlBuilder: UrlBuilder = null
   @Mock private[models] var relatedTagsService: RelatedTagsService = null
   @Mock private[models] var rssfeedNewsitemService: RssfeedNewsitemService = null
-  @Mock private[models] var flickrService: FlickrService = null
   @Mock private[models] var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
   @Mock private[models] var geocodeToPlaceMapper: GeocodeToPlaceMapper = null
   @Mock private[models] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
@@ -38,7 +37,7 @@ class TagModelBuilderTest {
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
-    modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService, contentRetrievalService, flickrService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder)
+    modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService, contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder)
     request = new MockHttpServletRequest
     Mockito.when(tag.getDisplayName).thenReturn(TagModelBuilderTest.TAG_DISPLAY_NAME)
   }

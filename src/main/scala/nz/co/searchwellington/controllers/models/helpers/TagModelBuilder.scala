@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.flickr.FlickrService
 import nz.co.searchwellington.model.{Feed, PublisherContentCount, Resource, Tag, TagContentCount}
 import nz.co.searchwellington.model.frontend.{FrontendFeedNewsitem, FrontendResource}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -19,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView
 
 @Component class TagModelBuilder @Autowired() (rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
-                                              contentRetrievalService: ContentRetrievalService, flickrService: FlickrService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
+                                              contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
   private val log: Logger = Logger.getLogger(classOf[TagModelBuilder])
@@ -109,11 +108,6 @@ import org.springframework.web.servlet.ModelAndView
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
     }
     return mv
-  }
-
-  private def populateTagFlickrPool(mv: ModelAndView, tag: Tag) {
-    mv.addObject("flickr_count", flickrService.getFlickrPhotoCountFor(tag))
-    mv.addObject("escaped_flickr_group_id", UrlParameterEncoder.encode(flickrService.getPoolId))
   }
 
   private def populateCommentedTaggedNewsitems(mv: ModelAndView, tag: Tag) {
