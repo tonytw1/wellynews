@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      val feed = request.getAttribute(FEED_ATTRIBUTE).asnstanceOf[Feed]
+      val feed = request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed]
       if (feed != null) {
         val mv = new ModelAndView
         mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed))

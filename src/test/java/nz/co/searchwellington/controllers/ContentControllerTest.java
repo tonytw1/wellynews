@@ -2,13 +2,8 @@ package nz.co.searchwellington.controllers;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import nz.co.searchwellington.controllers.models.ContentModelBuilderService;
-import nz.co.searchwellington.model.Tag;
 
 import org.junit.Before;
 import org.junit.Test;

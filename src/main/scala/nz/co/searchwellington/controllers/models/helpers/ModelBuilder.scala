@@ -5,9 +5,9 @@ import org.springframework.web.servlet.ModelAndView
 
 trait ModelBuilder {
 
-  def isValid(request: Nothing): Boolean
+  def isValid(request: HttpServletRequest): Boolean
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView]
-  def populateExtraModelContent(request: Nothing, mv: ModelAndView)
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView)
   def getViewName(mv: ModelAndView): String
 
 }

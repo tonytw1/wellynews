@@ -8,6 +8,7 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
+import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -17,7 +18,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
   private val log: Logger = Logger.getLogger(classOf[ArchiveModelBuilder])
 
-  private val dateFormatter: DateFormatter = new DateFormatter
+  private val dateFormatter = new DateFormatter(DateTimeZone.UTC)
 
   def isValid(request: HttpServletRequest): Boolean = {
     return request.getPathInfo.matches("^/archive/.*?/.*?$")
@@ -28,7 +29,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
       val month = getArchiveDateFromPath(request.getPathInfo)
       if (month != null) {
         log.debug("Archive month is: " + month)
-        val monthLabel = new DateFormatter().fullMonthYear(month)
+        val monthLabel = dateFormatter.fullMonthYear(month)
 
         val mv = new ModelAndView
         mv.addObject("heading", monthLabel)

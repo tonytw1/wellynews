@@ -38,7 +38,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    def populateTagPageModelAndView(tag: Tag, page: Int): ModelAndView = {
+    def populateTagPageModelAndView(tag: Tag, page: Int): Option[ModelAndView] = {
       val mv = new ModelAndView
       mv.addObject(PAGE, page)
       val startIndex = commonAttributesModelBuilder.getStartIndex(page)
@@ -67,7 +67,7 @@ import org.springframework.web.servlet.ModelAndView
       val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
       val tag = tags.get(0)
       val page = commonAttributesModelBuilder.getPage(request)
-      Some(populateTagPageModelAndView(tag, page))
+      populateTagPageModelAndView(tag, page)
     }
 
     None
@@ -109,7 +109,6 @@ import org.springframework.web.servlet.ModelAndView
     populateCommentedTaggedNewsitems(mv, tag)
     populateRelatedFeed(mv, tag)
     populateGeocoded(mv, tag)
-    populateTagFlickrPool(mv, tag)
     mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag))
     mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag))
     mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))

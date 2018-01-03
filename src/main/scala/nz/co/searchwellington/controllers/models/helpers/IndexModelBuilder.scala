@@ -29,7 +29,7 @@ import scala.collection.JavaConverters._
     return "index"
   }
 
-  def populateContentModel(request: HttpServletRequest): Opiton[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (!isValid(request)) {  // TODO really? won't the dispatcher alway have decided this?
       None
     }

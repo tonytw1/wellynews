@@ -10,29 +10,27 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component object FeedsModelBuilder {
-  private[models] var log: Logger = Logger.getLogger(classOf[FeedsModelBuilder])
-}
-
 @Component class FeedsModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, suggestedFeeditemsService: SuggestedFeeditemsService,
                                                 urlBuilder: UrlBuilder,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+
+  val log = Logger.getLogger(classOf[FeedsModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
     return request.getPathInfo.matches("^/feeds(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      FeedsModelBuilder.log.debug("Building feed page model")
+      log.debug("Building feed page model")
       val mv: ModelAndView = new ModelAndView
       mv.addObject("heading", "Feeds")
       mv.addObject("description", "Incoming feeds")
       mv.addObject("link", urlBuilder.getFeedsUrl)
       mv.addObject("main_content", contentRetrievalService.getAllFeeds)
-      return mv
+      Some(mv)
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

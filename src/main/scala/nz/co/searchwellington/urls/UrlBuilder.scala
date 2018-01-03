@@ -4,6 +4,7 @@ import java.util.Date
 
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendTag}
+import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component
 @Component
 class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator) {
 
-  private val dateFormatter = new DateFormatter();
+  private val dateFormatter = new DateFormatter(DateTimeZone.UTC);
 
   def getHomeUrl: String = {
     return siteInformation.getUrl

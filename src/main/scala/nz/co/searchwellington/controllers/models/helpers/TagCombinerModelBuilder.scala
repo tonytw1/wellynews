@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util
 import java.util.{HashSet, List}
 import javax.servlet.http.HttpServletRequest
 
@@ -46,6 +47,9 @@ import org.springframework.web.servlet.ModelAndView
           mv.addObject("main_content", taggedNewsitems)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)))
           Some(mv)
+
+        } else {
+          None
         }
       }
     }
@@ -60,8 +64,8 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
-    if (tags.nonEmpty) {
+    val tags: util.List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
+    if (!tags.isEmpty) {
       val tag = tags.get(0)
       mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, 8))
       mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5))
