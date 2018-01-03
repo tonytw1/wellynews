@@ -14,14 +14,14 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
 @Controller class RssController @Autowired() (siteInformation: SiteInformation, contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, viewFactory: ViewFactory) {
 
-  @RequestMapping(Array("/rss"))
+  @RequestMapping(Array("/rss"))  // TODO Should be a special case of the index model builder.
   @throws(classOf[Exception])
   def mainRss(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val title: String = siteInformation.getAreaname + " Newslog"
-    val link: String = siteInformation.getUrl
-    val description: String = "Links to " + siteInformation.getAreaname + " related newsitems."
+    val title = siteInformation.getAreaname + " Newslog"
+    val link = siteInformation.getUrl
+    val description = "Links to " + siteInformation.getAreaname + " related newsitems."
 
-    val model: Map[String, AnyRef] = Maps.newHashMap();
+    val model = Maps.newHashMap();
     model.put("data", contentRetrievalService.getLatestNewsitems)
     new ModelAndView(viewFactory.getRssView(title, link, description), model)
   }

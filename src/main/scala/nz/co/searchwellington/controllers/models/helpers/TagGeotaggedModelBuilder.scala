@@ -19,20 +19,35 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
   private val log: Logger = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tags: List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
-    val isSingleTagPage: Boolean = tags != null && tags.size == 1
-    val hasCommentPath: Boolean = request.getPathInfo.matches("^(.*?)/geotagged(/(rss|json))?$")
+    val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
+    val isSingleTagPage = tags != null && tags.size == 1
+    val hasCommentPath = request.getPathInfo.matches("^(.*?)/geotagged(/(rss|json))?$")
     return isSingleTagPage && hasCommentPath
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    def populateTagCommentPageModelAndView(tag: Tag): ModelAndView = {
+      val mv = new ModelAndView
+      mv.addObject("tag", tag)
+      mv.addObject("heading", tag.getDisplayName + " geotagged")
+      mv.addObject("description", "Geotagged " + tag.getDisplayName + " newsitems")
+      mv.addObject("link", urlBuilder.getTagCommentUrl(tag))
+      val allGeotaggedForTag: List[FrontendResource] = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+      mv.addObject("main_content", allGeotaggedForTag)
+      if (allGeotaggedForTag.size > 0) {
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))
+      }
+      mv
+    }
+
     if (isValid(request)) {
       log.debug("Building tag geotagged page model")
-      val tags: List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
-      val tag: Tag = tags.get(0)
-      return populateTagCommentPageModelAndView(tag)
+      val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
+      val tag = tags.get(0)
+      Some(populateTagCommentPageModelAndView(tag))
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -40,20 +55,6 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
 
   def getViewName(mv: ModelAndView): String = {
     return "tagGeotagged"
-  }
-
-  private def populateTagCommentPageModelAndView(tag: Tag): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView
-    mv.addObject("tag", tag)
-    mv.addObject("heading", tag.getDisplayName + " geotagged")
-    mv.addObject("description", "Geotagged " + tag.getDisplayName + " newsitems")
-    mv.addObject("link", urlBuilder.getTagCommentUrl(tag))
-    val allGeotaggedForTag: List[FrontendResource] = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
-    mv.addObject("main_content", allGeotaggedForTag)
-    if (allGeotaggedForTag.size > 0) {
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))
-    }
-    return mv
   }
 
 }

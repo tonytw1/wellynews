@@ -50,6 +50,7 @@ import org.springframework.web.servlet.ModelAndView
       populatePublisherTagCombinerNewsitems(mv, publisher, tag)
       Some(mv)
     }
+
     None
   }
 

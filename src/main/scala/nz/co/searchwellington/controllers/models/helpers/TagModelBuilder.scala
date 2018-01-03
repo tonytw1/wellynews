@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView
   private val WEBSITES = "websites"
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tags: List[Tag] = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
+    val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
     return tags != null && tags.size == 1
   }
 
