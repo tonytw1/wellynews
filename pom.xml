@@ -226,7 +226,7 @@
 		</dependency>
 
 		<dependency>
-			<groupId>jrobotx</groupId>
+			<groupId>net.sourceforge.jrobotx</groupId>
 			<artifactId>jrobotx</artifactId>
 			<version>0.1</version>
 		</dependency>
