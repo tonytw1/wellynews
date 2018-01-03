@@ -23,7 +23,7 @@ import scala.collection.JavaConverters._
                                                        loggedInUserFilter: LoggedInUserFilter,
                                                        resourceDAO: HibernateResourceDAO) extends ModelBuilder {
 
-  private val log: Logger = Logger.getLogger(classOf[NewsitemPageModelBuilder])
+  private val log = Logger.getLogger(classOf[NewsitemPageModelBuilder])
 
   def getViewName(mv: ModelAndView): String = {
     return "newsitemPage"
@@ -33,25 +33,24 @@ import scala.collection.JavaConverters._
     return request.getPathInfo.matches("^/.*?/\\d\\d\\d\\d/[a-z]{3}/\\d\\d?/.*?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
-
-    val frontendResource: FrontendResource = contentRetrievalService.getNewsPage(request.getPathInfo)
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+    val frontendResource = contentRetrievalService.getNewsPage(request.getPathInfo)
     if (frontendResource != null) {
-      val mv: ModelAndView = new ModelAndView
+      val mv = new ModelAndView
       mv.addObject("item", frontendResource)
       mv.addObject("heading", frontendResource.getName)
       if (frontendResource.getPlace != null) {
         mv.addObject("geocoded", List(frontendResource).asJava)
       }
 
-      val resource: Resource = resourceDAO.loadResourceById(frontendResource.getId) // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
+      val resource = resourceDAO.loadResourceById(frontendResource.getId) // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
       mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
       mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
 
       mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser, resource)))
-      return mv
+      Some(mv)
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
