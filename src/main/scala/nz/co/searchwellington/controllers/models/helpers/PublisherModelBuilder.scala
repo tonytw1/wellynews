@@ -32,14 +32,43 @@ import org.springframework.web.servlet.ModelAndView
     return isPublisherPage
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
+      val mv = new ModelAndView
+      mv.addObject("heading", publisher.getName)
+      mv.addObject("description", publisher.getName + " newsitems")
+      mv.addObject("link", urlBuilder.getPublisherUrl(publisher.getName))
+
+      val frontendPublisher = new FrontendWebsite
+      frontendPublisher.setName(publisher.getName)
+      frontendPublisher.setUrlWords(publisher.getUrlWords)
+      frontendPublisher.setUrl(publisher.getUrl)
+      if (publisher.getGeocode != null) {
+        frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(publisher.getGeocode))
+      }
+      mv.addObject("publisher", frontendPublisher)
+      mv.addObject("location", frontendPublisher.getPlace)
+
+      val startIndex = commonAttributesModelBuilder.getStartIndex(page)
+      val mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher)
+      if (mainContentTotal > 0) {
+        val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, CommonAttributesModelBuilder.MAX_NEWSITEMS, startIndex)
+        mv.addObject("main_content", publisherNewsitems)
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
+        commonAttributesModelBuilder.populatePagination(mv, startIndex, mainContentTotal)
+      }
+      mv
+    }
+
+
     if (isValid(request)) {
       logger.info("Building publisher page model")
-      val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
-      val page: Int = commonAttributesModelBuilder.getPage(request)
-      return populatePublisherPageModelAndView(publisher, page)
+      val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+      val page = commonAttributesModelBuilder.getPage(request)
+      Some(populatePublisherPageModelAndView(publisher, page))
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -58,35 +87,10 @@ import org.springframework.web.servlet.ModelAndView
     return "publisher"
   }
 
-  private def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView
-    mv.addObject("heading", publisher.getName)
-    mv.addObject("description", publisher.getName + " newsitems")
-    mv.addObject("link", urlBuilder.getPublisherUrl(publisher.getName))
-    val frontendPublisher: FrontendWebsite = new FrontendWebsite
-    frontendPublisher.setName(publisher.getName)
-    frontendPublisher.setUrlWords(publisher.getUrlWords)
-    frontendPublisher.setUrl(publisher.getUrl)
-    if (publisher.getGeocode != null) {
-      frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(publisher.getGeocode))
-    }
-    mv.addObject("publisher", frontendPublisher)
-    mv.addObject("location", frontendPublisher.getPlace)
-    val startIndex: Int = commonAttributesModelBuilder.getStartIndex(page)
-    val mainContentTotal: Long = contentRetrievalService.getPublisherNewsitemsCount(publisher)
-    if (mainContentTotal > 0) {
-      val publisherNewsitems: List[FrontendResource] = contentRetrievalService.getPublisherNewsitems(publisher, CommonAttributesModelBuilder.MAX_NEWSITEMS, startIndex)
-      mv.addObject("main_content", publisherNewsitems)
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-      commonAttributesModelBuilder.populatePagination(mv, startIndex, mainContentTotal)
-    }
-    return mv
-  }
-
   @SuppressWarnings(Array("unchecked")) private def populateGeotaggedItems(mv: ModelAndView) {
     val mainContent: List[FrontendNewsitem] = mv.getModel.get("main_content").asInstanceOf[List[FrontendNewsitem]]
     if (mainContent != null) {
-      val geotaggedNewsitems: List[FrontendNewsitem] = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
+      val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
       if (!geotaggedNewsitems.isEmpty) {
         mv.addObject("geocoded", geotaggedNewsitems)
       }

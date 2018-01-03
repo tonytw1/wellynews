@@ -23,26 +23,26 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     return request.getPathInfo.matches("^/archive/.*?/.*?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      log.debug("Building archive page model")
-      val month: Date = getArchiveDateFromPath(request.getPathInfo)
+      val month = getArchiveDateFromPath(request.getPathInfo)
       if (month != null) {
         log.debug("Archive month is: " + month)
-        val monthLabel: String = new DateFormatter().fullMonthYear(month)
-        val mv: ModelAndView = new ModelAndView
+        val monthLabel = new DateFormatter().fullMonthYear(month)
+
+        val mv = new ModelAndView
         mv.addObject("heading", monthLabel)
         mv.addObject("description", "Archived newsitems for the month of " + dateFormatter.fullMonthYear(month))
         mv.addObject("main_content", contentRetrievalService.getNewsitemsForMonth(month))
-        return mv
+        Some(mv)
       }
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val month: Date = getArchiveDateFromPath(request.getPathInfo)
-    val archiveLinks: List[ArchiveLink] = contentRetrievalService.getArchiveMonths
+    val month = getArchiveDateFromPath(request.getPathInfo)
+    val archiveLinks = contentRetrievalService.getArchiveMonths
     populateNextAndPreviousLinks(mv, month, archiveLinks)
     archiveLinksService.populateArchiveLinks(mv, archiveLinks)
   }

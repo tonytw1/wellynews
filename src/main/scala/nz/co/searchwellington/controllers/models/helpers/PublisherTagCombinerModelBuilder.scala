@@ -19,18 +19,28 @@ import org.springframework.web.servlet.ModelAndView
   private val logger: Logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tag: Tag = request.getAttribute("tag").asInstanceOf[Tag]
-    val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
+    val tag = request.getAttribute("tag").asInstanceOf[Tag]
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     return publisher != null && tag != null
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    def populatePublisherTagCombinerNewsitems(mv: ModelAndView, publisher: Website, tag: Tag) {
+      val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, CommonAttributesModelBuilder.MAX_NEWSITEMS)
+      mv.addObject("main_content", publisherNewsitems)
+      if (publisherNewsitems.size > 0) {
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
+      }
+    }
+
     if (isValid(request)) {
       logger.info("Building publisher tag combiner page model")
-      val tag: Tag = request.getAttribute("tag").asInstanceOf[Tag]
-      val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
-      val mv: ModelAndView = new ModelAndView
-      val frontendPublisher: FrontendWebsite = new FrontendWebsite
+      val tag = request.getAttribute("tag").asInstanceOf[Tag]
+      val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+
+      val mv = new ModelAndView
+      val frontendPublisher = new FrontendWebsite
       frontendPublisher.setName(publisher.getName)
       frontendPublisher.setUrlWords(publisher.getUrlWords)
       mv.addObject("publisher", frontendPublisher)
@@ -38,9 +48,9 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("description", "")
       mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher.getName, tag))
       populatePublisherTagCombinerNewsitems(mv, publisher, tag)
-      return mv
+      Some(mv)
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -55,11 +65,4 @@ import org.springframework.web.servlet.ModelAndView
     return "publisherCombiner"
   }
 
-  private def populatePublisherTagCombinerNewsitems(mv: ModelAndView, publisher: Website, tag: Tag) {
-    val publisherNewsitems: List[FrontendResource] = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, CommonAttributesModelBuilder.MAX_NEWSITEMS)
-    mv.addObject("main_content", publisherNewsitems)
-    if (publisherNewsitems.size > 0) {
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
-    }
-  }
 }

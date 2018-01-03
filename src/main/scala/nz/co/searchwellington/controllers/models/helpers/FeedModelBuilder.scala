@@ -22,18 +22,18 @@ import org.springframework.web.servlet.ModelAndView
     return request.getAttribute(FEED_ATTRIBUTE) != null
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      val feed: Feed = request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed]
+      val feed = request.getAttribute(FEED_ATTRIBUTE).asnstanceOf[Feed]
       if (feed != null) {
-        val mv: ModelAndView = new ModelAndView
+        val mv = new ModelAndView
         mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed))
         commonAttributesModelBuilder.setRss(mv, feed.getName, feed.getUrl)
         populateFeedItems(mv, feed)
-        return mv
+        Some(mv)
       }
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView
       return request.getPathInfo.matches("^/justin(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
       val mv: ModelAndView = new ModelAndView
       mv.addObject("heading", "Latest additions")
@@ -27,9 +27,9 @@ import org.springframework.web.servlet.ModelAndView
       val latestSites: List[FrontendResource] = contentRetrievalService.getLatestWebsites(CommonAttributesModelBuilder.MAX_NEWSITEMS)
       mv.addObject("main_content", latestSites)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
-      return mv
+      Some(mv)
     }
-    return null
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

@@ -32,25 +32,25 @@ import scala.collection.JavaConverters._
     return request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      val mv: ModelAndView = new ModelAndView
+      val mv = new ModelAndView
       mv.addObject("description", "Geotagged newsitems")
       mv.addObject("link", urlBuilder.getGeotaggedUrl)
 
       val userSuppliedPlace: Place = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
       val hasUserSuppliedALocation: Boolean = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
 
-      val page: Int = commonAttributesModelBuilder.getPage(request)
+      val page = commonAttributesModelBuilder.getPage(request)
       mv.addObject("page", page)
-      val startIndex: Int = commonAttributesModelBuilder.getStartIndex(page)
+      val startIndex = commonAttributesModelBuilder.getStartIndex(page)
 
       if (hasUserSuppliedALocation) {
-        val radius: Double = getLocationSearchRadius(request)
-        val latLong: LatLong = userSuppliedPlace.getLatLong
-        val totalNearbyCount: Long = contentRetrievalService.getNewsitemsNearCount(latLong, radius)
+        val radius = getLocationSearchRadius(request)
+        val latLong = userSuppliedPlace.getLatLong
+        val totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius)
         if (startIndex > totalNearbyCount) {
-          return null
+          None
         }
 
         commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNearbyCount)
@@ -75,21 +75,22 @@ import scala.collection.JavaConverters._
 
         mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
         setRssUrlForLocation(mv, userSuppliedPlace, radius)
-        return mv
+        Some(mv)
       }
 
-      val totalGeotaggedCount: Long = contentRetrievalService.getGeotaggedCount
+      val totalGeotaggedCount = contentRetrievalService.getGeotaggedCount
       if (startIndex > totalGeotaggedCount) {
-        return null
+        None
       }
       commonAttributesModelBuilder.populatePagination(mv, startIndex, totalGeotaggedCount)
 
       mv.addObject("heading", "Geotagged newsitems")
       mv.addObject("main_content", contentRetrievalService.getGeocoded(startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS))
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
-      return mv
+      Some(mv)
     }
-    return null
+
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -105,7 +106,7 @@ import scala.collection.JavaConverters._
   }
 
   private def getLocationSearchRadius(request: HttpServletRequest): Double = {
-    var radius: Double = HOW_FAR_IS_CLOSE_IN_KILOMETERS
+    var radius = HOW_FAR_IS_CLOSE_IN_KILOMETERS
     if (request.getAttribute(LocationParameterFilter.RADIUS) != null) {
       radius = request.getAttribute(LocationParameterFilter.RADIUS).asInstanceOf[Double]
     }

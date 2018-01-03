@@ -18,8 +18,8 @@ import scala.collection.JavaConverters._
 
 @Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
-  private val MAX_OWNED_TO_SHOW_IN_RHS: Int = 4
-  private val NUMBER_OF_COMMENTED_TO_SHOW: Int = 2
+  private val MAX_OWNED_TO_SHOW_IN_RHS = 4
+  private val NUMBER_OF_COMMENTED_TO_SHOW = 2
 
   def isValid(request: HttpServletRequest): Boolean = {
     return request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
@@ -29,14 +29,14 @@ import scala.collection.JavaConverters._
     return "index"
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
+  def populateContentModel(request: HttpServletRequest): Opiton[ModelAndView] = {
     if (!isValid(request)) {  // TODO really? won't the dispatcher alway have decided this?
-      return null;
+      None
     }
 
     val page = if (request.getParameter("page") != null) {Integer.parseInt(request.getParameter("page"))} else {1}
-    val mv: ModelAndView = new ModelAndView
 
+    val mv = new ModelAndView
     val latestNewsitems: List[FrontendResource] = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS, page).toList
     mv.addObject("main_content", latestNewsitems.asJava)
 
@@ -44,7 +44,7 @@ import scala.collection.JavaConverters._
     if (latestNewsitems != null && !latestNewsitems.isEmpty) {
         mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem(latestNewsitems)))
     }
-    return mv
+    Some(mv)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

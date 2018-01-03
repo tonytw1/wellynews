@@ -15,19 +15,28 @@ import scala.collection.JavaConverters._
 
 @Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO) extends ModelBuilder {
 
-  private val log: Logger = Logger.getLogger(classOf[TagsModelBuilder])
+  private val log = Logger.getLogger(classOf[TagsModelBuilder])
 
-  private val MAIN_CONTENT: String = "main_content"
+  private val MAIN_CONTENT = "main_content"
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/tags$") || request.getPathInfo.matches("^/tags/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest): ModelAndView = {
-    if (isValid(request)) {
-      return populateTagsPageModelAndView()
+  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    def populateTagsPageModelAndView(): ModelAndView = {
+      val mv = new ModelAndView
+      val allTags = tagDAO.getAllTags.toList
+      mv.addObject(MAIN_CONTENT, allTags.map(t => new FrontendTag(t.getName, t.getDisplayName)).asJava)
+      mv.addObject("heading", "All tags")
+      mv
     }
-    return null
+
+    if (isValid(request)) {
+      Some(populateTagsPageModelAndView())
+    }
+    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -35,14 +44,6 @@ import scala.collection.JavaConverters._
 
   def getViewName(mv: ModelAndView): String = {
     return "tags"
-  }
-
-  private def populateTagsPageModelAndView(): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView
-    val allTags = tagDAO.getAllTags.toList
-    mv.addObject(MAIN_CONTENT, allTags.map(t => new FrontendTag(t.getName, t.getDisplayName)).asJava)
-    mv.addObject("heading", "All tags")
-    return mv
   }
 
 }
