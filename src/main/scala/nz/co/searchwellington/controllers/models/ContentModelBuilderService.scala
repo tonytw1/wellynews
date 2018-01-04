@@ -27,12 +27,9 @@ import javax.servlet.http.HttpServletRequest
 
     val modelBuilderToUse = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
 
-    val x = modelBuilderToUse.fold {
-      logger.warn("No matching model builder found for path: " + request.getPathInfo)
-      None // TODO Blocks the above value
-
-    } { mb =>
+    val populatedContent = modelBuilderToUse.flatMap { mb =>
       logger.info("Using " + modelBuilder.getClass.getName + " to serve path: " + request.getPathInfo)
+
       modelBuilder.populateContentModel(request).map { mv =>
         val path = request.getPathInfo
 
@@ -57,9 +54,10 @@ import javax.servlet.http.HttpServletRequest
         mv
       }
 
+    }.getOrElse {
+      logger.warn("No matching model builder found for path: " + request.getPathInfo)
+      None
     }
-
-    x // TODO
   }
 
 }
