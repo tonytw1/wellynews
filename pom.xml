@@ -33,17 +33,6 @@
 			<id>local-dependencies</id>
 			<url>file:${basedir}/lib/repository</url>
 		</repository>
-		<repository>
-			<id>scala</id>
-			<name>Scala Tools</name>
-			<url>http://scala-tools.org/repo-releases/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
 	</repositories>
 
 	<build>
@@ -225,12 +214,11 @@
 			<version>2.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>net.sourceforge.jrobotx</groupId>
-			<artifactId>jrobotx</artifactId>
-			<version>0.1</version>
-		</dependency>
-
+<dependency>
+    <groupId>com.trigonic</groupId>
+    <artifactId>jrobotx</artifactId>
+    <version>0.2</version>
+</dependency>
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>

@@ -52,7 +52,7 @@ class PublisherModelBuilderTest {
     Mockito.when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
     val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor, geocodeToPlaceMapper, commonAttributesModelBuilder)
     val mv: ModelAndView = new ModelAndView
-    mv.addObject("main_content", publisherNewsitems)
+    mv.addObject(MAIN_CONTENT publisherNewsitems)
     modelBuilder.populateExtraModelContent(request, mv)
     val geotaggedPublisherNewsitems: List[FrontendResource] = mv.getModel.get("geocoded").asInstanceOf[List[FrontendResource]]
     assertEquals(geotaggedPublisherNewsitems, geotaggedNewsitems)

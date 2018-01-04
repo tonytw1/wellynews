@@ -1,13 +1,13 @@
 package nz.co.searchwellington.controllers.models
 
+import javax.servlet.http.HttpServletRequest
+
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
-import uk.co.eelpieconsulting.common.views.json.JsonView
-import javax.servlet.http.HttpServletRequest
 
 @Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, jsonCallbackNameValidator: JsonCallbackNameValidator, commonModelObjectsService: CommonModelObjectsService, modelBuilders: ModelBuilder*) {
 
@@ -25,12 +25,12 @@ import javax.servlet.http.HttpServletRequest
       }
     }
 
-    val modelBuilderToUse = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
+    val modelBuilderToUse: Option[ModelBuilder] = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
 
-    val populatedContent = modelBuilderToUse.flatMap { mb =>
-      logger.info("Using " + modelBuilder.getClass.getName + " to serve path: " + request.getPathInfo)
+    modelBuilderToUse.map { mb =>
+      logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
 
-      modelBuilder.populateContentModel(request).map { mv =>
+      mb.populateContentModel(request).map { mv =>
         val path = request.getPathInfo
 
         if (path.endsWith("/rss")) {
@@ -46,8 +46,8 @@ import javax.servlet.http.HttpServletRequest
             populateJsonCallback(request, mv)
 
         } else {
-          modelBuilder.populateExtraModelContent(request, mv)
-          mv.setViewName(modelBuilder.getViewName(mv))
+          mb.populateExtraModelContent(request, mv)
+          mv.setViewName(mb.getViewName(mv))
           commonModelObjectsService.populateCommonLocal(mv)
         }
 

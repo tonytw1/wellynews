@@ -34,7 +34,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
         val mv = new ModelAndView
         mv.addObject("heading", monthLabel)
         mv.addObject("description", "Archived newsitems for the month of " + dateFormatter.fullMonthYear(month))
-        mv.addObject(MAIN_CONTENT contentRetrievalService.getNewsitemsForMonth(month))
+        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsForMonth(month))
         Some(mv)
       }
     }

@@ -47,7 +47,7 @@ import org.springframework.web.servlet.ModelAndView
   private def populateFeedItems(mv: ModelAndView, feed: Feed) {
     val feedNewsitems: List[FrontendFeedNewsitem] = rssfeedNewsitemService.getFeedNewsitems(feed)
     if (feedNewsitems != null && !feedNewsitems.isEmpty) {
-      mv.addObject(MAIN_CONTENT feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems))
+      mv.addObject(MAIN_CONTENT, feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems))
       populateGeotaggedFeedItems(mv, feedNewsitems)
     }
   }
