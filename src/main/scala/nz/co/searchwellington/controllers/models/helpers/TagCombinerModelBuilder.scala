@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
-    val isTagCombinerPage: Boolean = tags != null && tags.size == 2
+    val isTagCombinerPage = tags != null && tags.size == 2
     return isTagCombinerPage
   }
 
@@ -35,15 +35,16 @@ import org.springframework.web.servlet.ModelAndView
         val firstTag = tags.get(0)
         val secondTag = tags.get(1)
 
-        val mv = new ModelAndView
-        mv.addObject("tag", firstTag)
-        mv.addObject("tags", tags)
-        mv.addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName)
-        mv.addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".")
-        mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag))
         if (totalNewsitemCount > 0) {
+          val mv = new ModelAndView
+          mv.addObject("tag", firstTag)
+          mv.addObject("tags", tags)
+          mv.addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName)
+          mv.addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".")
+          mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag))
           commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
-          val taggedNewsitems: List[FrontendResource] = contentRetrievalService.getTaggedNewsitems(tags, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS)
+
+          val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS)
           mv.addObject(MAIN_CONTENT taggedNewsitems)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)))
           Some(mv)
@@ -77,7 +78,7 @@ import org.springframework.web.servlet.ModelAndView
   def getViewName(mv: ModelAndView): String = {
     val taggedNewsitemsCount = mv.getModel.get("main_content_total").asInstanceOf[Long]
     val taggedWebsites = mv.getModel.get("websites").asInstanceOf[List[Resource]]
-    val isOneContentType: Boolean = taggedNewsitemsCount == 0 || taggedWebsites.size == 0
+    val isOneContentType = taggedNewsitemsCount == 0 || taggedWebsites.size == 0
     if (isOneContentType) {
       return "tagCombinedOneContentType"
     }
