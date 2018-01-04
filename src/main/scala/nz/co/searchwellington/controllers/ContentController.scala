@@ -25,7 +25,8 @@ import com.sun.syndication.io.FeedException
     mvo.fold {
       log.warn("Model was null; returning 404")
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      null
+      val a: ModelAndView = null
+      a
 
     } { mv =>
       if (isHtmlView(mv)) {

@@ -17,8 +17,6 @@ import scala.collection.JavaConverters._
 
   private val log = Logger.getLogger(classOf[TagsModelBuilder])
 
-  private val MAIN_CONTENT = "main_content"
-
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/tags$") || request.getPathInfo.matches("^/tags/json$")
   }

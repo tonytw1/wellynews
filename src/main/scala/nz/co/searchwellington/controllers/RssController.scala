@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers
 
-import java.util.Map
+import java.util
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import com.google.common.collect.Maps
@@ -21,7 +21,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
     val link = siteInformation.getUrl
     val description = "Links to " + siteInformation.getAreaname + " related newsitems."
 
-    val model = Maps.newHashMap();
+    val model: util.HashMap[String, Any] = Maps.newHashMap()
     model.put("data", contentRetrievalService.getLatestNewsitems)
     new ModelAndView(viewFactory.getRssView(title, link, description), model)
   }
