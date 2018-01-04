@@ -38,8 +38,8 @@ import scala.collection.JavaConverters._
       mv.addObject("description", "Geotagged newsitems")
       mv.addObject("link", urlBuilder.getGeotaggedUrl)
 
-      val userSuppliedPlace: Place = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
-      val hasUserSuppliedALocation: Boolean = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
+      val userSuppliedPlace = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
+      val hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
 
       val page = commonAttributesModelBuilder.getPage(request)
       mv.addObject("page", page)

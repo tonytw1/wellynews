@@ -37,7 +37,7 @@ import scala.collection.JavaConverters._
     val page = if (request.getParameter("page") != null) {Integer.parseInt(request.getParameter("page"))} else {1}
 
     val mv = new ModelAndView
-    val latestNewsitems: List[FrontendResource] = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS, page).toList
+    val latestNewsitems = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS, page).toList
     mv.addObject(MAIN_CONTENT latestNewsitems.asJava)
 
     commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
@@ -58,7 +58,7 @@ import scala.collection.JavaConverters._
 
   private def monthOfLastItem(latestNewsitems: List[FrontendResource]): Date = {
     if (latestNewsitems.size > 0) {
-      val lastNewsitem: FrontendResource = latestNewsitems.get(latestNewsitems.size - 1)
+      val lastNewsitem = latestNewsitems.get(latestNewsitems.size - 1)
       if (lastNewsitem.getDate != null) {
         return lastNewsitem.getDate
       }
@@ -83,7 +83,7 @@ import scala.collection.JavaConverters._
   }
 
   private def populateCommentedNewsitems(mv: ModelAndView) {
-    val recentCommentedNewsitems: List[FrontendResource] = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0).toList
+    val recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0).toList
     if (recentCommentedNewsitems.size <= NUMBER_OF_COMMENTED_TO_SHOW) {
       mv.addObject("commented_newsitems", recentCommentedNewsitems)
     }
@@ -94,7 +94,7 @@ import scala.collection.JavaConverters._
   }
 
   private def populateGeocoded(mv: ModelAndView) {
-    val geocoded: List[FrontendResource] = contentRetrievalService.getGeocoded(0, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
+    val geocoded = contentRetrievalService.getGeocoded(0, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
     if (!geocoded.isEmpty) {
       mv.addObject("geocoded", geocoded.asJava)
     }
