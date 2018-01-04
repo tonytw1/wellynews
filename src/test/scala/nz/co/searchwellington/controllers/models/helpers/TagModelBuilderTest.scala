@@ -4,7 +4,6 @@ import java.util.{Arrays, List}
 
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.flickr.FlickrService
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -66,7 +65,7 @@ class TagModelBuilderTest {
   @throws(classOf[Exception])
   def tagPageHeadingShouldBeTheTagDisplayName {
     request.setAttribute("tags", Arrays.asList(tag))
-    val mv: ModelAndView = modelBuilder.populateContentModel(request)
+    val mv: ModelAndView = modelBuilder.populateContentModel(request).get
     assertEquals(TagModelBuilderTest.TAG_DISPLAY_NAME, mv.getModel.get("heading"))
   }
 
@@ -75,7 +74,7 @@ class TagModelBuilderTest {
   def mainContentShouldBeTagNewsitems {
     request.setAttribute("tags", Arrays.asList(tag))
     Mockito.when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems)
-    val mv: ModelAndView = modelBuilder.populateContentModel(request)
+    val mv: ModelAndView = modelBuilder.populateContentModel(request).get
     assertEquals(tagNewsitems, mv.getModel.get("main_content"))
   }
 }

@@ -19,7 +19,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 class NewsitemPageModelBuilderTest {
 
   private val NEWSITEM_ID: Int = 123
-  private val VALID_NEWSITEM_PAGE_PATH: String = "/wellington-city-council/2010/feb/01/something-about-rates"
+  private val VALID_NEWSITEM_PAGE_PATH = "/wellington-city-council/2010/feb/01/something-about-rates"
 
   @Mock private[models] var contentRetrievalService: ContentRetrievalService = null
   @Mock private[models] var taggingReturnsOfficerService: TaggingReturnsOfficerService = null
@@ -55,7 +55,7 @@ class NewsitemPageModelBuilderTest {
     when(geotaggedNewsitem.getPlace).thenReturn(place)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(geotaggedNewsitem)
 
-    val mv: ModelAndView = builder.populateContentModel(request)
+    val mv = builder.populateContentModel(request).get
 
     val geotagged: java.util.List[Resource] = mv.getModel.get("geocoded").asInstanceOf[java.util.List[Resource]]
     assertEquals(1, geotagged.size)
@@ -65,7 +65,7 @@ class NewsitemPageModelBuilderTest {
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(frontendNewsitem)
-    val mv: ModelAndView = builder.populateContentModel(request)
+    val mv: ModelAndView = builder.populateContentModel(request).get
     assertNull(mv.getModel.get("geocoded"))
   }
 
@@ -76,7 +76,7 @@ class NewsitemPageModelBuilderTest {
     when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(newsitem)
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(List(geotaggingVote))
 
-    val mv: ModelAndView = builder.populateContentModel(request)
+    val mv = builder.populateContentModel(request).get
 
     val geotaggedVotesOnModel: java.util.List[GeotaggingVote] = mv.getModel.get("geotag_votes").asInstanceOf[java.util.List[GeotaggingVote]]
     assertEquals(1, geotaggedVotesOnModel.size)

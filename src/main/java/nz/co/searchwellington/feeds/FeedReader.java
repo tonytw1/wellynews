@@ -14,6 +14,7 @@ import nz.co.searchwellington.tagging.AutoTaggingService;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -54,7 +55,7 @@ public class FeedReader {
 		this.feedReaderUpdateService = feedReaderUpdateService;
 		this.contentUpdateService = contentUpdateService;
 		this.linkCheckerQueue = linkCheckerQueue;
-		dateFormatter = new DateFormatter();
+		dateFormatter = new DateFormatter(DateTimeZone.UTC);
 	}
 	
 	@Transactional(propagation=Propagation.REQUIRES_NEW)

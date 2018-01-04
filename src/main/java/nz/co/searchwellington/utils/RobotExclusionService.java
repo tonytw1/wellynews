@@ -1,13 +1,12 @@
 package nz.co.searchwellington.utils;
 
-import java.net.URL;
-
-import net.sourceforge.jrobotx.RobotExclusion;
-import net.sourceforge.jrobotx.util.URLInputStreamFactory;
-
+import com.trigonic.jrobotx.RobotExclusion;
+import com.trigonic.jrobotx.util.URLInputStreamFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.net.URL;
 
 @Component
 public class RobotExclusionService {
@@ -23,7 +22,7 @@ public class RobotExclusionService {
 	
 	public boolean isUrlCrawlable(String url, String userAgent) {
 		log.info("Checking if url '" + url + "' is allowed for user agent '" + userAgent + "'");
-		URLInputStreamFactory robotsDotTextInputStream = new HttpFetcherUrlInputStreamFactory(httpFetcher);		
+		URLInputStreamFactory robotsDotTextInputStream = new HttpFetcherUrlInputStreamFactory(httpFetcher);
 		RobotExclusion jrobotx = new RobotExclusion(robotsDotTextInputStream);
 		try {
 			boolean isCrawlable = jrobotx.allows(new URL(url), userAgent);

@@ -2,6 +2,7 @@ package nz.co.searchwellington.model;
 
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
+import org.joda.time.DateTimeZone;
 import org.springframework.stereotype.Component;
 
 import uk.co.eelpieconsulting.common.dates.DateFormatter;
@@ -27,7 +28,7 @@ public class UrlWordsGenerator {
 			uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName()));
 		}
 		
-		final DateFormatter dateFormatter = new DateFormatter();
+		final DateFormatter dateFormatter = new DateFormatter(DateTimeZone.UTC);
 		if (newsitem.getDate() != null) {
 			uri.append("/" + dateFormatter.yearMonthDayUrlStub(newsitem.getDate()));
 			uri.append("/" + makeUrlWordsFromName(newsitem.getName()));

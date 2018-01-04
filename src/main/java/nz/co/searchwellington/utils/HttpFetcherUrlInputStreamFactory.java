@@ -1,13 +1,12 @@
 package nz.co.searchwellington.utils;
 
+import com.trigonic.jrobotx.util.URLInputStreamFactory;
+import org.apache.commons.httpclient.HttpStatus;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-
-import net.sourceforge.jrobotx.util.URLInputStreamFactory;
-
-import org.apache.commons.httpclient.HttpStatus;
 
 public class HttpFetcherUrlInputStreamFactory implements URLInputStreamFactory {
 
