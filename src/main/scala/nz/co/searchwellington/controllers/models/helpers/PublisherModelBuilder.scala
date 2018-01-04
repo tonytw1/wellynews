@@ -54,7 +54,7 @@ import org.springframework.web.servlet.ModelAndView
       val mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher)
       if (mainContentTotal > 0) {
         val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, CommonAttributesModelBuilder.MAX_NEWSITEMS, startIndex)
-        mv.addObject("main_content", publisherNewsitems)
+        mv.addObject(MAIN_CONTENT publisherNewsitems)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
         commonAttributesModelBuilder.populatePagination(mv, startIndex, mainContentTotal)
       }

@@ -23,7 +23,6 @@ import org.springframework.web.servlet.ModelAndView
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])
 
-  private val MAIN_CONTENT = "main_content"
   private val PAGE = "page"
   private val TAG = "tag"
   private val TAGS = "tags"

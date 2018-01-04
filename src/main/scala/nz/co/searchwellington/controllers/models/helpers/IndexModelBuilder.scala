@@ -38,7 +38,7 @@ import scala.collection.JavaConverters._
 
     val mv = new ModelAndView
     val latestNewsitems: List[FrontendResource] = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS, page).toList
-    mv.addObject("main_content", latestNewsitems.asJava)
+    mv.addObject(MAIN_CONTENT latestNewsitems.asJava)
 
     commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
     if (latestNewsitems != null && !latestNewsitems.isEmpty) {

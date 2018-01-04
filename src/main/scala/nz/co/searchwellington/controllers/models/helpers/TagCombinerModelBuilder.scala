@@ -44,7 +44,7 @@ import org.springframework.web.servlet.ModelAndView
         if (totalNewsitemCount > 0) {
           commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
           val taggedNewsitems: List[FrontendResource] = contentRetrievalService.getTaggedNewsitems(tags, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS)
-          mv.addObject("main_content", taggedNewsitems)
+          mv.addObject(MAIN_CONTENT taggedNewsitems)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)))
           Some(mv)
 

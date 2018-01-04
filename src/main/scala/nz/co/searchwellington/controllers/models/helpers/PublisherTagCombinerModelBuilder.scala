@@ -28,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView
 
     def populatePublisherTagCombinerNewsitems(mv: ModelAndView, publisher: Website, tag: Tag) {
       val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, CommonAttributesModelBuilder.MAX_NEWSITEMS)
-      mv.addObject("main_content", publisherNewsitems)
+      mv.addObject(MAIN_CONTENT publisherNewsitems)
       if (publisherNewsitems.size > 0) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
       }
