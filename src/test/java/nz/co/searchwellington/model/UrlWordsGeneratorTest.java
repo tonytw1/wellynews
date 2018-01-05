@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import nz.co.searchwellington.model.frontend.FrontendNewsitem;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -17,7 +18,7 @@ public class UrlWordsGeneratorTest {
 	public void setup() {
 		newsitem = new FrontendNewsitem();
 		newsitem.setName("Some thing happening");
-		DateTime pubdate = new DateTime(2010, 4, 2, 0, 0, 0, 0);
+		DateTime pubdate = new DateTime(2010, 4, 2, 0, 0, 0, 0, DateTimeZone.UTC);
 		newsitem.setDate(pubdate.toDate());
 		this.urlWordsGenerator = new UrlWordsGenerator();
 	}
