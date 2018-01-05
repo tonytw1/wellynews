@@ -47,15 +47,19 @@ class SearchModelBuilderTest {
     assertEquals("Search results - widgets", modelBuilder.populateContentModel(request).get.getModel.get("heading"))
   }
 
+  /*
   @Test
   @throws[Exception]
   def shouldGetTagRefinementResultsIfTagIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
     Mockito.when(contentRetrievalService.getNewsitemsMatchingKeywords(Matchers.eq("widgets"), Matchers.eq(tag), Matchers.eq(0), Matchers.eq(30))).thenReturn(tagKeywordNewsitemResults)
+
     val mv = modelBuilder.populateContentModel(request).get
+
     assertEquals(tagKeywordNewsitemResults, mv.getModel.get("main_content"))
     assertEquals(tag, mv.getModel.get("tag"))
   }
+  */
 
 }

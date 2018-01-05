@@ -65,7 +65,9 @@ class TagModelBuilderTest {
   @throws(classOf[Exception])
   def tagPageHeadingShouldBeTheTagDisplayName {
     request.setAttribute("tags", Arrays.asList(tag))
-    val mv: ModelAndView = modelBuilder.populateContentModel(request).get
+
+    val mv = modelBuilder.populateContentModel(request).get
+
     assertEquals(TagModelBuilderTest.TAG_DISPLAY_NAME, mv.getModel.get("heading"))
   }
 
@@ -74,7 +76,9 @@ class TagModelBuilderTest {
   def mainContentShouldBeTagNewsitems {
     request.setAttribute("tags", Arrays.asList(tag))
     Mockito.when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems)
-    val mv: ModelAndView = modelBuilder.populateContentModel(request).get
+
+    val mv = modelBuilder.populateContentModel(request).get
+
     assertEquals(tagNewsitems, mv.getModel.get("main_content"))
   }
 }

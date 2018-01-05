@@ -28,7 +28,7 @@ class FeedModelBuilderTest {
   @Mock private[models] var geotaggedFeedNewsitems: List[FrontendNewsitem] = null
   @Mock private[models] var frontendFeed: FrontendResource = null
   private[models] var request: MockHttpServletRequest = null
-  private[models] var modelBuilder: ModelBuilder = null
+  private[models] var modelBuilder: FeedModelBuilder = null
 
   @Before
   @throws(classOf[Exception])
@@ -54,7 +54,9 @@ class FeedModelBuilderTest {
   @throws(classOf[Exception])
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
+
     val mv = modelBuilder.populateContentModel(request).get
+
     assertEquals(frontendFeed, mv.getModel.get("feed"))
   }
 
@@ -62,6 +64,7 @@ class FeedModelBuilderTest {
   @throws(classOf[Exception])
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     val mv = modelBuilder.populateContentModel(request).get
+
     assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation, mv.getModel.get("main_content"))
   }
 

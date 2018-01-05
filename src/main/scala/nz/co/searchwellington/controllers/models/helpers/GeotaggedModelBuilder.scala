@@ -76,21 +76,23 @@ import scala.collection.JavaConverters._
         mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
         setRssUrlForLocation(mv, userSuppliedPlace, radius)
         Some(mv)
+
+      } else {
+        val totalGeotaggedCount = contentRetrievalService.getGeotaggedCount
+        if (startIndex > totalGeotaggedCount) {
+          None
+        }
+        commonAttributesModelBuilder.populatePagination(mv, startIndex, totalGeotaggedCount)
+
+        mv.addObject("heading", "Geotagged newsitems")
+        mv.addObject(MAIN_CONTENT, contentRetrievalService.getGeocoded(startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS))
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
+        Some(mv)
       }
 
-      val totalGeotaggedCount = contentRetrievalService.getGeotaggedCount
-      if (startIndex > totalGeotaggedCount) {
-        None
-      }
-      commonAttributesModelBuilder.populatePagination(mv, startIndex, totalGeotaggedCount)
-
-      mv.addObject("heading", "Geotagged newsitems")
-      mv.addObject(MAIN_CONTENT, contentRetrievalService.getGeocoded(startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS))
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
-      Some(mv)
+    } else {
+      None
     }
-
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

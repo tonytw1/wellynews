@@ -27,7 +27,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
     val modelBuilderToUse: Option[ModelBuilder] = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
 
-    modelBuilderToUse.map { mb =>
+    val r = modelBuilderToUse.map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
 
       mb.populateContentModel(request).map { mv =>
@@ -58,6 +58,8 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
       logger.warn("No matching model builder found for path: " + request.getPathInfo)
       None
     }
+
+    r
   }
 
 }

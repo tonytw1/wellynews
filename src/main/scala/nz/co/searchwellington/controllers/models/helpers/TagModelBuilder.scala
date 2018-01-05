@@ -42,24 +42,27 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject(PAGE, page)
       val startIndex = commonAttributesModelBuilder.getStartIndex(page)
       val totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag)
+
       if (startIndex > totalNewsitemCount) {
         None
-      }
-      mv.addObject(TAG, tag)
-      if (tag.getGeocode != null) {
-        mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode))
-      }
-      mv.addObject("heading", tag.getDisplayName)
-      mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
-      mv.addObject("link", urlBuilder.getTagUrl(tag))
 
-      val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS)
-      mv.addObject(MAIN_CONTENT, taggedNewsitems)
-      commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
-      if (taggedNewsitems.size > 0) {
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
+      } else {
+        mv.addObject(TAG, tag)
+        if (tag.getGeocode != null) {
+          mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode))
+        }
+        mv.addObject("heading", tag.getDisplayName)
+        mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
+        mv.addObject("link", urlBuilder.getTagUrl(tag))
+
+        val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS)
+        mv.addObject(MAIN_CONTENT, taggedNewsitems)
+        commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
+        if (taggedNewsitems.size > 0) {
+          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
+        }
+        Some(mv)
       }
-      Some(mv)
     }
 
     if (isValid(request)) {
@@ -67,9 +70,9 @@ import org.springframework.web.servlet.ModelAndView
       val tag = tags.get(0)
       val page = commonAttributesModelBuilder.getPage(request)
       populateTagPageModelAndView(tag, page)
+    } else {
+      None
     }
-
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

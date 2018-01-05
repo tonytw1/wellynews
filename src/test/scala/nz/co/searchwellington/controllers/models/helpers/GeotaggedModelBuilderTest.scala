@@ -68,7 +68,9 @@ class GeotaggedModelBuilderTest {
   def geotaggedNewsitemsPageShouldHavePaginationInformation {
     request.setPathInfo("/geotagged")
     Mockito.when(contentRetrievalService.getGeotaggedCount).thenReturn(GeotaggedModelBuilderTest.TOTAL_GEOTAGGED_COUNT)
-    val modelAndView: ModelAndView = modelBuilder.populateContentModel(request).get
+
+    val modelAndView = modelBuilder.populateContentModel(request).get
+
     assertEquals(0, modelAndView.getModel.get("page"))
     assertEquals(GeotaggedModelBuilderTest.TOTAL_GEOTAGGED_COUNT, modelAndView.getModel.get("main_content_total"))
   }

@@ -31,9 +31,13 @@ import org.springframework.web.servlet.ModelAndView
         commonAttributesModelBuilder.setRss(mv, feed.getName, feed.getUrl)
         populateFeedItems(mv, feed)
         Some(mv)
+      } else {
+        None
       }
+
+    } else {
+      None
     }
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

@@ -34,7 +34,7 @@ class NewsitemPageModelBuilderTest {
   @Mock private var geotaggingVote: GeotaggingVote = null
 
   private var request: MockHttpServletRequest = null
-  private var builder: ModelBuilder = null
+  private var builder: NewsitemPageModelBuilder = null
 
   @Before
   def setUp {

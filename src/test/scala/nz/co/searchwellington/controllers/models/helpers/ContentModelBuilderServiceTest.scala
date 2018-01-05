@@ -48,14 +48,14 @@ class ContentModelBuilderServiceTest {
   @Test
   @throws[Exception]
   def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid {
-    assertEquals(validModelAndView, contentModelBuilderService.populateContentModel(request))
+    assertEquals(Some(validModelAndView), contentModelBuilderService.populateContentModel(request))
   }
 
   @Test
   @throws[Exception]
   def shouldReturnNullIfNoModelBuilderWasFoundForRequest {
     contentModelBuilderService = new ContentModelBuilderService(viewFactory, jsonCallbackNameValidator, commonModelObjectsService, invalidModelBuilder)
-    assertNull(contentModelBuilderService.populateContentModel(request))
+    assertEquals(None, contentModelBuilderService.populateContentModel(request))
   }
 
   @Test
