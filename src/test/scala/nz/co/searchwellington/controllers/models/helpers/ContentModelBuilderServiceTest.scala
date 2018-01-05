@@ -1,24 +1,21 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.List
+
 import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.models.ContentModelBuilderService
-import nz.co.searchwellington.controllers.models.JsonCallbackNameValidator
-import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, JsonCallbackNameValidator, ModelBuilder}
 import nz.co.searchwellington.model.Tag
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
+import org.junit.Assert.{assertEquals, assertNull}
+import org.junit.{Before, Test}
+import org.mockito.Matchers.anyString
+import org.mockito.Mockito.when
 import org.mockito.MockitoAnnotations
+import org.mockito.MockitoAnnotations.Mock
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 import uk.co.eelpieconsulting.common.views.json.JsonView
 import uk.co.eelpieconsulting.common.views.rss.RssView
-import java.util.List
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.mockito.Mockito.when
 
 class ContentModelBuilderServiceTest {
 
@@ -64,7 +61,7 @@ class ContentModelBuilderServiceTest {
   @Test
   @throws[Exception]
   def rssSuffixedRequestsShouldBeGivenTheRssView {
-    when(viewFactory.getRssView(Mockito.anyString, Mockito.anyString, Mockito.anyString)).thenReturn(rssView)
+    when(viewFactory.getRssView(anyString, anyString, anyString)).thenReturn(rssView)
     request.setPathInfo("/something/rss")
     assertEquals(rssView, contentModelBuilderService.populateContentModel(request).get.getView)
   }

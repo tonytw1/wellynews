@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers.admin
 
 import com.google.common.base.Strings
+import nz.co.searchwellington.model.SiteInformation
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendFeedNewsitem, FrontendResource, FrontendWebsite}
-import nz.co.searchwellington.model.{Feed, SiteInformation}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component

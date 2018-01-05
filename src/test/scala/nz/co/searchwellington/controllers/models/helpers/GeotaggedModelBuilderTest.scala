@@ -1,26 +1,18 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import java.util.List
-import nz.co.searchwellington.controllers.RelatedTagsService
-import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
-import nz.co.searchwellington.controllers.models.helpers.GeotaggedModelBuilder
+
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
+import org.junit.Assert.{assertEquals, assertNull, assertTrue}
+import org.junit.{Before, Test}
+import org.mockito.{Mock, Mockito, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
-import uk.co.eelpieconsulting.common.geo.model.LatLong
-import uk.co.eelpieconsulting.common.geo.model.Place
+import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
 object GeotaggedModelBuilderTest {
   private val TOTAL_GEOTAGGED_COUNT: Long = 512

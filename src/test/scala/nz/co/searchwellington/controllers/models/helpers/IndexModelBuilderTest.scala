@@ -1,24 +1,16 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 import java.util.List
+
 import com.google.common.collect.Lists
-import nz.co.searchwellington.controllers.LoggedInUserFilter
-import nz.co.searchwellington.controllers.RssUrlBuilder
-import nz.co.searchwellington.controllers.models.helpers.ArchiveLinksService
-import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
+import org.junit.{Before, Test}
+import org.mockito.{Mock, Mockito, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.ModelAndView
 
 class IndexModelBuilderTest {
   @Mock private[helpers] val contentRetrievalService: ContentRetrievalService = null
