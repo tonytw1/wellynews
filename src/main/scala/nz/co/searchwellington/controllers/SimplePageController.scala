@@ -6,7 +6,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository
-import nz.co.searchwellington.model.{ArchiveLink, DiscoveredFeed}
+import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -80,7 +80,7 @@ import org.springframework.web.servlet.ModelAndView
     commonModelObjectsService.populateCommonLocal(mv)
     urlStack.setUrlStack(request)
     mv.addObject("heading", "Discovered Feeds")
-    val nonCommentFeeds: util.List[DiscoveredFeed] = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds
+    val nonCommentFeeds = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds
     mv.addObject("discovered_feeds", nonCommentFeeds)
     mv.setViewName("discoveredFeeds")
     mv
