@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
 
-import nz.co.searchwellington.controllers.models.helpers.CommonAttributesModelBuilder
+import nz.co.searchwellington.controllers.models.helpers.{CommonAttributesModelBuilder, CommonSizes}
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.collection.immutable
 
-@Component class SearchModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class SearchModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val KEYWORDS_PARAMETER = "keywords"
 
@@ -58,7 +58,7 @@ import scala.collection.immutable
      // }
 
 //    } else {
-      mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS))
+      mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS))
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
  //   }
 

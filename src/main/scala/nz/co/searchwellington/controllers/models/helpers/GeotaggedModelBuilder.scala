@@ -21,7 +21,7 @@ import scala.collection.JavaConverters._
                                                      urlBuilder: UrlBuilder,
                                                      rssUrlBuilder: RssUrlBuilder,
                                                      relatedTagsService: RelatedTagsService,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val log: Logger = Logger.getLogger(classOf[GeotaggedModelBuilder])
 
@@ -56,7 +56,7 @@ import scala.collection.JavaConverters._
         commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNearbyCount)
         mv.addObject("location", userSuppliedPlace)
         mv.addObject("radius", radius)
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS))
+        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS))
         mv.addObject("related_distances", contentRetrievalService.getNewsitemsNearDistanceFacet(latLong))
 
         if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
@@ -85,7 +85,7 @@ import scala.collection.JavaConverters._
         commonAttributesModelBuilder.populatePagination(mv, startIndex, totalGeotaggedCount)
 
         mv.addObject("heading", "Geotagged newsitems")
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getGeocoded(startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS))
+        mv.addObject(MAIN_CONTENT, contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS))
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
         Some(mv)
       }

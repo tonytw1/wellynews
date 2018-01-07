@@ -14,7 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder)
+  extends ModelBuilder with CommonSizes {
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
@@ -44,7 +45,7 @@ import org.springframework.web.servlet.ModelAndView
           mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag))
           commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
 
-          val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS)
+          val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, MAX_NEWSITEMS)
           mv.addObject(MAIN_CONTENT, taggedNewsitems)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)))
           Some(mv)
@@ -70,7 +71,7 @@ import org.springframework.web.servlet.ModelAndView
       val tag = tags.get(0)
       mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, 8))
       mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5))
-      val taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet[Tag](tags), CommonAttributesModelBuilder.MAX_WEBSITES)
+      val taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet[Tag](tags), MAX_WEBSITES)
       mv.addObject("websites", taggedWebsites)
     }
   }

@@ -14,7 +14,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import nz.co.searchwellington.controllers.models.ModelBuilder
 
-@Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
+                                                       urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val log: Logger = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
@@ -33,7 +34,7 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
       mv.addObject("heading", tag.getDisplayName + " geotagged")
       mv.addObject("description", "Geotagged " + tag.getDisplayName + " newsitems")
       mv.addObject("link", urlBuilder.getTagCommentUrl(tag))
-      val allGeotaggedForTag: List[FrontendResource] = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+      val allGeotaggedForTag: List[FrontendResource] = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
       mv.addObject(MAIN_CONTENT, allGeotaggedForTag)
       if (allGeotaggedForTag.size > 0) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))

@@ -19,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView
 @Component class TagModelBuilder @Autowired() (rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
-                                              geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+                                              geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])
 
@@ -55,7 +55,7 @@ import org.springframework.web.servlet.ModelAndView
         mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
         mv.addObject("link", urlBuilder.getTagUrl(tag))
 
-        val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, CommonAttributesModelBuilder.MAX_NEWSITEMS)
+        val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS)
         mv.addObject(MAIN_CONTENT, taggedNewsitems)
         commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
         if (taggedNewsitems.size > 0) {
@@ -78,13 +78,13 @@ import org.springframework.web.servlet.ModelAndView
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
 
     def populateCommentedTaggedNewsitems(mv: ModelAndView, tag: Tag) {
-      val recentCommentedNewsitems: List[FrontendResource] = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1)
+      val recentCommentedNewsitems: List[FrontendResource] = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1)
       var commentedToShow: List[FrontendResource] = null
-      if (recentCommentedNewsitems.size <= CommonAttributesModelBuilder.MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
+      if (recentCommentedNewsitems.size <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
         commentedToShow = recentCommentedNewsitems
       }
       else {
-        commentedToShow = recentCommentedNewsitems.subList(0, CommonAttributesModelBuilder.MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS)
+        commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS)
       }
       val commentsCount: Int = contentRetrievalService.getCommentedNewsitemsForTagCount(tag)
       val moreCommentCount: Int = commentsCount - commentedToShow.size
@@ -98,7 +98,7 @@ import org.springframework.web.servlet.ModelAndView
 
     val tags: List[Tag] = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
     val tag: Tag = tags.get(0)
-    val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, CommonAttributesModelBuilder.MAX_WEBSITES)
+    val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
     mv.addObject(WEBSITES, taggedWebsites)
     val relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8)
     if (!relatedTagLinks.isEmpty) {
@@ -135,7 +135,7 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   private def populateGeocoded(mv: ModelAndView, tag: Tag) {
-    val geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+    val geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
     log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
     if (geocoded.size > 0) {
       mv.addObject("geocoded", geocoded)

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val logger: Logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
 
@@ -27,7 +27,7 @@ import org.springframework.web.servlet.ModelAndView
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populatePublisherTagCombinerNewsitems(mv: ModelAndView, publisher: Website, tag: Tag) {
-      val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, CommonAttributesModelBuilder.MAX_NEWSITEMS)
+      val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS)
       mv.addObject(MAIN_CONTENT, publisherNewsitems)
       if (publisherNewsitems.size > 0) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))

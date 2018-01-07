@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView
                                                      urlBuilder: UrlBuilder,
                                                      geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val logger: Logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
@@ -53,7 +53,7 @@ import org.springframework.web.servlet.ModelAndView
       val startIndex = commonAttributesModelBuilder.getStartIndex(page)
       val mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher)
       if (mainContentTotal > 0) {
-        val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, CommonAttributesModelBuilder.MAX_NEWSITEMS, startIndex)
+        val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex)
         mv.addObject(MAIN_CONTENT, publisherNewsitems)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
         commonAttributesModelBuilder.populatePagination(mv, startIndex, mainContentTotal)

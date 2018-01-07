@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
-@Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
   private val NUMBER_OF_COMMENTED_TO_SHOW = 2
@@ -37,7 +37,7 @@ import scala.collection.JavaConverters._
     val page = if (request.getParameter("page") != null) {Integer.parseInt(request.getParameter("page"))} else {1}
 
     val mv = new ModelAndView
-    val latestNewsitems = contentRetrievalService.getLatestNewsitems(CommonAttributesModelBuilder.MAX_NEWSITEMS, page).toList
+    val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, page).toList
     mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
     commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
@@ -94,7 +94,7 @@ import scala.collection.JavaConverters._
   }
 
   private def populateGeocoded(mv: ModelAndView) {
-    val geocoded = contentRetrievalService.getGeocoded(0, CommonAttributesModelBuilder.MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
+    val geocoded = contentRetrievalService.getGeocoded(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
     if (!geocoded.isEmpty) {
       mv.addObject("geocoded", geocoded.asJava)
     }
