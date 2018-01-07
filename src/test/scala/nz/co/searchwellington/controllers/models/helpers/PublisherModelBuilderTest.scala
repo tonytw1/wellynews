@@ -49,6 +49,8 @@ class PublisherModelBuilderTest {
     publisherNewsitems.add(geotaggedNewsitem)
     val geotaggedNewsitems: List[FrontendNewsitem] = new util.ArrayList();
     geotaggedNewsitems.add(geotaggedNewsitem)
+
+    import scala.collection.JavaConversions._
     Mockito.when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
     val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor, geocodeToPlaceMapper, commonAttributesModelBuilder)
     val mv: ModelAndView = new ModelAndView

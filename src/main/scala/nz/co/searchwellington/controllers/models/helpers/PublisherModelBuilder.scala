@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import java.util.List
 import javax.servlet.http.HttpServletRequest
 
-import nz.co.searchwellington.controllers.models.{ModelBuilder, GeotaggedNewsitemExtractor}
+import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.{Tag, TagContentCount, Website}
@@ -61,14 +61,14 @@ import org.springframework.web.servlet.ModelAndView
       mv
     }
 
-
     if (isValid(request)) {
       logger.info("Building publisher page model")
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
       val page = commonAttributesModelBuilder.getPage(request)
       Some(populatePublisherPageModelAndView(publisher, page))
+    } else {
+      None
     }
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -88,6 +88,7 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   @SuppressWarnings(Array("unchecked")) private def populateGeotaggedItems(mv: ModelAndView) {
+    import scala.collection.JavaConversions._
     val mainContent: List[FrontendNewsitem] = mv.getModel.get("main_content").asInstanceOf[List[FrontendNewsitem]]
     if (mainContent != null) {
       val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)

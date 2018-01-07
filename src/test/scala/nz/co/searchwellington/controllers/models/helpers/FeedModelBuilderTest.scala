@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.List
 
-import nz.co.searchwellington.controllers.models.{ModelBuilder, GeotaggedNewsitemExtractor}
+import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeedNewsitem, FrontendNewsitem, FrontendResource}
@@ -13,7 +13,6 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.ModelAndView
 
 class FeedModelBuilderTest {
   @Mock private[models] var rssfeedNewsitemService: RssfeedNewsitemService = null
@@ -71,6 +70,7 @@ class FeedModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
+    import scala.collection.JavaConversions._
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)).thenReturn(geotaggedFeedNewsitems)
     val mv = modelBuilder.populateContentModel(request).get
     modelBuilder.populateExtraModelContent(request, mv)
