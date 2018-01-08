@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 @Component class JustinModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   def isValid(request: HttpServletRequest): Boolean = {
-      return request.getPathInfo.matches("^/justin(/(rss|json))?$")
+    request.getPathInfo.matches("^/justin(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -26,15 +26,17 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject(MAIN_CONTENT, latestSites)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
       Some(mv)
+
+    } else {
+      None
     }
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "justin"
+    "justin"
   }
 
 }

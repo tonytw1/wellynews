@@ -16,40 +16,40 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 @Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends ModelBuilder {
 
-  private val log: Logger = Logger.getLogger(classOf[ArchiveModelBuilder])
+  private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
 
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC)
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/archive/.*?/.*?$")
+    request.getPathInfo.matches("^/archive/.*?/.*?$")
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      val month = getArchiveDateFromPath(request.getPathInfo)
-      if (month != null) {
-        log.debug("Archive month is: " + month)
+      getArchiveDateFromPath(request.getPathInfo).map { month =>
         val monthLabel = dateFormatter.fullMonthYear(month)
 
         val mv = new ModelAndView
         mv.addObject("heading", monthLabel)
         mv.addObject("description", "Archived newsitems for the month of " + dateFormatter.fullMonthYear(month))
         mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsForMonth(month))
-        Some(mv)
+        mv
       }
+    } else {
+      None
     }
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val month = getArchiveDateFromPath(request.getPathInfo)
-    val archiveLinks = contentRetrievalService.getArchiveMonths
-    populateNextAndPreviousLinks(mv, month, archiveLinks)
-    archiveLinksService.populateArchiveLinks(mv, archiveLinks)
+    getArchiveDateFromPath(request.getPathInfo).map { month =>
+      val archiveLinks = contentRetrievalService.getArchiveMonths
+      populateNextAndPreviousLinks(mv, month, archiveLinks)
+      archiveLinksService.populateArchiveLinks(mv, archiveLinks)
+    }
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "archivePage"
+    "archivePage"
   }
 
   private def populateNextAndPreviousLinks(mv: ModelAndView, month: Date, archiveLinks: List[ArchiveLink]) {
@@ -73,24 +73,26 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     }
   }
 
-  private def getArchiveDateFromPath(path: String): Date = {
+  private def getArchiveDateFromPath(path: String): Option[Date] = {
     if (path.startsWith("/archive/")) {
       val fields: Array[String] = path.split("/")
       if (fields.length == 4) {
-        val archiveMonthString: String = fields(2) + " " + fields(3)
+        val archiveMonthString = fields(2) + " " + fields(3)
         val df: SimpleDateFormat = new SimpleDateFormat("yyyy MMM")
         try {
-          val month: Date = df.parse(archiveMonthString)
-          return month
+          return Some(df.parse(archiveMonthString))
         }
         catch {
           case e: ParseException => {
             throw (new IllegalArgumentException(e.getMessage))
           }
         }
+      } else {
+        None
       }
+    } else {
+      None
     }
-    return null
   }
 
 }
