@@ -32,22 +32,51 @@ import scala.collection.JavaConverters._
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (!isValid(request)) {  // TODO really? won't the dispatcher alway have decided this?
       None
-    }
+    } else {
 
-    val page = if (request.getParameter("page") != null) {Integer.parseInt(request.getParameter("page"))} else {1}
+      val page = if (request.getParameter("page") != null) {  // TODO duplication
+        Integer.parseInt(request.getParameter("page"))
+      } else {
+        1
+      }
 
-    val mv = new ModelAndView
-    val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, page).toList
-    mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
+      val mv = new ModelAndView
+      val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, page).toList
+      mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
-    commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-    if (latestNewsitems != null && !latestNewsitems.isEmpty) {
+      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
+      if (latestNewsitems != null && !latestNewsitems.isEmpty) {
         mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem(latestNewsitems)))
+      }
+      Some(mv)
     }
-    Some(mv)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+
+    def populateCommentedNewsitems(mv: ModelAndView) {
+      val recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0).toList
+      if (recentCommentedNewsitems.size <= NUMBER_OF_COMMENTED_TO_SHOW) {
+        mv.addObject("commented_newsitems", recentCommentedNewsitems)
+      }
+      else {
+        mv.addObject("commented_newsitems", recentCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW))
+        mv.addObject("commented_newsitems_moreurl", "comment")
+      }
+    }
+
+    def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
+      if (loggedInUser != null) {
+        val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
+        if (ownedCount > 0) {
+          mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser))
+          if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
+            mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
+          }
+        }
+      }
+    }
+
     populateCommentedNewsitems(mv)
     populateSecondaryJustin(mv)
     populateGeocoded(mv)
@@ -60,37 +89,17 @@ import scala.collection.JavaConverters._
     if (latestNewsitems.size > 0) {
       val lastNewsitem = latestNewsitems.get(latestNewsitems.size - 1)
       if (lastNewsitem.getDate != null) {
-        return lastNewsitem.getDate
+        lastNewsitem.getDate
+      } else {
+        null
       }
-    }
-    return null
-  }
-
-  private def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
-    if (loggedInUser != null) {
-      val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
-      if (ownedCount > 0) {
-        mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser))
-        if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
-          mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
-        }
-      }
+    } else {
+      null
     }
   }
 
   private def populateFeatured(mv: ModelAndView) {
     mv.addObject("featured", contentRetrievalService.getFeaturedSites)
-  }
-
-  private def populateCommentedNewsitems(mv: ModelAndView) {
-    val recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0).toList
-    if (recentCommentedNewsitems.size <= NUMBER_OF_COMMENTED_TO_SHOW) {
-      mv.addObject("commented_newsitems", recentCommentedNewsitems)
-    }
-    else {
-      mv.addObject("commented_newsitems", recentCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW))
-      mv.addObject("commented_newsitems_moreurl", "comment")
-    }
   }
 
   private def populateGeocoded(mv: ModelAndView) {
