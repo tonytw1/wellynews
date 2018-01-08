@@ -23,6 +23,23 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: List[FrontendFeedNewsitem]) {
+      import scala.collection.JavaConversions._
+      val geotaggedItems: Seq[FrontendNewsitem] = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
+      if (!geotaggedItems.isEmpty) {
+        mv.addObject("geocoded", geotaggedItems)
+      }
+    }
+
+    def populateFeedItems(mv: ModelAndView, feed: Feed) {
+      val feedNewsitems: List[FrontendFeedNewsitem] = rssfeedNewsitemService.getFeedNewsitems(feed)
+      if (feedNewsitems != null && !feedNewsitems.isEmpty) {
+        mv.addObject(MAIN_CONTENT, feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems))
+        populateGeotaggedFeedItems(mv, feedNewsitems)
+      }
+    }
+
     if (isValid(request)) {
       val feed = request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed]
       if (feed != null) {
@@ -46,22 +63,6 @@ import org.springframework.web.servlet.ModelAndView
 
   def getViewName(mv: ModelAndView): String = {
     return "viewfeed"
-  }
-
-  private def populateFeedItems(mv: ModelAndView, feed: Feed) {
-    val feedNewsitems: List[FrontendFeedNewsitem] = rssfeedNewsitemService.getFeedNewsitems(feed)
-    if (feedNewsitems != null && !feedNewsitems.isEmpty) {
-      mv.addObject(MAIN_CONTENT, feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems))
-      populateGeotaggedFeedItems(mv, feedNewsitems)
-    }
-  }
-
-  private def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: List[FrontendFeedNewsitem]) {
-    import scala.collection.JavaConversions._
-    val geotaggedItems: Seq[FrontendNewsitem] = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
-    if (!geotaggedItems.isEmpty) {
-      mv.addObject("geocoded", geotaggedItems)
-    }
   }
 
 }
