@@ -26,14 +26,14 @@ import org.springframework.web.servlet.ModelAndView
 
     def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: List[FrontendFeedNewsitem]) {
       import scala.collection.JavaConversions._
-      val geotaggedItems: Seq[FrontendNewsitem] = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
+      val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
       if (!geotaggedItems.isEmpty) {
         mv.addObject("geocoded", geotaggedItems)
       }
     }
 
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
-      val feedNewsitems: List[FrontendFeedNewsitem] = rssfeedNewsitemService.getFeedNewsitems(feed)
+      val feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed)
       if (feedNewsitems != null && !feedNewsitems.isEmpty) {
         mv.addObject(MAIN_CONTENT, feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems))
         populateGeotaggedFeedItems(mv, feedNewsitems)
