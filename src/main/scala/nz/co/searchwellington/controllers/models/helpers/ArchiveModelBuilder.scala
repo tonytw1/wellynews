@@ -75,7 +75,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
   private def getArchiveDateFromPath(path: String): Option[Date] = {
     if (path.startsWith("/archive/")) {
-      val fields: Array[String] = path.split("/")
+      val fields= path.split("/")
       if (fields.length == 4) {
         val archiveMonthString = fields(2) + " " + fields(3)
         val df: SimpleDateFormat = new SimpleDateFormat("yyyy MMM")

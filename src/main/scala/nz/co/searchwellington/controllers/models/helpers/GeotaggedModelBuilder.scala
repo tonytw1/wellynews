@@ -12,7 +12,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
-import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
+import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
@@ -23,13 +23,13 @@ import scala.collection.JavaConverters._
                                                      relatedTagsService: RelatedTagsService,
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
-  private val log: Logger = Logger.getLogger(classOf[GeotaggedModelBuilder])
+  private val log = Logger.getLogger(classOf[GeotaggedModelBuilder])
 
-  private val REFINEMENTS_TO_SHOW: Int = 8
-  private val HOW_FAR_IS_CLOSE_IN_KILOMETERS: Double = 1.0
+  private val REFINEMENTS_TO_SHOW = 8
+  private val HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1.0
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
+    request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -100,7 +100,7 @@ import scala.collection.JavaConverters._
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "geocoded"
+    "geocoded"
   }
 
   private def setRssUrlForLocation(mv: ModelAndView, place: Place, radius: Double) {

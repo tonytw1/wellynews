@@ -84,12 +84,12 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   def getViewName(mv: ModelAndView):String = {
-    return "publisher"
+    "publisher"
   }
 
   @SuppressWarnings(Array("unchecked")) private def populateGeotaggedItems(mv: ModelAndView) {
     import scala.collection.JavaConversions._
-    val mainContent: List[FrontendNewsitem] = mv.getModel.get("main_content").asInstanceOf[List[FrontendNewsitem]]
+    val mainContent = mv.getModel.get("main_content").asInstanceOf[List[FrontendNewsitem]]
     if (mainContent != null) {
       val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
       if (!geotaggedNewsitems.isEmpty) {

@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.{Resource, Tag}
-import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
     val isTagCombinerPage = tags != null && tags.size == 2
-    return isTagCombinerPage
+    isTagCombinerPage
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -81,9 +80,10 @@ import org.springframework.web.servlet.ModelAndView
     val taggedWebsites = mv.getModel.get("websites").asInstanceOf[List[Resource]]
     val isOneContentType = taggedNewsitemsCount == 0 || taggedWebsites.size == 0
     if (isOneContentType) {
-      return "tagCombinedOneContentType"
+      "tagCombinedOneContentType"
+    } else {
+      "tag"
     }
-    return "tag"
   }
 
 }

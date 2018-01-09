@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest
   private val log = Logger.getLogger(classOf[WatchlistModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/watchlist(/(rss|json))?$")
+    request.getPathInfo.matches("^/watchlist(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest
       mv.addObject(MAIN_CONTENT, contentRetrievalService.getRecentlyChangedWatchlistItems)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
       Some(mv)
+
     } else {
       None
     }
@@ -37,7 +38,7 @@ import javax.servlet.http.HttpServletRequest
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "watchlist"
+    "watchlist"
   }
 
 }

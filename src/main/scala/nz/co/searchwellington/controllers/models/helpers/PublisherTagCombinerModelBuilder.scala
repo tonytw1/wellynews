@@ -1,12 +1,11 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.{Tag, TagContentCount, Website}
-import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.frontend.FrontendWebsite
+import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -21,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    return publisher != null && tag != null
+    publisher != null && tag != null
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -49,21 +48,22 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher.getName, tag))
       populatePublisherTagCombinerNewsitems(mv, publisher, tag)
       Some(mv)
-    }
 
-    None
+    } else {
+      None
+    }
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
-    val relatedTagLinks: List[TagContentCount] = relatedTagsService.getRelatedLinksForPublisher(publisher)
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
     if (relatedTagLinks.size > 0) {
       mv.addObject("related_tags", relatedTagLinks)
     }
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "publisherCombiner"
+    "publisherCombiner"
   }
 
 }

@@ -17,13 +17,13 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
 @Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                        urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
-  private val log: Logger = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
+  private val log = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
     val isSingleTagPage = tags != null && tags.size == 1
     val hasCommentPath = request.getPathInfo.matches("^(.*?)/geotagged(/(rss|json))?$")
-    return isSingleTagPage && hasCommentPath
+    isSingleTagPage && hasCommentPath
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -47,8 +47,9 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
       val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
       val tag = tags.get(0)
       Some(populateTagCommentPageModelAndView(tag))
+    } else {
+      None
     }
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

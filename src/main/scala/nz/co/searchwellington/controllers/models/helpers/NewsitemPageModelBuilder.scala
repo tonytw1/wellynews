@@ -4,8 +4,6 @@ import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO, HibernateResourceDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.widgets.TagsWidgetFactory
@@ -26,11 +24,11 @@ import scala.collection.JavaConverters._
   private val log = Logger.getLogger(classOf[NewsitemPageModelBuilder])
 
   def getViewName(mv: ModelAndView): String = {
-    return "newsitemPage"
+    "newsitemPage"
   }
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/.*?/\\d\\d\\d\\d/[a-z]{3}/\\d\\d?/.*?$")
+    request.getPathInfo.matches("^/.*?/\\d\\d\\d\\d/[a-z]{3}/\\d\\d?/.*?$")
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {

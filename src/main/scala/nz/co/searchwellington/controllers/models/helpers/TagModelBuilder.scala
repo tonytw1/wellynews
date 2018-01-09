@@ -6,17 +6,17 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.model.{Feed, PublisherContentCount, Resource, Tag, TagContentCount}
-import nz.co.searchwellington.model.frontend.{FrontendFeedNewsitem, FrontendResource}
+import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}
+import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class TagModelBuilder @Autowired() (rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
+@Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
-    return tags != null && tags.size == 1
+    tags != null && tags.size == 1
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -118,7 +118,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def getViewName(mv: ModelAndView): String = {
     val mainContent = mv.getModel.get(MAIN_CONTENT).asInstanceOf[List[Resource]]
-    val taggedWebsites= mv.getModel.get (WEBSITES).asInstanceOf[List[Resource]]
+    val taggedWebsites = mv.getModel.get(WEBSITES).asInstanceOf[List[Resource]]
     val tagWatchlist = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[List[Resource]]
     val tagFeeds = mv.getModel.get(TAG_FEEDS).asInstanceOf[List[Resource]]
     val hasSecondaryContent = !taggedWebsites.isEmpty || !tagWatchlist.isEmpty || !tagFeeds.isEmpty
@@ -126,12 +126,12 @@ import org.springframework.web.servlet.ModelAndView
     val page = mv.getModel.get(PAGE).asInstanceOf[Integer]
     if (page != null && page > 0) {
       mv.addObject(PAGE, page)
-      return "tagNewsArchive"
+      "tagNewsArchive"
+    } else if (isOneContentType) {
+      "tagOneContentType"
+    } else {
+      "tag"
     }
-    else if (isOneContentType) {
-      return "tagOneContentType"
-    }
-    return "tag"
   }
 
   private def populateGeocoded(mv: ModelAndView, tag: Tag) {
@@ -149,8 +149,7 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("related_feed", relatedFeed)
       val relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed)
       mv.addObject("related_feed_items", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(relatedFeedItems))
-    }
-    else {
+    } else {
       log.debug("No related feed.")
     }
   }

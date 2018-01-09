@@ -33,15 +33,16 @@ import scala.collection.JavaConverters._
 
     if (isValid(request)) {
       Some(populateTagsPageModelAndView())
+    } else {
+      None
     }
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "tags"
+    "tags"
   }
 
 }
