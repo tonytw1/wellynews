@@ -77,8 +77,28 @@ import org.springframework.web.servlet.ModelAndView
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
 
+    def populateGeocoded(mv: ModelAndView, tag: Tag) {
+      val geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+      log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
+      if (geocoded.size > 0) {
+        mv.addObject("geocoded", geocoded)
+      }
+    }
+
+    def populateRelatedFeed(mv: ModelAndView, tag: Tag) {
+      val relatedFeed = tag.getRelatedFeed
+      if (relatedFeed != null) {
+        log.debug("Related feed is: " + relatedFeed.getName)
+        mv.addObject("related_feed", relatedFeed)
+        val relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed)
+        mv.addObject("related_feed_items", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(relatedFeedItems))
+      } else {
+        log.debug("No related feed.")
+      }
+    }
+
     def populateCommentedTaggedNewsitems(mv: ModelAndView, tag: Tag) {
-      val recentCommentedNewsitems: List[FrontendResource] = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1)
+      val recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1)
       var commentedToShow: List[FrontendResource] = null
       if (recentCommentedNewsitems.size <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
         commentedToShow = recentCommentedNewsitems
@@ -96,8 +116,8 @@ import org.springframework.web.servlet.ModelAndView
     }
 
 
-    val tags: List[Tag] = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
-    val tag: Tag = tags.get(0)
+    val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
+    val tag = tags.get(0)
     val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
     mv.addObject(WEBSITES, taggedWebsites)
     val relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8)
@@ -131,26 +151,6 @@ import org.springframework.web.servlet.ModelAndView
       "tagOneContentType"
     } else {
       "tag"
-    }
-  }
-
-  private def populateGeocoded(mv: ModelAndView, tag: Tag) {
-    val geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
-    log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
-    if (geocoded.size > 0) {
-      mv.addObject("geocoded", geocoded)
-    }
-  }
-
-  private def populateRelatedFeed(mv: ModelAndView, tag: Tag) {
-    val relatedFeed = tag.getRelatedFeed
-    if (relatedFeed != null) {
-      log.debug("Related feed is: " + relatedFeed.getName)
-      mv.addObject("related_feed", relatedFeed)
-      val relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed)
-      mv.addObject("related_feed_items", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(relatedFeedItems))
-    } else {
-      log.debug("No related feed.")
     }
   }
 
