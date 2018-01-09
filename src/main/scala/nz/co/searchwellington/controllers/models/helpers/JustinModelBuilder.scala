@@ -22,8 +22,7 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("heading", "Latest additions")
       mv.addObject("description", "The most recently submitted website listings.")
       mv.addObject("link", urlBuilder.getJustinUrl)
-      val latestSites = contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS)
-      mv.addObject(MAIN_CONTENT, latestSites)
+      mv.addObject(MAIN_CONTENT, contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS))
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
       Some(mv)
 
