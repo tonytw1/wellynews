@@ -22,14 +22,19 @@ import scala.collection.JavaConverters._
   private val NUMBER_OF_COMMENTED_TO_SHOW = 2
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
+    request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "index"
+    "index"
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    def monthOfLastItem(newitems: Seq[FrontendResource]): Option[Date] = {
+      newitems.headOption.map( i => i.getDate)
+    }
+
     if (!isValid(request)) {  // TODO really? won't the dispatcher alway have decided this?
       None
     } else {
@@ -45,8 +50,10 @@ import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-      if (latestNewsitems != null && !latestNewsitems.isEmpty) {
-        mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(monthOfLastItem(latestNewsitems)))
+      if (latestNewsitems != null) {
+        monthOfLastItem(latestNewsitems).map { d =>
+          mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
+        }
       }
       Some(mv)
     }
@@ -86,19 +93,6 @@ import scala.collection.JavaConverters._
     populateFeatured(mv)
     populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
     archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths)
-  }
-
-  private def monthOfLastItem(latestNewsitems: List[FrontendResource]): Date = {
-    if (latestNewsitems.size > 0) {
-      val lastNewsitem = latestNewsitems.get(latestNewsitems.size - 1)
-      if (lastNewsitem.getDate != null) {
-        lastNewsitem.getDate
-      } else {
-        null
-      }
-    } else {
-      null
-    }
   }
 
   private def populateFeatured(mv: ModelAndView) {
