@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-@Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, jsonCallbackNameValidator: JsonCallbackNameValidator, commonModelObjectsService: CommonModelObjectsService, modelBuilders: ModelBuilder*) {
+@Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, jsonCallbackNameValidator: JsonCallbackNameValidator,
+                                                          commonModelObjectsService: CommonModelObjectsService, modelBuilders: ModelBuilder*) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
   private val JSON_CALLBACK_PARAMETER = "callback"
@@ -25,7 +26,8 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
       }
     }
 
-    val modelBuilderToUse: Option[ModelBuilder] = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
+    val mbs: Seq[ModelBuilder] = Seq()
+    val modelBuilderToUse: Option[ModelBuilder] = mbs.filter(mb => mb.isValid(request)).headOption // TODO collect first?
 
     val r = modelBuilderToUse.map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)

@@ -10,7 +10,7 @@ import org.junit.{Before, Test}
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.when
 import org.mockito.MockitoAnnotations
-import org.mockito.MockitoAnnotations.Mock
+import org.mockito.Mock
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
