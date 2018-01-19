@@ -9,22 +9,12 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-@Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, jsonCallbackNameValidator: JsonCallbackNameValidator,
-                                                          commonModelObjectsService: CommonModelObjectsService, modelBuilders: ModelBuilder*) {
+@Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, commonModelObjectsService: CommonModelObjectsService, modelBuilders: ModelBuilder*) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
   private val JSON_CALLBACK_PARAMETER = "callback"
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-
-    def populateJsonCallback(request: HttpServletRequest, mv: ModelAndView) = if (request.getParameter(JSON_CALLBACK_PARAMETER) != null) {
-      // TODO use CORS
-      val callback = request.getParameter(JSON_CALLBACK_PARAMETER)
-      if (jsonCallbackNameValidator.isValidCallbackName(callback)) {
-        logger.debug("Adding callback to model:" + callback)
-        mv.addObject(JSON_CALLBACK_PARAMETER, callback)
-      }
-    }
 
     val mbs: Seq[ModelBuilder] = Seq()
     val modelBuilderToUse: Option[ModelBuilder] = mbs.filter(mb => mb.isValid(request)).headOption // TODO collect first?
@@ -45,7 +35,6 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
             val jsonView = viewFactory.getJsonView
             jsonView.setDataField("main_content")
             mv.setView(jsonView)
-            populateJsonCallback(request, mv)
 
         } else {
           mb.populateExtraModelContent(request, mv)
