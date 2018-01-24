@@ -16,16 +16,15 @@ import scala.collection.JavaConversions._
                                                         whakaokoFeedItemMapper: WhakaokoFeedItemMapper, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                                         resourceDAO: HibernateResourceDAO) {
 
-  private val log: Logger = Logger.getLogger(classOf[SuggestedFeeditemsService])
+  private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
 
-  def getSuggestionFeednewsitems(maxItems: Int): java.util.List[FrontendNewsitem] = {
+  def getSuggestionFeednewsitems(maxItems: Int): Seq[FrontendNewsitem] = {
     val channelFeedItems: List[uk.co.eelpieconsulting.whakaoro.client.model.FeedItem] = whakaoroService.getChannelFeedItems.toList
     val notIgnoredFeedItems: List[FrontendFeedNewsitem] = channelFeedItems.map(i => fromWhakaoro(i)).filter(i => isNotIgnored(i))
     val suggestions: List[FeedNewsitemForAcceptance] = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(notIgnoredFeedItems).toList
     val withLocalCopiesFilteredOut: List[FeedNewsitemForAcceptance] = suggestions.filter(i => noLocalCopy(i))
 
-    var list: java.util.List[FrontendNewsitem] = withLocalCopiesFilteredOut.map(i => i.getFeednewsitem)
-    list
+    withLocalCopiesFilteredOut.map(i => i.getFeednewsitem)
   }
 
   private def fromWhakaoro(feedItem: uk.co.eelpieconsulting.whakaoro.client.model.FeedItem): FrontendFeedNewsitem = {
