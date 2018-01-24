@@ -96,8 +96,9 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
   def getRssDescriptionForTag(tag: Tag): String = {
     if (tag.getDescription != null && !tag.getDescription.isEmpty) {
       tag.getDescription
+    } else {
+      siteInformation.getAreaname + " related newsitems tagged with " + tag.getDisplayName
     }
-    siteInformation.getAreaname + " related newsitems tagged with " + tag.getDisplayName
   }
 
   def getTitleForSuggestions: String = {
