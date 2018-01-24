@@ -36,10 +36,7 @@ import scala.collection.JavaConverters._
       newitems.headOption.map( i => i.getDate)
     }
 
-    if (!isValid(request)) {  // TODO really? won't the dispatcher alway have decided this?
-      None
-    } else {
-
+    if (isValid(request)) {  // TODO really? won't the dispatcher alway have decided this?
       val page = if (request.getParameter("page") != null) {  // TODO duplication
         Integer.parseInt(request.getParameter("page"))
       } else {
@@ -48,7 +45,7 @@ import scala.collection.JavaConverters._
 
       val mv = new ModelAndView
       val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, page).toList
-      mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
+      mv.addObject(MAIN_CONTENT, latestNewsitems)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
       if (latestNewsitems != null) {
@@ -57,9 +54,11 @@ import scala.collection.JavaConverters._
         }
       }
       Some(mv)
+
+    } else {
+      None
     }
   }
-
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
 

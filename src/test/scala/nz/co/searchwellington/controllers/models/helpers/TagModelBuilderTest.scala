@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.{Arrays, List}
+import java.util.Arrays
 
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
@@ -13,7 +13,6 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.{Mock, Mockito, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.ModelAndView
 
 object TagModelBuilderTest {
   private val TAG_DISPLAY_NAME: String = "Penguins"
@@ -65,6 +64,7 @@ class TagModelBuilderTest {
   @throws(classOf[Exception])
   def tagPageHeadingShouldBeTheTagDisplayName {
     request.setAttribute("tags", Arrays.asList(tag))
+    Mockito.when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems)
 
     val mv = modelBuilder.populateContentModel(request).get
 

@@ -1,8 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
-
-import com.google.common.collect.Lists
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService

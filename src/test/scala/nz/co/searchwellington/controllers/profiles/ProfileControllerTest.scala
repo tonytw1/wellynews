@@ -7,9 +7,10 @@ import nz.co.searchwellington.repositories.{ContentRetrievalService, HibernateBa
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.Mockito.{MockitoAnnotations, when}
+import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import org.springframework.web.servlet.ModelAndView
+import org.mockito.Mockito.when
 
 object ProfileControllerTest {
   private val VALID_PROFILE_NAME: String = "tonytw1"
@@ -25,7 +26,7 @@ class ProfileControllerTest {
   @Mock private[profiles] val existingUser: User = null
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
-  private val allActiveUsers: Seq[User] = null
+  private val allActiveUsers: java.util.List[User] = null
   private var controller: ProfileController = null
   @Mock private[profiles] val existingUsersSubmittedItems: Seq[FrontendResource] = null
   @Mock private[profiles] val existingUsersTaggedItems: Seq[FrontendResource] = null
