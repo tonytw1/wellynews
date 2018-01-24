@@ -91,6 +91,7 @@ import org.springframework.web.servlet.ModelAndView
         log.debug("Related feed is: " + relatedFeed.getName)
         mv.addObject("related_feed", relatedFeed)
         val relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed)
+        import scala.collection.JavaConversions._
         mv.addObject("related_feed_items", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(relatedFeedItems))
       } else {
         log.debug("No related feed.")

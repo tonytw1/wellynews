@@ -1,12 +1,11 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.frontend.{FrontendFeedNewsitem, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,8 +23,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: List[FrontendFeedNewsitem]) {
-      import scala.collection.JavaConversions._
+    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendFeedNewsitem]) {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
       if (!geotaggedItems.isEmpty) {
         mv.addObject("geocoded", geotaggedItems)

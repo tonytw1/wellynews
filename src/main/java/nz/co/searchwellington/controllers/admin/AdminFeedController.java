@@ -6,8 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.feeds.FeedReader;
+import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
 import nz.co.searchwellington.urls.UrlBuilder;
@@ -28,7 +28,7 @@ public class AdminFeedController {
     private static final Logger log = Logger.getLogger(AdminFeedController.class);
     
     private AdminRequestFilter requestFilter;
-    private FeedReader feedReader;    
+    private FeedReader feedReader;
     private UrlBuilder urlBuilder;
     private EditPermissionService permissionService;
     private LoggedInUserFilter loggedInUserFilter;

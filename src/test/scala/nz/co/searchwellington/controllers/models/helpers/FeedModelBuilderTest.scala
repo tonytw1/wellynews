@@ -22,8 +22,8 @@ class FeedModelBuilderTest {
   @Mock private[models] var frontendResourceMapper: FrontendResourceMapper = null
   private[models] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
   @Mock private[models] var feed: Feed = null
-  @Mock private[models] var feedNewsitems: List[FrontendFeedNewsitem] = null
-  @Mock private[models] var feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: List[FeedNewsitemForAcceptance] = null
+  @Mock private[models] var feedNewsitems: Seq[FrontendFeedNewsitem] = null
+  @Mock private[models] var feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: Seq[FeedNewsitemForAcceptance] = null
   @Mock private[models] var geotaggedFeedNewsitems: List[FrontendNewsitem] = null
   @Mock private[models] var frontendFeed: FrontendResource = null
   private[models] var request: MockHttpServletRequest = null

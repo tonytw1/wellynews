@@ -13,16 +13,14 @@ import org.springframework.stereotype.Component
 
   private val log = Logger.getLogger(classOf[RssfeedNewsitemService])
 
-  def getFeedNewsitems(feed: Feed): util.List[FrontendFeedNewsitem] = {
+  def getFeedNewsitems(feed: Feed): Seq[FrontendFeedNewsitem] = {
+    import scala.collection.JavaConversions._
     return cachingRssfeedNewsitemService.getFeedNewsitems(feed)
   }
 
   final def getLatestPublicationDate(feed: Feed): Date = {
     var latestPublicationDate: Date = null
-    val feeditems: util.List[FrontendFeedNewsitem] = getFeedNewsitems(feed)
-
-    import scala.collection.JavaConversions._
-
+    val feeditems = getFeedNewsitems(feed)
     for (feeditem <- feeditems) {
       if (feeditem.getDate != null && (latestPublicationDate == null || feeditem.getDate.after(latestPublicationDate))) {
         latestPublicationDate = feeditem.getDate
@@ -32,8 +30,8 @@ import org.springframework.stereotype.Component
   }
 
   def getFeedNewsitemByUrl(feed: Feed, url: String): FrontendFeedNewsitem = {
-    val feedNewsitems: util.List[FrontendFeedNewsitem] = this.getFeedNewsitems(feed)
-    val i: util.Iterator[FrontendFeedNewsitem] = feedNewsitems.iterator
+    val feedNewsitems = this.getFeedNewsitems(feed)
+    val i = feedNewsitems.iterator
     while ( {
       i.hasNext
     }) {
