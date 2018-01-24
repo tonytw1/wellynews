@@ -8,65 +8,66 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class AdminUrlBuilder @Autowired() (siteInformation: SiteInformation, urlBuilder: UrlBuilder) {
+class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation, urlBuilder: UrlBuilder) {
 
   def getResourceEditUrl(resource: FrontendResource): String = {
     if (resource.getId > 0) {
-      return siteInformation.getUrl + "/edit?resource=" + resource.getId
+      siteInformation.getUrl + "/edit?resource=" + resource.getId
     }
     else if (!Strings.isNullOrEmpty(resource.getUrlWords)) {
-      return siteInformation.getUrl + "/edit?resource=" + UrlParameterEncoder.encode(resource.getUrlWords)
+      siteInformation.getUrl + "/edit?resource=" + UrlParameterEncoder.encode(resource.getUrlWords)
+    } else {
+      null
     }
-    return null
   }
 
   def getResourceEditUrl(resourceId: Int): String = {
-    return siteInformation.getUrl + "/edit?resource=" + resourceId
+    siteInformation.getUrl + "/edit?resource=" + resourceId
   }
 
   def getResourceDeleteUrl(resource: FrontendResource): String = {
-    return siteInformation.getUrl + "/delete?resource=" + resource.getId
+    siteInformation.getUrl + "/delete?resource=" + resource.getId
   }
 
   def getSaveUrl: String = {
-    return siteInformation.getUrl + "/save"
+    siteInformation.getUrl + "/save"
   }
 
   def getResourceCheckUrl(resource: FrontendResource): String = {
-    return siteInformation.getUrl + "/admin/linkchecker/add?resource=" + resource.getId
+    siteInformation.getUrl + "/admin/linkchecker/add?resource=" + resource.getId
   }
 
   def getViewSnapshotUrl(resource: FrontendResource): String = {
-    val resourceUrl: String = siteInformation.getUrl + "/" + resource.getUrlWords
-    return resourceUrl + "/viewsnapshot"
+    siteInformation.getUrl + "/" + resource.getUrlWords + "/viewsnapshot"
   }
 
   def getFeednewsItemAcceptUrl(feed: FrontendFeed, feednewsitem: FrontendFeedNewsitem): String = {
-    return siteInformation.getUrl + "/edit/accept?feed=" + feed.getUrlWords + "&url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
+    siteInformation.getUrl + "/edit/accept?feed=" + feed.getUrlWords + "&url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
   }
 
   def getAcceptAllFromFeed(feed: FrontendFeed): String = {
-    return siteInformation.getUrl + "/admin/feed/acceptall?feed=" + feed.getUrlWords
+    siteInformation.getUrl + "/admin/feed/acceptall?feed=" + feed.getUrlWords
   }
 
   def getFeedNewsitemSuppressUrl(feednewsitem: FrontendFeedNewsitem): String = {
-    return siteInformation.getUrl + "/supress/supress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
+    siteInformation.getUrl + "/supress/supress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
   }
 
   def getFeedNewsitemUnsuppressUrl(feednewsitem: FrontendFeedNewsitem): String = {
-    return siteInformation.getUrl + "/supress/unsupress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
+    siteInformation.getUrl + "/supress/unsupress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
   }
 
   def getPublisherAutoGatherUrl(resource: FrontendWebsite): String = {
     val resourceUrl: String = urlBuilder.getResourceUrl(resource)
     if (resourceUrl != null) {
-      return resourceUrl + "/gather"
+      resourceUrl + "/gather"
+    } else {
+      null
     }
-    return null
   }
 
   def getAddTagUrl: String = {
-    return siteInformation.getUrl + "/edit/tag/submit"
+    siteInformation.getUrl + "/edit/tag/submit"
   }
-  
+
 }
