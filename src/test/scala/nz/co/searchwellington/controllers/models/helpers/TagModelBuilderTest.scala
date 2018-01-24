@@ -28,7 +28,7 @@ class TagModelBuilderTest {
   @Mock private[models] var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
   @Mock private[models] var geocodeToPlaceMapper: GeocodeToPlaceMapper = null
   @Mock private[models] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock private[models] var tagNewsitems: List[FrontendResource] = null
+  @Mock private[models] var tagNewsitems: Seq[FrontendResource] = null
   @Mock private[models] var tag: Tag = null
 
   private[models] var request: MockHttpServletRequest = null
