@@ -55,7 +55,9 @@ class PublisherModelBuilderTest {
     val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor, geocodeToPlaceMapper, commonAttributesModelBuilder)
     val mv: ModelAndView = new ModelAndView
     mv.addObject("main_content", publisherNewsitems)
+
     modelBuilder.populateExtraModelContent(request, mv)
+
     val geotaggedPublisherNewsitems: List[FrontendResource] = mv.getModel.get("geocoded").asInstanceOf[List[FrontendResource]]
     assertEquals(geotaggedPublisherNewsitems, geotaggedNewsitems)
     assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitems.get(0))

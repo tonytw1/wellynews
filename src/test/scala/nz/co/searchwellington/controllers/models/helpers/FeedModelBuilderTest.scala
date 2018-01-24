@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
-
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed

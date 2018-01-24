@@ -5,6 +5,7 @@ import java.util.List
 import com.google.common.collect.Lists
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}

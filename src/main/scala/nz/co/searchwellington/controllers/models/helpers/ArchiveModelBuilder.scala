@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.ArchiveLink
+import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.joda.time.DateTimeZone

@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.{Propagation, Transactional}
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-@Component class FeedReader @Autowired()(resourceDAO: HibernateResourceDAO, rssfeedNewsitemService: RssfeedNewsitemService, feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner, contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
+@Component class FeedReader @Autowired() (resourceDAO: HibernateResourceDAO, rssfeedNewsitemService: RssfeedNewsitemService, feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner, contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          linkCheckerQueue: LinkCheckerQueue, feedReaderUpdateService: FeedReaderUpdateService) {
 
   private val log = Logger.getLogger(classOf[FeedReader])

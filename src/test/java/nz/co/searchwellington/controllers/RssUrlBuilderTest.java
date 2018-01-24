@@ -23,10 +23,10 @@ public class RssUrlBuilderTest {
 	
 	@Test
 	public void rssDescriptionForTagShouldBeSetFromTagDescriptionTextIfAvailable() throws Exception {
-		RssUrlBuilder rssUrlBuilder = new RssUrlBuilder(siteInformation);
-		
 		Mockito.when(tag.getDescription()).thenReturn("This is a tag about something...");
-		
+
+		RssUrlBuilder rssUrlBuilder = new RssUrlBuilder(siteInformation);
+
 		assertEquals(tag.getDescription(), rssUrlBuilder.getRssDescriptionForTag(tag));
 	}
 	

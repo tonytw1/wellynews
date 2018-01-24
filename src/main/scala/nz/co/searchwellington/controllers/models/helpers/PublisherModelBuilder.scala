@@ -93,7 +93,8 @@ import org.springframework.web.servlet.ModelAndView
     if (mainContent != null) {
       val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
       if (!geotaggedNewsitems.isEmpty) {
-        mv.addObject("geocoded", geotaggedNewsitems)
+        val list: java.util.List[FrontendNewsitem] = geotaggedNewsitems // TODO This going to get boring; push casting to Velocity compatible Lists upwards
+        mv.addObject("geocoded", list)
       }
     }
   }
