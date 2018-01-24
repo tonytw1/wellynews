@@ -16,8 +16,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    val mbs: Seq[ModelBuilder] = Seq()
-    val modelBuilderToUse: Option[ModelBuilder] = mbs.filter(mb => mb.isValid(request)).headOption // TODO collect first?
+    val modelBuilderToUse: Option[ModelBuilder] = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
 
     val r = modelBuilderToUse.map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
