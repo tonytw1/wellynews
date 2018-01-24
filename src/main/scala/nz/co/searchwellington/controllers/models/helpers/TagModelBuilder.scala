@@ -100,14 +100,10 @@ import org.springframework.web.servlet.ModelAndView
 
     def populateCommentedTaggedNewsitems(mv: ModelAndView, tag: Tag) {
       val recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1)
-      var commentedToShow: List[FrontendResource] = null
-      if (recentCommentedNewsitems.size <= MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS) {
-        commentedToShow = recentCommentedNewsitems
-      }
-      else {
-        commentedToShow = recentCommentedNewsitems.subList(0, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS)
-      }
-      val commentsCount: Int = contentRetrievalService.getCommentedNewsitemsForTagCount(tag)
+
+      val commentedToShow = recentCommentedNewsitems.take(MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS)
+
+      val commentsCount = contentRetrievalService.getCommentedNewsitemsForTagCount(tag)
       val moreCommentCount: Int = commentsCount - commentedToShow.size
       if (moreCommentCount > 0) {
         mv.addObject("commented_newsitems_morecount", moreCommentCount)

@@ -25,6 +25,8 @@ import org.springframework.web.servlet.ModelAndView
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populateTagCombinerModelAndView(tags: List[Tag], page: Int): Option[ModelAndView] = {
+      import scala.collection.JavaConversions._
+
       val startIndex = commonAttributesModelBuilder.getStartIndex(page)
       val totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags)
 
@@ -70,7 +72,7 @@ import org.springframework.web.servlet.ModelAndView
       val tag = tags.get(0)
       mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, 8))
       mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5))
-      val taggedWebsites = contentRetrievalService.getTaggedWebsites(new HashSet[Tag](tags), MAX_WEBSITES)
+      val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
       mv.addObject("websites", taggedWebsites)
     }
   }

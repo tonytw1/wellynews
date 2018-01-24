@@ -34,7 +34,7 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
       mv.addObject("heading", tag.getDisplayName + " geotagged")
       mv.addObject("description", "Geotagged " + tag.getDisplayName + " newsitems")
       mv.addObject("link", urlBuilder.getTagCommentUrl(tag))
-      val allGeotaggedForTag: List[FrontendResource] = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+      val allGeotaggedForTag = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
       mv.addObject(MAIN_CONTENT, allGeotaggedForTag)
       if (allGeotaggedForTag.size > 0) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))

@@ -21,7 +21,7 @@ class IndexModelBuilderTest {
   @Mock private[helpers] val archiveLinksService: ArchiveLinksService = null
   @Mock private[helpers] val commonAttributesModelBuilder: CommonAttributesModelBuilder = null
   private[helpers] var request: MockHttpServletRequest = null
-  private[helpers] var latestNewsitems: List[FrontendResource] = null
+  private[helpers] var latestNewsitems: Seq[FrontendResource] = null
   private var modelBuilder: IndexModelBuilder = null
 
   @Before def setup {
@@ -29,7 +29,7 @@ class IndexModelBuilderTest {
     modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
     request = new MockHttpServletRequest
     request.setPathInfo("/")
-    latestNewsitems = Lists.newArrayList(new FrontendResource)
+    latestNewsitems = Seq(new FrontendResource)
   }
 
   @Test

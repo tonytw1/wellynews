@@ -43,7 +43,7 @@ import org.springframework.web.servlet.ModelAndView
   final def populateSecondaryFeeds(mv: ModelAndView) {
     mv.addObject("righthand_heading", "Local Feeds")
     mv.addObject("righthand_description", "Recently updated feeds from local organisations.")
-    val allFeeds: java.util.List[FrontendResource] = contentRetrievalService.getAllFeedsOrderByLatestItemDate
+    val allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate
     if (allFeeds != null && allFeeds.size > 0) {
       mv.addObject("righthand_content", allFeeds)
     }

@@ -12,7 +12,7 @@ class ArchiveLinksService @Autowired()(contentRetrievalService: ContentRetrieval
 
   private val MaxBackIssues = 6
 
-  def populateArchiveLinks(mv: ModelAndView, archiveMonths: util.List[ArchiveLink]): Unit = {
+  def populateArchiveLinks(mv: ModelAndView, archiveMonths: Seq[ArchiveLink]): Unit = {
 
     def populateArchiveStatistics(mv: ModelAndView): Unit = {
       val archiveStatistics: util.Map[String, Integer] = contentRetrievalService.getArchiveStatistics
@@ -23,12 +23,7 @@ class ArchiveLinksService @Autowired()(contentRetrievalService: ContentRetrieval
       }
     }
 
-    if (archiveMonths.size <= MaxBackIssues) {
-      mv.addObject("archive_links", archiveMonths)
-    }
-    else {
-      mv.addObject("archive_links", archiveMonths.subList(0, MaxBackIssues))
-    }
+    mv.addObject("archive_links", archiveMonths.take(MaxBackIssues))
 
     populateArchiveStatistics(mv)
   }

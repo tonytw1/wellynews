@@ -25,8 +25,8 @@ class GeotaggedModelBuilderTest {
   @Mock private[helpers] val rssUrlBuilder: RssUrlBuilder = null
   @Mock private[helpers] val relatedTagsService: RelatedTagsService = null
   private[helpers] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock private[helpers] val newsitemsNearPetoneStationFirstPage: List[FrontendResource] = null
-  @Mock private[helpers] val newsitemsNearPetoneStationSecondPage: List[FrontendResource] = null
+  @Mock private[helpers] val newsitemsNearPetoneStationFirstPage: Seq[FrontendResource] = null
+  @Mock private[helpers] val newsitemsNearPetoneStationSecondPage: Seq[FrontendResource] = null
   private var request: MockHttpServletRequest = null
   private var validLocation: Place = null
   @Mock private[helpers] val invalidLocation: Place = null

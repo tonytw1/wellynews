@@ -35,7 +35,7 @@ import org.springframework.web.servlet.ModelAndView
     urlStack.setUrlStack(request)
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "Archive")
-    val archiveMonths: List[ArchiveLink] = contentRetrievalService.getArchiveMonths
+    val archiveMonths = contentRetrievalService.getArchiveMonths
     mv.addObject("archiveLinks", archiveMonths)
     mv.setViewName("archiveIndex")
     mv

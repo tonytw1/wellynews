@@ -53,7 +53,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     "archivePage"
   }
 
-  private def populateNextAndPreviousLinks(mv: ModelAndView, month: Date, archiveLinks: List[ArchiveLink]) {
+  private def populateNextAndPreviousLinks(mv: ModelAndView, month: Date, archiveLinks: Seq[ArchiveLink]) {
     var selected: ArchiveLink = null
     import scala.collection.JavaConversions._
     for (link <- archiveLinks) {
