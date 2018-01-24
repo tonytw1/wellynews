@@ -40,6 +40,7 @@ class FeedModelBuilderTest {
     request.setAttribute("feedAttribute", feed)
     request.setPathInfo("/feed/someonesfeed")
     commonAttributesModelBuilder = new CommonAttributesModelBuilder(contentRetrievalService)
+
     modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor, feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder)
   }
 
@@ -53,6 +54,7 @@ class FeedModelBuilderTest {
   @throws(classOf[Exception])
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -62,6 +64,8 @@ class FeedModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)).thenReturn(Seq())
+
     val mv = modelBuilder.populateContentModel(request).get
 
     assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation, mv.getModel.get("main_content"))
