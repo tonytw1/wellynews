@@ -2,7 +2,6 @@ package nz.co.searchwellington.repositories
 
 import java.util.Date
 
-import com.google.common.collect.Lists
 import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model._
@@ -102,7 +101,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getLatestNewsitems: Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW, 1)
   }
 
@@ -145,7 +143,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getFeaturedSites: Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     val featuredTag = tagDAO.loadTagByName("featured")
     if (featuredTag != null) {
       this.getTaggedWebsites(featuredTag, 10)

@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional
     sessionFactory.getCurrentSession.createCriteria(classOf[User]).add(Restrictions.eq("openId", openId)).uniqueResult.asInstanceOf[User]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getActiveUsers: java.util.List[User] = {
+  def getActiveUsers(): Seq[User] = {
+    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[User]).addOrder(Order.asc("profilename")).setCacheable(true).list
   }
 
