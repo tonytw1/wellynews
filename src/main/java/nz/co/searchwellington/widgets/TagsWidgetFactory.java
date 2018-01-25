@@ -60,7 +60,7 @@ public class TagsWidgetFactory {
         }
         relatedFeedSelect.addElement(noFeedOption);
 
-        for (Feed feed : resourceDAO.getAllFeeds()) {
+        for (Feed feed :  resourceDAO.getAllFeeds()) {
             Option option = new Option(Integer.toString(feed.getId()));
             option.setFilterState(true);
             option.addElement(feed.getName());

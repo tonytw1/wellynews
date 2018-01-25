@@ -14,26 +14,22 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
   private val commaSplitter: Splitter = Splitter.on(",")
 
   def suggestTags(resource: Resource) : Set[Tag] = {
-    def suggestedTags = for {
-        tag <- tagDAO.getAllTags()
-        if matches(resource, tag)
-      } yield tag;
-
-    suggestedTags.toSet
+    tagDAO.getAllTags().filter(tag => matches(resource, tag)).toSet
   }
 
   private def matches(resource: Resource, tag: Tag) : Boolean = {
     if (!Strings.isNullOrEmpty(tag.getAutotagHints)) {
-      var hints: List[String] = commaSplitter.split(tag.getAutotagHints()).toList
-      return hints.exists(hint => resourceMatchesHint(resource, hint))
+      var hints = commaSplitter.split(tag.getAutotagHints()).toList
+      hints.exists(hint => resourceMatchesHint(resource, hint))
+    } else {
+      false;
     }
-    return false;
   }
 
   private def resourceMatchesHint(resource: Resource, hint: String) : Boolean = {
     val headlineMatchesHint = matches(hint, resource.getName())
     val bodyMatchesTag = matches(hint, resource.getDescription())
-    return headlineMatchesHint || bodyMatchesTag;
+    headlineMatchesHint || bodyMatchesTag;
   }
 
   private def matches(hint: String, value: String): Boolean = {

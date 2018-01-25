@@ -1,8 +1,5 @@
 package nz.co.searchwellington.repositories
 
-import java.util.Set
-
-import com.google.common.collect.Sets
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import org.apache.log4j.Logger
@@ -26,12 +23,7 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   def getHandpickedTagsForThisResourceByUser(user: User, resource: Resource): Set[Tag] = {
-    if (user == null) {
-      Sets.newHashSet()
-    } else {
-      import scala.collection.JavaConversions._
-      getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.getTag).toSet
-    }
+    getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.getTag).toSet
   }
 
   @SuppressWarnings(Array("unchecked")) def getVotesForTag(tag: Tag): List[HandTagging] = {
@@ -68,7 +60,7 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   private def clearTagsForResourceByUser(resource: Resource, user: User) {
-    for (handTagging <- this.getHandTaggingsForResourceByUser(resource, user)) {
+    for (handTagging <- getHandTaggingsForResourceByUser(resource, user)) {
       sessionFactory.getCurrentSession.delete(handTagging)
     }
   }
@@ -77,4 +69,5 @@ import org.springframework.transaction.annotation.Transactional
     sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).
       add(Restrictions.eq("user", user)).setCacheable(true).list.asInstanceOf[List[HandTagging]]
   }
+
 }
