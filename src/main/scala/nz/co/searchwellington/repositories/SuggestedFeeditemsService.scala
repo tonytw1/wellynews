@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories
 import java.util
 
 import nz.co.searchwellington.feeds.FeedItemLocalCopyDecorator
-import nz.co.searchwellington.feeds.reading.{WhakaokoFeedItemMapper, WhakaoroService}
+import nz.co.searchwellington.feeds.reading.{WhakaokoFeedItemMapper, WhakaokoService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeedNewsitem, FrontendNewsitem}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import org.apache.log4j.Logger
@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component
 
 import scala.collection.JavaConversions._
 
-@Component class SuggestedFeeditemsService @Autowired() (whakaoroService: WhakaoroService,
-                                                        whakaokoFeedItemMapper: WhakaokoFeedItemMapper, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
-                                                        resourceDAO: HibernateResourceDAO) {
+@Component class SuggestedFeeditemsService @Autowired() (whakaoroService: WhakaokoService,
+                                                         whakaokoFeedItemMapper: WhakaokoFeedItemMapper, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
+                                                         resourceDAO: HibernateResourceDAO) {
 
   private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
 

@@ -12,7 +12,7 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService;
 import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.feeds.FeedItemAcceptor;
 import nz.co.searchwellington.feeds.FeednewsItemToNewsitemService;
-import nz.co.searchwellington.feeds.reading.WhakaoroService;
+import nz.co.searchwellington.feeds.reading.WhakaokoService;
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
@@ -70,7 +70,7 @@ public class ResourceEditController {
 	private UrlStack urlStack;
 	private FeednewsItemToNewsitemService feednewsItemToNewsitemService;
 	private UrlWordsGenerator urlWordsGenerator;
-	private WhakaoroService whakaoroService;
+	private WhakaokoService whakaoroService;
 	private FrontendResourceMapper frontendResourceMapper;
 	private SpamFilter spamFilter;
 	private LinkCheckerQueue linkCheckerQueue;
@@ -80,25 +80,25 @@ public class ResourceEditController {
 	
 	@Autowired
     public ResourceEditController(
-    		RssfeedNewsitemService rssfeedNewsitemService,
-			AdminRequestFilter adminRequestFilter,
-			TagsWidgetFactory tagWidgetFactory, AutoTaggingService autoTagger,
-			AcceptanceWidgetFactory acceptanceWidgetFactory,
-			LoggedInUserFilter loggedInUserFilter,
-			EditPermissionService editPermissionService, UrlStack urlStack,
-			SubmissionProcessingService submissionProcessingService,
-			ContentUpdateService contentUpdateService,
-			ContentDeletionService contentDeletionService,
-			SnapshotBodyExtractor snapBodyExtractor,
-			AnonUserService anonUserService,
-			HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor,
-			ResourceFactory resourceFactory,
-			CommonModelObjectsService commonModelObjectsService,
-			FeednewsItemToNewsitemService feednewsItemToNewsitemService,
-			UrlWordsGenerator urlWordsGenerator, 
-			WhakaoroService whakaoroService,
-			FrontendResourceMapper frontendResourceMapper,
-			SpamFilter spamFilter, LinkCheckerQueue linkCheckerQueue) {
+            RssfeedNewsitemService rssfeedNewsitemService,
+            AdminRequestFilter adminRequestFilter,
+            TagsWidgetFactory tagWidgetFactory, AutoTaggingService autoTagger,
+            AcceptanceWidgetFactory acceptanceWidgetFactory,
+            LoggedInUserFilter loggedInUserFilter,
+            EditPermissionService editPermissionService, UrlStack urlStack,
+            SubmissionProcessingService submissionProcessingService,
+            ContentUpdateService contentUpdateService,
+            ContentDeletionService contentDeletionService,
+            SnapshotBodyExtractor snapBodyExtractor,
+            AnonUserService anonUserService,
+            HandTaggingDAO tagVoteDAO, FeedItemAcceptor feedItemAcceptor,
+            ResourceFactory resourceFactory,
+            CommonModelObjectsService commonModelObjectsService,
+            FeednewsItemToNewsitemService feednewsItemToNewsitemService,
+            UrlWordsGenerator urlWordsGenerator,
+            WhakaokoService whakaoroService,
+            FrontendResourceMapper frontendResourceMapper,
+            SpamFilter spamFilter, LinkCheckerQueue linkCheckerQueue) {
 		this.rssfeedNewsitemService = rssfeedNewsitemService;
 		this.adminRequestFilter = adminRequestFilter;
 		this.tagWidgetFactory = tagWidgetFactory;
