@@ -22,7 +22,8 @@ import org.springframework.transaction.annotation.Transactional
     session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).asInstanceOf[List[java.lang.String]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllFeeds: List[Feed] = {
+  @SuppressWarnings(Array("unchecked")) def getAllFeeds: Seq[Feed] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).addOrder(Order.desc("latestItemDate")).addOrder(Order.asc("name")).setCacheable(true).list.asInstanceOf[List[Feed]]
   }
 
