@@ -27,7 +27,8 @@ import org.springframework.transaction.annotation.Transactional
     sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.eq("name", tagName)).uniqueResult.asInstanceOf[Tag]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllTags(): java.util.List[Tag] = {
+  @SuppressWarnings(Array("unchecked")) def getAllTags(): Seq[Tag] = {
+    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).addOrder(Order.asc("displayName")).
       setCacheable(true).list.asInstanceOf[List[Tag]]
   }
