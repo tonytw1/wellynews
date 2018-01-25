@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 
   def getActiveUsers(): Seq[User] = {
     import scala.collection.JavaConversions._
-    sessionFactory.getCurrentSession.createCriteria(classOf[User]).addOrder(Order.asc("profilename")).setCacheable(true).list
+    sessionFactory.getCurrentSession.createCriteria(classOf[User]).addOrder(Order.asc("profilename")).setCacheable(true).list().asInstanceOf[java.util.List[User]]
   }
 
   @Transactional def saveUser(user: User) {

@@ -65,8 +65,7 @@ import org.springframework.web.servlet.view.RedirectView
     def userByPath(path: String): Option[User] = {
       if (path.matches("^/profiles/.*$")) {
         val profilename: String = path.split("/")(2)
-        val user: User = userDAO.getUserByProfileName(profilename)
-        Option(user)
+        Option(userDAO.getUserByProfileName(profilename))
       } else {
         None
       }
@@ -91,8 +90,8 @@ import org.springframework.web.servlet.view.RedirectView
     }
   }
 
-  protected def isValidNewProfilename(profilename: String): Boolean = {
-    return profilename.matches("[a-z|A-Z|0-9]+") && userDAO.getUserByProfileName(profilename) == null
+  def isValidNewProfilename(profilename: String): Boolean = {
+    profilename.matches("[a-z|A-Z|0-9]+") && userDAO.getUserByProfileName(profilename) == null
   }
 
 }

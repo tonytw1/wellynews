@@ -26,7 +26,7 @@ class ProfileControllerTest {
   @Mock private[profiles] val existingUser: User = null
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
-  private val allActiveUsers: java.util.List[User] = null
+  private val allActiveUsers: Seq[User] = null
   private var controller: ProfileController = null
   @Mock private[profiles] val existingUsersSubmittedItems: Seq[FrontendResource] = null
   @Mock private[profiles] val existingUsersTaggedItems: Seq[FrontendResource] = null
