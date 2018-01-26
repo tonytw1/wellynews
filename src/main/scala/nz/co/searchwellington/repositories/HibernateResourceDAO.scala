@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   def getPublisherNamesByStartingLetters(q: String): List[String] = {
-    val session: Session = sessionFactory.getCurrentSession
+    val session = sessionFactory.getCurrentSession
     session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).asInstanceOf[List[java.lang.String]]
   }
 
@@ -58,7 +58,8 @@ import org.springframework.transaction.annotation.Transactional
       add(Restrictions.eq("httpStatus", 200)).addOrder(Order.desc("date")).setMaxResults(12).setCacheable(true).list.asInstanceOf[List[Newsitem]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllPublishersMatchingStem(stem: String, showBroken: Boolean): List[Resource] = {
+  @SuppressWarnings(Array("unchecked")) def getAllPublishersMatchingStem(stem: String, showBroken: Boolean): Seq[Resource] = {
+    import scala.collection.JavaConversions._
     if (showBroken) {
       sessionFactory.getCurrentSession.createCriteria(classOf[Website]).
         add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
