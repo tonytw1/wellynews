@@ -54,12 +54,12 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   private def removePublisherFromPublishersContent(editResource: Resource) {
-    val publisher: Website = editResource.asInstanceOf[Website]
-    import scala.collection.JavaConversions._
-    for (published <- resourceDAO.getNewsitemsForPublishers(publisher)) {
+    val publisher = editResource.asInstanceOf[Website]
+    resourceDAO.getNewsitemsForPublishers(publisher).map { published =>
       published.setPublisher(null)
       resourceDAO.saveResource(publisher)
     }
+
     import scala.collection.JavaConversions._
     for (feed <- publisher.getFeeds) {
       feed.setPublisher(null)
@@ -73,8 +73,7 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   private def removeFeedFromFeedNewsitems(feed: Feed) {
-    import scala.collection.JavaConversions._
-    for (newsitem <- resourceDAO.getNewsitemsForFeed(feed)) {
+    resourceDAO.getNewsitemsForFeed(feed).map { newsitem =>
       newsitem.setFeed(null)
       resourceDAO.saveResource(newsitem)
     }

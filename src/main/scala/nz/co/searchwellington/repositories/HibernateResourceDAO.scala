@@ -28,32 +28,39 @@ import org.springframework.transaction.annotation.Transactional
     return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).addOrder(Order.desc("latestItemDate")).addOrder(Order.asc("name")).setCacheable(true).list.asInstanceOf[List[Feed]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getFeedsToRead: List[Feed] = {
+  @SuppressWarnings(Array("unchecked")) def getFeedsToRead: Seq[Feed] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).add(Restrictions.ne("acceptancePolicy", "ignore")).addOrder(Order.asc("lastRead")).setCacheable(false).list.asInstanceOf[List[Feed]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllWatchlists: List[Resource] = {
+  @SuppressWarnings(Array("unchecked")) def getAllWatchlists: Seq[Resource] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Watchlist]).addOrder(Order.asc("name")).setCacheable(true).list.asInstanceOf[List[Resource]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllDiscoveredFeeds: List[DiscoveredFeed] = {
+  @SuppressWarnings(Array("unchecked")) def getAllDiscoveredFeeds: Seq[DiscoveredFeed] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[DiscoveredFeed]).setCacheable(true).addOrder(Order.desc("id")).list.asInstanceOf[List[DiscoveredFeed]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getNewsitemsForFeed(feed: Feed): List[Newsitem] = {
+  @SuppressWarnings(Array("unchecked")) def getNewsitemsForFeed(feed: Feed): Seq[Newsitem] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("feed", feed)).addOrder(Order.desc("date")).list.asInstanceOf[List[Newsitem]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getNewsitemsForPublishers(publisher: Website): List[PublishedResource] = {
+  @SuppressWarnings(Array("unchecked")) def getNewsitemsForPublishers(publisher: Website): Seq[PublishedResource] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("publisher", publisher)).list.asInstanceOf[List[PublishedResource]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getOwnedBy(owner: User, maxItems: Int): List[Resource] = {
+  @SuppressWarnings(Array("unchecked")) def getOwnedBy(owner: User, maxItems: Int): Seq[Resource] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("owner", owner)).
       addOrder(Order.desc("date")).addOrder(Order.desc("id")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getRecentUntaggedNewsitems: List[Newsitem] = {
+  @SuppressWarnings(Array("unchecked")) def getRecentUntaggedNewsitems: Seq[Newsitem] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.isEmpty("tags")).
       add(Restrictions.eq("httpStatus", 200)).addOrder(Order.desc("date")).setMaxResults(12).setCacheable(true).list.asInstanceOf[List[Newsitem]]
   }
@@ -70,11 +77,13 @@ import org.springframework.transaction.annotation.Transactional
     }
   }
 
-  @SuppressWarnings(Array("unchecked")) def getNewsitemsMatchingStem(stem: String): List[Resource] = {
+  @SuppressWarnings(Array("unchecked")) def getNewsitemsMatchingStem(stem: String): Seq[Resource] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.sqlRestriction(" page like \"%" + stem + "%\" ")).addOrder(Order.asc("name")).list.asInstanceOf[List[Resource]]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getNotCheckedSince(oneMonthAgo: Date, maxItems: Int): List[Resource] = {
+  @SuppressWarnings(Array("unchecked")) def getNotCheckedSince(oneMonthAgo: Date, maxItems: Int): Seq[Resource] = {
+    import scala.collection.JavaConversions._
     return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.lt("lastScanned", oneMonthAgo)).addOrder(Order.asc("lastScanned")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
   }
 
