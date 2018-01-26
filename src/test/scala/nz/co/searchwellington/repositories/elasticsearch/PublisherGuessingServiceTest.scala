@@ -67,7 +67,7 @@ class PublisherGuessingServiceTest extends TestCase {
     hostedTwo.setUrl("http://homepages.ihug.co.nz/~waicoll/")
 
     val possiblePublishers = Seq(hostedOne, hostedTwo)
-    when(resourceDAO.getAllPublishersMatchingStem("homepages.paradise.net.nz", true)).thenReturn(possiblePublishers)
+    when(resourceDAO.getAllPublishersMatchingStem("homepages.ihug.co.nz", true)).thenReturn(possiblePublishers)
 
     assertEquals(None, service.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/"))
   }

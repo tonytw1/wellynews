@@ -146,7 +146,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
           log.info("Setting accepted from feed to: " + feed.getName)
           (editResource.asInstanceOf[Newsitem]).setFeed(feed)
           (editResource.asInstanceOf[Newsitem]).setAcceptedBy(loggedInUser)
-          (editResource.asInstanceOf[Newsitem]).setAccepted(new DateTime(()).toDate)
+          (editResource.asInstanceOf[Newsitem]).setAccepted(DateTime.now.toDate)
         }
       }
     }
