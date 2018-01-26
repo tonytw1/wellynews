@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component
 
     def guessPossiblePublishersForUrl(url: String): Seq[Resource] = {
       val urlStem = urlParser.extractHostnameFrom(url)
+      println(url + ": " + urlStem)
       resourceDAO.getAllPublishersMatchingStem(urlStem, true)
     }
 

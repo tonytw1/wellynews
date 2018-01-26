@@ -5,7 +5,7 @@ import nz.co.searchwellington.model.{Website, WebsiteImpl}
 import nz.co.searchwellington.repositories.HibernateResourceDAO
 import nz.co.searchwellington.urls.UrlParser
 import org.junit.Before
-import org.mockito.Mockito.{mock, when}
+import org.mockito.Mockito.when
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.junit.Assert._
