@@ -12,8 +12,9 @@ import org.springframework.transaction.annotation.Transactional
 
 @Component class HibernateResourceDAO @Autowired() (sessionFactory: SessionFactory) {
 
-  @SuppressWarnings(Array("unchecked")) def getAllResourceIds: List[Integer] = {
-    val session: Session = sessionFactory.getCurrentSession
+  @SuppressWarnings(Array("unchecked")) def getAllResourceIds: Seq[Integer] = {
+    import scala.collection.JavaConversions._
+    val session = sessionFactory.getCurrentSession
     session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list().asInstanceOf[List[java.lang.Integer]]
   }
 

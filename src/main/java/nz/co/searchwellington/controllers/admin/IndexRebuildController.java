@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.ElasticSearchIndexRebuildService;
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
