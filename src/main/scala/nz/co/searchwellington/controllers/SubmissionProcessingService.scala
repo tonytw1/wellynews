@@ -195,10 +195,10 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
     field != null && field.length > 0 && field.matches("[a-zA-Z0-9]*")
   }
 
-  private def cleanTagName(field: String): String = {
-    var field = StringUtils.strip(field)
-    field = StringUtils.remove(field, " ")
-    field.toLowerCase.trim
+  private def cleanTagName(i: String): String = {
+    var cleaned = StringUtils.strip(i)
+    cleaned = StringUtils.remove(cleaned, " ")
+    cleaned.toLowerCase.trim
   }
 
 }

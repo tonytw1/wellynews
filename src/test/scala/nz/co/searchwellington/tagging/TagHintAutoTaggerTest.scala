@@ -1,6 +1,5 @@
 package nz.co.searchwellington.tagging
 
-import com.google.common.collect.Lists
 import nz.co.searchwellington.model.{NewsitemImpl, Resource, TagBuilder}
 import nz.co.searchwellington.repositories.TagDAO
 import org.junit.Assert.{assertFalse, assertTrue}
@@ -22,7 +21,7 @@ class TagHintAutoTaggerTest {
   @Test def shouldMatchTitlesWhichContainAutotaggingHint {
     val tag = new TagBuilder().autotagHints("fox,animal").build
     val anotherTag = new TagBuilder().autotagHints("cat").build
-    when(tagDAO.getAllTags).thenReturn(Lists.newArrayList(tag, anotherTag))
+    when(tagDAO.getAllTags).thenReturn(Seq(tag, anotherTag))
 
     val resource: Resource = new NewsitemImpl
     resource.setName("The quick brown fox jumped over the lazy dog")
