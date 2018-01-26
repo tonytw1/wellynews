@@ -11,24 +11,23 @@ import org.mockito.MockitoAnnotations
 import org.junit.Assert._
 
 class PublisherGuessingServiceTest extends TestCase {
-  @Mock private val urlParser: UrlParser = null
-  @Mock private val resourceDAO: HibernateResourceDAO = null
+  @Mock val resourceDAO: HibernateResourceDAO = null
   private var service: PublisherGuessingService = null
 
   @Before
   @throws[Exception]
   override def setUp {
     MockitoAnnotations.initMocks(this)
-    service = new PublisherGuessingService(resourceDAO, urlParser)
+    service = new PublisherGuessingService(resourceDAO, new UrlParser)
   }
 
   @throws[Exception]
   def testShouldNotMatchIfNoMatchingPublishers {
     val possiblePublishers = Seq()
-    val resourceDAO = mock(classOf[HibernateResourceDAO])
+
     when(resourceDAO.getAllPublishersMatchingStem("www.spammer.com", true)).thenReturn(possiblePublishers)
 
-    assertEquals(null, service.guessPublisherBasedOnUrl("http://www.spammer.com"))
+    assertEquals(None, service.guessPublisherBasedOnUrl("http://www.spammer.com"))
   }
 
   @throws[Exception]
@@ -44,9 +43,8 @@ class PublisherGuessingServiceTest extends TestCase {
 
     val possiblePublishers = Seq(golfCourseSite, heritageInventory, wccMainSite)
     when(resourceDAO.getAllPublishersMatchingStem("www.wellington.govt.nz", true)).thenReturn(possiblePublishers)
-    when(urlParser.extractHostnameFrom("http://www.wellington.govt.nz/news/display-item.php?id=3542")).thenReturn("www.wellington.govt.nz")
 
-    assertEquals(wccMainSite, service.guessPublisherBasedOnUrl("http://www.wellington.govt.nz/news/display-item.php?id=3542"))
+    assertEquals(Some(wccMainSite), service.guessPublisherBasedOnUrl("http://www.wellington.govt.nz/news/display-item.php?id=3542"))
   }
 
   @throws[Exception]
@@ -56,10 +54,9 @@ class PublisherGuessingServiceTest extends TestCase {
     wellingtonista.setUrl("http://www.wellingtonista.com")
 
     val possiblePublishers = Seq(wellingtonista)
-    when(urlParser.extractHostnameFrom("http://www.wellingtonista.com/a-week-of-it")).thenReturn("www.wellingtonista.com")
     when(resourceDAO.getAllPublishersMatchingStem("www.wellingtonista.com", true)).thenReturn(possiblePublishers)
 
-    assertEquals(wellingtonista, service.guessPublisherBasedOnUrl("http://www.wellingtonista.com/a-week-of-it"))
+    assertEquals(Some(wellingtonista), service.guessPublisherBasedOnUrl("http://www.wellingtonista.com/a-week-of-it"))
   }
 
   @throws[Exception]
@@ -72,7 +69,7 @@ class PublisherGuessingServiceTest extends TestCase {
     val possiblePublishers = Seq(hostedOne, hostedTwo)
     when(resourceDAO.getAllPublishersMatchingStem("homepages.paradise.net.nz", true)).thenReturn(possiblePublishers)
 
-    assertEquals(null, service.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/"))
+    assertEquals(None, service.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/"))
   }
 
 }
