@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories
 import java.util.List
 
 import nz.co.searchwellington.model.Tag
-import org.hibernate.{Session, SessionFactory}
+import org.hibernate.SessionFactory
 import org.hibernate.criterion.{Order, Restrictions}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -33,14 +33,15 @@ import org.springframework.transaction.annotation.Transactional
       setCacheable(true).list.asInstanceOf[List[Tag]]
   }
 
-  def loadTagsById(tagIds: java.util.List[Integer]): java.util.List[Tag] = {
+  def loadTagsById(tagIds: java.util.List[Integer]): Seq[Tag] = {
     import scala.collection.JavaConversions._
     tagIds.flatMap { id =>
       Option(loadTagById(id))
     }
   }
 
-  @SuppressWarnings(Array("unchecked")) def getTopLevelTags: java.util.List[Tag] = {
+  @SuppressWarnings(Array("unchecked")) def getTopLevelTags: Seq[Tag] = {
+    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.isNull("parent")).
       addOrder(Order.asc("name")).setCacheable(true).list.asInstanceOf[List[Tag]]
   }
@@ -54,13 +55,15 @@ import org.springframework.transaction.annotation.Transactional
     sessionFactory.getCurrentSession.delete(tag)
   }
 
-  def getTagNamesStartingWith(q: String): java.util.List[String] = {
-    val session: Session = sessionFactory.getCurrentSession
+  def getTagNamesStartingWith(q: String): Seq[String] = {
+    import scala.collection.JavaConversions._
+    val session = sessionFactory.getCurrentSession
     session.createQuery("select name from nz.co.searchwellington.model.Tag where name like ? order by name").
       setString(0, q + '%').setMaxResults(50).list.asInstanceOf[List[String]]
   }
 
-  def getFeaturedTags: java.util.List[Tag] = {
+  def getFeaturedTags: Seq[Tag] = {
+    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.eq("featured", true)).addOrder(Order.asc("name")).setCacheable(true).
       list.asInstanceOf[List[Tag]]
   }

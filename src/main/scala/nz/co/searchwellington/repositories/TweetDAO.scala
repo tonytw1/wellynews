@@ -11,11 +11,12 @@ import org.springframework.stereotype.Component
 @Component class TweetDAO @Autowired() (sessionFactory: SessionFactory) {
 
   def loadTweetByTwitterId(twitterId: Long): Twit = {
-    return sessionFactory.getCurrentSession.createCriteria(classOf[Twit]).add(Restrictions.eq("twitterid", twitterId)).setMaxResults(1).setCacheable(true).uniqueResult.asInstanceOf[Twit]
+    sessionFactory.getCurrentSession.createCriteria(classOf[Twit]).add(Restrictions.eq("twitterid", twitterId)).setMaxResults(1).setCacheable(true).uniqueResult.asInstanceOf[Twit]
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllTweets: java.util.List[Twit] = {
-    return sessionFactory.getCurrentSession.createCriteria(classOf[Twit]).list.asInstanceOf[List[Twit]]
+  @SuppressWarnings(Array("unchecked")) def getAllTweets: Seq[Twit] = {
+    import scala.collection.JavaConversions._
+    sessionFactory.getCurrentSession.createCriteria(classOf[Twit]).list.asInstanceOf[List[Twit]]
   }
 
   def saveTwit(twit: Twit) {
