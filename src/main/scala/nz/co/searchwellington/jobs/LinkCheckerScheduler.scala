@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
   private val log = Logger.getLogger(classOf[LinkCheckerScheduler])
 
   @Scheduled(fixedRate = 86400000)
-  @Transactional def queueWatchlistItems {
+  def queueWatchlistItems {
     log.info("Queuing watchlist items for checking.")
     for (resource <- resourceDAO.getAllWatchlists) {
       log.info("Queuing watchlist item for checking: " + resource.getName)
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   @Scheduled(fixedRate = 3600000)
-  @Transactional def queueExpiredItems {
+  def queueExpiredItems {
     val numberOfItemsToQueue: Int = 10
     log.info("Queuing items launched within the last 24 hours with but not scanned within the last 4 hours")
     val oneDayAgo: Date = new DateTime(()).minusDays(1).toDate

@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.Transactional
   private val log = Logger.getLogger(classOf[WhakaokoFeedSyncService])
 
   @Scheduled(fixedRate = 3600000)
-  @Transactional def run {
+  def run {
     registerFeedsWithWhakaoko(resourceDAO.getAllFeeds)
   }
 
-  @Transactional private def registerFeedsWithWhakaoko(feeds: Seq[Feed]) {
+  private def registerFeedsWithWhakaoko(feeds: Seq[Feed]) {
     log.info("Registering feeds with whakaoko")
     feeds.map { feed =>
       if (!Strings.isNullOrEmpty(feed.getUrl)) {
@@ -31,4 +31,5 @@ import org.springframework.transaction.annotation.Transactional
     }
     log.info("Finished registering feeds with whakaoro")
   }
+
 }

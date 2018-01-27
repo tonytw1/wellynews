@@ -29,8 +29,7 @@ import org.springframework.web.servlet.view.RedirectView
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
   private val ACCEPTANCE = "acceptance"
-  
-  @Transactional
+
   @RequestMapping(Array("/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     log.info("Starting resource edit method")
     response.setCharacterEncoding("UTF-8")
@@ -61,7 +60,6 @@ import org.springframework.web.servlet.view.RedirectView
     return mv
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/viewsnapshot")) def viewSnapshot(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     adminRequestFilter.loadAttributesOntoRequest(request)
     if (request.getAttribute("resource") == null) {
@@ -88,7 +86,6 @@ import org.springframework.web.servlet.view.RedirectView
     return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/accept"))
   @throws[IllegalArgumentException]
   @throws[IOException]
@@ -160,7 +157,6 @@ import org.springframework.web.servlet.view.RedirectView
     return modelAndView
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/submit/watchlist")) def submitWatchlist(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWatchlist")
     modelAndView.addObject("heading", "Submitting a Watchlist Item")
@@ -170,7 +166,6 @@ import org.springframework.web.servlet.view.RedirectView
     return modelAndView
   }
 
-  @Transactional
   @RequestMapping(Array("/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("deletedResource")
     commonModelObjectsService.populateCommonLocal(modelAndView)

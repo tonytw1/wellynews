@@ -28,7 +28,6 @@ import org.springframework.web.servlet.view.RedirectView
 
   private val log = Logger.getLogger(classOf[TagEditController])
 
-  @Transactional
   @RequestMapping(Array("/edit/tag/submit")) def submit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("submitTag")
     mv.addObject("heading", "Submitting a Tag")
@@ -36,7 +35,6 @@ import org.springframework.web.servlet.view.RedirectView
     return mv
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/tag/*")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv: ModelAndView = new ModelAndView("editTag")
     commonModelObjectsService.populateCommonLocal(mv)
@@ -54,7 +52,6 @@ import org.springframework.web.servlet.view.RedirectView
     return mv
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/tag/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser: User = loggedInUserFilter.getLoggedInUser
     if (!editPermissionService.canDeleteTags(loggedInUser)) {
@@ -97,7 +94,6 @@ import org.springframework.web.servlet.view.RedirectView
     }
   }
 
-  @Transactional
   @RequestMapping(value = Array("/edit/tag/save"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("savedTag")
     mv.addObject("heading", "Tag Saved")

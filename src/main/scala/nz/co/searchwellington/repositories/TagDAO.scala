@@ -46,12 +46,12 @@ import org.springframework.transaction.annotation.Transactional
       addOrder(Order.asc("name")).setCacheable(true).list.asInstanceOf[List[Tag]]
   }
 
-  @Transactional def saveTag(editTag: Tag) {
+  def saveTag(editTag: Tag) {
     sessionFactory.getCurrentSession.saveOrUpdate(editTag)
     sessionFactory.evictCollection("nz.co.searchwellington.model.Tag.children")
   }
 
-  @Transactional def deleteTag(tag: Tag) {
+  def deleteTag(tag: Tag) {
     sessionFactory.getCurrentSession.delete(tag)
   }
 

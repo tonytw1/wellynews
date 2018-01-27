@@ -22,7 +22,6 @@ import org.springframework.web.servlet.view.RedirectView
 
   private val log = Logger.getLogger(classOf[ProfileController])
 
-  @Transactional
   @RequestMapping(Array("/profiles"))
   @Timed(timingNotes = "") def all(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv: ModelAndView = new ModelAndView("profiles")
@@ -32,7 +31,6 @@ import org.springframework.web.servlet.view.RedirectView
     return mv
   }
 
-  @Transactional
   @RequestMapping(Array("/profile/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv: ModelAndView = new ModelAndView("editProfile")
     commonModelObjectsService.populateCommonLocal(mv)
@@ -42,7 +40,6 @@ import org.springframework.web.servlet.view.RedirectView
     return mv
   }
 
-  @Transactional
   @RequestMapping(value = Array("/profile/edit"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mayByloggedInUser = Option(loggerInUserFilter.getLoggedInUser)
     mayByloggedInUser.map { loggedInUser =>
@@ -58,7 +55,6 @@ import org.springframework.web.servlet.view.RedirectView
     return new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(mayByloggedInUser.get.getProfilename)))
   }
 
-  @Transactional(readOnly = true)
   @RequestMapping(Array("/profiles/*"))
   @Timed(timingNotes = "") def view(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
 
@@ -72,7 +68,7 @@ import org.springframework.web.servlet.view.RedirectView
     }
 
     userByPath(request.getPathInfo).map { user =>
-        var mv: ModelAndView = new ModelAndView("viewProfile")
+        var mv = new ModelAndView("viewProfile")
         val loggedInUser: User = loggerInUserFilter.getLoggedInUser
         if (loggedInUser != null && loggedInUser.getId == user.getId) {
           mv = new ModelAndView("profile")

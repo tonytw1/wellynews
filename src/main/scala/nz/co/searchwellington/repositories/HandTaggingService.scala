@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
     }
   }
 
-  @Transactional def transferVotes(previousOwner: User, newOwner: User) {
+  def transferVotes(previousOwner: User, newOwner: User) {
     val previousUsersVotes = handTaggingDao.getUsersVotes(previousOwner)
     log.info("Transfering " + previousUsersVotes.size + " vote from user " + previousOwner.getName + " to " + newOwner.getName)
     previousUsersVotes.map { handTagging =>
@@ -28,4 +28,5 @@ import org.springframework.transaction.annotation.Transactional
       frontendContentUpdater.update(handTagging.getResource)
     }
   }
+
 }

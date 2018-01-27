@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
   private val FEED_READER_PROFILE_NAME: String = "feedreader"
 
-  @Transactional
   @Scheduled(fixedRate = 1200000) def readFeeds {
     log.info("Running feed reader.")
     readAllFeeds(resourceDAO.getAllFeeds)

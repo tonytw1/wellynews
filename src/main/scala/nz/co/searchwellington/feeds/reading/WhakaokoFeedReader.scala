@@ -6,14 +6,14 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class WhakaokoFeedReader @Autowired()(whakaoroService: WhakaokoService, whakaokoFeedItemMapper: WhakaokoFeedItemMapper) {
+@Component class WhakaokoFeedReader @Autowired()(whakaokoService: WhakaokoService, whakaokoFeedItemMapper: WhakaokoFeedItemMapper) {
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedReader])
 
   def fetchFeedItems(feed: Feed): Seq[FrontendFeedNewsitem] = {
     log.info("Fetching feed items for feed with whakaoko id: " + feed.getWhakaokoId)
     Option(feed.getWhakaokoId).map { whakaokoId =>
-      val subscriptionFeedItems = whakaoroService.getSubscriptionFeedItems(whakaokoId)
+      val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(whakaokoId)
       val results = subscriptionFeedItems.map { feedItem =>
         whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem)
       }
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
       results
 
     }.getOrElse {
-      log.warn("Feed has no whakaoro id; skipping: " + feed.getName)
+      log.warn("Feed has no whakaoko id; skipping: " + feed.getName)
       Seq()
     }
   }

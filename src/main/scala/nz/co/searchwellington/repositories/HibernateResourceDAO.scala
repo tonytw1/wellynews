@@ -135,7 +135,7 @@ import org.springframework.transaction.annotation.Transactional
     return sessionFactory.getCurrentSession.createCriteria(classOf[DiscoveredFeed]).add(Restrictions.eq("url", url)).setMaxResults(1).setCacheable(true).uniqueResult.asInstanceOf[DiscoveredFeed]
   }
 
-  @Transactional def saveResource(resource: Resource) {
+  def saveResource(resource: Resource) {
     if (resource.getType == "N") {
       if ((resource.asInstanceOf[Newsitem]).getImage != null) {
         sessionFactory.getCurrentSession.saveOrUpdate((resource.asInstanceOf[Newsitem]).getImage)

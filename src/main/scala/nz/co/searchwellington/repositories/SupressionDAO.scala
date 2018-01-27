@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 
   private val log = Logger.getLogger(classOf[SupressionDAO])
 
-  @Transactional def addSuppression(urlToSupress: String) {
+  def addSuppression(urlToSupress: String) {
     val suppression = new Supression(urlToSupress)
 
     if (suppression != null) {
@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional
     existingSupression != null
   }
 
-  @Transactional def removeSupressionForUrl(url: String) {
+  def removeSupressionForUrl(url: String) {
     val existingSupression = sessionFactory.getCurrentSession.createCriteria(classOf[Supression]).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult.asInstanceOf[Supression]
     if (existingSupression != null) {
       sessionFactory.getCurrentSession.delete(existingSupression)

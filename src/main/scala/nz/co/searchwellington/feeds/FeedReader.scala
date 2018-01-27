@@ -23,12 +23,12 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO inject
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW) def processFeed(feedId: Int, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
+  def processFeed(feedId: Int, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
     val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
     processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy)
   }
 
-  @Transactional(propagation = Propagation.REQUIRES_NEW) def processFeed(feedId: Int, loggedInUser: User): Unit = {
+  def processFeed(feedId: Int, loggedInUser: User): Unit = {
     val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
     processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }

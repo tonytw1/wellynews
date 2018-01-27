@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional
       setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
   }
 
-  @Transactional def delete(handTagging: HandTagging) {
+  def delete(handTagging: HandTagging) {
     sessionFactory.getCurrentSession.delete(handTagging)
   }
 
@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional
       setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
   }
 
-  @Transactional def setUsersTagVotesForResource(editResource: Resource, user: User, tags: Set[Tag]) {
+  def setUsersTagVotesForResource(editResource: Resource, user: User, tags: Set[Tag]) {
     this.clearTagsForResourceByUser(editResource, user)
     import scala.collection.JavaConversions._
     for (tag <- tags) {
@@ -41,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional
     }
   }
 
-  @Transactional def addTag(user: User, tag: Tag, resource: Resource) {
+  def addTag(user: User, tag: Tag, resource: Resource) {
     val existingVotes = getHandpickedTagsForThisResourceByUser(user, resource)
     if (!existingVotes.contains(tag)) {
       val newTagging: HandTagging = new HandTagging(0, resource, user, tag)
