@@ -165,18 +165,18 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
           field = cleanTagName(field)
           log.debug("Wants additional tag: " + field)
           if (isValidTagName(field)) {
-            val existingTag: Tag = tagDAO.loadTagByName(field)
-            if (existingTag == null) {
+
+            tagDAO.loadTagByName(field).map { existingTag =>
+              log.debug("Found an existing tag in the additional list: " + existingTag.getName + "; adding.")
+              tagVoteDAO.addTag(user, existingTag, editResource)
+
+            }.getOrElse {
               log.debug("Tag '" + field + "' is a new tag. Needs to be created.")
               val newTag: Tag = tagDAO.createNewTag
               newTag.setName(field)
               newTag.setDisplayName(displayName)
               tagDAO.saveTag(newTag)
               tagVoteDAO.addTag(user, newTag, editResource)
-            }
-            else {
-              log.debug("Found an existing tag in the additional list: " + existingTag.getName + "; adding.")
-              tagVoteDAO.addTag(user, existingTag, editResource)
             }
           }
           else {

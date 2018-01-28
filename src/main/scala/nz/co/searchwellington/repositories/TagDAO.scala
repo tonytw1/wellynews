@@ -23,8 +23,8 @@ import org.springframework.transaction.annotation.Transactional
     sessionFactory.getCurrentSession.get(classOf[Tag], tagID).asInstanceOf[Tag]
   }
 
-  def loadTagByName(tagName: String): Tag = {
-    sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.eq("name", tagName)).uniqueResult.asInstanceOf[Tag]
+  def loadTagByName(tagName: String): Option[Tag] = {
+    Option(sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.eq("name", tagName)).uniqueResult.asInstanceOf[Tag])
   }
 
   @SuppressWarnings(Array("unchecked")) def getAllTags(): Seq[Tag] = {

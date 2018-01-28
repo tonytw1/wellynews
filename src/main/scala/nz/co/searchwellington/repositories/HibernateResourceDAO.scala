@@ -98,12 +98,12 @@ import org.springframework.stereotype.Component
     return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
   }
 
-  def getPublisherByUrlWords(urlWords: String): Website = {
-    return sessionFactory.getCurrentSession.createCriteria(classOf[Website]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Website]
+  def getPublisherByUrlWords(urlWords: String): Option[Website] = {
+    Option(sessionFactory.getCurrentSession.createCriteria(classOf[Website]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Website])
   }
 
-  def getPublisherByName(name: String): Website = {
-    return sessionFactory.getCurrentSession.createCriteria(classOf[Website]).add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult.asInstanceOf[Website]
+  def getPublisherByName(name: String): Option[Website] = {
+    Option(sessionFactory.getCurrentSession.createCriteria(classOf[Website]).add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult.asInstanceOf[Website])
   }
 
   def loadFeedByUrlWords(urlWords: String): Feed = {
@@ -118,8 +118,8 @@ import org.springframework.stereotype.Component
     Option(sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Resource])
   }
 
-  def loadResourceByUniqueUrl(url: String): Resource = {
-    return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("url", url)).uniqueResult.asInstanceOf[Resource]
+  def loadResourceByUniqueUrl(url: String): Option[Resource] = {
+    Option(sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("url", url)).uniqueResult.asInstanceOf[Resource])
   }
 
   def loadFeedByUrl(url: String): Feed = {

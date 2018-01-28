@@ -143,11 +143,10 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getFeaturedSites: Seq[FrontendResource] = {
-    val featuredTag = tagDAO.loadTagByName("featured")
-    if (featuredTag != null) {
+    tagDAO.loadTagByName("featured").map { featuredTag =>
       this.getTaggedWebsites(featuredTag, 10)
-    } else {
-      null
+    }.getOrElse{
+      Seq()
     }
   }
 
@@ -230,13 +229,11 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getPublisherTagCombinerNewsitems(publisherUrlWords: String, tagName: String, maxNewsitems: Int): Seq[FrontendResource] = {
-    val publisher: Website = resourceDAO.getPublisherByUrlWords(publisherUrlWords)
-    val tag: Tag = tagDAO.loadTagByName(tagName)
-    if (publisher != null && tag != null) {
-      this.getPublisherTagCombinerNewsitems(publisher, tag, maxNewsitems)
-    } else {
-      null
-    }
+    resourceDAO.getPublisherByUrlWords(publisherUrlWords).flatMap { p =>
+      tagDAO.loadTagByName(tagName).map { t =>
+        getPublisherTagCombinerNewsitems(p, t, maxNewsitems)
+      }
+    }.getOrElse(Seq())
   }
 
   def getRecentlyChangedWatchlistItems: Seq[FrontendResource] = {

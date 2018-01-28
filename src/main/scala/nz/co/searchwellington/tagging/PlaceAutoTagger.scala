@@ -16,11 +16,11 @@ import scala.collection.JavaConverters._
   }
 
   def getPlaces: Set[Tag] = {
-    val placesTag: Tag = tagDAO.loadTagByName(PLACES_TAG_NAME)
-    if (placesTag == null) {
-      return Set.empty
+    tagDAO.loadTagByName(PLACES_TAG_NAME).map { placesTag =>
+      placesTag.getChildren.asScala.toSet
+    }.getOrElse {
+      Set()
     }
-    placesTag.getChildren.asScala.toSet
   }
 
   private def checkForMatchingTag(resource: Resource, tag: Tag): Boolean = {
