@@ -46,7 +46,7 @@ import org.springframework.web.servlet.ModelAndView
       val autotaggedResourceIds = request.getParameterValues("autotag")
       val resources = autotaggedResourceIds.map { resourceIdString =>
         resourceDAO.loadResourceById(resourceIdString.toInt)
-      }
+      }.flatten
 
       val autotaggedNewsitems = resources.filter(resource => resource.getType == "N").map { newsitem =>
         log.info("Applying publisher " + publisher.getName + " to:" + newsitem.getName)

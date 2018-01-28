@@ -51,7 +51,7 @@ import org.springframework.stereotype.Component
   private def reindexBatch(batch: Seq[Integer]) {
     val resources = batch.map { id =>
       resourceDAO.loadResourceById(id)
-    }
+    }.flatten
     import scala.collection.JavaConversions._
     elasticSearchIndexUpdateService.updateMultipleContentItems(resources)
   }

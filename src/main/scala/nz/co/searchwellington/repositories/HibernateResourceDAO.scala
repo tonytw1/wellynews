@@ -7,7 +7,6 @@ import org.hibernate.SessionFactory
 import org.hibernate.criterion.{Order, Restrictions}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
 @Component class HibernateResourceDAO @Autowired() (sessionFactory: SessionFactory) {
 
@@ -87,8 +86,8 @@ import org.springframework.transaction.annotation.Transactional
     return (sessionFactory.getCurrentSession.createQuery("select count(*) from ResourceImpl where owner = " + user.getId).iterate.next.asInstanceOf[Long]).intValue
   }
 
-  def loadResourceById(resourceID: Int): Resource = {
-    return sessionFactory.getCurrentSession.get(classOf[ResourceImpl], resourceID).asInstanceOf[Resource]
+  def loadResourceById(resourceID: Int): Option[Resource] = {
+    Option(sessionFactory.getCurrentSession.get(classOf[ResourceImpl], resourceID).asInstanceOf[Resource])
   }
 
   def loadResourceByUrl(url: String): Resource = {
@@ -115,8 +114,8 @@ import org.springframework.transaction.annotation.Transactional
     return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).add(Restrictions.eq("whakaokoId", whakaoroId)).setMaxResults(1).uniqueResult.asInstanceOf[Feed]
   }
 
-  def loadByUrlWords(urlWords: String): Resource = {
-    return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
+  def loadByUrlWords(urlWords: String): Option[Resource] = {
+    Option(sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Resource])
   }
 
   def loadResourceByUniqueUrl(url: String): Resource = {

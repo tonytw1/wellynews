@@ -41,11 +41,12 @@ import scala.collection.JavaConverters._
         mv.addObject("geocoded", List(frontendResource).asJava)
       }
 
-      val resource = resourceDAO.loadResourceById(frontendResource.getId) // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
-      mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
-      mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
-      import scala.collection.JavaConversions._
-      mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser, resource)))
+      resourceDAO.loadResourceById(frontendResource.getId).map { resource => // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
+        mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
+        mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
+        mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser, resource)))
+      }
+
       Some(mv)
 
     } else {
