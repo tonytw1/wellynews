@@ -72,7 +72,7 @@ class NewsitemPageModelBuilderTest {
   def shouldDisplayGeotaggingVotes {
     when(frontendNewsitem.getId).thenReturn(123)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(frontendNewsitem)
-    when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(newsitem)
+    when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(Some(newsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(List(geotaggingVote))
 
     val mv = builder.populateContentModel(request).get
