@@ -63,7 +63,7 @@ import scala.collection.JavaConverters._
           mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags)
         }
         else {
-          val relatedTagLinks: List[TagContentCount] = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW).toList
+          val relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW).toList
           if (!relatedTagLinks.isEmpty) {
             mv.addObject("related_tags", relatedTagLinks.asJava)
           }
