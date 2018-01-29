@@ -43,7 +43,9 @@ class AdminRequestFilterTest {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("parent", "transport")
     assertNotNull(filter)
+
     filter.loadAttributesOntoRequest(request)
+
     assertNotNull(request.getAttribute("parent_tag"))
   }
 

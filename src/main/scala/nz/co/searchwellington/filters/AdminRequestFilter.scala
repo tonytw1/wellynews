@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component
   private val EMBARGO_DATE_FIELD = "embargo_date"
   
   def loadAttributesOntoRequest(request: HttpServletRequest) {
+
     log.debug("Looking for tag parameter")
     if (request.getParameter("tag") != null) {
       val tagName = request.getParameter("tag")
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Component
         request.setAttribute("tag", tag)
       }
     }
+
     if (request.getParameter("item") != null) {
       val item: Integer = request.getParameter("item").toInt
       request.setAttribute("item", item)
@@ -40,6 +42,7 @@ import org.springframework.stereotype.Component
     if (!Strings.isNullOrEmpty(image)) {
       request.setAttribute("image", new Image(image, null))
     }
+
     log.debug("Looking for date field")
     if (request.getParameter(DATE_FIELD) != null && !request.getParameter(DATE_FIELD).isEmpty) {
       val dateString: String = request.getParameter(DATE_FIELD).asInstanceOf[String]
@@ -56,6 +59,7 @@ import org.springframework.stereotype.Component
         }
       }
     }
+
     log.debug("Looking for embargoed field")
     if (request.getParameter(EMBARGO_DATE_FIELD) != null && !request.getParameter(EMBARGO_DATE_FIELD).isEmpty) {
       request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate(request.getParameter(EMBARGO_DATE_FIELD).asInstanceOf[String]))
@@ -65,37 +69,41 @@ import org.springframework.stereotype.Component
       resourceDAO.getPublisherByUrlWords(publisherUrlWords).map { publisher =>
         request.setAttribute("publisher", publisher)
       }
-      tagsParameterFilter.filter(request)
-      resourceParameterFilter.filter(request)
-      if (request.getParameter("feed") != null) {
-        val feedParameter: String = request.getParameter("feed")
-        log.debug("Loading feed by url words: " + feedParameter)
-        val feed: Resource = resourceDAO.loadFeedByUrlWords(feedParameter)
-        if (feed != null) {
-          log.debug("Found feed: " + feed.getName)
-          request.setAttribute("feedAttribute", feed)
-        }
-        else {
-          log.debug("Could not find feed: " + feed)
-        }
+    }
+
+    tagsParameterFilter.filter(request)
+    resourceParameterFilter.filter(request)
+    if (request.getParameter("feed") != null) {
+      val feedParameter: String = request.getParameter("feed")
+      log.debug("Loading feed by url words: " + feedParameter)
+      val feed: Resource = resourceDAO.loadFeedByUrlWords(feedParameter)
+      if (feed != null) {
+        log.debug("Found feed: " + feed.getName)
+        request.setAttribute("feedAttribute", feed)
       }
-      if (request.getParameter("parent") != null) {
-        val tagName = request.getParameter("parent")
-        tagDAO.loadTagByName(tagName).map { tag =>
-          log.debug("Found parent tag: " + tag.getName)
-          request.setAttribute("parent_tag", tag)
-        }
-      }
-      log.debug("Looking for edit tags")
-      val pattern: Pattern = Pattern.compile("^/edit/tag/(.*)$")
-      val matcher: Matcher = pattern.matcher(request.getPathInfo)
-      if (matcher.matches) {
-        val tagname = matcher.group(1)
-        tagDAO.loadTagByName(tagname).map { tag =>
-          request.setAttribute("tag", tag)
-        }
+      else {
+        log.debug("Could not find feed: " + feed)
       }
     }
+
+    if (request.getParameter("parent") != null) {
+      val tagName = request.getParameter("parent")
+      tagDAO.loadTagByName(tagName).map { tag =>
+        log.debug("Found parent tag: " + tag.getName)
+        request.setAttribute("parent_tag", tag)
+      }
+    }
+
+    log.debug("Looking for edit tags")
+    val pattern: Pattern = Pattern.compile("^/edit/tag/(.*)$")
+    val matcher: Matcher = pattern.matcher(request.getPathInfo)
+    if (matcher.matches) {
+      val tagname = matcher.group(1)
+      tagDAO.loadTagByName(tagname).map { tag =>
+        request.setAttribute("tag", tag)
+      }
+    }
+
   }
 
   private def parseEmbargoDate(dateString: String): Date = {
