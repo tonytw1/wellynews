@@ -13,6 +13,7 @@ import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.{Mock, Mockito, MockitoAnnotations}
+import org.mockito.Mockito.when
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
@@ -51,9 +52,10 @@ class PublisherModelBuilderTest {
     geotaggedNewsitems.add(geotaggedNewsitem)
 
     import scala.collection.JavaConversions._
-    Mockito.when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
+    when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
+    when(relatedTagsService.getRelatedLinksForPublisher(publisher)).thenReturn(Seq())
     val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor, geocodeToPlaceMapper, commonAttributesModelBuilder)
-    val mv: ModelAndView = new ModelAndView
+    val mv = new ModelAndView
     mv.addObject("main_content", publisherNewsitems)
 
     modelBuilder.populateExtraModelContent(request, mv)
