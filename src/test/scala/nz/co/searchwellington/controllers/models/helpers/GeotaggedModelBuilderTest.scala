@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
-
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -9,10 +7,12 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertNull, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.{Mock, Mockito, MockitoAnnotations}
+import org.mockito.Mockito.when
+import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
+import org.mockito.Matchers._
 
 object GeotaggedModelBuilderTest {
   private val TOTAL_GEOTAGGED_COUNT: Long = 512
@@ -67,7 +67,7 @@ class GeotaggedModelBuilderTest {
   @throws[Exception]
   def geotaggedNewsitemsPageShouldHavePaginationInformation {
     request.setPathInfo("/geotagged")
-    Mockito.when(contentRetrievalService.getGeotaggedCount).thenReturn(GeotaggedModelBuilderTest.TOTAL_GEOTAGGED_COUNT)
+    when(contentRetrievalService.getGeotaggedCount).thenReturn(GeotaggedModelBuilderTest.TOTAL_GEOTAGGED_COUNT)
 
     val modelAndView = modelBuilder.populateContentModel(request).get
 
@@ -78,21 +78,29 @@ class GeotaggedModelBuilderTest {
   @Test
   @throws[Exception]
   def locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent {
-    Mockito.when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage)
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage)
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
     request.setPathInfo("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
-    val modelAndView: ModelAndView = modelBuilder.populateContentModel(request).get
+
+    val modelAndView = modelBuilder.populateContentModel(request).get
+
     assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel.get("main_content"))
   }
 
   @Test
   @throws[Exception]
   def locationSearchRadiusShouldBeTweakableFromTheRequestParameters {
-    Mockito.when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage)
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage)
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
     request.setPathInfo("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute(LocationParameterFilter.RADIUS, 3.0)
-    val modelAndView: ModelAndView = modelBuilder.populateContentModel(request).get
+
+    val modelAndView = modelBuilder.populateContentModel(request).get
+
     assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel.get("main_content"))
   }
 
@@ -100,9 +108,13 @@ class GeotaggedModelBuilderTest {
   @throws[Exception]
   def locationSearchesShouldHavePagination {
     request.setPathInfo("/geotagged")
-    Mockito.when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0)).thenReturn(GeotaggedModelBuilderTest.LOCATION_RESULTS_COUNT)
+    when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0)).thenReturn(GeotaggedModelBuilderTest.LOCATION_RESULTS_COUNT)
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
-    val modelAndView: ModelAndView = modelBuilder.populateContentModel(request).get
+
+    val modelAndView = modelBuilder.populateContentModel(request).get
+
     assertEquals(0, modelAndView.getModel.get("page"))
     assertEquals(GeotaggedModelBuilderTest.LOCATION_RESULTS_COUNT, modelAndView.getModel.get("main_content_total"))
   }
@@ -111,11 +123,15 @@ class GeotaggedModelBuilderTest {
   @throws[Exception]
   def locationSearchesShouldHaveCorrectContentOnSecondPaginationPage {
     request.setPathInfo("/geotagged")
-    Mockito.when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0)).thenReturn(GeotaggedModelBuilderTest.LOCATION_RESULTS_COUNT)
-    Mockito.when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage)
+    when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0)).thenReturn(GeotaggedModelBuilderTest.LOCATION_RESULTS_COUNT)
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage)
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute("page", 2)
-    val modelAndView: ModelAndView = modelBuilder.populateContentModel(request).get
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
+
+    val modelAndView = modelBuilder.populateContentModel(request).get
+
     assertEquals(2, modelAndView.getModel.get("page"))
     assertEquals(newsitemsNearPetoneStationSecondPage, modelAndView.getModel.get("main_content"))
   }
@@ -124,9 +140,12 @@ class GeotaggedModelBuilderTest {
   @throws[Exception]
   def locationSearchShouldNotSetLocationWasInvalid {
     request.setPathInfo("/geotagged")
-    Mockito.when(invalidLocation.getLatLong).thenReturn(null)
+    when(invalidLocation.getLatLong).thenReturn(null)
     request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation)
-    val modelAndView: ModelAndView = modelBuilder.populateContentModel(request).get
+
+    val modelAndView = modelBuilder.populateContentModel(request).get
+
     assertNull(modelAndView.getModel.get("location"))
   }
+
 }
