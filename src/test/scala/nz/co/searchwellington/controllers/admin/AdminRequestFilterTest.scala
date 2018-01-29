@@ -30,7 +30,7 @@ class AdminRequestFilterTest {
   @Before
   @throws[Exception]
   def setUp {
-    when(tagDAO.loadTagByName("transport")).thenReturn(transportTag)
+    when(tagDAO.loadTagByName("transport")).thenReturn(Some(transportTag))
     when(resourceDAO.loadResourceById(567)).thenReturn(Some(resource))
     request = new MockHttpServletRequest
     filter = new AdminRequestFilter(resourceDAO, tagDAO, new ResourceParameterFilter(resourceDAO), new TagsParameterFilter(tagDAO))

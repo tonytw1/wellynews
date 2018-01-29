@@ -23,7 +23,7 @@ class PlaceAutoTaggerTest {
     placesTag = new TagBuilder().name("places").displayName("Places").build
     aroValleyTag = new TagBuilder().name("arovalley").displayName("Aro Valley").parent(placesTag).build
     placesTag.addChild(aroValleyTag)
-    when(tagDAO.loadTagByName("places")).thenReturn(placesTag)
+    when(tagDAO.loadTagByName("places")).thenReturn(Some(placesTag))
     placeAutoTagger = new PlaceAutoTagger(tagDAO)
   }
 
