@@ -6,8 +6,8 @@ import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
 import java.util.Date
-import nz.co.searchwellington.filters.ResourceParameterFilter
-import nz.co.searchwellington.filters.TagsParameterFilter
+
+import nz.co.searchwellington.filters.{AdminRequestFilter, ResourceParameterFilter, TagsParameterFilter}
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.model.Tag

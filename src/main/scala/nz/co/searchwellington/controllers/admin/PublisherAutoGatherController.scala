@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.admin
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Newsitem, Resource, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.HibernateResourceDAO

@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import nz.co.searchwellington.controllers.UrlStack;
+import nz.co.searchwellington.filters.AdminRequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.queues.LinkCheckerQueue;
 

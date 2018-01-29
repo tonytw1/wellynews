@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.admin
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter}
+import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.modification.ContentUpdateService

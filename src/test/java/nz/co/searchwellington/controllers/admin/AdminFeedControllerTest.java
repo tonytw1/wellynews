@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.admin;
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.feeds.FeedReader;
+import nz.co.searchwellington.filters.AdminRequestFilter;
 import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.model.Feed;
 import nz.co.searchwellington.model.FeedAcceptancePolicy;
@@ -20,7 +21,8 @@ public class AdminFeedControllerTest {
 
 	private static final int FEED_ID = 1;
 	
-	@Mock AdminRequestFilter requestFilter;
+	@Mock
+	AdminRequestFilter requestFilter;
 	@Mock FeedReader feedReader;
 	@Mock UrlBuilder urlBuilder;
 	@Mock

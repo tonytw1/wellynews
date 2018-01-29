@@ -4,9 +4,9 @@ import java.io.{IOException, UnsupportedEncodingException}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import com.google.common.base.Strings
-import nz.co.searchwellington.controllers.admin.AdminRequestFilter
 import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeednewsItemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.feeds.reading.WhakaokoService
+import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper

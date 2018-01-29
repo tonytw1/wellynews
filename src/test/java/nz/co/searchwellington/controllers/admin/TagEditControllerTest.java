@@ -9,6 +9,7 @@ import nz.co.searchwellington.controllers.CommonModelObjectsService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.SubmissionProcessingService;
 import nz.co.searchwellington.controllers.UrlStack;
+import nz.co.searchwellington.filters.AdminRequestFilter;
 import nz.co.searchwellington.permissions.EditPermissionService;
 import nz.co.searchwellington.model.Tag;
 import nz.co.searchwellington.model.UrlWordsGenerator;
@@ -29,7 +30,8 @@ public class TagEditControllerTest {
 
 	private static final String NEW_TAG_DISPLAY_NAME = "A new tag";
 	
-	@Mock AdminRequestFilter requestFilter;
+	@Mock
+	AdminRequestFilter requestFilter;
 	@Mock TagsWidgetFactory tagWidgetFactory;
 	@Mock UrlStack urlStack;
 	@Mock TagDAO tagDAO;
