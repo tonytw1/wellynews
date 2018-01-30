@@ -51,8 +51,10 @@ class NewsitemPageModelBuilderTest {
   @Test
   @SuppressWarnings(Array("unchecked"))
   def shouldShowNewsitemOnMapIfItIsGeotagged {
+    when(geotaggedNewsitem.getId).thenReturn(123)
     when(geotaggedNewsitem.getPlace).thenReturn(place)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(geotaggedNewsitem)
+    when(resourceDAO.loadResourceById(123)).thenReturn(None)  // TODO properly exercise mapped option branch
 
     val mv = builder.populateContentModel(request).get
 
@@ -63,8 +65,12 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
+    when(frontendNewsitem.getId).thenReturn(123)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(frontendNewsitem)
-    val mv: ModelAndView = builder.populateContentModel(request).get
+    when(resourceDAO.loadResourceById(123)).thenReturn(None)  // TODO properly exercise mapped option branch
+
+    val mv = builder.populateContentModel(request).get
+
     assertNull(mv.getModel.get("geocoded"))
   }
 
