@@ -14,7 +14,6 @@ public class UrlParser {
             return new String(url.getHost());
             
         } catch (MalformedURLException e) {
-            System.out.println(e);
         	return null;
         }        
     }
