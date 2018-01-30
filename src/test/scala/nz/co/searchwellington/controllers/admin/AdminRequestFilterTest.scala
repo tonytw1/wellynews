@@ -132,4 +132,5 @@ class AdminRequestFilterTest {
 
     assertNotNull(request.getAttribute("feedAttribute"))
   }
+
 }
