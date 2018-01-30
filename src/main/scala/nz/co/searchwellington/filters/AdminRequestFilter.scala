@@ -5,6 +5,7 @@ import java.util.Date
 import java.util.regex.{Matcher, Pattern}
 import javax.servlet.http.HttpServletRequest
 
+import com.clutch.dates.StringToTime
 import com.google.common.base.Strings
 import nz.co.searchwellington.model.{Image, Resource}
 import nz.co.searchwellington.repositories.{HibernateResourceDAO, TagDAO}
@@ -62,7 +63,7 @@ import org.springframework.stereotype.Component
 
     log.debug("Looking for embargoed field")
     if (request.getParameter(EMBARGO_DATE_FIELD) != null && !request.getParameter(EMBARGO_DATE_FIELD).isEmpty) {
-      request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate(request.getParameter(EMBARGO_DATE_FIELD).asInstanceOf[String]))
+      request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate(request.getParameter(EMBARGO_DATE_FIELD).asInstanceOf[String]).getOrElse(null))
     }
     if (request.getParameter("publisher") != null && !(request.getParameter("publisher") == "")) {
       val publisherUrlWords: String = request.getParameter("publisher")
@@ -106,7 +107,7 @@ import org.springframework.stereotype.Component
 
   }
 
-  private def parseEmbargoDate(dateString: String): Date = {
+  private def parseEmbargoDate(dateString: String): Option[Date] = {
 
     val supportedEmbargoDateFormats = Seq(new SimpleDateFormat("dd MMM yyyy HH:mm"), new SimpleDateFormat("HH:mm"))
 
@@ -127,10 +128,18 @@ import org.springframework.stereotype.Component
       }
     }.flatten
 
-    parsed.headOption.getOrElse {
-      log.warn("User supplied embargo date '" + dateString + "' could not be parsed")
-      null
+    val withTextDates = parsed.headOption.fold {
+      val time: Date = new StringToTime(dateString)
+      Option(time)
+    } { p =>
+      Some(p)
     }
+
+    withTextDates.getOrElse {
+      log.warn("User supplied embargo date '" + dateString + "' could not be parsed")
+    }
+
+    withTextDates
   }
 
   private def parseTwitterIdfromRequest(request: HttpServletRequest): Option[Long] = {
