@@ -39,10 +39,10 @@ class AdminRequestFilterTest {
   @Test
   @throws[Exception]
   def testShouldPopulateParentTagAttribute {
-    val request: MockHttpServletRequest = new MockHttpServletRequest
+    val request = new MockHttpServletRequest
     request.setPathInfo("/edit/tag/save")
     request.setParameter("parent", "transport")
-    assertNotNull(filter)
+    when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
 
     filter.loadAttributesOntoRequest(request)
 
@@ -97,8 +97,10 @@ class AdminRequestFilterTest {
   def embargoDatesWrittenInPlainTextShouldBeAccepted {
     request.setPathInfo("/edit/save")
     request.setParameter("embargo_date", "today")
+
     filter.loadAttributesOntoRequest(request)
-    val embargoDate: Date = request.getAttribute("embargo_date").asInstanceOf[Date]
+
+    val embargoDate = request.getAttribute("embargo_date").asInstanceOf[Date]
     assertNotNull(embargoDate)
     assertEquals(DateTime.now.toDateMidnight, new DateTime(embargoDate))
   }
@@ -108,9 +110,12 @@ class AdminRequestFilterTest {
   def testShouldPopulateTagFromParameterAsWell {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("tag", "transport")
+    when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
+
     filter.loadAttributesOntoRequest(request)
+
     verify(tagDAO).loadTagByName("transport")
-    val requestTag: Tag = request.getAttribute("tag").asInstanceOf[Tag]
+    val requestTag = request.getAttribute("tag").asInstanceOf[Tag]
     assertNotNull(requestTag)
     assertEquals(transportTag, requestTag)
   }
@@ -121,7 +126,10 @@ class AdminRequestFilterTest {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("feed", "a-feed")
     when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(feed)
+    when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
+
     filter.loadAttributesOntoRequest(request)
+
     assertNotNull(request.getAttribute("feedAttribute"))
   }
 }
