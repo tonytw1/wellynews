@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component
       log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'")
 
       tagDAO.loadTagByName(right).map { rightHandTag =>
+
         resourceDAO.getPublisherByUrlWords(left).map { publisher =>
           log.debug("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.getName)
           request.setAttribute("publisher", publisher)

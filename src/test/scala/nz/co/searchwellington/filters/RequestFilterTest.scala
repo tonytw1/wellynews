@@ -102,7 +102,10 @@ class RequestFilterTest {
   def shouldPopulatePublisherForPublisherRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setPathInfo("/capital-times")
+    when(tagDAO.loadTagByName("capital-times")).thenReturn(None)
+
     filter.loadAttributesOntoRequest(request)
+
     verify(resourceDAO).getPublisherByUrlWords("capital-times")
     assertEquals(capitalTimesPublisher, request.getAttribute("publisher"))
   }
@@ -132,7 +135,9 @@ class RequestFilterTest {
   def shouldPopulateTagForSingleTagRssRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setPathInfo("/transport/rss")
+
     filter.loadAttributesOntoRequest(request)
+
     verify(tagDAO).loadTagByName("transport")
     assertEquals(transportTag, request.getAttribute("tag"))
   }
@@ -142,9 +147,11 @@ class RequestFilterTest {
   def shouldPopulateAttributesForPublisherTagCombinerRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setPathInfo("/capital-times+soccer")
+    when(tagDAO.loadTagByName("capital-times+soccer")).thenReturn(None) // TODO tag combiner pattern should have been blocked before here
+    when(resourceDAO.getPublisherByUrlWords("capital-times+soccer")).thenReturn(None)
+
     filter.loadAttributesOntoRequest(request)
-    verify(resourceDAO).getPublisherByUrlWords("capital-times")
-    verify(tagDAO).loadTagByName("soccer")
+
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     assertEquals(capitalTimesPublisher, publisher)
@@ -156,12 +163,14 @@ class RequestFilterTest {
   def shouldPopulateAttributesForPublisherTagCombinerRssRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setPathInfo("/capital-times+soccer/rss")
+    when(tagDAO.loadTagByName("capital-times+soccer")).thenReturn(None) // TODO tag combiner pattern should have been blocked before here
+    when(resourceDAO.getPublisherByUrlWords("capital-times+soccer")).thenReturn(None)
+
     filter.loadAttributesOntoRequest(request)
-    verify(resourceDAO).getPublisherByUrlWords("capital-times")
-    verify(tagDAO).loadTagByName("soccer")
+
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val tag = request.getAttribute("tag").asInstanceOf[Tag]
     assertEquals(capitalTimesPublisher, publisher)
+    val tag = request.getAttribute("tag").asInstanceOf[Tag]
     assertEquals(soccerTag, tag)
   }
 
@@ -171,13 +180,19 @@ class RequestFilterTest {
   def shouldPopulateTagsForTagCombinerRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setPathInfo("/transport+soccer")
+    when(tagDAO.loadTagByName("transport+soccer")).thenReturn(None) // TODO tag combiner pattern should have been blocked before here
+    when(resourceDAO.getPublisherByUrlWords("transport+soccer")).thenReturn(None)
+
+    when(tagDAO.loadTagByName("transport")).thenReturn(Some(transportTag))
+    when(resourceDAO.getPublisherByUrlWords("transport")).thenReturn(None)
+    when(resourceDAO.getPublisherByUrlWords("transport+soccer")).thenReturn(None)
+
     filter.loadAttributesOntoRequest(request)
-    verify(tagDAO).loadTagByName("transport")
-    verify(tagDAO).loadTagByName("soccer")
-    val tags = request.getAttribute("tags").asInstanceOf[util.List[Tag]]
+
+    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     assertEquals(2, tags.size)
-    assertEquals(transportTag, tags.get(0))
-    assertEquals(soccerTag, tags.get(1))
+    assertEquals(transportTag, tags(0))
+    assertEquals(soccerTag, tags(1))
   }
 
   @Test
@@ -186,13 +201,16 @@ class RequestFilterTest {
   def shouldPopulateTagsForTagCombinerJSONRequest(): Unit = {
     val request = new MockHttpServletRequest
     request.setPathInfo("/transport+soccer/json")
+    when(tagDAO.loadTagByName("transport+soccer")).thenReturn(None) // TODO tag combiner pattern should have been blocked before here
+    when(resourceDAO.getPublisherByUrlWords("transport+soccer")).thenReturn(None)
+    when(resourceDAO.getPublisherByUrlWords("transport")).thenReturn(None)
+
     filter.loadAttributesOntoRequest(request)
-    verify(tagDAO).loadTagByName("transport")
-    verify(tagDAO).loadTagByName("soccer")
-    val tags = request.getAttribute("tags").asInstanceOf[util.List[Tag]]
+
+    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     assertEquals(2, tags.size)
-    assertEquals(transportTag, tags.get(0))
-    assertEquals(soccerTag, tags.get(1))
+    assertEquals(transportTag, tags(0))
+    assertEquals(soccerTag, tags(1))
   }
 
   // TODO implement
