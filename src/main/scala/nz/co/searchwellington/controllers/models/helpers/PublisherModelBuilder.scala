@@ -88,14 +88,15 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   @SuppressWarnings(Array("unchecked")) private def populateGeotaggedItems(mv: ModelAndView) {
-    import scala.collection.JavaConversions._
     val mainContent = mv.getModel.get("main_content").asInstanceOf[List[FrontendNewsitem]]
     if (mainContent != null) {
+      import scala.collection.JavaConversions._
       val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
       if (!geotaggedNewsitems.isEmpty) {
-        val list: java.util.List[FrontendNewsitem] = geotaggedNewsitems // TODO This going to get boring; push casting to Velocity compatible Lists upwards
-        mv.addObject("geocoded", list)
+        import scala.collection.JavaConverters._
+        mv.addObject("geocoded", geotaggedNewsitems.asJava)
       }
     }
   }
+
 }

@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
-import nz.co.searchwellington.model.{PublisherContentCount, TagContentCount}
+import nz.co.searchwellington.model.PublisherContentCount
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 @Component class GeotaggedModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService,

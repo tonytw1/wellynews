@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 @Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
@@ -70,7 +69,7 @@ import scala.collection.JavaConverters._
         mv.addObject(COMMENTED_NEWSITEMS, recentCommentedNewsitems)
       }
       else {
-        mv.addObject(COMMENTED_NEWSITEMS, recentCommentedNewsitems.subList(0, NUMBER_OF_COMMENTED_TO_SHOW))
+        mv.addObject(COMMENTED_NEWSITEMS, recentCommentedNewsitems.take(NUMBER_OF_COMMENTED_TO_SHOW))
         mv.addObject("commented_newsitems_moreurl", "comment")
       }
     }
