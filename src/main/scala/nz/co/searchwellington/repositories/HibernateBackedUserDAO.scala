@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional
     sessionFactory.getCurrentSession.saveOrUpdate(user)
   }
 
-  def getUserByProfileName(profilename: String): User = {
-    sessionFactory.getCurrentSession.createCriteria(classOf[User]).add(Restrictions.eq("profilename", profilename)).uniqueResult.asInstanceOf[User]
+  def getUserByProfileName(profilename: String): Option[User] = {
+    Option(sessionFactory.getCurrentSession.createCriteria(classOf[User]).add(Restrictions.eq("profilename", profilename)).uniqueResult.asInstanceOf[User])
   }
 
   def getUserByTwitterId(twitterId: Long): User = {

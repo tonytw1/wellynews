@@ -50,7 +50,7 @@ class ProfileControllerTest {
   @throws[Exception]
   def usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService {
     request.setPathInfo("/profiles/" + ProfileControllerTest.VALID_PROFILE_NAME)
-    when(userDao.getUserByProfileName(ProfileControllerTest.VALID_PROFILE_NAME)).thenReturn(existingUser)
+    when(userDao.getUserByProfileName(ProfileControllerTest.VALID_PROFILE_NAME)).thenReturn(Some(existingUser))
     when(contentRetrievalService.getOwnedBy(existingUser)).thenReturn(existingUsersSubmittedItems)
     when(contentRetrievalService.getTaggedBy(existingUser)).thenReturn(existingUsersTaggedItems)
     val mv: ModelAndView = controller.view(request, response)
@@ -75,7 +75,7 @@ class ProfileControllerTest {
   @Test
   @throws[Exception]
   def newProfileNamesMustNotAlreadyBeTaken {
-    when(userDao.getUserByProfileName(ProfileControllerTest.VALID_PROFILE_NAME)).thenReturn(existingUser)
+    when(userDao.getUserByProfileName(ProfileControllerTest.VALID_PROFILE_NAME)).thenReturn(Some(existingUser))
     assertFalse(controller.isValidNewProfilename(ProfileControllerTest.VALID_PROFILE_NAME))
   }
 

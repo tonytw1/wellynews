@@ -60,8 +60,8 @@ import org.springframework.web.servlet.view.RedirectView
 
     def userByPath(path: String): Option[User] = {
       if (path.matches("^/profiles/.*$")) {
-        val profilename: String = path.split("/")(2)
-        Option(userDAO.getUserByProfileName(profilename))
+        val profilename = path.split("/")(2)
+        userDAO.getUserByProfileName(profilename)
       } else {
         None
       }

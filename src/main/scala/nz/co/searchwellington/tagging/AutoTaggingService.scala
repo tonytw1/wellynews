@@ -8,19 +8,19 @@ import org.springframework.stereotype.Component
 
 @Component class AutoTaggingService @Autowired() (placeAutoTagger: PlaceAutoTagger, tagHintAutoTagger: TagHintAutoTagger, handTaggingDAO: HandTaggingDAO, userDAO: HibernateBackedUserDAO) {
 
-  private var log: Logger = Logger.getLogger(classOf[AutoTaggingService])
-  private val AUTOTAGGER_PROFILE_NAME: String = "autotagger"
+  private var log = Logger.getLogger(classOf[AutoTaggingService])
+  private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
   def autotag(resource: Resource) {
 
-    Option(userDAO.getUserByProfileName(AUTOTAGGER_PROFILE_NAME)).fold {
+    userDAO.getUserByProfileName(AUTOTAGGER_PROFILE_NAME).fold {
       log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME)
 
     } { autotagUser =>
       val suggestedTags = placeAutoTagger.suggestTags(resource) ++ tagHintAutoTagger.suggestTags(resource);
       log.debug("Suggested tags for '" + resource.getName + "' are: " + suggestedTags)
       if (!suggestedTags.isEmpty) {
-        handTaggingDAO.setUsersTagVotesForResource(resource, userDAO.getUserByProfileName(AUTOTAGGER_PROFILE_NAME), suggestedTags)
+        handTaggingDAO.setUsersTagVotesForResource(resource, autotagUser, suggestedTags)
       }
     }
   }

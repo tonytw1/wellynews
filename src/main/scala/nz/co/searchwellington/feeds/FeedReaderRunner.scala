@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 @Component class FeedReaderRunner @Autowired()(feedReader: FeedReader, userDAO: HibernateBackedUserDAO, resourceDAO: HibernateResourceDAO) {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
-  private val FEED_READER_PROFILE_NAME: String = "feedreader"
+  private val FEED_READER_PROFILE_NAME = "feedreader"
 
   @Scheduled(fixedRate = 1200000) def readFeeds {
     log.info("Running feed reader.")
@@ -29,10 +29,10 @@ import org.springframework.transaction.annotation.Transactional
 
   private def getFeedReaderUser: Option[User] = {
     val feedReaderUser = userDAO.getUserByProfileName(FEED_READER_PROFILE_NAME)
-    if (feedReaderUser == null) {
+    if (feedReaderUser.isEmpty) {
       log.warn("Feed reader could not run as no user was found with profile name: " + FEED_READER_PROFILE_NAME)
     }
-    Option(feedReaderUser)
+    feedReaderUser
   }
 
 }
