@@ -14,7 +14,7 @@ import org.elasticsearch.index.query._
 import org.elasticsearch.search.SearchHits
 import org.elasticsearch.search.facet.FacetBuilders
 import org.elasticsearch.search.facet.datehistogram.DateHistogramFacet
-import org.elasticsearch.search.facet.geodistance.{GeoDistanceFacet, GeoDistanceFacetBuilder}
+import org.elasticsearch.search.facet.geodistance.GeoDistanceFacet
 import org.elasticsearch.search.facet.terms.TermsFacet
 import org.elasticsearch.search.facet.terms.TermsFacet.{ComparatorType, Entry}
 import org.elasticsearch.search.sort.SortOrder
@@ -48,7 +48,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   def getLatestNewsitems(maxItems: Int, shouldShowBroken: Boolean, from: Int): Seq[FrontendResource] = {
     val latestNewsitems: BoolQueryBuilder = QueryBuilders.boolQuery.must(isNewsitem)
     addShouldShowBrokenClause(latestNewsitems, shouldShowBroken)
-    val builder: SearchRequestBuilder = searchRequestBuilder.setQuery(latestNewsitems).setFrom(from).setSize(maxItems)
+    val builder: SearchRequestBuilder = searchRequestBuilder(latestNewsitems).setFrom(from).setSize(maxItems)
     addDateDescendingOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
@@ -57,7 +57,8 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   def getTaggedNewsitems(tag: Tag, shouldShowBroken: Boolean, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     val query = tagNewsitemsQuery(tag)
     addShouldShowBrokenClause(query, shouldShowBroken)
-    val builder: SearchRequestBuilder = searchRequestBuilder.setQuery(query).setFrom(startIndex).setSize(maxItems)
+
+    val builder = searchRequestBuilder(query).setFrom(startIndex).setSize(maxItems)
     addDateDescendingOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
@@ -74,7 +75,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getTaggedNewitemsCount(tag: Tag, shouldShowBroken: Boolean): Long = {
-    val builder = searchRequestBuilder.setQuery(tagNewsitemsQuery(tag))
+    val builder = searchRequestBuilder(tagNewsitemsQuery(tag))
     val response = builder.execute.actionGet
     return response.getHits.getTotalHits
   }
@@ -83,7 +84,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     val isWebsite: TermQueryBuilder = QueryBuilders.termQuery(TYPE, "W")
     val websites: BoolQueryBuilder = QueryBuilders.boolQuery.must(isWebsite)
     addShouldShowBrokenClause(websites, shouldShowBroken)
-    val justinWebsites: SearchRequestBuilder = searchRequestBuilder.setQuery(websites).setSize(maxItems)
+    val justinWebsites: SearchRequestBuilder = searchRequestBuilder(websites).setSize(maxItems)
     addDateDescendingOrder(justinWebsites)
     val response = justinWebsites.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
@@ -96,7 +97,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
       taggedWebsites.must(hasTag(tag))
     }
     addShouldShowBrokenClause(taggedWebsites, shouldShowBroken)
-    val builder = searchRequestBuilder.setQuery(taggedWebsites).setSize(maxItems)
+    val builder = searchRequestBuilder(taggedWebsites).setSize(maxItems)
     addNameOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
@@ -104,7 +105,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 
   def getTagWatchlist(tag: Tag, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val taggedWatchlists: BoolQueryBuilder = QueryBuilders.boolQuery.must(isWatchlist).must(hasTag(tag))
-    val builder = searchRequestBuilder.setQuery(taggedWatchlists).setSize(ALL)
+    val builder = searchRequestBuilder(taggedWatchlists).setSize(ALL)
     addShouldShowBrokenClause(taggedWatchlists, shouldShowBroken)
     addNameOrder(builder)
     val response = builder.execute.actionGet
@@ -113,7 +114,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 
   def getTaggedFeeds(tag: Tag, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val taggedFeeds = QueryBuilders.boolQuery.must(isFeed).must(hasTag(tag))
-    val builder = searchRequestBuilder.setQuery(taggedFeeds).setSize(ALL)
+    val builder = searchRequestBuilder(taggedFeeds).setSize(ALL)
     addShouldShowBrokenClause(taggedFeeds, shouldShowBroken)
     addNameOrder(builder)
     val response = builder.execute.actionGet
@@ -123,7 +124,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   def getPublisherWatchlist(publisher: Website, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val publisherWatchlist: BoolQueryBuilder = QueryBuilders.boolQuery.must(isWatchlist).must(hasPublisher(publisher))
     addShouldShowBrokenClause(publisherWatchlist, shouldShowBroken)
-    val builder = searchRequestBuilder.setQuery(publisherWatchlist).setSize(ALL)
+    val builder = searchRequestBuilder(publisherWatchlist).setSize(ALL)
     addNameOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
@@ -131,7 +132,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 
   def getPublisherFeeds(publisher: Website, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val publisherFeeds: BoolQueryBuilder = QueryBuilders.boolQuery.must(isFeed).must(hasPublisher(publisher))
-    val builder = searchRequestBuilder.setQuery(publisherFeeds).setSize(ALL)
+    val builder = searchRequestBuilder(publisherFeeds).setSize(ALL)
     addShouldShowBrokenClause(publisherFeeds, shouldShowBroken)
     addNameOrder(builder)
     val response = builder.execute.actionGet
@@ -139,14 +140,14 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getAllWatchlists(shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val response = searchRequestBuilder.setQuery(isWatchlist).setSize(ALL).execute.actionGet
+    val response = searchRequestBuilder(isWatchlist).setSize(ALL).execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
   }
 
   def getAllFeeds(shouldShowBroken: Boolean, latestFirst: Boolean): Seq[FrontendResource] = {
     val feeds = QueryBuilders.boolQuery.must(isFeed)
     addShouldShowBrokenClause(feeds, shouldShowBroken)
-    val builder = searchRequestBuilder.setQuery(feeds).setSize(ALL)
+    val builder = searchRequestBuilder(feeds).setSize(ALL)
     if (latestFirst) {
       addLatestFeedItemOrder(builder)
     }
@@ -158,27 +159,27 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getGeotagged(startIndex: Int, maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val builder = searchRequestBuilder.setQuery(geotaggedNewsitems(shouldShowBroken)).setFrom(startIndex).setSize(maxItems)
+    val builder = searchRequestBuilder(geotaggedNewsitems(shouldShowBroken)).setFrom(startIndex).setSize(maxItems)
     addDateDescendingOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
   }
 
   def getGeotaggedCount(shouldShowBroken: Boolean): Long = {
-    val builder = searchRequestBuilder.setQuery(geotaggedNewsitems(shouldShowBroken)).setSize(0)
+    val builder = searchRequestBuilder(geotaggedNewsitems(shouldShowBroken)).setSize(0)
     val response = builder.execute.actionGet
     return response.getHits.getTotalHits
   }
 
   def getGeotaggedNewsitemsNear(latLong: LatLong, radius: Double, shouldShowBroken: Boolean, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    val builder = searchRequestBuilder.setQuery(geotaggedNearQuery(latLong, radius, shouldShowBroken)).setFrom(startIndex).setSize(maxItems)
+    val builder = searchRequestBuilder(geotaggedNearQuery(latLong, radius, shouldShowBroken)).setFrom(startIndex).setSize(maxItems)
     addDateDescendingOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
   }
 
   def getPublisherFacetsNear(latLong: LatLong, radius: Double, shouldShowBroken: Boolean): Map[String, Int] = {
-    val builder = searchRequestBuilder.setQuery(geotaggedNearQuery(latLong, radius, shouldShowBroken)).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.COUNT).size(10)).execute.actionGet
+    val builder = searchRequestBuilder(geotaggedNearQuery(latLong, radius, shouldShowBroken)).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.COUNT).size(10)).execute.actionGet
     val facet = builder.getFacets.getFacets.get(PUBLISHER_NAME).asInstanceOf[TermsFacet]
     facet.getEntries.asInstanceOf[Seq[_ <: Entry]].map { entry =>
       ((entry.getTerm.string, entry.getCount))
@@ -195,7 +196,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
       geoDistanceFacet.addRange(0, i)
     }
 
-    val builder = searchRequestBuilder.setQuery(geotaggedNearQuery(latLong, 1000, shouldShowBroken)).setSize(0).addFacet(geoDistanceFacet)
+    val builder = searchRequestBuilder(geotaggedNearQuery(latLong, 1000, shouldShowBroken)).setSize(0).addFacet(geoDistanceFacet)
     val response = builder.execute.actionGet
     val facets: GeoDistanceFacet = response.getFacets.facetsAsMap.get("distance").asInstanceOf[GeoDistanceFacet]
 
@@ -206,13 +207,13 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getGeotaggedNewsitemsNearCount(latLong: LatLong, radius: Double, shouldShowBroken: Boolean): Long = {
-    val builder = searchRequestBuilder.setQuery(geotaggedNearQuery(latLong, radius, shouldShowBroken)).setSize(0)
+    val builder = searchRequestBuilder(geotaggedNearQuery(latLong, radius, shouldShowBroken)).setSize(0)
     val response = builder.execute.actionGet
     return response.getHits.getTotalHits
   }
 
   def getAllPublishers(shouldShowBroken: Boolean): Seq[PublisherContentCount] = {
-    val searchResponse = searchRequestBuilder.setSize(0).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).execute.actionGet
+    val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).setSize(0).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).execute.actionGet
     val facet = searchResponse.getFacets.getFacets.get(PUBLISHER_NAME).asInstanceOf[TermsFacet]
     val entries = facet.getEntries
     import scala.collection.JavaConversions._
@@ -258,14 +259,14 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getTwitteredNewsitems(startIndex: Int, maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val builder = searchRequestBuilder.setQuery(twitternMentionedNewsitemsQuery(shouldShowBroken)).setSize(maxItems)
+    val builder = searchRequestBuilder(twitternMentionedNewsitemsQuery(shouldShowBroken)).setSize(maxItems)
     addDateDescendingOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
   }
 
   def getTwitteredNewsitemsCount(shouldShowBroken: Boolean): Long = {
-    val builder = searchRequestBuilder.setQuery(twitternMentionedNewsitemsQuery(shouldShowBroken)).setSize(0)
+    val builder = searchRequestBuilder(twitternMentionedNewsitemsQuery(shouldShowBroken)).setSize(0)
     val response = builder.execute.actionGet
     response.getHits.getTotalHits
   }
@@ -277,7 +278,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   def getArchiveMonths(shouldShowBroken: Boolean): Seq[ArchiveLink] = {
     val latestNewsitems = QueryBuilders.boolQuery.must(isNewsitem)
     addShouldShowBrokenClause(latestNewsitems, shouldShowBroken)
-    val searchResponse = searchRequestBuilder.setQuery(latestNewsitems).setSize(0).addFacet(FacetBuilders.dateHistogramFacet(DATE).field(DATE).interval("month")).execute.actionGet
+    val searchResponse = searchRequestBuilder(latestNewsitems).setSize(0).addFacet(FacetBuilders.dateHistogramFacet(DATE).field(DATE).interval("month")).execute.actionGet
     val dateFacet = searchResponse.getFacets.getFacets.get(DATE).asInstanceOf[DateHistogramFacet]
 
     import scala.collection.JavaConversions._
@@ -288,7 +289,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getArchiveStatistics(shouldShowBroken: Boolean): Map[String, Int] = {
-    val searchResponse = searchRequestBuilder.addFacet(FacetBuilders.termsFacet(TYPE).field(TYPE)).execute.actionGet
+    val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).addFacet(FacetBuilders.termsFacet(TYPE).field(TYPE)).execute.actionGet
     val facet = searchResponse.getFacets.getFacets.get(TYPE).asInstanceOf[TermsFacet]
     facet.getEntries.asInstanceOf[Seq[_ <: Entry]].map { entry =>
       (entry.getTerm.string, entry.getCount)
@@ -306,7 +307,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     val latestNewsitems = QueryBuilders.boolQuery.must(isNewsitem).must(QueryBuilders.rangeQuery(DATE).from(startOfMonth.toDate.getTime)).must(QueryBuilders.rangeQuery(DATE).to(endOfMonth.toDate.getTime))
     addShouldShowBrokenClause(latestNewsitems, shouldShowBroken)
 
-    val builder = searchRequestBuilder.setQuery(latestNewsitems).setSize(ALL)
+    val builder = searchRequestBuilder(latestNewsitems).setSize(ALL)
     addDateDescendingOrder(builder)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
@@ -331,7 +332,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     publishertaggedNewsitems.must(hasPublisher(publisher))
     addShouldShowBrokenClause(publishertaggedNewsitems, shouldShowBroken)
 
-    val builder = searchRequestBuilder.setQuery(publishertaggedNewsitems).setSize(maxNewsitems)
+    val builder = searchRequestBuilder(publishertaggedNewsitems).setSize(maxNewsitems)
     val response =  builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits)
   }
@@ -343,7 +344,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   def getNewspage(urlWords: String, shouldShowBroken: Boolean): Option[FrontendResource] = {
     val urlWordsQuery = QueryBuilders.boolQuery.must(QueryBuilders.termQuery("urlWords", urlWords))
     addShouldShowBrokenClause(urlWordsQuery, shouldShowBroken)
-    val builder = searchRequestBuilder.setQuery(urlWordsQuery).setSize(1)
+    val builder = searchRequestBuilder(urlWordsQuery).setSize(1)
     val response = builder.execute.actionGet
     deserializeFrontendResourceHits(response.getHits).headOption
   }
@@ -364,7 +365,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   private def tagNewsitemsFacet(tag: Tag, facetField: String): Map[String, Int] = {
-    val searchResponse = searchRequestBuilder.setQuery(tagNewsitemsQuery(tag)).addFacet(FacetBuilders.termsFacet(facetField).field(facetField).order(ComparatorType.COUNT).size(10)).execute.actionGet
+    val searchResponse = searchRequestBuilder(tagNewsitemsQuery(tag)).addFacet(FacetBuilders.termsFacet(facetField).field(facetField).order(ComparatorType.COUNT).size(10)).execute.actionGet
     val facet = searchResponse.getFacets.getFacets.get(facetField).asInstanceOf[TermsFacet]
     facet.getEntries.asInstanceOf[Seq[_ <: Entry]].map { entry =>
       (entry.getTerm.string, entry.getCount)
@@ -380,7 +381,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     publisherNewsitemsQuery.must(isNewsitem).must(hasPublisher(publisher))
     addShouldShowBrokenClause(publisherNewsitemsQuery, shouldShowBroken)
 
-    val builder = searchRequestBuilder.setQuery(publisherNewsitemsQuery).setFrom(startIndex).setSize(maxItems)
+    val builder = searchRequestBuilder(publisherNewsitemsQuery).setFrom(startIndex).setSize(maxItems)
     addDateDescendingOrder(builder)
     builder
   }
@@ -391,7 +392,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
       taggedNewsitems.must(hasTag(tag))
     }
     addShouldShowBrokenClause(taggedNewsitems, shouldShowBroken)
-    searchRequestBuilder.setQuery(taggedNewsitems).setSize(maxNewsitems)
+    searchRequestBuilder(taggedNewsitems).setSize(maxNewsitems)
   }
 
   private def geotaggedNewsitems(shouldShowBroken: Boolean): FilteredQueryBuilder = {
@@ -447,8 +448,8 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     searchRequestBuilder.addSort(LATEST_ITEM_DATE, SortOrder.DESC)
   }
 
-  private def searchRequestBuilder: SearchRequestBuilder = {
-    elasticSearchClientFactory.getClient.prepareSearch().setIndices(ElasticSearchIndexUpdateService.INDEX).setTypes(ElasticSearchIndexUpdateService.TYPE)
+  private def searchRequestBuilder(query: QueryBuilder): SearchRequestBuilder = {
+    elasticSearchClientFactory.getClient.prepareSearch().setIndices(ElasticSearchIndexUpdateService.INDEX).setTypes(ElasticSearchIndexUpdateService.TYPE).setQuery(query)
   }
 
   private def deserializeFrontendResourceHits(hits: SearchHits): Seq[FrontendResource] = {
