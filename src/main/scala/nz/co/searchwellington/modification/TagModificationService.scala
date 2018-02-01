@@ -1,8 +1,7 @@
 package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.repositories.HandTaggingService
-import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.{HandTaggingService, TagDAO}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
