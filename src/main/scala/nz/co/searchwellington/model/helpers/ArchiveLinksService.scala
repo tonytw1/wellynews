@@ -15,12 +15,10 @@ class ArchiveLinksService @Autowired()(contentRetrievalService: ContentRetrieval
   def populateArchiveLinks(mv: ModelAndView, archiveMonths: Seq[ArchiveLink]): Unit = {
 
     def populateArchiveStatistics(mv: ModelAndView): Unit = {
-      val archiveStatistics: util.Map[String, Integer] = contentRetrievalService.getArchiveStatistics
-      if (archiveStatistics != null) {
-        mv.addObject("site_count", archiveStatistics.get("W"))
-        mv.addObject("newsitem_count", archiveStatistics.get("N"))
-        mv.addObject("feed_count", archiveStatistics.get("F"))
-      }
+      val archiveStatistics = contentRetrievalService.getArchiveStatistics
+      mv.addObject("site_count", archiveStatistics.get("W"))
+      mv.addObject("newsitem_count", archiveStatistics.get("N"))
+      mv.addObject("feed_count", archiveStatistics.get("F"))
     }
 
     mv.addObject("archive_links", archiveMonths.take(MaxBackIssues))

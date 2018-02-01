@@ -52,7 +52,7 @@ class NewsitemPageModelBuilderTest {
   def shouldShowNewsitemOnMapIfItIsGeotagged {
     when(geotaggedNewsitem.getId).thenReturn(123)
     when(geotaggedNewsitem.getPlace).thenReturn(place)
-    when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(geotaggedNewsitem)
+    when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(geotaggedNewsitem))
     when(resourceDAO.loadResourceById(123)).thenReturn(None)  // TODO properly exercise mapped option branch
 
     val mv = builder.populateContentModel(request).get
@@ -65,7 +65,7 @@ class NewsitemPageModelBuilderTest {
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
     when(frontendNewsitem.getId).thenReturn(123)
-    when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(frontendNewsitem)
+    when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
     when(resourceDAO.loadResourceById(123)).thenReturn(None)  // TODO properly exercise mapped option branch
 
     val mv = builder.populateContentModel(request).get
@@ -76,7 +76,7 @@ class NewsitemPageModelBuilderTest {
   @Test
   def shouldDisplayGeotaggingVotes {
     when(frontendNewsitem.getId).thenReturn(123)
-    when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(frontendNewsitem)
+    when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
     when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(Some(newsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(List(geotaggingVote))
 

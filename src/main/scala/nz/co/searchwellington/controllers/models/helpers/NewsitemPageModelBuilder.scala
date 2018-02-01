@@ -32,8 +32,7 @@ import scala.collection.JavaConverters._
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-    val frontendResource = contentRetrievalService.getNewsPage(request.getPathInfo)
-    if (frontendResource != null) {
+    contentRetrievalService.getNewsPage(request.getPathInfo).map { frontendResource =>
       val mv = new ModelAndView
       mv.addObject("item", frontendResource)
       mv.addObject("heading", frontendResource.getName)
@@ -46,11 +45,7 @@ import scala.collection.JavaConverters._
         mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
         mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser, resource)))
       }
-
-      Some(mv)
-
-    } else {
-      None
+      mv
     }
   }
 

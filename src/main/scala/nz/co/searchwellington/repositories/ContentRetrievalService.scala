@@ -17,12 +17,10 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   val MAX_NEWSITEMS_TO_SHOW = 30
 
   def getAllWatchlists: Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken)
   }
 
   def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken)
   }
 
@@ -31,7 +29,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getAllPublishers: Seq[PublisherContentCount] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken)
   }
 
@@ -48,31 +45,26 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getRecentCommentedNewsitemsForTag(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getRecentCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken, maxItems)
   }
 
   def getTagWatchlist(tag: Tag): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTagWatchlist(tag, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getTaggedFeeds(tag: Tag): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTaggedFeeds(tag, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getTaggedGeotaggedNewsitems(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNear(latLong, radius, showBrokenDecisionService.shouldShowBroken, startIndex, maxNewsitems)
   }
 
-  def getNewsitemsNearDistanceFacet(latLong: LatLong): java.util.Map[java.lang.Double, java.lang.Long] = {
+  def getNewsitemsNearDistanceFacet(latLong: LatLong): Map[Double, Long] = {
     elasticSearchBackedResourceDAO.getNewsitemsNearDistanceFacet(latLong, showBrokenDecisionService.shouldShowBroken)
   }
 
@@ -81,12 +73,10 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getGeotaggedTags: Seq[Tag] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getGeotaggedTags(showBrokenDecisionService.shouldShowBroken)
   }
 
   def getCommentedNewsitems(maxItems: Int, startIndex: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getCommentedNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken, true, startIndex)
   }
 
@@ -95,7 +85,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getCommentedTags: Seq[Tag] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getCommentedTags(showBrokenDecisionService.shouldShowBroken)
   }
 
@@ -104,17 +93,14 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getLatestNewsitems(maxNumber: Int, page: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getLatestNewsitems(maxNumber, showBrokenDecisionService.shouldShowBroken, (page - 1) * maxNumber)
   }
 
   def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {
-    import scala.collection.JavaConversions._
     relatedTagsService.getKeywordSearchFacets(keywords, null) // TODO This is abit odd - it's the only facet one which comes through here.
   }
 
@@ -150,17 +136,14 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getAllFeeds: Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken, false)
   }
 
   def getAllFeedsOrderByLatestItemDate: Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken, true)
   }
 
   def getPublisherFeeds(publisher: Website): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getPublisherFeeds(publisher, showBrokenDecisionService.shouldShowBroken)
   }
 
@@ -169,61 +152,50 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getPublisherNewsitems(publisher, maxItems, showBrokenDecisionService.shouldShowBroken, startIndex)
   }
 
   def getPublisherWatchlist(publisher: Website): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getPublisherWatchlist(publisher, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getArchiveMonths: Seq[ArchiveLink] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getArchiveStatistics: java.util.Map[String, Integer] = {
+  def getArchiveStatistics: Map[String, Int] = {
     elasticSearchBackedResourceDAO.getArchiveStatistics(showBrokenDecisionService.shouldShowBroken)
   }
 
   def getCommentedNewsitemsForTag(tag: Tag, maxNewsitems: Int, startIndex: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken, maxNewsitems, startIndex)
   }
 
   def getNewsitemsForMonth(month: Date): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getNewsitemsForMonth(month, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getTaggedWebsites(tags: Set[Tag], maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken, maxItems)
   }
 
   def getTaggedNewsitemsCount(tags: Seq[Tag]): Long = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTaggedNewsitemsCount(tags, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getTaggedNewsitems(tags: Seq[Tag], startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken, startIndex, maxItems)
   }
 
   def getTaggedNewsitems(tag: Tag, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTaggedNewsitems(tag, showBrokenDecisionService.shouldShowBroken, startIndex, maxNewsitems)
   }
 
   def getTaggedWebsites(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getTaggedWebsites(Set(tag), showBrokenDecisionService.shouldShowBroken, maxItems)
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken, maxNewsitems)
   }
 
@@ -236,7 +208,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getRecentlyChangedWatchlistItems: Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken)
   }
 
@@ -250,7 +221,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getDiscoveredFeeds: Seq[DiscoveredFeed] = {
-    import scala.collection.JavaConversions._
     discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds
   }
 
@@ -264,17 +234,14 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getTaggedBy(user: User): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     elasticSearchBackedResourceDAO.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getTagNamesStartingWith(q: String): Seq[String] = {
-    import scala.collection.JavaConversions._
     tagDAO.getTagNamesStartingWith(q)
   }
 
   def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
-    import scala.collection.JavaConversions._
     resourceDAO.getPublisherNamesByStartingLetters(q)
   }
 
@@ -282,12 +249,11 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     resourceDAO.getOwnedByUserCount(loggedInUser)
   }
 
-  def getNewsPage(pathInfo: String): FrontendResource = {
+  def getNewsPage(pathInfo: String): Option[FrontendResource] = {
     elasticSearchBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getFeaturedTags: Seq[Tag] = {
-    import scala.collection.JavaConversions._
     tagDAO.getFeaturedTags
   }
 
