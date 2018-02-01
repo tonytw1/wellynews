@@ -36,7 +36,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getTopLevelTags:Seq[Tag] = {
-    import scala.collection.JavaConversions._
     tagDAO.getTopLevelTags
   }
 
