@@ -58,6 +58,8 @@ trait Resource {
 
   def getUrl: String = url
 
+  def setUrl(url: String) = this.url = url
+
   def getHttpStatus: Int = httpStatus
 
   def setHttpStatus(httpStatus: Int): Unit = this.httpStatus = httpStatus

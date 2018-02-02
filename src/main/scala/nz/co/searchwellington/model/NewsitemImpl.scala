@@ -24,7 +24,7 @@ case class NewsitemImpl(override var id: Int = 0,
                         var commentFeed: CommentFeed = null,
                         var image: Image = null,
                         var accepted: Date = null,
-                        var acceptedBy: User = null) extends PublishedResourceImpl with Newsitem {
+                        var acceptedBy: User = null) extends PublishedResource with Newsitem {
 
   override def getType = "N"
 

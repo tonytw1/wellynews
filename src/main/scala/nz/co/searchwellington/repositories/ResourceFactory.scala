@@ -13,7 +13,7 @@ import java.util
 
   def createNewFeed = new FeedImpl()
 
-  def createNewWatchlist = new Watchlist(0, "", "", "", null, new util.HashSet[DiscoveredFeed])
+  def createNewWatchlist = Watchlist()
 
   def createNewCommentFeed(commentFeedUrl: String) = new CommentFeed(0, commentFeedUrl, Lists.newArrayList[Comment], null, null)
 

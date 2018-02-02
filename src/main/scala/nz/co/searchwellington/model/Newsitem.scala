@@ -1,22 +1,18 @@
 package nz.co.searchwellington.model
 
 import java.util.Date
-import java.util
 
 trait Newsitem extends PublishedResource with Commentable {
-  def getImage: Image
 
+  def getImage: Image
   def setImage(image: Image): Unit
 
   def getFeed: Feed
-
   def setFeed(feed: Feed): Unit
 
   def getAccepted: Date
-
   def setAccepted(accepted: Date): Unit
 
   def getAcceptedBy: User
-
   def setAcceptedBy(user: User): Unit
 }

@@ -20,7 +20,7 @@ case class WebsiteImpl(override var id: Int = 0,
                        override var geocode: Geocode = null,
                        override var owner: User = null,
                        var feeds: Set[Feed] = Set(),
-                       var watchlist: Set[Watchlist] = Set(),
+                       var watchlist: Set[Watchlist] = Set()
                       ) extends Website {
 
   def getFeeds: Set[Feed] = feeds

@@ -1,18 +1,28 @@
 package nz.co.searchwellington.model
 
-import java.util
+import java.util.Date
 
-@SerialVersionUID(1L)
-case class Watchlist() extends PublishedResourceImpl {
-  def this(id: Int, name: String, url: String, description: String, publisher: Website, discoveredFeeds: util.Set[DiscoveredFeed]) {
-    this()
-    this.id = id
-    this.name = name
-    this.url = url
-    this.description = description
-    this.publisher = publisher
-    this.discoveredFeeds = discoveredFeeds
-  }
+import org.joda.time.DateTime
+
+case class Watchlist(
+                      override var id: Int = 0,
+                      override var `type`: String = "",
+                      override var name: String = "",
+                      override var url: String = "",
+                      override var httpStatus: Int = 0,
+                      override var date: Date = DateTime.now.toDate,
+                      override var description: String = "",
+                      override var lastScanned: Date = null,
+                      override var lastChanged: Date = null,
+                      override var liveTime: Date = null,
+                      override var embargoedUntil: Date = null,
+                      override var held: Boolean = false,
+                      override var urlWords: String = null,
+                      override var geocode: Geocode = null,
+                      override var owner: User = null,
+                      override var publisher: Website = null
+                    ) extends PublishedResource {
 
   override def getType = "L"
+
 }
