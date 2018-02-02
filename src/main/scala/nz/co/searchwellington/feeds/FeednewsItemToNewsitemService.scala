@@ -1,9 +1,7 @@
 package nz.co.searchwellington.feeds
 
-import java.util.HashSet
-
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
-import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Image, Newsitem, NewsitemImpl}
+import nz.co.searchwellington.model.{Feed, Image, Newsitem, NewsitemImpl}
 import nz.co.searchwellington.utils.TextTrimmer
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -16,7 +14,8 @@ class FeednewsItemToNewsitemService @Autowired() (textTrimmer: TextTrimmer, plac
 
   def makeNewsitemFromFeedItem(feed: Feed, feedNewsitem: FrontendFeedNewsitem): Newsitem = {
 
-    val newsitem: Newsitem = new NewsitemImpl(0, feedNewsitem.getName, feedNewsitem.getUrl, composeDescription(feedNewsitem), feedNewsitem.getDate, feed.getPublisher, new HashSet[DiscoveredFeed])
+    val newsitem: Newsitem = new NewsitemImpl(id = 0, name = feedNewsitem.getName, url = feedNewsitem.getUrl, description = composeDescription(feedNewsitem),
+      date = feedNewsitem.getDate, publisher = feed.getPublisher)
     newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
     newsitem.setFeed(feed)
     newsitem.setPublisher(feed.getPublisher)

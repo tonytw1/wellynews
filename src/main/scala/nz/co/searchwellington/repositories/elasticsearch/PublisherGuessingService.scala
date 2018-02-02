@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component
 
     def guessPossiblePublishersForUrl(url: String): Seq[Resource] = {
       val urlStem = urlParser.extractHostnameFrom(url)
-      println(url + ": " + urlStem)
       resourceDAO.getAllPublishersMatchingStem(urlStem, true)
     }
 
@@ -26,7 +25,11 @@ import org.springframework.stereotype.Component
 
     } else if (possiblePublishers.size > 1) {
 
-      val filtered = possiblePublishers.filter(p => url.startsWith(p.getUrl()))
+      val filtered = possiblePublishers.filter { p =>
+        val pageUrl = p.url
+        url.startsWith(pageUrl)
+      }
+
       filtered.headOption
 
     } else {

@@ -46,7 +46,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getLatestNewsitems(maxItems: Int, shouldShowBroken: Boolean, from: Int): Seq[FrontendResource] = {
-    val latestNewsitems: BoolQueryBuilder = QueryBuilders.boolQuery.must(isNewsitem)
+    val latestNewsitems = QueryBuilders.boolQuery.must(isNewsitem)
     addShouldShowBrokenClause(latestNewsitems, shouldShowBroken)
     val builder: SearchRequestBuilder = searchRequestBuilder(latestNewsitems).setFrom(from).setSize(maxItems)
     addDateDescendingOrder(builder)
@@ -82,7 +82,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 
   def getLatestWebsites(maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val isWebsite: TermQueryBuilder = QueryBuilders.termQuery(TYPE, "W")
-    val websites: BoolQueryBuilder = QueryBuilders.boolQuery.must(isWebsite)
+    val websites = QueryBuilders.boolQuery.must(isWebsite)
     addShouldShowBrokenClause(websites, shouldShowBroken)
     val justinWebsites: SearchRequestBuilder = searchRequestBuilder(websites).setSize(maxItems)
     addDateDescendingOrder(justinWebsites)
@@ -92,7 +92,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 
   def getTaggedWebsites(tags: Set[Tag], shouldShowBroken: Boolean, maxItems: Int): Seq[FrontendResource] = {
     val isWebsite: TermQueryBuilder = QueryBuilders.termQuery(TYPE, "W")
-    val taggedWebsites: BoolQueryBuilder = QueryBuilders.boolQuery.must(isWebsite)
+    val taggedWebsites = QueryBuilders.boolQuery.must(isWebsite)
     for (tag <- tags) {
       taggedWebsites.must(hasTag(tag))
     }
@@ -104,7 +104,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getTagWatchlist(tag: Tag, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val taggedWatchlists: BoolQueryBuilder = QueryBuilders.boolQuery.must(isWatchlist).must(hasTag(tag))
+    val taggedWatchlists = QueryBuilders.boolQuery.must(isWatchlist).must(hasTag(tag))
     val builder = searchRequestBuilder(taggedWatchlists).setSize(ALL)
     addShouldShowBrokenClause(taggedWatchlists, shouldShowBroken)
     addNameOrder(builder)
@@ -122,7 +122,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getPublisherWatchlist(publisher: Website, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val publisherWatchlist: BoolQueryBuilder = QueryBuilders.boolQuery.must(isWatchlist).must(hasPublisher(publisher))
+    val publisherWatchlist = QueryBuilders.boolQuery.must(isWatchlist).must(hasPublisher(publisher))
     addShouldShowBrokenClause(publisherWatchlist, shouldShowBroken)
     val builder = searchRequestBuilder(publisherWatchlist).setSize(ALL)
     addNameOrder(builder)
@@ -131,7 +131,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getPublisherFeeds(publisher: Website, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val publisherFeeds: BoolQueryBuilder = QueryBuilders.boolQuery.must(isFeed).must(hasPublisher(publisher))
+    val publisherFeeds = QueryBuilders.boolQuery.must(isFeed).must(hasPublisher(publisher))
     val builder = searchRequestBuilder(publisherFeeds).setSize(ALL)
     addShouldShowBrokenClause(publisherFeeds, shouldShowBroken)
     addNameOrder(builder)
@@ -425,8 +425,8 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     if (!shouldShowBroken) {
       val contentIsOk: TermQueryBuilder = QueryBuilders.termQuery(HTTP_STATUS, "200")
       val contentIsApproved: TermQueryBuilder = QueryBuilders.termQuery(HELD, false)
-      val contentIsPublic: BoolQueryBuilder = QueryBuilders.boolQuery.must(contentIsOk).must(contentIsApproved)
-      val userCanViewContent: BoolQueryBuilder = QueryBuilders.boolQuery.minimumNumberShouldMatch(1).should(contentIsPublic)
+      val contentIsPublic = QueryBuilders.boolQuery.must(contentIsOk).must(contentIsApproved)
+      val userCanViewContent = QueryBuilders.boolQuery.minimumNumberShouldMatch(1).should(contentIsPublic)
       if (loggedInUserFilter.getLoggedInUser != null) {
         userCanViewContent.should(QueryBuilders.termQuery(OWNER, loggedInUserFilter.getLoggedInUser.getProfilename))
       }

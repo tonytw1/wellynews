@@ -11,7 +11,7 @@
         overflowToDisk="false"
         />
            		
-	<cache name="nz.co.searchwellington.model.ResourceImpl.tags"
+	<cache name="nz.co.searchwellington.model.Resource.tags"
 		maxElementsInMemory="256"
 		timeToIdleSeconds="7200"
         timeToLiveSeconds="7200"
@@ -72,7 +72,7 @@
 		overflowToDisk="false"
 		/>
 				
-	<cache name="nz.co.searchwellington.model.ResourceImpl"
+	<cache name="nz.co.searchwellington.model.Resource"
 		maxElementsInMemory="500"
 		eternal="true"
 		overflowToDisk="false"

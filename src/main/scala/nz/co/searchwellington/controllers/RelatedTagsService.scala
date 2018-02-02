@@ -16,7 +16,8 @@ import uk.co.eelpieconsulting.common.geo.model.Place
     def removeUnsuitableTags(tag: Tag, tagFacetsForTag: Map[String, Int]): Seq[TagContentCount] = {
 
       def isTagSuitableRelatedTag(tag: Tag, relatedTag: Tag): Boolean = {
-        !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
+        //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
+        false // TODO reimplement
       }
 
       tagFacetsForTag.keys.flatMap { tagId =>

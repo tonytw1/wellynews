@@ -30,7 +30,7 @@ class TagBuilder() {
     tag.setAutotagHints(autotagHints)
     tag.setDisplayName(displayName)
     tag.setName(name)
-    tag.setParent(parent)
+    //tag.setParent(parent)
     tag
   }
 

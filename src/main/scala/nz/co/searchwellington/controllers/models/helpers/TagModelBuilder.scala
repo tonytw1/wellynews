@@ -49,7 +49,7 @@ import org.springframework.web.servlet.ModelAndView
       } else {
         mv.addObject(TAG, tag)
         if (tag.getGeocode != null) {
-          mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode))
+          // mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode))
         }
         mv.addObject("heading", tag.getDisplayName)
         mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
@@ -87,7 +87,8 @@ import org.springframework.web.servlet.ModelAndView
 
     def populateRelatedFeed(mv: ModelAndView, tag: Tag) {
       val relatedFeed = tag.getRelatedFeed
-      if (relatedFeed != null) {
+
+     /* if (relatedFeed != null) {
         log.debug("Related feed is: " + relatedFeed.getName)
         mv.addObject("related_feed", relatedFeed)
         val relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed)
@@ -96,6 +97,7 @@ import org.springframework.web.servlet.ModelAndView
       } else {
         log.debug("No related feed.")
       }
+      */
     }
 
     def populateCommentedTaggedNewsitems(mv: ModelAndView, tag: Tag) {

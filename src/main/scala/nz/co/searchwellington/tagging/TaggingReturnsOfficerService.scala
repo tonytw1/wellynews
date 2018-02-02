@@ -70,8 +70,8 @@ import scala.collection.mutable
       }
     }
 
-    val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
-    votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
+    // TODO val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
+    // TODO votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
 
     votes.toList
   }
@@ -80,7 +80,7 @@ import scala.collection.mutable
     val feedTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (tag <- feedsHandTags) {
       feedTagVotes += new GeneratedTaggingVote(tag, new FeedsTagsTagVoter)
-      feedTagVotes ++= tag.getAncestors.toList.map(t => {new GeneratedTaggingVote(t, new FeedTagAncestorTagVoter)})
+      // TODO feedTagVotes ++= tag.getAncestors.toList.map(t => {new GeneratedTaggingVote(t, new FeedTagAncestorTagVoter)})
     }
     feedTagVotes.toList
   }
@@ -92,7 +92,7 @@ import scala.collection.mutable
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       for (publisherTag <- this.getHandTagsForResource(publisher)) {
         publisherTagVotes += new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter)
-        publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
+        // TODO publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
       }
     }
     publisherTagVotes.toList
@@ -101,7 +101,7 @@ import scala.collection.mutable
   private def generateAncestorTagVotes(resource: Resource): List[TaggingVote] = {
     val ancestorTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
     for (tag <- this.getHandTagsForResource(resource)) {
-      ancestorTagVotes ++= tag.getAncestors.toList.map(ancestorTag => (new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)))
+      // TODO ancestorTagVotes ++= tag.getAncestors.toList.map(ancestorTag => (new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)))
     }
     ancestorTagVotes.toList
   }

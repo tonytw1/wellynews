@@ -32,7 +32,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     elasticSearchBackedResourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getTopLevelTags:Seq[Tag] = {
+  def getTopLevelTags: Seq[Tag] = {
     tagDAO.getTopLevelTags
   }
 
@@ -105,17 +105,14 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken, tag, startIndex, maxItems)
   }
 
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken, null, startIndex, maxNewsitems)
   }
 
   def getNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
     keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken, tag, startIndex, maxItems)
   }
 
@@ -129,7 +126,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 
   def getFeaturedSites: Seq[FrontendResource] = {
     tagDAO.loadTagByName("featured").map { featuredTag =>
-      this.getTaggedWebsites(featuredTag, 10)
+      getTaggedWebsites(featuredTag, 10)
     }.getOrElse{
       Seq()
     }

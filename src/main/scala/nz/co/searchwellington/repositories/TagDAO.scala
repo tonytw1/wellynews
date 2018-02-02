@@ -12,11 +12,11 @@ import org.springframework.transaction.annotation.Transactional
 @Component class TagDAO @Autowired() (sessionFactory: SessionFactory) {
 
   @deprecated def createNewTag: Tag = {
-    new Tag(0, "", "", null, new java.util.HashSet[Tag], 0, false, false)
+    new Tag()
   }
 
   def createNewTag(tagUrlWords: String, displayName: String): Tag = {
-    new Tag(0, tagUrlWords, displayName, null, new java.util.HashSet[Tag], 0, false, false)
+    new Tag(name = tagUrlWords, display_name = displayName)
   }
 
   def loadTagById(tagID: Int): Tag = {

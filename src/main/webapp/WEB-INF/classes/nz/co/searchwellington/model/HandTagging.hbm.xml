@@ -16,8 +16,8 @@
 		</id>
 		
 		<many-to-one name="resource"
-			class="nz.co.searchwellington.model.ResourceImpl" column="resource_id"
-			cascade="" />
+                     class="nz.co.searchwellington.model.Resource" column="resource_id"
+                     cascade="" />
 		
 		<many-to-one name="user"
 			class="nz.co.searchwellington.model.UserImpl" column="user_id"

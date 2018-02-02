@@ -15,7 +15,8 @@ public class TagModificationServiceTest {
 	@Mock TagDAO tagDAO;
 	@Mock HandTaggingService handTaggingService;
 	
-	@Mock Tag tag;
+	@Mock
+	Tag tag;
 
 	private TagModificationService tagModificationService;
 	

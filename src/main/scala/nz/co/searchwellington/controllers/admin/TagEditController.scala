@@ -46,9 +46,9 @@ import org.springframework.web.servlet.view.RedirectView
       editTag = request.getAttribute("tag").asInstanceOf[Tag]
       mv.addObject("tag", editTag)
       import scala.collection.JavaConverters._
-      var children = editTag.getChildren.asScala.toSet
-      mv.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent, children).toString)
-      mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed))
+      //var children = editTag.getChildren.asScala.toSet
+      //mv.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent, children).toString)
+      //mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed))
     }
     return mv
   }
@@ -114,7 +114,7 @@ import org.springframework.web.servlet.view.RedirectView
     editTag.setDescription(request.getParameter("description"))
     val isFeatured: Boolean = request.getParameter("featured") != null
     editTag.setFeatured(isFeatured)
-    editTag.setGeocode(submissionProcessingService.processGeocode(request))
+    //editTag.setGeocode(submissionProcessingService.processGeocode(request))
     populateRelatedTwitter(request, editTag)
     populateAutotagHints(request, editTag)
     var relatedFeed: Feed = null
@@ -122,24 +122,24 @@ import org.springframework.web.servlet.view.RedirectView
       relatedFeed = request.getAttribute("feedAttribute").asInstanceOf[Feed]
     }
     log.info("Setting related feed to: " + relatedFeed)
-    editTag.setRelatedFeed(relatedFeed)
+    //editTag.setRelatedFeed(relatedFeed)
     readImageFieldFromRequest(editTag, request)
     val parentTag: Tag = request.getAttribute("parent_tag").asInstanceOf[Tag]
     if (parentTag != null) {
-      val parentTagHasChanged: Boolean = parentTag ne editTag.getParent
-      if (parentTagHasChanged) {
-        val newParentIsOneOfOurChildren: Boolean = editTag.getChildren.contains(parentTag)
-        if (!newParentIsOneOfOurChildren) {
-          tagModifcationService.updateTagParent(editTag, parentTag)
-        }
-        else {
-          log.warn("Not setting parent to one of our current children; this would be a circular reference")
-        }
-      }
+      //val parentTagHasChanged: Boolean = parentTag ne editTag.getParent
+      //if (parentTagHasChanged) {
+        //val newParentIsOneOfOurChildren: Boolean = editTag.getChildren.contains(parentTag)
+        //if (!newParentIsOneOfOurChildren) {
+        //  tagModifcationService.updateTagParent(editTag, parentTag)
+       // }
+        //else {
+         // log.warn("Not setting parent to one of our current children; this would be a circular reference")
+       // }
+      //}
     }
     else {
       log.info("Making top level tag; setting parent to null.")
-      editTag.setParent(null)
+      // editTag.setParent(null)
     }
     tagDAO.saveTag(editTag)
     mv.addObject("tag", editTag)

@@ -8,7 +8,8 @@ import java.util.HashSet;
 import org.junit.Test;
 
 public class TagTest {
-    
+
+    /*
 	@Test
     public void testIsParentOfTag() throws Exception {          
         Tag childTag = new Tag(1, "child", "Child", null, new HashSet<Tag>(), 0, false, false);        
@@ -27,5 +28,6 @@ public class TagTest {
         assertTrue(parent.isParentOf(childTag));
         assertTrue(parent.isParentOf(grandChildTag));
     }
+    */
     
 }

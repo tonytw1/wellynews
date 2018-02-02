@@ -5,11 +5,11 @@
 
 <hibernate-mapping>
 
-	<class name="nz.co.searchwellington.model.ResourceImpl"
+	<class name="nz.co.searchwellington.model.Resource"
 		proxy="nz.co.searchwellington.model.Resource" table="resource"
 		discriminator-value="R">
 
-		<cache usage="read-write" region="nz.co.searchwellington.model.ResourceImpl" />
+		<cache usage="read-write" region="nz.co.searchwellington.model.Resource" />
 
 
 		<id name="id" type="integer" unsaved-value="0">

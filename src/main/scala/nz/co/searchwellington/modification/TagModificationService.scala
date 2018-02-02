@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component
 
   def updateTagParent(editTag: Tag, parentTag: Tag) {
     log.debug("Setting parent tag to: " + parentTag.getName)
-    editTag.setParent(parentTag)
+    //editTag.setParent(parentTag)
   }
 
   def deleteTag(tag: Tag) {
     log.info("Deleting tag " + tag.getName)
     handTaggingService.clearTaggingsForTag(tag)
     if (tag.getParent != null) {
-      tag.getParent.getChildren.remove(tag)
+      //tag.getParent.getChildren.remove(tag)
     }
     tagDAO.deleteTag(tag)
   }

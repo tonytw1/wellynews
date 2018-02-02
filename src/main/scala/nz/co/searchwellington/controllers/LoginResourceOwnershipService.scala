@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component
 @Component class LoginResourceOwnershipService @Autowired()(var resourceDAO: HibernateResourceDAO, var userDAO: HibernateBackedUserDAO, var handTaggingService: HandTaggingService) {
 
   def reassignOwnership(previousOwner: User, newOwner: User) {
-    println(previousOwner)
     resourceDAO.getOwnedBy(previousOwner, 1000).map { resource => // TODO should do all or not at all
       resource.setOwner(newOwner)
       resourceDAO.saveResource(resource)

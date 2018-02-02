@@ -12,12 +12,12 @@ import org.springframework.stereotype.Component
 
   @SuppressWarnings(Array("unchecked")) def getAllResourceIds: Seq[Integer] = {
     val session = sessionFactory.getCurrentSession
-    session.createQuery("select id from nz.co.searchwellington.model.ResourceImpl order by id DESC").setFetchSize(100).list().asInstanceOf[List[java.lang.Integer]]
+    session.createQuery("select id from nz.co.searchwellington.model.Resource order by id DESC").setFetchSize(100).list().asInstanceOf[List[java.lang.Integer]]
   }
 
   def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
     val session = sessionFactory.getCurrentSession
-    session.createQuery("select name from nz.co.searchwellington.model.ResourceImpl where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).asInstanceOf[List[java.lang.String]]
+    session.createQuery("select name from nz.co.searchwellington.model.Resource where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).asInstanceOf[List[java.lang.String]]
   }
 
   @SuppressWarnings(Array("unchecked")) def getAllFeeds: Seq[Feed] = {
@@ -83,11 +83,11 @@ import org.springframework.stereotype.Component
   }
 
   def getOwnedByUserCount(user: User): Int = {
-    return (sessionFactory.getCurrentSession.createQuery("select count(*) from ResourceImpl where owner = " + user.getId).iterate.next.asInstanceOf[Long]).intValue
+    return (sessionFactory.getCurrentSession.createQuery("select count(*) from Resource where owner = " + user.getId).iterate.next.asInstanceOf[Long]).intValue
   }
 
   def loadResourceById(resourceID: Int): Option[Resource] = {
-    Option(sessionFactory.getCurrentSession.get(classOf[ResourceImpl], resourceID).asInstanceOf[Resource])
+    Option(sessionFactory.getCurrentSession.get(classOf[Resource], resourceID).asInstanceOf[Resource])
   }
 
   def loadResourceByUrl(url: String): Resource = {

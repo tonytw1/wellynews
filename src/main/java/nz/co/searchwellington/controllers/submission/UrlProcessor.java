@@ -28,7 +28,7 @@ public class UrlProcessor implements SubmissionProcessor {
 		if (request.getParameter(URL) != null) {	
 			final String url = request.getParameter(URL);
 			log.debug("Request url is: " + url);
-			editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
+			// TODO editResource.setUrl(urlCleaner.cleanSubmittedItemUrl(url));
 			log.debug("Resource url set to: " + editResource.getUrl());			
 		} else {
 			log.debug("Url was null");

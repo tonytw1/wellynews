@@ -42,9 +42,9 @@ import org.springframework.transaction.annotation.Transactional
 
   private def removeRelatedFeedFromTags(editResource: Feed) {
     tagDAO.getAllTags.map { tag =>
-      if (tag.getRelatedFeed != null && tag.getRelatedFeed == editResource) {
-        tag.setRelatedFeed(null)
-      }
+      // TODO if (tag.getRelatedFeed != null && tag.getRelatedFeed == editResource) {
+      //  tag.setRelatedFeed(null)
+      //}
     }
   }
 
