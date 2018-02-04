@@ -11,7 +11,7 @@ import org.mockito.MockitoAnnotations
 
 class RssUrlBuilderTest {
   @Mock val siteInformation: SiteInformation = null
-  @Mock val tag: Tag = null
+  val tag = Tag(description = Some("This is a tag about something..."))
 
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
@@ -21,8 +21,8 @@ class RssUrlBuilderTest {
   @Test
   @throws[Exception]
   def rssDescriptionForTagShouldBeSetFromTagDescriptionTextIfAvailable(): Unit = {
-    Mockito.when(tag.getDescription).thenReturn(Some("This is a tag about something..."))
     val rssUrlBuilder = new RssUrlBuilder(siteInformation)
-    assertEquals(tag.getDescription, rssUrlBuilder.getRssDescriptionForTag(tag))
+
+    assertEquals("This is a tag about something...", rssUrlBuilder.getRssDescriptionForTag(tag))
   }
 }
