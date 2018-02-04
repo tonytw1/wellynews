@@ -9,7 +9,7 @@ import scala.collection.JavaConverters._
 
 @Component class PlaceAutoTagger @Autowired() (tagDAO: TagDAO) {
 
-  private final val PLACES_TAG_NAME: String = "places"
+  private final val PLACES_TAG_NAME = "places"
 
   def suggestTags(resource: Resource): Set[Tag] = {
     getPlaces.filter(p => checkForMatchingTag(resource, p))
