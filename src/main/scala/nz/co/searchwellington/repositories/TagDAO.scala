@@ -40,6 +40,11 @@ import org.springframework.transaction.annotation.Transactional
     }
   }
 
+  def loadTagsByParent(parentId: Int): Seq[Tag] = {
+    import scala.collection.JavaConversions._
+    sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.eq("parent", parentId)).list.asInstanceOf[List[Tag]]
+  }
+
   @SuppressWarnings(Array("unchecked")) def getTopLevelTags: Seq[Tag] = {
     import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.isNull("parent")).

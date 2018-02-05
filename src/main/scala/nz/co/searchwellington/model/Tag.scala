@@ -1,6 +1,9 @@
 package nz.co.searchwellington.model
 
-case class Tag(id: Int = 0 , var name: String = "", var display_name: String = "", var parent: Option[Long] = None,
+case class Tag(id: Int = 0,
+               var name: String = "",
+               var display_name: String = "",
+               var parent: Option[Long] = None,
                flickrCount: Option[Int] = None,
                var hidden: Int = 0, var featured: Int = 0,
                var geocode_id: Option[Int] = None,
