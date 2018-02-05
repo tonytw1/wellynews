@@ -2,102 +2,104 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
+import org.joda.time.format.ISODateTimeFormat
+
 trait Resource {
   var id: Int
 
   var `type`: String
 
-  var name: String
+  var title: String
 
-  var url: String
+  var page: Option[String]
 
-  var httpStatus: Int
+  var http_status: Int
 
-  var date: Date
+  var date: String
 
-  var description: String
+  var description: Option[String]
 
-  var lastScanned: Date
+  var last_scanned: Option[String]
 
-  var lastChanged: Date
+  var last_changed: Option[String]
 
-  var liveTime: Date
+  var live_time: Option[String]
 
-  var embargoedUntil: Date
+  var embargoed_until: Option[String]
 
-  var held: Boolean
+  var held: Int
 
-  var urlWords: String
+  var url_words: Option[String]
 
-  var geocode: Geocode
+  var geocode: Option[Int]
 
-  var owner: User
+  var owner: Option[Int]
 
-  def getDate: Date = date
+  def getDate: Date = ISODateTimeFormat.dateParser().parseDateTime(date).toDate // TODO
 
-  def setDate(date: Date): Unit = this.date = date
+  def setDate(date: Date): Unit = {}  // TODO
 
-  def getDescription: String = description
+  def getDescription: String = description.getOrElse("")
 
-  def setDescription(description: String): Unit = this.description = description
+  def setDescription(description: String): Unit = {}  // TODO this.description = description
 
   def getId: Int = id
 
   def setId(id: Int): Unit = this.id = id
 
-  def getName: String = name
+  def getName: String = title
 
-  def setName(name: String): Unit = this.name = name
+  def setName(name: String): Unit = this.title = name
 
   def name(name: String): Resource = {
-    this.name = name
+    this.title = name
     this
   }
 
   def getType: String = `type`
 
-  def getUrl: String = url
+  def getUrl: String = page.getOrElse(null)
 
-  def setUrl(url: String) = this.url = url
+  def setUrl(url: String) = this.page = Some(url)
 
-  def getHttpStatus: Int = httpStatus
+  def getHttpStatus: Int = http_status
 
-  def setHttpStatus(httpStatus: Int): Unit = this.httpStatus = httpStatus
+  def setHttpStatus(httpStatus: Int): Unit = this.http_status = httpStatus
 
-  def getLastScanned: Date = lastScanned
+  def getLastScanned: Date = last_scanned.map(d => ISODateTimeFormat.dateParser().parseDateTime(d).toDate).getOrElse(null) // TODO
 
-  def setLastScanned(lastScanned: Date): Unit = this.lastScanned = lastScanned
+  def setLastScanned(lastScanned: Date): Unit = {}  // TODO
 
-  def getLastChanged: Date = lastChanged
+  def getLastChanged: Date = last_changed.map(d => ISODateTimeFormat.dateParser().parseDateTime(d).toDate).getOrElse(null) // TODO
 
-  def setLastChanged(lastChanged: Date): Unit = this.lastChanged = lastChanged
+  def setLastChanged(lastChanged: Date): Unit = {}
 
-  def getLiveTime: Date = liveTime
+  def getLiveTime: Date = live_time.map(d => ISODateTimeFormat.dateParser().parseDateTime(d).toDate).getOrElse(null) // TODO
 
-  def setLiveTime(liveTime: Date): Unit = this.liveTime = liveTime
+  def setLiveTime(liveTime: Date): Unit = {}
 
-  def getEmbargoedUntil: Date = embargoedUntil
+  def getEmbargoedUntil: Date = embargoed_until.map(d => ISODateTimeFormat.dateParser().parseDateTime(d).toDate).getOrElse(null) // TODO
 
-  def setEmbargoedUntil(embargoedUntil: Date): Unit = this.embargoedUntil = embargoedUntil
+  def setEmbargoedUntil(embargoedUntil: Date): Unit = {}
 
-  def getGeocode: Geocode = geocode
+  def getGeocode: Geocode = null  // TODO
 
-  def setGeocode(geocode: Geocode): Unit = this.geocode = geocode
+  def setGeocode(geocode: Geocode): Unit = {} // TODO
 
-  def getUrlWords: String = urlWords
+  def getUrlWords: String = url_words.getOrElse(null)
 
-  def setUrlWords(urlWords: String): Unit = this.urlWords = urlWords
+  def setUrlWords(urlWords: String): Unit = {} // TODO this.url_words = urlWords
 
-  def getOwner: User = owner
+  def getOwner: User = null // TODO
 
-  def setOwner(owner: User): Unit = this.owner = owner
+  def setOwner(owner: User): Unit = {}  // TODO
 
-  def isHeld: Boolean = held
+  def isHeld: Boolean = held == 1
 
-  def setHeld(held: Boolean): Unit = this.held = held
+  def setHeld(held: Boolean): Unit = this.held = 0  // TODO
 
   final def getOwnerId: Integer = {
-    if (owner != null) return owner.getId
+    // TODO if (owner != null) return owner.getId
     null
   }
 

@@ -2,26 +2,26 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
-import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 
 case class FeedImpl(override var id: Int = 0,
                     override var `type`: String = "",
-                    override var name: String = "",
-                    override var url: String = "",
-                    override var httpStatus: Int = 0,
-                    override var date: Date = DateTime.now.toDate,
-                    override var description: String = "",
-                    override var lastScanned: Date = null,
-                    override var lastChanged: Date = null,
-                    override var liveTime: Date = null,
-                    override var embargoedUntil: Date = null,
-                    override var held: Boolean = false,
-                    override var urlWords: String = null,
-                    override var geocode: Geocode = null,
-                    override var owner: User = null,
+                    override var title: String = "",
+                    override var page: Option[String] = None,
+                    override var http_status: Int = 0,
+                    override var date: String = null,
+                    override var description: Option[String] = None,
+                    override var last_scanned: Option[String] = None,
+                    override var last_changed: Option[String] = None,
+                    override var live_time: Option[String] = None,
+                    override var embargoed_until: Option[String] = None,
+                    override var held: Int = 0,
+                    override var url_words: Option[String] = None,
+                    override var geocode: Option[Int] = None,
+                    override var owner: Option[Int] = None,
                     var acceptancePolicy: FeedAcceptancePolicy = null,
-                    var latestItemDate: Date = null,
-                    var lastRead: Date = null,
+                    var latestItemDate: String = null,
+                    var lastRead: String = null,
                     var whakaokoId: String = null,
                     override var publisher: Website = null) extends PublishedResource with Feed {
 
@@ -31,15 +31,15 @@ case class FeedImpl(override var id: Int = 0,
 
   override def setAcceptancePolicy(acceptancePolicy: FeedAcceptancePolicy): Unit = this.acceptancePolicy = acceptancePolicy
 
-  override def getLatestItemDate: Date = latestItemDate
+  override def getLatestItemDate: Date = ISODateTimeFormat.dateParser().parseDateTime(latestItemDate).toDate // TODO
 
-  override def setLatestItemDate(latestPublicationDate: Date): Unit = this.latestItemDate = latestPublicationDate
+  override def setLatestItemDate(latestPublicationDate: Date): Unit = {}
 
-  override def getLastRead: Date = lastRead
+  override def getLastRead: Date = ISODateTimeFormat.dateParser().parseDateTime(lastRead).toDate // TODO
 
-  override def setLastRead(lastRead: Date): Unit = this.lastRead = lastRead
+  override def setLastRead(lastRead: Date): Unit = {}
 
-  def isScreenScraped: Boolean = url.startsWith("http://brownbag.wellington.gen.nz/")
+  def isScreenScraped: Boolean = page.map(p => p.startsWith("http://brownbag.wellington.gen.nz/")).getOrElse(false)
 
   override def getWhakaokoId: String = whakaokoId
 

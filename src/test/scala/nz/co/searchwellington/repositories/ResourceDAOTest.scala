@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories
 
 import java.util.Date
 
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{Tag, WebsiteImpl}
 import org.joda.time.DateTime
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -40,11 +40,10 @@ class ResourceDAOTest {
     val count = Await.result(eventualCount, Duration(10000, MILLISECONDS))
     assertEquals(73049, count)
 
+    implicit def reader: BSONDocumentReader[WebsiteImpl] = Macros.reader[WebsiteImpl]
 
-    implicit def tagReader: BSONDocumentReader[MongoResource] = Macros.reader[MongoResource]
-
-    val eventualCursor: Future[Cursor[MongoResource]] = tagCollection.map { tagCollection =>
-      tagCollection.find(BSONDocument.empty).cursor[MongoResource]
+    val eventualCursor: Future[Cursor[WebsiteImpl]] = tagCollection.map { resourceCollection =>
+      resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl]
     }
 
     val eventualDocuments = eventualCursor.flatMap { c =>
@@ -56,7 +55,5 @@ class ResourceDAOTest {
       println(d)
     }
   }
-
-  case class MongoResource(id: Int, title: Option[String], page: Option[String], date: String)
 
 }

@@ -29,9 +29,9 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
   }
 
   private def resourceMatchesHint(resource: Resource, hint: String) : Boolean = {
-    val headlineMatchesHint = matches(hint, resource.name)
-    val bodyMatchesTag = matches(hint, resource.description)
-    headlineMatchesHint || bodyMatchesTag;
+    val headlineMatchesHint = matches(hint, resource.title)
+    val bodyMatchesTag = resource.description.map(d => matches(hint, d)).getOrElse(false)
+    headlineMatchesHint || bodyMatchesTag
   }
 
   private def matches(hint: String, value: String): Boolean = {
