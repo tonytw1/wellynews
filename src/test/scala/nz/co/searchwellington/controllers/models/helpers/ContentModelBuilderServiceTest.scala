@@ -5,7 +5,7 @@ import java.util.List
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ModelBuilder}
 import nz.co.searchwellington.model.Tag
-import org.junit.Assert.{assertEquals, assertNull}
+import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.Matchers.anyString
 import org.mockito.Mockito.when

@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
-
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -9,20 +7,20 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.{Matchers, Mock, Mockito, MockitoAnnotations}
+import org.mockito.Mockito.when
+import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.collection.JavaConversions._
 
 class SearchModelBuilderTest {
-  @Mock private[helpers] val contentRetrievalService: ContentRetrievalService = null
-  @Mock private[helpers] val urlBuilder: UrlBuilder = null
-  @Mock private[helpers] val commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock private[helpers] val tag: Tag = null
-  private var tags: List[Tag] = null
+  @Mock val contentRetrievalService: ContentRetrievalService = null
+  @Mock val urlBuilder: UrlBuilder = null
+  @Mock val commonAttributesModelBuilder: CommonAttributesModelBuilder = null
+  val tag: Tag = Tag(name = "A tag")
+  private var tags: Seq[Tag] = null
   private var request: MockHttpServletRequest = null
   private var modelBuilder: SearchModelBuilder = null
-  @Mock private[helpers] val tagKeywordNewsitemResults: List[FrontendResource] = null
+  @Mock val tagKeywordNewsitemResults: Seq[FrontendResource] = null
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
@@ -36,6 +34,7 @@ class SearchModelBuilderTest {
   def keywordShouldBeSetToIndicateASearch {
     request.setPathInfo("")
     assertFalse(modelBuilder.isValid(request))
+
     request.setParameter("keywords", "widgets")
     assertTrue(modelBuilder.isValid(request))
   }
@@ -44,22 +43,32 @@ class SearchModelBuilderTest {
   @throws[Exception]
   def pageHeadingShouldBeSearchKeyword {
     request.setParameter("keywords", "widgets")
+
     assertEquals("Search results - widgets", modelBuilder.populateContentModel(request).get.getModel.get("heading"))
   }
 
-  /*
+
   @Test
   @throws[Exception]
-  def shouldGetTagRefinementResultsIfTagIsSet {
+  def shouldShowTagIfTagFilterIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-    Mockito.when(contentRetrievalService.getNewsitemsMatchingKeywords(Matchers.eq("widgets"), Matchers.eq(tag), Matchers.eq(0), Matchers.eq(30))).thenReturn(tagKeywordNewsitemResults)
+
+    val mv = modelBuilder.populateContentModel(request).get
+
+    assertEquals(tag, mv.getModel.get("tag"))
+  }
+
+  @Test
+  @throws[Exception]
+  def shouldShowTagResultsIfTagFilterIsSet {
+    request.setParameter("keywords", "widgets")
+    request.setAttribute("tags", tags)
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", tag, 0, 30)).thenReturn(tagKeywordNewsitemResults)
 
     val mv = modelBuilder.populateContentModel(request).get
 
     assertEquals(tagKeywordNewsitemResults, mv.getModel.get("main_content"))
-    assertEquals(tag, mv.getModel.get("tag"))
   }
-  */
 
 }
