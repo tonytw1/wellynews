@@ -6,7 +6,7 @@ import org.joda.time.format.ISODateTimeFormat
 
 case class FeedImpl(override var id: Int = 0,
                     override var `type`: String = "",
-                    override var title: String = "",
+                    override var title: Option[String] = None,
                     override var page: Option[String] = None,
                     override var http_status: Int = 0,
                     override var date: String = null,

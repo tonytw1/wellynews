@@ -9,7 +9,7 @@ trait Resource {
 
   var `type`: String
 
-  var title: String
+  var title: Option[String]
 
   var page: Option[String]
 
@@ -47,12 +47,12 @@ trait Resource {
 
   def setId(id: Int): Unit = this.id = id
 
-  def getName: String = title
+  def getName: String = title.getOrElse(null)
 
-  def setName(name: String): Unit = this.title = name
+  def setName(name: String): Unit = {} // this.title = name
 
   def name(name: String): Resource = {
-    this.title = name
+    // this.title = name
     this
   }
 

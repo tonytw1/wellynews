@@ -22,7 +22,7 @@ class UrlWordsGeneratorTest {
   @Test
   @throws[Exception]
   def shouldProduceCorrectUrlBasedOnPublisherDateAndHeadline {
-    val publisher = new WebsiteImpl(title = "Island Bay school")
+    val publisher = new WebsiteImpl(title = Some("Island Bay school"))
     newsitem.setPublisherName("Island Bay school")
     assertEquals("/island-bay-school/2010/apr/2/some-thing-happening", urlWordsGenerator.makeUrlForNewsitem(newsitem))
   }

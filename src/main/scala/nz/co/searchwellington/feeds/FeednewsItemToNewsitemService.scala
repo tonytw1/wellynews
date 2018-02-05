@@ -14,7 +14,7 @@ class FeednewsItemToNewsitemService @Autowired() (textTrimmer: TextTrimmer, plac
 
   def makeNewsitemFromFeedItem(feed: Feed, feedNewsitem: FrontendFeedNewsitem): Newsitem = {
 
-    val newsitem = NewsitemImpl(title = feedNewsitem.getName, page = Some(feedNewsitem.getUrl), description = Some(composeDescription(feedNewsitem)),
+    val newsitem = NewsitemImpl(title = Some(feedNewsitem.getName), page = Some(feedNewsitem.getUrl), description = Some(composeDescription(feedNewsitem)),
       date = null, publisher = feed.getPublisher) // TODO date
     newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
     newsitem.setFeed(feed)

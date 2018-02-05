@@ -3,7 +3,7 @@ package nz.co.searchwellington.model
 case class Watchlist(
                       override var id: Int = 0,
                       override var `type`: String = "",
-                      override var title: String = "",
+                      override var title: Option[String] = None,
                       override var page: Option[String] = None,
                       override var http_status: Int = 0,
                       override var date: String = null,

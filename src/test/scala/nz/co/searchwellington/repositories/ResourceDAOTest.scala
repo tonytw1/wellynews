@@ -1,9 +1,6 @@
 package nz.co.searchwellington.repositories
 
-import java.util.Date
-
-import nz.co.searchwellington.model.{Tag, WebsiteImpl}
-import org.joda.time.DateTime
+import nz.co.searchwellington.model.WebsiteImpl
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import reactivemongo.api.collections.bson.BSONCollection
@@ -43,7 +40,7 @@ class ResourceDAOTest {
     implicit def reader: BSONDocumentReader[WebsiteImpl] = Macros.reader[WebsiteImpl]
 
     val eventualCursor: Future[Cursor[WebsiteImpl]] = tagCollection.map { resourceCollection =>
-      resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl]
+      resourceCollection.find(BSONDocument("type" -> "N")).cursor[WebsiteImpl]
     }
 
     val eventualDocuments = eventualCursor.flatMap { c =>

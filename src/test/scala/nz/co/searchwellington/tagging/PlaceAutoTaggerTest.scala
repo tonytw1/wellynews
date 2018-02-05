@@ -32,7 +32,7 @@ class PlaceAutoTaggerTest {
   }
 
   @Test def testShouldTagNewsitemWithPlaceTags {
-    aroValleyNewsitem = new NewsitemImpl(title = "Test newsitem", description = Some(".. Student flats in the Aro Valley... Test"))
+    aroValleyNewsitem = new NewsitemImpl(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
 
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
 
@@ -40,7 +40,7 @@ class PlaceAutoTaggerTest {
   }
 
   @Test def testPlaceAutoTaggingShouldBeCaseInsensitive {
-    aroValleyNewsitem = new NewsitemImpl(title = "Test newsitem", description = Some(".. Student flats in the aro valley... Test"))
+    aroValleyNewsitem = new NewsitemImpl(title = Some("Test newsitem"), description = Some(".. Student flats in the aro valley... Test"))
 
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
 
