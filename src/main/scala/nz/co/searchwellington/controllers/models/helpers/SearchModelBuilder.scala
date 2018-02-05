@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.collection.immutable
-
 @Component class SearchModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
 
   private val KEYWORDS_PARAMETER = "keywords"
@@ -29,9 +27,9 @@ import scala.collection.immutable
 
     val startIndex = commonAttributesModelBuilder.getStartIndex(page)
 
-    val tag: Option[Tag] =  if (request.getAttribute("tags") != null) (request.getAttribute("tags").asInstanceOf[Seq[Tag]].headOption) else None
+    val maybeTag =  if (request.getAttribute("tags") != null) (request.getAttribute("tags").asInstanceOf[Seq[Tag]].headOption) else None
 
-    val contentWithCount: (Seq[FrontendResource], Int) = tag.fold { // The problem here is that you should be able to content and count in one go
+    val contentWithCount: (Seq[FrontendResource], Int) = maybeTag.fold { // The problem here is that you should be able to content and count in one go
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
 
       val content = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS)
