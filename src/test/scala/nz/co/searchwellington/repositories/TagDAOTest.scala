@@ -15,6 +15,10 @@ class TagDAOTest {
 
   @Test
   def canConnectToMongoAndReadTags {
+
+
+
+
     val mongoUri = "mongodb://localhost:27017/wellynews"
 
     // Connect to the database: Must be done only once per application

@@ -3,12 +3,13 @@ package nz.co.searchwellington.repositories
 import java.util.Date
 
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.hibernate.SessionFactory
 import org.hibernate.criterion.{Order, Restrictions}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class HibernateResourceDAO @Autowired() (sessionFactory: SessionFactory) {
+@Component class HibernateResourceDAO @Autowired() (sessionFactory: SessionFactory, mongoRepository: MongoRepository) {
 
   @SuppressWarnings(Array("unchecked")) def getAllResourceIds: Seq[Integer] = {
     val session = sessionFactory.getCurrentSession
@@ -87,7 +88,7 @@ import org.springframework.stereotype.Component
   }
 
   def loadResourceById(resourceID: Int): Option[Resource] = {
-    Option(sessionFactory.getCurrentSession.get(classOf[Resource], resourceID).asInstanceOf[Resource])
+    mongoRepository.getResourceById(resourceID)
   }
 
   def loadResourceByUrl(url: String): Resource = {

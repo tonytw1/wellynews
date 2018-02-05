@@ -172,7 +172,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
             }.getOrElse {
               log.debug("Tag '" + field + "' is a new tag. Needs to be created.")
-              val newTag: Tag = tagDAO.createNewTag
+              val newTag: Tag = Tag()
               newTag.setName(field)
               newTag.setDisplayName(displayName)
               tagDAO.saveTag(newTag)

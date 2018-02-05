@@ -14,7 +14,7 @@ case class WebsiteImpl(override var id: Int = 0,
                        override var held: Int = 0,
                        override var url_words: Option[String] = None,
                        override var geocode: Option[Int] = None,
-                       override var owner: Option[Int] = None,
+                       override var owner: Option[Int] = None
                        // var feeds: Set[Feed] = Set(),
                        // var watchlist: Set[Watchlist] = Set()
                       ) extends Website {
