@@ -26,41 +26,36 @@ import scala.collection.immutable
     val page = commonAttributesModelBuilder.getPage(request)
     mv.addObject("page", page)
 
-    if (request.getAttribute("tags") != null) {
-      val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-      val tag = tags(0)
-      mv.addObject("tag", tag)
-    }
+    val tag: Option[Tag] =  if (request.getAttribute("tags") != null) (request.getAttribute("tags").asInstanceOf[Seq[Tag]].headOption) else None
 
-    var contentCount: Int = 0
-    if (request.getAttribute("tags") != null) {
-      val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-      val tag = tags.head
-        contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag)
-    } else {
-      contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords)
-    }
-
+    /*
     val startIndex: Int = commonAttributesModelBuilder.getStartIndex(page)
     if (startIndex > contentCount) {
       return null
     }
+    */
 
-    commonAttributesModelBuilder.populatePagination(mv, startIndex, contentCount)
+    val startIndex = 0  // TODO
+
+    val contentCount = tag.fold {
+      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords)
+      mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS))
+      mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
+      contentCount
+
+
+    }{ tag =>
+      mv.addObject("tag", tag)
+      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag)
+      mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS))
+      contentCount
+    }
+
+
     mv.addObject("query", keywords)
     mv.addObject("heading", "Search results - " + keywords)
 
-    if (request.getAttribute("tags") != null) {
-      val tags = request.getAttribute("tags").asInstanceOf[List[Tag]].toSeq
-      val tag = tags(0)
-      if (tag != null) {
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS))
-      }
-
-    } else {
-      mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS))
-      mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
-    }
+    commonAttributesModelBuilder.populatePagination(mv, startIndex, contentCount)
 
     mv.addObject("main_content_total", contentCount)
     mv.addObject("main_heading", "Matching Newsitems")
