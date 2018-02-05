@@ -19,18 +19,18 @@ object TagModelBuilderTest {
 }
 
 class TagModelBuilderTest {
-  @Mock private[models] var contentRetrievalService: ContentRetrievalService = null
-  @Mock private[models] var rssUrlBuilder: RssUrlBuilder = null
-  @Mock private[models] var urlBuilder: UrlBuilder = null
-  @Mock private[models] var relatedTagsService: RelatedTagsService = null
-  @Mock private[models] var rssfeedNewsitemService: RssfeedNewsitemService = null
-  @Mock private[models] var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
-  @Mock private[models] var geocodeToPlaceMapper: GeocodeToPlaceMapper = null
-  @Mock private[models] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock private[models] var tagNewsitems: Seq[FrontendResource] = null
-  @Mock private[models] var tag: Tag = null
+  @Mock var contentRetrievalService: ContentRetrievalService = null
+  @Mock var rssUrlBuilder: RssUrlBuilder = null
+  @Mock var urlBuilder: UrlBuilder = null
+  @Mock var relatedTagsService: RelatedTagsService = null
+  @Mock var rssfeedNewsitemService: RssfeedNewsitemService = null
+  @Mock var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
+  @Mock var geocodeToPlaceMapper: GeocodeToPlaceMapper = null
+  @Mock var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
+  @Mock var tagNewsitems: Seq[FrontendResource] = null
+  @Mock var tag: Tag = null
 
-  private[models] var request: MockHttpServletRequest = null
+  var request: MockHttpServletRequest = null
   private var modelBuilder: TagModelBuilder = null
 
   @Before def setup {

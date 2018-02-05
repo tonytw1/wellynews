@@ -20,7 +20,7 @@ import scala.collection.JavaConverters._
                                                      urlBuilder: UrlBuilder,
                                                      rssUrlBuilder: RssUrlBuilder,
                                                      relatedTagsService: RelatedTagsService,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination {
 
   private val log = Logger.getLogger(classOf[GeotaggedModelBuilder])
 
@@ -40,9 +40,9 @@ import scala.collection.JavaConverters._
       val userSuppliedPlace = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
       val hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
 
-      val page = commonAttributesModelBuilder.getPage(request)
+      val page = getPage(request)
       mv.addObject("page", page)
-      val startIndex = commonAttributesModelBuilder.getStartIndex(page)
+      val startIndex = getStartIndex(page)
 
       if (hasUserSuppliedALocation) {
         val radius = getLocationSearchRadius(request)
@@ -52,7 +52,7 @@ import scala.collection.JavaConverters._
           None
         }
 
-        commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNearbyCount)
+        populatePagination(mv, startIndex, totalNearbyCount)
         mv.addObject("location", userSuppliedPlace)
         mv.addObject("radius", radius)
         mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS))
@@ -81,7 +81,7 @@ import scala.collection.JavaConverters._
         if (startIndex > totalGeotaggedCount) {
           None
         }
-        commonAttributesModelBuilder.populatePagination(mv, startIndex, totalGeotaggedCount)
+        populatePagination(mv, startIndex, totalGeotaggedCount)
 
         mv.addObject("heading", "Geotagged newsitems")
         mv.addObject(MAIN_CONTENT, contentRetrievalService.getGeocoded(startIndex, MAX_NEWSITEMS))

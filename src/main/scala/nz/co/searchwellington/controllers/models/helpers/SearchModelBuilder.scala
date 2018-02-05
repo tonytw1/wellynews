@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
 
-import nz.co.searchwellington.controllers.models.helpers.{CommonAttributesModelBuilder, CommonSizes}
+import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class SearchModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+@Component class SearchModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder)
+  extends ModelBuilder with CommonSizes with Pagination {
 
   private val KEYWORDS_PARAMETER = "keywords"
 
@@ -22,10 +23,10 @@ import org.springframework.web.servlet.ModelAndView
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     val mv = new ModelAndView()
     val keywords = request.getParameter(KEYWORDS_PARAMETER)
-    val page = commonAttributesModelBuilder.getPage(request)
+    val page = getPage(request)
     mv.addObject("page", page)
 
-    val startIndex = commonAttributesModelBuilder.getStartIndex(page)
+    val startIndex = getStartIndex(page)
 
     val maybeTag =  if (request.getAttribute("tags") != null) (request.getAttribute("tags").asInstanceOf[Seq[Tag]].headOption) else None
 
@@ -35,7 +36,6 @@ import org.springframework.web.servlet.ModelAndView
       val content = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS)
       val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords)
       (content, contentCount)
-
 
     }{ tag =>
       mv.addObject("tag", tag)
@@ -50,7 +50,7 @@ import org.springframework.web.servlet.ModelAndView
 
     val contentCount = contentWithCount._2
     mv.addObject("main_content_total", contentCount)
-    commonAttributesModelBuilder.populatePagination(mv, startIndex, contentCount)
+    populatePagination(mv, startIndex, contentCount)
 
     /*
     if (startIndex > contentCount) {

@@ -13,8 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ModelBuilder with CommonSizes {
+@Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
+                                                      relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder)
+  extends ModelBuilder with CommonSizes with Pagination {
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
@@ -27,7 +28,7 @@ import org.springframework.web.servlet.ModelAndView
     def populateTagCombinerModelAndView(tags: List[Tag], page: Int): Option[ModelAndView] = {
       import scala.collection.JavaConversions._
 
-      val startIndex = commonAttributesModelBuilder.getStartIndex(page)
+      val startIndex = getStartIndex(page)
       val totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags)
 
       if (startIndex > totalNewsitemCount) {
@@ -44,7 +45,7 @@ import org.springframework.web.servlet.ModelAndView
           mv.addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName)
           mv.addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".")
           mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag))
-          commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
+          populatePagination(mv, startIndex, totalNewsitemCount)
 
           val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, MAX_NEWSITEMS)
           mv.addObject(MAIN_CONTENT, taggedNewsitems)
@@ -59,7 +60,7 @@ import org.springframework.web.servlet.ModelAndView
 
     if (isValid(request)) {
       val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
-      val page = commonAttributesModelBuilder.getPage(request)
+      val page = getPage(request)
       populateTagCombinerModelAndView(tags, page)
     } else {
       None

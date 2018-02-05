@@ -11,11 +11,9 @@ import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
-
 class SearchModelBuilderTest {
   @Mock val contentRetrievalService: ContentRetrievalService = null
   @Mock val urlBuilder: UrlBuilder = null
-  @Mock val commonAttributesModelBuilder: CommonAttributesModelBuilder = null
   val tag: Tag = Tag(name = "A tag")
   private var tags: Seq[Tag] = null
   private var request: MockHttpServletRequest = null
@@ -25,7 +23,7 @@ class SearchModelBuilderTest {
   @Before def setup {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
-    modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, commonAttributesModelBuilder)
+    modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder)
     tags = Seq(tag)
   }
 

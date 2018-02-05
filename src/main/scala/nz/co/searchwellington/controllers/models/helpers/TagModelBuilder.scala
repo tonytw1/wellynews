@@ -19,7 +19,8 @@ import org.springframework.web.servlet.ModelAndView
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
-                                              geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+                                              geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+  with CommonSizes with Pagination {
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])
 
@@ -40,7 +41,7 @@ import org.springframework.web.servlet.ModelAndView
     def populateTagPageModelAndView(tag: Tag, page: Int): Option[ModelAndView] = {
       val mv = new ModelAndView
       mv.addObject(PAGE, page)
-      val startIndex = commonAttributesModelBuilder.getStartIndex(page)
+      val startIndex = getStartIndex(page)
       val totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag)
 
       if (startIndex > totalNewsitemCount) {
@@ -57,7 +58,7 @@ import org.springframework.web.servlet.ModelAndView
 
         val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS)
         mv.addObject(MAIN_CONTENT, taggedNewsitems)
-        commonAttributesModelBuilder.populatePagination(mv, startIndex, totalNewsitemCount)
+        populatePagination(mv, startIndex, totalNewsitemCount)
         if (taggedNewsitems.size > 0) {
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
         }
@@ -68,7 +69,7 @@ import org.springframework.web.servlet.ModelAndView
     if (isValid(request)) {
       val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
       val tag = tags.get(0)
-      val page = commonAttributesModelBuilder.getPage(request)
+      val page = getPage(request)
       populateTagPageModelAndView(tag, page)
     } else {
       None

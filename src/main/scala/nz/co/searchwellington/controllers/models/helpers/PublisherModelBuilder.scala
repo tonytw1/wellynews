@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView
                                                      urlBuilder: UrlBuilder,
                                                      geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination {
 
   private val logger: Logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
@@ -50,13 +50,13 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("publisher", frontendPublisher)
       mv.addObject("location", frontendPublisher.getPlace)
 
-      val startIndex = commonAttributesModelBuilder.getStartIndex(page)
+      val startIndex = getStartIndex(page)
       val mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher)
       if (mainContentTotal > 0) {
         val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex)
         mv.addObject(MAIN_CONTENT, publisherNewsitems)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-        commonAttributesModelBuilder.populatePagination(mv, startIndex, mainContentTotal)
+        populatePagination(mv, startIndex, mainContentTotal)
       }
       mv
     }
@@ -64,7 +64,7 @@ import org.springframework.web.servlet.ModelAndView
     if (isValid(request)) {
       logger.info("Building publisher page model")
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-      val page = commonAttributesModelBuilder.getPage(request)
+      val page = getPage(request)
       Some(populatePublisherPageModelAndView(publisher, page))
     } else {
       None
