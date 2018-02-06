@@ -15,7 +15,7 @@ trait Resource {
 
   var http_status: Int
 
-  var date: String
+  var date: Option[String]
 
   var description: Option[String]
 
@@ -35,7 +35,7 @@ trait Resource {
 
   var owner: Option[Int]
 
-  def getDate: Date = ISODateTimeFormat.dateParser().parseDateTime(date).toDate // TODO
+  def getDate: Date = date.map(d => ISODateTimeFormat.dateParser().parseDateTime(d).toDate).getOrElse(null) // TODO
 
   def setDate(date: Date): Unit = {}  // TODO
 

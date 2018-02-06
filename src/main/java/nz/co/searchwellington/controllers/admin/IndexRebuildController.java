@@ -34,11 +34,13 @@ public class IndexRebuildController {
     
     @RequestMapping("/admin/indexbuilder")
     public ModelAndView build(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	final User loggedInUser = loggedInUserFilter.getLoggedInUser();
+
+		/*final User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null || !loggedInUser.isAdmin()) {
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         	return null;
     	}
+    	*/
     	        
         boolean deleteAll = false;
 		if (request.getParameter("delete") != null) {

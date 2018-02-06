@@ -12,7 +12,7 @@ import nz.co.searchwellington.repositories.SupressionDAO;
 import nz.co.searchwellington.utils.UrlCleaner;
 
 import org.apache.log4j.Logger;
-import org.elasticsearch.common.joda.time.DateTime;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -111,7 +111,7 @@ public class FeedAcceptanceDecider {
         	return;
         }
         
-        final DateTime oneWeekAgo = DateTime.now().minusWeeks(1);        
+        final DateTime oneWeekAgo = DateTime.now().minusWeeks(1);
         final boolean isMoreThanOneWeekOld = new DateTime(feedNewsitem.getDate()).isBefore(oneWeekAgo);
 		if (isMoreThanOneWeekOld) {
             acceptanceErrors.add("Item is more than one week old");            

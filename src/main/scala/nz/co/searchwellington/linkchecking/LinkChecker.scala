@@ -17,7 +17,7 @@ import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
 import uk.co.eelpieconsulting.archiving.Snapshot
 import uk.co.eelpieconsulting.archiving.SnapshotArchive
 
-@Component class LinkChecker @Autowired() (resourceDAO: HibernateResourceDAO, contentUpdateService: ContentUpdateService, httpFetcher: HttpFetcher, processers: LinkCheckerProcessor*) {
+@Component class LinkChecker @Autowired() (resourceDAO: HibernateResourceDAO, contentUpdateService: ContentUpdateService, httpFetcher: HttpFetcher) {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT: Int = -1
@@ -25,6 +25,9 @@ import uk.co.eelpieconsulting.archiving.SnapshotArchive
   val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
   @Transactional def scanResource(checkResourceId: Int) {
+
+    val processers: Seq[LinkCheckerProcessor] = Seq() // TODO inject
+
     resourceDAO.loadResourceById(checkResourceId).map { resource =>
       if (resource != null && !Strings.isNullOrEmpty(resource.getUrl)) {
         log.info("Checking: " + resource.getName + " (" + resource.getUrl + ")")

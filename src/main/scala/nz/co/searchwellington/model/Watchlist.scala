@@ -6,7 +6,7 @@ case class Watchlist(
                       override var title: Option[String] = None,
                       override var page: Option[String] = None,
                       override var http_status: Int = 0,
-                      override var date: String = null,
+                      override var date: Option[String] = None,
                       override var description: Option[String] = None,
                       override var last_scanned: Option[String] = None,
                       override var last_changed: Option[String] = None,

@@ -247,7 +247,8 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getNewsPage(pathInfo: String): Option[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken)
+    //elasticSearchBackedResourceDAO.getNewspage(pathInfo, showBrokenDecisionService.shouldShowBroken)
+    None
   }
 
   def getFeaturedTags: Seq[Tag] = {

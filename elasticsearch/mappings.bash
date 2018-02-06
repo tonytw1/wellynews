@@ -1,9 +1,9 @@
-curl -XPUT 'http://localhost:9200/searchwellington/resources/_mapping' -d '{
+curl -XPUT 'http://localhost:9200/searchwellington/resources/_mapping' -H 'Content-Type: application/json' -d '{
          "resources" : {
             "properties" : {
                "tags.id" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "analyzer": "standard",
+                  "type" : "text"
                },
                "held" : {
                   "type" : "boolean"
@@ -13,7 +13,7 @@ curl -XPUT 'http://localhost:9200/searchwellington/resources/_mapping' -d '{
                   "type" : "date"
                },
                "acceptedByProfilename" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "place" : {
                   "properties" : {
@@ -28,12 +28,12 @@ curl -XPUT 'http://localhost:9200/searchwellington/resources/_mapping' -d '{
                         }
                      },
                      "address" : {
-                        "type" : "string"
+                        "type" : "text"
                      },
                      "osmId" : {
                         "properties" : {
                            "type" : {
-                              "type" : "string"
+                              "type" : "text"
                            },
                            "id" : {
                               "type" : "long"
@@ -43,7 +43,7 @@ curl -XPUT 'http://localhost:9200/searchwellington/resources/_mapping' -d '{
                   }
                },
                "author" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "latestItemDate" : {
                   "type" : "long"
@@ -51,30 +51,32 @@ curl -XPUT 'http://localhost:9200/searchwellington/resources/_mapping' -d '{
                "handTags" : {
                   "properties" : {
                      "name" : {
-                        "type" : "string"
+                        "type" : "text"
                      },
                      "id" : {
-                        "type" : "string"
+                        "type" : "text"
                      }
                   }
                },
                "urlWords" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "analyzer": "standard",
+                  "type" : "text"
                },
                "url" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "id" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "analyzer": "standard",
+                  "type" : "text",
+                  "store": true
+
                },
                "publisherName" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "analyzer": "standard",
+                  "type" : "text"
                },
                "owner" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "latLong" : {
                   "properties" : {
@@ -90,58 +92,57 @@ curl -XPUT 'http://localhost:9200/searchwellington/resources/_mapping' -d '{
                   "type" : "geo_point"
                },
                "name" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "analyzer": "standard",
+                  "type" : "text"
                },
                "frontendImage" : {
                   "properties" : {
                      "url" : {
-                        "type" : "string"
+                        "type" : "text"
                      }
                   }
                },
                "description" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "tags" : {
                   "properties" : {
                      "name" : {
-                        "type" : "string"
+                        "type" : "text"
                      },
                      "id" : {
-                        "type" : "string"
+                        "type" : "text"
                      }
                   }
                },
                "imageUrl" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "acceptedFromFeedName" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "accepted" : {
                   "type" : "long"
                },
                "type" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "analyzer": "standard",
+                  "type" : "text"
                },
                "httpStatus" : {
                   "type" : "long"
                },
                "place.osmId.id" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "type" : "long"
                },
                "webUrl" : {
-                  "type" : "string"
+                  "type" : "text"
                },
                "place.osmId.type" : {
-                  "index" : "not_analyzed",
-                  "type" : "string"
+                  "analyzer": "standard",
+                  "type" : "text"
                },
                "headline" : {
-                  "type" : "string"
+                  "type" : "text"
                }
             }
          }

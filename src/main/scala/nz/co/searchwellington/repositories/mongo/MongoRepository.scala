@@ -1,14 +1,14 @@
 package nz.co.searchwellington.repositories.mongo
 
-import nz.co.searchwellington.model.{Resource, Tag, WebsiteImpl}
+import nz.co.searchwellington.model.{NewsitemImpl, Tag, WebsiteImpl}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDocument, BSONDocumentReader, Macros}
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component
 class MongoRepository {
@@ -56,6 +56,11 @@ class MongoRepository {
 
   def getFeaturedTags(): Seq[Tag] = {
     val eventualTags = tagCollection.find(BSONDocument("featured" -> 1)).cursor[Tag].toList()
+    Await.result(eventualTags, Duration(10000, MILLISECONDS))
+  }
+
+  def getAllWebsites(): Seq[WebsiteImpl] = {
+    val eventualTags = resourceCollection.find(BSONDocument("type" -> "N")).cursor[WebsiteImpl].toList()
     Await.result(eventualTags, Duration(10000, MILLISECONDS))
   }
 

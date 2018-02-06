@@ -2,8 +2,8 @@ package nz.co.searchwellington.feeds.reading
 
 import java.io.UnsupportedEncodingException
 
+import com.google.common.collect.Lists
 import org.apache.log4j.Logger
-import org.elasticsearch.common.collect.Lists
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.http.{HttpBadRequestException, HttpFetchException, HttpForbiddenException, HttpNotFoundException}
@@ -11,9 +11,13 @@ import uk.co.eelpieconsulting.whakaoro.client.WhakaoroClient
 import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Component class WhakaokoService @Autowired()(val url: String, val username: String, val channel: String) {
+@Component class WhakaokoService @Autowired()() {
 
   private val log = Logger.getLogger(classOf[WhakaokoService])
+
+  val url = "TODO"
+  val username = "TODO"
+  val channel = "TODO"
 
   def createFeedSubscription(url: String): String = {
     log.info("Requesting Whakakaoro subscription for feed")

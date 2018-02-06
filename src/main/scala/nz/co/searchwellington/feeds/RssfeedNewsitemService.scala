@@ -9,7 +9,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class RssfeedNewsitemService @Autowired()(liveRssfeedNewsitemService: LiveRssfeedNewsitemService, var resourceDAO: HibernateResourceDAO) {
+@Component class RssfeedNewsitemService @Autowired() (liveRssfeedNewsitemService: LiveRssfeedNewsitemService, var resourceDAO: HibernateResourceDAO) {
 
   private val log = Logger.getLogger(classOf[RssfeedNewsitemService])
 

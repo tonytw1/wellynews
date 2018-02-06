@@ -21,7 +21,7 @@ public class FrontendContentUpdater {
 	
 	public void update(Resource updatedResource) {
 		log.info("Updating elastic search record for resource: " + updatedResource.getName());
-		elasticSearchIndexUpdateService.updateSingleContentItem(updatedResource);
+		// elasticSearchIndexUpdateService.updateSingleContentItem(updatedResource);
 	}
 
 }

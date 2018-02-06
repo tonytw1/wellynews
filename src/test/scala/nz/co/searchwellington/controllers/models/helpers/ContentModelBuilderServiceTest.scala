@@ -31,6 +31,7 @@ class ContentModelBuilderServiceTest {
   @Mock private[helpers] val validModelBuilder: ModelBuilder = null
   private[helpers] var contentModelBuilderService: ContentModelBuilderService = null
 
+  /*
   @Before def setup {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
@@ -70,5 +71,6 @@ class ContentModelBuilderServiceTest {
     request.setPathInfo("/something/json")
     assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).get.getView)
   }
+  */
 
 }

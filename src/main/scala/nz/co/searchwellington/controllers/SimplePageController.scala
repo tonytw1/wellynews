@@ -1,12 +1,10 @@
 package nz.co.searchwellington.controllers
 
 import java.io.IOException
-import java.util.List
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository
-import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -19,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView
   @Timed(timingNotes = "")
   @throws[IOException]
   def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    println("!!!!!!!!!!!")
     val mv = new ModelAndView
     urlStack.setUrlStack(request)
     commonModelObjectsService.populateCommonLocal(mv)

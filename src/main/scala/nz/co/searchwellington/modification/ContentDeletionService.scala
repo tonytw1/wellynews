@@ -36,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional
         log.info("Not found in live feeds; not supressing")
       }
     }
-    elasticSearchIndexUpdateService.deleteContentItem(resource.getId)
+    //elasticSearchIndexUpdateService.deleteContentItem(resource.getId)
     resourceDAO.deleteResource(resource)
   }
 

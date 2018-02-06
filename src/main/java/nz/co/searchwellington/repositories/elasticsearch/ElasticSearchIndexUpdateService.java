@@ -25,19 +25,20 @@ public class ElasticSearchIndexUpdateService {
 	
 	private static Logger log = Logger.getLogger(ElasticSearchIndexUpdateService.class);
 	
-	private final ElasticSearchClientFactory elasticSearchClientFactory;
+	//private final ElasticSearchClientFactory elasticSearchClientFactory;
 	private final FrontendResourceMapper frontendResourceMapper;
 	private final ObjectMapper mapper;
 	
 	@Autowired
-	public ElasticSearchIndexUpdateService(ElasticSearchClientFactory elasticSearchClientFactory,
+	public ElasticSearchIndexUpdateService( //ElasticSearchClientFactory elasticSearchClientFactory,
 			FrontendResourceMapper frontendResourceMapper) {
-		this.elasticSearchClientFactory = elasticSearchClientFactory;
+		// this.elasticSearchClientFactory = elasticSearchClientFactory;
 		this.frontendResourceMapper = frontendResourceMapper;
 		this.mapper = new ObjectMapper();
 		this.mapper.configure(MapperFeature.USE_ANNOTATIONS, true);	    
 	}
-	
+
+	/*
 	public void updateSingleContentItem(Resource contentItem) {
 		log.debug("Updating content item: " + contentItem.getId());		
 		try {
@@ -81,5 +82,6 @@ public class ElasticSearchIndexUpdateService {
 		log.debug("Updating elastic search with json: " + json);
 		return client.prepareIndex(INDEX, TYPE, Integer.toString(contentItem.getId())).setSource(json);
 	}
+	*/
 	
 }
