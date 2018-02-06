@@ -2,8 +2,6 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
-import org.joda.time.DateTime
-
 case class NewsitemImpl(override var id: Int = 0,
                         override var `type`: String = "",
                         override var title: Option[String] = None,

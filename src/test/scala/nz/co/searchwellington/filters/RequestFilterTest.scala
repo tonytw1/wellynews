@@ -1,23 +1,12 @@
 package nz.co.searchwellington.filters
 
+import nz.co.searchwellington.filters.attributesetters.{CombinerPageAttributeSetter, FeedAttributeSetter, PublisherPageAttributeSetter, TagPageAttributeSetter}
+import nz.co.searchwellington.model.{Feed, Tag, Website}
+import nz.co.searchwellington.repositories.{HibernateResourceDAO, TagDAO}
 import org.junit.Assert.assertEquals
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.verifyNoMoreInteractions
-import org.mockito.Mockito.when
-import java.util
-import nz.co.searchwellington.filters.attributesetters.CombinerPageAttributeSetter
-import nz.co.searchwellington.filters.attributesetters.FeedAttributeSetter
-import nz.co.searchwellington.filters.attributesetters.PublisherPageAttributeSetter
-import nz.co.searchwellington.filters.attributesetters.TagPageAttributeSetter
-import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.model.Website
-import nz.co.searchwellington.repositories.HibernateResourceDAO
-import nz.co.searchwellington.repositories.TagDAO
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+import org.junit.{Before, Test}
+import org.mockito.Mockito.{verify, verifyNoMoreInteractions, when}
+import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
 class RequestFilterTest {

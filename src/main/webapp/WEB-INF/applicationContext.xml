@@ -34,17 +34,6 @@
 	
 	<import resource="database.xml" />	
 	<import resource="commentfeeds.xml" />	
-							
-	<bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
-	  	<property name="transactionInterceptor" ref="txInterceptor"/>
-	</bean>
-	
-	<bean id="txInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
-		<property name="transactionManager" ref="transactionManager"/>
-	 	<property name="transactionAttributeSource">
-   			<bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
-  		</property>
-	</bean>
 
 	<bean id="memcache" class="uk.co.eelpieconsulting.common.caching.MemcachedCache">
 		<constructor-arg index="0" value="#{config['memcached.urls']}" />

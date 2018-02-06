@@ -3,18 +3,22 @@ package nz.co.searchwellington.controllers.models
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.controllers.models.helpers.IndexModelBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-@Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, commonModelObjectsService: CommonModelObjectsService, modelBuilders: ModelBuilder*) {
+@Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, commonModelObjectsService: CommonModelObjectsService,
+                                                          indexModelBuilder: IndexModelBuilder) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
   private val JSON_CALLBACK_PARAMETER = "callback"
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    val modelBuilders = Seq(indexModelBuilder)
 
     val modelBuilderToUse: Option[ModelBuilder] = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
 

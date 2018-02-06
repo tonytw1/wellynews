@@ -2,25 +2,9 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
-	    <property name="sessionFactory" ref="sessionFactory" />
-	    <property name="nestedTransactionAllowed" value="true" />	    
-	</bean>
-
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean" lazy-init="true">
 		<property name="mappingResources">
     		<list>
-       			<value>nz/co/searchwellington/model/Comment.hbm.xml</value>
-      			<value>nz/co/searchwellington/model/CommentFeed.hbm.xml</value>	
-      			<value>nz/co/searchwellington/model/DiscoveredFeed.hbm.xml</value>
-      			<value>nz/co/searchwellington/model/Geocode.hbm.xml</value>
-     			<value>nz/co/searchwellington/model/Resource.hbm.xml</value>
-     			<value>nz/co/searchwellington/model/Image.hbm.xml</value>     			
-      			<value>nz/co/searchwellington/model/Tag.hbm.xml</value>
-      	 		<value>nz/co/searchwellington/model/User.hbm.xml</value>
-      			<value>nz/co/searchwellington/model/Supression.hbm.xml</value>
-      			<value>nz/co/searchwellington/model/Twit.hbm.xml</value>
-      			<value>nz/co/searchwellington/model/HandTagging.hbm.xml</value>      			   			      			
     		</list>
   		</property>
   		<property name="hibernateProperties">
