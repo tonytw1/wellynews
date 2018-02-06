@@ -1,14 +1,13 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.model.Supression
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
-import org.hibernate.SessionFactory
 import org.hibernate.criterion.Restrictions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
-@Component class SupressionDAO @Autowired() (sessionFactory: SessionFactory) {
+@Component class SupressionDAO @Autowired() (mongoRepository: MongoRepository) {
 
   private val log = Logger.getLogger(classOf[SupressionDAO])
 

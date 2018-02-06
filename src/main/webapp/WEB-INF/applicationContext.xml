@@ -32,8 +32,7 @@
 		</property>
 	</bean>
 	
-	<import resource="database.xml" />	
-	<import resource="commentfeeds.xml" />	
+	<import resource="commentfeeds.xml" />
 
 	<bean id="memcache" class="uk.co.eelpieconsulting.common.caching.MemcachedCache">
 		<constructor-arg index="0" value="#{config['memcached.urls']}" />

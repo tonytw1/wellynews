@@ -1,20 +1,18 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.model.User
-import org.hibernate.SessionFactory
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.hibernate.criterion.{Order, Restrictions}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
-@Component class HibernateBackedUserDAO @Autowired() (sessionFactory: SessionFactory) {
+@Component class HibernateBackedUserDAO @Autowired() (mongoRepository: MongoRepository) {
 
   def getUserByOpenId(openId: String): User = {
     sessionFactory.getCurrentSession.createCriteria(classOf[User]).add(Restrictions.eq("openId", openId)).uniqueResult.asInstanceOf[User]
   }
 
   def getActiveUsers(): Seq[User] = {
-    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[User]).addOrder(Order.asc("profilename")).setCacheable(true).list.asInstanceOf[java.util.List[User]]
   }
 

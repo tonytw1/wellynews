@@ -4,13 +4,11 @@ import java.util.List
 
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.hibernate.SessionFactory
 import org.hibernate.criterion.{Order, Restrictions}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
-@Component class TagDAO @Autowired() (sessionFactory: SessionFactory, mongoRepository: MongoRepository) {
+@Component class TagDAO @Autowired() (mongoRepository: MongoRepository) {
 
   def createNewTag(tagUrlWords: String, displayName: String): Tag = {
     new Tag(name = tagUrlWords, display_name = displayName)
@@ -43,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   @SuppressWarnings(Array("unchecked")) def getTopLevelTags: Seq[Tag] = {
-    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.isNull("parent")).
       addOrder(Order.asc("name")).setCacheable(true).list.asInstanceOf[List[Tag]]
   }
@@ -58,7 +55,6 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   def getTagNamesStartingWith(q: String): Seq[String] = {
-    import scala.collection.JavaConversions._
     val session = sessionFactory.getCurrentSession
     session.createQuery("select name from nz.co.searchwellington.model.Tag where name like ? order by name").
       setString(0, q + '%').setMaxResults(50).list.asInstanceOf[List[String]]

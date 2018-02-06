@@ -1,20 +1,18 @@
 package nz.co.searchwellington.repositories
 
-import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.model.taggingvotes.HandTagging
+import nz.co.searchwellington.model.{Resource, Tag, User}
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
-import org.hibernate.SessionFactory
 import org.hibernate.criterion.Restrictions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
-@Component class HandTaggingDAO @Autowired() (sessionFactory: SessionFactory) {
+@Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository) {
   
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
 
   @SuppressWarnings(Array("unchecked")) def getHandTaggingsForResource(resource: Resource): Seq[HandTagging] = {
-    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).
       setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
   }
@@ -28,14 +26,12 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   @SuppressWarnings(Array("unchecked")) def getVotesForTag(tag: Tag): Seq[HandTagging] = {
-    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("tag", tag)).
       setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
   }
 
   def setUsersTagVotesForResource(editResource: Resource, user: User, tags: Set[Tag]) {
     this.clearTagsForResourceByUser(editResource, user)
-    import scala.collection.JavaConversions._
     for (tag <- tags) {
       this.addTag(user, tag, editResource)
     }
@@ -57,7 +53,6 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   @SuppressWarnings(Array("unchecked")) def getUsersVotes(user: User): Seq[HandTagging] = {
-    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("user", user)).
       setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
   }
@@ -69,7 +64,6 @@ import org.springframework.transaction.annotation.Transactional
   }
 
   @SuppressWarnings(Array("unchecked")) private def getHandTaggingsForResourceByUser(resource: Resource, user: User): Seq[HandTagging] = {
-    import scala.collection.JavaConversions._
     sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).
       add(Restrictions.eq("user", user)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
   }
