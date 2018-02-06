@@ -47,10 +47,10 @@ import scala.collection.mutable
     }
 
     if (resource.getType == "N") {
-      val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
-      if (acceptedFeed != null) {
-        votes ++= addAcceptedFromFeedTags(this.getHandTagsForResource(acceptedFeed).toSet)
-      }
+      //val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
+      //if (acceptedFeed != null) {
+       // votes ++= addAcceptedFromFeedTags(this.getHandTagsForResource(acceptedFeed).toSet)
+     // }
     }
 
     votes.toList
@@ -63,11 +63,13 @@ import scala.collection.mutable
     }
 
     if ((resource.getType == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
+      /*
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       if (publisher.getGeocode != null && publisher.getGeocode.isValid) {
         log.debug("Adding publisher geotag: " + publisher.getGeocode.toString)
         votes += new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1)
       }
+      */
     }
 
     // TODO val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
@@ -88,6 +90,7 @@ import scala.collection.mutable
   private def generatePublisherDerivedTagVotes(resource: Resource): List[TaggingVote] = {
     val publisherTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
 
+    /*
     if ((resource.asInstanceOf[PublishedResource]).getPublisher != null) {
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       for (publisherTag <- this.getHandTagsForResource(publisher)) {
@@ -95,6 +98,8 @@ import scala.collection.mutable
         // TODO publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
       }
     }
+    */
+
     publisherTagVotes.toList
   }
 

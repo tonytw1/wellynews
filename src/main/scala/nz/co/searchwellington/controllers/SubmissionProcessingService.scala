@@ -46,7 +46,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
   def processImage(request: HttpServletRequest, editResource: Newsitem, loggedInUser: User) {
     val image = request.getAttribute("image").asInstanceOf[Image]
-    editResource.setImage(image)
+    // editResource.setImage(image)
   }
 
   def processGeocode(request: HttpServletRequest): Geocode = {
@@ -131,7 +131,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
         val publisher: Website = resourceDAO.getPublisherByName(publisherName).asInstanceOf[Website]
         if (publisher != null) {
           log.info("Found publisher: " + publisher.getName)
-          (editResource.asInstanceOf[PublishedResource]).setPublisher(publisher)
+          // (editResource.asInstanceOf[PublishedResource]).setPublisher(publisher)
         }
       }
     }
@@ -144,9 +144,9 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
         log.info("Item was accepted from a feed with url words: " + acceptedFromFeedUrlWords)
         Option(resourceDAO.loadFeedByUrlWords(acceptedFromFeedUrlWords)).map { feed =>
           log.info("Setting accepted from feed to: " + feed.getName)
-          (editResource.asInstanceOf[Newsitem]).setFeed(feed)
-          (editResource.asInstanceOf[Newsitem]).setAcceptedBy(loggedInUser)
-          (editResource.asInstanceOf[Newsitem]).setAccepted(DateTime.now.toDate)
+          // (editResource.asInstanceOf[Newsitem]).setFeed(feed)
+          // (editResource.asInstanceOf[Newsitem]).setAcceptedBy(loggedInUser)
+          // (editResource.asInstanceOf[Newsitem]).setAccepted(DateTime.now.toDate)
         }
       }
     }

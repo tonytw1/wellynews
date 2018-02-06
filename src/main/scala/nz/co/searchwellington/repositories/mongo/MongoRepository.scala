@@ -31,7 +31,8 @@ class MongoRepository {
   def resourceCollection: BSONCollection = connect().collection("resource")
   def tagCollection: BSONCollection = connect().collection("tag")
 
-  implicit def resourceReader: BSONDocumentReader[WebsiteImpl] = Macros.reader[WebsiteImpl]
+  implicit def newsitemReader = Macros.reader[NewsitemImpl]
+  implicit def websiteReader = Macros.reader[WebsiteImpl]
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
 
   def getResourceById(id: Int): Option[WebsiteImpl] = {
@@ -59,9 +60,12 @@ class MongoRepository {
     Await.result(eventualTags, Duration(10000, MILLISECONDS))
   }
 
+  def getAllNewsitems(): Seq[NewsitemImpl] = {
+    Await.result(resourceCollection.find(BSONDocument("type" -> "N")).cursor[NewsitemImpl].toList(), Duration(10000, MILLISECONDS))
+  }
+
   def getAllWebsites(): Seq[WebsiteImpl] = {
-    val eventualTags = resourceCollection.find(BSONDocument("type" -> "N")).cursor[WebsiteImpl].toList()
-    Await.result(eventualTags, Duration(10000, MILLISECONDS))
+    Await.result(resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl].toList(), Duration(10000, MILLISECONDS))
   }
 
 }

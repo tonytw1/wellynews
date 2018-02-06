@@ -51,7 +51,7 @@ import org.springframework.web.servlet.ModelAndView
 
       val autotaggedNewsitems = resources.filter(resource => resource.getType == "N").map { newsitem =>
         log.info("Applying publisher " + publisher.getName + " to:" + newsitem.getName)
-        (newsitem.asInstanceOf[Newsitem]).setPublisher(publisher)
+        // (newsitem.asInstanceOf[Newsitem]).setPublisher(publisher)
         contentUpdateService.update(newsitem)
         newsitem
       }

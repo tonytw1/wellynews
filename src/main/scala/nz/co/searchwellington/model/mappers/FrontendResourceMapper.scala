@@ -18,11 +18,11 @@ import scala.collection.mutable
       val contentItemNewsitem: Newsitem = contentItem.asInstanceOf[Newsitem]
       val frontendNewsitem: FrontendNewsitem = new FrontendNewsitem
       frontendNewsitem.setPublisherName(contentItemNewsitem.getPublisherName)
-      frontendNewsitem.setAcceptedFromFeedName(if (contentItemNewsitem.getFeed != null) contentItemNewsitem.getFeed.getName else null)
-      frontendNewsitem.setAcceptedByProfilename(if (contentItemNewsitem.getAcceptedBy != null) contentItemNewsitem.getAcceptedBy.getProfilename else null)
+      // frontendNewsitem.setAcceptedFromFeedName(if (contentItemNewsitem.getFeed != null) contentItemNewsitem.getFeed.getName else null)
+      // frontendNewsitem.setAcceptedByProfilename(if (contentItemNewsitem.getAcceptedBy != null) contentItemNewsitem.getAcceptedBy.getProfilename else null)
       frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted)
       if (contentItemNewsitem.getImage != null) {
-        frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage.getUrl))
+        // frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage.getUrl))
       }
       frontendContentItem = frontendNewsitem
     }

@@ -95,10 +95,10 @@ public class FeedAcceptanceDecider {
     
 	// TODO acceptance errors are really moderation votes which human voters should probably be able to overrule.
 	private void alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(FrontendFeedNewsitem resource, List<String> acceptanceErrors, Feed feed) {
-		 if (resourceDAO.loadNewsitemByHeadlineAndPublisherWithinLastMonth(resource.getName(), feed.getPublisher()) !=  null) {
-			 log.info("A recent resource from the same publisher with the same headline '" + resource.getName() + "' already exists; not accepting.");
-			 acceptanceErrors.add("A recent resource from the same publisher with the same headline already exists; not accepting.");
-		 }
+		 //if (resourceDAO.loadNewsitemByHeadlineAndPublisherWithinLastMonth(resource.getName(), feed.getPublisher()) !=  null) {
+	//		 log.info("A recent resource from the same publisher with the same headline '" + resource.getName() + "' already exists; not accepting.");
+		//	 acceptanceErrors.add("A recent resource from the same publisher with the same headline already exists; not accepting.");
+	//	 }
 	}
 	
     private void lessThanOneWeekOld(FrontendFeedNewsitem feedNewsitem, FeedAcceptancePolicy acceptancePolicy, List<String> acceptanceErrors) {      

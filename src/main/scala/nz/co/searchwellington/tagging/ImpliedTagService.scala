@@ -8,8 +8,9 @@ import org.springframework.stereotype.Component
 class ImpliedTagService @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService) {
 
   def alreadyHasTag(resource: Resource, tag: Tag): Boolean = {
-    val isNewsitemWhosPublisherAlreadyHasThisTag = resource.getType == "N" && resource.asInstanceOf[Newsitem].getPublisher != null && taggingReturnsOfficerService.getHandTagsForResource(resource.asInstanceOf[Newsitem].getPublisher).contains(tag)
-    isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
+    //val isNewsitemWhosPublisherAlreadyHasThisTag = resource.getType == "N" && resource.asInstanceOf[Newsitem].getPublisher != null && taggingReturnsOfficerService.getHandTagsForResource(resource.asInstanceOf[Newsitem].getPublisher).contains(tag)
+    //isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
+    false
   }
   
 }

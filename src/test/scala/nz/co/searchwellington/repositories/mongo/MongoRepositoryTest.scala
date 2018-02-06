@@ -14,4 +14,16 @@ class MongoRepositoryTest {
     assertEquals(306, tags.size)
   }
 
+  @Test
+  def canConnectToMongoAndReadNewsitems {
+    val newsitems = mongoRepository.getAllNewsitems()
+    assertEquals(306, newsitems.size)
+  }
+
+  @Test
+  def canConnectToMongoAndReadWebsites {
+    val websites = mongoRepository.getAllWebsites()
+    assertEquals(306, websites.size)
+  }
+
 }

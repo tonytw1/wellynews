@@ -15,7 +15,7 @@ public class FeedItemAcceptor {
 	private static Logger log = Logger.getLogger(FeedItemAcceptor.class);
 	
 	public Newsitem acceptFeedItem(User user, Newsitem newsitem) {
-		log.info("Accepting: " + newsitem.getName() + " from " + newsitem.getFeed().getName());
+		// log.info("Accepting: " + newsitem.getName() + " from " + newsitem.getFeed().getName());
 		flattenLoudCapsInTitle(newsitem);     
         if (newsitem.getDate() == null) {
         	log.info("Accepting a feeditem with no date; setting date to current time");            
@@ -23,7 +23,7 @@ public class FeedItemAcceptor {
         }
         
         newsitem.setAccepted(new DateTime().toDate());
-        newsitem.setAcceptedBy(user);
+       // newsitem.setAcceptedBy(user);
         newsitem.setOwner(user);
         return newsitem;
     }

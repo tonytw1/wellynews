@@ -8,9 +8,12 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 @Component class WhakaokoFeedItemMapper {
 
   def mapWhakaokoFeeditem(feed: Feed, feedItem: FeedItem): FrontendFeedNewsitem = {
-    new FrontendFeedNewsitem(feedItem.getTitle, feedItem.getUrl, feedItem.getDate, feedItem.getBody, feedItem.getPlace, makeFrontendFeed(feed), if (feed != null && feed.getPublisher != null) feed.getPublisher.getName
-    else null, if (feedItem.getImageUrl != null) new FrontendImage(feedItem.getImageUrl)
-    else null)
+    var publisherName = null // if (feed != null && feed.getPublisher != null) feed.getPublisher.getName else null
+    var imageUrl = null //if (feedItem.getImageUrl != null) new FrontendImage(feedItem.getImageUrl) else null
+    new FrontendFeedNewsitem(feedItem.getTitle, feedItem.getUrl, feedItem.getDate, feedItem.getBody, feedItem.getPlace, makeFrontendFeed(feed),
+      publisherName,
+      imageUrl
+    )
   }
 
   private def makeFrontendFeed(feed: Feed): FrontendFeed = {

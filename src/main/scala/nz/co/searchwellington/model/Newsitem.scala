@@ -4,15 +4,15 @@ import java.util.Date
 
 trait Newsitem extends PublishedResource with Commentable {
 
-  def getImage: Image
-  def setImage(image: Image): Unit
+  def getImage: Option[Int]
+  def setImage(image: Int): Unit
 
-  def getFeed: Feed
-  def setFeed(feed: Feed): Unit
+  def getFeed: Option[Int]
+  def setFeed(feed: Int): Unit
 
   def getAccepted: Date
   def setAccepted(accepted: Date): Unit
 
-  def getAcceptedBy: User
-  def setAcceptedBy(user: User): Unit
+  def getAcceptedBy: Option[Int]
+  def setAcceptedBy(user: Int): Unit
 }

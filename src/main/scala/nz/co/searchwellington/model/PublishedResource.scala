@@ -1,14 +1,15 @@
 package nz.co.searchwellington.model
 
 trait PublishedResource extends Resource {
-  var publisher: Website
+  var publisher: Option[Int]
+  def getPublisher: Option[Int] = publisher
 
-  def getPublisher: Website = publisher
-
-  def setPublisher(publisher: Website): Unit = this.publisher = publisher
+  def setPublisher(publisher: Int): Unit = this.publisher = Some(publisher)
 
   def getPublisherName: String = {
-    if (publisher != null) publisher.getName else null
+    //if (publisher != null) publisher.getName else null
+    // publisher.getOrElse("")
+    null
   }
 
 }

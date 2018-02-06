@@ -86,4 +86,15 @@ class UrlBuilderTest {
     val osmId = new OsmId(24724709, OsmType.WAY)
     assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId))
   }
+
+  @Test
+  def group: Unit = {
+
+    println("Done")
+
+  }
+
+
+
+
 }

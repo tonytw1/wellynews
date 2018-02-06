@@ -16,7 +16,7 @@ case class Watchlist(
                       override var url_words: Option[String] = None,
                       override var geocode: Option[Int] = None,
                       override var owner: Option[Int] = None,
-                      override var publisher: Website = null
+                      override var publisher: Option[Int] = None
                     ) extends PublishedResource {
 
   override def getType = "L"

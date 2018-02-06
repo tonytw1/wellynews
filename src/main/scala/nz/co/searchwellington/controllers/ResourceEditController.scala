@@ -119,9 +119,9 @@ import org.springframework.web.servlet.view.RedirectView
     modelAndView.addObject("heading", "Accepting a submission")
     modelAndView.addObject("resource", acceptedNewsitem)
     modelAndView.addObject("publisher_select", "1")
-    modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
-    modelAndView.addObject("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(if (acceptedNewsitem.getFeed != null) acceptedNewsitem.getFeed.getName
-    else null))
+    // modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
+    // modelAndView.addObject("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(if (acceptedNewsitem.getFeed != null) acceptedNewsitem.getFeed.getName
+    // else null))
     return modelAndView
   }
 

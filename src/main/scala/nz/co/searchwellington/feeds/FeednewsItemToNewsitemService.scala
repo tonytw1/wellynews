@@ -15,25 +15,24 @@ class FeednewsItemToNewsitemService @Autowired() (textTrimmer: TextTrimmer, plac
   def makeNewsitemFromFeedItem(feed: Feed, feedNewsitem: FrontendFeedNewsitem): Newsitem = {
 
     val newsitem = NewsitemImpl(title = Some(feedNewsitem.getName), page = Some(feedNewsitem.getUrl), description = Some(composeDescription(feedNewsitem)),
-      date = null, publisher = feed.getPublisher) // TODO date
-    newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
-    newsitem.setFeed(feed)
-    newsitem.setPublisher(feed.getPublisher)
+      date = null, publisher = None) // TODO date and publisher
+    // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
+    // newsitem.setFeed(feed)
+    // newsitem.setPublisher(feed.getPublisher)
 
     val place: Place = feedNewsitem.getPlace
     if (place != null) {
       newsitem.setGeocode(placeToGeocodeMapper.mapPlaceToGeocode(place))
     }
     if (feedNewsitem.getFrontendImage != null) {
-      newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
+      // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
     }
     return newsitem
   }
 
   private def composeDescription(feedNewsitem: FrontendFeedNewsitem): String = {
-    var description: String = if (feedNewsitem.getDescription != null) feedNewsitem.getDescription else ""
-    description = textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH)
-    return description
+    var description = if (feedNewsitem.getDescription != null) feedNewsitem.getDescription else ""
+    textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH)
   }
 
 }

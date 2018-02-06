@@ -1,9 +1,9 @@
 package nz.co.searchwellington.model
 
 trait Commentable {
-  def getCommentFeed: CommentFeed
+  def getCommentFeed: Option[Int]
 
-  def setCommentFeed(commentFeed: CommentFeed)
+  def setCommentFeed(commentFeed: Int)
 
-  def getComments: Seq[Comment]
+  // def getComments: Seq[Comment]
 }

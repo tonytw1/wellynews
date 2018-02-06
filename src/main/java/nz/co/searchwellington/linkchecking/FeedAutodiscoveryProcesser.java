@@ -97,7 +97,7 @@ public class FeedAutodiscoveryProcesser implements LinkCheckerProcessor {
             commentFeed = resourceFactory.createNewCommentFeed(commentFeedUrl);                         
             resourceDAO.saveCommentFeed(commentFeed);
         }
-        ((Newsitem) checkResource).setCommentFeed(commentFeed);      
+        //((Newsitem) checkResource).setCommentFeed(commentFeed);
     }
 
     private void recordDiscoveredFeedUrl(Resource checkResource, String discoveredFeedUrl) {        

@@ -56,25 +56,25 @@ import org.springframework.transaction.annotation.Transactional
   private def removePublisherFromPublishersContent(editResource: Resource) {
     val publisher = editResource.asInstanceOf[Website]
     resourceDAO.getNewsitemsForPublishers(publisher).map { published =>
-      published.setPublisher(null)
+      // published.setPublisher(null)
       resourceDAO.saveResource(publisher)
     }
 
     import scala.collection.JavaConversions._
     for (feed <- publisher.getFeeds) {
-      feed.setPublisher(null)
+      // feed.setPublisher(null)
       resourceDAO.saveResource(feed)
     }
     import scala.collection.JavaConversions._
     for (watchlist <- publisher.getWatchlist) {
-      watchlist.setPublisher(null)
+      // watchlist.setPublisher(null)
       resourceDAO.saveResource(watchlist)
     }
   }
 
   private def removeFeedFromFeedNewsitems(feed: Feed) {
     resourceDAO.getNewsitemsForFeed(feed).map { newsitem =>
-      newsitem.setFeed(null)
+      // newsitem.setFeed(null)
       resourceDAO.saveResource(newsitem)
     }
   }
