@@ -1,6 +1,6 @@
 package nz.co.searchwellington.repositories.mongo
 
-import nz.co.searchwellington.model.{Resource, Tag}
+import nz.co.searchwellington.model.{Resource, Tag, WebsiteImpl}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
@@ -31,11 +31,11 @@ class MongoRepository {
   def resourceCollection: BSONCollection = connect().collection("resource")
   def tagCollection: BSONCollection = connect().collection("tag")
 
-  implicit def resourceReader: BSONDocumentReader[Resource] = Macros.reader[Resource]
+  implicit def resourceReader: BSONDocumentReader[WebsiteImpl] = Macros.reader[WebsiteImpl]
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
 
-  def getResourceById(id: Int): Option[Resource] = {
-    val eventualMaybyResource = resourceCollection.find(BSONDocument("id" -> id)).one[Resource]
+  def getResourceById(id: Int): Option[WebsiteImpl] = {
+    val eventualMaybyResource = resourceCollection.find(BSONDocument("id" -> id)).one[WebsiteImpl]
     Await.result(eventualMaybyResource, Duration(10000, MILLISECONDS))
   }
 
