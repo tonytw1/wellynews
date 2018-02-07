@@ -3,7 +3,6 @@ package nz.co.searchwellington.repositories
 import nz.co.searchwellington.model.Supression
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
-import org.hibernate.criterion.Restrictions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -15,21 +14,22 @@ import org.springframework.stereotype.Component
     val suppression = new Supression(urlToSupress)
 
     if (suppression != null) {
-      sessionFactory.getCurrentSession.saveOrUpdate(suppression)
+      // sessionFactory.getCurrentSession.saveOrUpdate(suppression)
       log.info("Created suppression for: " + suppression.getUrl)
     }
   }
 
   def isSupressed(url: String): Boolean = {
-    val existingSupression = sessionFactory.getCurrentSession.createCriteria(classOf[Supression]).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult.asInstanceOf[Supression]
-    existingSupression != null
+    //val existingSupression = sessionFactory.getCurrentSession.createCriteria(classOf[Supression]).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult.asInstanceOf[Supression]
+    //existingSupression != null
+    false // TODO
   }
 
   def removeSupressionForUrl(url: String) {
-    val existingSupression = sessionFactory.getCurrentSession.createCriteria(classOf[Supression]).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult.asInstanceOf[Supression]
-    if (existingSupression != null) {
-      sessionFactory.getCurrentSession.delete(existingSupression)
-    }
+    //val existingSupression = sessionFactory.getCurrentSession.createCriteria(classOf[Supression]).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult.asInstanceOf[Supression]
+    //if (existingSupression != null) {
+      //sessionFactory.getCurrentSession.delete(existingSupression)
+    //}
   }
 
 }

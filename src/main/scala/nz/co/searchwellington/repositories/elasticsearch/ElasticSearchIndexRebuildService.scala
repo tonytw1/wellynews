@@ -12,55 +12,22 @@ import org.springframework.stereotype.Component
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
   private val BATCH_COMMIT_SIZE = 10
 
-  private var running = false
-
   @throws[JsonProcessingException]
-  def buildIndex(deleteAll: Boolean): Boolean = {
-    /*if (running) {
-      log.warn("The index builder is already running; cannot start another process")
-      false
-
-    } else {
-      running = true
-      try {
-      */
-    println("!!!!!!!!!! MEH")
-        val resourceToIndex = mongoRepository.getAllWebsites()
-        log.info("Number of resources to reindex: " + resourceToIndex.size)
-        reindexResources(resourceToIndex)
-        running = false
-        true
-    /*
-      } catch {
-        case e: Exception => {
-          log.error("Unexpected error while reindexing", e)
-        }
-          running = false
-          false
-      }
-      false
-    }
-    */
+  def buildIndex(deleteAll: Boolean): Unit = {
+    val resourceToIndex = mongoRepository.getAllNewsitems()
+    log.info("Number of resources to reindex: " + resourceToIndex.size)
+    reindexResources(resourceToIndex)
   }
 
   @throws[JsonProcessingException]
   private def reindexResources(resourceToIndex: Seq[Resource]) {
     println(resourceToIndex.size)
-   // resourceToIndex.grouped(BATCH_COMMIT_SIZE).map { batch =>
-    //  println("Processing batch: " + batch)
-      reindexBatch(resourceToIndex)
-    //}
+    val iterator = resourceToIndex.grouped(BATCH_COMMIT_SIZE)
+    iterator.foreach { batch =>
+      println("Processing batch: " + batch.size)
+      elasticSearchIndexer.updateMultipleContentItems(batch)
+    }
     println("Index rebuild complete")
-  }
-
-  @throws[JsonProcessingException]
-  private def reindexBatch(batch: Seq[Resource]) {
-    //val resources = batch.map { id =>
-    //  resourceDAO.loadResourceById(id)
-    //}.flatten
-    //import scala.collection.JavaConversions._
-    println("Indexing batch: " + batch.size)
-    elasticSearchIndexer.updateMultipleContentItems(batch)
   }
 
 }

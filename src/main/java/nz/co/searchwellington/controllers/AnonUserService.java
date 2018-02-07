@@ -24,8 +24,7 @@ public class AnonUserService {
 		this.userDAO = userDAO;
 	}
 	
-	@Transactional
-	public User createAnonUser() {		
+	public User createAnonUser() {
 		final int userNumber = userDAO.getNextAvailableAnonUserNumber();
 		
 		User anonUser = new UserImpl();		

@@ -24,7 +24,7 @@ import uk.co.eelpieconsulting.archiving.SnapshotArchive
 
   val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
-  @Transactional def scanResource(checkResourceId: Int) {
+  def scanResource(checkResourceId: Int) {
 
     val processers: Seq[LinkCheckerProcessor] = Seq() // TODO inject
 

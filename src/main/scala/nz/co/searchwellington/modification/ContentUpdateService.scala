@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 
   private val log = Logger.getLogger(classOf[ContentUpdateService])
 
-  @Transactional def update(resource: Resource) {
+  def update(resource: Resource) {
     log.info("Updating content for: " + resource.getName + " - " + resource.getUrl)
     try {
       var resourceUrlHasChanged = false
@@ -35,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional
     }
   }
 
-  @Transactional def create(resource: Resource) {
+  def create(resource: Resource) {
     resource.setHttpStatus(0)
     resourceDAO.saveResource(resource)
     linkCheckerQueue.add(resource.getId)

@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 import java.util.Date
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.sksamuel.elastic4s.http.HttpClient
 import com.sksamuel.elastic4s.{ElasticsearchClientUri, TcpClient}
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model._
@@ -21,7 +22,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   private val Index = "searchwellington"
   private val Resources = "resources"
 
-  val client = TcpClient.transport(ElasticsearchClientUri("localhost", 9300))
+  val client = HttpClient(ElasticsearchClientUri("localhost", 9300))
 
   private val ID = "id"
   private val OWNER = "owner"

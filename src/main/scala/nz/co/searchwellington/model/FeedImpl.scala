@@ -19,7 +19,7 @@ case class FeedImpl(override var id: Int = 0,
                     override var url_words: Option[String] = None,
                     override var geocode: Option[Int] = None,
                     override var owner: Option[Int] = None,
-                    var acceptancePolicy: FeedAcceptancePolicy = null,
+                    var acceptance: String = "IGNORE",
                     var latestItemDate: String = null,
                     var lastRead: String = null,
                     var whakaokoId: String = null,
@@ -27,9 +27,9 @@ case class FeedImpl(override var id: Int = 0,
 
   override def getType: String = "F"
 
-  override def getAcceptancePolicy: FeedAcceptancePolicy = acceptancePolicy
+  override def getAcceptancePolicy: String = acceptance
 
-  override def setAcceptancePolicy(acceptancePolicy: FeedAcceptancePolicy): Unit = this.acceptancePolicy = acceptancePolicy
+  override def setAcceptancePolicy(acceptancePolicy: String): Unit = this.acceptance = acceptancePolicy
 
   override def getLatestItemDate: Date = ISODateTimeFormat.dateParser().parseDateTime(latestItemDate).toDate // TODO
 

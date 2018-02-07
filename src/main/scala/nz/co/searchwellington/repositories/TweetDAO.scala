@@ -1,10 +1,7 @@
 package nz.co.searchwellington.repositories
 
-import java.util.List
-
 import nz.co.searchwellington.model.Twit
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.hibernate.criterion.Restrictions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 

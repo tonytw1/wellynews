@@ -30,7 +30,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
   def processFeed(feedId: Int, loggedInUser: User): Unit = {
     val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
-    processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
+    // processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
 
   private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {

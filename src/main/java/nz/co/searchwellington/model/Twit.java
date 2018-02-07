@@ -5,8 +5,6 @@ import java.util.Date;
 
 import org.joda.time.DateTime;
 
-import twitter4j.Status;
-
 public class Twit implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -21,16 +19,7 @@ public class Twit implements Serializable {
 
 	public Twit() {		
 	}
-	
-	public Twit(Status status) {
-		this.twitterid = status.getId();
-		this.inReplyToStatusId = status.getInReplyToStatusId();
-		this.text = status.getText();
-		this.author = status.getUser().getScreenName();
-		DateTime time = new DateTime(status.getCreatedAt());
-		this.date = time.toDate();
-	}
-	
+
 	public Twit(String author, String text) {
 		this.author = author;
 		this.text = text;

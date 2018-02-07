@@ -17,13 +17,13 @@ class MongoRepositoryTest {
   @Test
   def canConnectToMongoAndReadNewsitems {
     val newsitems = mongoRepository.getAllNewsitems()
-    assertEquals(306, newsitems.size)
+    assertEquals(50813, newsitems.size)
   }
 
   @Test
   def canConnectToMongoAndReadWebsites {
     val websites = mongoRepository.getAllWebsites()
-    assertEquals(306, websites.size)
+    assertEquals(21644, websites.size)
   }
 
 }

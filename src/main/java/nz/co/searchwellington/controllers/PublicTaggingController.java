@@ -1,20 +1,18 @@
 package nz.co.searchwellington.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import nz.co.searchwellington.filters.AdminRequestFilter;
 import nz.co.searchwellington.model.Resource;
 import nz.co.searchwellington.model.User;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class PublicTaggingController {
@@ -43,7 +41,6 @@ public class PublicTaggingController {
 		this.urlStack = urlStack;
 	}
 	
-	@Transactional
 	@RequestMapping(value="/tagging/submit", method=RequestMethod.POST)
     public ModelAndView tag(HttpServletRequest request, HttpServletResponse response) {	
 		adminRequestFilter.loadAttributesOntoRequest(request);    	

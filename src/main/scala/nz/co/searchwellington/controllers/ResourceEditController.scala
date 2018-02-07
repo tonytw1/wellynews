@@ -4,8 +4,8 @@ import java.io.{IOException, UnsupportedEncodingException}
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import com.google.common.base.Strings
-import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeednewsItemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.feeds.reading.WhakaokoService
+import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeednewsItemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor
 import nz.co.searchwellington.model._
@@ -20,7 +20,6 @@ import nz.co.searchwellington.widgets.{AcceptanceWidgetFactory, TagsWidgetFactor
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
@@ -55,7 +54,7 @@ import org.springframework.web.servlet.view.RedirectView
     val userIsLoggedIn: Boolean = loggedInUser != null
     populatePublisherField(mv, userIsLoggedIn, resource)
     if (resource.getType == "F") {
-      mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
+      // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
     }
     return mv
   }
@@ -125,7 +124,6 @@ import org.springframework.web.servlet.view.RedirectView
     return modelAndView
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/submit/website")) def submitWebsite(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWebsite")
     modelAndView.addObject("heading", "Submitting a Website")
@@ -136,7 +134,6 @@ import org.springframework.web.servlet.view.RedirectView
     return modelAndView
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/submit/newsitem")) def submitNewsitem(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitNewsitem")
     modelAndView.addObject("heading", "Submitting a Newsitem")
@@ -146,7 +143,6 @@ import org.springframework.web.servlet.view.RedirectView
     return modelAndView
   }
 
-  @Transactional
   @RequestMapping(Array("/edit/submit/feed")) def submitFeed(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitFeed")
     modelAndView.addObject("heading", "Submitting a Feed")
@@ -183,7 +179,6 @@ import org.springframework.web.servlet.view.RedirectView
     return modelAndView
   }
 
-  @Transactional
   @RequestMapping(value = Array("/save"), method = Array(RequestMethod.POST))
   @throws[UnsupportedEncodingException]
   def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -286,6 +281,7 @@ import org.springframework.web.servlet.view.RedirectView
   }
 
   private def processFeedAcceptancePolicy(request: HttpServletRequest, editResource: Resource) {
+    /*
     if (editResource.getType == "F") {
       (editResource.asInstanceOf[Feed]).setAcceptancePolicy(FeedAcceptancePolicy.IGNORE)
       if (request.getParameter(ACCEPTANCE) != null) {
@@ -293,6 +289,7 @@ import org.springframework.web.servlet.view.RedirectView
         log.debug("Feed acceptance policy set to: " + (editResource.asInstanceOf[Feed]).getAcceptancePolicy)
       }
     }
+    */
   }
 
   private def saveResource(request: HttpServletRequest, loggedInUser: User, editResource: Resource) {

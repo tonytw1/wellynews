@@ -1,6 +1,6 @@
 package nz.co.searchwellington.repositories.mongo
 
-import nz.co.searchwellington.model.{NewsitemImpl, Tag, WebsiteImpl}
+import nz.co.searchwellington.model._
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
@@ -31,6 +31,7 @@ class MongoRepository {
   def resourceCollection: BSONCollection = connect().collection("resource")
   def tagCollection: BSONCollection = connect().collection("tag")
 
+  implicit def feedReader = Macros.reader[FeedImpl]
   implicit def newsitemReader = Macros.reader[NewsitemImpl]
   implicit def websiteReader = Macros.reader[WebsiteImpl]
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
@@ -42,6 +43,11 @@ class MongoRepository {
 
   def getTagById(id: Int): Option[Tag] = {
     val eventualMaybyTag = tagCollection.find(BSONDocument("id" -> id)).one[Tag]
+    Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
+  }
+
+  def getTagByName(name: String): Option[Tag] = {
+    val eventualMaybyTag = tagCollection.find(BSONDocument("name" -> name)).one[Tag]
     Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
   }
 
@@ -60,8 +66,16 @@ class MongoRepository {
     Await.result(eventualTags, Duration(10000, MILLISECONDS))
   }
 
+  def getAllFeeds(): Seq[FeedImpl] = {
+    Await.result(resourceCollection.find(BSONDocument("type" -> "F")).cursor[FeedImpl].toList(), Duration(10000, MILLISECONDS))
+  }
+
   def getAllNewsitems(): Seq[NewsitemImpl] = {
     Await.result(resourceCollection.find(BSONDocument("type" -> "N")).cursor[NewsitemImpl].toList(), Duration(10000, MILLISECONDS))
+  }
+
+  def getAllWatchlists(): Seq[WebsiteImpl] = {
+    Await.result(resourceCollection.find(BSONDocument("type" -> "L")).cursor[WebsiteImpl].toList(), Duration(10000, MILLISECONDS))
   }
 
   def getAllWebsites(): Seq[WebsiteImpl] = {

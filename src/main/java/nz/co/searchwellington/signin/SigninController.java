@@ -1,22 +1,20 @@
 package nz.co.searchwellington.signin;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import nz.co.searchwellington.controllers.AnonUserService;
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.controllers.LoginResourceOwnershipService;
 import nz.co.searchwellington.controllers.UrlStack;
 import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class SigninController {
@@ -57,7 +55,6 @@ public class SigninController {
 		return signinErrorView(request);		
 	}
 	
-	@Transactional
 	@RequestMapping("/twitter/callback")
 	public ModelAndView callback(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		final Object externalIdentifier = signinHandler.getExternalUserIdentifierFromCallbackRequest(request);

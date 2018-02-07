@@ -39,7 +39,6 @@ public class FeedAcceptanceDecider {
         this.urlCleaner = urlCleaner;
     }
     
-    @Transactional(propagation = Propagation.REQUIRES_NEW) 
     public List<String> getAcceptanceErrors(Feed feed, FrontendFeedNewsitem feedNewsitem, FeedAcceptancePolicy acceptancePolicy) {
         final List<String> acceptanceErrors = Lists.newArrayList();
         final String cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl());

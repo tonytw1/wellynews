@@ -33,7 +33,6 @@ public class FeedReaderUpdateService {
 		this.feednewsItemToNewsitemService = feednewsItemToNewsitemService;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public int acceptNewsitem(Feed feed, User feedReaderUser, FrontendFeedNewsitem feednewsitem) {
 		final Newsitem newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem);
 		feedItemAcceptor.acceptFeedItem(feedReaderUser, newsitem);

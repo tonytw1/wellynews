@@ -48,7 +48,6 @@ public class AdminFeedController {
 		this.loggedInUserFilter = loggedInUserFilter;
 	}
     
-    @Transactional
     @RequestMapping("/admin/feed/acceptall")
     public ModelAndView acceptAllFrom(HttpServletRequest request, HttpServletResponse response) throws IllegalArgumentException, FeedException, IOException {
         requestFilter.loadAttributesOntoRequest(request);

@@ -2,7 +2,6 @@ package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.hibernate.criterion.Restrictions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -16,8 +15,8 @@ import org.springframework.stereotype.Component
     mongoRepository.getTagById(tagID)
   }
 
-  def loadTagByName(tagName: String): Option[Tag] = {
-    Option(sessionFactory.getCurrentSession.createCriteria(classOf[Tag]).add(Restrictions.eq("name", tagName)).uniqueResult.asInstanceOf[Tag])
+  def loadTagByName(name: String): Option[Tag] = {
+    mongoRepository.getTagByName(name)
   }
 
   def getAllTags(): Seq[Tag] = {

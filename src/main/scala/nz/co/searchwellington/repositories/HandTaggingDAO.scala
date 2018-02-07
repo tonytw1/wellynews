@@ -4,7 +4,6 @@ import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
-import org.hibernate.criterion.Restrictions
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
