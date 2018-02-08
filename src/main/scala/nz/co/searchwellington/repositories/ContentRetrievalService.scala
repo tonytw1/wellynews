@@ -99,20 +99,20 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW, 1)
   }
 
-  def getLatestNewsitems(maxNumber: Int, page: Int): Seq[FrontendResource] = {
-    val ids = elasticSearchIndexer.getLatestNewsitems(maxNumber, true, page)
-    println("Got ids: " + ids)
+  def getLatestNewsitems(maxItems: Int, page: Int): Seq[FrontendResource] = {
+    fetchByIds(elasticSearchIndexer.getLatestNewsitems(maxItems))     // TODO pagination
+  }
 
+  def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
+    fetchByIds(elasticSearchIndexer.getLatestNewsitems(maxItems))     // TODO pagination
+  }
+
+  private def fetchByIds(ids: Seq[Int]): Seq[FrontendResource] = {
     ids.map { id =>
       mongoRepository.getResourceById(id).map { r =>
         frontendResourceMapper.createFrontendResourceFrom(r)
       }
     }.flatten
-  }
-
-  def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
-    val ids = elasticSearchBackedResourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken)
-    Seq()
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {

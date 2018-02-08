@@ -92,30 +92,24 @@ class ElasticSearchIndexer @Autowired()() {
     println("Index created")
   }
 
-  def getLatestNewsitems(maxItems: Int, shouldShowBroken: Boolean, from: Int): Seq[Int] = {
+  def getLatestNewsitems(maxItems: Int): Seq[Int] = {
+    executeRequest(search in Index / Resources matchQuery(Type, "N") limit (maxItems))
+  }
 
-    var request: SearchDefinition = {
-      search in Index / Resources matchQuery(Type, "N")
-    }
+  def getLatestWebsites(maxItems: Int): Seq[Int] = {
+    executeRequest(search in Index / Resources matchQuery(Type, "W") limit (maxItems))
+  }
 
-    val result = Await.result({client.execute (request)}, tenSeconds)
-
-    val x: Either[RequestFailure, Seq[Int]] = result.map { r =>
-      println("!!!!!! " + r.result.hits.total)
+  private def executeRequest(request: SearchDefinition) = {
+    Await.result(client.execute(request), tenSeconds).map { r =>
       r.result.hits.hits.map { h =>
-        println("!!!!! " + h)
         h.id.toInt
       }.toSeq
-    }
 
-    x match {
-      case(Right(ids)) => {
-        println("Got ids: " + ids)
-        ids
-      }
+    } match {
+      case(Right(ids)) => ids
       case(Left(_)) => Seq()
     }
   }
-
 
 }

@@ -110,7 +110,8 @@ import scala.collection.JavaConverters._
   private def populateSecondaryJustin(mv: ModelAndView) {
     mv.addObject("secondary_heading", "Just In")
     mv.addObject("secondary_description", "New additions.")
-    mv.addObject("secondary_content", contentRetrievalService.getLatestWebsites(4))
+    import scala.collection.JavaConverters._
+    mv.addObject("secondary_content", contentRetrievalService.getLatestWebsites(4).asJava)
     mv.addObject("secondary_content_moreurl", "justin")
   }
 
