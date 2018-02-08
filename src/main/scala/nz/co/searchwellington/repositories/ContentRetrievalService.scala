@@ -7,12 +7,19 @@ import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendTag}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, KeywordSearchService}
+import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, ElasticSearchIndexer, KeywordSearchService}
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-@Component class ContentRetrievalService @Autowired()(var resourceDAO: HibernateResourceDAO, var keywordSearchService: KeywordSearchService, var showBrokenDecisionService: ShowBrokenDecisionService, var tagDAO: TagDAO, var relatedTagsService: RelatedTagsService, var discoveredFeedsDAO: DiscoveredFeedRepository, var elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO, var frontendResourceMapper: FrontendResourceMapper) {
+@Component class ContentRetrievalService @Autowired()( resourceDAO: HibernateResourceDAO,
+                                                       keywordSearchService: KeywordSearchService,  showBrokenDecisionService: ShowBrokenDecisionService,
+                                                       tagDAO: TagDAO,  relatedTagsService: RelatedTagsService,
+                                                       discoveredFeedsDAO: DiscoveredFeedRepository,
+                                                       elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
+                                                       frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
+                                                       mongoRepository: MongoRepository) {
 
   val MAX_NEWSITEMS_TO_SHOW = 30
 
@@ -93,11 +100,19 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getLatestNewsitems(maxNumber: Int, page: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getLatestNewsitems(maxNumber, showBrokenDecisionService.shouldShowBroken, (page - 1) * maxNumber)
+    val ids = elasticSearchIndexer.getLatestNewsitems(maxNumber, true, page)
+    println("Got ids: " + ids)
+
+    ids.map { id =>
+      mongoRepository.getResourceById(id).map { r =>
+        frontendResourceMapper.createFrontendResourceFrom(r)
+      }
+    }.flatten
   }
 
   def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken)
+    val ids = elasticSearchBackedResourceDAO.getLatestWebsites(maxItems, showBrokenDecisionService.shouldShowBroken)
+    Seq()
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {

@@ -8,6 +8,9 @@ import com.sksamuel.elastic4s.http.index.CreateIndexResponse
 import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.searches._
 import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.model.frontend.FrontendResource
+import org.elasticsearch.action.search.SearchRequestBuilder
+import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -88,5 +91,31 @@ class ElasticSearchIndexer @Autowired()() {
 
     println("Index created")
   }
+
+  def getLatestNewsitems(maxItems: Int, shouldShowBroken: Boolean, from: Int): Seq[Int] = {
+
+    var request: SearchDefinition = {
+      search in Index / Resources matchQuery(Type, "N")
+    }
+
+    val result = Await.result({client.execute (request)}, tenSeconds)
+
+    val x: Either[RequestFailure, Seq[Int]] = result.map { r =>
+      println("!!!!!! " + r.result.hits.total)
+      r.result.hits.hits.map { h =>
+        println("!!!!! " + h)
+        h.id.toInt
+      }.toSeq
+    }
+
+    x match {
+      case(Right(ids)) => {
+        println("Got ids: " + ids)
+        ids
+      }
+      case(Left(_)) => Seq()
+    }
+  }
+
 
 }

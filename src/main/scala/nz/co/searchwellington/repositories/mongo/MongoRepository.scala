@@ -36,7 +36,7 @@ class MongoRepository {
   implicit def websiteReader = Macros.reader[WebsiteImpl]
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
 
-  def getResourceById(id: Int): Option[WebsiteImpl] = {
+  def getResourceById(id: Int): Option[Resource] = {
     val eventualMaybyResource = resourceCollection.find(BSONDocument("id" -> id)).one[WebsiteImpl]
     Await.result(eventualMaybyResource, Duration(10000, MILLISECONDS))
   }

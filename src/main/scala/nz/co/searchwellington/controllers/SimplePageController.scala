@@ -17,13 +17,13 @@ import org.springframework.web.servlet.ModelAndView
   @Timed(timingNotes = "")
   @throws[IOException]
   def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    println("!!!!!!!!!!!")
     val mv = new ModelAndView
     urlStack.setUrlStack(request)
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "About")
     mv.setViewName("about")
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))
+    import scala.collection.JavaConverters._
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
     mv
   }
 

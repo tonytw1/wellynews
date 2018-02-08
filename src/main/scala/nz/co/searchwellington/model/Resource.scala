@@ -2,6 +2,7 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
+import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 
 trait Resource {
@@ -35,7 +36,7 @@ trait Resource {
 
   var owner: Option[Int]
 
-  def getDate: Date = date.map(d => ISODateTimeFormat.dateParser().parseDateTime(d).toDate).getOrElse(null) // TODO
+  def getDate: Date = date.map(d => DateTime.now.toDate).getOrElse(null) // TODO
 
   def setDate(date: Date): Unit = {}  // TODO
 
