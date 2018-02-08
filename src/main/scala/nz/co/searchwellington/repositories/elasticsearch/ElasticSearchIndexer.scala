@@ -1,16 +1,15 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-
 import com.sksamuel.elastic4s.ElasticsearchClientUri
-import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
+import com.sksamuel.elastic4s.http.ElasticDsl._
+import com.sksamuel.elastic4s.http.HttpClient
 import nz.co.searchwellington.model.Resource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import com.sksamuel.elastic4s.http.ElasticDsl._
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Duration, MILLISECONDS}
-import scala.concurrent.{Await, Future}
 
 @Component
 class ElasticSearchIndexer @Autowired()() {
@@ -22,22 +21,20 @@ class ElasticSearchIndexer @Autowired()() {
 
   def updateMultipleContentItems(resources: Seq[Resource]): Unit = {
     println("Index batch of size: " + resources.size)
-    resources.map { r =>
-      println(r.title)
 
-      val fields: Seq[Option[(String, Any)]] = Seq {
-        r.title.map(t => ("title" -> t))
-        r.description.map(d => ("description" -> d))
+    val indexDefinations = resources.map { r =>
+      val fields = Seq {
+        Some("type", r.`type`)
+        r.title.map(t => ("title" -> t)),
+        r.description.map(d => ("description" -> d)),
+        Some("http_status" -> r.http_status.toString))
       }
 
-      val x = client.execute{
-        bulk(indexInto(Index / Resources).fields(fields.flatten) id r.id.toString)
-      }
-
-
-     val y = Await.result(x, Duration(10000, MILLISECONDS))
-     println(y)
+      indexInto(Index / Resources).fields(fields.flatten) id r.id.toString
     }
+
+    val result = Await.result(client.execute (bulk(indexDefinations)), Duration(10000, MILLISECONDS))
+    println(result)
   }
 
 }
