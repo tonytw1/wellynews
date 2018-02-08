@@ -10,13 +10,13 @@ import org.springframework.stereotype.Component
 @Component class ElasticSearchIndexRebuildService @Autowired()(var mongoRepository: MongoRepository, val elasticSearchIndexer: ElasticSearchIndexer) {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
-  private val BATCH_COMMIT_SIZE = 10
+  private val BATCH_COMMIT_SIZE = 100
 
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {
-    val resourceToIndex = mongoRepository.getAllNewsitems()
-    log.info("Number of resources to reindex: " + resourceToIndex.size)
-    reindexResources(resourceToIndex)
+    val resourcesToIndex = mongoRepository.getAllNewsitems() ++ mongoRepository.getAllWebsites() ++ mongoRepository.getAllWatchlists()
+    log.info("Number of resources to reindex: " + resourcesToIndex.size)
+    reindexResources(resourcesToIndex)
   }
 
   @throws[JsonProcessingException]

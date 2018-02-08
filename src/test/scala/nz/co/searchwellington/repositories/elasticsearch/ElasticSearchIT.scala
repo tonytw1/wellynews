@@ -8,10 +8,21 @@ class ElasticSearchIT {
   val mongoRepository = new MongoRepository()
   val elasticSearchIndexer = new ElasticSearchIndexer()
 
+  val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer)
+
+  @Test
+  def canCreateIndexes: Unit = {
+    elasticSearchIndexer.createIndexes()
+  }
+
   @Test
   def canIndexResources {
-    val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer)
     rebuild.buildIndex(false)
+  }
+
+  @Test
+  def canReadResources: Unit = {
+    elasticSearchIndexer.readBack()
   }
 
 }
