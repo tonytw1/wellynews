@@ -15,17 +15,20 @@ import scala.collection.mutable
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
     var frontendContentItem: FrontendResource = new FrontendResource
     if (contentItem.getType == "N") {
-      val contentItemNewsitem: Newsitem = contentItem.asInstanceOf[Newsitem]
-      val frontendNewsitem: FrontendNewsitem = new FrontendNewsitem
+      val contentItemNewsitem = contentItem.asInstanceOf[Newsitem]
+
+      val frontendNewsitem = new FrontendNewsitem
       frontendNewsitem.setPublisherName(contentItemNewsitem.getPublisherName)
       // frontendNewsitem.setAcceptedFromFeedName(if (contentItemNewsitem.getFeed != null) contentItemNewsitem.getFeed.getName else null)
       // frontendNewsitem.setAcceptedByProfilename(if (contentItemNewsitem.getAcceptedBy != null) contentItemNewsitem.getAcceptedBy.getProfilename else null)
       frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted)
+
       if (contentItemNewsitem.getImage != null) {
         // frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage.getUrl))
       }
       frontendContentItem = frontendNewsitem
     }
+
     if (contentItem.getType == "F") {
       val frontendFeed: FrontendFeed = new FrontendFeed
       val contentItemFeed: Feed = contentItem.asInstanceOf[Feed]
@@ -37,7 +40,11 @@ import scala.collection.mutable
     frontendContentItem.setType(contentItem.getType)
     frontendContentItem.setName(contentItem.getName)
     frontendContentItem.setUrl(contentItem.getUrl)
-    frontendContentItem.setDate(contentItem.getDate)
+
+    val date = contentItem.date2.getOrElse(null)
+    println("!!! " + date)
+    frontendContentItem.setDate(date)
+
     frontendContentItem.setDescription(contentItem.getDescription)
     frontendContentItem.setHttpStatus(contentItem.getHttpStatus)
     frontendContentItem.setHeld(contentItem.isHeld)

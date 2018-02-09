@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Test
+import org.junit.Assert.assertTrue
 
 class ElasticSearchIT {
 
@@ -21,8 +22,12 @@ class ElasticSearchIT {
   }
 
   @Test
-  def canReadResources: Unit = {
-    elasticSearchIndexer.readBack()
+  def canFilterByType: Unit = {
+    val newsitems = elasticSearchIndexer.getLatestNewsitems(10)
+    assertTrue(newsitems.forall(i => mongoRepository.getResourceById(i).get.`type` == "N"))
+
+    val websites = elasticSearchIndexer.getLatestWebsites(10)
+    assertTrue(websites.forall(i => mongoRepository.getResourceById(i).get.`type` == "W"))
   }
 
 }

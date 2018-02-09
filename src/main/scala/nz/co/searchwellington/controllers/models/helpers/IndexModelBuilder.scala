@@ -97,7 +97,7 @@ import scala.collection.JavaConverters._
   }
 
   private def populateFeatured(mv: ModelAndView) {
-    mv.addObject("featured", contentRetrievalService.getFeaturedSites)
+    //mv.addObject("featured", contentRetrievalService.getFeaturedSites)
   }
 
   private def populateGeocoded(mv: ModelAndView) {
