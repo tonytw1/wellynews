@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.models.helpers.IndexModelBuilder
+import nz.co.searchwellington.controllers.models.helpers.{IndexModelBuilder, TagModelBuilder, TagsModelBuilder}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -11,18 +11,16 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
 @Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, commonModelObjectsService: CommonModelObjectsService,
-                                                          indexModelBuilder: IndexModelBuilder) {
+                                                          indexModelBuilder: IndexModelBuilder, tagsModelBuilder: TagsModelBuilder, tagModelBuilder: TagModelBuilder) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
   private val JSON_CALLBACK_PARAMETER = "callback"
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    val modelBuilders = Seq(indexModelBuilder)
+    val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder)
 
-    val modelBuilderToUse: Option[ModelBuilder] = modelBuilders.filter(mb => mb.isValid(request)).headOption // TODO collect first?
-
-    val r = modelBuilderToUse.map { mb =>
+    modelBuilders.filter(mb => mb.isValid(request)).headOption.map { mb => // TODO collect first?
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
 
       mb.populateContentModel(request).map { mv =>
@@ -34,10 +32,10 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
           mv.addObject("data", mv.getModel.get("main_content"))
 
         } else if (path.endsWith("/json")) {
-            logger.debug("Selecting json view for path: " + path)
-            val jsonView = viewFactory.getJsonView
-            jsonView.setDataField("main_content")
-            mv.setView(jsonView)
+          logger.debug("Selecting json view for path: " + path)
+          val jsonView = viewFactory.getJsonView
+          jsonView.setDataField("main_content")
+          mv.setView(jsonView)
 
         } else {
           mb.populateExtraModelContent(request, mv)
@@ -52,8 +50,6 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
       logger.warn("No matching model builder found for path: " + request.getPathInfo)
       None
     }
-
-    r
   }
 
 }

@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 
 @Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO) extends ModelBuilder {
@@ -22,17 +21,13 @@ import scala.collection.JavaConverters._
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-
-    def populateTagsPageModelAndView(): ModelAndView = {
-      val mv = new ModelAndView
-      val allTags = tagDAO.getAllTags.toList
-      mv.addObject(MAIN_CONTENT, allTags.map(t => new FrontendTag(t.getName, t.getDisplayName)).asJava)
-      mv.addObject("heading", "All tags")
-      mv
-    }
-
     if (isValid(request)) {
-      Some(populateTagsPageModelAndView())
+      val mv = new ModelAndView
+      val allFrontendTags = tagDAO.getAllTags.map(t => new FrontendTag(t.getName, t.getDisplayName))
+      mv.addObject(MAIN_CONTENT, allFrontendTags.asJava)
+      mv.addObject("heading", "All tags")
+      Some(mv)
+
     } else {
       None
     }

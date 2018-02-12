@@ -22,8 +22,6 @@ import org.springframework.web.servlet.ModelAndView
   @throws[FeedException]
   @throws[IOException]
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    println("!!!!!!!!!!!!!!!")
-
     val mvo = contentModelBuilderService.populateContentModel(request)
     mvo.fold {
       log.warn("Model was null; returning 404")
