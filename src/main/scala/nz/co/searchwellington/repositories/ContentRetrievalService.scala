@@ -104,7 +104,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
-    fetchByIds(elasticSearchIndexer.getLatestNewsitems(maxItems))     // TODO pagination
+    fetchByIds(elasticSearchIndexer.getLatestWebsites(maxItems))     // TODO pagination
   }
 
   private def fetchByIds(ids: Seq[Int]): Seq[FrontendResource] = {

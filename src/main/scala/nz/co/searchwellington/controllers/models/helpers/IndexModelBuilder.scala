@@ -18,7 +18,7 @@ import scala.collection.JavaConverters._
 
 @Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                 loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
-                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination {
 
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
   private val NUMBER_OF_COMMENTED_TO_SHOW = 2
@@ -34,26 +34,17 @@ import scala.collection.JavaConverters._
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def monthOfLastItem(newitems: Seq[FrontendResource]): Option[Date] = {
-      newitems.headOption.map( i => i.getDate)
+      newitems.headOption.map(i => i.getDate)
     }
 
-    if (isValid(request)) {  // TODO really? won't the dispatcher alway have decided this?
-      val page = if (request.getParameter("page") != null) {  // TODO duplication
-        Integer.parseInt(request.getParameter("page"))
-      } else {
-        1
+    if (isValid(request)) {  val mv = new ModelAndView
+      val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request))
+      mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
+      monthOfLastItem(latestNewsitems).map { d =>
+        mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
       }
-
-      val mv = new ModelAndView
-      val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, page).toList
-      mv.addObject(MAIN_CONTENT, latestNewsitems)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-      if (latestNewsitems != null) {
-        monthOfLastItem(latestNewsitems).map { d =>
-          mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
-        }
-      }
       Some(mv)
 
     } else {
@@ -88,8 +79,8 @@ import scala.collection.JavaConverters._
       }
     }
 
-    populateCommentedNewsitems(mv)
     populateSecondaryJustin(mv)
+    populateCommentedNewsitems(mv)
     populateGeocoded(mv)
     populateFeatured(mv)
     populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)

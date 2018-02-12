@@ -10,7 +10,7 @@ trait Pagination extends CommonSizes {
     if (request.getAttribute("page") != null) {
       request.getAttribute("page").asInstanceOf[Integer]
     } else {
-      0
+      1
     }
   }
 
