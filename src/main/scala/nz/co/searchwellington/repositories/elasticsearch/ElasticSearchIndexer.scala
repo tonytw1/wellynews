@@ -8,16 +8,12 @@ import com.sksamuel.elastic4s.http.index.CreateIndexResponse
 import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.searches._
 import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.model.frontend.FrontendResource
-import org.elasticsearch.action.search.SearchRequestBuilder
-import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Duration, MILLISECONDS}
-
+import scala.concurrent.{Await, Future}
 
 @Component
 class ElasticSearchIndexer @Autowired()() {
@@ -33,6 +29,7 @@ class ElasticSearchIndexer @Autowired()() {
   val Type = "type"
   val HttpStatus = "http_status"
   val Description = "description"
+  val Date = "date"
 
   def updateMultipleContentItems(resources: Seq[Resource]): Unit = {
     println("Index batch of size: " + resources.size)
@@ -76,7 +73,8 @@ class ElasticSearchIndexer @Autowired()() {
         create index Index mappings (
           mapping(Resources).fields(
             field(Title) typed TextType analyzer StandardAnalyzer,
-            field(Type) typed TextType analyzer NotAnalyzed,
+            field(Type) typed TextType,
+            field(Date) typed DateType,
             field(Description) typed TextType analyzer StandardAnalyzer
           )
           )
@@ -93,11 +91,11 @@ class ElasticSearchIndexer @Autowired()() {
   }
 
   def getLatestNewsitems(maxItems: Int): Seq[Int] = {
-    executeRequest(search in Index / Resources matchQuery(Type, "N") limit (maxItems))
+    executeRequest(search in Index / Resources matchQuery(Type, "N") sortByFieldDesc(Date) limit (maxItems) )
   }
 
   def getLatestWebsites(maxItems: Int): Seq[Int] = {
-    executeRequest(search in Index / Resources matchQuery(Type, "W") limit (maxItems))
+    executeRequest(search in Index / Resources matchQuery(Type, "W") sortByFieldDesc(Date) limit (maxItems) )
   }
 
   private def executeRequest(request: SearchDefinition) = {
@@ -108,7 +106,9 @@ class ElasticSearchIndexer @Autowired()() {
 
     } match {
       case(Right(ids)) => ids
-      case(Left(_)) => Seq()
+      case(Left(f)) =>
+        println(f)
+        Seq()
     }
   }
 
