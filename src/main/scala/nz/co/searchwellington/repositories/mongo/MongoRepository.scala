@@ -30,11 +30,13 @@ class MongoRepository {
 
   def resourceCollection: BSONCollection = connect().collection("resource")
   def tagCollection: BSONCollection = connect().collection("tag")
+  def taggingCollection: BSONCollection = connect().collection("taggings")
 
   implicit def feedReader = Macros.reader[FeedImpl]
   implicit def newsitemReader = Macros.reader[NewsitemImpl]
   implicit def websiteReader = Macros.reader[WebsiteImpl]
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
+  implicit def tagggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
   def getResourceById(id: Int): Option[Resource] = {
     val eventualMaybyResource = resourceCollection.find(BSONDocument("id" -> id)).one[WebsiteImpl]
@@ -81,5 +83,11 @@ class MongoRepository {
   def getAllWebsites(): Seq[WebsiteImpl] = {
     Await.result(resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl].toList(), Duration(10000, MILLISECONDS))
   }
+
+  def getAllTaggings(): Seq[Tagging] = {
+    Await.result(taggingCollection.find(BSONDocument.empty).cursor[Tagging].toList(), Duration(10000, MILLISECONDS))
+  }
+
+  case class Tagging(resource: Int, tag: Int)
 
 }

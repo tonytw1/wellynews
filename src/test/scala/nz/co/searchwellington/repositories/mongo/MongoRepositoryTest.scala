@@ -26,4 +26,9 @@ class MongoRepositoryTest {
     assertEquals(21644, websites.size)
   }
 
+  def canReadResourceTagsFromMongo = {
+    val taggings = mongoRepository.getAllTaggings()
+    assertEquals(2, taggings)
+  }
+
 }
