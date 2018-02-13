@@ -8,6 +8,7 @@ import com.sksamuel.elastic4s.http.index.CreateIndexResponse
 import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.searches._
 import nz.co.searchwellington.model.Resource
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -35,12 +36,13 @@ class ElasticSearchIndexer @Autowired()() {
     println("Index batch of size: " + resources.size)
 
     val indexDefinations = resources.map { r =>
-
+      println("! " + r.date2)
       val fields = Seq (
         Some((Type -> r.`type`)),
         r.title.map(t => (Title -> t)),
         Some(HttpStatus -> r.http_status.toString),
-        r.description.map(d => (Description -> d))
+        r.description.map(d => (Description -> d)),
+        r.date2.map(d => (Date -> new DateTime(d)))
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r.id.toString
