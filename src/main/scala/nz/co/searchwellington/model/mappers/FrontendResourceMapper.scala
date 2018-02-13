@@ -78,7 +78,7 @@ import scala.collection.mutable
     return frontendContentItem
   }
 
-  private def mapTagToFrontendTag(tag: Tag): FrontendTag = {
+  def mapTagToFrontendTag(tag: Tag): FrontendTag = {
     return new FrontendTag(tag.getName, tag.getDisplayName)
   }
 

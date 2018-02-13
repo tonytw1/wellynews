@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.model.frontend.FrontendTag
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.TagDAO
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.collection.JavaConverters._
 
-@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO) extends ModelBuilder {
+@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder {
 
   private val log = Logger.getLogger(classOf[TagsModelBuilder])
 
@@ -23,7 +23,7 @@ import scala.collection.JavaConverters._
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
       val mv = new ModelAndView
-      val allFrontendTags = tagDAO.getAllTags.map(t => new FrontendTag(t.getName, t.getDisplayName))
+      val allFrontendTags = tagDAO.getAllTags.map(frontendResourceMapper.mapTagToFrontendTag(_))
       mv.addObject(MAIN_CONTENT, allFrontendTags.asJava)
       mv.addObject("heading", "All tags")
       Some(mv)

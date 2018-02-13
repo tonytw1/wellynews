@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 // TODO move out of controllers package
 import nz.co.searchwellington.model.frontend.FrontendTag
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchBackedResourceDAO
@@ -9,7 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.Place
 
-@Component class RelatedTagsService @Autowired()(val elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO, val tagDAO: TagDAO, val showBrokenDecisionService: ShowBrokenDecisionService) {
+@Component class RelatedTagsService @Autowired()(elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
+                                                 tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService, frontendResourceMapper: FrontendResourceMapper) {
 
   def getRelatedLinksForTag(tag: Tag, maxItems: Int): Seq[TagContentCount] = {
 
@@ -24,8 +26,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place
         tagDAO.loadTagByName(tagId).flatMap { facetTag =>
           if (isTagSuitableRelatedTag(tag, facetTag)) {
             tagFacetsForTag.get(tagId).flatMap { count =>
-              val frontendTag: FrontendTag = new FrontendTag(facetTag.getName, facetTag.getDisplayName)
-              Some(new TagContentCount(frontendTag, count))
+              Some(new TagContentCount(frontendResourceMapper.mapTagToFrontendTag(facetTag), count))
             }
           } else {
             None
