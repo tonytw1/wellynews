@@ -70,7 +70,7 @@ import org.springframework.web.servlet.ModelAndView
     if (resource.getPublisher == null) {
       true
     } else {
-      if (resource.getPublisher ne proposedPublisher) {
+      if (resource.getPublisher != proposedPublisher) {
         true
       } else {
         false
