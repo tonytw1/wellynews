@@ -3,6 +3,9 @@ package nz.co.searchwellington.repositories.mongo
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 class MongoRepositoryTest {
 
   val mongoRepository = new MongoRepository()
@@ -34,14 +37,14 @@ class MongoRepositoryTest {
 
   @Test
   def canReadTaggingsForResource = {
-    val taggings = mongoRepository.getTaggingsFor(6833)
+    val taggings = Await.result(mongoRepository.getTaggingsFor(6833), Duration(1, MINUTES))
     println(taggings)
     assertEquals(1, taggings.size)
     assertEquals(8, taggings.head.tag_id)
   }
 
   def canReadListOfResourceIds = {
-    val resourceIds: Seq[Int] = mongoRepository.getAllResourceIds()
+    val resourceIds = Await.result(mongoRepository.getAllResourceIds(), Duration(1, MINUTES))
     assertEquals(30435, resourceIds.size)
   }
 

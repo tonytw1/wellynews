@@ -1,12 +1,12 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import nz.co.searchwellington.model.{Resource, WebsiteImpl}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(var mongoRepository: MongoRepository, val elasticSearchIndexer: ElasticSearchIndexer) {

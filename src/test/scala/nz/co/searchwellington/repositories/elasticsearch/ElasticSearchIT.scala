@@ -4,6 +4,9 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Test
 import org.junit.Assert.assertTrue
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 class ElasticSearchIT {
 
   val mongoRepository = new MongoRepository()
@@ -26,7 +29,7 @@ class ElasticSearchIT {
     val newsitems = elasticSearchIndexer.getLatestNewsitems(10)
 
     assertTrue(newsitems.nonEmpty)
-    assertTrue(newsitems.forall(i => mongoRepository.getResourceById(i).get.`type` == "N"))
+    assertTrue(newsitems.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
 
     newsitems.map { n =>
       println(n)

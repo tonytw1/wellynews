@@ -116,7 +116,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       mongoRepository.getResourceById(id)
     }}.map(_.flatten)
 
-    Await.result(eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r))),  Duration(1, MINUTES))
+    Await.result(eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r))), Duration(1, MINUTES))
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {

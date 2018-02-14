@@ -7,6 +7,9 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
+
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) {
 
   @SuppressWarnings(Array("unchecked")) def getAllResourceIds: Seq[Integer] = {
@@ -99,7 +102,7 @@ import org.springframework.stereotype.Component
   }
 
   def loadResourceById(resourceID: Int): Option[Resource] = {
-    mongoRepository.getResourceById(resourceID)
+    Await.result(mongoRepository.getResourceById(resourceID),  Duration(1, MINUTES))
   }
 
   def loadResourceByUrl(url: String): Resource = {
