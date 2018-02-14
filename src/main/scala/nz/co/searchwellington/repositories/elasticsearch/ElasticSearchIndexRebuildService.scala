@@ -16,14 +16,19 @@ import org.springframework.stereotype.Component
   def buildIndex(deleteAll: Boolean): Unit = {
     val resourcesToIndex = mongoRepository.getAllNewsitems() ++ mongoRepository.getAllWebsites() ++ mongoRepository.getAllWatchlists()
     log.info("Number of resources to reindex: " + resourcesToIndex.size)
-    reindexResources(resourcesToIndex)
+
+    val withTags = resourcesToIndex.map { r =>
+      val tags = mongoRepository.getTaggingsFor(r.id).map(_.tag).toSet
+      (r, tags)
+    }
+
+    reindexResources(withTags)
   }
 
   @throws[JsonProcessingException]
-  private def reindexResources(resourceToIndex: Seq[Resource]) {
-    println(resourceToIndex.size)
-    val iterator = resourceToIndex.grouped(BATCH_COMMIT_SIZE)
-    iterator.foreach { batch =>
+  private def reindexResources(resourceToIndex: Seq[(Resource, Set[Int])]) {
+    val batches = resourceToIndex.grouped(BATCH_COMMIT_SIZE)
+    batches.foreach { batch =>
       println("Processing batch: " + batch.size)
       elasticSearchIndexer.updateMultipleContentItems(batch)
     }

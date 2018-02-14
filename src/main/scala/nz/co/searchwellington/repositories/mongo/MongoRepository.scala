@@ -88,6 +88,10 @@ class MongoRepository {
     Await.result(taggingCollection.find(BSONDocument.empty).cursor[Tagging].toList(), Duration(10000, MILLISECONDS))
   }
 
+  def getTaggingsFor(resourceId: Int): Seq[Tagging] = {
+    Await.result(taggingCollection.find(BSONDocument("resource" -> resourceId)).cursor[Tagging].toList(), Duration(10000, MILLISECONDS))
+  }
+
   case class Tagging(resource: Int, tag: Int)
 
 }
