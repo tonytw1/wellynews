@@ -32,11 +32,10 @@ class ElasticSearchIndexer @Autowired()() {
   val Description = "description"
   val Date = "date"
 
-  def updateMultipleContentItems(resources: Seq[Resource]): Unit = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Set[Int])]): Unit = {
     println("Index batch of size: " + resources.size)
 
-    val indexDefinations = resources.map { r =>
-      println("! " + r.date2)
+    val indexDefinations = resources.map(_._1).map { r =>
       val fields = Seq (
         Some((Type -> r.`type`)),
         r.title.map(t => (Title -> t)),
