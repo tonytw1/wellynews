@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories.mongo
 import nz.co.searchwellington.model._
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
+import reactivemongo.api.{Cursor, DefaultDB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDocument, BSONDocumentReader, Macros}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -30,7 +30,7 @@ class MongoRepository {
 
   def resourceCollection: BSONCollection = connect().collection("resource")
   def tagCollection: BSONCollection = connect().collection("tag")
-  def taggingCollection: BSONCollection = connect().collection("taggings")
+  def taggingCollection: BSONCollection = connect().collection("resource_tags")
 
   implicit def feedReader = Macros.reader[FeedImpl]
   implicit def newsitemReader = Macros.reader[NewsitemImpl]
@@ -39,7 +39,7 @@ class MongoRepository {
   implicit def tagggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
   def getResourceById(id: Int): Option[Resource] = {
-    val eventualMaybyResource = resourceCollection.find(BSONDocument("id" -> id)).one[WebsiteImpl]
+    val eventualMaybyResource = resourceCollection.find(BSONDocument("id" -> id)).one[WebsiteImpl]  // TODO typing
     Await.result(eventualMaybyResource, Duration(10000, MILLISECONDS))
   }
 
@@ -61,6 +61,23 @@ class MongoRepository {
   def getAllTags(): Seq[Tag] = {
     val eventualTags = tagCollection.find(BSONDocument.empty).cursor[Tag].toList()
     Await.result(eventualTags, Duration(10000, MILLISECONDS))
+  }
+
+  def getAllResourceIds(): Seq[Int] = {
+    val projection = BSONDocument("id" -> 1)
+    val eventual = resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument].collect[List](Integer.MAX_VALUE)
+
+    val x = eventual.map { r =>
+      r.map { i =>
+        val maybeInt = i.getAs[Int]("id")
+        println(i + ": " + maybeInt)
+        maybeInt
+
+      }.flatten
+    }
+
+
+    Await.result(x, Duration(10000, MILLISECONDS))
   }
 
   def getFeaturedTags(): Seq[Tag] = {
@@ -89,9 +106,9 @@ class MongoRepository {
   }
 
   def getTaggingsFor(resourceId: Int): Seq[Tagging] = {
-    Await.result(taggingCollection.find(BSONDocument("resource" -> resourceId)).cursor[Tagging].toList(), Duration(10000, MILLISECONDS))
+    Await.result(taggingCollection.find(BSONDocument("resource_id" -> resourceId)).cursor[Tagging].toList(), Duration(10000, MILLISECONDS))
   }
 
-  case class Tagging(resource: Int, tag: Int)
+  case class Tagging(resource_id: Int, tag_id: Int)
 
 }

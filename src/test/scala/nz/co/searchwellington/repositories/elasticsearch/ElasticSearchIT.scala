@@ -27,6 +27,7 @@ class ElasticSearchIT {
 
     assertTrue(newsitems.nonEmpty)
     assertTrue(newsitems.forall(i => mongoRepository.getResourceById(i).get.`type` == "N"))
+
     newsitems.map { n =>
       println(n)
     }

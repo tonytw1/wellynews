@@ -14,24 +14,28 @@ import org.springframework.stereotype.Component
 
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {
-    val resourcesToIndex = mongoRepository.getAllNewsitems() ++ mongoRepository.getAllWebsites() ++ mongoRepository.getAllWatchlists()
+    val resourcesToIndex = mongoRepository.getAllResourceIds()
     log.info("Number of resources to reindex: " + resourcesToIndex.size)
-
-    val withTags = resourcesToIndex.map { r =>
-      val tags = mongoRepository.getTaggingsFor(r.id).map(_.tag).toSet
-      (r, tags)
-    }
-
-    reindexResources(withTags)
+    reindexResources(resourcesToIndex)
   }
 
   @throws[JsonProcessingException]
-  private def reindexResources(resourceToIndex: Seq[(Resource, Set[Int])]) {
-    val batches = resourceToIndex.grouped(BATCH_COMMIT_SIZE)
+  private def reindexResources(resourcesToIndex: Seq[Int]) {
+    val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
     batches.foreach { batch =>
       println("Processing batch: " + batch.size)
-      elasticSearchIndexer.updateMultipleContentItems(batch)
+      val resources = batch.map { i =>
+        mongoRepository.getResourceById(i)
+      }.flatten
+
+      val withTags = resources.map { r =>
+        val tags = mongoRepository.getTaggingsFor(r.id).map(_.tag_id).toSet
+        (r, tags)
+      }
+
+      elasticSearchIndexer.updateMultipleContentItems(withTags)
     }
+
     println("Index rebuild complete")
   }
 
