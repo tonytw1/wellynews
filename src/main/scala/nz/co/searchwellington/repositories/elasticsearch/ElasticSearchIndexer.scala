@@ -31,20 +31,22 @@ class ElasticSearchIndexer @Autowired()() {
   val HttpStatus = "http_status"
   val Description = "description"
   val Date = "date"
+  val Tags = "tags"
 
   def updateMultipleContentItems(resources: Seq[(Resource, Set[Int])]): Unit = {
     println("Index batch of size: " + resources.size)
 
-    val indexDefinations = resources.map(_._1).map { r =>
+    val indexDefinations = resources.map { r =>
       val fields = Seq (
-        Some((Type -> r.`type`)),
-        r.title.map(t => (Title -> t)),
-        Some(HttpStatus -> r.http_status.toString),
-        r.description.map(d => (Description -> d)),
-        r.date2.map(d => (Date -> new DateTime(d)))
+        Some((Type -> r._1.`type`)),
+        r._1.title.map(t => (Title -> t)),
+        Some(HttpStatus -> r._1.http_status.toString),
+        r._1.description.map(d => (Description -> d)),
+        r._1.date2.map(d => (Date -> new DateTime(d))),
+        Some(Tags, r._2)
       )
 
-      indexInto(Index / Resources).fields(fields.flatten) id r.id.toString
+      indexInto(Index / Resources).fields(fields.flatten) id r._1.id.toString
     }
 
     val result = Await.result(client.execute (bulk(indexDefinations)), tenSeconds)
@@ -76,7 +78,8 @@ class ElasticSearchIndexer @Autowired()() {
             field(Title) typed TextType analyzer StandardAnalyzer,
             field(Type) typed TextType,
             field(Date) typed DateType,
-            field(Description) typed TextType analyzer StandardAnalyzer
+            field(Description) typed TextType analyzer StandardAnalyzer,
+            field(Tags) typed IntegerType
           )
           )
       }
