@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
 @Component class ContentRetrievalService @Autowired()( resourceDAO: HibernateResourceDAO,
                                                        keywordSearchService: KeywordSearchService,  showBrokenDecisionService: ShowBrokenDecisionService,
                                                        tagDAO: TagDAO,  relatedTagsService: RelatedTagsService,
@@ -108,11 +112,11 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   private def fetchByIds(ids: Seq[Int]): Seq[FrontendResource] = {
-    ids.map { id =>
-      mongoRepository.getResourceById(id).map { r =>
-        frontendResourceMapper.createFrontendResourceFrom(r)
-      }
-    }.flatten
+    val eventualResources = Future.sequence{ ids.map { id =>
+      mongoRepository.getResourceById(id)
+    }}.map(_.flatten)
+
+    Await.result(eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r))),  Duration(1, MINUTES))
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {
