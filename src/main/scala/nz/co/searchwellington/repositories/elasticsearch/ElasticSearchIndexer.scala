@@ -5,8 +5,6 @@ import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.HttpClient
-import com.sksamuel.elastic4s.mappings.FieldType._
-import com.sksamuel.elastic4s.searches._
 import nz.co.searchwellington.model.{Resource, Tag}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -82,19 +80,27 @@ class ElasticSearchIndexer @Autowired()() {
   }
 
   def getLatestNewsitems(maxItems: Int): Future[(Seq[Int], Long)] = {
-    executeRequest(search in Index -> Resources matchQuery(Type, "N") sortByFieldDesc (Date) limit (maxItems))
-  }
-
-  def getTagNewsitems(tag: Tag, maxItems: Int): Future[(Seq[Int], Long)] = {
-    val tagNewsitems = must(Seq(matchQuery(Tags, tag.id), matchQuery(Type, "N")))
-    executeRequest(search in Index -> Resources query tagNewsitems sortByFieldDesc (Date) limit (maxItems))
+    executeRequest(ResourceQuery(`type` = Some("N")))
   }
 
   def getLatestWebsites(maxItems: Int): Future[(Seq[Int], Long)] = {
-    executeRequest(search in Index -> Resources query matchQuery(Type, "W") sortByFieldDesc (Date) limit (maxItems))
+    executeRequest(ResourceQuery(`type` = Some("W")))
   }
 
-  private def executeRequest(request: SearchDefinition): Future[(Seq[Int], Long)] = {
+  def getTagNewsitems(tag: Tag, maxItems: Int): Future[(Seq[Int], Long)] = {
+    executeRequest(ResourceQuery(`type` = Some("N"), tag = Some(tag)))
+  }
+
+  private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {
+    var conditions = Seq (
+      query.`type`.map(t => matchQuery(Type, "N")),
+      query.tag.map(t => matchQuery(Tags, t))
+    ).flatten
+
+    val q = must(conditions)
+
+    val request = search in Index -> Resources query q sortByFieldDesc (Date) limit (query.maxItems)
+
     client.execute(request).map { r =>
       r.map { rs =>
         (rs.result.hits.hits.map (_.id.toInt).toSeq, rs.result.totalHits)
@@ -107,5 +113,7 @@ class ElasticSearchIndexer @Autowired()() {
       }
     }
   }
+
+  case class ResourceQuery(`type`: Option[String] = None, tag: Option[Tag] = None, maxItems: Int = 30)
 
 }
