@@ -29,7 +29,7 @@ import org.springframework.web.servlet.ModelAndView
       import scala.collection.JavaConversions._
 
       val startIndex = getStartIndex(page)
-      val totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags)
+      val totalNewsitemCount = contentRetrievalService.getTagNewsitemsCount(tags)
 
       if (startIndex > totalNewsitemCount) {
         None

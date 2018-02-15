@@ -342,25 +342,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     deserializeFrontendResourceHits(response.getHits)
   }
 
-  def getTaggedNewsitems(tags: Seq[Tag], shouldShowBroken: Boolean, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    /*
-    val builder = tagCombinerQuery(tags, shouldShowBroken, maxNewsitems)
-    addNameOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-    */
-    Seq() // TODO
-  }
-
-  def getTaggedNewsitemsCount(tags: Seq[Tag], shouldShowBroken: Boolean): Long = {
-    /*
-    val searchRequestBuilder = tagCombinerQuery(tags, shouldShowBroken, 0)
-    val response = searchRequestBuilder.execute.actionGet
-    response.getHits.getTotalHits
-    */
-    0 // TODO
-  }
-
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, shouldShowBroken: Boolean, maxNewsitems: Int): Seq[FrontendResource] = {
     val publishertaggedNewsitems = QueryBuilders.boolQuery.must(QueryBuilders.termQuery(TYPE, "N"))
     publishertaggedNewsitems.must(hasTag(tag))

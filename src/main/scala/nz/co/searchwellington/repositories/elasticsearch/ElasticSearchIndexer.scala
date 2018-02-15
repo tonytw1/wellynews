@@ -87,8 +87,8 @@ class ElasticSearchIndexer @Autowired()() {
     executeRequest(ResourceQuery(`type` = Some("W")))
   }
 
-  def getTagNewsitems(tag: Tag, maxItems: Int): Future[(Seq[Int], Long)] = {
-    executeRequest(ResourceQuery(`type` = Some("N"), tag = Some(tag)))
+  def getTagNewsitems(tag: Tag, maxItems: Int, startIndex: Int): Future[(Seq[Int], Long)] = {
+    executeRequest(ResourceQuery(`type` = Some("N"), tag = Some(tag)))  // TODO paginationation
   }
 
   private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {

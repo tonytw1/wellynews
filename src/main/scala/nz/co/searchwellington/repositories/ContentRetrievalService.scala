@@ -48,7 +48,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getTaggedNewitemsCount(tag: Tag): Long = {
-    Await.result(elasticSearchIndexer.getTagNewsitems(tag, MAX_NEWSITEMS_TO_SHOW), Duration(10, SECONDS))._2      // TODO show broken
+    Await.result(elasticSearchIndexer.getTagNewsitems(tag = tag, MAX_NEWSITEMS_TO_SHOW, 0), Duration(10, SECONDS))._2      // TODO show broken
+  }
+
+  def getTaggedNewitems(tag: Tag): Seq[FrontendResource] = {
+    Await.result(elasticSearchIndexer.getTagNewsitems(tag = tag, MAX_NEWSITEMS_TO_SHOW, 0).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS)) // TODO show broken
   }
 
   def getCommentedNewsitemsForTagCount(tag: Tag): Int = {
