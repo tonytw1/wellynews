@@ -7,24 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.{Duration, MINUTES}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(var mongoRepository: MongoRepository, val elasticSearchIndexer: ElasticSearchIndexer) {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
-  private val BATCH_COMMIT_SIZE = 100
+  private val BATCH_COMMIT_SIZE = 10
 
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {
-    mongoRepository.getAllResourceIds().map { resourcesToIndex =>
-      log.info("Number of resources to reindex: " + resourcesToIndex.size)
-      reindexResources(resourcesToIndex)
-    }
+    val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), Duration(1, MINUTES))
+    reindexResources(resourcesToIndex)
+
+
   }
 
   @throws[JsonProcessingException]
-  private def reindexResources(resourcesToIndex: Seq[Int]) {
+  private def reindexResources(resourcesToIndex: Seq[Int]): Unit = {
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
+
     batches.foreach { batch =>
       println("Processing batch: " + batch.size)
 
@@ -33,14 +35,17 @@ import scala.concurrent.Future
       val eventualWithTags = eventualResources.flatMap { rs =>
         Future.sequence(rs.map { r =>
           mongoRepository.getTaggingsFor(r.id).map { ts =>
+            log.info("Tags: " + ts.size)
             (r, ts.map(_.tag_id).toSet)
           }
         })
       }
 
-      eventualWithTags.map { rs =>
+      val x: Future[Unit] = eventualWithTags.map { rs =>
         elasticSearchIndexer.updateMultipleContentItems(rs)
       }
+      Await.result(x, Duration(1, MINUTES))
+      println("Next")
     }
 
     println("Index rebuild complete")

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.mongo
 
+import nz.co.searchwellington.model.{Newsitem, Resource, Website, WebsiteImpl}
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -43,9 +44,21 @@ class MongoRepositoryTest {
     assertEquals(8, taggings.head.tag_id)
   }
 
+  @Test
   def canReadListOfResourceIds = {
     val resourceIds = Await.result(mongoRepository.getAllResourceIds(), Duration(1, MINUTES))
-    assertEquals(30435, resourceIds.size)
+    assertEquals(73049, resourceIds.size)
+  }
+
+  @Test
+  def canReadResourcesBackWithCorrectType = {
+    val newsitems = mongoRepository.getAllNewsitems()
+    val newsitem = newsitems.head
+    val reloadedNewsitem = Await.result(mongoRepository.getResourceById(newsitem.id), Duration(1, MINUTES)).get
+
+    val websites = mongoRepository.getAllWebsites()
+    val website = websites.head
+    val reloadedWebsite = Await.result(mongoRepository.getResourceById(website.id), Duration(1, MINUTES)).get
   }
 
 }

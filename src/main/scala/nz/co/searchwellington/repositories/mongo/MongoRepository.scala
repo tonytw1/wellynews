@@ -4,7 +4,7 @@ import nz.co.searchwellington.model._
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDocument, BSONDocumentReader, Macros}
+import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONString, Macros}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -38,8 +38,21 @@ class MongoRepository {
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
   implicit def tagggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
-  def getResourceById(id: Int): Future[Option[WebsiteImpl]] = {
-    resourceCollection.find(BSONDocument("id" -> id)).one[WebsiteImpl]  // TODO typing
+  def getResourceById(id: Int): Future[Option[Resource]] = {
+    val bson: Future[Option[BSONDocument]] = resourceCollection.find(BSONDocument("id" -> id)).one[BSONDocument]  // TODO typing
+
+    bson.map { bo =>
+      bo.flatMap { b =>
+        b.get("type").get match {
+          case BSONString("N") =>
+            Some(b.as[NewsitemImpl])
+          case BSONString("W") =>
+            Some(b.as[WebsiteImpl])
+          case _ =>
+            None
+        }
+      }
+    }
   }
 
   def getTagById(id: Int): Option[Tag] = {
