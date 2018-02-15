@@ -104,19 +104,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getLatestNewsitems(maxItems: Int, page: Int): Seq[FrontendResource] = {
-    fetchByIds(elasticSearchIndexer.getLatestNewsitems(maxItems))     // TODO pagination
+    Await.result(elasticSearchIndexer.getLatestNewsitems(maxItems).flatMap(fetchByIds(_)), Duration(10, SECONDS))     // TODO pagination
   }
 
   def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
-    fetchByIds(elasticSearchIndexer.getLatestWebsites(maxItems))     // TODO pagination
+    Await.result(elasticSearchIndexer.getLatestWebsites(maxItems).flatMap(fetchByIds(_)), Duration(10, SECONDS))     // TODO pagination
   }
 
-  private def fetchByIds(ids: Seq[Int]): Seq[FrontendResource] = {
+  private def fetchByIds(ids: Seq[Int]): Future[Seq[FrontendResource]] = {
     val eventualResources = Future.sequence{ ids.map { id =>
       mongoRepository.getResourceById(id)
     }}.map(_.flatten)
 
-    Await.result(eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r))), Duration(1, MINUTES))
+    eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {

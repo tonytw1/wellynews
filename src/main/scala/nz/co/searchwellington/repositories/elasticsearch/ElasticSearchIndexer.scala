@@ -4,10 +4,10 @@ import com.sksamuel.elastic4s.ElasticDsl.search
 import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
-import com.sksamuel.elastic4s.http.index.CreateIndexResponse
-import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
+import com.sksamuel.elastic4s.http.HttpClient
 import com.sksamuel.elastic4s.searches._
 import nz.co.searchwellington.model.Resource
+import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -18,6 +18,8 @@ import scala.concurrent.{Await, Future}
 
 @Component
 class ElasticSearchIndexer @Autowired()() {
+
+  private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
 
   private val tenSeconds = Duration(10000, MILLISECONDS)
 
@@ -34,7 +36,7 @@ class ElasticSearchIndexer @Autowired()() {
   val Tags = "tags"
 
   def updateMultipleContentItems(resources: Seq[(Resource, Set[Int])]): Unit = {
-    println("Index batch of size: " + resources.size)
+    log.info("Index batch of size: " + resources.size)
 
     val indexDefinations = resources.map { r =>
       val fields = Seq (
@@ -50,21 +52,7 @@ class ElasticSearchIndexer @Autowired()() {
     }
 
     val result = Await.result(client.execute (bulk(indexDefinations)), tenSeconds)
-    println(result)
-  }
-
-  def readBack() = {
-    var request: SearchDefinition = {
-      search in Index / Resources matchQuery(Type, "L")
-    }
-
-    val result = Await.result({client.execute (request)}, tenSeconds)
-    result.map { r =>
-      println("!!!!!! " + r.result.hits.total)
-      r.result.hits.hits.map { h =>
-        println("!!!!! " + h)
-      }
-    }
+    log.info(result)
   }
 
   def createIndexes() = {
@@ -72,7 +60,7 @@ class ElasticSearchIndexer @Autowired()() {
     import com.sksamuel.elastic4s.mappings.FieldType._
 
     try {
-      val x: Future[Either[RequestFailure, RequestSuccess[CreateIndexResponse]]] = client.execute {
+      val eventualCreateIndexResult = client.execute {
         create index Index mappings (
           mapping(Resources).fields(
             field(Title) typed TextType analyzer StandardAnalyzer,
@@ -84,35 +72,35 @@ class ElasticSearchIndexer @Autowired()() {
           )
       }
 
-      val result = x.await
-      println("!!! " + result)
+      val result = eventualCreateIndexResult.await
+      log.info("Create indexes result: " + result)
 
     } catch {
-      case e: Exception => println("Failed to created index", e)
+      case e: Exception => log.error("Failed to created index", e)
     }
-
-    println("Index created")
   }
 
-  def getLatestNewsitems(maxItems: Int): Seq[Int] = {
-    executeRequest(search in Index / Resources matchQuery(Type, "N") sortByFieldDesc(Date) limit (maxItems) )
+  def getLatestNewsitems(maxItems: Int): Future[Seq[Int]] = {
+    executeRequest(search in Index / Resources matchQuery(Type, "N") sortByFieldDesc (Date) limit (maxItems))
   }
 
-  def getLatestWebsites(maxItems: Int): Seq[Int] = {
-    executeRequest(search in Index / Resources matchQuery(Type, "W") sortByFieldDesc(Date) limit (maxItems) )
+  def getLatestWebsites(maxItems: Int): Future[Seq[Int]] = {
+    executeRequest(search in Index / Resources matchQuery(Type, "W") sortByFieldDesc (Date) limit (maxItems))
   }
 
-  private def executeRequest(request: SearchDefinition) = {
-    Await.result(client.execute(request), tenSeconds).map { r =>
-      r.result.hits.hits.map { h =>
-        h.id.toInt
-      }.toSeq
+  private def executeRequest(request: SearchDefinition): Future[Seq[Int]] = {
+    client.execute(request).map { r =>
+      r.map { rs =>
+        rs.result.hits.hits.map { h =>
+          h.id.toInt
+        }.toSeq
 
-    } match {
-      case(Right(ids)) => ids
-      case(Left(f)) =>
-        println(f)
-        Seq()
+      } match {
+        case (Right(ids)) => ids
+        case (Left(f)) =>
+          log.error(f)
+          Seq()
+      }
     }
   }
 
