@@ -5,15 +5,16 @@ import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.HttpClient
+import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.searches._
-import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.model.{Resource, Tag}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{Duration, MILLISECONDS}
+import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 @Component
@@ -72,7 +73,7 @@ class ElasticSearchIndexer @Autowired()() {
           )
       }
 
-      val result = eventualCreateIndexResult.await
+      val result = Await.result(eventualCreateIndexResult, Duration(10, SECONDS))
       log.info("Create indexes result: " + result)
 
     } catch {
@@ -80,26 +81,29 @@ class ElasticSearchIndexer @Autowired()() {
     }
   }
 
-  def getLatestNewsitems(maxItems: Int): Future[Seq[Int]] = {
-    executeRequest(search in Index / Resources matchQuery(Type, "N") sortByFieldDesc (Date) limit (maxItems))
+  def getLatestNewsitems(maxItems: Int): Future[(Seq[Int], Long)] = {
+    executeRequest(search in Index -> Resources matchQuery(Type, "N") sortByFieldDesc (Date) limit (maxItems))
   }
 
-  def getLatestWebsites(maxItems: Int): Future[Seq[Int]] = {
-    executeRequest(search in Index / Resources matchQuery(Type, "W") sortByFieldDesc (Date) limit (maxItems))
+  def getTagNewsitems(tag: Tag, maxItems: Int): Future[(Seq[Int], Long)] = {
+    val tagNewsitems = must(Seq(matchQuery(Tags, tag.id), matchQuery(Type, "N")))
+    executeRequest(search in Index -> Resources query tagNewsitems sortByFieldDesc (Date) limit (maxItems))
   }
 
-  private def executeRequest(request: SearchDefinition): Future[Seq[Int]] = {
+  def getLatestWebsites(maxItems: Int): Future[(Seq[Int], Long)] = {
+    executeRequest(search in Index -> Resources query matchQuery(Type, "W") sortByFieldDesc (Date) limit (maxItems))
+  }
+
+  private def executeRequest(request: SearchDefinition): Future[(Seq[Int], Long)] = {
     client.execute(request).map { r =>
       r.map { rs =>
-        rs.result.hits.hits.map { h =>
-          h.id.toInt
-        }.toSeq
+        (rs.result.hits.hits.map (_.id.toInt).toSeq, rs.result.totalHits)
 
       } match {
-        case (Right(ids)) => ids
+        case (Right(idsWithTotalCount)) => idsWithTotalCount
         case (Left(f)) =>
           log.error(f)
-          Seq()
+          (Seq(), 0L)
       }
     }
   }

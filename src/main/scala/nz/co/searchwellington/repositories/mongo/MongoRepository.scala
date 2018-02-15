@@ -35,6 +35,7 @@ class MongoRepository {
   implicit def feedReader = Macros.reader[FeedImpl]
   implicit def newsitemReader = Macros.reader[NewsitemImpl]
   implicit def websiteReader = Macros.reader[WebsiteImpl]
+  implicit def watchlistReader = Macros.reader[Watchlist]
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
   implicit def tagggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 

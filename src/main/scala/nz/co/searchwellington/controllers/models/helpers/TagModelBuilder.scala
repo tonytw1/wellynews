@@ -66,7 +66,6 @@ import org.springframework.web.servlet.ModelAndView
       }
     }
 
-    println("!!!!!!!!!!! TAGS: " + isValid(request))
     if (isValid(request)) {
       val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
       val tag = tags.get(0)
@@ -116,7 +115,6 @@ import org.springframework.web.servlet.ModelAndView
       }
       mv.addObject("commented_newsitems", commentedToShow)
     }
-
 
     val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
     val tag = tags.get(0)

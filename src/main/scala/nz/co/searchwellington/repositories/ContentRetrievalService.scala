@@ -48,7 +48,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getTaggedNewitemsCount(tag: Tag): Long = {
-    elasticSearchBackedResourceDAO.getTaggedNewitemsCount(tag, showBrokenDecisionService.shouldShowBroken)
+    Await.result(elasticSearchIndexer.getTagNewsitems(tag, MAX_NEWSITEMS_TO_SHOW), Duration(10, SECONDS))._2      // TODO show broken
   }
 
   def getCommentedNewsitemsForTagCount(tag: Tag): Int = {
@@ -104,11 +104,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getLatestNewsitems(maxItems: Int, page: Int): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getLatestNewsitems(maxItems).flatMap(fetchByIds(_)), Duration(10, SECONDS))     // TODO pagination
+    Await.result(elasticSearchIndexer.getLatestNewsitems(maxItems).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))     // TODO pagination
   }
 
   def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getLatestWebsites(maxItems).flatMap(fetchByIds(_)), Duration(10, SECONDS))     // TODO pagination
+    Await.result(elasticSearchIndexer.getLatestWebsites(maxItems).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))     // TODO pagination
   }
 
   private def fetchByIds(ids: Seq[Int]): Future[Seq[FrontendResource]] = {

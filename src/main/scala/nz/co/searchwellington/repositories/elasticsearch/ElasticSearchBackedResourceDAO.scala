@@ -79,12 +79,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     0 // TODO
   }
 
-  def getTaggedNewitemsCount(tag: Tag, shouldShowBroken: Boolean): Long = {
-    val builder = searchRequestBuilder(tagNewsitemsQuery(tag))
-    val response = builder.execute.actionGet
-    return response.getHits.getTotalHits
-  }
-
   def getLatestWebsites(maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val isWebsite: TermQueryBuilder = QueryBuilders.termQuery(TYPE, "W")
     val websites = QueryBuilders.boolQuery.must(isWebsite)

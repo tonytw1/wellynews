@@ -27,13 +27,13 @@ class ElasticSearchIT {
   @Test
   def canFilterByType: Unit = {
     val newsitems = Await.result(elasticSearchIndexer.getLatestNewsitems(10), Duration(10, SECONDS))
-    assertTrue(newsitems.nonEmpty)
-    assertTrue(newsitems.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
+    assertTrue(newsitems._1.nonEmpty)
+    assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
 
 
     val websites = Await.result(elasticSearchIndexer.getLatestWebsites(10), Duration(10, SECONDS))
-    assertTrue(websites.nonEmpty)
-    assertTrue(websites.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(10, SECONDS)).get.`type` == "W"))
+    assertTrue(websites._1.nonEmpty)
+    assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(10, SECONDS)).get.`type` == "W"))
   }
 
 }
