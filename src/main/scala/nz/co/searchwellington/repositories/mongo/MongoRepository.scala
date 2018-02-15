@@ -39,17 +39,14 @@ class MongoRepository {
   implicit def tagggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
   def getResourceById(id: Int): Future[Option[Resource]] = {
-    val bson: Future[Option[BSONDocument]] = resourceCollection.find(BSONDocument("id" -> id)).one[BSONDocument]  // TODO typing
-
-    bson.map { bo =>
+    resourceCollection.find(BSONDocument("id" -> id)).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
         b.get("type").get match {
-          case BSONString("N") =>
-            Some(b.as[NewsitemImpl])
-          case BSONString("W") =>
-            Some(b.as[WebsiteImpl])
-          case _ =>
-            None
+          case BSONString("N") => Some(b.as[NewsitemImpl])
+          case BSONString("W") => Some(b.as[WebsiteImpl])
+          case BSONString("F") => Some(b.as[FeedImpl])
+          case BSONString("L") => Some(b.as[Watchlist])
+          case _ => None
         }
       }
     }
