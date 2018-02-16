@@ -23,7 +23,7 @@ case class NewsitemImpl(override var id: Int = 0,
                         var feed: Option[Int] = None,
                         var commentFeed: Option[Int] = None,
                         var image: Option[Int] = None,
-                        var accepted: Option[String] = None,
+                        var accepted2: Option[Date] = None,
                         var acceptedBy: Option[Int] = None) extends PublishedResource with Newsitem {
 
   override def getType = "N"
@@ -46,9 +46,9 @@ case class NewsitemImpl(override var id: Int = 0,
 
   override def setFeed(feed: Int): Unit = this.feed = Some(feed)
 
-  override def getAccepted: Date = accepted.map(d => ISODateTimeFormat.dateParser().parseDateTime(d).toDate).getOrElse(null) // TODO
+  override def getAccepted: Date = accepted2.getOrElse(null) // TODO
 
-  override def setAccepted(accepted: Date): Unit = this.accepted = Some(accepted.toString)  // TODO
+  override def setAccepted(accepted: Date): Unit = this.accepted2 = Some(accepted)
 
   override def getAcceptedBy: Option[Int] = acceptedBy
 
