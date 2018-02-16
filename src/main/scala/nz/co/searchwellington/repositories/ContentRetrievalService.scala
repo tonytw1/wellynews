@@ -40,7 +40,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getAllPublishers: Seq[PublisherContentCount] = {
-    elasticSearchBackedResourceDAO.getAllPublishers(showBrokenDecisionService.shouldShowBroken)
+    elasticSearchIndexer.getAllPublishers()   // TODO show broken
   }
 
   def getTopLevelTags: Seq[Tag] = {

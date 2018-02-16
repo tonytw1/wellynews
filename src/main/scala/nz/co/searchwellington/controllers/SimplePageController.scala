@@ -90,9 +90,10 @@ import org.springframework.web.servlet.ModelAndView
     urlStack.setUrlStack(request)
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "All Publishers")
-    mv.addObject("publishers", contentRetrievalService.getAllPublishers)
+    import scala.collection.JavaConverters._
+    mv.addObject("publishers", contentRetrievalService.getAllPublishers.asJava)
     mv.setViewName("publishers")
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
     mv
   }
 

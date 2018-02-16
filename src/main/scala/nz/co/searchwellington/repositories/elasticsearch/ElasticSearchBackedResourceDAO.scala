@@ -209,19 +209,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     0 // TODO
   }
 
-  def getAllPublishers(shouldShowBroken: Boolean): Seq[PublisherContentCount] = {
-    /*
-    val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).setSize(0).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).execute.actionGet
-    val facet = searchResponse.getFacets.getFacets.get(PUBLISHER_NAME).asInstanceOf[TermsFacet]
-    val entries = facet.getEntries
-    import scala.collection.JavaConversions._
-    entries.map { entry =>
-      new PublisherContentCount(entry.getTerm.string, entry.getCount)
-    }
-    */
-    Seq()
-  }
-
   def getTagFacetsForTag(tag: Tag): Map[String, Int] = {
     tagNewsitemsFacet(tag, INDEX_TAGS)
   }
