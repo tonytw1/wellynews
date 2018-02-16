@@ -1,8 +1,8 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Test
 import org.junit.Assert.assertTrue
+import org.junit.Test
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
@@ -25,7 +25,7 @@ class ElasticSearchIT {
   }
 
   @Test
-  def canFilterByType: Unit = {
+  def canFilterByType {
     val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), Duration(10, SECONDS))
     assertTrue(newsitems._1.nonEmpty)
     assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
@@ -36,8 +36,23 @@ class ElasticSearchIT {
   }
 
   @Test
-  def canFilterByTag: Unit = {
-    // TODO implement
+  def canFilterByTag {
+    val tag = mongoRepository.getTagByName("transport").get
+    val withTag = ResourceQuery(tags = Some(Set(tag)))
+
+    val taggedNewsitems = Await.result(elasticSearchIndexer.getResources(withTag.copy(`type` = Some("N"))), Duration(10, SECONDS))
+    assertTrue(taggedNewsitems._1.nonEmpty)
+    assertTrue(taggedNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
+    assertTrue(taggedNewsitems._1.forall { i =>
+      Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)
+    })
+
+    val taggedWebsites = Await.result(elasticSearchIndexer.getResources(withTag.copy(`type` = Some("N"))), Duration(10, SECONDS))
+    assertTrue(taggedWebsites._1.nonEmpty)
+    assertTrue(taggedWebsites._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
+    assertTrue(taggedWebsites._1.forall { i =>
+      Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)
+    })
   }
 
 }
