@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedSyncService])
 
-  @Scheduled(fixedRate = 3600000)
+  // @Scheduled(fixedRate = 3600000)
   def run {
     registerFeedsWithWhakaoko(resourceDAO.getAllFeeds)
   }
