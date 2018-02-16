@@ -1,6 +1,8 @@
 package nz.co.searchwellington.repositories.mongo
 
+import nz.co.searchwellington.controllers.ajax.TagAjaxController
 import nz.co.searchwellington.model._
+import org.apache.log4j.Logger
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
@@ -13,7 +15,10 @@ import scala.concurrent.{Await, Future}
 @Component
 class MongoRepository {
 
+  private val log = Logger.getLogger(classOf[MongoRepository])
+
   def connect(): DefaultDB = {
+    log.info("Connecting to Mongo")
     val mongoUri = "mongodb://localhost:27017/wellynews"
     val driver = MongoDriver()
     val parsedUri = MongoConnection.parseURI(mongoUri)
@@ -28,16 +33,16 @@ class MongoRepository {
 
   val db: DefaultDB = connect()
 
-  def resourceCollection: BSONCollection = connect().collection("resource")
-  def tagCollection: BSONCollection = connect().collection("tag")
-  def taggingCollection: BSONCollection = connect().collection("resource_tags")
+  def resourceCollection: BSONCollection = db.collection("resource")
+  def tagCollection: BSONCollection = db.collection("tag")
+  def taggingCollection: BSONCollection = db.collection("resource_tags")
 
   implicit def feedReader = Macros.reader[FeedImpl]
   implicit def newsitemReader = Macros.reader[NewsitemImpl]
   implicit def websiteReader = Macros.reader[WebsiteImpl]
   implicit def watchlistReader = Macros.reader[Watchlist]
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
-  implicit def tagggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
+  implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
 
   def getResourceById(id: Int): Future[Option[Resource]] = {
     resourceCollection.find(BSONDocument("id" -> id)).one[BSONDocument].map { bo =>
@@ -69,7 +74,7 @@ class MongoRepository {
   }
 
   def getAllTags(): Seq[Tag] = {
-    val eventualTags = tagCollection.find(BSONDocument.empty).cursor[Tag].toList()
+    val eventualTags = tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag].toList()
     Await.result(eventualTags, Duration(10000, MILLISECONDS))
   }
 
