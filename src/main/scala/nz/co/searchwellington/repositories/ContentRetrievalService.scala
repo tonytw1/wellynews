@@ -7,7 +7,7 @@ import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendTag}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, ElasticSearchIndexer, KeywordSearchService}
+import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, ElasticSearchIndexer, KeywordSearchService, ResourceQuery}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -47,14 +47,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     tagDAO.getTopLevelTags
   }
 
-  def getTaggedNewitemsCount(tag: Tag): Long = {
-    Await.result(elasticSearchIndexer.getTagNewsitems(tag = tag, MAX_NEWSITEMS_TO_SHOW, 0), Duration(10, SECONDS))._2      // TODO show broken
-  }
-
-  def getTaggedNewitems(tag: Tag): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getTagNewsitems(tag = tag, MAX_NEWSITEMS_TO_SHOW, 0).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS)) // TODO show broken
-  }
-
   def getCommentedNewsitemsForTagCount(tag: Tag): Int = {
     elasticSearchBackedResourceDAO.getCommentedNewsitemsForTagCount(tag, showBrokenDecisionService.shouldShowBroken)
   }
@@ -64,11 +56,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getTagWatchlist(tag: Tag): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTagWatchlist(tag, showBrokenDecisionService.shouldShowBroken)
+    val taggedWebsites = ResourceQuery(`type` = Some("L"), tags = Some(Set(tag)))
+    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   def getTaggedFeeds(tag: Tag): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTaggedFeeds(tag, showBrokenDecisionService.shouldShowBroken)
+    val taggedWebsites = ResourceQuery(`type` = Some("F"), tags = Some(Set(tag)))
+    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   def getTaggedGeotaggedNewsitems(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
@@ -199,20 +193,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken, maxItems)
   }
 
-  def getTaggedNewsitemsCount(tags: Seq[Tag]): Long = {
-    elasticSearchBackedResourceDAO.getTaggedNewsitemsCount(tags, showBrokenDecisionService.shouldShowBroken)
+  def getTaggedNewitemsCount(tag: Tag): Long = {
+   getTaggedNewsitemsCount(tags = Set(tag))
   }
 
-  def getTaggedNewsitems(tags: Seq[Tag], startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTaggedNewsitems(tags, showBrokenDecisionService.shouldShowBroken, startIndex, maxItems)
+  def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS_TO_SHOW): Seq[FrontendResource] = {
+    getTaggedNewsitems(tags = Set(tag), startIndex = startIndex, maxItems = maxItems)
   }
 
-  def getTaggedNewsitems(tag: Tag, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTaggedNewsitems(tag, showBrokenDecisionService.shouldShowBroken, startIndex, maxNewsitems)
+  def getTaggedNewsitemsCount(tags: Set[Tag]): Long = {
+    val query = ResourceQuery(`type` = Some("N"), tags = Some(tags))
+    Await.result(elasticSearchIndexer.getResources(query), Duration(10, SECONDS))._2      // TODO show broken
+  }
+
+  def getTaggedNewsitems(tags: Set[Tag], startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
+    val query = ResourceQuery(`type` = Some("N"), tags = Some(tags), startIndex = startIndex, maxItems = maxItems)
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   def getTaggedWebsites(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTaggedWebsites(Set(tag), showBrokenDecisionService.shouldShowBroken, maxItems)
+    val taggedWebsites = ResourceQuery(`type` = Some("W"), tags = Some(Set(tag)), maxItems = maxItems)
+    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int): Seq[FrontendResource] = {

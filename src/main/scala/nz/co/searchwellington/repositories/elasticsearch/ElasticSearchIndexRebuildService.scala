@@ -10,10 +10,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.{Duration, MINUTES}
 
-@Component class ElasticSearchIndexRebuildService @Autowired()(var mongoRepository: MongoRepository, val elasticSearchIndexer: ElasticSearchIndexer) {
+@Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer) {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
-  private val BATCH_COMMIT_SIZE = 10
+  private val BATCH_COMMIT_SIZE = 1000
 
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {

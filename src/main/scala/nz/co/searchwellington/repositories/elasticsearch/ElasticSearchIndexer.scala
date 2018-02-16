@@ -80,21 +80,27 @@ class ElasticSearchIndexer @Autowired()() {
   }
 
   def getLatestNewsitems(maxItems: Int): Future[(Seq[Int], Long)] = {
-    executeRequest(ResourceQuery(`type` = Some("N")))
+    getResources(ResourceQuery(`type` = Some("N")))
   }
 
   def getLatestWebsites(maxItems: Int): Future[(Seq[Int], Long)] = {
-    executeRequest(ResourceQuery(`type` = Some("W")))
+    getResources(ResourceQuery(`type` = Some("W")))
   }
 
-  def getTagNewsitems(tag: Tag, maxItems: Int, startIndex: Int): Future[(Seq[Int], Long)] = {
-    executeRequest(ResourceQuery(`type` = Some("N"), tag = Some(tag)))  // TODO paginationation
+  def getResources(query: ResourceQuery): Future[(Seq[Int], Long)] = {
+    executeRequest(query)
   }
 
   private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {
     var conditions = Seq (
       query.`type`.map(t => matchQuery(Type, "N")),
-      query.tag.map(t => matchQuery(Tags, t))
+      query.tags.map { tags =>
+        should {          // TODO AND or OR
+          tags.map { t =>
+            matchQuery(Tags, t.id)
+          }
+        }
+      }
     ).flatten
 
     val q = must(conditions)
@@ -106,14 +112,15 @@ class ElasticSearchIndexer @Autowired()() {
         (rs.result.hits.hits.map (_.id.toInt).toSeq, rs.result.totalHits)
 
       } match {
-        case (Right(idsWithTotalCount)) => idsWithTotalCount
+        case (Right(idsWithTotalCount)) => {
+          log.info(query + ": " + idsWithTotalCount._2)
+          idsWithTotalCount
+        }
         case (Left(f)) =>
           log.error(f)
           (Seq(), 0L)
       }
     }
   }
-
-  case class ResourceQuery(`type`: Option[String] = None, tag: Option[Tag] = None, maxItems: Int = 30)
 
 }

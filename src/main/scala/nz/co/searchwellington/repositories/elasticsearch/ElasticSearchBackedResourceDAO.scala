@@ -102,24 +102,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     deserializeFrontendResourceHits(response.getHits)
   }
 
-  def getTagWatchlist(tag: Tag, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val taggedWatchlists = QueryBuilders.boolQuery.must(isWatchlist).must(hasTag(tag))
-    val builder = searchRequestBuilder(taggedWatchlists).setSize(ALL)
-    addShouldShowBrokenClause(taggedWatchlists, shouldShowBroken)
-    addNameOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
-  def getTaggedFeeds(tag: Tag, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val taggedFeeds = QueryBuilders.boolQuery.must(isFeed).must(hasTag(tag))
-    val builder = searchRequestBuilder(taggedFeeds).setSize(ALL)
-    addShouldShowBrokenClause(taggedFeeds, shouldShowBroken)
-    addNameOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
   def getPublisherWatchlist(publisher: Website, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val publisherWatchlist = QueryBuilders.boolQuery.must(isWatchlist).must(hasPublisher(publisher))
     addShouldShowBrokenClause(publisherWatchlist, shouldShowBroken)
