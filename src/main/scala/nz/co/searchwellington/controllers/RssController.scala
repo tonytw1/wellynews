@@ -22,7 +22,8 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
     val description = "Links to " + siteInformation.getAreaname + " related newsitems."
 
     val model: util.HashMap[String, Any] = Maps.newHashMap()
-    model.put("data", contentRetrievalService.getLatestNewsitems)
+    import scala.collection.JavaConverters._
+    model.put("data", contentRetrievalService.getLatestNewsitems.asJava)
     new ModelAndView(viewFactory.getRssView(title, link, description), model)
   }
 
