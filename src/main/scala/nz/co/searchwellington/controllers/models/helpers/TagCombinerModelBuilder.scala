@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util
-import java.util.{HashSet, List}
+import java.util.List
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.ModelBuilder
@@ -25,18 +25,18 @@ import org.springframework.web.servlet.ModelAndView
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    def populateTagCombinerModelAndView(tags: List[Tag], page: Int): Option[ModelAndView] = {
+    def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Option[ModelAndView] = {
       import scala.collection.JavaConversions._
 
       val startIndex = getStartIndex(page)
-      val totalNewsitemCount = contentRetrievalService.getTagNewsitemsCount(tags)
+      val totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags.toSet)
 
       if (startIndex > totalNewsitemCount) {
         None
 
       } else {
-        val firstTag = tags.get(0)
-        val secondTag = tags.get(1)
+        val firstTag = tags(0)
+        val secondTag = tags(1)
 
         if (totalNewsitemCount > 0) {
           val mv = new ModelAndView
@@ -47,7 +47,7 @@ import org.springframework.web.servlet.ModelAndView
           mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag))
           populatePagination(mv, startIndex, totalNewsitemCount)
 
-          val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags, startIndex, MAX_NEWSITEMS)
+          val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS)
           mv.addObject(MAIN_CONTENT, taggedNewsitems)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)))
           Some(mv)
@@ -59,9 +59,10 @@ import org.springframework.web.servlet.ModelAndView
     }
 
     if (isValid(request)) {
-      val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
+      val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
       val page = getPage(request)
       populateTagCombinerModelAndView(tags, page)
+
     } else {
       None
     }

@@ -32,7 +32,7 @@ import org.springframework.web.servlet.ModelAndView
   private val WEBSITES = "websites"
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
+    val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
     tags != null && tags.size == 1
   }
 
@@ -57,7 +57,10 @@ import org.springframework.web.servlet.ModelAndView
         mv.addObject("link", urlBuilder.getTagUrl(tag))
 
         val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS)
-        mv.addObject(MAIN_CONTENT, taggedNewsitems)
+        log.info("Got tagged newsitems: " + taggedNewsitems)
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
+
         populatePagination(mv, startIndex, totalNewsitemCount)
         if (taggedNewsitems.size > 0) {
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
@@ -67,10 +70,8 @@ import org.springframework.web.servlet.ModelAndView
     }
 
     if (isValid(request)) {
-      val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
-      val tag = tags.get(0)
       val page = getPage(request)
-      populateTagPageModelAndView(tag, page)
+      populateTagPageModelAndView(tagFromRequest(request), page)
 
     } else {
       None
@@ -116,10 +117,12 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("commented_newsitems", commentedToShow)
     }
 
-    val tags = request.getAttribute(TAGS).asInstanceOf[List[Tag]]
-    val tag = tags.get(0)
+    val tag = tagFromRequest(request)
     val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
-    mv.addObject(WEBSITES, taggedWebsites)
+    log.info("Tag websites: " + taggedWebsites)
+    import scala.collection.JavaConverters._
+    mv.addObject(WEBSITES, taggedWebsites.asJava)
+
     val relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8)
     if (!relatedTagLinks.isEmpty) {
       mv.addObject("related_tags", relatedTagLinks)
@@ -131,9 +134,10 @@ import org.springframework.web.servlet.ModelAndView
     populateCommentedTaggedNewsitems(mv, tag)
     populateRelatedFeed(mv, tag)
     populateGeocoded(mv, tag)
-    mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag))
-    mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag))
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))
+    import scala.collection.JavaConverters._
+    mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag).asJava)
+    mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag).asJava)
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
   }
 
   def getViewName(mv: ModelAndView): String = {
@@ -152,6 +156,11 @@ import org.springframework.web.servlet.ModelAndView
     } else {
       "tag"
     }
+  }
+
+  private def tagFromRequest(request: HttpServletRequest): Tag = {
+    val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
+    tags(0)
   }
 
 }

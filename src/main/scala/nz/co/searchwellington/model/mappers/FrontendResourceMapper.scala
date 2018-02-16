@@ -41,9 +41,7 @@ import scala.collection.mutable
     frontendContentItem.setName(contentItem.getName)
     frontendContentItem.setUrl(contentItem.getUrl)
 
-    val date = contentItem.date2.getOrElse(null)
-    println("!!! " + date)
-    frontendContentItem.setDate(date)
+    frontendContentItem.setDate(contentItem.date2.getOrElse(null))
 
     frontendContentItem.setDescription(contentItem.getDescription)
     frontendContentItem.setHttpStatus(contentItem.getHttpStatus)
