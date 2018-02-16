@@ -79,14 +79,6 @@ class ElasticSearchIndexer @Autowired()() {
     }
   }
 
-  def getLatestNewsitems(maxItems: Int): Future[(Seq[Int], Long)] = {
-    getResources(ResourceQuery(`type` = Some("N")))
-  }
-
-  def getLatestWebsites(maxItems: Int): Future[(Seq[Int], Long)] = {
-    getResources(ResourceQuery(`type` = Some("W")))
-  }
-
   def getResources(query: ResourceQuery): Future[(Seq[Int], Long)] = {
     executeRequest(query)
   }

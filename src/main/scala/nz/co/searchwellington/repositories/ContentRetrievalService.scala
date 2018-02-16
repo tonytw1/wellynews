@@ -101,12 +101,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW, 1)
   }
 
-  def getLatestNewsitems(maxItems: Int, page: Int): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getLatestNewsitems(maxItems).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))     // TODO pagination
+  def getLatestNewsitems(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
+    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
-  def getLatestWebsites(maxItems: Int): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getLatestWebsites(maxItems).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))     // TODO pagination
+  def getLatestWebsites(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
+    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   private def fetchByIds(ids: Seq[Int]): Future[Seq[FrontendResource]] = {
