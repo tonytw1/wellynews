@@ -49,21 +49,21 @@ class TagModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def isValidIsOneTagIsOnTheRequest {
-    request.setAttribute("tags", Arrays.asList(tag))
+    request.setAttribute("tags", Seq(tag))
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
   @throws(classOf[Exception])
   def isNotValidIfMoreThanOneTagIsOnTheRequest {
-    request.setAttribute("tags", Arrays.asList(tag, tag))
+    request.setAttribute("tags", Seq(tag, tag))
     assertFalse(modelBuilder.isValid(request))
   }
 
   @Test
   @throws(classOf[Exception])
   def tagPageHeadingShouldBeTheTagDisplayName {
-    request.setAttribute("tags", Arrays.asList(tag))
+    request.setAttribute("tags", Seq(tag))
     Mockito.when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems)
 
     val mv = modelBuilder.populateContentModel(request).get
@@ -74,7 +74,7 @@ class TagModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def mainContentShouldBeTagNewsitems {
-    request.setAttribute("tags", Arrays.asList(tag))
+    request.setAttribute("tags", Seq(tag))
     Mockito.when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems)
 
     val mv = modelBuilder.populateContentModel(request).get
