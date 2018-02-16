@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.collection.JavaConverters._
-
 @Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder {
 
   private val log = Logger.getLogger(classOf[TagsModelBuilder])
@@ -24,6 +22,7 @@ import scala.collection.JavaConverters._
     if (isValid(request)) {
       val mv = new ModelAndView
       val allFrontendTags = tagDAO.getAllTags.map(frontendResourceMapper.mapTagToFrontendTag(_))
+      import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, allFrontendTags.asJava)
       mv.addObject("heading", "All tags")
       Some(mv)

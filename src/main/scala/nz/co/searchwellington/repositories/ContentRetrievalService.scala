@@ -149,10 +149,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def getAllFeeds: Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken, false)
-  }
-
   def getAllFeedsOrderByLatestItemDate: Seq[FrontendResource] = {
     elasticSearchBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken, true)
   }
@@ -199,6 +195,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS_TO_SHOW): Seq[FrontendResource] = {
     getTaggedNewsitems(tags = Set(tag), startIndex = startIndex, maxItems = maxItems)
+  }
+
+  def getAllFeeds: Seq[FrontendResource] = {
+    val allFeeds = ResourceQuery(`type` = Some("F"))
+    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   def getTaggedNewsitemsCount(tags: Set[Tag]): Long = {

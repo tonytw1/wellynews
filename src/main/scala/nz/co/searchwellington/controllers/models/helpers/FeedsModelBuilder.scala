@@ -27,7 +27,8 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("heading", "Feeds")
       mv.addObject("description", "Incoming feeds")
       mv.addObject("link", urlBuilder.getFeedsUrl)
-      mv.addObject(MAIN_CONTENT, contentRetrievalService.getAllFeeds)
+      import scala.collection.JavaConverters._
+      mv.addObject(MAIN_CONTENT, contentRetrievalService.getAllFeeds.asJava)
       Some(mv)
     }
     None
