@@ -153,14 +153,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken, true)
   }
 
-  def getPublisherFeeds(publisher: Website): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getPublisherFeeds(publisher, showBrokenDecisionService.shouldShowBroken)
-  }
-
-  def getPublisherWatchlist(publisher: Website): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getPublisherWatchlist(publisher, showBrokenDecisionService.shouldShowBroken)
-  }
-
   def getArchiveMonths: Seq[ArchiveLink] = {
     elasticSearchBackedResourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken)
   }
@@ -217,6 +209,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int): Seq[FrontendResource] = {
     val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher), startIndex = startIndex, maxItems = maxItems)
     Await.result(elasticSearchIndexer.getResources(publisherNewsitems).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
+  }
+
+  def getPublisherFeeds(publisher: Website): Seq[FrontendResource] = {
+    val publisherFeeds = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
+    Await.result(elasticSearchIndexer.getResources(publisherFeeds).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))  }
+
+  def getPublisherWatchlist(publisher: Website): Seq[FrontendResource] = {
+    val publisherWatchlist = ResourceQuery(`type` = Some("L"), publisher = Some(publisher))
+    Await.result(elasticSearchIndexer.getResources(publisherWatchlist).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int): Seq[FrontendResource] = {

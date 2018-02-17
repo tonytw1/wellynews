@@ -51,7 +51,9 @@ import org.springframework.web.servlet.ModelAndView
       val mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher)
       if (mainContentTotal > 0) {
         val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex)
-        mv.addObject(MAIN_CONTENT, publisherNewsitems)
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, publisherNewsitems.asJava)
+
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
         populatePagination(mv, startIndex, mainContentTotal)
       }
@@ -70,15 +72,16 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
-    mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher))
-    mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher))
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    import scala.collection.JavaConverters._
+    mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher).asJava)
+    mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher).asJava)
     populateGeotaggedItems(mv)
     val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
     if (relatedTagLinks.size > 0) {
-      mv.addObject("related_tags", relatedTagLinks)
+      mv.addObject("related_tags", relatedTagLinks.asJava)
     }
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
   }
 
   def getViewName(mv: ModelAndView):String = {
