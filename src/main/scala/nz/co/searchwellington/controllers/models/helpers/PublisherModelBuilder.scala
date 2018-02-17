@@ -5,8 +5,9 @@ import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
-import nz.co.searchwellington.model.{Tag, TagContentCount, Website}
+import nz.co.searchwellington.model.frontend.FrontendNewsitem
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
@@ -21,32 +22,28 @@ import org.springframework.web.servlet.ModelAndView
                                                      urlBuilder: UrlBuilder,
                                                      geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination {
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with CommonSizes with Pagination {
 
-  private val logger: Logger = Logger.getLogger(classOf[PublisherModelBuilder])
+  private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tag: Tag = request.getAttribute("tag").asInstanceOf[Tag]
-    val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
-    val isPublisherPage: Boolean = publisher != null && tag == null
-    return isPublisherPage
+    val tag = request.getAttribute("tag").asInstanceOf[Tag]
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val isPublisherPage = publisher != null && tag == null
+    isPublisherPage
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
+      val frontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
+
       val mv = new ModelAndView
       mv.addObject("heading", publisher.getName)
       mv.addObject("description", publisher.getName + " newsitems")
       mv.addObject("link", urlBuilder.getPublisherUrl(publisher.getName))
 
-      val frontendPublisher = new FrontendWebsite
-      frontendPublisher.setName(publisher.getName)
-      frontendPublisher.setUrlWords(publisher.getUrlWords)
-      frontendPublisher.setUrl(publisher.getUrl)
-      if (publisher.getGeocode != null) {
-        frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(publisher.getGeocode))
-      }
       mv.addObject("publisher", frontendPublisher)
       mv.addObject("location", frontendPublisher.getPlace)
 
@@ -66,6 +63,7 @@ import org.springframework.web.servlet.ModelAndView
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
       val page = getPage(request)
       Some(populatePublisherPageModelAndView(publisher, page))
+
     } else {
       None
     }

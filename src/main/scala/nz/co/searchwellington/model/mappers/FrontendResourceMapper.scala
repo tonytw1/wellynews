@@ -1,7 +1,7 @@
 package nz.co.searchwellington.model.mappers
 
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendImage, FrontendNewsitem, FrontendResource, FrontendTag}
-import nz.co.searchwellington.model.{Feed, Geocode, Newsitem, Resource, Tag, UrlWordsGenerator}
+import nz.co.searchwellington.model.frontend._
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +13,7 @@ import scala.collection.mutable
 @Component class FrontendResourceMapper @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator, geocodeToPlaceMapper: GeocodeToPlaceMapper) {
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
-    var frontendContentItem: FrontendResource = new FrontendResource
+    var frontendContentItem = new FrontendResource
     if (contentItem.getType == "N") {
       val contentItemNewsitem = contentItem.asInstanceOf[Newsitem]
 
@@ -36,6 +36,7 @@ import scala.collection.mutable
       frontendFeed.setLatestItemDate(contentItemFeed.getLatestItemDate)
       frontendContentItem = frontendFeed
     }
+
     frontendContentItem.setId(contentItem.getId)
     frontendContentItem.setType(contentItem.getType)
     frontendContentItem.setName(contentItem.getName)
@@ -78,6 +79,18 @@ import scala.collection.mutable
 
   def mapTagToFrontendTag(tag: Tag): FrontendTag = {
     return new FrontendTag(tag.getName, tag.getDisplayName)
+  }
+
+  def mapFrontendWebsite(website: Website): FrontendWebsite = {
+    // TODO why is this different from the above?
+    val frontendPublisher = new FrontendWebsite
+    frontendPublisher.setName(website.getName)
+    frontendPublisher.setUrlWords(website.getUrlWords)
+    frontendPublisher.setUrl(website.getUrl)
+    if (website.getGeocode != null) {
+      frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(website.getGeocode))
+    }
+    frontendPublisher
   }
 
 }

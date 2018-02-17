@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.models.helpers.{FeedsModelBuilder, IndexModelBuilder, TagModelBuilder, TagsModelBuilder}
+import nz.co.searchwellington.controllers.models.helpers._
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -12,13 +12,14 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
 @Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, commonModelObjectsService: CommonModelObjectsService,
                                                           indexModelBuilder: IndexModelBuilder, tagsModelBuilder: TagsModelBuilder,
-                                                          tagModelBuilder: TagModelBuilder, feedsModelBuilder: FeedsModelBuilder) {
+                                                          tagModelBuilder: TagModelBuilder, feedsModelBuilder: FeedsModelBuilder,
+                                                          publisherModelBuilder: PublisherModelBuilder) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
   private val JSON_CALLBACK_PARAMETER = "callback"
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-    val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder, feedsModelBuilder)
+    val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder, feedsModelBuilder, publisherModelBuilder)
 
     modelBuilders.filter(mb => mb.isValid(request)).headOption.map { mb => // TODO collect first?
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)

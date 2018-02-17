@@ -157,14 +157,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchBackedResourceDAO.getPublisherFeeds(publisher, showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getPublisherNewsitemsCount(publisher: Website): Long = {
-    elasticSearchBackedResourceDAO.getPublisherNewsitemsCount(publisher, showBrokenDecisionService.shouldShowBroken)
-  }
-
-  def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getPublisherNewsitems(publisher, maxItems, showBrokenDecisionService.shouldShowBroken, startIndex)
-  }
-
   def getPublisherWatchlist(publisher: Website): Seq[FrontendResource] = {
     elasticSearchBackedResourceDAO.getPublisherWatchlist(publisher, showBrokenDecisionService.shouldShowBroken)
   }
@@ -215,6 +207,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def getTaggedWebsites(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
     val taggedWebsites = ResourceQuery(`type` = Some("W"), tags = Some(Set(tag)), maxItems = maxItems)
     Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
+  }
+
+  def getPublisherNewsitemsCount(publisher: Website): Long = {
+    val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+    Await.result(elasticSearchIndexer.getResources(publisherNewsitems), Duration(10, SECONDS))._2      // TODO show broken
+  }
+
+  def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int): Seq[FrontendResource] = {
+    val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher), startIndex = startIndex, maxItems = maxItems)
+    Await.result(elasticSearchIndexer.getResources(publisherNewsitems).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int): Seq[FrontendResource] = {
