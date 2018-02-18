@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories.mongo
 
-import nz.co.searchwellington.controllers.ajax.TagAjaxController
 import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
 import org.springframework.stereotype.Component
@@ -19,11 +18,14 @@ class MongoRepository {
 
   def connect(): DefaultDB = {
     log.info("Connecting to Mongo")
-    val mongoUri = "mongodb://localhost:27017/wellynews"
+
+    // val mongoUri = "mongodb://localhost:27017/wellynews"
+    val mongoUri = "mongodb://user:password@mongodev1.eelpieconsulting.co.uk:27017/wellynews?sslEnabled=true"
+
     val driver = MongoDriver()
+
     val parsedUri = MongoConnection.parseURI(mongoUri)
     val connection = parsedUri.map(driver.connection(_))
-
     val futureConnection: Future[MongoConnection] = Future.fromTry(connection)
 
     def database: Future[DefaultDB] = futureConnection.flatMap(_.database("wellynews"))

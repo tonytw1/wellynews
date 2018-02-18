@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories.mongo
 
-import nz.co.searchwellington.model.{Newsitem, Resource, Website, WebsiteImpl}
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
