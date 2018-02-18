@@ -27,10 +27,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   val MAX_NEWSITEMS_TO_SHOW = 30
 
-  def getAllWatchlists: Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken)
-  }
-
   def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     elasticSearchBackedResourceDAO.getGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken)
   }
@@ -169,10 +165,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchBackedResourceDAO.getNewsitemsForMonth(month, showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getTaggedWebsites(tags: Set[Tag], maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTaggedWebsites(tags, showBrokenDecisionService.shouldShowBroken, maxItems)
-  }
-
   def getTaggedNewitemsCount(tag: Tag): Long = {
    getTaggedNewsitemsCount(tags = Set(tag))
   }
@@ -196,6 +188,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
+  def getTaggedWebsites(tags: Set[Tag], maxItems: Int): Seq[FrontendResource] = { // TODO no usages
+    val query = ResourceQuery(`type` = Some("W"), tags = Some(tags), maxItems = maxItems)
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
+  }
+
   def getTaggedWebsites(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
     val taggedWebsites = ResourceQuery(`type` = Some("W"), tags = Some(Set(tag)), maxItems = maxItems)
     Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
@@ -215,6 +212,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val publisherFeeds = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
     Await.result(elasticSearchIndexer.getResources(publisherFeeds).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))  }
 
+  def getAllWatchlists: Seq[FrontendResource] = {
+    val allWatchlists = ResourceQuery(`type` = Some("L"))
+    Await.result(elasticSearchIndexer.getResources(allWatchlists).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
+  }
+
   def getPublisherWatchlist(publisher: Website): Seq[FrontendResource] = {
     val publisherWatchlist = ResourceQuery(`type` = Some("L"), publisher = Some(publisher))
     Await.result(elasticSearchIndexer.getResources(publisherWatchlist).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
@@ -230,10 +232,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
         getPublisherTagCombinerNewsitems(p, t, maxNewsitems)
       }
     }.getOrElse(Seq())
-  }
-
-  def getRecentlyChangedWatchlistItems: Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getAllWatchlists(showBrokenDecisionService.shouldShowBroken)
   }
 
   def getFeedworthyTags: Seq[FrontendTag] = {

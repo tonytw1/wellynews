@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import javax.servlet.http.HttpServletRequest
+
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -8,7 +10,6 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
-import javax.servlet.http.HttpServletRequest
 
 @Component class WatchlistModelBuilder @Autowired()(var contentRetrievalService: ContentRetrievalService, var rssUrlBuilder: RssUrlBuilder, var urlBuilder: UrlBuilder, var commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
@@ -25,7 +26,10 @@ import javax.servlet.http.HttpServletRequest
       mv.addObject("heading", "News watchlist")
       mv.addObject("description", "The news watchlist")
       mv.addObject("link", urlBuilder.getWatchlistUrl)
-      mv.addObject(MAIN_CONTENT, contentRetrievalService.getRecentlyChangedWatchlistItems)
+
+      import scala.collection.JavaConverters._
+      mv.addObject(MAIN_CONTENT, contentRetrievalService.getAllWatchlists.asJava)
+
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
       Some(mv)
 

@@ -89,42 +89,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     deserializeFrontendResourceHits(response.getHits)
   }
 
-  def getTaggedWebsites(tags: Set[Tag], shouldShowBroken: Boolean, maxItems: Int): Seq[FrontendResource] = {
-    val isWebsite: TermQueryBuilder = QueryBuilders.termQuery(TYPE, "W")
-    val taggedWebsites = QueryBuilders.boolQuery.must(isWebsite)
-    for (tag <- tags) {
-      taggedWebsites.must(hasTag(tag))
-    }
-    addShouldShowBrokenClause(taggedWebsites, shouldShowBroken)
-    val builder = searchRequestBuilder(taggedWebsites).setSize(maxItems)
-    addNameOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
-  def getPublisherWatchlist(publisher: Website, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val publisherWatchlist = QueryBuilders.boolQuery.must(isWatchlist).must(hasPublisher(publisher))
-    addShouldShowBrokenClause(publisherWatchlist, shouldShowBroken)
-    val builder = searchRequestBuilder(publisherWatchlist).setSize(ALL)
-    addNameOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
-  def getPublisherFeeds(publisher: Website, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val publisherFeeds = QueryBuilders.boolQuery.must(isFeed).must(hasPublisher(publisher))
-    val builder = searchRequestBuilder(publisherFeeds).setSize(ALL)
-    addShouldShowBrokenClause(publisherFeeds, shouldShowBroken)
-    addNameOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
-  def getAllWatchlists(shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val response = searchRequestBuilder(isWatchlist).setSize(ALL).execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
   def getAllFeeds(shouldShowBroken: Boolean, latestFirst: Boolean): Seq[FrontendResource] = {
     val feeds = QueryBuilders.boolQuery.must(isFeed)
     addShouldShowBrokenClause(feeds, shouldShowBroken)
