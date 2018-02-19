@@ -2,6 +2,7 @@ package nz.co.searchwellington.feeds
 
 import java.util.Date
 
+import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
 import nz.co.searchwellington.repositories.HibernateResourceDAO
@@ -9,12 +10,12 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class RssfeedNewsitemService @Autowired() (liveRssfeedNewsitemService: LiveRssfeedNewsitemService, var resourceDAO: HibernateResourceDAO) {
+@Component class RssfeedNewsitemService @Autowired() (whakaokoFeedReader: WhakaokoFeedReader, var resourceDAO: HibernateResourceDAO) {
 
   private val log = Logger.getLogger(classOf[RssfeedNewsitemService])
 
   def getFeedNewsitems(feed: Feed): Seq[FrontendFeedNewsitem] = {
-    liveRssfeedNewsitemService.getFeedNewsitems(feed)
+    whakaokoFeedReader.fetchFeedItems(feed)
   }
 
   final def getLatestPublicationDate(feed: Feed): Date = {
