@@ -15,7 +15,7 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
 
-  private val BATCH_COMMIT_SIZE = 1000
+  private val BATCH_COMMIT_SIZE = 10
 
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {

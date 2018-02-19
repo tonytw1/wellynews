@@ -13,8 +13,13 @@ class MongoRepositoryTest {
   @Test
   def canConnectToMongoAndReadTags {
     val tags = mongoRepository.getAllTags()
-
     assertEquals(306, tags.size)
+  }
+
+  @Test
+  def canReadTagParent: Unit = {
+    val tagWithParent = mongoRepository.getTagByName("vuw").get
+    assertEquals(Some(28L), tagWithParent.parent)
   }
 
   @Test

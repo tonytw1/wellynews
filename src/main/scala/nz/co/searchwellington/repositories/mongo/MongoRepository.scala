@@ -19,8 +19,8 @@ class MongoRepository {
   def connect(): DefaultDB = {
     log.info("Connecting to Mongo")
 
-    // val mongoUri = "mongodb://localhost:27017/wellynews"
-    val mongoUri = "mongodb://user:password@mongodev1.eelpieconsulting.co.uk:27017/wellynews?sslEnabled=true"
+    val mongoUri = "mongodb://localhost:27017/wellynews"
+    //val mongoUri = "mongodb://user:password@mongodev1.eelpieconsulting.co.uk:27017/wellynews?sslEnabled=true"
 
     val driver = MongoDriver()
 
@@ -55,7 +55,7 @@ class MongoRepository {
   }
 
 
-  def getTagById(id: Long): Option[Tag] = {
+  def getTagById(id: Int): Option[Tag] = {
     val eventualMaybyTag = tagCollection.find(BSONDocument("id" -> id)).one[Tag]
     Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
   }

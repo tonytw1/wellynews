@@ -3,9 +3,10 @@ package nz.co.searchwellington.model
 case class Tag(id: Int = 0,
                var name: String = "",
                var display_name: String = "",
-               var parent: Option[Long] = None,
-               flickrCount: Option[Int] = None,
-               var hidden: Int = 0, var featured: Int = 0,
+               var parent: Option[Int] = None,
+               var flickrCount: Option[Int] = None,
+               var hidden: Int = 0,
+               var featured: Int = 0,
                var geocode_id: Option[Int] = None,
                var description: Option[String] = None,
                var main_image: Option[String] = None,
@@ -22,8 +23,8 @@ case class Tag(id: Int = 0,
   def getDisplayName: String = display_name
   def setDisplayName(displayName: String): Unit = this.display_name = displayName
 
-  def getParent: Option[Long] = parent
-  def setParent(parent: Long): Unit = this.parent = Some(parent)
+  def getParent: Option[Int] = parent
+  def setParent(parent: Int): Unit = this.parent = Some(parent)
 
   def getMainImage: Option[String] = main_image
   def setMainImage(mainImage: String): Unit = this.main_image = Some(mainImage)
