@@ -51,24 +51,28 @@ import scala.concurrent.{Await, Future}
   }
 
   private def getTagIdsFor(resource: Resource) = {
-    var taggingsFor: Future[Seq[mongoRepository.Tagging]] = mongoRepository.getTaggingsFor(resource.id)
-    taggingsFor.map { taggings =>
+    mongoRepository.getTaggingsFor(resource.id).map { taggings =>
 
       val tags = taggings.map { tagging =>
         mongoRepository.getTagById(tagging.tag_id)
       }.flatten
 
-      def resolveParentsFor(tag: Tag): Seq[Tag] = {
+      def resolveParentsFor(tag: Tag, result: Seq[Tag]): Seq[Tag] = {
         val parentTag = tag.parent.flatMap(p => mongoRepository.getTagById(p))
         parentTag.map { p =>
-          resolveParentsFor(p) :+ p     // TODO break on loop
+          if (!result.contains(p)) {
+            resolveParentsFor(p, result :+ p)
+          } else {
+            log.warn("Loop detected while resolving tag parents: " + tag.id + " -> " + parentTag)
+            result
+          }
         }.getOrElse{
-          Seq()
+          result
         }
       }
 
       val withParents = tags.map { t =>
-        resolveParentsFor(t)
+        resolveParentsFor(t, Seq())
       }.flatten
 
       withParents.map(t => t.id).toSet
