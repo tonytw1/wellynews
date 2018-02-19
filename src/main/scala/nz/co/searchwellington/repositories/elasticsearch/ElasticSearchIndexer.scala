@@ -94,7 +94,7 @@ class ElasticSearchIndexer @Autowired()() {
     executeRequest(query)
   }
 
-  def getAllPublishers(): Future[Seq[String]] = {
+  def getAllPublishers(): Future[Seq[Int]] = {
     /*
     val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).setSize(0).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).execute.actionGet
     val facet = searchResponse.getFacets.getFacets.get(PUBLISHER_NAME).asInstanceOf[TermsFacet]
@@ -113,11 +113,11 @@ class ElasticSearchIndexer @Autowired()() {
 
     client.execute(request).map { r =>
 
-      val x: Either[RequestFailure, Seq[String]] = r.map { rs =>
+      val x: Either[RequestFailure, Seq[Int]] = r.map { rs =>
         val publisherAgg: TermsAggResult = rs.result.aggregations.terms("publisher")
         publisherAgg.buckets.map { b =>
           log.info("Publisher agg bucket: " + b.key + "/" + b.docCount)
-          b.key
+          b.key.toInt
         }
       }
 

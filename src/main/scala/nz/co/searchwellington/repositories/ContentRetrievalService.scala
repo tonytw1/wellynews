@@ -35,8 +35,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchBackedResourceDAO.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getAllPublishers: Seq[PublisherContentCount] = {
-    elasticSearchIndexer.getAllPublishers()   // TODO show broken
+  def getAllPublishers: Seq[Website] = {
+    val evenutalWebsites  = elasticSearchIndexer.getAllPublishers().flatMap { ids =>
+      ids.map { id =>
+        mongoRepository.getResourceById(id).map(ro => ro.map(_.asInstanceOf[Website]))
+      }
+      Future.sequence(ids.map { id =>
+        mongoRepository.getResourceById(id).map(ro => ro.map(_.asInstanceOf[Website]))
+      }).map { wos => wos.flatten }
+    }
+    Await.result(evenutalWebsites, Duration(10, SECONDS))
   }
 
   def getTopLevelTags: Seq[Tag] = {
