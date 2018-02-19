@@ -1,26 +1,26 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import com.fasterxml.jackson.core.JsonProcessingException
+import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.{Duration, MINUTES}
+import scala.concurrent.{Await, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer) {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
+
   private val BATCH_COMMIT_SIZE = 1000
 
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {
     val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), Duration(1, MINUTES))
     reindexResources(resourcesToIndex)
-
-
   }
 
   @throws[JsonProcessingException]
@@ -28,15 +28,14 @@ import scala.concurrent.duration.{Duration, MINUTES}
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
 
     batches.foreach { batch =>
-      println("Processing batch: " + batch.size)
+      log.info("Processing batch: " + batch.size)
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceById(i))).map(_.flatten)
 
       val eventualWithTags = eventualResources.flatMap { rs =>
         Future.sequence(rs.map { r =>
-          mongoRepository.getTaggingsFor(r.id).map { ts =>
-            log.info("Tags: " + ts.size)
-            (r, ts.map(_.tag_id).toSet)
+          getTagIdsFor(r).map { tagIds =>
+            (r, tagIds)
           }
         })
       }
@@ -49,6 +48,14 @@ import scala.concurrent.duration.{Duration, MINUTES}
     }
 
     println("Index rebuild complete")
+  }
+
+  private def getTagIdsFor(resource: Resource) = {
+    var taggingsFor: Future[Seq[mongoRepository.Tagging]] = mongoRepository.getTaggingsFor(resource.id)
+    taggingsFor.map { ts =>
+      val tagIds = ts.map(_.tag_id).toSet
+      tagIds
+    }
   }
 
 }
