@@ -12,9 +12,11 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
 @Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, commonModelObjectsService: CommonModelObjectsService,
                                                           indexModelBuilder: IndexModelBuilder, tagsModelBuilder: TagsModelBuilder,
-                                                          tagModelBuilder: TagModelBuilder, feedsModelBuilder: FeedsModelBuilder,
+                                                          tagModelBuilder: TagModelBuilder,
+                                                          feedsModelBuilder: FeedsModelBuilder,
                                                           publisherModelBuilder: PublisherModelBuilder,
-                                                          watchlistModelBuilder: WatchlistModelBuilder, feedModelBuilder: FeedModelBuilder) {
+                                                          watchlistModelBuilder: WatchlistModelBuilder,
+                                                          feedModelBuilder: FeedModelBuilder) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
   private val JSON_CALLBACK_PARAMETER = "callback"
