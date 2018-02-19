@@ -47,18 +47,13 @@ class MongoRepository {
   implicit def taggingReader = Macros.reader[Tagging]
 
   def getResourceById(id: Int): Future[Option[Resource]] = {
-    resourceCollection.find(BSONDocument("id" -> id)).one[BSONDocument].map { bo =>
-      bo.flatMap { b =>
-        b.get("type").get match {
-          case BSONString("N") => Some(b.as[NewsitemImpl])
-          case BSONString("W") => Some(b.as[WebsiteImpl])
-          case BSONString("F") => Some(b.as[FeedImpl])
-          case BSONString("L") => Some(b.as[Watchlist])
-          case _ => None
-        }
-      }
-    }
+    getResourceBy(BSONDocument("id" -> id))
   }
+
+  def getResourceByUrl(url: String): Future[Option[Resource]] = {
+    getResourceBy(BSONDocument("url" -> url))
+  }
+
 
   def getTagById(id: Long): Option[Tag] = {
     val eventualMaybyTag = tagCollection.find(BSONDocument("id" -> id)).one[Tag]
@@ -116,6 +111,20 @@ class MongoRepository {
 
   def getTaggingsFor(resourceId: Int): Future[Seq[Tagging]] = {
     taggingCollection.find(BSONDocument("resource_id" -> resourceId)).cursor[Tagging].toList()
+  }
+
+  private def getResourceBy(selector: BSONDocument) = {
+    resourceCollection.find(selector).one[BSONDocument].map { bo =>
+      bo.flatMap { b =>
+        b.get("type").get match {
+          case BSONString("N") => Some(b.as[NewsitemImpl])
+          case BSONString("W") => Some(b.as[WebsiteImpl])
+          case BSONString("F") => Some(b.as[FeedImpl])
+          case BSONString("L") => Some(b.as[Watchlist])
+          case _ => None
+        }
+      }
+    }
   }
 
   case class Tagging(resource_id: Int, tag_id: Int)

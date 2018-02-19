@@ -50,7 +50,7 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def canReadResourcesBackWithCorrectType = {
+  def canReadResourcesByIdWithCorrectType = {
     val newsitems = mongoRepository.getAllNewsitems()
     val newsitem = newsitems.head
     val reloadedNewsitem = Await.result(mongoRepository.getResourceById(newsitem.id), Duration(1, MINUTES)).get
@@ -58,6 +58,16 @@ class MongoRepositoryTest {
     val websites = mongoRepository.getAllWebsites()
     val website = websites.head
     val reloadedWebsite = Await.result(mongoRepository.getResourceById(website.id), Duration(1, MINUTES)).get
+  }
+
+  @Test
+  def canReadResourceByUrl = {
+    val newsitems = mongoRepository.getAllNewsitems()
+    val newsitem = newsitems.head
+
+    val reloadedByUrl = Await.result(mongoRepository.getResourceByUrl(newsitem.getUrl), Duration(1, MINUTES)).get
+
+    assertEquals(newsitem, reloadedByUrl)
   }
 
 }
