@@ -105,9 +105,9 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getResourceById(resourceID),  Duration(1, MINUTES))
   }
 
-  def loadResourceByUrl(url: String): Resource = {
+  def loadResourceByUrl(url: String): Option[Resource] = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
-    null
+    null  // TODO
   }
 
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
