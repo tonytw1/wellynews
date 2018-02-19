@@ -43,8 +43,8 @@ class MongoRepository {
   implicit def newsitemReader = Macros.reader[NewsitemImpl]
   implicit def websiteReader = Macros.reader[WebsiteImpl]
   implicit def watchlistReader = Macros.reader[Watchlist]
-  implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
-  implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
+  implicit def tagReader = Macros.reader[Tag]
+  implicit def taggingReader = Macros.reader[Tagging]
 
   def getResourceById(id: Int): Future[Option[Resource]] = {
     resourceCollection.find(BSONDocument("id" -> id)).one[BSONDocument].map { bo =>
