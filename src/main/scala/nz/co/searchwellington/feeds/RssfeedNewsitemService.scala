@@ -19,14 +19,8 @@ import org.springframework.stereotype.Component
   }
 
   final def getLatestPublicationDate(feed: Feed): Date = {
-    var latestPublicationDate: Date = null
-    val feeditems = getFeedNewsitems(feed)
-    for (feeditem <- feeditems) {
-      if (feeditem.getDate != null && (latestPublicationDate == null || feeditem.getDate.after(latestPublicationDate))) {
-        latestPublicationDate = feeditem.getDate
-      }
-    }
-    latestPublicationDate
+    val publicationDates = getFeedNewsitems(feed).map(i => Option(i.getDate)).flatten
+    publicationDates.max  // TODO None case? By Explict about the ordering
   }
 
   def getFeedNewsitemByUrl(feed: Feed, url: String): Option[FrontendFeedNewsitem] = {
