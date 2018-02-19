@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -53,6 +54,16 @@ class ElasticSearchIT {
     assertTrue(taggedWebsites._1.forall { i =>
       Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)
     })
+  }
+
+  @Test
+  def canFilterByPublisher {
+    val publisher = Await.result(mongoRepository.getWebsiteByUrlwords("wellington-city-council"), Duration(10, SECONDS)).get
+
+    val publisherNewsitems: (Seq[Int], Long) = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), publisher = Some(publisher))), Duration(10, SECONDS))
+
+    assertTrue(publisherNewsitems._1.nonEmpty)
+    assertTrue(publisherNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.asInstanceOf[Newsitem].getPublisher == Some(1407)))
   }
 
 }

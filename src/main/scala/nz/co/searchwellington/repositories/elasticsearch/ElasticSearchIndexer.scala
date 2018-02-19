@@ -115,7 +115,7 @@ class ElasticSearchIndexer @Autowired()() {
           }
         }
       },
-      query.publisher.map(p => matchQuery(Publisher, p))
+      query.publisher.map(p => matchQuery(Publisher, p.id))
     ).flatten
 
     val q = must(conditions)
