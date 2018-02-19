@@ -4,7 +4,10 @@ import com.sksamuel.elastic4s.ElasticDsl.search
 import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
-import com.sksamuel.elastic4s.http.HttpClient
+import com.sksamuel.elastic4s.http.search.{SearchResponse, TermBucket, TermsAggResult}
+import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
+import com.sksamuel.elastic4s.searches.queries.matches.MatchQueryDefinition
+import com.sksamuel.elastic4s.searches.aggs.{AbstractAggregation, AggregationApi}
 import nz.co.searchwellington.model.{PublishedResource, PublisherContentCount, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -91,7 +94,7 @@ class ElasticSearchIndexer @Autowired()() {
     executeRequest(query)
   }
 
-  def getAllPublishers(): Seq[PublisherContentCount] = {
+  def getAllPublishers(): Future[Seq[String]] = {
     /*
     val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).setSize(0).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).execute.actionGet
     val facet = searchResponse.getFacets.getFacets.get(PUBLISHER_NAME).asInstanceOf[TermsFacet]
@@ -102,7 +105,32 @@ class ElasticSearchIndexer @Autowired()() {
     }
     */
 
-    Seq()
+    val newsitems: MatchQueryDefinition = matchQuery(Type, "N")
+
+    val aggs = Seq(termsAgg("publisher", "publisher") size Integer.MAX_VALUE)
+
+    val request = (search in Index / Resources query newsitems) limit 0 aggregations(aggs)
+
+    client.execute(request).map { r =>
+
+      val x: Either[RequestFailure, Seq[String]] = r.map { rs =>
+        val publisherAgg: TermsAggResult = rs.result.aggregations.terms("publisher")
+        publisherAgg.buckets.map { b =>
+          log.info("Publisher agg bucket: " + b.key + "/" + b.docCount)
+          b.key
+        }
+      }
+
+      x match {
+        case (Right(buckets)) => {
+          log.info("Buckets: " + buckets)
+          buckets
+        }
+        case (Left(f)) =>
+          log.error(f)
+          Seq()
+      }
+    }
   }
 
   private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {
