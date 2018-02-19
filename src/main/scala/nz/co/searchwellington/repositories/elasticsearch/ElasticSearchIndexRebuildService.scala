@@ -59,7 +59,7 @@ import scala.concurrent.{Await, Future}
       }.flatten
 
       def resolveParentsFor(tag: Tag): Seq[Tag] = {
-        val parentTag = tag.parent.flatMap(p => mongoRepository.getTagById(p.toInt))    // TODO Int vs Long
+        val parentTag = tag.parent.flatMap(p => mongoRepository.getTagById(p))
         parentTag.map { p =>
           resolveParentsFor(p) :+ p     // TODO break on loop
         }.getOrElse{

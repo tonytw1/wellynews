@@ -60,7 +60,7 @@ class MongoRepository {
     }
   }
 
-  def getTagById(id: Int): Option[Tag] = {
+  def getTagById(id: Long): Option[Tag] = {
     val eventualMaybyTag = tagCollection.find(BSONDocument("id" -> id)).one[Tag]
     Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
   }

@@ -88,7 +88,7 @@ import org.springframework.web.servlet.ModelAndView
     "publisher"
   }
 
-  @SuppressWarnings(Array("unchecked")) private def populateGeotaggedItems(mv: ModelAndView) {
+  private def populateGeotaggedItems(mv: ModelAndView) {
     val mainContent = mv.getModel.get("main_content").asInstanceOf[List[FrontendNewsitem]]
     if (mainContent != null) {
       import scala.collection.JavaConversions._
