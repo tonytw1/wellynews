@@ -5,7 +5,7 @@ import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.HttpClient
-import nz.co.searchwellington.model.{NewsitemImpl, PublishedResource, PublisherContentCount, Resource}
+import nz.co.searchwellington.model.{PublishedResource, PublisherContentCount, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -107,7 +107,7 @@ class ElasticSearchIndexer @Autowired()() {
 
   private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {
     var conditions = Seq (
-      query.`type`.map(t => matchQuery(Type, "N")),
+      query.`type`.map(t => matchQuery(Type, t)),
       query.tags.map { tags =>
         should {          // TODO AND or OR
           tags.map { t =>
