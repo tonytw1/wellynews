@@ -27,9 +27,12 @@ db.resource.find({}).forEach(
         if(doc.live_time) doc.live_time2 = dateFromString(doc.live_time);
         if(doc.embargoed_until) doc.embargoed_until2 = dateFromString(doc.embargoed_until);
         if(doc.accepted) doc.accepted2 = dateFromString(doc.accepted);
+        if(doc.latestItemDate) doc.latestItemDate2 = dateFromString(doc.latestItemDate);
+        if(doc.lastRead) doc.lastRead2 = dateFromString(doc.lastRead);
 
 	    doc.held2 = booleanFromInt(doc.held);
 
         db.resource.save(doc);
     }
 );
+
