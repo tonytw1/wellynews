@@ -32,17 +32,18 @@ import scala.concurrent.{Await, Future}
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceById(i))).map(_.flatten)
 
-      val eventualWithTags = eventualResources.flatMap { rs =>
+      val eventualWithIndexTags = eventualResources.flatMap { rs =>
         Future.sequence(rs.map { r =>
-          getTagIdsFor(r).map { tagIds =>
+          getIndexTagIdsFor(r).map { tagIds =>
             (r, tagIds)
           }
         })
       }
 
-      val x: Future[Unit] = eventualWithTags.map { rs =>
+      val x: Future[Unit] = eventualWithIndexTags.map { rs =>
         elasticSearchIndexer.updateMultipleContentItems(rs)
       }
+      
       Await.result(x, Duration(1, MINUTES))
       println("Next")
     }
@@ -50,7 +51,7 @@ import scala.concurrent.{Await, Future}
     println("Index rebuild complete")
   }
 
-  private def getTagIdsFor(resource: Resource) = {
+  private def getIndexTagIdsFor(resource: Resource) = {
     mongoRepository.getTaggingsFor(resource.id).map { taggings =>
 
       val tags = taggings.map { tagging =>
