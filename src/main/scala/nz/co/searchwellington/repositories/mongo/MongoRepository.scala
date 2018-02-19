@@ -78,9 +78,9 @@ class MongoRepository {
   def getAllResourceIds(): Future[Seq[Int]] = {
     val projection = BSONDocument("id" -> 1)
     resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument].collect[List](Integer.MAX_VALUE).map { r =>
-      r.map { i =>
+      r.flatMap { i =>
         i.getAs[Int]("id")
-      }.flatten
+      }
     }
   }
 
