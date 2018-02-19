@@ -40,15 +40,13 @@ import scala.concurrent.{Await, Future}
         })
       }
 
-      val x: Future[Unit] = eventualWithIndexTags.map { rs =>
+      val eventualIndexing = eventualWithIndexTags.map { rs =>
         elasticSearchIndexer.updateMultipleContentItems(rs)
       }
-      
-      Await.result(x, Duration(1, MINUTES))
-      println("Next")
+      Await.result(eventualIndexing, Duration(1, MINUTES))
     }
 
-    println("Index rebuild complete")
+    log.info("Index rebuild complete")
   }
 
   private def getIndexTagIdsFor(resource: Resource) = {
