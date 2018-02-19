@@ -19,12 +19,16 @@ import scala.collection.JavaConversions._
   private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
 
   def getSuggestionFeednewsitems(maxItems: Int): Seq[FrontendNewsitem] = {
+    /*
     val channelFeedItems: List[uk.co.eelpieconsulting.whakaoro.client.model.FeedItem] = whakaoroService.getChannelFeedItems.toList
     val notIgnoredFeedItems: List[FrontendFeedNewsitem] = channelFeedItems.map(i => fromWhakaoro(i)).filter(i => isNotIgnored(i))
     val suggestions: List[FeedNewsitemForAcceptance] = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(notIgnoredFeedItems).toList
     val withLocalCopiesFilteredOut: List[FeedNewsitemForAcceptance] = suggestions.filter(i => noLocalCopy(i))
 
     withLocalCopiesFilteredOut.map(i => i.getFeednewsitem)
+    */
+
+    Seq() // TODO
   }
 
   private def fromWhakaoro(feedItem: uk.co.eelpieconsulting.whakaoro.client.model.FeedItem): FrontendFeedNewsitem = {

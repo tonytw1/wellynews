@@ -14,15 +14,15 @@ import org.springframework.web.servlet.ModelAndView
                                                 urlBuilder: UrlBuilder,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
-  val log = Logger.getLogger(classOf[FeedsModelBuilder])
+  private val log = Logger.getLogger(classOf[FeedsModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/feeds(/(rss|json))?$")
+    request.getPathInfo.matches("^/feeds(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      log.debug("Building feed page model")
+      log.info("Building feed page model")
       val mv: ModelAndView = new ModelAndView
       mv.addObject("heading", "Feeds")
       mv.addObject("description", "Incoming feeds")
@@ -30,14 +30,17 @@ import org.springframework.web.servlet.ModelAndView
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, contentRetrievalService.getAllFeeds.asJava)
       Some(mv)
+
+    } else {
+      None
     }
-    None
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     commonAttributesModelBuilder.populateSecondaryFeeds(mv)
-    mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6))
-    mv.addObject("discovered_feeds", contentRetrievalService.getDiscoveredFeeds)
+    import scala.collection.JavaConverters._
+    mv.addObject("suggestions", suggestedFeeditemsService.getSuggestionFeednewsitems(6).asJava)
+    mv.addObject("discovered_feeds", contentRetrievalService.getDiscoveredFeeds.asJava)
   }
 
   def getViewName(mv: ModelAndView): String = {

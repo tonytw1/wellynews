@@ -145,10 +145,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def getAllFeedsOrderByLatestItemDate: Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getAllFeeds(showBrokenDecisionService.shouldShowBroken, true)
-  }
-
   def getArchiveMonths: Seq[ArchiveLink] = {
     elasticSearchBackedResourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken)
   }
@@ -176,6 +172,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def getAllFeeds: Seq[FrontendResource] = {
     val allFeeds = ResourceQuery(`type` = Some("F"))
     Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
+  }
+
+  def getAllFeedsOrderByLatestItemDate(): Seq[FrontendResource] = {
+    val allFeeds = ResourceQuery(`type` = Some("F"))
+    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS)) // TODO order
   }
 
   def getTaggedNewsitemsCount(tags: Set[Tag]): Long = {
