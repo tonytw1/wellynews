@@ -109,14 +109,13 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getResourceByUrl(url), Duration(1, MINUTES))
   }
 
+  def getPublisherByUrlWords(urlWords: String): Option[Website] = {
+    Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), Duration(1, MINUTES))
+  }
+
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
     null
-  }
-
-  def getPublisherByUrlWords(urlWords: String): Option[Website] = {
-    // Option(sessionFactory.getCurrentSession.createCriteria(classOf[Website]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Website])
-    None // TODO
   }
 
   def getPublisherByName(name: String): Option[Website] = {

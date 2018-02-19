@@ -54,6 +54,9 @@ class MongoRepository {
     getResourceBy(BSONDocument("url" -> url))
   }
 
+  def getWebsiteByUrlwords(urlWords: String): Future[Option[Website]] = {
+    getResourceBy(BSONDocument("url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
+  }
 
   def getTagById(id: Int): Option[Tag] = {
     val eventualMaybyTag = tagCollection.find(BSONDocument("id" -> id)).one[Tag]
