@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import com.fasterxml.jackson.core.JsonProcessingException
-import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -52,9 +52,26 @@ import scala.concurrent.{Await, Future}
 
   private def getTagIdsFor(resource: Resource) = {
     var taggingsFor: Future[Seq[mongoRepository.Tagging]] = mongoRepository.getTaggingsFor(resource.id)
-    taggingsFor.map { ts =>
-      val tagIds = ts.map(_.tag_id).toSet
-      tagIds
+    taggingsFor.map { taggings =>
+
+      val tags = taggings.map { tagging =>
+        mongoRepository.getTagById(tagging.tag_id)
+      }.flatten
+
+      def resolveParentsFor(tag: Tag): Seq[Tag] = {
+        val parentTag = tag.parent.flatMap(p => mongoRepository.getTagById(p.toInt))    // TODO Int vs Long
+        parentTag.map { p =>
+          resolveParentsFor(p) :+ p     // TODO break on loop
+        }.getOrElse{
+          Seq()
+        }
+      }
+
+      val withParents = tags.map { t =>
+        resolveParentsFor(t)
+      }.flatten
+
+      withParents.map(t => t.id).toSet
     }
   }
 
