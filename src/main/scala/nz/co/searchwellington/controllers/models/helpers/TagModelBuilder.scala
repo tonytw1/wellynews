@@ -57,7 +57,7 @@ import org.springframework.web.servlet.ModelAndView
         mv.addObject("link", urlBuilder.getTagUrl(tag))
 
         val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS)
-        log.info("Got tagged newsitems: " + taggedNewsitems)
+        log.info("Got tagged newsitems: " + taggedNewsitems.size)
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
 
@@ -119,7 +119,7 @@ import org.springframework.web.servlet.ModelAndView
 
     val tag = tagFromRequest(request)
     val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
-    log.info("Tag websites: " + taggedWebsites)
+    log.info("Tag websites: " + taggedWebsites.size)
     import scala.collection.JavaConverters._
     mv.addObject(WEBSITES, taggedWebsites.asJava)
 
