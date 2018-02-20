@@ -71,18 +71,18 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getTagsByParent(parent: Int): Seq[Tag] = {
-    val eventualMaybyTag = tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag].toList()
+    val eventualMaybyTag = tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag]().collect[List]()
     Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
   }
 
   def getAllTags(): Seq[Tag] = {
-    val eventualTags = tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag].toList()
+    val eventualTags = tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
     Await.result(eventualTags, Duration(10000, MILLISECONDS))
   }
 
   def getAllResourceIds(): Future[Seq[Int]] = {
     val projection = BSONDocument("id" -> 1)
-    resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument].collect[List](Integer.MAX_VALUE).map { r =>
+    resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](Integer.MAX_VALUE).map { r =>
       r.flatMap { i =>
         i.getAs[Int]("id")
       }
@@ -90,32 +90,32 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getFeaturedTags(): Seq[Tag] = {
-    val eventualTags = tagCollection.find(BSONDocument("featured" -> 1)).cursor[Tag].toList()
+    val eventualTags = tagCollection.find(BSONDocument("featured" -> 1)).cursor[Tag]().collect[List]()
     Await.result(eventualTags, Duration(10000, MILLISECONDS))
   }
 
   def getAllFeeds(): Seq[FeedImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "F")).cursor[FeedImpl].toList(), Duration(10000, MILLISECONDS))
+    Await.result(resourceCollection.find(BSONDocument("type" -> "F")).cursor[FeedImpl]().collect[List](), Duration(10000, MILLISECONDS))
   }
 
   def getAllNewsitems(): Seq[NewsitemImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "N")).cursor[NewsitemImpl].toList(), Duration(10000, MILLISECONDS))
+    Await.result(resourceCollection.find(BSONDocument("type" -> "N")).cursor[NewsitemImpl]().collect[List](), Duration(10000, MILLISECONDS))
   }
 
   def getAllWatchlists(): Seq[WebsiteImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "L")).cursor[WebsiteImpl].toList(), Duration(10000, MILLISECONDS))
+    Await.result(resourceCollection.find(BSONDocument("type" -> "L")).cursor[WebsiteImpl]().collect[List](), Duration(10000, MILLISECONDS))
   }
 
   def getAllWebsites(): Seq[WebsiteImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl].toList(), Duration(10000, MILLISECONDS))
+    Await.result(resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl]().collect[List](), Duration(10000, MILLISECONDS))
   }
 
   def getAllTaggings(): Seq[Tagging] = {
-    Await.result(taggingCollection.find(BSONDocument.empty).cursor[Tagging].toList(), Duration(10000, MILLISECONDS))
+    Await.result(taggingCollection.find(BSONDocument.empty).cursor[Tagging]().toList(), Duration(10000, MILLISECONDS))
   }
 
   def getTaggingsFor(resourceId: Int): Future[Seq[Tagging]] = {
-    taggingCollection.find(BSONDocument("resource_id" -> resourceId)).cursor[Tagging].toList()
+    taggingCollection.find(BSONDocument("resource_id" -> resourceId)).cursor[Tagging]().collect[List]()
   }
 
   private def getResourceBy(selector: BSONDocument) = {
