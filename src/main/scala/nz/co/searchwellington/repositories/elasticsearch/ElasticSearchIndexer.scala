@@ -11,7 +11,7 @@ import com.sksamuel.elastic4s.searches.aggs.{AbstractAggregation, AggregationApi
 import nz.co.searchwellington.model.{PublishedResource, PublisherContentCount, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -19,7 +19,8 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 @Component
-class ElasticSearchIndexer @Autowired()() {
+class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}") elasticsearchHost: String,
+                                         @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int) {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
 
@@ -28,7 +29,7 @@ class ElasticSearchIndexer @Autowired()() {
   private val Index = "searchwellington"
   private val Resources = "resources"
 
-  val client = HttpClient(ElasticsearchClientUri("localhost", 9200))
+  val client = HttpClient(ElasticsearchClientUri(elasticsearchHost, elasticsearchPort))
 
   val Title = "title"
   val Type = "type"

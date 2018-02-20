@@ -2,25 +2,23 @@ package nz.co.searchwellington.repositories.mongo
 
 import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDocument, BSONDocumentReader, BSONString, Macros}
+import reactivemongo.bson.{BSONDocument, BSONString, Macros}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 @Component
-class MongoRepository {
+class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) {
 
   private val log = Logger.getLogger(classOf[MongoRepository])
 
   def connect(): DefaultDB = {
-    log.info("Connecting to Mongo")
-
-    val mongoUri = "mongodb://localhost:27017/wellynews"
-    //val mongoUri = "mongodb://user:password@mongodev1.eelpieconsulting.co.uk:27017/wellynews?sslEnabled=true"
+    log.info("Connecting to Mongo: " + mongoUri)
 
     val driver = MongoDriver()
 
