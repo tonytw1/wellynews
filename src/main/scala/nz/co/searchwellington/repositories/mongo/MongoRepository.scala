@@ -86,10 +86,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  def getFeaturedTags(): Future[Seq[Tag]] = {
-    tagCollection.find(BSONDocument("featured" -> 1)).cursor[Tag]().collect[List]()
-  }
-
   def getAllFeeds(): Future[Seq[FeedImpl]] = {
     resourceCollection.find(BSONDocument("type" -> "F")).cursor[FeedImpl]().collect[List]()
   }

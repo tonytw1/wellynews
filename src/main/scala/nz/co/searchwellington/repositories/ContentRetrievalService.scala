@@ -113,14 +113,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), Duration(10, SECONDS))
   }
 
-  private def fetchByIds(ids: Seq[Int]): Future[Seq[FrontendResource]] = {
-    val eventualResources = Future.sequence{ ids.map { id =>
-      mongoRepository.getResourceById(id)
-    }}.map(_.flatten)
-
-    eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
-  }
-
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {
     relatedTagsService.getKeywordSearchFacets(keywords, null) // TODO This is abit odd - it's the only facet one which comes through here.
   }
@@ -288,6 +280,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getFeaturedTags: Seq[Tag] = {
     tagDAO.getFeaturedTags
+  }
+
+  private def fetchByIds(ids: Seq[Int]): Future[Seq[FrontendResource]] = {
+    val eventualResources = Future.sequence{ ids.map { id =>
+      mongoRepository.getResourceById(id)
+    }}.map(_.flatten)
+
+    eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
   }
 
 }

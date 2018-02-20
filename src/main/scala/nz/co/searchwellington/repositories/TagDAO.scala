@@ -27,7 +27,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def getFeaturedTags: Seq[Tag] = {
-    Await.result(mongoRepository.getFeaturedTags(), Duration(10, SECONDS))
+    getAllTags().filter(t => t.isFeatured)
   }
 
   def loadTagsById(tagIds: Seq[Integer]): Seq[Tag] = {
