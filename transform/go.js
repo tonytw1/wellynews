@@ -29,6 +29,7 @@ db.resource.find({}).forEach(
         if(doc.accepted) doc.accepted2 = dateFromString(doc.accepted);
         if(doc.latestItemDate) doc.latestItemDate2 = dateFromString(doc.latestItemDate);
         if(doc.lastRead) doc.lastRead2 = dateFromString(doc.lastRead);
+        if(doc.feed_publisher) doc.publisher = doc.feed_publisher;
 
 	    doc.held2 = booleanFromInt(doc.held);
 

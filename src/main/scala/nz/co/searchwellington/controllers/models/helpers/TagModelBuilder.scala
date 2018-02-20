@@ -145,10 +145,12 @@ import org.springframework.web.servlet.ModelAndView
     val taggedWebsites = mv.getModel.get(WEBSITES).asInstanceOf[List[Resource]]
     val tagWatchlist = mv.getModel.get(TAG_WATCHLIST).asInstanceOf[List[Resource]]
     val tagFeeds = mv.getModel.get(TAG_FEEDS).asInstanceOf[List[Resource]]
+
     val hasSecondaryContent = !taggedWebsites.isEmpty || !tagWatchlist.isEmpty || !tagFeeds.isEmpty
     val isOneContentType = mainContent.isEmpty || !hasSecondaryContent
     val page = mv.getModel.get(PAGE).asInstanceOf[Integer]
-    if (page != null && page > 0) {
+
+    if (page != null && page > 1) {
       mv.addObject(PAGE, page)
       "tagNewsArchive"
     } else if (isOneContentType) {

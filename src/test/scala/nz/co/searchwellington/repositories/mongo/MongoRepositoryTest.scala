@@ -35,6 +35,19 @@ class MongoRepositoryTest {
   }
 
   @Test
+  def canConnectToMongoAndReadFeeds {
+    val feeds = mongoRepository.getAllFeeds()
+
+    feeds.map { f =>
+      println(f.id + " " + f.publisher)
+    }
+
+    assertEquals(414, feeds.size)
+
+    println(Await.result(mongoRepository.getResourceById(54011), Duration(1, MINUTES)))
+  }
+
+  @Test
   def canReadResourceTagsFromMongo = {
     val taggings = mongoRepository.getAllTaggings()
     assertEquals(30435, taggings.size)

@@ -121,10 +121,16 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   private def getResourceBy(selector: BSONDocument) = {
     resourceCollection.find(selector).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
+        log.info("!!T" + b.get("type"))
         b.get("type").get match {
           case BSONString("N") => Some(b.as[NewsitemImpl])
           case BSONString("W") => Some(b.as[WebsiteImpl])
-          case BSONString("F") => Some(b.as[FeedImpl])
+          case BSONString("F") => {
+            println(b.get("publisher"))
+
+
+            Some(b.as[FeedImpl])
+          }
           case BSONString("L") => Some(b.as[Watchlist])
           case _ => None
         }
