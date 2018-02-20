@@ -19,15 +19,15 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def loadTagByName(name: String): Option[Tag] = {
-    mongoRepository.getTagByName(name)
+    Await.result(mongoRepository.getTagByName(name), Duration(10, SECONDS))
   }
 
   def getAllTags(): Seq[Tag] = {
-    mongoRepository.getAllTags()
+    Await.result(mongoRepository.getAllTags(), Duration(10, SECONDS))
   }
 
   def getFeaturedTags: Seq[Tag] = {
-    mongoRepository.getFeaturedTags()
+    Await.result(mongoRepository.getFeaturedTags(), Duration(10, SECONDS))
   }
 
   def loadTagsById(tagIds: Seq[Integer]): Seq[Tag] = {
@@ -37,7 +37,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def loadTagsByParent(parentId: Int): Seq[Tag] = {
-    mongoRepository.getTagsByParent(parentId)
+    Await.result(mongoRepository.getTagsByParent(parentId), Duration(10, SECONDS))
   }
 
   def getTopLevelTags: Seq[Tag] = {

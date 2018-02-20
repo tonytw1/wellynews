@@ -65,19 +65,16 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     tagCollection.find(BSONDocument("id" -> id)).one[Tag]
   }
 
-  def getTagByName(name: String): Option[Tag] = {
-    val eventualMaybyTag = tagCollection.find(BSONDocument("name" -> name)).one[Tag]
-    Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
+  def getTagByName(name: String): Future[Option[Tag]] = {
+    tagCollection.find(BSONDocument("name" -> name)).one[Tag]
   }
 
-  def getTagsByParent(parent: Int): Seq[Tag] = {
-    val eventualMaybyTag = tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag]().collect[List]()
-    Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
+  def getTagsByParent(parent: Int): Future[List[Tag]] = {
+    tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag]().collect[List]()
   }
 
-  def getAllTags(): Seq[Tag] = {
-    val eventualTags = tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
-    Await.result(eventualTags, Duration(10000, MILLISECONDS))
+  def getAllTags(): Future[Seq[Tag]] = {
+    tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
   }
 
   def getAllResourceIds(): Future[Seq[Int]] = {
@@ -89,29 +86,24 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  def getFeaturedTags(): Seq[Tag] = {
-    val eventualTags = tagCollection.find(BSONDocument("featured" -> 1)).cursor[Tag]().collect[List]()
-    Await.result(eventualTags, Duration(10000, MILLISECONDS))
+  def getFeaturedTags(): Future[Seq[Tag]] = {
+    tagCollection.find(BSONDocument("featured" -> 1)).cursor[Tag]().collect[List]()
   }
 
-  def getAllFeeds(): Seq[FeedImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "F")).cursor[FeedImpl]().collect[List](), Duration(10000, MILLISECONDS))
+  def getAllFeeds(): Future[Seq[FeedImpl]] = {
+    resourceCollection.find(BSONDocument("type" -> "F")).cursor[FeedImpl]().collect[List]()
   }
 
-  def getAllNewsitems(): Seq[NewsitemImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "N")).cursor[NewsitemImpl]().collect[List](), Duration(10000, MILLISECONDS))
+  def getAllWatchlists(): Future[Seq[WebsiteImpl]] = {
+    resourceCollection.find(BSONDocument("type" -> "L")).cursor[WebsiteImpl]().collect[List]()
   }
 
-  def getAllWatchlists(): Seq[WebsiteImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "L")).cursor[WebsiteImpl]().collect[List](), Duration(10000, MILLISECONDS))
+  def getAllWebsites(): Future[Seq[WebsiteImpl]] = {
+    resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl]().collect[List]()
   }
 
-  def getAllWebsites(): Seq[WebsiteImpl] = {
-    Await.result(resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl]().collect[List](), Duration(10000, MILLISECONDS))
-  }
-
-  def getAllTaggings(): Seq[Tagging] = {
-    Await.result(taggingCollection.find(BSONDocument.empty).cursor[Tagging]().toList(), Duration(10000, MILLISECONDS))
+  def getAllTaggings(): Future[Seq[Tagging]] = {
+    taggingCollection.find(BSONDocument.empty).cursor[Tagging]().toList()
   }
 
   def getTaggingsFor(resourceId: Int): Future[Seq[Tagging]] = {
@@ -127,8 +119,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
           case BSONString("W") => Some(b.as[WebsiteImpl])
           case BSONString("F") => {
             println(b.get("publisher"))
-
-
             Some(b.as[FeedImpl])
           }
           case BSONString("L") => Some(b.as[Watchlist])

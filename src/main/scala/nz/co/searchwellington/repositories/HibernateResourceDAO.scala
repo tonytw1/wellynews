@@ -25,7 +25,7 @@ import scala.concurrent.duration._
   }
 
   @SuppressWarnings(Array("unchecked")) def getAllFeeds: Seq[Feed] = {
-    mongoRepository.getAllFeeds()
+    Await.result(mongoRepository.getAllFeeds(), Duration(10, SECONDS))
   }
 
   @SuppressWarnings(Array("unchecked")) def getFeedsToRead: Seq[Feed] = {
@@ -34,7 +34,7 @@ import scala.concurrent.duration._
   }
 
   @SuppressWarnings(Array("unchecked")) def getAllWatchlists: Seq[Resource] = {
-    mongoRepository.getAllWatchlists()
+    Await.result(mongoRepository.getAllWatchlists(), Duration(10, SECONDS))
   }
 
   @SuppressWarnings(Array("unchecked")) def getAllDiscoveredFeeds: Seq[DiscoveredFeed] = {
