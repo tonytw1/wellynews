@@ -91,7 +91,10 @@ import org.springframework.web.servlet.ModelAndView
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "All Publishers")
     import scala.collection.JavaConverters._
-    mv.addObject("publishers", contentRetrievalService.getAllPublishers.asJava)
+
+    val publishers = contentRetrievalService.getAllPublishers.sortBy(_.getName)
+    mv.addObject("publishers", publishers.asJava)
+
     mv.setViewName("publishers")
     mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
     mv
