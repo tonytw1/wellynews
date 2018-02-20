@@ -246,8 +246,9 @@ import org.springframework.web.servlet.view.RedirectView
         editResource.setHeld(true)
       }
       if (editResource.getType == "F" && !Strings.isNullOrEmpty(editResource.getUrl)) {
-        val createFeedSubscription: String = whakaoroService.createFeedSubscription(editResource.getUrl)
-        (editResource.asInstanceOf[Feed]).setWhakaokoId(createFeedSubscription)
+        whakaoroService.createFeedSubscription(editResource. getUrl).map { createdFeedSubscription =>
+          (editResource.asInstanceOf[Feed]).setWhakaokoId(createdFeedSubscription)
+        }
       }
       val okToSave: Boolean = !newSubmission || !isSpamUrl || loggedInUser != null
       if (okToSave) {

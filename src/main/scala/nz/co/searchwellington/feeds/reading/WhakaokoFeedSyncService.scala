@@ -9,7 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 
-@Component class WhakaokoFeedSyncService @Autowired() (resourceDAO: HibernateResourceDAO, whakaoroService: WhakaokoService) {
+@Component class WhakaokoFeedSyncService @Autowired() (resourceDAO: HibernateResourceDAO, whakaokoService: WhakaokoService) {
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedSyncService])
 
@@ -23,10 +23,11 @@ import org.springframework.transaction.annotation.Transactional
     feeds.map { feed =>
       if (!Strings.isNullOrEmpty(feed.getUrl)) {
         log.info("Registering feed with whakaoko: " + feed.getName)
-        val createdSubscriptionId = whakaoroService.createFeedSubscription(feed.getUrl)
-        log.info("Setting feed whakaoko id to: " + createdSubscriptionId)
-        feed.setWhakaokoId(createdSubscriptionId)
-        resourceDAO.saveResource(feed)
+        whakaokoService.createFeedSubscription(feed.getUrl).map { createdSubscriptionId =>
+          log.info("Setting feed whakaoko id to: " + createdSubscriptionId)
+          feed.setWhakaokoId(createdSubscriptionId)
+          resourceDAO.saveResource(feed)
+        }
       }
     }
     log.info("Finished registering feeds with whakaoro")
