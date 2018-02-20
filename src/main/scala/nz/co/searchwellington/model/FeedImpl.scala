@@ -20,9 +20,9 @@ case class FeedImpl(override var id: Int = 0,
                     override var geocode: Option[Int] = None,
                     override var owner: Option[Int] = None,
                     var acceptance: String = "IGNORE",
-                    var latestItemDate: String = null,
-                    var lastRead: String = null,  // TODO
-                    var whakaokoId: String = null,
+                    var latestItemDate2: Option[Date] = null,
+                    var lastRead2: Option[Date] = null, // TODO
+                    var whakaoko_id: String = null,
                     override var publisher: Option[Int] = None) extends PublishedResource with Feed {
 
   override def getType: String = "F"
@@ -31,18 +31,18 @@ case class FeedImpl(override var id: Int = 0,
 
   override def setAcceptancePolicy(acceptancePolicy: String): Unit = this.acceptance = acceptancePolicy
 
-  override def getLatestItemDate: Date = ISODateTimeFormat.dateParser().parseDateTime(latestItemDate).toDate // TODO
+  override def getLatestItemDate: Date = latestItemDate2.getOrElse(null)
 
   override def setLatestItemDate(latestPublicationDate: Date): Unit = {}
 
-  override def getLastRead: Date = ISODateTimeFormat.dateParser().parseDateTime(lastRead).toDate // TODO
+  override def getLastRead: Date = lastRead2.getOrElse(null)
 
   override def setLastRead(lastRead: Date): Unit = {}
 
   def isScreenScraped: Boolean = page.map(p => p.startsWith("http://brownbag.wellington.gen.nz/")).getOrElse(false)
 
-  override def getWhakaokoId: String = whakaokoId
+  override def getWhakaokoId: String = whakaoko_id
 
-  override def setWhakaokoId(whakaokoId: String): Unit = this.whakaokoId = whakaokoId
+  override def setWhakaokoId(whakaokoId: String): Unit = this.whakaoko_id = whakaokoId
 
 }
