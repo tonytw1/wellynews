@@ -12,12 +12,6 @@ import scala.concurrent.duration._
 
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) {
 
-  @SuppressWarnings(Array("unchecked")) def getAllResourceIds: Seq[Integer] = {
-    //val session = sessionFactory.getCurrentSession
-    //session.createQuery("select id from nz.co.searchwellington.model.Resource order by id DESC").setFetchSize(100).list().asInstanceOf[List[java.lang.Integer]]
-    Seq() // TODO
-  }
-
   def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
     // val session = sessionFactory.getCurrentSession
      // session.createQuery("select name from nz.co.searchwellington.model.Resource where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).asInstanceOf[List[java.lang.String]]
