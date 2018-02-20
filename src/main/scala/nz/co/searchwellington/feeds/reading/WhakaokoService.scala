@@ -4,25 +4,23 @@ import java.io.UnsupportedEncodingException
 
 import com.google.common.collect.Lists
 import org.apache.log4j.Logger
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.http.{HttpBadRequestException, HttpFetchException, HttpForbiddenException, HttpNotFoundException}
 import uk.co.eelpieconsulting.whakaoro.client.WhakaoroClient
 import uk.co.eelpieconsulting.whakaoro.client.exceptions.ParsingException
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Component class WhakaokoService @Autowired()() {
+@Component class WhakaokoService @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUrl: String,
+                                              @Value("#{config['whakaoko.username']}") whakaokoUsername: String,
+                                              @Value("#{config['whakaoko.channel']}") whakaokoChannel: String) {
 
   private val log = Logger.getLogger(classOf[WhakaokoService])
 
-  val url = "TODO"
-  val username = "TODO"
-  val channel = "TODO"
-
-  def createFeedSubscription(url: String): String = {
+  def createFeedSubscription(feedUrl: String): String = {
     log.info("Requesting Whakakaoro subscription for feed")
     try {
-      val createdFeedSubscription = getClient.createFeedSubscription(username, channel, url)
+      val createdFeedSubscription = getClient.createFeedSubscription(whakaokoUsername, whakaokoChannel, feedUrl)
       createdFeedSubscription.getId
     }
     catch {
@@ -56,7 +54,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   def getSubscriptionFeedItems(subscriptionId: String): Seq[FeedItem] = {
     import scala.collection.JavaConversions._
     try {
-       getClient.getSubscriptionFeedItems(username, subscriptionId)
+       getClient.getSubscriptionFeedItems(whakaokoUsername, subscriptionId)
     }
     catch {
       case e: HttpNotFoundException => {
@@ -96,9 +94,9 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
         })
       }
       */
-      getClient.getChannelFeedItems(username, channel, 0) // TODO restore pagination
-    }
-    catch {
+      getClient.getChannelFeedItems(whakaokoUsername, whakaokoChannel, 0) // TODO restore pagination
+
+    } catch {
       case e: HttpNotFoundException => {
         log.error(e)
         return Lists.newArrayList()
@@ -123,7 +121,8 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   }
 
   private def getClient: WhakaoroClient = {
-    return new WhakaoroClient(url)
+    log.info("Creating whakaoko client for: " + whakaokoUrl)
+    new WhakaoroClient(whakaokoUrl)
   }
 
 }
