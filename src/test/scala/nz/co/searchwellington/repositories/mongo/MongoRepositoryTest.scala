@@ -8,7 +8,7 @@ import scala.concurrent.duration._
 
 class MongoRepositoryTest {
 
-  val mongoRepository = new MongoRepository()
+  val mongoRepository = new MongoRepository("mongodb://localhost:27017/wellynews")
 
   @Test
   def canConnectToMongoAndReadTags {

@@ -10,8 +10,8 @@ import scala.concurrent.duration._
 
 class ElasticSearchIT {
 
-  val mongoRepository = new MongoRepository()
-  val elasticSearchIndexer = new ElasticSearchIndexer()
+  val mongoRepository = new MongoRepository("mongodb://localhost:27017/wellynews")
+  val elasticSearchIndexer = new ElasticSearchIndexer("localhost", 9200)
 
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer)
 
