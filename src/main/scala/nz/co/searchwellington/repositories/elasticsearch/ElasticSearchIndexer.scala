@@ -4,11 +4,11 @@ import com.sksamuel.elastic4s.ElasticDsl.search
 import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
-import com.sksamuel.elastic4s.http.search.{SearchResponse, TermBucket, TermsAggResult}
-import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
+import com.sksamuel.elastic4s.http.HttpClient
+import com.sksamuel.elastic4s.http.search.{DateHistogramAggResult, DateRangeAggResult, TermsAggResult}
+import com.sksamuel.elastic4s.searches.aggs.DateRangeAggregation
 import com.sksamuel.elastic4s.searches.queries.matches.MatchQueryDefinition
-import com.sksamuel.elastic4s.searches.aggs.{AbstractAggregation, AggregationApi}
-import nz.co.searchwellington.model.{PublishedResource, PublisherContentCount, Resource}
+import nz.co.searchwellington.model.{ArchiveLink, PublishedResource, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -108,21 +108,21 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
 
     val newsitems: MatchQueryDefinition = matchQuery(Type, "N")
 
-    val aggs = Seq(termsAgg("publisher", "publisher") size Integer.MAX_VALUE)
+    val aggs = Seq(dateRangeAgg("date", "date"))
 
     val request = (search in Index / Resources query newsitems) limit 0 aggregations(aggs)
 
     client.execute(request).map { r =>
 
-      val x: Either[RequestFailure, Seq[Int]] = r.map { rs =>
-        val publisherAgg: TermsAggResult = rs.result.aggregations.terms("publisher")
-        publisherAgg.buckets.map { b =>
-          log.info("Publisher agg bucket: " + b.key + "/" + b.docCount)
+      val result = r.map { rs =>
+        val dateAgg: DateRangeAggResult = rs.result.aggregations.dateRange("date")
+        dateAgg.buckets.map { b =>
+          b.key
           b.key.toInt
         }
       }
 
-      x match {
+      result match {
         case (Right(buckets)) => {
           log.info("Buckets: " + buckets)
           buckets
@@ -132,6 +132,22 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
           Seq()
       }
     }
+  }
+
+  def getArchiveMonths(shouldShowBroken: Boolean): Seq[ArchiveLink] = {
+    /*
+    val latestNewsitems = QueryBuilders.boolQuery.must(isNewsitem)
+    addShouldShowBrokenClause(latestNewsitems, shouldShowBroken)
+    val searchResponse = searchRequestBuilder(latestNewsitems).setSize(0).addFacet(FacetBuilders.dateHistogramFacet(DATE).field(DATE).interval("month")).execute.actionGet
+    val dateFacet = searchResponse.getFacets.getFacets.get(DATE).asInstanceOf[DateHistogramFacet]
+
+    import scala.collection.JavaConversions._
+    dateFacet.getEntries.map { entry =>
+      val monthDate = new DateTime(entry.getTime, DateTimeZone.UTC)
+      new ArchiveLink(monthDate.toDate, entry.getCount)
+    }.reverse
+    */
+    Seq() // TODO implement
   }
 
   private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {

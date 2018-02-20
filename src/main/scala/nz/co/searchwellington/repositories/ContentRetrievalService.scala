@@ -146,7 +146,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getArchiveMonths: Seq[ArchiveLink] = {
-    elasticSearchBackedResourceDAO.getArchiveMonths(showBrokenDecisionService.shouldShowBroken)
+    elasticSearchIndexer.getArchiveMonths(showBrokenDecisionService.shouldShowBroken)
   }
 
   def getArchiveStatistics: Map[String, Int] = {

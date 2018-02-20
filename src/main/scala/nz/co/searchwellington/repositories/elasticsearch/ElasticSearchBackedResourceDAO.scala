@@ -231,22 +231,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Seq.empty //TODO
   }
 
-  def getArchiveMonths(shouldShowBroken: Boolean): Seq[ArchiveLink] = {
-    /*
-    val latestNewsitems = QueryBuilders.boolQuery.must(isNewsitem)
-    addShouldShowBrokenClause(latestNewsitems, shouldShowBroken)
-    val searchResponse = searchRequestBuilder(latestNewsitems).setSize(0).addFacet(FacetBuilders.dateHistogramFacet(DATE).field(DATE).interval("month")).execute.actionGet
-    val dateFacet = searchResponse.getFacets.getFacets.get(DATE).asInstanceOf[DateHistogramFacet]
-
-    import scala.collection.JavaConversions._
-    dateFacet.getEntries.map { entry =>
-      val monthDate = new DateTime(entry.getTime, DateTimeZone.UTC)
-      new ArchiveLink(monthDate.toDate, entry.getCount)
-    }.reverse
-    */
-    Seq()
-  }
-
   def getArchiveStatistics(shouldShowBroken: Boolean): Map[String, Int] = {
     /*
     val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).addFacet(FacetBuilders.termsFacet(TYPE).field(TYPE)).execute.actionGet
