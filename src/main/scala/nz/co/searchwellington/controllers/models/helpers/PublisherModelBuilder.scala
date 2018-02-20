@@ -74,7 +74,11 @@ import org.springframework.web.servlet.ModelAndView
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     import scala.collection.JavaConverters._
-    mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher).asJava)
+
+    val publisherFeeds = contentRetrievalService.getPublisherFeeds(publisher)
+    logger.info("Publisher feeds: " + publisherFeeds)
+    mv.addObject("feeds", publisherFeeds.asJava)
+
     mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher).asJava)
     populateGeotaggedItems(mv)
     val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)

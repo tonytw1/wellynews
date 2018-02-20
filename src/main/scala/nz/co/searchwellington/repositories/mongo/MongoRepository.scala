@@ -54,8 +54,12 @@ class MongoRepository {
     getResourceBy(BSONDocument("url" -> url))
   }
 
+  def getFeedByUrlwords(urlWords: String): Future[Option[Feed]] = {
+    getResourceBy(BSONDocument("type" -> "F", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
+  }
+
   def getWebsiteByUrlwords(urlWords: String): Future[Option[Website]] = {
-    getResourceBy(BSONDocument("url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
+    getResourceBy(BSONDocument("type" -> "W", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
   def getTagById(id: Int): Option[Tag] = {

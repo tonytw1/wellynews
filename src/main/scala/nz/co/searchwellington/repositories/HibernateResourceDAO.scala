@@ -113,6 +113,10 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), Duration(1, MINUTES))
   }
 
+  def loadFeedByUrlWords(urlWords: String): Feed = {
+    Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES)).getOrElse(null) // TODO callers need to move to Java and accept an Option
+  }
+
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
     null
@@ -121,11 +125,6 @@ import scala.concurrent.duration._
   def getPublisherByName(name: String): Option[Website] = {
    // Option(sessionFactory.getCurrentSession.createCriteria(classOf[Website]).add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult.asInstanceOf[Website])
     None // TODO
-  }
-
-  def loadFeedByUrlWords(urlWords: String): Feed = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Feed]
-    null // TODO
   }
 
   def loadFeedByWhakaoroId(whakaoroId: String): Feed = {
