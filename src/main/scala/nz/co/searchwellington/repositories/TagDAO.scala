@@ -5,6 +5,9 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
+
 @Component class TagDAO @Autowired() (mongoRepository: MongoRepository) {
 
   def createNewTag(tagUrlWords: String, displayName: String): Tag = {
@@ -12,7 +15,7 @@ import org.springframework.stereotype.Component
   }
 
   def loadTagById(tagID: Int): Option[Tag] = {
-    mongoRepository.getTagById(tagID)
+    Await.result(mongoRepository.getTagById(tagID), Duration(10, SECONDS))
   }
 
   def loadTagByName(name: String): Option[Tag] = {

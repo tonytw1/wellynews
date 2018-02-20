@@ -5,6 +5,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDocument, BSONString, Macros}
 
@@ -60,9 +61,8 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("type" -> "W", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
-  def getTagById(id: Int): Option[Tag] = {
-    val eventualMaybyTag = tagCollection.find(BSONDocument("id" -> id)).one[Tag]
-    Await.result(eventualMaybyTag, Duration(10000, MILLISECONDS))
+  def getTagById(id: Int): Future[Option[Tag]] = {
+    tagCollection.find(BSONDocument("id" -> id)).one[Tag]
   }
 
   def getTagByName(name: String): Option[Tag] = {
@@ -133,5 +133,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   case class Tagging(resource_id: Int, tag_id: Int)
+
+  {
+    log.info("Ensuring indexes")
+    log.info("taggings.resource_id index result: " + Await.result(taggingCollection.indexesManager.ensure(Index(Seq("resource_id" -> IndexType.Ascending), name = Some("resource_id"), unique = false)), Duration(10000, MILLISECONDS)))
+    log.info("resources.id index result: " + Await.result(resourceCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
+    log.info("tag.id index result: " + Await.result(tagCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
+  }
 
 }

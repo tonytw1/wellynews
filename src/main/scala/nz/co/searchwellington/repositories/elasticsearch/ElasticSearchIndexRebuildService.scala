@@ -15,7 +15,7 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
 
-  private val BATCH_COMMIT_SIZE = 10
+  private val BATCH_COMMIT_SIZE = 1000
 
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {
@@ -49,33 +49,45 @@ import scala.concurrent.{Await, Future}
     log.info("Index rebuild complete")
   }
 
-  private def getIndexTagIdsFor(resource: Resource) = {
-    mongoRepository.getTaggingsFor(resource.id).map { taggings =>
+  private def getIndexTagIdsFor(resource: Resource): Future[Set[Int]] = {
 
-      val tags = taggings.map { tagging =>
-        mongoRepository.getTagById(tagging.tag_id)
-      }.flatten
-
-      def resolveParentsFor(tag: Tag, result: Seq[Tag]): Seq[Tag] = {
-        val parentTag = tag.parent.flatMap(p => mongoRepository.getTagById(p))
-        parentTag.map { p =>
-          if (!result.contains(p)) {
-            resolveParentsFor(p, result :+ p)
-          } else {
-            log.warn("Loop detected while resolving tag parents: " + tag.id + " -> " + parentTag)
-            result
+    def resolveParentsFor(tag: Tag, result: Seq[Tag]): Future[Seq[Tag]] = {
+      tag.parent.map { p =>
+        val eventualMaybeParentTag = mongoRepository.getTagById(p)
+        eventualMaybeParentTag.flatMap { pto =>
+          pto.map { pt =>
+            val a = pt
+            if (!result.contains(pt)) {
+              resolveParentsFor(pt, result :+ pt)
+            } else {
+              log.warn("Tag parent loop detected")
+              Future.successful(result)
+            }
+          }.getOrElse {
+            Future.successful(result)
           }
-        }.getOrElse{
-          result
+        }
+      }.getOrElse{
+        Future.successful(result)
+      }
+    }
+
+    mongoRepository.getTaggingsFor(resource.id).flatMap { taggings =>
+      val eventualTags = Future.sequence(taggings.map { tagging =>
+        mongoRepository.getTagById(tagging.tag_id)
+      }).map(_.flatten)
+
+      eventualTags.flatMap { tags =>
+        Future.sequence {
+          tags.map { t =>
+            resolveParentsFor(t, Seq())
+          }
+        }.map { ts =>
+          ts.flatten.map(t => t.id).toSet
         }
       }
-
-      val withParents = tags.map { t =>
-        resolveParentsFor(t, Seq())
-      }.flatten
-
-      withParents.map(t => t.id).toSet
     }
+
   }
 
 }
