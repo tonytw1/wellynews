@@ -11,7 +11,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import javax.servlet.http.HttpServletRequest
 
-@Component class SuggestionsModelBuilder @Autowired()(var suggestedFeeditemsService: SuggestedFeeditemsService, var rssUrlBuilder: RssUrlBuilder, var urlBuilder: UrlBuilder, var contentRetrievalService: ContentRetrievalService, var commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
+                                                      rssUrlBuilder: RssUrlBuilder,
+                                                      urlBuilder: UrlBuilder,
+                                                      contentRetrievalService: ContentRetrievalService,
+                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
   private val log = Logger.getLogger(classOf[SuggestionsModelBuilder])
   private val MAX_SUGGESTIONS = 50
@@ -22,7 +26,6 @@ import javax.servlet.http.HttpServletRequest
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      log.debug("Building feeds inbox model")
       val mv = new ModelAndView
       mv.addObject(MAIN_CONTENT, suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS))
       mv.addObject("heading", "Inbox")

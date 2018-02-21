@@ -16,14 +16,16 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
                                                           feedsModelBuilder: FeedsModelBuilder,
                                                           publisherModelBuilder: PublisherModelBuilder,
                                                           watchlistModelBuilder: WatchlistModelBuilder,
-                                                          feedModelBuilder: FeedModelBuilder) {
+                                                          feedModelBuilder: FeedModelBuilder,
+                                                          justinModelBuilder: JustinModelBuilder,
+                                                          suggestionsModelBuilder: SuggestionsModelBuilder) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
   private val JSON_CALLBACK_PARAMETER = "callback"
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder, feedsModelBuilder,
-      publisherModelBuilder, watchlistModelBuilder, feedModelBuilder)
+      publisherModelBuilder, watchlistModelBuilder, feedModelBuilder, justinModelBuilder)
 
     modelBuilders.filter(mb => mb.isValid(request)).headOption.map { mb => // TODO collect first?
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
