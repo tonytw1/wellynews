@@ -1,16 +1,12 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import java.util.concurrent.TimeUnit
-
 import com.sksamuel.elastic4s.ElasticDsl.search
 import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
-import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure}
-import com.sksamuel.elastic4s.http.search.{DateHistogramAggResult, DateHistogramBucket, DateRangeAggResult, TermsAggResult}
+import com.sksamuel.elastic4s.http.HttpClient
+import com.sksamuel.elastic4s.http.search.TermsAggResult
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
-import com.sksamuel.elastic4s.searches.aggs.DateRangeAggregation
-import com.sksamuel.elastic4s.searches.queries.matches.MatchQueryDefinition
 import nz.co.searchwellington.model.{ArchiveLink, PublishedResource, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -100,35 +96,23 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
   }
 
   def getAllPublishers(): Future[Seq[Int]] = {
-    /*
-    val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).setSize(0).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.TERM).size(Integer.MAX_VALUE)).execute.actionGet
-    val facet = searchResponse.getFacets.getFacets.get(PUBLISHER_NAME).asInstanceOf[TermsFacet]
-    val entries = facet.getEntries
-    import scala.collection.JavaConversions._
-    entries.map { entry =>
-      new PublisherContentCount(entry.getTerm.string, entry.getCount)
-    }
-    */
-
-    val newsitems: MatchQueryDefinition = matchQuery(Type, "N")
+    val allNewsitems = matchQuery(Type, "N")
 
     val aggs = Seq(termsAgg("publisher", "publisher") size Integer.MAX_VALUE)
 
-    val request = (search in Index / Resources query newsitems) limit 0 aggregations(aggs)
+    val request = (search in Index / Resources query allNewsitems) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
 
-      val x: Either[RequestFailure, Seq[Int]] = r.map { rs =>
+      val resultBuckets = r.map { rs =>
         val publisherAgg: TermsAggResult = rs.result.aggregations.terms("publisher")
         publisherAgg.buckets.map { b =>
-          log.info("Publisher agg bucket: " + b.key + "/" + b.docCount)
           b.key.toInt
         }
       }
 
-      x match {
+      resultBuckets match {
         case (Right(buckets)) => {
-          log.info("Buckets: " + buckets)
           buckets
         }
         case (Left(f)) =>
@@ -142,7 +126,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
     val newsitems = matchQuery(Type, "N")
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
 
-    val request = (search in Index / Resources query newsitems) limit 0 aggregations(aggs)
+    val request = (search in Index / Resources query newsitems) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
       val resultBuckets = r.map { rs =>
@@ -163,10 +147,10 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
   }
 
   private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {
-    var conditions = Seq (
+    var conditions = Seq(
       query.`type`.map(t => matchQuery(Type, t)),
       query.tags.map { tags =>
-        should {          // TODO AND or OR
+        should { // TODO AND or OR
           tags.map { t =>
             matchQuery(Tags, t.id)
           }
@@ -184,7 +168,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
 
     client.execute(request).map { r =>
       r.map { rs =>
-        (rs.result.hits.hits.map (_.id.toInt).toSeq, rs.result.totalHits)
+        (rs.result.hits.hits.map(_.id.toInt).toSeq, rs.result.totalHits)
 
       } match {
         case (Right(idsWithTotalCount)) => {
