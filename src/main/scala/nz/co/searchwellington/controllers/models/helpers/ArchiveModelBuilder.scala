@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
-import org.joda.time.DateTimeZone
+import org.joda.time.{DateTime, DateTimeZone, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -33,9 +33,12 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
         val mv = new ModelAndView
         mv.addObject("heading", monthLabel)
         mv.addObject("description", "Archived newsitems for the month of " + dateFormatter.fullMonthYear(month))
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsForMonth(month))
+        val interval = new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsForInterval(interval).asJava)
         mv
       }
+
     } else {
       None
     }

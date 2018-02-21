@@ -2,11 +2,12 @@ package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 class ElasticSearchIT {
 
@@ -64,6 +65,29 @@ class ElasticSearchIT {
 
     assertTrue(publisherNewsitems._1.nonEmpty)
     assertTrue(publisherNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.asInstanceOf[Newsitem].getPublisher == Some(1407)))
+  }
+
+  @Test
+  def canCreateNewsitemDateRanges {
+    val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths(true), Duration(10, SECONDS))
+    assertTrue(archiveLinks.nonEmpty)
+  }
+
+  @Test
+  def canFilterNewsitemsByDateRange {
+    val startOfMonth = new DateTime(2016, 2, 1, 0, 0)
+    val interval = new Interval(startOfMonth, startOfMonth.plusMonths(1))
+
+    val monthNewsitems = ResourceQuery(`type` = Some("N"), interval = Some(interval))
+    val results = Await.result(elasticSearchIndexer.getResources(monthNewsitems), Duration(10, SECONDS))
+
+    import scala.concurrent.ExecutionContext.Implicits.global
+    val newsitems = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceById(i))), Duration(10, SECONDS)).flatten
+
+    assertTrue(newsitems.nonEmpty)
+    assertTrue(newsitems.forall{n =>
+      interval.contains(n.date2.get.getTime)
+    })
   }
 
 }
