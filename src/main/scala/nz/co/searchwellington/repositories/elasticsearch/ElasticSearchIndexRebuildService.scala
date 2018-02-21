@@ -82,8 +82,8 @@ import scala.concurrent.{Await, Future}
           tags.map { t =>
             resolveParentsFor(t, Seq())
           }
-        }.map { ts =>
-          ts.flatten.map(t => t.id).toSet
+        }.map { parents =>
+          (tags ++ parents.flatten).map(t => t.id).toSet
         }
       }
     }
