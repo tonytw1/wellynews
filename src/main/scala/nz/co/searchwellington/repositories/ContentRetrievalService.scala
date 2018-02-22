@@ -27,6 +27,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                        mongoRepository: MongoRepository) {
 
   val MAX_NEWSITEMS_TO_SHOW = 30
+  val ALL_ITEMS = 1000
 
   private val tenSeconds = Duration(10, SECONDS)
 
@@ -113,7 +114,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getNewsitemsForInterval(interval: Interval): Seq[FrontendResource] = {
-    val newsitemsForMonth = ResourceQuery(`type` = Some("N"), interval = Some(interval), maxItems = 1000)
+    val newsitemsForMonth = ResourceQuery(`type` = Some("N"), interval = Some(interval), maxItems = ALL_ITEMS)
     Await.result(elasticSearchIndexer.getResources(newsitemsForMonth).flatMap(i => fetchByIds(i._1)), tenSeconds)
   }
 
@@ -174,8 +175,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getAllFeeds: Seq[FrontendResource] = {
-    val allFeeds = ResourceQuery(`type` = Some("F"))
-    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    val allFeeds = ResourceQuery(`type` = Some("F"), maxItems = ALL_ITEMS)
+    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), tenSeconds).sortBy(_.getName)
   }
 
   def getAllFeedsOrderByLatestItemDate(): Seq[FrontendResource] = {
