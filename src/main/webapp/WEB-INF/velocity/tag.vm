@@ -41,8 +41,9 @@
 			<p>Listings tagged with both $heading. <br/>
 			Select an individual tag to see all listings for that tag.</p>			
 		#else
-			#if ($tag.parent) 
-				<h2><a href="$site_information.url/$tag.parent.name">$tag.parent.displayName</a> / $tag.displayName</h2>
+			#if ($parent_tag)
+			    $parent_tag
+				<h2><a href="$site_information.url/$parent_tag.name">$parent_tag.name</a> / $tag.displayName</h2>   // TODO url builder
 			#else
 				<h2>$tag.displayName</h2>
 			#end

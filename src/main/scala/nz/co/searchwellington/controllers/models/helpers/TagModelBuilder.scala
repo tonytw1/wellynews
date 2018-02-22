@@ -6,8 +6,9 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag}
-import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.apache.log4j.Logger
@@ -18,7 +19,8 @@ import org.springframework.web.servlet.ModelAndView
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
-                                              geocodeToPlaceMapper: GeocodeToPlaceMapper, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+                                              geocodeToPlaceMapper: GeocodeToPlaceMapper,
+                                              commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with Pagination {
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])
@@ -54,6 +56,13 @@ import org.springframework.web.servlet.ModelAndView
         mv.addObject("heading", tag.getDisplayName)
         mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
         mv.addObject("link", urlBuilder.getTagUrl(tag))
+
+        tag.parent.map { pid =>
+          tagDAO.loadTagById(pid).map { p =>
+            log.info("Adding parent tag: " + p)
+            mv.addObject("parent_tag", frontendResourceMapper.mapTagToFrontendTag(p))
+          }
+        }
 
         val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS)
         log.info("Got tagged newsitems: " + taggedNewsitems.size)

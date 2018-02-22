@@ -12,4 +12,5 @@ class FrontendTag(var id: String, var name: String) extends java.io.Serializable
   def getName = name
   def setName(newName: String) = {name = newName}
 
+  override def toString = s"FrontendTag($id, $name)"
 }
