@@ -11,15 +11,19 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter;
 public class UrlWordsGenerator {
 		
 	public String makeUrlWordsFromName(String name) {
-		String urlWords = new String(name);		
-		return urlWords.
-			replaceAll("\\(.*?\\)", "").
-			trim().
-			replaceAll(" ", "-").
-			replaceAll("\\s", "").
-			replaceAll("[^\\w-]","").
-			replaceAll("-+", "-").
-			toLowerCase();
+		if (name != null) {
+			String urlWords = new String(name);
+			return urlWords.
+					replaceAll("\\(.*?\\)", "").
+					trim().
+					replaceAll(" ", "-").
+					replaceAll("\\s", "").
+					replaceAll("[^\\w-]", "").
+					replaceAll("-+", "-").
+					toLowerCase();
+		} else {
+			return null;
+		}
 	}
 	
 	public String makeUrlForNewsitem(FrontendNewsitem newsitem) {

@@ -32,4 +32,11 @@ class UrlWordsGeneratorTest {
   def urlWordshouldBeDateAndHeadlineIfPublisherIsNotSet {
     assertEquals("/2010/apr/2/some-thing-happening", urlWordsGenerator.makeUrlForNewsitem(newsitem))
   }
+
+  @Test
+  @throws[Exception]
+  def shouldBeNullSafe {
+    assertEquals(null, urlWordsGenerator.makeUrlWordsFromName(null))
+  }
+
 }
