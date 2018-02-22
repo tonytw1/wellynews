@@ -4,7 +4,8 @@ import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendResource
-import nz.co.searchwellington.repositories.ContentRetrievalService
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -26,6 +27,8 @@ class TagModelBuilderTest {
   @Mock var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
   @Mock var geocodeToPlaceMapper: GeocodeToPlaceMapper = null
   @Mock var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
+  @Mock var tagDAO: TagDAO = null
+  @Mock var frontendResourceMapper: FrontendResourceMapper = null
 
   @Mock val newsitem1: FrontendResource = null
   @Mock val newsitem2: FrontendResource = null
@@ -38,7 +41,8 @@ class TagModelBuilderTest {
   @Before def setup {
     MockitoAnnotations.initMocks(this)
 
-    modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService, contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder)
+    modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
+      contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
     request = new MockHttpServletRequest
     when(tag.getDisplayName).thenReturn(TagModelBuilderTest.TAG_DISPLAY_NAME)
   }

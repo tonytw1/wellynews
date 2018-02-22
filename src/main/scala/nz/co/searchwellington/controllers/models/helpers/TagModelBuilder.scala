@@ -20,7 +20,8 @@ import org.springframework.web.servlet.ModelAndView
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               geocodeToPlaceMapper: GeocodeToPlaceMapper,
-                                              commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
+                                              commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
+                                              frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with Pagination {
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])

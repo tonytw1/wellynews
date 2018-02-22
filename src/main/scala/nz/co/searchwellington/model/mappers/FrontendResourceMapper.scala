@@ -22,8 +22,10 @@ import scala.concurrent.duration.{Duration, SECONDS}
       val contentItemNewsitem = contentItem.asInstanceOf[Newsitem]
 
       val frontendNewsitem = new FrontendNewsitem
-      // frontendNewsitem.setAcceptedFromFeedName(if (contentItemNewsitem.getFeed != null) contentItemNewsitem.getFeed.getName else null)
-      // frontendNewsitem.setAcceptedByProfilename(if (contentItemNewsitem.getAcceptedBy != null) contentItemNewsitem.getAcceptedBy.getProfilename else null)
+
+      contentItemNewsitem.getFeed.map(f => frontendNewsitem.setAcceptedFromFeedName(f.toString))
+      contentItemNewsitem.getFeed.map(u => frontendNewsitem.setAcceptedByProfilename(u.toString))
+
       frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted)
 
       if (contentItemNewsitem.getImage != null) {
