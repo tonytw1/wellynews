@@ -21,7 +21,7 @@ case class FeedImpl(override var id: Int = 0,
                     var latestItemDate2: Option[Date] = null,
                     var lastRead2: Option[Date] = null, // TODO
                     var whakaoko_id: String = null,
-                    override var publisher: Option[Int] = None) extends PublishedResource with Feed {
+                    override var publisher: Option[Long] = None) extends PublishedResource with Feed {
 
   override def getType: String = "F"
 

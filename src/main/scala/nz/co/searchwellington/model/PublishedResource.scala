@@ -2,9 +2,9 @@ package nz.co.searchwellington.model
 
 trait PublishedResource extends Resource {
 
-  var publisher: Option[Int]
+  var publisher: Option[Long]
 
-  def getPublisher: Option[Int] = publisher
+  def getPublisher: Option[Long] = publisher
 
   def setPublisher(publisher: Int): Unit = this.publisher = Some(publisher)
 

@@ -13,7 +13,6 @@ db.tag.find({}).forEach(
     function(doc) {
 	    doc.hidden2 = booleanFromInt(doc.hidden);
 	    doc.featured2 = booleanFromInt(doc.featured);
-	    print(doc);
         db.tag.save(doc);
     }
 );
@@ -29,11 +28,10 @@ db.resource.find({}).forEach(
         if(doc.accepted) doc.accepted2 = dateFromString(doc.accepted);
         if(doc.latestItemDate) doc.latestItemDate2 = dateFromString(doc.latestItemDate);
         if(doc.lastRead) doc.lastRead2 = dateFromString(doc.lastRead);
-        if(doc.feed_publisher) doc.publisher = doc.feed_publisher;
-
-	    doc.held2 = booleanFromInt(doc.held);
+        if(doc.publisher) doc.publisher = NumberLong(doc.publisher);
+        if(doc.feed_publisher) doc.publisher = NumberLong(doc.feed_publisher);
+        doc.held2 = booleanFromInt(doc.held);
 
         db.resource.save(doc);
     }
 );
-
