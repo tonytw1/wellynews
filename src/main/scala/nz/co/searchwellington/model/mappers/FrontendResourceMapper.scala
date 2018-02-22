@@ -2,6 +2,7 @@ package nz.co.searchwellington.model.mappers
 
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.springframework.beans.factory.annotation.Autowired
@@ -9,8 +10,11 @@ import org.springframework.stereotype.Component
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
 
-@Component class FrontendResourceMapper @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator, geocodeToPlaceMapper: GeocodeToPlaceMapper) {
+@Component class FrontendResourceMapper @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
+                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper, mongoRepository: MongoRepository) {
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
     var frontendContentItem = new FrontendResource
@@ -74,9 +78,16 @@ import scala.collection.mutable
     }
 
     contentItem match {
-      case p: PublishedResource => p.publisher.map(p => frontendContentItem.setPublisherName(p.toString))
+      case p: PublishedResource => {
+        p.publisher.map { pid =>
+          val tenSeconds = Duration(10, SECONDS)
+          Await.result(mongoRepository.getResourceById(pid.toInt), tenSeconds).map { publisher =>
+            frontendContentItem.setPublisherName(publisher.getName)
+          }
+        }
+      }
+      case _ =>
     }
-
 
     frontendContentItem
   }
