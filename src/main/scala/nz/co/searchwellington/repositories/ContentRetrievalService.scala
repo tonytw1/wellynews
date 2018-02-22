@@ -113,7 +113,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getNewsitemsForInterval(interval: Interval): Seq[FrontendResource] = {
-    val newsitemsForMonth = ResourceQuery(`type` = Some("N"), interval = Some(interval))
+    val newsitemsForMonth = ResourceQuery(`type` = Some("N"), interval = Some(interval), maxItems = 1000)
     Await.result(elasticSearchIndexer.getResources(newsitemsForMonth).flatMap(i => fetchByIds(i._1)), tenSeconds)
   }
 
