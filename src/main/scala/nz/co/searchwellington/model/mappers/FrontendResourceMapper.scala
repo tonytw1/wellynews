@@ -18,7 +18,6 @@ import scala.collection.mutable
       val contentItemNewsitem = contentItem.asInstanceOf[Newsitem]
 
       val frontendNewsitem = new FrontendNewsitem
-      frontendNewsitem.setPublisherName(contentItemNewsitem.getPublisherName)
       // frontendNewsitem.setAcceptedFromFeedName(if (contentItemNewsitem.getFeed != null) contentItemNewsitem.getFeed.getName else null)
       // frontendNewsitem.setAcceptedByProfilename(if (contentItemNewsitem.getAcceptedBy != null) contentItemNewsitem.getAcceptedBy.getProfilename else null)
       frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted)
@@ -30,9 +29,8 @@ import scala.collection.mutable
     }
 
     if (contentItem.getType == "F") {
-      val frontendFeed: FrontendFeed = new FrontendFeed
+      val frontendFeed = new FrontendFeed
       val contentItemFeed: Feed = contentItem.asInstanceOf[Feed]
-      frontendFeed.setPublisherName(contentItemFeed.getPublisherName)
       frontendFeed.setLatestItemDate(contentItemFeed.getLatestItemDate)
       frontendContentItem = frontendFeed
     }
@@ -74,7 +72,13 @@ import scala.collection.mutable
     if (contentItemGeocode != null) {
       frontendContentItem.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(contentItemGeocode))
     }
-    return frontendContentItem
+
+    contentItem match {
+      case p: PublishedResource => p.publisher.map(p => frontendContentItem.setPublisherName(p.toString))
+    }
+
+
+    frontendContentItem
   }
 
   def mapTagToFrontendTag(tag: Tag): FrontendTag = {

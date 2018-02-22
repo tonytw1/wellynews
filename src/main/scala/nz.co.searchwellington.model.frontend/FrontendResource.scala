@@ -22,6 +22,15 @@ class FrontendResource extends RssFeedable with Serializable {
   private var owner: String = null
   private var place: Place = null
   private var held: Boolean = false
+  final protected var publisherName: String = null
+
+  final def getPublisherName: String = {
+    return publisherName
+  }
+
+  final def setPublisherName(publisherName: String) {
+    this.publisherName = publisherName
+  }
 
   def getId: Int = {
     return id

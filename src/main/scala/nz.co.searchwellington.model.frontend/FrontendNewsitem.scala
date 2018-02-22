@@ -7,20 +7,11 @@ import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 class FrontendNewsitem extends FrontendResource with RssFeedable {
 
-  private var publisherName: String = null
   private var acceptedFromFeedName: String = null
   private var acceptedByProfilename: String = null
   private var comments: List[Comment] = null
   private var accepted: Date = null
   private var image: FrontendImage = null
-
-  def getPublisherName: String = {
-    return publisherName
-  }
-
-  def setPublisherName(publisherName: String) {
-    this.publisherName = publisherName
-  }
 
   def getAcceptedFromFeedName: String = {
     return acceptedFromFeedName
