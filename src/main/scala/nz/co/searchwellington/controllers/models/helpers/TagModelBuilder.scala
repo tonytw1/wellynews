@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
+import nz.co.searchwellington.model.frontend.FrontendTag
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
@@ -50,7 +51,7 @@ import org.springframework.web.servlet.ModelAndView
         None
 
       } else {
-        mv.addObject(TAG, tag)
+        mv.addObject(TAG, frontendResourceMapper.mapTagToFrontendTag(tag))
         if (tag.getGeocode != null) {
           // mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode))
         }
@@ -60,8 +61,7 @@ import org.springframework.web.servlet.ModelAndView
 
         tag.parent.map { pid =>
           tagDAO.loadTagById(pid).map { p =>
-            log.info("Adding parent tag: " + p)
-            mv.addObject("parent_tag", frontendResourceMapper.mapTagToFrontendTag(p))
+            mv.addObject("parent", frontendResourceMapper.mapTagToFrontendTag(p))
           }
         }
 

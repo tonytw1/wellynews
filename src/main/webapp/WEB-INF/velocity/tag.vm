@@ -13,14 +13,14 @@
 	<div class="main">
 	
 		<div class="yellow">	
-		#if ($searchterm) 
-			<p>This site has matches for '$searchterm' on the following pages:</p>
-				<ul class="childtags">
-				#foreach ($related_tag in $searchfacets)
-        			<li><a href="$urlBuilder.getTagUrl($related_tag.tag)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
-				#end
-				</ul>
-		#end
+            #if ($searchterm)
+                <p>This site has matches for '$searchterm' on the following pages:</p>
+                    <ul class="childtags">
+                    #foreach ($related_tag in $searchfacets)
+                        <li><a href="$urlBuilder.getTagUrl($related_tag.tag)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
+                    #end
+                    </ul>
+            #end
 		</div>
 	
 		<div class="rss">
@@ -39,20 +39,16 @@
    			#end
 		   	</h2>	
 			<p>Listings tagged with both $heading. <br/>
-			Select an individual tag to see all listings for that tag.</p>			
+			Select an individual tag to see all listings for that tag.</p>
+
 		#else
-			#if ($parent_tag)
-			    $parent_tag
-				<h2><a href="$site_information.url/$parent_tag.name">$parent_tag.name</a> / $tag.displayName</h2>   // TODO url builder
-			#else
-				<h2>$tag.displayName</h2>
-			#end
+			#parse("includes/tag_heading.vm")
 			
 			#parse("includes/place.vm")
 				
 			#parse("includes/tag_admin_links.vm")	
-			
-			#if($tag.description) 
+
+			#if($tag.description)
 				<p>$escape.html($tag.description)</p>
 			#end
 			

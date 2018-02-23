@@ -95,7 +95,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def mapTagToFrontendTag(tag: Tag): FrontendTag = {
-    return new FrontendTag(tag.getName, tag.getDisplayName)
+    new FrontendTag(id = tag.id, name = tag.getName, displayName = tag.getDisplayName, description = tag.description.getOrElse(null))
   }
 
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
