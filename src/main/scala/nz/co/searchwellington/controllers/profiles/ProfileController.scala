@@ -44,11 +44,11 @@ import org.springframework.web.servlet.view.RedirectView
     val mayByloggedInUser = Option(loggerInUserFilter.getLoggedInUser)
     mayByloggedInUser.map { loggedInUser =>
       if (request.getParameter("profilename") != null && isValidNewProfilename(request.getParameter("profilename"))) {
-        loggedInUser.setProfilename(request.getParameter("profilename"))
+      //  loggedInUser.setProfilename(request.getParameter("profilename"))
       }
-      loggedInUser.setName(request.getParameter("name"))
-      loggedInUser.setBio(request.getParameter("bio"))
-      loggedInUser.setUrl(request.getParameter("url"))
+    //  loggedInUser.setName(request.getParameter("name"))
+     // loggedInUser.setBio(request.getParameter("bio"))
+   //   loggedInUser.setUrl(request.getParameter("url"))
       userDAO.saveUser(loggedInUser)
     }
 

@@ -5,6 +5,9 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
+
 @Component class HibernateBackedUserDAO @Autowired() (mongoRepository: MongoRepository) {
 
   def getUserByOpenId(openId: String): User = {
@@ -26,9 +29,8 @@ import org.springframework.stereotype.Component
     None // TODO
   }
 
-  def getUserByTwitterId(twitterId: Long): User = {
-    //sessionFactory.getCurrentSession.createCriteria(classOf[User]).add(Restrictions.eq("twitterId", twitterId)).uniqueResult.asInstanceOf[User]
-    null // TODO
+  def getUserByTwitterId(twitterId: Long): Option[User] = {
+    Await.result(mongoRepository.getUserByTwitterId(twitterId),  Duration(10, SECONDS))
   }
 
   def getUserByApiKey(apiKey: String): User = {

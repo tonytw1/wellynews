@@ -37,6 +37,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   def resourceCollection: BSONCollection = db.collection("resource")
   def tagCollection: BSONCollection = db.collection("tag")
   def taggingCollection: BSONCollection = db.collection("resource_tags")
+  def userCollection: BSONCollection = db.collection("user")
 
   implicit def feedReader = Macros.reader[FeedImpl]
   implicit def newsitemReader = Macros.reader[NewsitemImpl]
@@ -44,6 +45,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def watchlistReader = Macros.reader[Watchlist]
   implicit def tagReader = Macros.reader[Tag]
   implicit def taggingReader = Macros.reader[Tagging]
+  implicit def userReader = Macros.reader[User]
 
   def getResourceById(id: Int): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("id" -> id))
@@ -106,6 +108,14 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     taggingCollection.find(BSONDocument("resource_id" -> resourceId)).cursor[Tagging]().collect[List]()
   }
 
+  def getAllUsers(): Future[Seq[User]] = {
+    userCollection.find(BSONDocument.empty).cursor[User]().toList()
+  }
+
+  def getUserByTwitterId(twitterId: Long): Future[Option[User]] = {
+    userCollection.find(BSONDocument("twitterid" -> twitterId)).one[User]
+  }
+
   private def getResourceBy(selector: BSONDocument) = {
     resourceCollection.find(selector).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
@@ -121,6 +131,8 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   case class Tagging(resource_id: Int, tag_id: Int)
+
+  case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])
 
   {
     log.info("Ensuring indexes")

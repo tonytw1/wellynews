@@ -149,6 +149,12 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.twitter4j</groupId>
+			<artifactId>twitter4j-core</artifactId>
+			<version>[4.0,)</version>
+		</dependency>
+
+		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>16.0</version>
