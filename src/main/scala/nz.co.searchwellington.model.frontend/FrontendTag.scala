@@ -1,16 +1,23 @@
 package nz.co.searchwellington.model.frontend
 
-class FrontendTag(var id: String, var name: String) extends java.io.Serializable {
+case class FrontendTag(id: Int, name: String, displayName: String, description: String) {
 
-  def this() {
-    this("", "")
+  def getId(): Int = {
+    id
   }
 
-  def getId = id
-  def setId (newId: String) = {id = newId}
+  def getDisplayName(): String = {
+    displayName
+  }
 
-  def getName = name
-  def setName(newName: String) = {name = newName}
+  def getName(): String = {
+    name
+  }
 
-  override def toString = s"FrontendTag($id, $name)"
+  def getDescription(): String = {
+    description
+  }
+
 }
+
+

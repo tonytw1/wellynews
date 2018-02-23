@@ -16,12 +16,8 @@
 			#parse("includes/rss_widget_for_tag.vm")
 		</div>
 
-		#if ($tag.parent) 
-			<h2><a href="$urlBuilder.getTagUrl($tag.parent)">$tag.parent.displayName</a> / $tag.displayName</h2>
-		#else
-			<h2>$tag.displayName</h2>
-		#end
-		
+        #parse("includes/tag_heading.vm")
+
 		#parse("includes/place.vm")
 		
 		#parse("includes/tag_admin_links.vm")

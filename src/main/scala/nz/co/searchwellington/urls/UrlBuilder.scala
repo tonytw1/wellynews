@@ -60,7 +60,7 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
   }
 
   def getTagUrl(tag: FrontendTag): String = {
-    return siteInformation.getUrl + "/" + tag.getId
+    return siteInformation.getUrl + "/" + tag.name
   }
 
   def getAutoTagUrl(tag: Tag): String = {
@@ -68,7 +68,7 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
   }
 
   def getTagCombinerUrl(firstTag: Tag, secondTag: FrontendTag): String = {
-    return siteInformation.getUrl + "/" + firstTag.getName + "+" + secondTag.getId
+    return siteInformation.getUrl + "/" + firstTag.getName + "+" + secondTag.id
   }
 
   def getTagCombinerUrl(firstTag: Tag, secondTag: Tag): String = {

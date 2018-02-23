@@ -21,7 +21,7 @@
 			<h4>$current.toUpperCase()</h4>
 			<ul>
 		#end
-		<li><a href="$site_information.url/$tag.id">$tag.name</a></li>
+		<li><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></li>
 	#end
 #end
 </ul>

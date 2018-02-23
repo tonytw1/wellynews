@@ -57,6 +57,7 @@ public class LoggedInUserFilter {
 	}
 
 	public void setLoggedInUser(HttpServletRequest request, User user) {
+		log.info("Setting signed in user: " + user);
 		request.getSession().setAttribute("user", user);
 	}
 	
