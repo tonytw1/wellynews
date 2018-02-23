@@ -12,10 +12,9 @@ import org.springframework.stereotype.Component
 
   def createAnonUser: User = {
     val userNumber = userDAO.getNextAvailableAnonUserNumber
-    val anonUser = User(0)
-    //anonUser.setProfilename("anon" + userNumber)
-    //log.info("Created new anon user: " + anonUser.getProfilename)
+    val anonUser = User(id = userNumber, profilename = Some("anon" + userNumber))
     userDAO.saveUser(anonUser)
+    log.info("Created new anon user: " + anonUser.getProfilename)
     anonUser
   }
 
