@@ -8,12 +8,11 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 
   def mapPlaceToGeocode(place: Place): Geocode = {
     val address: String = composeAddress(place)
-    val geocode: Geocode = new Geocode(address,
-        if (place.getLatLong != null) place.getLatLong.getLatitude else null,
-        if (place.getLatLong != null) place.getLatLong.getLongitude else null,
-        if (place.getOsmId != null) place.getOsmId.getId else null,
-        if (place.getOsmId != null) place.getOsmId.getType.toString else null)
-    geocode
+    Geocode(address = address,
+      latitude = (if (place.getLatLong != null) place.getLatLong.getLatitude else null),
+      longitude = (if (place.getLatLong != null) place.getLatLong.getLongitude else null),
+      osmId = (if (place.getOsmId != null) place.getOsmId.getId else null),
+      osmType = (if (place.getOsmId != null) place.getOsmId.getType.toString else null))
   }
 
   private def composeAddress(place: Place): String = {

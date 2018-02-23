@@ -39,6 +39,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   def taggingCollection: BSONCollection = db.collection("resource_tags")
   def userCollection: BSONCollection = db.collection("user")
 
+  implicit def geocodeReader = Macros.reader[Geocode]
   implicit def feedReader = Macros.reader[Feed]
   implicit def newsitemReader = Macros.reader[Newsitem]
   implicit def websiteReader = Macros.reader[Website]

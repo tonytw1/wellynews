@@ -21,7 +21,7 @@ class FeednewsItemToNewsitemService @Autowired() (textTrimmer: TextTrimmer, plac
 
     val place = feedNewsitem.getPlace
     if (place != null) {
-      newsitem.setGeocode(placeToGeocodeMapper.mapPlaceToGeocode(place))
+      // newsitem.setGeocode(placeToGeocodeMapper.mapPlaceToGeocode(place))
     }
     if (feedNewsitem.getFrontendImage != null) {
       // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))

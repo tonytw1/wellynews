@@ -16,6 +16,7 @@ case class Website(override var id: Int = 0,
                    override var held2: Boolean = true,
                    override var url_words: Option[String] = None,
                    override var geocode: Option[Int] = None,
+                   override var geocode2: Option[Geocode] = None,
                    override var owner: Option[Int] = None
                    // var feeds: Set[Feed] = Set(),
                    // var watchlist: Set[Watchlist] = Set()

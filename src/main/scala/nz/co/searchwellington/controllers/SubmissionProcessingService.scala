@@ -56,7 +56,11 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
       val resolvedPlace: Place = nominatimGeocodeService.resolveOsmId(osmId)
       log.info("Selected geocode " + osmIdString + " resolved to: " + resolvedPlace)
       if (resolvedPlace != null) {
-        new Geocode(resolvedPlace.getAddress, resolvedPlace.getLatLong.getLatitude, resolvedPlace.getLatLong.getLongitude, osmId.getId, osmId.getType.toString)
+        Geocode(address = resolvedPlace.getAddress,
+          latitude = resolvedPlace.getLatLong.getLatitude,
+          longitude = resolvedPlace.getLatLong.getLongitude,
+          osmId = osmId.getId,
+          osmType = osmId.getType.toString)
       } else {
         null
       }

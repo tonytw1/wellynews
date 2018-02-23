@@ -225,7 +225,7 @@ import org.springframework.web.servlet.view.RedirectView
       }
       submissionProcessingService.processUrl(request, editResource)
       submissionProcessingService.processTitle(request, editResource)
-      editResource.setGeocode(submissionProcessingService.processGeocode(request))
+      // editResource.setGeocode(submissionProcessingService.processGeocode(request))
       submissionProcessingService.processDate(request, editResource)
       submissionProcessingService.processHeld(request, editResource)
       submissionProcessingService.processEmbargoDate(request, editResource)

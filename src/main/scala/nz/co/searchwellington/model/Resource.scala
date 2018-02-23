@@ -19,6 +19,7 @@ trait Resource {
   var held2: Boolean
   var url_words: Option[String]
   var geocode: Option[Int]
+  var geocode2: Option[Geocode]
   var owner: Option[Int]
 
   def getDate: Date = date2.getOrElse(null)
@@ -57,9 +58,6 @@ trait Resource {
 
   def getEmbargoedUntil: Date = embargoed_until2.getOrElse(null)
   def setEmbargoedUntil(embargoedUntil: Date): Unit = {}
-
-  def getGeocode: Geocode = null  // TODO
-  def setGeocode(geocode: Geocode): Unit = {} // TODO
 
   def getUrlWords: String = url_words.getOrElse(null)
   def setUrlWords(urlWords: String): Unit = {} // TODO this.url_words = urlWords
