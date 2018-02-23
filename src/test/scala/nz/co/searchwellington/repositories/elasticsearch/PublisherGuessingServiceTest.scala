@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import junit.framework.TestCase
-import nz.co.searchwellington.model.{Website, WebsiteImpl}
+import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.HibernateResourceDAO
 import nz.co.searchwellington.urls.UrlParser
 import org.junit.Before
@@ -32,13 +32,13 @@ class PublisherGuessingServiceTest extends TestCase {
 
   @throws[Exception]
   def testShouldMatchIfMultipleAvailable {
-    val golfCourseSite = new WebsiteImpl
+    val golfCourseSite = Website()
     golfCourseSite.setUrl("http://www.wellington.govt.nz/services/berhgolf/index.html")
 
-    val heritageInventory = new WebsiteImpl
+    val heritageInventory = Website()
     heritageInventory.setUrl("http://www.wellington.govt.nz/services/heritage/inventory/index.html")
 
-    val wccMainSite = new WebsiteImpl
+    val wccMainSite = Website()
     wccMainSite.setUrl("http://www.wellington.govt.nz")
 
     val possiblePublishers = Seq(golfCourseSite, heritageInventory, wccMainSite)
@@ -49,7 +49,7 @@ class PublisherGuessingServiceTest extends TestCase {
 
   @throws[Exception]
   def testShouldMatchIfOnlyOnePossiblePublisher {
-    val wellingtonista: Website = new WebsiteImpl
+    val wellingtonista: Website = Website()
     wellingtonista.setName("The Wellingtonista")
     wellingtonista.setUrl("http://www.wellingtonista.com")
 
@@ -61,9 +61,9 @@ class PublisherGuessingServiceTest extends TestCase {
 
   @throws[Exception]
   def testShouldNotMatchJustBecauseTheHostNameMatches {
-    val hostedOne = new WebsiteImpl
+    val hostedOne = Website()
     hostedOne.setUrl("http://homepages.paradise.net.nz/~titahi/")
-    val hostedTwo = new WebsiteImpl
+    val hostedTwo = Website()
     hostedTwo.setUrl("http://homepages.ihug.co.nz/~waicoll/")
 
     val possiblePublishers = Seq(hostedOne, hostedTwo)

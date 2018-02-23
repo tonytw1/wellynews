@@ -23,7 +23,7 @@ import scala.concurrent.duration._
   }
 
   def getFeedsToRead: Seq[Feed] = {
-    getAllFeeds.filterNot( f => f.getAcceptancePolicy == "ignore").sortBy(_.getLastRead).reverse
+    getAllFeeds.filterNot( f => f.acceptance == "ignore").sortBy(_.getLastRead).reverse
   }
 
   def getAllWatchlists: Seq[Resource] = {

@@ -39,9 +39,9 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   def taggingCollection: BSONCollection = db.collection("resource_tags")
   def userCollection: BSONCollection = db.collection("user")
 
-  implicit def feedReader = Macros.reader[FeedImpl]
-  implicit def newsitemReader = Macros.reader[NewsitemImpl]
-  implicit def websiteReader = Macros.reader[WebsiteImpl]
+  implicit def feedReader = Macros.reader[Feed]
+  implicit def newsitemReader = Macros.reader[Newsitem]
+  implicit def websiteReader = Macros.reader[Website]
   implicit def watchlistReader = Macros.reader[Watchlist]
   implicit def tagReader = Macros.reader[Tag]
   implicit def taggingReader = Macros.reader[Tagging]
@@ -88,16 +88,16 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  def getAllFeeds(): Future[Seq[FeedImpl]] = {
-    resourceCollection.find(BSONDocument("type" -> "F")).cursor[FeedImpl]().collect[List]()
+  def getAllFeeds(): Future[Seq[Feed]] = {
+    resourceCollection.find(BSONDocument("type" -> "F")).cursor[Feed]().collect[List]()
   }
 
-  def getAllWatchlists(): Future[Seq[WebsiteImpl]] = {
-    resourceCollection.find(BSONDocument("type" -> "L")).cursor[WebsiteImpl]().collect[List]()
+  def getAllWatchlists(): Future[Seq[Website]] = {
+    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Website]().collect[List]()
   }
 
-  def getAllWebsites(): Future[Seq[WebsiteImpl]] = {
-    resourceCollection.find(BSONDocument("type" -> "W")).cursor[WebsiteImpl]().collect[List]()
+  def getAllWebsites(): Future[Seq[Website]] = {
+    resourceCollection.find(BSONDocument("type" -> "W")).cursor[Website]().collect[List]()
   }
 
   def getAllTaggings(): Future[Seq[Tagging]] = {
@@ -124,9 +124,9 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     resourceCollection.find(selector).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
         b.get("type").get match {
-          case BSONString("N") => Some(b.as[NewsitemImpl])
-          case BSONString("W") => Some(b.as[WebsiteImpl])
-          case BSONString("F") => Some(b.as[FeedImpl])
+          case BSONString("N") => Some(b.as[Newsitem])
+          case BSONString("W") => Some(b.as[Website])
+          case BSONString("F") => Some(b.as[Feed])
           case BSONString("L") => Some(b.as[Watchlist])
           case _ => None
         }

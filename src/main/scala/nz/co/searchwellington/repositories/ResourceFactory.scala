@@ -7,11 +7,11 @@ import java.util.Calendar
 import java.util
 
 @Component class ResourceFactory {
-  def createNewNewsitem = new NewsitemImpl()
+  def createNewNewsitem = Newsitem()
 
-  def createNewWebsite = WebsiteImpl()
+  def createNewWebsite = Website()
 
-  def createNewFeed = new FeedImpl()
+  def createNewFeed = Feed()
 
   def createNewWatchlist = Watchlist()
 

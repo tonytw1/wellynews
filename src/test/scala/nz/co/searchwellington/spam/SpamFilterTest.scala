@@ -1,7 +1,7 @@
 package nz.co.searchwellington.spam
 
 import junit.framework.TestCase
-import nz.co.searchwellington.model.WebsiteImpl
+import nz.co.searchwellington.model.Website
 import org.junit.Assert._
 import org.junit.Test
 
@@ -11,7 +11,7 @@ class SpamFilterTest extends TestCase {
   @Test
   @throws[Exception]
   def testAllowsNormalSubmission {
-    val okResource = new WebsiteImpl
+    val okResource = Website()
     okResource.setName("Test site")
     okResource.setUrl("http://www.test.com.localhost")
     okResource.setDescription("test test")
@@ -21,7 +21,7 @@ class SpamFilterTest extends TestCase {
   @Test
   @throws[Exception]
   def testShouldBlockRFID {
-    val spamResource = new WebsiteImpl
+    val spamResource = Website()
     spamResource.setName("Test site")
     spamResource.setUrl("http://www.rfid.com")
     spamResource.setDescription("test test")
@@ -31,7 +31,7 @@ class SpamFilterTest extends TestCase {
   @Test
   @throws[Exception]
   def testShouldBlockByDescription {
-    val spamResource = new WebsiteImpl
+    val spamResource = Website()
     spamResource.setName("Test site")
     spamResource.setUrl("http://www.test.com.localhost")
     spamResource.setDescription("test rfid test")

@@ -3,7 +3,7 @@ package nz.co.searchwellington.tagging
 import java.util
 
 import nz.co.searchwellington.model.taggingvotes.{HandTagging, TaggingVote}
-import nz.co.searchwellington.model.{Newsitem, NewsitemImpl, Tag, TagBuilder}
+import nz.co.searchwellington.model.{Newsitem, Tag, TagBuilder}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import org.junit.Assert._
 import org.junit.{Before, Test}
@@ -32,7 +32,7 @@ class TaggingReturnsOfficerServiceTest {
   }
 
   @Test def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
-    aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
+    aroValleyNewsitem = Newsitem(1, "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
     val handTags = Seq(new HandTagging(-1, aroValleyNewsitem, null, aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 
@@ -42,7 +42,7 @@ class TaggingReturnsOfficerServiceTest {
   }
 
   @Test def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
-    aroValleyNewsitem = new NewsitemImpl(1, "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
+    aroValleyNewsitem = Newsitem(1, "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
     val handTags = Seq(new HandTagging(-1, aroValleyNewsitem, null, aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 

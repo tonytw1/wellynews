@@ -1,12 +1,11 @@
 package nz.co.searchwellington.tagging
 
-import nz.co.searchwellington.model.{Newsitem, NewsitemImpl, Tag, TagBuilder}
+import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.TagDAO
 import org.junit.Assert._
-import org.mockito.{MockitoAnnotations, Mock}
-import org.mockito.Mockito.{mock, when}
-import org.junit.Test
-import org.junit.Before
+import org.junit.{Before, Test}
+import org.mockito.Mockito.when
+import org.mockito.{Mock, MockitoAnnotations}
 
 class PlaceAutoTaggerTest {
 
@@ -32,7 +31,7 @@ class PlaceAutoTaggerTest {
   }
 
   @Test def testShouldTagNewsitemWithPlaceTags {
-    aroValleyNewsitem = new NewsitemImpl(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
+    aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
 
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
 
@@ -40,7 +39,7 @@ class PlaceAutoTaggerTest {
   }
 
   @Test def testPlaceAutoTaggingShouldBeCaseInsensitive {
-    aroValleyNewsitem = new NewsitemImpl(title = Some("Test newsitem"), description = Some(".. Student flats in the aro valley... Test"))
+    aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the aro valley... Test"))
 
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
 

@@ -1,6 +1,6 @@
 package nz.co.searchwellington.tagging
 
-import nz.co.searchwellington.model.{NewsitemImpl, Resource, TagBuilder}
+import nz.co.searchwellington.model.{Newsitem, TagBuilder}
 import nz.co.searchwellington.repositories.TagDAO
 import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.{Before, Test}
@@ -23,7 +23,7 @@ class TagHintAutoTaggerTest {
     val anotherTag = new TagBuilder().autotagHints("cat").build
     when(tagDAO.getAllTags).thenReturn(Seq(tag, anotherTag))
 
-    val resource: Resource = new NewsitemImpl
+    val resource = Newsitem()
     resource.setName("The quick brown fox jumped over the lazy dog")
 
     val suggestions = tagHintAutoTagger.suggestTags(resource)

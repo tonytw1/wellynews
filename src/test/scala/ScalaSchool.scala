@@ -1,4 +1,3 @@
-import nz.co.searchwellington.model.NewsitemImpl
 import org.junit.Assert._
 import org.junit.Test
 
