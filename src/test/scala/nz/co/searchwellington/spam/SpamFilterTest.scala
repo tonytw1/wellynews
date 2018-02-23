@@ -11,30 +11,24 @@ class SpamFilterTest extends TestCase {
   @Test
   @throws[Exception]
   def testAllowsNormalSubmission {
-    val okResource = Website()
-    okResource.setName("Test site")
-    okResource.setUrl("http://www.test.com.localhost")
-    okResource.setDescription("test test")
+    val okResource = Website(title = Some("Test site"), page = Some("http://www.test.com.localhost"), description = Some("test test"))
+
     assertFalse(filter.isSpam(okResource))
   }
 
   @Test
   @throws[Exception]
   def testShouldBlockRFID {
-    val spamResource = Website()
-    spamResource.setName("Test site")
-    spamResource.setUrl("http://www.rfid.com")
-    spamResource.setDescription("test test")
+    val spamResource = Website(title = Some("Test site"), page = Some("http://www.rfid.com"), description = Some("test test"))
+
     assertTrue(filter.isSpam(spamResource))
   }
 
   @Test
   @throws[Exception]
   def testShouldBlockByDescription {
-    val spamResource = Website()
-    spamResource.setName("Test site")
-    spamResource.setUrl("http://www.test.com.localhost")
-    spamResource.setDescription("test rfid test")
+    val spamResource = Website(title = Some("Test site"), page = Some("http://www.test.com.localhost"), description = Some("test rfid test"))
+
     assertTrue(filter.isSpam(spamResource))
   }
 
