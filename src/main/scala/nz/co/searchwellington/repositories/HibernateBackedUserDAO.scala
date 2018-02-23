@@ -25,8 +25,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def getUserByProfileName(profilename: String): Option[User] = {
-    //Option(sessionFactory.getCurrentSession.createCriteria(classOf[User]).add(Restrictions.eq("profilename", profilename)).uniqueResult.asInstanceOf[User])
-    None // TODO
+    Await.result(mongoRepository.getUserByProfilename(profilename),  Duration(10, SECONDS))
   }
 
   def getUserByTwitterId(twitterId: Long): Option[User] = {

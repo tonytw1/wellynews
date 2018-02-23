@@ -112,6 +112,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     userCollection.find(BSONDocument.empty).cursor[User]().toList()
   }
 
+  def getUserByProfilename(profileName: String): Future[Option[User]] = {
+    userCollection.find(BSONDocument("profilename" -> profileName)).one[User]
+  }
+
   def getUserByTwitterId(twitterId: Long): Future[Option[User]] = {
     userCollection.find(BSONDocument("twitterid" -> twitterId)).one[User]
   }

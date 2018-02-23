@@ -44,11 +44,11 @@ import org.springframework.web.servlet.view.RedirectView
     val mayByloggedInUser = Option(loggerInUserFilter.getLoggedInUser)
     mayByloggedInUser.map { loggedInUser =>
       if (request.getParameter("profilename") != null && isValidNewProfilename(request.getParameter("profilename"))) {
-      //  loggedInUser.setProfilename(request.getParameter("profilename"))
+        //  loggedInUser.setProfilename(request.getParameter("profilename"))
       }
-    //  loggedInUser.setName(request.getParameter("name"))
-     // loggedInUser.setBio(request.getParameter("bio"))
-   //   loggedInUser.setUrl(request.getParameter("url"))
+      //  loggedInUser.setName(request.getParameter("name"))
+      // loggedInUser.setBio(request.getParameter("bio"))
+      //   loggedInUser.setUrl(request.getParameter("url"))
       userDAO.saveUser(loggedInUser)
     }
 
@@ -68,21 +68,21 @@ import org.springframework.web.servlet.view.RedirectView
     }
 
     userByPath(request.getPathInfo).map { user =>
-        var mv = new ModelAndView("viewProfile")
-        val loggedInUser: User = loggerInUserFilter.getLoggedInUser
-        if (loggedInUser != null && loggedInUser.getId == user.getId) {
-          mv = new ModelAndView("profile")
-        }
-        mv.addObject("heading", "User profile")
-        commonModelObjectsService.populateCommonLocal(mv)
-        mv.addObject("profileuser", user)
-        mv.addObject("submitted", contentRetrievalService.getOwnedBy(user))
-        mv.addObject("tagged", contentRetrievalService.getTaggedBy(user))
-        return mv
+      var mv = new ModelAndView("viewProfile")
+      val loggedInUser: User = loggerInUserFilter.getLoggedInUser
+      if (loggedInUser != null && loggedInUser.getId == user.getId) {
+        mv = new ModelAndView("profile")
+      }
+      mv.addObject("heading", "User profile")
+      commonModelObjectsService.populateCommonLocal(mv)
+      mv.addObject("profileuser", user)
+      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user))
+      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user))
+      mv
 
     }.getOrElse {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      return null
+      null
     }
   }
 
