@@ -127,7 +127,7 @@ import org.springframework.web.servlet.view.RedirectView
   @RequestMapping(Array("/edit/submit/website")) def submitWebsite(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWebsite")
     modelAndView.addObject("heading", "Submitting a Website")
-    val editResource: Resource = resourceFactory.createNewWebsite
+    val editResource = Website()
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
     modelAndView.addObject("publisher_select", null)
@@ -137,7 +137,7 @@ import org.springframework.web.servlet.view.RedirectView
   @RequestMapping(Array("/edit/submit/newsitem")) def submitNewsitem(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitNewsitem")
     modelAndView.addObject("heading", "Submitting a Newsitem")
-    val editResource: Resource = resourceFactory.createNewNewsitem
+    val editResource = Newsitem()
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
     return modelAndView
@@ -146,7 +146,7 @@ import org.springframework.web.servlet.view.RedirectView
   @RequestMapping(Array("/edit/submit/feed")) def submitFeed(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitFeed")
     modelAndView.addObject("heading", "Submitting a Feed")
-    val editResource: Resource = resourceFactory.createNewFeed
+    val editResource = Feed()
     modelAndView.addObject("resource", editResource)
     modelAndView.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect(null))
     populateSubmitCommonElements(request, modelAndView)
@@ -156,7 +156,7 @@ import org.springframework.web.servlet.view.RedirectView
   @RequestMapping(Array("/edit/submit/watchlist")) def submitWatchlist(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWatchlist")
     modelAndView.addObject("heading", "Submitting a Watchlist Item")
-    val editResource: Resource = resourceFactory.createNewWebsite
+    val editResource = Website()
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
     return modelAndView
@@ -198,19 +198,19 @@ import org.springframework.web.servlet.view.RedirectView
       if (request.getParameter("type") != null) {
         val `type`: String = request.getParameter("type")
         if (`type` == "W") {
-          editResource = resourceFactory.createNewWebsite
+          editResource = Website()
         }
         else if (`type` == "N") {
-          editResource = resourceFactory.createNewNewsitem
+          editResource = Newsitem()
         }
         else if (`type` == "F") {
-          editResource = resourceFactory.createNewFeed
+          editResource = Feed()
         }
         else if (`type` == "L") {
-          editResource = resourceFactory.createNewWatchlist
+          editResource = Watchlist()
         }
         else {
-          editResource = resourceFactory.createNewWebsite
+          editResource = Newsitem()
         }
       }
     }
