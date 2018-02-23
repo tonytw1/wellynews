@@ -35,3 +35,10 @@ db.resource.find({}).forEach(
         db.resource.save(doc);
     }
 );
+
+db.user.find({}).forEach(
+    function(doc) {
+	    doc.admin2 = booleanFromInt(doc.admin);
+        db.user.save(doc);
+    }
+);
