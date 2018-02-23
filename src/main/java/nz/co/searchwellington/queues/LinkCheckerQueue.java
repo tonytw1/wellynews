@@ -15,24 +15,26 @@ public class LinkCheckerQueue {
 
 	public static final String QUEUE_NAME = "linkchecker";
 	
-	private final Channel channel;
+	//private final Channel channel;
         
 	@Autowired
-	public LinkCheckerQueue(RabbitConnectionFactory rabbitConnectionFactory) throws IOException {
-		channel = rabbitConnectionFactory.connect().createChannel();
-		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+	public LinkCheckerQueue(
+					//RabbitConnectionFactory rabbitConnectionFactory
+					) throws IOException {
+		//channel = rabbitConnectionFactory.connect().createChannel();
+		//channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 	}
 	
     public void add(int id) {
-        log.debug("Adding resource id to queue: " + id);
-        try {
-			channel.basicPublish("", QUEUE_NAME, null, Integer.toString(id).getBytes());
-			final int messageCount = channel.queueDeclarePassive(QUEUE_NAME).getMessageCount();
-			log.info("There are currently " + messageCount + " items in the link checker queue");	// TODO doesn't seem to work
+    //    log.debug("Adding resource id to queue: " + id);
+  //      try {
+			//channel.basicPublish("", QUEUE_NAME, null, Integer.toString(id).getBytes());
+			//final int messageCount = channel.queueDeclarePassive(QUEUE_NAME).getMessageCount();
+		//	log.info("There are currently " + messageCount + " items in the link checker queue");	// TODO doesn't seem to work
 			
-		} catch (IOException e) {
-			log.error(e);
-		}	    
+	//	} catch (IOException e) {
+//			log.error(e);
+//		}
     }
     
 }

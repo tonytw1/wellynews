@@ -21,23 +21,26 @@ public class LinkCheckerListener  {
 	private final static String QUEUE_NAME = LinkCheckerQueue.QUEUE_NAME;
 
     private final LinkChecker linkChecker;
-	private final Channel channel;
-	private final Thread consumerThread;
+//	private final Channel channel;
+//	private final Thread consumerThread;
 	
 	@Autowired
     public LinkCheckerListener(LinkChecker linkChecker, RabbitConnectionFactory rabbitConnectionFactory) throws IOException {
-        this.linkChecker = linkChecker;
-        
+		this.linkChecker = linkChecker;
+
+		/*
 		final Connection connection = rabbitConnectionFactory.connect();
 		channel = connection.createChannel();
 		channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 		
 		consumerThread = new Thread(new ConsumerThread());
 		consumerThread.start();
+		*/
     }
 	        
 	class ConsumerThread implements Runnable {
 		public void run() {
+			/*
 			QueueingConsumer consumer = new QueueingConsumer(channel);
 			try {
 				channel.basicConsume(QUEUE_NAME, true, consumer);			
@@ -58,6 +61,7 @@ public class LinkCheckerListener  {
 					log.error(e);
 				}
 			}
+			*/
 		}
 	}
     

@@ -12,16 +12,17 @@ import com.rabbitmq.client.ConnectionFactory;
 @Component
 public class RabbitConnectionFactory {
 
-	private final ConnectionFactory factory;
+	//private final ConnectionFactory factory;
 	
 	@Autowired
 	public RabbitConnectionFactory(@Value("#{config['rabbit.hostname']}") String rabbitHost) {
-		this.factory = new ConnectionFactory();
-		factory.setHost(rabbitHost);
+		//this.factory = new ConnectionFactory();
+		//factory.setHost(rabbitHost);
 	}
 	
 	public Connection connect() throws IOException {
-		return factory.newConnection();
+	//	return factory.newConnection();
+		return null;
 	}
 	
 }
