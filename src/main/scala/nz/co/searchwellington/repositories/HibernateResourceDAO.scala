@@ -18,16 +18,15 @@ import scala.concurrent.duration._
     Seq() // TODO
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllFeeds: Seq[Feed] = {
+  def getAllFeeds: Seq[Feed] = {
     Await.result(mongoRepository.getAllFeeds(), Duration(10, SECONDS))
   }
 
-  @SuppressWarnings(Array("unchecked")) def getFeedsToRead: Seq[Feed] = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).add(Restrictions.ne("acceptancePolicy", "ignore")).addOrder(Order.asc("lastRead")).setCacheable(false).list.asInstanceOf[List[Feed]]
-    Seq() // TODO
+  def getFeedsToRead: Seq[Feed] = {
+    getAllFeeds.filterNot( f => f.getAcceptancePolicy == "ignore").sortBy(_.getLastRead).reverse
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllWatchlists: Seq[Resource] = {
+  def getAllWatchlists: Seq[Resource] = {
     Await.result(mongoRepository.getAllWatchlists(), Duration(10, SECONDS))
   }
 
