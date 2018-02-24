@@ -1,8 +1,8 @@
-#if ($tag && $tag.children.size() > 0)
+#if ($children && $children.size() > 0)
 <ul class="childtags">
-#foreach ($child_tag in $tag.children)
-	<li><a href="$urlBuilder.getTagUrl($child_tag)">$child_tag.displayName</a>
-#end
+    #foreach ($child_tag in $children)
+        <li><a href="$urlBuilder.getTagUrl($child_tag)">$child_tag.displayName</a>
+    #end
 </ul>
 #end
 

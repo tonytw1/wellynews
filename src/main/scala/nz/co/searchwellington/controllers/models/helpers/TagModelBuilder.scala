@@ -65,6 +65,13 @@ import org.springframework.web.servlet.ModelAndView
           }
         }
 
+        val children = tagDAO.loadTagsByParent(tag.id).map(t => frontendResourceMapper.mapTagToFrontendTag(t))
+        log.info("Children: " + children)
+        if (children.nonEmpty) {
+          import scala.collection.JavaConverters._
+          mv.addObject("children", children.asJava)
+        }
+
         val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS)
         log.info("Got tagged newsitems: " + taggedNewsitems.size)
         import scala.collection.JavaConverters._
