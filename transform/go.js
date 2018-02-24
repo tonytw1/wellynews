@@ -42,3 +42,17 @@ db.user.find({}).forEach(
         db.user.save(doc);
     }
 );
+
+db.resource.find({}).forEach(
+    function(doc) {
+        var resourceId = doc.id;
+        if (doc.geocode_id) {
+                var geocode = db.geocode.findOne({id: doc.geocode_id});
+                print(resourceId);
+                print(geocode);
+                doc.geocode = geocode;
+                db.resource.save(doc);
+
+        }
+    }
+);
