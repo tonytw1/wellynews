@@ -6,21 +6,23 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 
 @Component class PlaceToGeocodeMapper {
 
-  def mapPlaceToGeocode(place: Place): Geocode = {
-    val address: String = composeAddress(place)
-    Geocode(address = address,
-      latitude = (if (place.getLatLong != null) place.getLatLong.getLatitude else null),
-      longitude = (if (place.getLatLong != null) place.getLatLong.getLongitude else null),
-      osmId = (if (place.getOsmId != null) place.getOsmId.getId else null),
-      osmType = (if (place.getOsmId != null) place.getOsmId.getType.toString else null))
-  }
+  def mapPlaceToGeocode(p: Place): Geocode = {
 
-  private def composeAddress(place: Place): String = {
-    var address: String = place.getAddress
-    if (address == null && place.getLatLong != null) {
-      address = place.getLatLong.getLatitude + ", " + place.getLatLong.getLongitude
+    def composeAddress(place: Place): String = {
+      var address: String = place.getAddress
+      if (address == null && place.getLatLong != null) {
+        address = place.getLatLong.getLatitude + ", " + place.getLatLong.getLongitude
+      }
+      address
     }
-    address
+
+    Geocode(
+      address = Some(composeAddress(p)),
+      latitude = Option(p.getLatLong).map(ll => ll.getLatitude),
+      longitude = Option(p.getLatLong).map(ll => ll.getLongitude),
+      osmId = Option(p.getOsmId).map(o => o.getId),
+      osmType = Option(p.getOsmId).map(o => o.getType.toString)
+    )
   }
 
 }

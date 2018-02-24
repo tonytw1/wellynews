@@ -12,7 +12,8 @@ import uk.co.eelpieconsulting.common.geo.model.Place;
 @Component
 public class GeocodeToPlaceMapper {
 	
-	public Place mapGeocodeToPlace(final Geocode contentItemGeocode) {
+	public Place mapGeocodeToPlace(final Geocode contentItemGeocode) {	// TODO just use geocodes on the frontend?
+		/*
 		LatLong latLong = null;
 		if (contentItemGeocode.getLatitude() != null && contentItemGeocode.getLongitude() != null) {
 			latLong = new LatLong(contentItemGeocode.getLatitude(), contentItemGeocode.getLongitude());
@@ -22,6 +23,9 @@ public class GeocodeToPlaceMapper {
 			osmId = new OsmId(contentItemGeocode.getOsmId(), OsmType.valueOf(contentItemGeocode.getOsmType()));
 		}
 		return new Place(contentItemGeocode.getDisplayName(), latLong, osmId);
+		*/
+
+		return null;
 	}
 
 }

@@ -13,39 +13,36 @@ case class Geocode(id: Int = 0,
     return id
   }
 
-
   def getAddress: String = {
-    return address
+    address.getOrElse("")
   }
 
 
   def getLatitude: Double = {
-    return latitude
+    latitude.getOrElse(0)
   }
 
   def getLongitude: Double = {
-    return longitude
+    longitude.getOrElse(0)
   }
-
 
   def isValid: Boolean = {
     return latitude != null && longitude != null
   }
 
   def getType: String = {
-    return `type`
+    `type`.getOrElse(null)
   }
 
 
   def getOsmId: Long = {
-    return osmId
+    osmId.getOrElse(0)
   }
 
 
   def getOsmType: String = {
-    return osmType
+    osmType.getOrElse("")
   }
-
 
   @deprecated def getOsmPlaceId: String = {
     if (osmId != null && osmType != null) {
@@ -55,19 +52,17 @@ case class Geocode(id: Int = 0,
   }
 
   def getResolver: String = {
-    return resolver
-  }
-
-
-  override def toString: String = {
-    return "Geocode [address=" + address + ", id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", osmPlaceId=" + osmId + ", type=" + `type` + "]"
+    resolver.getOrElse(null)
   }
 
   def getDisplayName: String = {
-    if (address != null) {
-      return address
+    address.getOrElse {
+      latitude + ", " + longitude
     }
-    return latitude + ", " + longitude
+  }
+
+  override def toString: String = {
+    return "Geocode [address=" + address + ", id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", osmPlaceId=" + osmId + ", type=" + `type` + "]"
   }
 
 }

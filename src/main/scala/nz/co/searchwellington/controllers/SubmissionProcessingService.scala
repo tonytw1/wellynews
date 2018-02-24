@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.controllers.submission.UrlProcessor
+import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.{CachingNominatimGeocodingService, OsmIdParser}
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
@@ -16,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
-@Component class SubmissionProcessingService @Autowired()(var nominatimGeocodeService: CachingNominatimGeocodingService, var tagDAO: TagDAO, var tagVoteDAO: HandTaggingDAO, var resourceDAO: HibernateResourceDAO, var urlProcessor: UrlProcessor, var osmIdParser: OsmIdParser) {
+@Component class SubmissionProcessingService @Autowired()(nominatimGeocodeService: CachingNominatimGeocodingService, tagDAO: TagDAO,
+                                                          tagVoteDAO: HandTaggingDAO, resourceDAO: HibernateResourceDAO, urlProcessor: UrlProcessor,
+                                                          osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper) {
 
   private val log = Logger.getLogger(classOf[SubmissionProcessingService])
 
@@ -49,24 +52,26 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
     // editResource.setImage(image)
   }
 
-  def processGeocode(request: HttpServletRequest): Geocode = {
+  def processGeocode(request: HttpServletRequest): Geocode = {  // TODO make an Option
     if (!Strings.isNullOrEmpty(request.getParameter(REQUEST_SELECTED_GEOCODE))) {
+
       val osmIdString: String = new String(request.getParameter(REQUEST_SELECTED_GEOCODE).trim)
       val osmId: OsmId = osmIdParser.parseOsmId(osmIdString)
       val resolvedPlace: Place = nominatimGeocodeService.resolveOsmId(osmId)
+
       log.info("Selected geocode " + osmIdString + " resolved to: " + resolvedPlace)
-      if (resolvedPlace != null) {
-        Geocode(address = resolvedPlace.getAddress,
-          latitude = resolvedPlace.getLatLong.getLatitude,
-          longitude = resolvedPlace.getLatLong.getLongitude,
-          osmId = osmId.getId,
-          osmType = osmId.getType.toString)
-      } else {
+
+      Option(resolvedPlace).map { p =>
+        placeToGeocodeMapper.mapPlaceToGeocode(p)
+
+      }.getOrElse {
+        log.warn("Could not resolve OSM id: " + osmId)
         null
       }
-      log.warn("Could not resolve OSM id: " + osmId)
+
+    } else {
+      null
     }
-    null
   }
 
   def processDate(request: HttpServletRequest, editResource: Resource) {
