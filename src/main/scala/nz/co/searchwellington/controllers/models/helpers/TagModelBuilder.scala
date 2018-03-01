@@ -52,9 +52,11 @@ import org.springframework.web.servlet.ModelAndView
 
       } else {
         mv.addObject(TAG, frontendResourceMapper.mapTagToFrontendTag(tag))
-        if (tag.getGeocode != null) {
-          // mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(tag.getGeocode))
+
+        tag.geocode.map { g =>
+          mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(g))
         }
+
         mv.addObject("heading", tag.getDisplayName)
         mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
         mv.addObject("link", urlBuilder.getTagUrl(tag))

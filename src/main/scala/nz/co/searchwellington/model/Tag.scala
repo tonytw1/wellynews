@@ -7,7 +7,7 @@ case class Tag(id: Int = 0,
                var flickrCount: Option[Int] = None,
                var hidden: Int = 0,
                var featured: Int = 0,
-               var geocode_id: Option[Int] = None,
+               var geocode: Option[Geocode] = None,
                var description: Option[String] = None,
                var main_image: Option[String] = None,
                var secondary_image: Option[String] = None,
@@ -43,9 +43,6 @@ case class Tag(id: Int = 0,
 
   def isHidden: Boolean = hidden == 1
   def setHidden(hidden: Boolean): Unit = this.hidden == (if (hidden) 1 else 0)
-
-  def getGeocode: Option[Int] = geocode_id
-  def setGeocode(geocode: Int): Unit = this.geocode_id = Some(geocode)
 
   def getDescription: Option[String] = description
   def setDescription(description: String): Unit = this.description = Some(description)

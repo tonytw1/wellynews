@@ -1,7 +1,6 @@
 package nz.co.searchwellington.model
 
-case class Geocode(id: Int = 0,
-                   address: Option[String] = None,
+case class Geocode(address: Option[String] = None,
                    latitude: Option[Double] = None,
                    longitude: Option[Double] = None,
                    `type`: Option[String] = None,
@@ -9,14 +8,9 @@ case class Geocode(id: Int = 0,
                    osmType: Option[String] = None,
                    resolver: Option[String] = None) {
 
-  def getId: Int = {
-    return id
-  }
-
   def getAddress: String = {
     address.getOrElse("")
   }
-
 
   def getLatitude: Double = {
     latitude.getOrElse(0)
@@ -62,7 +56,7 @@ case class Geocode(id: Int = 0,
   }
 
   override def toString: String = {
-    return "Geocode [address=" + address + ", id=" + id + ", latitude=" + latitude + ", longitude=" + longitude + ", osmPlaceId=" + osmId + ", type=" + `type` + "]"
+    return "Geocode [address=" + address + ", latitude=" + latitude + ", longitude=" + longitude + ", osmPlaceId=" + osmId + ", type=" + `type` + "]"
   }
 
 }

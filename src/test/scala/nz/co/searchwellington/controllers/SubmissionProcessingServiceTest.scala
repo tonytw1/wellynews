@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
-import java.util.Date
 import nz.co.searchwellington.controllers.submission.UrlProcessor
+import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService
 import nz.co.searchwellington.geocoding.osm.OsmIdParser
 import nz.co.searchwellington.model.Feed
@@ -17,9 +17,8 @@ import org.joda.time.DateTime
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
-import org.mockito.Mockito.{when, verify}
+import org.mockito.Mockito.{verify, when}
 
 class SubmissionProcessingServiceTest {
 
@@ -36,6 +35,8 @@ class SubmissionProcessingServiceTest {
   @Mock val urlProcessor: UrlProcessor = null
   @Mock val nominatimGeocodingService: CachingNominatimGeocodingService = null
   @Mock val osmIdParser: OsmIdParser = null
+  @Mock val placeToGeocodeMapper: PlaceToGeocodeMapper = null
+
   private var urlWordsGenerator: UrlWordsGenerator = null
   private var request: MockHttpServletRequest = null
   private var submissionProcessingService: SubmissionProcessingService = null
@@ -45,7 +46,8 @@ class SubmissionProcessingServiceTest {
     request = new MockHttpServletRequest
     when(feed.getName).thenReturn(FEED_NAME)
     urlWordsGenerator = new UrlWordsGenerator
-    submissionProcessingService = new SubmissionProcessingService(nominatimGeocodingService, tagDAO, tagVoteDAO, resourceDAO, urlProcessor, osmIdParser)
+    submissionProcessingService = new SubmissionProcessingService(nominatimGeocodingService, tagDAO, tagVoteDAO,
+      resourceDAO, urlProcessor, osmIdParser, placeToGeocodeMapper)
   }
 
   @Test
