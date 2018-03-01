@@ -25,7 +25,7 @@
 #if ($geotagged_tags.size() > 0)
 <ul class="childtags">
 #foreach ($geotagged_tag in $geotagged_tags)
-	#if (!$geotagged_tag.hidden)
+	#if (!$geotagged_tag.hidden2)
 		<li><a href="$site_information.url/geotagged/$geotagged_tag.name">$geotagged_tag.displayName</a>
 	#end
 #end

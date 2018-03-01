@@ -5,8 +5,8 @@ case class Tag(id: Int = 0,
                var display_name: String = "",
                var parent: Option[Int] = None,
                var flickrCount: Option[Int] = None,
-               var hidden: Int = 0,
-               var featured: Int = 0,
+               var hidden2: Boolean = false,
+               var featured2: Boolean = false,
                var geocode: Option[Geocode] = None,
                var description: Option[String] = None,
                var main_image: Option[String] = None,
@@ -41,13 +41,13 @@ case class Tag(id: Int = 0,
   def getAutotagHints: Option[String] = autotag_hints
   def setAutotagHints(autotag_hints: String): Unit = this.autotag_hints = Some(autotag_hints)
 
-  def isHidden: Boolean = hidden == 1
-  def setHidden(hidden: Boolean): Unit = this.hidden == (if (hidden) 1 else 0)
+  def isHidden: Boolean = hidden2
+  def setHidden(hidden: Boolean): Unit = this.hidden2 == hidden
 
   def getDescription: Option[String] = description
   def setDescription(description: String): Unit = this.description = Some(description)
 
-  def isFeatured: Boolean = featured == 1
-  def setFeatured(featured: Boolean): Unit = this.featured = (if (featured) 1 else 0)
+  def isFeatured: Boolean = featured2
+  def setFeatured(featured: Boolean): Unit = this.featured2 = featured
 
 }

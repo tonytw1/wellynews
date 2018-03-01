@@ -38,7 +38,7 @@
 
 <ul class="tagtree" rel="noindex">
 #foreach($tree_tag in $top_level_tags)
-	#if (!$tree_tag.hidden)
+	#if (!$tree_tag.hidden2)
 		#showNode($tree_tag)
 	#end
 #end

@@ -58,7 +58,7 @@
 					<br />
 					
 					<label for="featured">Featured: </label>
-					<input name="featured" type="checkbox"  #if ($tag.featured) CHECKED #end>
+					<input name="featured" type="checkbox"  #if ($tag.featured2) CHECKED #end>
 																
 					<input type="submit" value="Save" />		
 				</fieldset>

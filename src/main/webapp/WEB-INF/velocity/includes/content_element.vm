@@ -88,7 +88,7 @@
 				#if ($item.handTags && $item.handTags.size() > 0)
 					<li class="tagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Tagged as</a>:</li>
 					#foreach ($tag in $item.handTags)
-						#if (!$tag.hidden)							
+						#if (!$tag.hidden2)
 							<li class="tagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name.toLowerCase()</a></li>
 						#end
 					#end					
@@ -96,7 +96,7 @@
 					#if ($item.tags && $item.tags.size() > 0)
 						<li class="autotagged" rel="noindex"><a href="$urlBuilder.getTaggingUrl($item)">Automatically tagged as</a>:</li>					
 						#foreach ($tag in $item.tags)
-							#if (!$tag.hidden)
+							#if (!$tag.hidden2)
 								<li class="autotagged"><a href="$urlBuilder.getTagUrl($tag)">$tag.name.toLowerCase()</a></li>
 							#end
 						#end

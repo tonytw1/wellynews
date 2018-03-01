@@ -13,7 +13,7 @@
 <ul>
 #set($letter = "")
 #foreach ($tag in $main_content)
-	#if (!$tag.hidden)
+	#if (!$tag.hidden2)
 		#set($current = $tag.name.substring(0, 1).toUpperCase())
 		#if ($current != $letter)
 			#set($letter = $current)		
