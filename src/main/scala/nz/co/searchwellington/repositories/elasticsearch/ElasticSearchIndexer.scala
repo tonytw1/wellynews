@@ -38,6 +38,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
   val Date = "date"
   val Tags = "tags"
   val Publisher = "publisher"
+  val Held = "held"
 
   def updateMultipleContentItems(resources: Seq[(Resource, Set[Int])]): Unit = {
     log.info("Index batch of size: " + resources.size)
@@ -55,7 +56,8 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         r._1.description.map(d => (Description -> d)),
         r._1.date2.map(d => (Date -> new DateTime(d))),
         Some(Tags, r._2),
-        publisher.map(p => (Publisher -> p))
+        publisher.map(p => (Publisher -> p)),
+        Some(Held -> r._1.held2)
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1.id.toString
@@ -78,7 +80,8 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
             field(Date) typed DateType,
             field(Description) typed TextType analyzer StandardAnalyzer,
             field(Tags) typed IntegerType,
-            field(Publisher) typed IntegerType
+            field(Publisher) typed IntegerType,
+            field(Held) typed BooleanType
           )
           )
       }
@@ -161,6 +164,8 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         rangeQuery("date") gte i.getStartMillis lt i.getEndMillis
       }
     ).flatten
+
+    val withModerationConditions = conditions :+ matchQuery(Held, false)
 
     val q = must(conditions)
 
