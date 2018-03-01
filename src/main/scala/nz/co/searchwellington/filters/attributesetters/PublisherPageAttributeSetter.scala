@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
       log.debug("'" + `match` + "' matches content")
       log.debug("Looking for publisher '" + `match` + "'")
        resourceDAO.getPublisherByUrlWords(`match`).map { publisher =>
-        log.info("Setting publisher: " + publisher.getName)
+        log.info("Setting publisher: " + publisher.title)
         request.setAttribute("publisher", publisher)
         request.setAttribute("resource", publisher)
          true

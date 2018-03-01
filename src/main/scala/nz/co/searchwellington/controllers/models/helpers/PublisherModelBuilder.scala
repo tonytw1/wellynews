@@ -40,10 +40,9 @@ import org.springframework.web.servlet.ModelAndView
       val frontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
 
       val mv = new ModelAndView
-      mv.addObject("heading", publisher.getName)
-      mv.addObject("description", publisher.getName + " newsitems")
-      mv.addObject("link", urlBuilder.getPublisherUrl(publisher.getName))
-
+      mv.addObject("heading", publisher.title.getOrElse(""))
+      mv.addObject("description", publisher.title.getOrElse("") + " newsitems")
+      publisher.title.map(t => mv.addObject("link", urlBuilder.getPublisherUrl(t)))
       mv.addObject("publisher", frontendPublisher)
       mv.addObject("location", frontendPublisher.getPlace)
 

@@ -26,31 +26,5 @@ case class Newsitem(override var id: Int = 0,
 
   override def getType = "N"
 
-  //override def getComments: Seq[Comment] = {
-  //if (getCommentFeed != null) return ImmutableList.builder[Comment].addAll(getCommentFeed.getComments).build
-  //Collections.emptyList
-  // Seq()
-  // }
-
-  def getCommentFeed: Option[Int] = commentFeed
-
-  def setCommentFeed(commentFeed: Int): Unit = this.commentFeed = Some(commentFeed)
-
-  def getImage: Option[Int] = image
-
-  def setImage(image: Int): Unit = this.image = Some(image)
-
-  def getFeed: Option[Int] = feed
-
-  def setFeed(feed: Int): Unit = this.feed = Some(feed)
-
-  def getAccepted: Date = accepted2.getOrElse(null) // TODO
-
-  def setAccepted(accepted: Date): Unit = this.accepted2 = Some(accepted)
-
-  def getAcceptedBy: Option[Int] = acceptedBy
-
-  def setAcceptedBy(acceptedBy: Int): Unit = this.acceptedBy = Some(acceptedBy)
-
 }
 

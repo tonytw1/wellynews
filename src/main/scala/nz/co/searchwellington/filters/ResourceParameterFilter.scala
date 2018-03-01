@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
         val resourceId = resourceParameter.toInt
         if (resourceId > 0) {
           resourceDAO.loadResourceById(resourceId).map { resource =>
-            log.debug("Found resource: " + resource.getName)
+            log.debug("Found resource: " + resource.title)
             request.setAttribute("resource", resource)
           }
         }
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component
 
     def processResourceUrlWords(request: HttpServletRequest, resourceParameter: String) {
       resourceDAO.loadByUrlWords(resourceParameter).map { resource =>
-        log.debug("Found resource by urlWords: " + resource.getName)
+        log.debug("Found resource by urlWords: " + resource.title)
         request.setAttribute("resource", resource)
       }
     }

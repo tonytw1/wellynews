@@ -92,7 +92,7 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("heading", "All Publishers")
     import scala.collection.JavaConverters._
 
-    val publishers = contentRetrievalService.getAllPublishers.sortBy(_.getName)
+    val publishers = contentRetrievalService.getAllPublishers.sortBy(_.title)
     mv.addObject("publishers", publishers.asJava)
 
     mv.setViewName("publishers")

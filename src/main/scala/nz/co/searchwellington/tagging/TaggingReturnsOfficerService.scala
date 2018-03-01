@@ -40,13 +40,13 @@ import scala.collection.mutable
     val handTaggings: List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource).toList
     votes ++= handTaggings;
 
-    val shouldAppearOnPublisherAndParentTagPages: Boolean = (resource.getType == "L") || (resource.getType == "N") || (resource.getType == "C") || (resource.getType == "F")
+    val shouldAppearOnPublisherAndParentTagPages = (resource.`type` == "L") || (resource.`type` == "N") || (resource.`type` == "C") || (resource.`type` == "F")
     if (shouldAppearOnPublisherAndParentTagPages) {
       votes ++= generateAncestorTagVotes(resource)
       votes ++= generatePublisherDerivedTagVotes(resource)
     }
 
-    if (resource.getType == "N") {
+    if (resource.`type` == "N") {
       //val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
       //if (acceptedFeed != null) {
        // votes ++= addAcceptedFromFeedTags(this.getHandTagsForResource(acceptedFeed).toSet)
@@ -65,7 +65,7 @@ import scala.collection.mutable
       }
     }
 
-    if ((resource.getType == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
+    if ((resource.`type` == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
       /*
       val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
       if (publisher.getGeocode != null && publisher.getGeocode.isValid) {

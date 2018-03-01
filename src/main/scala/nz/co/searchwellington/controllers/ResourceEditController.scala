@@ -53,7 +53,7 @@ import org.springframework.web.servlet.view.RedirectView
     mv.addObject("show_additional_tags", 1)
     val userIsLoggedIn: Boolean = loggedInUser != null
     populatePublisherField(mv, userIsLoggedIn, resource)
-    if (resource.getType == "F") {
+    if (resource.`type` == "F") {
       // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
     }
     return mv
@@ -172,7 +172,7 @@ import org.springframework.web.servlet.view.RedirectView
       modelAndView.addObject("resource", editResource)
       editResource = request.getAttribute("resource").asInstanceOf[Resource]
       contentDeletionService.performDelete(editResource)
-      if (editResource.getType == "F") {
+      if (editResource.`type` == "F") {
         urlStack.setUrlStack(request, "")
       }
     }
@@ -216,7 +216,7 @@ import org.springframework.web.servlet.view.RedirectView
     }
     log.info("In save")
     if (editResource != null) {
-      val newSubmission: Boolean = editResource.getId == 0
+      val newSubmission: Boolean = editResource.id == 0
       if (loggedInUser == null) {
         loggedInUser = createAndSetAnonUser(request)
       }
@@ -231,12 +231,14 @@ import org.springframework.web.servlet.view.RedirectView
       submissionProcessingService.processEmbargoDate(request, editResource)
       submissionProcessingService.processDescription(request, editResource)
       submissionProcessingService.processPublisher(request, editResource)
-      if (editResource.getType == "N") {
+      if (editResource.`type` == "N") {
         submissionProcessingService.processImage(request, editResource.asInstanceOf[Newsitem], loggedInUser)
         submissionProcessingService.processAcceptance(request, editResource, loggedInUser)
       }
-      if (editResource.getType == "W" || editResource.getType == "F") {
-        editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(editResource.getName))
+      if (editResource.`type` == "W" || editResource.`type` == "F") {
+        editResource.title.map { t =>
+          editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(t))
+        }
       }
       processFeedAcceptancePolicy(request, editResource)
       val isSpamUrl: Boolean = spamFilter.isSpam(editResource)
@@ -245,22 +247,27 @@ import org.springframework.web.servlet.view.RedirectView
         log.info("This is a public submission; marking as held")
         editResource.setHeld(true)
       }
-      if (editResource.getType == "F" && !Strings.isNullOrEmpty(editResource.getUrl)) {
-        whakaoroService.createFeedSubscription(editResource. getUrl).map { createdFeedSubscription =>
-          (editResource.asInstanceOf[Feed]).setWhakaokoId(createdFeedSubscription)
+      if (editResource.`type` == "F") {
+        editResource.page.map { p =>
+          if (!Strings.isNullOrEmpty(p)) {
+            whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
+              (editResource.asInstanceOf[Feed]).setWhakaokoId(createdFeedSubscription)
+            }
+          }
         }
       }
-      val okToSave: Boolean = !newSubmission || !isSpamUrl || loggedInUser != null
+
+      val okToSave = !newSubmission || !isSpamUrl || loggedInUser != null
       if (okToSave) {
         saveResource(request, loggedInUser, editResource)
-        log.info("Saved resource; id is now: " + editResource.getId)
+        log.info("Saved resource; id is now: " + editResource.id)
         submissionProcessingService.processTags(request, editResource, loggedInUser)
         if (newSubmission) {
           log.info("Applying the auto tagger to new submission.")
           autoTagger.autotag(editResource)
         }
         saveResource(request, loggedInUser, editResource)
-        linkCheckerQueue.add(editResource.getId)
+        linkCheckerQueue.add(editResource.id)
       }
       else {
         log.info("Could not save resource. Spam question not answered?")

@@ -18,48 +18,48 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
     var frontendContentItem = new FrontendResource
-    if (contentItem.getType == "N") {
+    if (contentItem.`type` == "N") {
       val contentItemNewsitem = contentItem.asInstanceOf[Newsitem]
 
       val frontendNewsitem = new FrontendNewsitem
 
-      contentItemNewsitem.getFeed.map(f => frontendNewsitem.setAcceptedFromFeedName(f.toString))
-      contentItemNewsitem.getFeed.map(u => frontendNewsitem.setAcceptedByProfilename(u.toString))
+      contentItemNewsitem.feed.map(f => frontendNewsitem.setAcceptedFromFeedName(f.toString))
+      contentItemNewsitem.feed.map(u => frontendNewsitem.setAcceptedByProfilename(u.toString))
 
-      frontendNewsitem.setAccepted(contentItemNewsitem.getAccepted)
+      frontendNewsitem.setAccepted(contentItemNewsitem.accepted2.getOrElse(null))
 
-      if (contentItemNewsitem.getImage != null) {
-        // frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage.getUrl))
+      contentItemNewsitem.image.map { i =>
+        // TODO frontendNewsitem.setFrontendImage(new FrontendImage(contentItemNewsitem.getImage.getUrl))
       }
       frontendContentItem = frontendNewsitem
     }
 
-    if (contentItem.getType == "F") {
+    if (contentItem.`type` == "F") {
       val frontendFeed = new FrontendFeed
       val contentItemFeed: Feed = contentItem.asInstanceOf[Feed]
       frontendFeed.setLatestItemDate(contentItemFeed.getLatestItemDate)
       frontendContentItem = frontendFeed
     }
 
-    frontendContentItem.setId(contentItem.getId)
-    frontendContentItem.setType(contentItem.getType)
-    frontendContentItem.setName(contentItem.getName)
-    frontendContentItem.setUrl(contentItem.getUrl)
+    frontendContentItem.setId(contentItem.id)
+    frontendContentItem.setType(contentItem.`type`)
+    frontendContentItem.setName(contentItem.title.getOrElse(""))
+    frontendContentItem.setUrl(contentItem.page.getOrElse(""))
 
     frontendContentItem.setDate(contentItem.date2.getOrElse(null))
 
-    frontendContentItem.setDescription(contentItem.getDescription)
-    frontendContentItem.setHttpStatus(contentItem.getHttpStatus)
-    frontendContentItem.setHeld(contentItem.isHeld)
-    if (contentItem.getOwner != null) {
-      frontendContentItem.setOwner(contentItem.getOwner.getProfilename)
+    frontendContentItem.setDescription(contentItem.description.getOrElse(""))
+    frontendContentItem.setHttpStatus(contentItem.http_status)
+    frontendContentItem.setHeld(contentItem.held2)
+    contentItem.owner.map { o =>
+      frontendContentItem.setOwner(o.toString)
     }
-    frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(contentItem.getName))
+    frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(contentItem.title.getOrElse("")))
     if (frontendContentItem.getType == "N") {
       frontendContentItem.setUrlWords(urlWordsGenerator.makeUrlForNewsitem(frontendContentItem.asInstanceOf[FrontendNewsitem]))
     }
     else if (frontendContentItem.getType == "F") {
-      frontendContentItem.setUrlWords("/feed/" + urlWordsGenerator.makeUrlWordsFromName(contentItem.getName))
+      frontendContentItem.setUrlWords("/feed/" + urlWordsGenerator.makeUrlWordsFromName(contentItem.title.getOrElse("")))
     }
 
     val tags: mutable.MutableList[FrontendTag] = mutable.MutableList.empty
@@ -84,7 +84,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
         p.publisher.map { pid =>
           val tenSeconds = Duration(10, SECONDS)
           Await.result(mongoRepository.getResourceById(pid.toInt), tenSeconds).map { publisher =>
-            frontendContentItem.setPublisherName(publisher.getName)
+            frontendContentItem.setPublisherName(publisher.title.getOrElse(""))
           }
         }
       }
@@ -101,9 +101,9 @@ import scala.concurrent.duration.{Duration, SECONDS}
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
     // TODO why is this different from the above?
     val frontendPublisher = new FrontendWebsite
-    frontendPublisher.setName(website.getName)
-    frontendPublisher.setUrlWords(website.getUrlWords)
-    frontendPublisher.setUrl(website.getUrl)
+    frontendPublisher.setName(website.title.getOrElse(""))
+    frontendPublisher.setUrlWords(website.url_words.getOrElse(""))
+    frontendPublisher.setUrl(website.page.getOrElse(null))
     website.geocode.map { g =>
       frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(g))
     }

@@ -30,7 +30,7 @@ import uk.co.eelpieconsulting.archiving.SnapshotArchive
 
     resourceDAO.loadResourceById(checkResourceId).map { resource =>
       if (resource != null && !Strings.isNullOrEmpty(resource.getUrl)) {
-        log.info("Checking: " + resource.getName + " (" + resource.getUrl + ")")
+        log.info("Checking: " + resource.title + " (" + resource.page + ")")
         val pageContent = httpCheck(resource)
         for (processor <- processers) {
           log.debug("Running processor: " + processor.getClass.toString)
@@ -46,7 +46,9 @@ import uk.co.eelpieconsulting.archiving.SnapshotArchive
         log.debug("Saving resource and updating snapshot")
         resource.setLastScanned(DateTime.now.toDate)
         if (pageContent != null) {
-          snapshotArchive.put(new Snapshot(resource.getUrl, DateTime.now.toDate, pageContent))
+          resource.page.map { p =>
+            snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
+          }
         }
         contentUpdateService.update(resource)
         log.info("Finished linkchecking")
@@ -63,7 +65,7 @@ import uk.co.eelpieconsulting.archiving.SnapshotArchive
       var pageContent: String = null
       val httpResult: HttpFetchResult = httpFetcher.httpFetch(checkResource.getUrl)
       checkResource.setHttpStatus(httpResult.getStatus)
-      log.info("Http status for " + checkResource.getUrl + " set to: " + checkResource.getHttpStatus)
+      log.info("Http status for " + checkResource.page + " set to: " + checkResource.http_status)
       if (httpResult.getStatus == HttpStatus.SC_OK) {
         pageContent = httpResult.readEncodedResponse("UTF-8")
         return pageContent

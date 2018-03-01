@@ -70,7 +70,7 @@ import org.springframework.web.servlet.ModelAndView
         val resourcesAutoTagged = autotaggedResourceIds.map { resourceIdString =>
           val resourceId: Int = resourceIdString.toInt
           resourceDAO.loadResourceById(resourceId).map { resource =>
-            log.info("Applying tag " + tag.getName + " to:" + resource.getName)
+            log.info("Applying tag " + tag.getName + " to:" + resource.title)
             if (!autoTagService.alreadyHasTag(resource, tag)) {
               tagVoteDAO.addTag(loggedInUser, tag, resource)
             }

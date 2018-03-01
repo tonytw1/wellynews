@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component
     }
 
     def checkForMatchingTag(resource: Resource, tag: Tag): Boolean = {
-      val headlineMatchesTag = resource.getName.toLowerCase.contains(tag.getDisplayName.toLowerCase)
-      val bodyMatchesTag = resource.getDescription.toLowerCase.contains(tag.getDisplayName.toLowerCase)
+      val headlineMatchesTag = resource.title.map(t => t.toLowerCase.contains(tag.getDisplayName.toLowerCase)).getOrElse(false)
+      val bodyMatchesTag = resource.description.map(d => d.toLowerCase.contains(tag.getDisplayName.toLowerCase)).getOrElse(false)
       headlineMatchesTag || bodyMatchesTag
     }
 

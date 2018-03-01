@@ -49,9 +49,9 @@ import org.springframework.web.servlet.ModelAndView
         resourceDAO.loadResourceById(resourceIdString.toInt)
       }.flatten
 
-      val autotaggedNewsitems = resources.filter(resource => resource.getType == "N").map { newsitem =>
-        log.info("Applying publisher " + publisher.getName + " to:" + newsitem.getName)
-        // (newsitem.asInstanceOf[Newsitem]).setPublisher(publisher)
+      val autotaggedNewsitems = resources.filter(resource => resource.`type` == "N").map { newsitem =>
+        log.info("Applying publisher " + publisher.title + " to:" + newsitem.title)
+        // TODO (newsitem.asInstanceOf[Newsitem]).setPublisher(publisher)
         contentUpdateService.update(newsitem)
         newsitem
       }
@@ -62,8 +62,10 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {
-    val publishersUrlStem = urlParser.extractHostnameFrom(publisher.getUrl)
-    resourceDAO.getNewsitemsMatchingStem(publishersUrlStem)
+    publisher.page.map { p =>
+      val publishersUrlStem = urlParser.extractHostnameFrom(p)
+      resourceDAO.getNewsitemsMatchingStem(publishersUrlStem)
+    }.getOrElse(Seq.empty)
   }
 
   private def needsPublisher(resource: Newsitem, proposedPublisher: Website): Boolean = {

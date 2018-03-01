@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 
     } { autotagUser =>
       val suggestedTags = placeAutoTagger.suggestTags(resource) ++ tagHintAutoTagger.suggestTags(resource);
-      log.debug("Suggested tags for '" + resource.getName + "' are: " + suggestedTags)
+      log.debug("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
       if (!suggestedTags.isEmpty) {
         handTaggingDAO.setUsersTagVotesForResource(resource, autotagUser, suggestedTags)
       }

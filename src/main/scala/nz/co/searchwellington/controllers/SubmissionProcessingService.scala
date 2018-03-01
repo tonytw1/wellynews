@@ -76,7 +76,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
   def processDate(request: HttpServletRequest, editResource: Resource) {
     editResource.setDate(request.getAttribute(REQUEST_DATE_NAME).asInstanceOf[Date])
-    if (editResource.getDate == null && editResource.getId == 0) {
+    if (editResource.date2.isEmpty && editResource.id == 0) {
       editResource.setDate(Calendar.getInstance.getTime)
     }
   }
@@ -139,7 +139,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
         val publisherName: String = request.getParameter("publisherName")
         val publisher: Website = resourceDAO.getPublisherByName(publisherName).asInstanceOf[Website]
         if (publisher != null) {
-          log.info("Found publisher: " + publisher.getName)
+          log.info("Found publisher: " + publisher.title)
           // (editResource.asInstanceOf[PublishedResource]).setPublisher(publisher)
         }
       }
@@ -152,7 +152,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
         val acceptedFromFeedUrlWords: String = request.getParameter("acceptedFromFeed")
         log.info("Item was accepted from a feed with url words: " + acceptedFromFeedUrlWords)
         Option(resourceDAO.loadFeedByUrlWords(acceptedFromFeedUrlWords)).map { feed =>
-          log.info("Setting accepted from feed to: " + feed.getName)
+          log.info("Setting accepted from feed to: " + feed.title)
           // (editResource.asInstanceOf[Newsitem]).setFeed(feed)
           // (editResource.asInstanceOf[Newsitem]).setAcceptedBy(loggedInUser)
           // (editResource.asInstanceOf[Newsitem]).setAccepted(DateTime.now.toDate)

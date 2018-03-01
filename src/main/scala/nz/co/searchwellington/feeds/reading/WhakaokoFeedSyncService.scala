@@ -21,12 +21,14 @@ import org.springframework.transaction.annotation.Transactional
   private def registerFeedsWithWhakaoko(feeds: Seq[Feed]) {
     log.info("Registering feeds with whakaoko")
     feeds.map { feed =>
-      if (!Strings.isNullOrEmpty(feed.getUrl)) {
-        log.info("Registering feed with whakaoko: " + feed.getName)
-        whakaokoService.createFeedSubscription(feed.getUrl).map { createdSubscriptionId =>
-          log.info("Setting feed whakaoko id to: " + createdSubscriptionId)
-          feed.setWhakaokoId(createdSubscriptionId)
-          resourceDAO.saveResource(feed)
+      feed.page.map { p =>
+        if (!Strings.isNullOrEmpty(p)) {
+          log.info("Registering feed with whakaoko: " + feed.title)
+          whakaokoService.createFeedSubscription(p).map { createdSubscriptionId =>
+            log.info("Setting feed whakaoko id to: " + createdSubscriptionId)
+            feed.setWhakaokoId(createdSubscriptionId)
+            resourceDAO.saveResource(feed)
+          }
         }
       }
     }

@@ -41,9 +41,9 @@ import org.springframework.stereotype.Component
     relatedFeedSelect.addElement(noFeedOption)
 
     resourceDAO.getAllFeeds.map { feed =>
-      val option = new Option(Integer.toString(feed.getId))
+      val option = new Option(Integer.toString(feed.id))
       option.setFilterState(true)
-      option.addElement(feed.getName)
+      option.addElement(feed.title.getOrElse(feed.id.toString))
       if (relatedFeed != null && relatedFeed == feed) {
         option.setSelected(true)
       }

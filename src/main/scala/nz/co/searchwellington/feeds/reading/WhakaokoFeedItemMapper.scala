@@ -19,7 +19,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   private def makeFrontendFeed(feed: Feed): FrontendFeed = {
     Option(feed).map { f =>
       val frontendFeed: FrontendFeed = new FrontendFeed
-      frontendFeed.setUrlWords(f.getUrlWords)
+      frontendFeed.setUrlWords(f.url_words.getOrElse(""))
       frontendFeed
     }.getOrElse(null)
   }

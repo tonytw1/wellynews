@@ -21,7 +21,7 @@ import org.springframework.stereotype.Component
       results
 
     }.getOrElse {
-      log.warn("Feed has no whakaoko id; skipping: " + feed.getName)
+      log.warn("Feed has no whakaoko id; skipping: " + feed.title)
       Seq()
     }
   }

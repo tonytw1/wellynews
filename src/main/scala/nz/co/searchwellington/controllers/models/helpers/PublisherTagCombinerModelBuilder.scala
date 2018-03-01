@@ -39,13 +39,15 @@ import org.springframework.web.servlet.ModelAndView
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
 
       val mv = new ModelAndView
-      val frontendPublisher = new FrontendWebsite
-      frontendPublisher.setName(publisher.getName)
-      frontendPublisher.setUrlWords(publisher.getUrlWords)
+
+      val frontendPublisher = new FrontendWebsite // TODO push to mapper
+      frontendPublisher.setName(publisher.title.getOrElse(""))
+      frontendPublisher.setUrlWords(publisher.url_words.getOrElse(""))
+
       mv.addObject("publisher", frontendPublisher)
-      mv.addObject("heading", publisher.getName + " and " + tag.getDisplayName)
+      mv.addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName)
       mv.addObject("description", "")
-      mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher.getName, tag))
+      mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher.title.getOrElse(""), tag))
       populatePublisherTagCombinerNewsitems(mv, publisher, tag)
       Some(mv)
 

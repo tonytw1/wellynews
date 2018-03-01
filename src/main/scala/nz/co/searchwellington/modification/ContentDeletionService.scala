@@ -14,22 +14,25 @@ import org.springframework.stereotype.Component
 
   def performDelete(resource: Resource) {
     handTaggingDAO.clearTags(resource)
-    if (resource.getType == "W") {
+    if (resource.`type` == "W") {
       removePublisherFromPublishersContent(resource)
     }
-    if (resource.getType == "F") {
+    if (resource.`type` == "F") {
       removeFeedFromFeedNewsitems(resource.asInstanceOf[Feed])
       removeRelatedFeedFromTags(resource.asInstanceOf[Feed])
     }
-    if (resource.getType == "N") {
+    if (resource.`type` == "N") {
       log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
       val deletedNewsitem: Newsitem = resource.asInstanceOf[Newsitem]
-      if (rssfeedNewsitemService.isUrlInAcceptedFeeds(deletedNewsitem.getUrl)) {
-        log.info("Supressing deleted newsitem url as it still visible in an automatically deleted feed: " + deletedNewsitem.getUrl)
-        suppressDeletedNewsitem(deletedNewsitem)
-      }
-      else {
-        log.info("Not found in live feeds; not supressing")
+
+      deletedNewsitem.page.map { p =>
+        if (rssfeedNewsitemService.isUrlInAcceptedFeeds(p)) {
+          log.info("Supressing deleted newsitem url as it still visible in an automatically deleted feed: " + p)
+          suppressUrl(p)
+        }
+        else {
+          log.info("Not found in live feeds; not supressing")
+        }
       }
     }
     //elasticSearchIndexUpdateService.deleteContentItem(resource.getId)
@@ -44,9 +47,9 @@ import org.springframework.stereotype.Component
     }
   }
 
-  private def suppressDeletedNewsitem(deletedNewsitem: Newsitem) {
-    log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + deletedNewsitem.getUrl)
-    supressionService.suppressUrl(deletedNewsitem.getUrl)
+  private def suppressUrl(p: String) {
+    log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + p)
+    supressionService.suppressUrl(p)
   }
 
   private def removePublisherFromPublishersContent(editResource: Resource) {

@@ -79,7 +79,7 @@ import org.springframework.stereotype.Component
       log.debug("Loading feed by url words: " + feedParameter)
       val feed: Resource = resourceDAO.loadFeedByUrlWords(feedParameter)
       if (feed != null) {
-        log.debug("Found feed: " + feed.getName)
+        log.debug("Found feed: " + feed.title)
         request.setAttribute("feedAttribute", feed)
       }
       else {

@@ -350,7 +350,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   */
 
   private def hasPublisher(publisher: Website): TermQueryBuilder = {
-    QueryBuilders.termQuery(PUBLISHER_NAME, publisher.getName)
+    QueryBuilders.termQuery(PUBLISHER_NAME, publisher.title.getOrElse(""))
   }
 
   private def hasTag(tag: Tag): TermQueryBuilder = {

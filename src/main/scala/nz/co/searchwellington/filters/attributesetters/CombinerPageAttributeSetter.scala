@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component
       tagDAO.loadTagByName(right).map { rightHandTag =>
 
         resourceDAO.getPublisherByUrlWords(left).map { publisher =>
-          log.debug("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.getName)
+          log.debug("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.title)
           request.setAttribute("publisher", publisher)
           request.setAttribute("tag", rightHandTag)
           true

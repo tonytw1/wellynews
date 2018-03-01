@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional
   private val log = Logger.getLogger(classOf[ContentUpdateService])
 
   def update(resource: Resource) {
-    log.info("Updating content for: " + resource.getName + " - " + resource.getUrl)
+    log.info("Updating content for: " + resource.title + " - " + resource.page)
     try {
       var resourceUrlHasChanged = false
-      val newSubmission = resource.getId == 0
+      val newSubmission = resource.id == 0
       if (!newSubmission) {
-        resourceDAO.loadResourceById(resource.getId).map { existingResource =>
+        resourceDAO.loadResourceById(resource.id).map { existingResource =>
           resourceUrlHasChanged = !(resource.getUrl == existingResource.getUrl)
         }
       }
@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional
   def create(resource: Resource) {
     resource.setHttpStatus(0)
     resourceDAO.saveResource(resource)
-    linkCheckerQueue.add(resource.getId)
+    linkCheckerQueue.add(resource.id)
   }
 
 }

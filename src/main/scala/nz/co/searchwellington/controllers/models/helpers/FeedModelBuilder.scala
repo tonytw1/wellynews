@@ -43,11 +43,13 @@ import org.springframework.web.servlet.ModelAndView
     if (isValid(request)) {
       val feed = request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed]
       if (feed != null) {
-        val mv = new ModelAndView
-        mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed))
-        commonAttributesModelBuilder.setRss(mv, feed.getName, feed.getUrl)
-        populateFeedItems(mv, feed)
-        Some(mv)
+        feed.page.map { p =>
+          val mv = new ModelAndView
+          mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed))
+          commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), p)
+          populateFeedItems(mv, feed)
+          mv
+        }
       } else {
         None
       }

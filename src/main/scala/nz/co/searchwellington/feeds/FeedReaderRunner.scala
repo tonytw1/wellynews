@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional
   def readAllFeeds(feeds: Seq[Feed]) {
     getFeedReaderUser.map { feedReaderUser =>
       feeds.map { feed =>
-        feedReader.processFeed(feed.getId, feedReaderUser)
+        feedReader.processFeed(feed.id, feedReaderUser)
       }
     }
   }
