@@ -61,7 +61,7 @@ import scala.collection.mutable
 
     resource.geocode.map { g =>
       if (g.isValid) {
-        votes += new GeotaggingVote(g, resource.getOwner, 1)
+        // TODO votes += new GeotaggingVote(g, resource.getOwner, 1)
       }
     }
 

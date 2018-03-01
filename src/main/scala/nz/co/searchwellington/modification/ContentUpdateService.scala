@@ -29,9 +29,8 @@ import org.springframework.transaction.annotation.Transactional
       frontendContentUpdater.update(resource)
     }
     catch {
-      case e: Exception => {
+      case e: Exception =>
         log.error("Error: ", e)
-      }
     }
   }
 
