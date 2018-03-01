@@ -104,7 +104,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     frontendPublisher.setName(website.getName)
     frontendPublisher.setUrlWords(website.getUrlWords)
     frontendPublisher.setUrl(website.getUrl)
-    website.geocode2.map { g =>
+    website.geocode.map { g =>
       frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(g))
     }
     frontendPublisher

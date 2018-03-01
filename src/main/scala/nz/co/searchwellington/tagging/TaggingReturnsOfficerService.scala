@@ -59,7 +59,7 @@ import scala.collection.mutable
   def getGeotagVotesForResource(resource: Resource): List[GeotaggingVote] = {
     val votes: mutable.MutableList[GeotaggingVote] = mutable.MutableList.empty
 
-    resource.geocode2.map { g =>
+    resource.geocode.map { g =>
       if (g.isValid) {
         votes += new GeotaggingVote(g, resource.getOwner, 1)
       }

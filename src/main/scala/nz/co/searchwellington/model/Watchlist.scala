@@ -16,8 +16,7 @@ case class Watchlist(
                       override var embargoed_until2: Option[Date] = None,
                       override var held2: Boolean = true,
                       override var url_words: Option[String] = None,
-                      override var geocode: Option[Int] = None,
-                      override var geocode2: Option[Geocode] = None,
+                      override var geocode: Option[Geocode] = None,
                       override var owner: Option[Int] = None,
                       override var publisher: Option[Long] = None
                     ) extends PublishedResource {

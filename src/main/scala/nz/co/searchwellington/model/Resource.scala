@@ -18,8 +18,7 @@ trait Resource {
   var embargoed_until2: Option[Date]
   var held2: Boolean
   var url_words: Option[String]
-  var geocode: Option[Int]
-  var geocode2: Option[Geocode]
+  var geocode: Option[Geocode]
   var owner: Option[Int]
 
   def getDate: Date = date2.getOrElse(null)

@@ -50,7 +50,7 @@ db.resource.find({}).forEach(
                 var geocode = db.geocode.findOne({id: doc.geocode_id});
                 print(resourceId);
                 print(geocode);
-                doc.geocode2 = geocode;
+                doc.geocode = geocode;
                 db.resource.save(doc);
 
         }
