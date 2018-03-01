@@ -79,7 +79,7 @@ import org.springframework.web.servlet.ModelAndView
         mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
 
         populatePagination(mv, startIndex, totalNewsitemCount)
-        if (taggedNewsitems.size > 0) {
+        if (taggedNewsitems.nonEmpty) {
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
         }
         Some(mv)
@@ -100,7 +100,7 @@ import org.springframework.web.servlet.ModelAndView
     def populateGeocoded(mv: ModelAndView, tag: Tag) {
       val geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
       log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
-      if (geocoded.size > 0) {
+      if (geocoded.nonEmpty) {
         mv.addObject("geocoded", geocoded)
       }
     }
@@ -141,11 +141,11 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject(WEBSITES, taggedWebsites.asJava)
 
     val relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8)
-    if (!relatedTagLinks.isEmpty) {
+    if (relatedTagLinks.nonEmpty) {
       mv.addObject("related_tags", relatedTagLinks)
     }
     val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, 8)
-    if (!relatedPublisherLinks.isEmpty) {
+    if (relatedPublisherLinks.nonEmpty) {
       mv.addObject("related_publishers", relatedPublisherLinks)
     }
     populateCommentedTaggedNewsitems(mv, tag)
