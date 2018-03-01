@@ -14,10 +14,6 @@ import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
-object TagModelBuilderTest {
-  private val TAG_DISPLAY_NAME: String = "Penguins"
-}
-
 class TagModelBuilderTest {
   @Mock var contentRetrievalService: ContentRetrievalService = null
   @Mock var rssUrlBuilder: RssUrlBuilder = null
@@ -33,10 +29,14 @@ class TagModelBuilderTest {
   @Mock val newsitem1: FrontendResource = null
   @Mock val newsitem2: FrontendResource = null
 
-  @Mock var tag: Tag = null
+
+  private val TAG_DISPLAY_NAME = "Penguins"
+
+  private val tag = Tag(id = 123, display_name = TAG_DISPLAY_NAME)
 
   var request: MockHttpServletRequest = null
   private var modelBuilder: TagModelBuilder = null
+
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
@@ -44,7 +44,8 @@ class TagModelBuilderTest {
     modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
       contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
     request = new MockHttpServletRequest
-    when(tag.getDisplayName).thenReturn(TagModelBuilderTest.TAG_DISPLAY_NAME)
+
+    when(tagDAO.loadTagsByParent(123)).thenReturn(Seq())
   }
 
   @Test
@@ -76,7 +77,7 @@ class TagModelBuilderTest {
 
     val mv = modelBuilder.populateContentModel(request).get
 
-    assertEquals(TagModelBuilderTest.TAG_DISPLAY_NAME, mv.getModel.get("heading"))
+    assertEquals(TAG_DISPLAY_NAME, mv.getModel.get("heading"))
   }
 
   @Test

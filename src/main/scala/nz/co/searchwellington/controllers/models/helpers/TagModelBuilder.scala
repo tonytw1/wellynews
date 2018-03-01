@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.model.frontend.FrontendTag
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
@@ -57,7 +56,7 @@ import org.springframework.web.servlet.ModelAndView
           mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(g))
         }
 
-        mv.addObject("heading", tag.getDisplayName)
+        mv.addObject("heading", tag.display_name)
         mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
         mv.addObject("link", urlBuilder.getTagUrl(tag))
 
