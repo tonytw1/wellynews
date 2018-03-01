@@ -3,7 +3,7 @@ package nz.co.searchwellington.model
 import java.util.Date
 
 case class Feed(override var id: Int = 0,
-                override var `type`: String = "",
+                override val `type`: String = "F",
                 override var title: Option[String] = None,
                 override var description: Option[String] = None,
                 override var page: Option[String] = None,
@@ -22,8 +22,6 @@ case class Feed(override var id: Int = 0,
                 var lastRead2: Option[Date] = null, // TODO
                 var whakaoko_id: String = null,
                 override var publisher: Option[Long] = None) extends PublishedResource {
-
-  override def getType: String = "F"
 
   def getAcceptancePolicy: String = acceptance
 

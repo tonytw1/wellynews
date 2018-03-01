@@ -3,7 +3,7 @@ package nz.co.searchwellington.model
 import java.util.Date
 
 case class Newsitem(override var id: Int = 0,
-                    override var `type`: String = "",
+                    override val `type`: String = "N",
                     override var title: Option[String] = None,
                     override var page: Option[String] = None,
                     override var http_status: Int = 0,
@@ -22,9 +22,4 @@ case class Newsitem(override var id: Int = 0,
                     var commentFeed: Option[Int] = None,
                     var image: Option[Int] = None,
                     var accepted2: Option[Date] = None,
-                    var acceptedBy: Option[Int] = None) extends PublishedResource with Commentable {
-
-  override def getType = "N"
-
-}
-
+                    var acceptedBy: Option[Int] = None) extends PublishedResource

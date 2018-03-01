@@ -19,7 +19,11 @@ import org.springframework.transaction.annotation.Transactional
       val newSubmission = resource.id == 0
       if (!newSubmission) {
         resourceDAO.loadResourceById(resource.id).map { existingResource =>
-          resourceUrlHasChanged = !(resource.getUrl == existingResource.getUrl)
+          resourceUrlHasChanged = resource.page.flatMap { rp =>
+            existingResource.page.map { ep =>
+              rp != ep
+            }
+          }.getOrElse(false)
         }
       }
       if (newSubmission || resourceUrlHasChanged) {

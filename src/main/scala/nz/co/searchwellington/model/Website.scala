@@ -3,7 +3,7 @@ package nz.co.searchwellington.model
 import java.util.Date
 
 case class Website(override var id: Int = 0,
-                   override var `type`: String = "",
+                   override val `type`: String = "W",
                    override var title: Option[String] = None,
                    override var description: Option[String] = None,
                    override var page: Option[String] = None,
@@ -25,9 +25,7 @@ case class Website(override var id: Int = 0,
 
   // TODO
   def setFeeds(feeds: Set[Feed]): Unit = {} // TODO
-
-  override def getType: String = "W"
-
+  
   def getWatchlist: Set[Watchlist] = Set()
 
   // TODO

@@ -84,7 +84,13 @@ class EditPermissionService @Autowired() (loggedInUserFilter: LoggedInUserFilter
       return true
     }
 
-    val isOwner = loggedInUser != null && resource.getOwner != null && loggedInUser.getId == resource.getOwner.getId
+    val isOwner = if (loggedInUser != null) {
+      resource.owner.map { o =>
+        loggedInUser.id == o
+      }.getOrElse(false)
+    } else {
+      false
+    }
     isOwner
   }
   

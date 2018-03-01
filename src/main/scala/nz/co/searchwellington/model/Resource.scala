@@ -4,7 +4,7 @@ import java.util.Date
 
 trait Resource {
   var id: Int
-  var `type`: String
+  val `type`: String
   var title: Option[String]
   var description: Option[String]
   var page: Option[String]

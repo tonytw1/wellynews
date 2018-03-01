@@ -4,7 +4,7 @@ import java.util.Date
 
 case class Watchlist(
                       override var id: Int = 0,
-                      override var `type`: String = "",
+                      override val `type`: String = "L",
                       override var title: Option[String] = None,
                       override var description: Option[String] = None,
                       override var page: Option[String] = None,
@@ -19,8 +19,4 @@ case class Watchlist(
                       override var geocode: Option[Geocode] = None,
                       override var owner: Option[Int] = None,
                       override var publisher: Option[Long] = None
-                    ) extends PublishedResource {
-
-  override def getType = "L"
-
-}
+                    ) extends PublishedResource
