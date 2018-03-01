@@ -167,7 +167,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
 
     val withModerationConditions = conditions :+ matchQuery(Held, false)
 
-    val q = must(conditions)
+    val q = must(withModerationConditions)
 
     val request = search in Index -> Resources query q sortByFieldDesc (Date) limit (query.maxItems)
 
