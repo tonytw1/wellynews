@@ -10,14 +10,13 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 class PublisherPageAttributeSetterTest {
   @Mock val resourceDAO: HibernateResourceDAO = null
-  @Mock val publisher: Website = null
+  private val publisher = Website(title = Some("Wellington City Council"))
   private var request: MockHttpServletRequest = null
   private var pageAttributeSetter: PublisherPageAttributeSetter = null
 
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
-    when(publisher.getName).thenReturn("Wellington City Council")
     when(resourceDAO.getPublisherByUrlWords("wellington-city-council")).thenReturn(Some(publisher))
     pageAttributeSetter = new PublisherPageAttributeSetter(resourceDAO)
   }

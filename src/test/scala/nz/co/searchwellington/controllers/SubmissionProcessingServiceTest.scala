@@ -30,7 +30,7 @@ class SubmissionProcessingServiceTest {
   @Mock val tagVoteDAO: HandTaggingDAO = null
   @Mock val resourceDAO: HibernateResourceDAO = null
   @Mock val resource: Newsitem = null
-  @Mock val feed: Feed = null
+  private val feed: Feed = Feed(title = Some(FEED_NAME))
   @Mock val loggedInUser: User = null
   @Mock val urlProcessor: UrlProcessor = null
   @Mock val nominatimGeocodingService: CachingNominatimGeocodingService = null
@@ -44,7 +44,6 @@ class SubmissionProcessingServiceTest {
   @Before def setup {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
-    when(feed.getName).thenReturn(FEED_NAME)
     urlWordsGenerator = new UrlWordsGenerator
     submissionProcessingService = new SubmissionProcessingService(nominatimGeocodingService, tagDAO, tagVoteDAO,
       resourceDAO, urlProcessor, osmIdParser, placeToGeocodeMapper)
