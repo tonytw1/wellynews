@@ -162,6 +162,11 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
       query.publisher.map(p => matchQuery(Publisher, p.id)),
       query.interval.map { i =>
         rangeQuery("date") gte i.getStartMillis lt i.getEndMillis
+      },
+      query.q.map { qt =>
+        val titleMatches = matchQuery(Title, qt).boost(5)
+        val descriptionMatches = matchQuery(Description, qt)
+        should(titleMatches, descriptionMatches)
       }
     ).flatten
 

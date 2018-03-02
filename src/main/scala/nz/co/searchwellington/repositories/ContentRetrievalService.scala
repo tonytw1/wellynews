@@ -40,7 +40,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getAllPublishers: Seq[Website] = {
-    val evenutalWebsites  = elasticSearchIndexer.getAllPublishers().flatMap { ids =>
+    val evenutalWebsites = elasticSearchIndexer.getAllPublishers().flatMap { ids =>
       ids.map { id =>
         mongoRepository.getResourceById(id).map(ro => ro.map(_.asInstanceOf[Website]))
       }
@@ -61,6 +61,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getRecentCommentedNewsitemsForTag(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
     elasticSearchBackedResourceDAO.getRecentCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken, maxItems)
+  }
+
+  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
+    val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), tenSeconds)
+  }
+
+  def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
+    val query = ResourceQuery(`type` = Some("N"), q = Some(keywords), tags = Some(Set(tag)))
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), tenSeconds)
   }
 
   def getTagWatchlist(tag: Tag): Seq[FrontendResource] = {
@@ -128,14 +138,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken, tag, startIndex, maxItems)
-  }
-
-  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken, null, startIndex, maxNewsitems)
-  }
-
-  def getNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    keywordSearchService.getNewsitemsMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken, tag, startIndex, maxItems)
   }
 
   def getNewsitemsMatchingKeywordsCount(keywords: String, tag: Tag): Int = {

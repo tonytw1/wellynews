@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
 import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
@@ -30,7 +29,7 @@ import org.springframework.web.servlet.ModelAndView
 
     val maybeTag =  if (request.getAttribute("tags") != null) (request.getAttribute("tags").asInstanceOf[Seq[Tag]].headOption) else None
 
-    val contentWithCount: (Seq[FrontendResource], Int) = maybeTag.fold { // The problem here is that you should be able to content and count in one go
+    val contentWithCount = maybeTag.fold { // The problem here is that you should be able to content and count in one go
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
 
       val content = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS)
@@ -39,14 +38,14 @@ import org.springframework.web.servlet.ModelAndView
 
     }{ tag =>
       mv.addObject("tag", tag)
-
-      val content = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS)
+      
+      val content = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS)
       val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag)
       (content, contentCount)
-
     }
 
-    mv.addObject(MAIN_CONTENT, contentWithCount._1)
+    import scala.collection.JavaConverters._
+    mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
 
     val contentCount = contentWithCount._2
     mv.addObject("main_content_total", contentCount)
@@ -69,7 +68,8 @@ import org.springframework.web.servlet.ModelAndView
   }
 
   @Override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1))
+    import scala.collection.JavaConverters._
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
   }
 
   @Override def getViewName(mv: ModelAndView): String = {

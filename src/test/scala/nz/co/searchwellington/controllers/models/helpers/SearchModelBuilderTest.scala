@@ -62,7 +62,7 @@ class SearchModelBuilderTest {
   def shouldShowTagResultsIfTagFilterIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", tag, 0, 30)).thenReturn(tagKeywordNewsitemResults)
+    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30)).thenReturn(tagKeywordNewsitemResults)
 
     val mv = modelBuilder.populateContentModel(request).get
 
