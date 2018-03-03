@@ -106,7 +106,8 @@ import org.springframework.web.servlet.view.RedirectView
     if (feed == null) {
       throw new RuntimeException("Could not find feed")
     }
-    var acceptedNewsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url).get) // TODO naked get
+    var value = rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url).get // TODO naked get
+    var acceptedNewsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, value)
     if (acceptedNewsitem == null) {
       log.warn("No matching newsitem found for url: " + url)
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
