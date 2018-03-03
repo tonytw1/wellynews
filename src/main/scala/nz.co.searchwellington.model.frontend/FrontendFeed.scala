@@ -1,25 +1,32 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.Date
+import java.util.{Date, List}
 
 import nz.co.searchwellington.model.FeedAcceptancePolicy
+import uk.co.eelpieconsulting.common.geo.model.Place
 
-class FrontendFeed extends FrontendResource { // TODO migrate to immutable constructor
+case class FrontendFeed( id: Int = 0,
+                         urlWords: String = null,
+                         `type`: String = null,
+                         name: String = null,
+                         url: String = null,
+                         httpStatus: Int = 0,
+                         date: Date = null,
+                         description: String = null,
+                         liveTime: Date = null,
+                         tags: List[FrontendTag] = null,
+                         handTags: List[FrontendTag] = null,
+                         owner: String = null,
+                         place: Place = null,
+                         held: Boolean = false,
+                        latestItemDate: Date = null, acceptancePolicy: FeedAcceptancePolicy = null) extends FrontendResource {
 
-  private var urlWords: String = null
-  private var latestItemDate: Date = null
-  private var acceptancePolicy: FeedAcceptancePolicy = null
-
-  final override def getUrlWords: String = {
-    return urlWords
+  def getLatestItemDate: Date = {
+    latestItemDate
   }
 
-  final def getLatestItemDate: Date = {
-    return latestItemDate
-  }
-
-  final def getAcceptancePolicy: FeedAcceptancePolicy = {
-    return acceptancePolicy
+  def getAcceptancePolicy: FeedAcceptancePolicy = {
+    acceptancePolicy
   }
 
 }
