@@ -7,6 +7,5 @@ class FrontendImage(var url: String) extends java.io.Serializable {
   }
 
   def getUrl = url
-  def setUrl (newUrl: String) = {url = newUrl}
 
 }

@@ -4,10 +4,6 @@ package nz.co.searchwellington.model.frontend
 class FrontendWebsite extends FrontendResource {
   private var urlWords: String = null
 
-  override def setUrlWords(urlWords: String) {
-    this.urlWords = urlWords
-  }
-
   override def getUrlWords: String = {
     return urlWords
   }
