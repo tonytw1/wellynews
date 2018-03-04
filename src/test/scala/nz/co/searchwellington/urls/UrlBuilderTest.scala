@@ -15,6 +15,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 import uk.co.eelpieconsulting.common.geo.model.OsmId
 import uk.co.eelpieconsulting.common.geo.model.OsmType
 import uk.co.eelpieconsulting.common.geo.model.Place
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 object UrlBuilderTest {
   private val SITE_URL = "http://siteurl.test"
@@ -23,7 +24,7 @@ object UrlBuilderTest {
 class UrlBuilderTest {
   @Mock private[urls] val siteInformation: SiteInformation = null
   private var urlBuilder: UrlBuilder = null
-  private var frontendNewsitem: FrontendNewsitem = null
+  private var frontendNewsitem: FeedItem = null
   private var frontendFeed: FrontendFeed = null
   private var tag: Tag = null
 
@@ -31,10 +32,10 @@ class UrlBuilderTest {
     MockitoAnnotations.initMocks(this)
     Mockito.when(siteInformation.getUrl).thenReturn(UrlBuilderTest.SITE_URL)
     urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
-    frontendNewsitem = new FrontendNewsitem
-    frontendNewsitem.setName("Quick brown fox jumps over lazy dog")
+    frontendNewsitem = new FeedItem
+    frontendNewsitem.setTitle("Quick brown fox jumps over lazy dog")
     frontendNewsitem.setDate(new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate)
-    frontendNewsitem.setUrlWords("2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
+    //frontendNewsitem.setUrlWords("2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
     frontendFeed = new FrontendFeed
     tag = new Tag
     tag.setName("atag")

@@ -3,7 +3,6 @@ package nz.co.searchwellington.feeds
 import java.util.Calendar
 
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
-import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.HibernateResourceDAO
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.{Propagation, Transactional}
 import uk.co.eelpieconsulting.common.dates.DateFormatter
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component class FeedReader @Autowired()(resourceDAO: HibernateResourceDAO, rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
@@ -38,7 +38,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
   private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.timeSince(feed.getLastRead))
-      val feedNewsitems: Seq[Any] = rssfeedNewsitemService.getFeedNewsitems(feed)
+      val feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (!feedNewsitems.isEmpty) 200 else -3)
       if (acceptancePolicy.shouldReadFeed) processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems)
@@ -50,9 +50,11 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     }
   }
 
-  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FrontendFeedNewsitem]) = {
+  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem]) = {
     log.info("Accepting feed items")
-    for (feednewsitem <- feedNewsitems) { // TODO new up a new copy before modifying
+
+    feedNewsitems.map { feednewsitem => // TODO new up a new copy before modifying
+
       val cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl)
       feednewsitem.setUrl(cleanSubmittedItemUrl)
       val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy)

@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.FrontendWebsite
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+@Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
+                                                               relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                               frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with CommonSizes {
 
   private val logger: Logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
 
@@ -40,11 +42,9 @@ import org.springframework.web.servlet.ModelAndView
 
       val mv = new ModelAndView
 
-      val frontendPublisher = new FrontendWebsite // TODO push to mapper
-      frontendPublisher.setName(publisher.title.getOrElse(""))
-      frontendPublisher.setUrlWords(publisher.url_words.getOrElse(""))
-
+      val frontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
       mv.addObject("publisher", frontendPublisher)
+
       mv.addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName)
       mv.addObject("description", "")
       mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher.title.getOrElse(""), tag))

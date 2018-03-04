@@ -5,12 +5,12 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, contentRetrievalService: ContentRetrievalService, geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator, frontendResourceMapper: FrontendResourceMapper,
                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
@@ -23,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendFeedNewsitem]) {
+    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FeedItem]) {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
       if (!geotaggedItems.isEmpty) {
         mv.addObject("geocoded", geotaggedItems)

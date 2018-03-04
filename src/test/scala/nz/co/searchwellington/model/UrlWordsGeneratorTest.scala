@@ -12,7 +12,7 @@ class UrlWordsGeneratorTest {
   private var newsitem: FrontendNewsitem = null
 
   @Before def setup {
-    newsitem = new FrontendNewsitem
+    newsitem = FrontendNewsitem()
     newsitem.setName("Some thing happening")
     val pubdate = new DateTime(2010, 4, 2, 0, 0, 0, 0, DateTimeZone.UTC)
     newsitem.setDate(pubdate.toDate)

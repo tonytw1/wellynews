@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -18,7 +18,7 @@ class IndexModelBuilderTest {
   @Mock private[helpers] val archiveLinksService: ArchiveLinksService = null
   @Mock private[helpers] val commonAttributesModelBuilder: CommonAttributesModelBuilder = null
   private[helpers] var request: MockHttpServletRequest = null
-  private[helpers] var latestNewsitems: Seq[FrontendResource] = null
+  var latestNewsitems: Seq[FrontendResource] = null
   private var modelBuilder: IndexModelBuilder = null
 
   @Before def setup {
@@ -26,7 +26,7 @@ class IndexModelBuilderTest {
     modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
     request = new MockHttpServletRequest
     request.setPathInfo("/")
-    latestNewsitems = Seq(new FrontendResource)
+    latestNewsitems = Seq(FrontendNewsitem)
   }
 
   @Test

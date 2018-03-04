@@ -1,7 +1,8 @@
 package nz.co.searchwellington.controllers.models
 
-import nz.co.searchwellington.model.frontend.{FrontendFeedNewsitem, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import org.springframework.stereotype.Component
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component class GeotaggedNewsitemExtractor {
 
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component
     feedNewsitems.filter(i => i.getPlace != null)
   }
 
-  def extractGeotaggedItemsFromFeedNewsitems(feedNewsitems: Seq[FrontendFeedNewsitem]): Seq[FrontendNewsitem] = { // TODO duplication
+  def extractGeotaggedItemsFromFeedNewsitems(feedNewsitems: Seq[FeedItem]): Seq[FeedItem] = { // TODO duplication
     feedNewsitems.filter(i => i.getPlace != null)
   }
 

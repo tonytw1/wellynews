@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.{HibernateResourceDAO, SupressionDAO}
 import nz.co.searchwellington.utils.UrlCleaner
@@ -8,6 +7,7 @@ import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component class FeedAcceptanceDecider @Autowired()(resourceDAO: HibernateResourceDAO,
                                                     supressionDAO: SupressionDAO,
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 
   private val log = Logger.getLogger(classOf[FeedAcceptanceDecider])
 
-  def getAcceptanceErrors(feed: Feed, feedNewsitem: FrontendFeedNewsitem, acceptancePolicy: FeedAcceptancePolicy): Seq[String] = {
+  def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Seq[String] = {
     val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)
     val isSuppressed = supressionDAO.isSupressed(cleanedUrl)
 
@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component
     }
 
     def titleCannotBeBlank(): Option[String] = {
-      if (feedNewsitem.getName != null && feedNewsitem.getName.trim.isEmpty) {
+      if (feedNewsitem.getTitle != null && feedNewsitem.getTitle.trim.isEmpty) {
         Some("Item has no title")
       } else {
         None
@@ -87,11 +87,11 @@ import org.springframework.stereotype.Component
     ).flatten
   }
 
-  def shouldSuggest(feednewsitem: FrontendFeedNewsitem): Boolean = {
+  def shouldSuggest(feednewsitem: FeedItem): Boolean = {
     !alreadyHaveThisFeedItem(feednewsitem)
   }
 
-  private def alreadyHaveThisFeedItem(feedNewsitem: FrontendFeedNewsitem): Boolean = {
+  private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem): Boolean = {
     val url = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)
     resourceDAO.loadResourceByUrl(url) != null
   }
