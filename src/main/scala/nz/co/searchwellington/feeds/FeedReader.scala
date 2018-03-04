@@ -38,7 +38,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
   private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.timeSince(feed.getLastRead))
-      val feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed)
+      val feedNewsitems: Seq[Any] = rssfeedNewsitemService.getFeedNewsitems(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (!feedNewsitems.isEmpty) 200 else -3)
       if (acceptancePolicy.shouldReadFeed) processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems)

@@ -4,17 +4,17 @@ import java.util.Date
 
 import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader
 import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.frontend.FrontendFeedNewsitem
 import nz.co.searchwellington.repositories.HibernateResourceDAO
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component class RssfeedNewsitemService @Autowired() (whakaokoFeedReader: WhakaokoFeedReader, var resourceDAO: HibernateResourceDAO) {
 
   private val log = Logger.getLogger(classOf[RssfeedNewsitemService])
 
-  def getFeedNewsitems(feed: Feed): Seq[FrontendFeedNewsitem] = {
+  def getFeedNewsitems(feed: Feed): Seq[FeedItem] = {
     whakaokoFeedReader.fetchFeedItems(feed)
   }
 
@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component
     publicationDates.max  // TODO None case? By Explict about the ordering
   }
 
-  def getFeedNewsitemByUrl(feed: Feed, url: String): Option[FrontendFeedNewsitem] = {
+  def getFeedNewsitemByUrl(feed: Feed, url: String): Option[FeedItem] = {
     getFeedNewsitems(feed).find( ni => ni.getUrl == url)
   }
 

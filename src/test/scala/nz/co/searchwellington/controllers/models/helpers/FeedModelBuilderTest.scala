@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeedNewsitem, FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.{assertEquals, assertTrue}
@@ -11,6 +11,7 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 class FeedModelBuilderTest {
   @Mock private[models] var rssfeedNewsitemService: RssfeedNewsitemService = null
@@ -20,7 +21,7 @@ class FeedModelBuilderTest {
   @Mock private[models] var frontendResourceMapper: FrontendResourceMapper = null
   private[models] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
   @Mock private[models] var feed: Feed = null
-  @Mock private[models] var feedNewsitems: Seq[FrontendFeedNewsitem] = null
+  @Mock private[models] var feedNewsitems: Seq[FeedItem] = null
   @Mock private[models] var feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: Seq[FeedNewsitemForAcceptance] = null
   @Mock private[models] var geotaggedFeedNewsitems: Seq[FrontendNewsitem] = null
   @Mock private[models] var frontendFeed: FrontendResource = null
@@ -77,4 +78,5 @@ class FeedModelBuilderTest {
     modelBuilder.populateExtraModelContent(request, mv)
     assertEquals(geotaggedFeedNewsitems, mv.getModel.get("geocoded"))
   }
+
 }

@@ -1,6 +1,5 @@
 package nz.co.searchwellington.model
 
-import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import org.joda.time.DateTimeZone
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
@@ -15,7 +14,8 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
     else null
   }
 
-  def makeUrlForNewsitem(newsitem: FrontendNewsitem): String = {
+  /*
+  def makeUrlForFrontendNewsitem(newsitem: FrontendNewsitem): String = {
     val uri = new StringBuilder
     if (newsitem.getPublisherName != null) uri.append("/" + makeUrlWordsFromName(newsitem.getPublisherName))
     val dateFormatter = new DateFormatter(DateTimeZone.UTC)
@@ -25,6 +25,22 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
       return uri.toString
     }
     null
+  }
+  */
+
+  def makeUrlForNewsitem(newsitem: Newsitem): Option[String] = {
+    val uri = new StringBuilder
+
+    newsitem.publisher.map { p =>
+      uri.append("/" + makeUrlWordsFromName(p.toString))
+    }
+
+    newsitem.date2.map { d =>
+      val dateFormatter = new DateFormatter(DateTimeZone.UTC)
+      uri.append("/" + dateFormatter.yearMonthDayUrlStub(d))
+      uri.append("/" + makeUrlWordsFromName(newsitem.title.getOrElse("")))
+      uri.toString()
+    }
   }
 
 }
