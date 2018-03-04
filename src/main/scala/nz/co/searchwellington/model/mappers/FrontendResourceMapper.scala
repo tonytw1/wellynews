@@ -95,19 +95,17 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def mapTagToFrontendTag(tag: Tag): FrontendTag = {
-    new FrontendTag(id = tag.id, name = tag.getName, displayName = tag.getDisplayName, description = tag.description.getOrElse(null))
+    FrontendTag(id = tag.id, name = tag.getName, displayName = tag.getDisplayName, description = tag.description.getOrElse(null))
   }
 
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
-    // TODO why is this different from the above?
-    val frontendPublisher = new FrontendWebsite
-    frontendPublisher.setName(website.title.getOrElse(""))
-    frontendPublisher.setUrlWords(website.url_words.getOrElse(""))
-    frontendPublisher.setUrl(website.page.getOrElse(null))
-    website.geocode.map { g =>
-      frontendPublisher.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(g))
-    }
-    frontendPublisher
+    FrontendWebsite(name = website.title.getOrElse(""),
+      url = website.page.getOrElse(""),
+      urlWords = website.url_words.getOrElse(""),
+      place = website.geocode.map { g =>
+        geocodeToPlaceMapper.mapGeocodeToPlace(g)
+      }.getOrElse(null)
+    )
   }
 
 }
