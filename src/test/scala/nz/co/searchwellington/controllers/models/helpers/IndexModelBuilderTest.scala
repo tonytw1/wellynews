@@ -26,7 +26,7 @@ class IndexModelBuilderTest {
     modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
     request = new MockHttpServletRequest
     request.setPathInfo("/")
-    latestNewsitems = Seq(FrontendNewsitem)
+    latestNewsitems = Seq()
   }
 
   @Test

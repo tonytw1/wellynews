@@ -7,6 +7,7 @@ import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -17,9 +18,17 @@ import scala.concurrent.duration.{Duration, SECONDS}
                                                       geocodeToPlaceMapper: GeocodeToPlaceMapper, mongoRepository: MongoRepository) {
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
+
+
+    val contentItemGeocode: Geocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
+    val place = if (contentItemGeocode != null) {
+      geocodeToPlaceMapper.mapGeocodeToPlace(contentItemGeocode)
+    } else {
+      null
+    }
+
     contentItem match {
       case n: Newsitem =>
-
         val publisher = n.publisher.flatMap { pid =>
           val tenSeconds = Duration(10, SECONDS)
           Await.result(mongoRepository.getResourceById(pid.toInt), tenSeconds)
@@ -31,14 +40,27 @@ import scala.concurrent.duration.{Duration, SECONDS}
           name = n.title.getOrElse(""),
           url = n.page.getOrElse(null),
           date = n.date2.getOrElse(null),
+          description = n.description.getOrElse(null),
+          place = place,
           acceptedFromFeedName = n.feed.map(f => f.toString).getOrElse(""),
           acceptedByProfilename= n.feed.map(p => p.toString).getOrElse(""),
           accepted = n.accepted2.getOrElse(null),
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
-          publisherName = publisher.flatMap(p => p.title).getOrElse("")
+          publisherName = publisher.flatMap(p => p.title).getOrElse(""),
         )
 
+      case f: Feed =>
+        FrontendFeed(
+          id = f.id,
+          `type` = f.`type`,
+          name = f.title.getOrElse(""),
+          url = f.page.getOrElse(null),
+          date = f.date2.getOrElse(null),
+          description = f.description.getOrElse(null),
+          place = place,
+          latestItemDate = f.getLatestItemDate
+        )
 
       case w: Website =>
         mapFrontendWebsite(w)
@@ -48,13 +70,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
     }
   }
   /*
-
-    if (contentItem.`type` == "F") {
-      val frontendFeed = new FrontendFeed
-      val contentItemFeed: Feed = contentItem.asInstanceOf[Feed]
-      frontendFeed.setLatestItemDate(contentItemFeed.getLatestItemDate)
-      frontendContentItem = frontendFeed
-    }
 
 
     frontendContentItem.setDescription(contentItem.description.getOrElse(""))
@@ -82,10 +97,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
     }
     frontendContentItem.setHandTags(handTags)
 
-    val contentItemGeocode: Geocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
-    if (contentItemGeocode != null) {
-      frontendContentItem.setPlace(geocodeToPlaceMapper.mapGeocodeToPlace(contentItemGeocode))
-    }
 
 
 
