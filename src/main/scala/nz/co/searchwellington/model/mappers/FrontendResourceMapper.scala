@@ -1,16 +1,13 @@
 package nz.co.searchwellington.model.mappers
 
-import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.common.geo.model.Place
 
-import scala.collection.JavaConversions._
-import scala.collection.mutable
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
@@ -60,6 +57,17 @@ import scala.concurrent.duration.{Duration, SECONDS}
           description = f.description.getOrElse(null),
           place = place,
           latestItemDate = f.getLatestItemDate
+        )
+
+      case l: Watchlist =>
+        FrontendWatchlist(
+          id = l.id,
+          `type` = l.`type`,
+          name = l.title.getOrElse(""),
+          url = l.page.getOrElse(null),
+          date = l.date2.getOrElse(null),
+          description = l.description.getOrElse(null),
+          place = place
         )
 
       case w: Website =>
