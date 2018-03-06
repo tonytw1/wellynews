@@ -5,7 +5,7 @@ import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.feeds.reading.WhakaokoService
-import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeednewsItemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.htmlparsing.SnapshotBodyExtractor
 import nz.co.searchwellington.model._
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-@Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory, loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack, submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService, contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService, tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, resourceFactory: ResourceFactory, commonModelObjectsService: CommonModelObjectsService, feednewsItemToNewsitemService: FeednewsItemToNewsitemService, urlWordsGenerator: UrlWordsGenerator, whakaoroService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper, spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
+@Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory, loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack, submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService, contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService, tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, resourceFactory: ResourceFactory, commonModelObjectsService: CommonModelObjectsService, feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator, whakaoroService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper, spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
   private val ACCEPTANCE = "acceptance"
@@ -106,15 +106,14 @@ import org.springframework.web.servlet.view.RedirectView
     if (feed == null) {
       throw new RuntimeException("Could not find feed")
     }
-    var value = rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url).get // TODO naked get
-    var acceptedNewsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, value)
-    if (acceptedNewsitem == null) {
+    var feeditemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url).get // TODO naked get
+    if (feeditemToAccept == null) {
       log.warn("No matching newsitem found for url: " + url)
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       return null
     }
-    acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, acceptedNewsitem)
-    val modelAndView: ModelAndView = new ModelAndView("acceptResource")
+    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, feeditemToAccept, feed)
+    val modelAndView = new ModelAndView("acceptResource")
     commonModelObjectsService.populateCommonLocal(modelAndView)
     modelAndView.addObject("heading", "Accepting a submission")
     modelAndView.addObject("resource", acceptedNewsitem)

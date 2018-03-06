@@ -16,7 +16,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   private val log = Logger.getLogger(classOf[FeedAcceptanceDecider])
 
   def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Seq[String] = {
-    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)
+    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)  // TODO duplication
     val isSuppressed = supressionDAO.isSupressed(cleanedUrl)
 
     def cannotBeSupressed(): Option[String] = {

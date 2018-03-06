@@ -36,6 +36,14 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   }
 
   private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {
+
+    def markFeedAsRead(feed: Feed): Unit = {
+      feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed))
+      log.info("Feed latest item publication date is: " + feed.getLatestItemDate)
+      feed.setLastRead(Calendar.getInstance.getTime)
+      contentUpdateService.update(feed)
+    }
+
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.timeSince(feed.getLastRead))
       val feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed)
@@ -56,23 +64,18 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     feedNewsitems.map { feednewsitem => // TODO new up a new copy before modifying
 
       val cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl)
-      feednewsitem.setUrl(cleanSubmittedItemUrl)
+      feednewsitem.setUrl(cleanSubmittedItemUrl)    // TODO do not mutate inputs
+
       val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy)
       val acceptThisItem = acceptanceErrors.isEmpty
       if (acceptThisItem) {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
-        linkCheckerQueue.add(feedReaderUpdateService.acceptNewsitem(feed, feedReaderUser, feednewsitem))
+        var acceptedNewsitem = feedReaderUpdateService.acceptNewsitem(feed, feedReaderUser, feednewsitem)
+        linkCheckerQueue.add(acceptedNewsitem)
       } else {
         log.info("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
       }
     }
-  }
-
-  def markFeedAsRead(feed: Feed): Unit = {
-    feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed))
-    log.info("Feed latest item publication date is: " + feed.getLatestItemDate)
-    feed.setLastRead(Calendar.getInstance.getTime)
-    contentUpdateService.update(feed)
   }
 
 }

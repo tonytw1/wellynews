@@ -12,15 +12,15 @@ import org.mockito.MockitoAnnotations
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-class FeednewsItemToNewsitemServiceTest {
+class FeeditemToNewsitemServiceTest {
   @Mock private[feeds] val textTrimmer: TextTrimmer = null
   @Mock private[feeds] val place: Place = null
   @Mock private val feed: Feed = null
-  private var service: FeednewsItemToNewsitemService = null
+  private var service: FeeditemToNewsitemService = null
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
-    service = new FeednewsItemToNewsitemService(textTrimmer, new PlaceToGeocodeMapper)
+    service = new FeeditemToNewsitemService(textTrimmer, new PlaceToGeocodeMapper)
   }
 
   @Test

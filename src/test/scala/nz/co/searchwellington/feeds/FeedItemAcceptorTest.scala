@@ -15,13 +15,13 @@ class FeedItemAcceptorTest {
 
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
-    feedItemAcceptor = new FeedItemAcceptor
+    feedItemAcceptor = new FeedItemAcceptor(null)
   }
 
   @Test
   @throws[Exception]
   def shouldSetAcceptedTimeWhenAccepting(): Unit = {
-    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem)
+    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
 
     assertTrue(accepted.accepted2.nonEmpty)
   }
@@ -29,7 +29,7 @@ class FeedItemAcceptorTest {
   @Test
   @throws[Exception]
   def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
-    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem)
+    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
 
     assertEquals(Some(user.id), accepted.acceptedBy)
     assertEquals(Some(user.id), accepted.owner)
@@ -38,7 +38,7 @@ class FeedItemAcceptorTest {
   @Test
   @throws[Exception]
   def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
-    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem)
+    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
     assertEquals("Headline", accepted.title.get)
   }
 
