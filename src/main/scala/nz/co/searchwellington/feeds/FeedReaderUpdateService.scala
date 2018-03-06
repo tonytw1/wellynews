@@ -8,8 +8,8 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService, feednewsItemToNewsitemService: FeeditemToNewsitemService) {
 
-  def acceptNewsitem(feed: Feed, feedReaderUser: User, feednewsitem: FeedItem): Int = {
-    val newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feed, feednewsitem)
+  def acceptNewsitem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Int = {
+    val newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feednewsitem, Some(feed))
     contentUpdateService.create(newsitem)
     autoTagger.autotag(newsitem)
     contentUpdateService.update(newsitem)

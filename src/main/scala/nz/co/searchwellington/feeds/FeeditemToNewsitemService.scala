@@ -11,19 +11,22 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
 
   private val MAXIMUM_BODY_LENGTH: Int = 400
 
-  def makeNewsitemFromFeedItem(feed: Feed, feedNewsitem: FeedItem): Newsitem = {  // TODO user as well
+  def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Option[Feed]): Newsitem = {  // TODO user as well
 
-    val newsitem = Newsitem(title = Some(feedNewsitem.getTitle), page = Some(feedNewsitem.getUrl), description = Some(composeDescription(feedNewsitem)),
-      date2 = Some(feedNewsitem.getDate), publisher = None) // TODO publisher
+    val newsitem = Newsitem(title = Some(feedItem.getTitle), page = Some(feedItem.getUrl),
+      description = Some(composeDescription(feedItem)),
+      date2 = Some(feedItem.getDate), publisher = None,
+      feed = feed.map(f => f.id)
+    ) // TODO publisher
     // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
-    // newsitem.setFeed(feed)
+
     // newsitem.setPublisher(feed.getPublisher)
 
-    val place = feedNewsitem.getPlace
+    val place = feedItem.getPlace
     if (place != null) {
       // newsitem.setGeocode(placeToGeocodeMapper.mapPlaceToGeocode(place))
     }
-    if (feedNewsitem.getImageUrl != null) {
+    if (feedItem.getImageUrl != null) {
       // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
     }
     newsitem

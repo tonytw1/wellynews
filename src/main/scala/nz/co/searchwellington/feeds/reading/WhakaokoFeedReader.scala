@@ -6,17 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Component class WhakaokoFeedReader @Autowired()(whakaokoService: WhakaokoService, whakaokoFeedItemMapper: WhakaokoFeedItemMapper) {
+@Component class WhakaokoFeedReader @Autowired()(whakaokoService: WhakaokoService) {
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedReader])
+
+  def fetchFeedItems(): Seq[FeedItem] = {
+    whakaokoService.getChannelFeedItems()
+  }
 
   def fetchFeedItems(feed: Feed): Seq[FeedItem] = {
     log.info("Fetching feed items for feed with whakaoko id: " + feed.getWhakaokoId)
     Option(feed.getWhakaokoId).map { whakaokoId =>
-      val subscriptionFeedItems: Seq[FeedItem] = whakaokoService.getSubscriptionFeedItems(whakaokoId)
-      //val results = subscriptionFeedItems.map { feedItem =>
-      //  whakaokoFeedItemMapper.mapWhakaokoFeeditem(feed, feedItem)
-      //}
+      val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(whakaokoId)
       log.info("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
       subscriptionFeedItems
 
@@ -25,4 +26,5 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       Seq()
     }
   }
+
 }

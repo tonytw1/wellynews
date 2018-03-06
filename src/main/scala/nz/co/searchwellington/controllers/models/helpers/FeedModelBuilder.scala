@@ -3,8 +3,9 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
-import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.model.Feed
+import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance
+import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,10 +13,13 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, contentRetrievalService: ContentRetrievalService, geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator, frontendResourceMapper: FrontendResourceMapper,
-                                               commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, contentRetrievalService: ContentRetrievalService,
+                                               geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedNewsItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
+                                               frontendResourceMapper: FrontendResourceMapper,
+                                               commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                               feeditemToNewsitemService: FeeditemToNewsitemService) extends ModelBuilder {
 
-  private val FEED_ATTRIBUTE: String = "feedAttribute"
+  private val FEED_ATTRIBUTE = "feedAttribute"
 
   def isValid(request: HttpServletRequest): Boolean = {
     return request.getAttribute(FEED_ATTRIBUTE) != null
@@ -31,12 +35,13 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     }
 
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
-      val feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed)
-      if (!feedNewsitems.isEmpty) {
-        val feedItemsWithAcceptanceInformation = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
+      val feedItems = rssfeedNewsitemService.getFeedItemsFor(feed)
+      if (!feedItems.isEmpty) {
+        val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+        val feedItemsWithAcceptanceInformation: Seq[FeedNewsitemForAcceptance] = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
-        populateGeotaggedFeedItems(mv, feedNewsitems)
+        populateGeotaggedFeedItems(mv, feedItems.map(i => i._1))
       }
     }
 

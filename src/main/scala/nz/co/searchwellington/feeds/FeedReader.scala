@@ -12,7 +12,6 @@ import org.apache.log4j.Logger
 import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.{Propagation, Transactional}
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
@@ -46,12 +45,13 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.timeSince(feed.getLastRead))
-      val feedNewsitems = rssfeedNewsitemService.getFeedNewsitems(feed)
+      val feedNewsitems = rssfeedNewsitemService.getFeedItemsFor(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (!feedNewsitems.isEmpty) 200 else -3)
-      if (acceptancePolicy.shouldReadFeed) processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems)
+      if (acceptancePolicy.shouldReadFeed) processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems.map(i => i._1))
       markFeedAsRead(feed)
       log.info("Done processing feed.")
+
     } catch {
       case e: Exception =>
         log.error(e, e)
@@ -70,8 +70,9 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       val acceptThisItem = acceptanceErrors.isEmpty
       if (acceptThisItem) {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
-        var acceptedNewsitem = feedReaderUpdateService.acceptNewsitem(feed, feedReaderUser, feednewsitem)
+        var acceptedNewsitem = feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed)
         linkCheckerQueue.add(acceptedNewsitem)
+
       } else {
         log.info("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
       }

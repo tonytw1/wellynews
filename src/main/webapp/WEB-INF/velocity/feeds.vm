@@ -1,13 +1,11 @@
 #parse("includes/header.vm")
 
-
 <div class="page">
 #parse("includes/topbar.vm")
 
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
-
 
 <div class="main">
 <h2>$heading</h2>
@@ -28,14 +26,13 @@
 	#end
 	<li class="feedlist">
 		<ul>
-			<li><a href="$urlBuilder.getLocalPageUrl($feed)">$feed.name</a></li>
+			<li><a href="$urlBuilder.getFeedUrl($feed)">$feed.name</a></li>
 			#if ($feed.publisherName) <li class="publisher">$feed.publisherName</li> #end
 		</ul>
 	</li>
 	
 #end
 </ul>
-
 
 </div>
 
@@ -49,11 +46,8 @@
 
 #parse("includes/discovered_feeds.vm")
 
-
-
 </div>
-
 </div>
-
 
 #parse("includes/footer.vm")
+

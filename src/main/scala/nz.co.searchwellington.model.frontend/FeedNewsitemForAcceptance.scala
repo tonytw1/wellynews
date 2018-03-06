@@ -1,10 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
+case class FeedNewsitemForAcceptance(val feedNewsitem: FrontendResource, acceptanceState: FeedNewsitemAcceptanceState) {
 
-case class FeedNewsitemForAcceptance(val feedNewsitem: FeedItem, acceptanceState: FeedNewsitemAcceptanceState) {
-
-  def getFeednewsitem: FeedItem = {
+  def getFeednewsitem: FrontendResource = {
     feedNewsitem
   }
 

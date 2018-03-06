@@ -23,6 +23,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
+import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory, loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack, submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService, contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService, tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, resourceFactory: ResourceFactory, commonModelObjectsService: CommonModelObjectsService, feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator, whakaoroService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper, spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
 
@@ -111,17 +112,19 @@ import org.springframework.web.servlet.view.RedirectView
       log.warn("No matching newsitem found for url: " + url)
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       return null
+
+    } else {
+      val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, feeditemToAccept)
+      val modelAndView = new ModelAndView("acceptResource")
+      commonModelObjectsService.populateCommonLocal(modelAndView)
+      modelAndView.addObject("heading", "Accepting a submission")
+      modelAndView.addObject("resource", acceptedNewsitem)
+      modelAndView.addObject("publisher_select", "1")
+      // modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
+      // modelAndView.addObject("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(if (acceptedNewsitem.getFeed != null) acceptedNewsitem.getFeed.getName
+      // else null))
+      modelAndView
     }
-    val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, feeditemToAccept, feed)
-    val modelAndView = new ModelAndView("acceptResource")
-    commonModelObjectsService.populateCommonLocal(modelAndView)
-    modelAndView.addObject("heading", "Accepting a submission")
-    modelAndView.addObject("resource", acceptedNewsitem)
-    modelAndView.addObject("publisher_select", "1")
-    // modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
-    // modelAndView.addObject("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(if (acceptedNewsitem.getFeed != null) acceptedNewsitem.getFeed.getName
-    // else null))
-    return modelAndView
   }
 
   @RequestMapping(Array("/edit/submit/website")) def submitWebsite(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

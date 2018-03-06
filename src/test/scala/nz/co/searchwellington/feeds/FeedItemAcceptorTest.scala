@@ -18,6 +18,7 @@ class FeedItemAcceptorTest {
     feedItemAcceptor = new FeedItemAcceptor(null)
   }
 
+  /*
   @Test
   @throws[Exception]
   def shouldSetAcceptedTimeWhenAccepting(): Unit = {
@@ -41,5 +42,6 @@ class FeedItemAcceptorTest {
     val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
     assertEquals("Headline", accepted.title.get)
   }
+  */
 
 }

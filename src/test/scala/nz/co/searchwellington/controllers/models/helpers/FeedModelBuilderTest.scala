@@ -1,10 +1,10 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
@@ -14,25 +14,27 @@ import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 class FeedModelBuilderTest {
-  @Mock private[models] var rssfeedNewsitemService: RssfeedNewsitemService = null
-  @Mock private[models] var contentRetrievalService: ContentRetrievalService = null
-  @Mock private[models] var geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor = null
-  @Mock private[models] var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
-  @Mock private[models] var frontendResourceMapper: FrontendResourceMapper = null
-  private[models] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock private[models] var feed: Feed = null
-  @Mock private[models] var feedNewsitems: Seq[FeedItem] = null
-  @Mock private[models] var feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: Seq[FeedNewsitemForAcceptance] = null
-  @Mock private[models] var geotaggedFeedNewsitems: Seq[FeedItem] = null
-  @Mock private[models] var frontendFeed: FrontendResource = null
-  private[models] var request: MockHttpServletRequest = null
-  private[models] var modelBuilder: FeedModelBuilder = null
+  @Mock var rssfeedNewsitemService: RssfeedNewsitemService = null
+  @Mock var contentRetrievalService: ContentRetrievalService = null
+  @Mock var geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor = null
+  @Mock var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
+  @Mock var frontendResourceMapper: FrontendResourceMapper = null
+  @Mock var feeditemToNewsitemService: FeeditemToNewsitemService = null
+  var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
+  @Mock var feed: Feed = null
+  @Mock var feeditems: Seq[(FeedItem, Option[Feed])] = null
+  @Mock var feedNewsitems: Seq[Newsitem] = null
+  @Mock var feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: Seq[FeedNewsitemForAcceptance] = null
+  @Mock var geotaggedFeedNewsitems: Seq[FeedItem] = null
+  @Mock var frontendFeed: FrontendResource = null
+  var request: MockHttpServletRequest = null
+  var modelBuilder: FeedModelBuilder = null
 
   @Before
   @throws(classOf[Exception])
   def setUp {
     MockitoAnnotations.initMocks(this)
-    when(rssfeedNewsitemService.getFeedNewsitems(feed)).thenReturn(feedNewsitems)
+    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(feeditems)
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
     when(feedNewsitems.size).thenReturn(10)
     request = new MockHttpServletRequest
@@ -40,7 +42,8 @@ class FeedModelBuilderTest {
     request.setPathInfo("/feed/someonesfeed")
     commonAttributesModelBuilder = new CommonAttributesModelBuilder(contentRetrievalService)
 
-    modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor, feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder)
+    modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
+      feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService)
   }
 
   @Test
@@ -53,7 +56,7 @@ class FeedModelBuilderTest {
   @throws(classOf[Exception])
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)).thenReturn(Seq())
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -63,7 +66,7 @@ class FeedModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)).thenReturn(Seq())
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -73,7 +76,7 @@ class FeedModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)).thenReturn(geotaggedFeedNewsitems)
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(geotaggedFeedNewsitems)
     val mv = modelBuilder.populateContentModel(request).get
     modelBuilder.populateExtraModelContent(request, mv)
     assertEquals(geotaggedFeedNewsitems, mv.getModel.get("geocoded"))
