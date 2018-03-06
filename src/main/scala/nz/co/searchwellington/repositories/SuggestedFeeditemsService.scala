@@ -16,7 +16,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
 
   def getSuggestionFeednewsitems(maxItems: Int): Seq[FrontendResource] = {
-    val channelFeedItems: Seq[(FeedItem, Option[Feed])] = rssfeedNewsitemService.getFeedItems()
+    val channelFeedItems = rssfeedNewsitemService.getFeedItems()
     val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1))
 
     val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
