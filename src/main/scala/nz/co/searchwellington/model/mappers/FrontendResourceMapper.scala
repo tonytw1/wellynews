@@ -53,6 +53,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           `type` = f.`type`,
           name = f.title.getOrElse(""),
           url = f.page.getOrElse(null),
+          urlWords = f.url_words.getOrElse(null),
           date = f.date2.getOrElse(null),
           description = f.description.getOrElse(null),
           place = place,

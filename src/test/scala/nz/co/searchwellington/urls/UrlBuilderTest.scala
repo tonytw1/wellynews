@@ -15,7 +15,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 import uk.co.eelpieconsulting.common.geo.model.OsmId
 import uk.co.eelpieconsulting.common.geo.model.OsmType
 import uk.co.eelpieconsulting.common.geo.model.Place
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 object UrlBuilderTest {
   private val SITE_URL = "http://siteurl.test"
@@ -24,17 +23,17 @@ object UrlBuilderTest {
 class UrlBuilderTest {
   @Mock private[urls] val siteInformation: SiteInformation = null
   private var urlBuilder: UrlBuilder = null
-  private var frontendNewsitem: FeedItem = null
+  private var frontendNewsitem: FrontendNewsitem = null
   private var tag: Tag = null
 
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
     Mockito.when(siteInformation.getUrl).thenReturn(UrlBuilderTest.SITE_URL)
     urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
-    frontendNewsitem = new FeedItem
-    frontendNewsitem.setTitle("Quick brown fox jumps over lazy dog")
-    frontendNewsitem.setDate(new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate)
-    //frontendNewsitem.setUrlWords("2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
+    frontendNewsitem = FrontendNewsitem(name = "Quick brown fox jumps over the lazy dog",
+      date = new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate,
+      urlWords = "2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
+
     tag = new Tag
     tag.setName("atag")
   }
@@ -61,28 +60,26 @@ class UrlBuilderTest {
     assertEquals(UrlBuilderTest.SITE_URL + "/geotagged?osm=12345%2FNODE", urlBuilder.getLocationUrlFor(somewhereWithOSMid))
   }
 
-  /*
+
   @Test
   @throws[Exception]
   def shouldConstructPageUrlForFrontendResourceFromResourcesUrlWords(): Unit = {
-    assertNull(frontendNewsitem.getPublisherName)
+    assertNull(frontendNewsitem.publisherName)
     assertEquals(UrlBuilderTest.SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem))
   }
-  */
 
   @Test
   @throws[Exception]
   def canGenerateFrontendPublisherPageUrl(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl("Wellington City Council"))
 
-  /*
+
   @Test
   @throws[Exception]
   def urlForFeedsShouldPointToOurFeedPage(): Unit = {
-    frontendFeed = new FrontendFeed(urlWords = "my-local-sports-team-match-reports" )
+    val frontendFeed = new FrontendFeed(urlWords = "my-local-sports-team-match-reports")
 
     assertEquals(UrlBuilderTest.SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed))
   }
-  */
 
   @Test
   @throws[Exception]
@@ -90,15 +87,5 @@ class UrlBuilderTest {
     val osmId = new OsmId(24724709, OsmType.WAY)
     assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId))
   }
-
-  @Test
-  def group: Unit = {
-
-    println("Done")
-
-  }
-
-
-
 
 }
