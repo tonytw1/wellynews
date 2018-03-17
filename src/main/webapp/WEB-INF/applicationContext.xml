@@ -16,7 +16,7 @@
 	http://www.springframework.org/schema/task/spring-task-3.0.xsd
 	">
 	
-	<util:properties id="config" location="classpath:searchwellington.properties" />
+	<util:properties id="config" location="classpath:wellynews.properties" />
 	
 	<context:annotation-config />
 	<context:component-scan base-package="nz.co.searchwellington,uk.co.eelpieconsulting.common" />
@@ -28,7 +28,7 @@
         				
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
-			<value>classpath:searchwellington.properties</value>
+			<value>classpath:wellynews.properties</value>
 		</property>
 	</bean>
 	
