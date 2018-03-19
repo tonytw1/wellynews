@@ -7,26 +7,23 @@ import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.Mockito.when
-import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 class SearchModelBuilderTest {
-  @Mock val contentRetrievalService: ContentRetrievalService = null
-  @Mock val urlBuilder: UrlBuilder = null
-  val tag: Tag = Tag(name = "A tag")
-  private var tags: Seq[Tag] = null
+  val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  val urlBuilder = mock(classOf[UrlBuilder])
+  val tag = Tag(name = "A tag")
+  val tags = Seq(tag)
   private var request: MockHttpServletRequest = null
   private var modelBuilder: SearchModelBuilder = null
 
-  val tagNewsitem: FrontendResource = org.mockito.Mockito.mock[FrontendResource]()
+  val tagNewsitem: FrontendResource = org.mockito.Mockito.mock(classOf[FrontendResource])
   val tagKeywordNewsitemResults: Seq[FrontendResource] = Seq(tagNewsitem)
 
   @Before def setup {
-    MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
     modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder)
-    tags = Seq(tag)
   }
 
   @Test
