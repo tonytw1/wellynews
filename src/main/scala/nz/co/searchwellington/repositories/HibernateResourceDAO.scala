@@ -102,7 +102,7 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getResourceByUrl(url), Duration(1, MINUTES))
   }
 
-  @Deprecated("UI should be passing id")
+  @Deprecated // UI should be passing id
   def getPublisherByName(name: String): Option[Website] = {
     Await.result(mongoRepository.getWebsiteByName(name), Duration(1, MINUTES))
 
@@ -111,8 +111,8 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), Duration(1, MINUTES))
   }
 
-  def loadFeedByUrlWords(urlWords: String): Feed = {
-    Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES)).getOrElse(null) // TODO callers need to move to Java and accept an Option
+  def loadFeedByUrlWords(urlWords: String): Option[Feed] = {
+    Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))
   }
 
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {

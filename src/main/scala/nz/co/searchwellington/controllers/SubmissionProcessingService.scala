@@ -151,7 +151,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
       if (!Strings.isNullOrEmpty(request.getParameter("acceptedFromFeed"))) {
         val acceptedFromFeedUrlWords: String = request.getParameter("acceptedFromFeed")
         log.info("Item was accepted from a feed with url words: " + acceptedFromFeedUrlWords)
-        Option(resourceDAO.loadFeedByUrlWords(acceptedFromFeedUrlWords)).map { feed =>
+        resourceDAO.loadFeedByUrlWords(acceptedFromFeedUrlWords).map { feed =>
           log.info("Setting accepted from feed to: " + feed.title)
           // (editResource.asInstanceOf[Newsitem]).setFeed(feed)
           // (editResource.asInstanceOf[Newsitem]).setAcceptedBy(loggedInUser)

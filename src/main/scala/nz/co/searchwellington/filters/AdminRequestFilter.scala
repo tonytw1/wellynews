@@ -77,13 +77,9 @@ import org.springframework.stereotype.Component
     if (request.getParameter("feed") != null) {
       val feedParameter: String = request.getParameter("feed")
       log.debug("Loading feed by url words: " + feedParameter)
-      val feed: Resource = resourceDAO.loadFeedByUrlWords(feedParameter)
-      if (feed != null) {
+      resourceDAO.loadFeedByUrlWords(feedParameter).map { feed =>
         log.debug("Found feed: " + feed.title)
         request.setAttribute("feedAttribute", feed)
-      }
-      else {
-        log.debug("Could not find feed: " + feed)
       }
     }
 
