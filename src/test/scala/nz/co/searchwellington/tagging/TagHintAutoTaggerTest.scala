@@ -22,9 +22,7 @@ class TagHintAutoTaggerTest {
     val tag = new TagBuilder().autotagHints("fox,animal").build
     val anotherTag = new TagBuilder().autotagHints("cat").build
     when(tagDAO.getAllTags).thenReturn(Seq(tag, anotherTag))
-
-    val resource = Newsitem()
-    resource.setName("The quick brown fox jumped over the lazy dog")
+    val resource = Newsitem(title = Some("The quick brown fox jumped over the lazy dog"))
 
     val suggestions = tagHintAutoTagger.suggestTags(resource)
 
