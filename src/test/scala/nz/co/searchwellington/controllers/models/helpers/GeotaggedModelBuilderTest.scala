@@ -6,34 +6,29 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertNull, assertTrue}
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Matchers._
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
 class GeotaggedModelBuilderTest {
-  val contentRetrievalService: ContentRetrievalService = mock(classOf[ContentRetrievalService])
-  val urlBuilder: UrlBuilder = mock(classOf[UrlBuilder])
-  val rssUrlBuilder: RssUrlBuilder = mock(classOf[RssUrlBuilder])
-  val relatedTagsService: RelatedTagsService = mock(classOf[RelatedTagsService])
+  val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  val urlBuilder = mock(classOf[UrlBuilder])
+  val rssUrlBuilder = mock(classOf[RssUrlBuilder])
+  val relatedTagsService = mock(classOf[RelatedTagsService])
   val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   val newsitemsNearPetoneStationFirstPage: Seq[FrontendResource] = null
   val newsitemsNearPetoneStationSecondPage: Seq[FrontendResource] = null
-  private var request: MockHttpServletRequest = null
-  private var validLocation: Place = null
+
+  val request = new MockHttpServletRequest
+  val validLocation = new Place("Petone Station", new LatLong(1.1, 2.2), null)
   val invalidLocation: Place = null
 
   private val TOTAL_GEOTAGGED_COUNT: Long = 512
   private val LOCATION_RESULTS_COUNT: Long = 33
 
   val modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService, commonAttributesModelBuilder)
-
-  @Before
-  def setUp {
-    request = new MockHttpServletRequest
-    validLocation = new Place("Petone Station", new LatLong(1.1, 2.2), null)
-  }
 
   @Test
   def shouldBeValidForGeotaggedPath {
