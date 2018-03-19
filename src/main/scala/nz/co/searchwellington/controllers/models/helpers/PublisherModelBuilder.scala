@@ -75,7 +75,6 @@ import org.springframework.web.servlet.ModelAndView
     import scala.collection.JavaConverters._
 
     val publisherFeeds = contentRetrievalService.getPublisherFeeds(publisher)
-    logger.info("Publisher feeds: " + publisherFeeds.size)
     mv.addObject("feeds", publisherFeeds.asJava)
 
     mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher).asJava)
