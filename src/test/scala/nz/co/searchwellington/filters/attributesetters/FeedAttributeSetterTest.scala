@@ -17,7 +17,7 @@ class FeedAttributeSetterTest {
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
-    when(resourceDAO.loadFeedByUrlWords("wcc-news")).thenReturn(feed)
+    when(resourceDAO.loadFeedByUrlWords("wcc-news")).thenReturn(Some(feed))
     feedAttributeSetter = new FeedAttributeSetter(resourceDAO)
   }
 

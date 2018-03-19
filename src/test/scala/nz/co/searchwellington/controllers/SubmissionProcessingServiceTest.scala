@@ -30,7 +30,7 @@ class SubmissionProcessingServiceTest {
   @Mock val tagVoteDAO: HandTaggingDAO = null
   @Mock val resourceDAO: HibernateResourceDAO = null
   @Mock val resource: Newsitem = null
-  private val feed: Feed = Feed(title = Some(FEED_NAME))
+  val feed = Feed(title = Some(FEED_NAME))
   @Mock val loggedInUser: User = null
   @Mock val urlProcessor: UrlProcessor = null
   @Mock val nominatimGeocodingService: CachingNominatimGeocodingService = null
@@ -74,7 +74,7 @@ class SubmissionProcessingServiceTest {
   @throws[Exception]
   def shouldPopulateAcceptanceFieldsOnInitalSubmission {
     request.addParameter("acceptedFromFeed", urlWordsGenerator.makeUrlWordsFromName(FEED_NAME))
-    when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(feed)
+    when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(Some(feed))
 
     submissionProcessingService.processAcceptance(request, resource, loggedInUser)
 

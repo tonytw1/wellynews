@@ -26,7 +26,7 @@ class RequestFilterTest {
     when(tagDAO.loadTagByName("transport")).thenReturn(Some(transportTag))
     when(tagDAO.loadTagByName("soccer")).thenReturn(Some(soccerTag))
     when(resourceDAO.getPublisherByUrlWords("capital-times")).thenReturn(Some(capitalTimesPublisher))
-    when(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).thenReturn(feed)
+    when(resourceDAO.loadFeedByUrlWords("tranz-metro-delays")).thenReturn(Some(feed))
     filter = new RequestFilter(new CombinerPageAttributeSetter(tagDAO, resourceDAO), new PublisherPageAttributeSetter(resourceDAO), new FeedAttributeSetter(resourceDAO), new TagPageAttributeSetter(tagDAO), filters) // TODO suggests test coverage at wrong level
   }
 

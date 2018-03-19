@@ -65,7 +65,11 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getWebsiteByName(name: String): Future[Option[Website]] = {
-    getResourceBy(BSONDocument("type" -> "W", "name" -> name)).map( ro => ro.map(r => r.asInstanceOf[Website]))
+    getResourceBy(BSONDocument("type" -> "W", "name" -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
+  }
+
+  def getWebsiteByNamePrefix(q: String): Future[List[Website]] = {
+    resourceCollection.find(BSONDocument("type" -> "W", "name" -> q)).cursor[Website]().collect[List]() // TODO how to prefix in Mongo?
   }
 
   def getWebsiteByUrlwords(urlWords: String): Future[Option[Website]] = {

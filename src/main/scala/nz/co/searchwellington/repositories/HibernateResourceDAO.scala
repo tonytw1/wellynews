@@ -13,9 +13,7 @@ import scala.concurrent.duration._
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) {
 
   def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
-    // val session = sessionFactory.getCurrentSession
-     // session.createQuery("select name from nz.co.searchwellington.model.Resource where type='W' and name like ? order by name").setString(0, q + '%').setMaxResults(50).asInstanceOf[List[java.lang.String]]
-    Seq() // TODO
+    Await.result(mongoRepository.getWebsiteByNamePrefix(q), Duration(1, MINUTES)).map(p => p.title.getOrElse(""))
   }
 
   def getAllFeeds: Seq[Feed] = {
@@ -23,11 +21,33 @@ import scala.concurrent.duration._
   }
 
   def getFeedsToRead: Seq[Feed] = {
-    getAllFeeds.filterNot( f => f.acceptance == "ignore").sortBy(_.getLastRead).reverse
+    getAllFeeds.filterNot(f => f.acceptance == "ignore").sortBy(_.getLastRead).reverse
   }
 
   def getAllWatchlists: Seq[Resource] = {
     Await.result(mongoRepository.getAllWatchlists(), Duration(10, SECONDS))
+  }
+
+
+  def loadResourceById(resourceID: Int): Option[Resource] = {
+    Await.result(mongoRepository.getResourceById(resourceID), Duration(1, MINUTES))
+  }
+
+  def loadResourceByUrl(url: String): Option[Resource] = {
+    Await.result(mongoRepository.getResourceByUrl(url), Duration(1, MINUTES))
+  }
+
+  @Deprecated // UI should be passing id
+  def getPublisherByName(name: String): Option[Website] = {
+    Await.result(mongoRepository.getWebsiteByName(name), Duration(1, MINUTES))
+
+  }
+  def getPublisherByUrlWords(urlWords: String): Option[Website] = {
+    Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), Duration(1, MINUTES))
+  }
+
+  def loadFeedByUrlWords(urlWords: String): Option[Feed] = {
+    Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))
   }
 
   @SuppressWarnings(Array("unchecked")) def getAllDiscoveredFeeds: Seq[DiscoveredFeed] = {
@@ -94,35 +114,9 @@ import scala.concurrent.duration._
     0 // TODO
   }
 
-  def loadResourceById(resourceID: Int): Option[Resource] = {
-    Await.result(mongoRepository.getResourceById(resourceID), Duration(1, MINUTES))
-  }
-
-  def loadResourceByUrl(url: String): Option[Resource] = {
-    Await.result(mongoRepository.getResourceByUrl(url), Duration(1, MINUTES))
-  }
-
-  @Deprecated // UI should be passing id
-  def getPublisherByName(name: String): Option[Website] = {
-    Await.result(mongoRepository.getWebsiteByName(name), Duration(1, MINUTES))
-
-  }
-  def getPublisherByUrlWords(urlWords: String): Option[Website] = {
-    Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), Duration(1, MINUTES))
-  }
-
-  def loadFeedByUrlWords(urlWords: String): Option[Feed] = {
-    Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))
-  }
-
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
     null
-  }
-
-  def loadFeedByWhakaoroId(whakaoroId: String): Feed = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).add(Restrictions.eq("whakaokoId", whakaoroId)).setMaxResults(1).uniqueResult.asInstanceOf[Feed]
-    null // TODO
   }
 
   def loadByUrlWords(urlWords: String): Option[Resource] = {

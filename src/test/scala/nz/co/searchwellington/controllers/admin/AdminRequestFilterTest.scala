@@ -125,7 +125,7 @@ class AdminRequestFilterTest {
   def testShouldPopulateFeedAttributeFromParameter {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("feed", "a-feed")
-    when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(feed)
+    when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(Some(feed))
     when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
 
     filter.loadAttributesOntoRequest(request)
