@@ -8,9 +8,8 @@ import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.when
-import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.Mock
+import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
@@ -23,9 +22,9 @@ class FeedModelBuilderTest {
   val feeditemToNewsitemService =  mock(classOf[FeeditemToNewsitemService])
   val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
-  var feed: Feed = Feed(page = Some("http://localhost/a-feed"))
-  @Mock var feeditems: Seq[(FeedItem, Option[Feed])] = null
-  @Mock var feedNewsitems: Seq[Newsitem] = null
+  var feed = Feed(page = Some("http://localhost/a-feed"))
+  var feeditems: Seq[(FeedItem, Option[Feed])] = Seq()
+  var feedNewsitems: Seq[Newsitem] = Seq()
 
   val decoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
   val anotherDecoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
@@ -45,10 +44,8 @@ class FeedModelBuilderTest {
   @Before
   @throws(classOf[Exception])
   def setUp {
-    MockitoAnnotations.initMocks(this)
     when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(feeditems)
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
-    when(feedNewsitems.size).thenReturn(10)
     request = new MockHttpServletRequest
     request.setAttribute("feedAttribute", feed)
     request.setPathInfo("/feed/someonesfeed")
