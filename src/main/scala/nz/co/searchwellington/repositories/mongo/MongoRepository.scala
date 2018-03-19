@@ -64,6 +64,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("type" -> "F", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
+  def getWebsiteByName(name: String): Future[Option[Website]] = {
+    getResourceBy(BSONDocument("type" -> "W", "name" -> name)).map( ro => ro.map(r => r.asInstanceOf[Website]))
+  }
+
   def getWebsiteByUrlwords(urlWords: String): Future[Option[Website]] = {
     getResourceBy(BSONDocument("type" -> "W", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
   }

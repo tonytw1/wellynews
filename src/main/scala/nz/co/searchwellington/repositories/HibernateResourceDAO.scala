@@ -102,6 +102,11 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getResourceByUrl(url), Duration(1, MINUTES))
   }
 
+  @Deprecated("UI should be passing id")
+  def getPublisherByName(name: String): Option[Website] = {
+    Await.result(mongoRepository.getWebsiteByName(name), Duration(1, MINUTES))
+
+  }
   def getPublisherByUrlWords(urlWords: String): Option[Website] = {
     Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), Duration(1, MINUTES))
   }
@@ -113,11 +118,6 @@ import scala.concurrent.duration._
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
     null
-  }
-
-  def getPublisherByName(name: String): Option[Website] = {
-   // Option(sessionFactory.getCurrentSession.createCriteria(classOf[Website]).add(Restrictions.eq("name", name)).setMaxResults(1).uniqueResult.asInstanceOf[Website])
-    None // TODO
   }
 
   def loadFeedByWhakaoroId(whakaoroId: String): Feed = {
