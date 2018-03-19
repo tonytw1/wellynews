@@ -13,13 +13,16 @@ import org.springframework.mock.web.MockHttpServletRequest
 class SearchModelBuilderTest {
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
   val urlBuilder = mock(classOf[UrlBuilder])
+
   val tag = Tag(name = "A tag")
   val tags = Seq(tag)
+
   private var request: MockHttpServletRequest = null
   private var modelBuilder: SearchModelBuilder = null
 
-  val tagNewsitem: FrontendResource = org.mockito.Mockito.mock(classOf[FrontendResource])
-  val tagKeywordNewsitemResults: Seq[FrontendResource] = Seq(tagNewsitem)
+  val tagNewsitem = mock(classOf[FrontendResource])
+  val anotherTagNewsitem = mock(classOf[FrontendResource])
+  val tagKeywordNewsitemResults: Seq[FrontendResource] = Seq(tagNewsitem, anotherTagNewsitem)
 
   @Before def setup {
     request = new MockHttpServletRequest
@@ -61,12 +64,12 @@ class SearchModelBuilderTest {
   def shouldShowTagResultsIfTagFilterIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-
     when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30)).thenReturn(tagKeywordNewsitemResults)
 
     val mv = modelBuilder.populateContentModel(request).get
 
-    assertEquals(tagKeywordNewsitemResults, mv.getModel.get("main_content"))
+    import scala.collection.JavaConverters._
+    assertEquals(tagKeywordNewsitemResults.asJava, mv.getModel.get("main_content"))
   }
 
 }
