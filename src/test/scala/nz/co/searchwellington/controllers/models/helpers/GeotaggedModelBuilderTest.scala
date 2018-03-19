@@ -71,7 +71,7 @@ class GeotaggedModelBuilderTest {
 
     val modelAndView = modelBuilder.populateContentModel(request).get
 
-    assertEquals(0, modelAndView.getModel.get("page"))
+    assertEquals(1, modelAndView.getModel.get("page"))
     assertEquals(GeotaggedModelBuilderTest.TOTAL_GEOTAGGED_COUNT, modelAndView.getModel.get("main_content_total"))
   }
 
@@ -115,7 +115,7 @@ class GeotaggedModelBuilderTest {
 
     val modelAndView = modelBuilder.populateContentModel(request).get
 
-    assertEquals(0, modelAndView.getModel.get("page"))
+    assertEquals(1, modelAndView.getModel.get("page"))
     assertEquals(GeotaggedModelBuilderTest.LOCATION_RESULTS_COUNT, modelAndView.getModel.get("main_content_total"))
   }
 

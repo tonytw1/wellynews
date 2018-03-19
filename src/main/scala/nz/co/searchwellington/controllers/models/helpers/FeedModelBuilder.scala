@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest
 
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance
-import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -38,7 +38,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       val feedItems = rssfeedNewsitemService.getFeedItemsFor(feed)
       if (!feedItems.isEmpty) {
         val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
-        val feedItemsWithAcceptanceInformation: Seq[FeedNewsitemForAcceptance] = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
+        val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
         populateGeotaggedFeedItems(mv, feedItems.map(i => i._1))

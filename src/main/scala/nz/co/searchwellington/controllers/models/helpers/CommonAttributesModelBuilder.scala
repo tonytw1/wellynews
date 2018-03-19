@@ -12,7 +12,7 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("rss_url", url)
   }
 
-  final def populateSecondaryFeeds(mv: ModelAndView) {
+  def populateSecondaryFeeds(mv: ModelAndView) {
     mv.addObject("righthand_heading", "Local Feeds")
     mv.addObject("righthand_description", "Recently updated feeds from local organisations.")
     val allFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate()

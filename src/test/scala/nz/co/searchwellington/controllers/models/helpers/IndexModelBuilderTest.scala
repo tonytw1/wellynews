@@ -1,32 +1,34 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.{Mock, Mockito, MockitoAnnotations}
+import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 class IndexModelBuilderTest {
-  @Mock private[helpers] val contentRetrievalService: ContentRetrievalService = null
-  @Mock private[helpers] val rssUrlBuilder: RssUrlBuilder = null
-  @Mock private[helpers] val loggedInUserFilter: LoggedInUserFilter = null
-  @Mock private[helpers] val urlBuilder: UrlBuilder = null
-  @Mock private[helpers] val archiveLinksService: ArchiveLinksService = null
-  @Mock private[helpers] val commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  private[helpers] var request: MockHttpServletRequest = null
-  var latestNewsitems: Seq[FrontendResource] = null
-  private var modelBuilder: IndexModelBuilder = null
+
+  val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  val rssUrlBuilder = mock(classOf[RssUrlBuilder])
+  val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+  val urlBuilder = mock(classOf[UrlBuilder])
+  val archiveLinksService = mock(classOf[ArchiveLinksService])
+  val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+
+  val request = new MockHttpServletRequest
+
+  val newsitem = org.mockito.Mockito.mock(classOf[FrontendResource])
+  val anotherNewsitem = org.mockito.Mockito.mock(classOf[FrontendResource])
+  val latestNewsitems = Seq(newsitem, anotherNewsitem)
+
+  val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
 
   @Before def setup {
-    MockitoAnnotations.initMocks(this)
-    modelBuilder = new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
-    request = new MockHttpServletRequest
     request.setPathInfo("/")
-    latestNewsitems = Seq()
   }
 
   @Test
@@ -52,8 +54,12 @@ class IndexModelBuilderTest {
   @Test
   @throws[Exception]
   def indexPageMainContentIsTheLatestNewsitems {
-    Mockito.when(contentRetrievalService.getLatestNewsitems(30, 1)).thenReturn(latestNewsitems)
+    when(contentRetrievalService.getLatestNewsitems(30, 1)).thenReturn(latestNewsitems)
+
     val mv = modelBuilder.populateContentModel(request).get
-    assertEquals(latestNewsitems, mv.getModel.get("main_content"))
+
+    import scala.collection.JavaConverters._
+    assertEquals(latestNewsitems.asJava, mv.getModel.get("main_content"))
   }
+
 }
