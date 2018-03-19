@@ -21,7 +21,7 @@ class FeedModelBuilderTest {
   @Mock var frontendResourceMapper: FrontendResourceMapper = null
   @Mock var feeditemToNewsitemService: FeeditemToNewsitemService = null
   var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock var feed: Feed = null
+  var feed: Feed = Feed(page = Some("http://localhost/a-feed"))
   @Mock var feeditems: Seq[(FeedItem, Option[Feed])] = null
   @Mock var feedNewsitems: Seq[Newsitem] = null
   @Mock var feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: Seq[FeedNewsitemForAcceptance] = null
@@ -77,8 +77,11 @@ class FeedModelBuilderTest {
   @throws(classOf[Exception])
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(geotaggedFeedNewsitems)
+    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate).thenReturn(Seq())
+
     val mv = modelBuilder.populateContentModel(request).get
     modelBuilder.populateExtraModelContent(request, mv)
+
     assertEquals(geotaggedFeedNewsitems, mv.getModel.get("geocoded"))
   }
 
