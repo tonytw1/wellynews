@@ -18,7 +18,9 @@ class SearchModelBuilderTest {
   private var tags: Seq[Tag] = null
   private var request: MockHttpServletRequest = null
   private var modelBuilder: SearchModelBuilder = null
-  @Mock val tagKeywordNewsitemResults: Seq[FrontendResource] = null
+
+  val tagNewsitem: FrontendResource = org.mockito.Mockito.mock[FrontendResource]()
+  val tagKeywordNewsitemResults: Seq[FrontendResource] = Seq(tagNewsitem)
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
@@ -62,6 +64,7 @@ class SearchModelBuilderTest {
   def shouldShowTagResultsIfTagFilterIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
+
     when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30)).thenReturn(tagKeywordNewsitemResults)
 
     val mv = modelBuilder.populateContentModel(request).get
