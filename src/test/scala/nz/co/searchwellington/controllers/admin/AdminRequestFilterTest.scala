@@ -107,7 +107,6 @@ class AdminRequestFilterTest {
   def shouldPopulateTagFromParameterAsWell {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("tag", "transport")
-    when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
 
     filter.loadAttributesOntoRequest(request)
 
@@ -122,7 +121,6 @@ class AdminRequestFilterTest {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("feed", "a-feed")
     when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(Some(feed))
-    when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
 
     filter.loadAttributesOntoRequest(request)
 
