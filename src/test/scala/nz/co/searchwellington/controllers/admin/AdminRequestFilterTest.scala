@@ -69,17 +69,6 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def shouldPutTagOntoEditTagPath {
-    request.setPathInfo("/edit/tag/transport")
-
-    filter.loadAttributesOntoRequest(request)
-
-    verify(tagDAO).loadTagByName("transport")
-    val requestTag = request.getAttribute("tag").asInstanceOf[Tag]
-    assertNotNull(requestTag)
-  }
-
-  @Test
   def embargoDatesInFullDateTimeFormatAreAccepted {
     request.setPathInfo("/edit/save")
     request.setParameter("embargo_date", "17 dec 2011 21:12")

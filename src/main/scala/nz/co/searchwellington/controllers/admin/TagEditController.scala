@@ -179,4 +179,17 @@ import org.springframework.web.servlet.view.RedirectView
     editTag.setMainImage(mainImage)
     editTag.setSecondaryImage(secondaryImage)
   }
+
+  /*
+  log.debug("Looking for edit tags")
+  val pattern = Pattern.compile("^/edit/tag/(.*)$")
+  val matcher = pattern.matcher(request.getPathInfo)
+  if (matcher.matches) {
+    val tagname = matcher.group(1)
+    tagDAO.loadTagByName(tagname).map { tag =>
+      request.setAttribute("tag", tag)
+    }
+  }
+  */
+
 }

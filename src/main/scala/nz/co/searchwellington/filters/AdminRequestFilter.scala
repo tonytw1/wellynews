@@ -90,17 +90,6 @@ import org.springframework.stereotype.Component
         request.setAttribute("parent_tag", tag)
       }
     }
-
-    log.debug("Looking for edit tags")
-    val pattern: Pattern = Pattern.compile("^/edit/tag/(.*)$")
-    val matcher: Matcher = pattern.matcher(request.getPathInfo)
-    if (matcher.matches) {
-      val tagname = matcher.group(1)
-      tagDAO.loadTagByName(tagname).map { tag =>
-        request.setAttribute("tag", tag)
-      }
-    }
-
   }
 
   private def parseEmbargoDate(dateString: String): Option[Date] = {
