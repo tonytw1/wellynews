@@ -96,22 +96,16 @@ import org.springframework.stereotype.Component
 
     val supportedEmbargoDateFormats = Seq(new SimpleDateFormat("dd MMM yyyy HH:mm"), new SimpleDateFormat("HH:mm"))
 
-    val parsed = supportedEmbargoDateFormats.map { dateFormat =>
+    val parsed = supportedEmbargoDateFormats.flatMap { dateFormat =>
       try {
-        val date = dateFormat.parse(dateString)
-        if (date != null) {
-          Some(date)
-        } else {
-          None
-        }
-      }
-      catch {
+        Option(dateFormat.parse(dateString))
+      } catch {
         case e: ParseException => {
           log.warn("Supplied embargo date '" + dateString + "' did not match date format: " + dateFormat.toPattern)
           None
         }
       }
-    }.flatten
+    }
 
     val withTextDates = parsed.headOption.fold {
       val time: Date = new StringToTime(dateString)
