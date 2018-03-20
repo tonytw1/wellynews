@@ -20,12 +20,13 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 class AdminRequestFilterTest {
   val resourceDAO = mock(classOf[HibernateResourceDAO])
-  val filter = new AdminRequestFilter(resourceDAO, tagDAO, new ResourceParameterFilter(resourceDAO), new TagsParameterFilter(tagDAO))
   val transportTag = Tag(name = "transport")
   val feed = mock(classOf[Feed])
   val resource = mock(classOf[Resource])
   val tagDAO = mock(classOf[TagDAO])
   val request = new MockHttpServletRequest
+
+  val filter = new AdminRequestFilter(resourceDAO, tagDAO, new ResourceParameterFilter(resourceDAO), new TagsParameterFilter(tagDAO))
 
   @Before
   def setUp {
@@ -34,10 +35,9 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def testShouldPopulateParentTagAttribute {
+  def shouldPopulateParentTagAttribute {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("parent", "transport")
-    when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
 
     filter.loadAttributesOntoRequest(request)
 
@@ -45,7 +45,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def testShouldParseDateParameterIntoDateAttribute {
+  def shouldParseDateParameterIntoDateAttribute {
     request.setPathInfo("/edit/save")
     request.setParameter("date", "23 Apr 2009")
 
@@ -57,7 +57,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def testShouldPopulateResourceFromParameter {
+  def shouldPopulateResourceFromParameter {
     request.setPathInfo("/edit/edit")
     request.setParameter("resource", "567")
 
@@ -69,7 +69,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def testShouldPutTagOntoEditTagPath {
+  def shouldPutTagOntoEditTagPath {
     request.setPathInfo("/edit/tag/transport")
 
     filter.loadAttributesOntoRequest(request)
@@ -80,7 +80,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def testEmbargoDatesInFullDateTimeFormatAreAccepted {
+  def embargoDatesInFullDateTimeFormatAreAccepted {
     request.setPathInfo("/edit/save")
     request.setParameter("embargo_date", "17 dec 2011 21:12")
 
@@ -104,7 +104,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def testShouldPopulateTagFromParameterAsWell {
+  def shouldPopulateTagFromParameterAsWell {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("tag", "transport")
     when(tagDAO.loadTagByName("save")).thenReturn(None) // TODO should not be needed
@@ -118,7 +118,7 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def testShouldPopulateFeedAttributeFromParameter {
+  def shouldPopulateFeedAttributeFromParameter {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("feed", "a-feed")
     when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(Some(feed))
