@@ -1,38 +1,38 @@
 package nz.co.searchwellington.controllers.admin
 
+import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, SubmissionProcessingService, UrlStack}
+import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
+import nz.co.searchwellington.modification.TagModificationService
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.junit.Assert.{assertEquals, assertNull}
-import org.junit.{Before, Test}
-import org.mockito.Mockito.{verify, when}
-import org.mockito.{Mock, MockitoAnnotations}
+import org.junit.Test
+import org.mockito.Mockito.{mock, verify, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 class TagEditControllerTest {
-  @Mock val requestFilter = null
-  @Mock val tagWidgetFactory = null
-  @Mock val urlStack = null
-  @Mock val tagDAO: TagDAO = null
-  @Mock val tagModifcationService = null
-  @Mock val loggedInUserFilter = null
-  @Mock val editPermissionService = null
-  @Mock val submissionProcessingService = null
-  @Mock val commonModelObjectsService = null
-  @Mock val urlWordsGenerator: UrlWordsGenerator = null
-  @Mock val newTag = null
-  @Mock val existingTag = null
+   val requestFilter = mock(classOf[AdminRequestFilter])
+   val tagWidgetFactory = mock(classOf[TagsWidgetFactory])
+   val urlStack = mock(classOf[UrlStack])
+   val tagDAO = mock(classOf[TagDAO])
+   val tagModifcationService = mock(classOf[TagModificationService])
+   val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+   val editPermissionService = mock(classOf[EditPermissionService])
+   val submissionProcessingService = mock(classOf[SubmissionProcessingService])
+   val commonModelObjectsService = mock(classOf[CommonModelObjectsService])
+   val urlWordsGenerator = mock(classOf[UrlWordsGenerator])
 
-  private var request: MockHttpServletRequest = null
+   val newTag = Tag(name = "A new tag")
+   val existingTag = Tag(name = "An existing tag")
+
+  private val request = new MockHttpServletRequest
   private val response = null
-  private var controller: TagEditController = null
+
+  private val controller = new TagEditController(requestFilter, tagWidgetFactory, urlStack, tagDAO, tagModifcationService, loggedInUserFilter, editPermissionService, submissionProcessingService, commonModelObjectsService, urlWordsGenerator)
 
   private val NEW_TAG_DISPLAY_NAME = "A new tag"
-
-  @Before def setup(): Unit = {
-    MockitoAnnotations.initMocks(this)
-    request = new MockHttpServletRequest
-    controller = new TagEditController(requestFilter, tagWidgetFactory, urlStack, tagDAO, tagModifcationService, loggedInUserFilter, editPermissionService, submissionProcessingService, commonModelObjectsService, urlWordsGenerator)
-  }
 
   @Test
   @throws[Exception]
@@ -52,7 +52,7 @@ class TagEditControllerTest {
   @throws[Exception]
   def shouldRejectNewTagIfUrlWordsClauseWithAnExistingTag(): Unit = {
     when(tagDAO.createNewTag("an-existing-tag", "An existing tag")).thenReturn(newTag)
-    when(tagDAO.loadTagByName("an-existing-tag")).thenReturn(existingTag)
+    when(tagDAO.loadTagByName("an-existing-tag")).thenReturn(Some(existingTag))
     request.setParameter("displayName", "An existing tag")
 
     val mv = controller.add(request, response)
