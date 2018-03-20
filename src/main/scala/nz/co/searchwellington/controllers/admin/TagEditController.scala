@@ -1,55 +1,46 @@
 package nz.co.searchwellington.controllers.admin
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import java.util.regex.Pattern
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
-import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.LoggedInUserFilter
-import nz.co.searchwellington.controllers.SubmissionProcessingService
-import nz.co.searchwellington.controllers.UrlStack
+import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, SubmissionProcessingService, UrlStack}
 import nz.co.searchwellington.filters.AdminRequestFilter
-import nz.co.searchwellington.permissions.EditPermissionService
-import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.model.UrlWordsGenerator
-import nz.co.searchwellington.model.User
+import nz.co.searchwellington.model.{Feed, Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.TagModificationService
+import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
 @Controller class TagEditController @Autowired() (requestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory, urlStack: UrlStack, tagDAO: TagDAO, tagModifcationService: TagModificationService, loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, submissionProcessingService: SubmissionProcessingService, commonModelObjectsService: CommonModelObjectsService, urlWordsGenerator: UrlWordsGenerator) {
 
   private val log = Logger.getLogger(classOf[TagEditController])
+  private val pattern = Pattern.compile("^/edit/tag/(.*)$")
+
+  @RequestMapping(Array("/edit/tag/*")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    val mv = new ModelAndView("editTag")
+    commonModelObjectsService.populateCommonLocal(mv)
+    mv.addObject("heading", "Editing a Tag")
+
+    tagFromPage(request).map { tag =>
+      mv.addObject("tag", tag)
+      //var children = editTag.getChildren.asScala.toSet
+      //mv.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent, children).toString)
+      //mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed))
+    }.getOrElse {
+      null
+    }
+  }
 
   @RequestMapping(Array("/edit/tag/submit")) def submit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("submitTag")
     mv.addObject("heading", "Submitting a Tag")
     commonModelObjectsService.populateCommonLocal(mv)
-    return mv
-  }
-
-  @RequestMapping(Array("/edit/tag/*")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView("editTag")
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "Editing a Tag")
-    var editTag: Tag = null
-    requestFilter.loadAttributesOntoRequest(request)
-    if (request.getAttribute("tag") != null) {
-      editTag = request.getAttribute("tag").asInstanceOf[Tag]
-      mv.addObject("tag", editTag)
-      import scala.collection.JavaConverters._
-      //var children = editTag.getChildren.asScala.toSet
-      //mv.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent, children).toString)
-      //mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed))
-    }
     return mv
   }
 
@@ -180,16 +171,14 @@ import org.springframework.web.servlet.view.RedirectView
     editTag.setSecondaryImage(secondaryImage)
   }
 
-  /*
-  log.debug("Looking for edit tags")
-  val pattern = Pattern.compile("^/edit/tag/(.*)$")
-  val matcher = pattern.matcher(request.getPathInfo)
-  if (matcher.matches) {
-    val tagname = matcher.group(1)
-    tagDAO.loadTagByName(tagname).map { tag =>
-      request.setAttribute("tag", tag)
+  private def tagFromPage(request: HttpServletRequest): Option[Tag] = {
+    val matcher = pattern.matcher(request.getPathInfo)
+    if (matcher.matches) {
+      val tagname = matcher.group(1)
+      tagDAO.loadTagByName(tagname)
+    } else {
+      None
     }
   }
-  */
 
 }
