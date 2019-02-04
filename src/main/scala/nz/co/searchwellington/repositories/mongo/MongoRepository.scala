@@ -30,7 +30,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
         uri.db.map { db =>
           driver.connection(uri).database(db)
         }.getOrElse {
-          Future.failed(new RuntimeException("No database givem in Mongo URI"))
+          Future.failed(new RuntimeException("No database given in Mongo URI"))
         }
       }
     }.flatten
