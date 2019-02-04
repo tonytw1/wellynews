@@ -24,12 +24,18 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     val driver = MongoDriver()
 
     val parsedUri = MongoConnection.parseURI(mongoUri)
-    val connection = parsedUri.map(driver.connection(_))
-    val futureConnection: Future[MongoConnection] = Future.fromTry(connection)
 
-    def database: Future[DefaultDB] = futureConnection.flatMap(_.database("wellynews"))
+    val eventualDatabase = Future.fromTry {
+      parsedUri.map { uri =>
+        uri.db.map { db =>
+          driver.connection(uri).database(db)
+        }.getOrElse {
+          Future.failed(new RuntimeException("No database givem in Mongo URI"))
+        }
+      }
+    }.flatten
 
-    Await.result(database, Duration(1, MINUTES))
+    Await.result(eventualDatabase, Duration(1, MINUTES))
   }
 
   val db: DefaultDB = connect()
