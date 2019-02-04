@@ -3,7 +3,7 @@ package nz.co.searchwellington.model
 import nz.co.searchwellington.model.taggingvotes.voters.TaggingVoter
 
 case class User(id: Int, openid: Option[String] = None, twitterId: Option[Long] = None, profilename: Option[String] = None, url: Option[String] = None,
-                name: Option[String] = None, bio: Option[String] = None, apikey: Option[String]= None, admin2: Boolean = false) extends TaggingVoter {
+                name: Option[String] = None, bio: Option[String] = None, apikey: Option[String]= None, admin: Boolean = false) extends TaggingVoter {
 
   def getId: Int = id
 
@@ -17,7 +17,7 @@ case class User(id: Int, openid: Option[String] = None, twitterId: Option[Long] 
 
   def getVoterName: String = this.getProfilename
 
-  def isAdmin: Boolean = admin2
+  def isAdmin: Boolean = admin
 
   def getUrl: String = url.getOrElse(null)
 

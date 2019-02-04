@@ -9,11 +9,11 @@ trait Resource {
   var description: Option[String]
   var page: Option[String]
   var http_status: Int
-  var date2: Option[Date]
-  var last_scanned2: Option[Date]
-  var last_changed2: Option[Date]
-  var live_time2: Option[Date]
-  var embargoed_until2: Option[Date]
+  var date: Option[Date]
+  var last_scanned: Option[Date]
+  var last_changed: Option[Date]
+  var live_time: Option[Date]
+  var embargoed_until: Option[Date]
   var held2: Boolean
   var url_words: Option[String]
   var geocode: Option[Geocode]

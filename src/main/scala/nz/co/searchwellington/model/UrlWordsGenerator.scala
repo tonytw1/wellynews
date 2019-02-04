@@ -35,7 +35,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
       uri.append("/" + makeUrlWordsFromName(p.toString))
     }
 
-    newsitem.date2.map { d =>
+    newsitem.date.map { d =>
       val dateFormatter = new DateFormatter(DateTimeZone.UTC)
       uri.append("/" + dateFormatter.yearMonthDayUrlStub(d))
       uri.append("/" + makeUrlWordsFromName(newsitem.title.getOrElse("")))

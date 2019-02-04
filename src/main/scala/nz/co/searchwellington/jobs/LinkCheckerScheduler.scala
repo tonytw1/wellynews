@@ -32,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional
     val fourHoursAgo: Date = new DateTime(()).minusHours(4).toDate
     for (resource <- resourceDAO.getNotCheckedSince(oneDayAgo, fourHoursAgo, numberOfItemsToQueue)) {
       if (resource.`type` == "N") {
-        log.info("Queying recent newsitem for checking: " + resource.title + " - " + resource.last_scanned2)
+        log.info("Queying recent newsitem for checking: " + resource.title + " - " + resource.last_scanned)
         linkCheckerQueue.add(resource.id)
       }
     }
@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional
     log.info("Queuing " + numberOfItemsToQueue + " items not scanned for more than one month.")
     val oneMonthAgo: Date = new DateTime(()).minusMonths(1).toDate
     for (resource <- resourceDAO.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue)) {
-      log.info("Queuing for scheduled checking: " + resource.title + " - " + resource.last_scanned2)
+      log.info("Queuing for scheduled checking: " + resource.title + " - " + resource.last_scanned)
       linkCheckerQueue.add(resource.id)
     }
   }

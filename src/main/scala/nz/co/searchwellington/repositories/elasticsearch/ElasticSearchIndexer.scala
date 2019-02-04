@@ -54,7 +54,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         r._1.title.map(t => (Title -> t)),
         Some(HttpStatus -> r._1.http_status.toString),
         r._1.description.map(d => (Description -> d)),
-        r._1.date2.map(d => (Date -> new DateTime(d))),
+        r._1.date.map(d => (Date -> new DateTime(d))),
         Some(Tags, r._2),
         publisher.map(p => (Publisher -> p)),
         Some(Held -> r._1.held2)

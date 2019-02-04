@@ -15,7 +15,7 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
 
     val newsitem = Newsitem(title = Some(feedItem.getTitle), page = Some(feedItem.getUrl),
       description = Some(composeDescription(feedItem)),
-      date2 = Some(feedItem.getDate), publisher = None,
+      date = Some(feedItem.getDate), publisher = None,
       feed = feed.map(f => f.id)
     ) // TODO publisher
     // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)

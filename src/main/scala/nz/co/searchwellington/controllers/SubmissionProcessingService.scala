@@ -76,7 +76,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
   def processDate(request: HttpServletRequest, editResource: Resource) {
     editResource.setDate(request.getAttribute(REQUEST_DATE_NAME).asInstanceOf[Date])
-    if (editResource.date2.isEmpty && editResource.id == 0) {
+    if (editResource.date.isEmpty && editResource.id == 0) {
       editResource.setDate(Calendar.getInstance.getTime)
     }
   }

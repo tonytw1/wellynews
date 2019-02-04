@@ -86,7 +86,7 @@ class ElasticSearchIT {
 
     assertTrue(newsitems.nonEmpty)
     assertTrue(newsitems.forall{n =>
-      interval.contains(n.date2.get.getTime)
+      interval.contains(n.date.get.getTime)
     })
   }
 

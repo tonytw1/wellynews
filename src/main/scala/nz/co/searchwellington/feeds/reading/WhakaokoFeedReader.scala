@@ -16,7 +16,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   def fetchFeedItems(feed: Feed): Seq[FeedItem] = {
     log.info("Fetching feed items for feed with whakaoko id: " + feed.getWhakaokoId)
-    Option(feed.getWhakaokoId).map { whakaokoId =>
+    feed.getWhakaokoId.map { whakaokoId =>
       val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(whakaokoId)
       log.info("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
       subscriptionFeedItems

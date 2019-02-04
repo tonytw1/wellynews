@@ -36,7 +36,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           `type` = n.`type`,
           name = n.title.getOrElse(""),
           url = n.page.getOrElse(null),
-          date = n.date2.getOrElse(null),
+          date = n.date.getOrElse(null),
           description = n.description.getOrElse(null),
           place = place,
           acceptedFromFeedName = n.feed.map(f => f.toString).getOrElse(""),
@@ -54,7 +54,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           name = f.title.getOrElse(""),
           url = f.page.getOrElse(null),
           urlWords = f.url_words.getOrElse(null),
-          date = f.date2.getOrElse(null),
+          date = f.date.getOrElse(null),
           description = f.description.getOrElse(null),
           place = place,
           latestItemDate = f.getLatestItemDate
@@ -66,7 +66,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           `type` = l.`type`,
           name = l.title.getOrElse(""),
           url = l.page.getOrElse(null),
-          date = l.date2.getOrElse(null),
+          date = l.date.getOrElse(null),
           description = l.description.getOrElse(null),
           place = place
         )

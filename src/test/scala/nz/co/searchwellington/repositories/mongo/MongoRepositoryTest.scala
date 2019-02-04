@@ -11,7 +11,7 @@ class MongoRepositoryTest {
 
   val TenSeconds = Duration(10, SECONDS)
 
-  val mongoRepository = new MongoRepository("mongodb://localhost:27017/wellynews")
+  val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
 
   @Test
   def canConnectToMongoAndReadTags {
@@ -34,7 +34,7 @@ class MongoRepositoryTest {
   @Test
   def canReadResourceTagsFromMongo = {
     val taggings = Await.result(mongoRepository.getAllTaggings(), TenSeconds)
-    assertEquals(30435, taggings.size)
+    assertEquals(30832, taggings.size)
   }
 
   @Test
@@ -48,7 +48,7 @@ class MongoRepositoryTest {
   @Test
   def canReadListOfResourceIds = {
     val resourceIds = Await.result(mongoRepository.getAllResourceIds(), TenSeconds)
-    assertEquals(73049, resourceIds.size)
+    assertEquals(88657, resourceIds.size)
   }
 
   @Test
@@ -60,7 +60,6 @@ class MongoRepositoryTest {
   @Test
   def canFindUsersByLinkedTwitterId = {
     val user = Await.result(mongoRepository.getUserByTwitterId(14497864), TenSeconds)
-    println("GOT: " + user)
     assertTrue(user.nonEmpty)
   }
 
