@@ -49,6 +49,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         case _ => None
       }
 
+      // TODO This is silly; just pass in the whole domain object as JSON
       val fields = Seq (
         Some(Type -> r._1.`type`),
         r._1.title.map(t => Title -> t),
