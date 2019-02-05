@@ -23,12 +23,18 @@ class FeedModelBuilderTest {
   val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
   var feed = Feed(page = Some("http://localhost/a-feed"))
-  var feeditems: Seq[(FeedItem, Option[Feed])] = Seq()
-  var feedNewsitems: Seq[Newsitem] = Seq()
+
+  val feedItem = mock(classOf[FeedItem])
+  val anotherFeedItem = mock(classOf[FeedItem])
+  var feeditems: Seq[(FeedItem, Option[Feed])] = Seq((feedItem, Some(feed)), (anotherFeedItem, Some(feed)))
+
+  val newsItem = mock(classOf[Newsitem])
+  val anotherNewsitem = mock(classOf[Newsitem])
+  var feedNewsitems: Seq[Newsitem] = Seq(newsItem, anotherNewsitem)
 
   val decoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
   val anotherDecoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
-  val feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation = Seq(decoratedFeedItem, anotherDecoratedFeedItem)
+  val feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: Seq[FeedNewsitemForAcceptance] = Seq(decoratedFeedItem, anotherDecoratedFeedItem)
 
   val geotaggedFeeditem = mock(classOf[FeedItem])
   val anotherGeotaggedFeeditem = mock(classOf[FeedItem])
@@ -45,6 +51,10 @@ class FeedModelBuilderTest {
   @throws(classOf[Exception])
   def setUp {
     when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(feeditems)
+
+    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, Some(feed))).thenReturn(newsItem)
+    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, Some(feed))).thenReturn(anotherNewsitem)
+
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
     request = new MockHttpServletRequest
     request.setAttribute("feedAttribute", feed)
@@ -71,11 +81,14 @@ class FeedModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
+    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(feeditems)
+    when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
-    assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation, mv.getModel.get("main_content"))
+    import scala.collection.JavaConverters._
+    assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation.asJava, mv.getModel.get("main_content"))
   }
 
   @Test
