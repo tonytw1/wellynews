@@ -45,7 +45,7 @@ import org.springframework.stereotype.Component
 
           } else {
             val isUrlOfExistingFeed: Boolean = resourceDAO.loadFeedByUrl(discoveredUrl) != null
-            if (!(isUrlOfExistingFeed)) {
+            if (!isUrlOfExistingFeed) {
               recordDiscoveredFeedUrl(checkResource, discoveredUrl)
             }
             else {

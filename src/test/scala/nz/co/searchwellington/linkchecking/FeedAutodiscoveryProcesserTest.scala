@@ -29,7 +29,7 @@ class FeedAutodiscoveryProcesserTest {
   @Mock val commentFeedGuesser: CommentFeedGuesserService = null
   @Mock private val resourceFactory: ResourceFactory = null
   val resource = Newsitem()
-  @Mock val existingFeed = null
+  @Mock val existingFeed: Feed = null
   private val pageContent = "Meh"
   private var feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser = null
 
@@ -59,7 +59,10 @@ class FeedAutodiscoveryProcesserTest {
     autoDiscoveredLinks.add(EXISTING_FEED_URL)
     when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
-    when(resourceDAO.loadDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(null)
+    val newlyDiscoveredFeed = new DiscoveredFeed
+    newlyDiscoveredFeed.setUrl(EXISTING_FEED_URL)
+    newlyDiscoveredFeed.setReferences(new util.HashSet[Resource])
+    when(resourceDAO.loadDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(newlyDiscoveredFeed)
     when(resourceDAO.loadFeedByUrl(EXISTING_FEED_URL)).thenReturn(existingFeed)
 
     feedAutodiscoveryProcesser.process(resource, pageContent)
