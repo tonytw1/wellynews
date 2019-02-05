@@ -33,7 +33,7 @@ class FeeditemToNewsitemServiceTest {
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, Some(feed))
 
-    assertEquals("A place", newsitem.geocode.get.getAddress)
+    assertEquals(Some("A place"), newsitem.geocode.map(_.getAddress))
   }
 
 }
