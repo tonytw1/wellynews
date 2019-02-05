@@ -43,27 +43,27 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
   def updateMultipleContentItems(resources: Seq[(Resource, Set[Int])]): Unit = {
     log.info("Index batch of size: " + resources.size)
 
-    val indexDefinations = resources.map { r =>
+    val indexDefinitions = resources.map { r =>
       val publisher = r._1 match {
         case p: PublishedResource => p.getPublisher
         case _ => None
       }
 
       val fields = Seq (
-        Some((Type -> r._1.`type`)),
-        r._1.title.map(t => (Title -> t)),
+        Some(Type -> r._1.`type`),
+        r._1.title.map(t => Title -> t),
         Some(HttpStatus -> r._1.http_status.toString),
-        r._1.description.map(d => (Description -> d)),
-        r._1.date.map(d => (Date -> new DateTime(d))),
+        r._1.description.map(d => Description -> d),
+        r._1.date.map(d => Date -> new DateTime(d)),
         Some(Tags, r._2),
-        publisher.map(p => (Publisher -> p)),
+        publisher.map(p => Publisher -> p),
         Some(Held -> r._1.held2)
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1.id.toString
     }
 
-    val result = Await.result(client.execute (bulk(indexDefinations)), tenSeconds)
+    val result = Await.result(client.execute (bulk(indexDefinitions)), tenSeconds)
     log.info(result)
   }
 
