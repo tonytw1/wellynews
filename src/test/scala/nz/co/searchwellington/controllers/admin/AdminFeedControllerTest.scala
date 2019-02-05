@@ -2,8 +2,10 @@ package nz.co.searchwellington.controllers.admin
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.feeds.FeedReader
+import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.permissions.EditPermissionService
+import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.{Before, Test}
 import org.mockito.{Mock, Mockito, MockitoAnnotations}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
@@ -12,9 +14,9 @@ class AdminFeedControllerTest {
 
   private val FEED_ID = 1
 
-  @Mock val requestFilter = null
+  @Mock val requestFilter: AdminRequestFilter = null
   @Mock val feedReader: FeedReader = null
-  @Mock val urlBuilder = null
+  @Mock val urlBuilder: UrlBuilder = null
   @Mock val permissionService: EditPermissionService = null
   @Mock val loggedInUserFilter: LoggedInUserFilter = null
   private var request: MockHttpServletRequest = null
@@ -33,6 +35,7 @@ class AdminFeedControllerTest {
   def manualFeedReaderRunsShouldBeAttributedToTheUserWhoKicksThemOffAndShouldAcceptAllEvenIfNoDateIsGivenOfNotCurrent(): Unit = {
     Mockito.when(loggedInUserFilter.getLoggedInUser).thenReturn(loggedInUser)
     Mockito.when(permissionService.canAcceptAllFrom(feed)).thenReturn(true)
+
     val controller = new AdminFeedController(requestFilter, feedReader, urlBuilder, permissionService, loggedInUserFilter)
     request.setAttribute("feedAttribute", feed)
 
