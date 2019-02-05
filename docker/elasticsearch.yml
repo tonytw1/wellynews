@@ -1,4 +1,4 @@
-cluster.name: media-service
+cluster.name: local
 
 xpack.security.enabled: false
 discovery.type: single-node
