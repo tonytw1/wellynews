@@ -1,7 +1,7 @@
 package nz.co.searchwellington.views
 
 import nz.co.searchwellington.model.{Geocode, Newsitem}
-import org.junit.Assert.{assertFalse, assertTrue}
+import org.junit.Assert.{assertFalse, assertTrue, assertEquals}
 import org.junit.{Before, Test}
 
 class GoogleMapsDisplayCleanerTest {
@@ -29,8 +29,8 @@ class GoogleMapsDisplayCleanerTest {
   def shouldDedupeListByGeocodeSoThatLowerItemsDoNotOverlayEarlierOnes(): Unit = {
     val deduped = cleaner.dedupe(geocoded)
 
+    assertEquals(2, deduped.size)
     assertFalse(deduped.contains(thirdNewsitem))
-    assertTrue(deduped.size == 2)
   }
 
   @Test
