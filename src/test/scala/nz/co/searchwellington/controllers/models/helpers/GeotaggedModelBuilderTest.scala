@@ -23,7 +23,7 @@ class GeotaggedModelBuilderTest {
 
   val request = new MockHttpServletRequest
   val validLocation = new Place("Petone Station", new LatLong(1.1, 2.2), null)
-  val invalidLocation: Place = null
+  val invalidLocation = new Place("No where", null, null)
 
   private val TOTAL_GEOTAGGED_COUNT: Long = 512
   private val LOCATION_RESULTS_COUNT: Long = 33
@@ -119,7 +119,6 @@ class GeotaggedModelBuilderTest {
   @Test
   def locationSearchShouldNotSetLocationWasInvalid {
     request.setPathInfo("/geotagged")
-    when(invalidLocation.getLatLong).thenReturn(null)
     request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation)
 
     val modelAndView = modelBuilder.populateContentModel(request).get
