@@ -47,7 +47,9 @@ class FeedAutodiscoveryProcesserTest {
     val newlyDiscoveredFeed = new DiscoveredFeed
     newlyDiscoveredFeed.setReferences(new util.HashSet[Resource])
     when(resourceFactory.createNewDiscoveredFeed(UNSEEN_FEED_URL)).thenReturn(newlyDiscoveredFeed)
+
     feedAutodiscoveryProcesser.process(resource, pageContent)
+
     assertTrue(newlyDiscoveredFeed.getReferences.contains(resource))
     verify(resourceDAO).saveDiscoveredFeed(newlyDiscoveredFeed)
   }
@@ -59,7 +61,9 @@ class FeedAutodiscoveryProcesserTest {
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
     when(resourceDAO.loadDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(null)
     when(resourceDAO.loadFeedByUrl(EXISTING_FEED_URL)).thenReturn(existingFeed)
+
     feedAutodiscoveryProcesser.process(resource, pageContent)
+
     verify(resourceFactory, never).createNewDiscoveredFeed(any(classOf[String]))
     verify(resourceDAO, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))
   }

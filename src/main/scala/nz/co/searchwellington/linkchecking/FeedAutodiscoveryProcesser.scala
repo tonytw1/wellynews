@@ -86,9 +86,11 @@ import org.springframework.stereotype.Component
   }
 
   private def addGuessedCommentFeeds(checkResource: Resource): Unit = {
-    val commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(checkResource.page.get) // TODO naked get
-    if (commentFeedUrl != null) {
-      recordCommentFeed(checkResource, commentFeedUrl)
+    checkResource.page.map { page =>
+      val commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(page)
+      if (commentFeedUrl != null) { // TODO migrate to Option
+        recordCommentFeed(checkResource, commentFeedUrl)
+      }
     }
   }
 
