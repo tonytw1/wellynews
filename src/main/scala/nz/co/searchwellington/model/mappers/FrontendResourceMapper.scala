@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
+import scala.collection.JavaConverters._
 
 @Component class FrontendResourceMapper @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
                                                       geocodeToPlaceMapper: GeocodeToPlaceMapper, mongoRepository: MongoRepository) {
@@ -31,6 +32,9 @@ import scala.concurrent.duration.{Duration, SECONDS}
           Await.result(mongoRepository.getResourceById(pid.toInt), tenSeconds)
         }
 
+        val tags = taggingReturnsOfficerService.getIndexTagsForResource(contentItem).
+          map(mapTagToFrontendTag).toSeq
+
         FrontendNewsitem(
           id = n.id,
           `type` = n.`type`,
@@ -45,6 +49,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
           publisherName = publisher.flatMap(p => p.title).getOrElse(""),
+          tags = tags.asJava
         )
 
       case f: Feed =>

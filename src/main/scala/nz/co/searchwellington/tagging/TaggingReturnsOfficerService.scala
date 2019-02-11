@@ -16,13 +16,11 @@ import scala.collection.mutable
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
   def getHandTagsForResource(resource: Resource): Set[Tag] = {
-    val toSet = handTaggingDAO.getHandTaggingsForResource(resource).toList.map(handTagging => (handTagging.getTag)).distinct.toSet
-    toSet
+    handTaggingDAO.getHandTaggingsForResource(resource).toList.map(handTagging => (handTagging.getTag)).distinct.toSet
   }
 
   def getIndexTagsForResource(resource: Resource): Set[Tag] = {
-    val toSet = compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.getTag)).distinct.toSet
-    toSet
+    compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.getTag)).distinct.toSet
   }
 
   def getIndexGeocodeForResource(resource: Resource): Geocode = {
