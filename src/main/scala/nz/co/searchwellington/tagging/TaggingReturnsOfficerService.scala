@@ -1,9 +1,8 @@
 package nz.co.searchwellington.tagging
 
-import com.google.common.collect.{Lists, Sets}
-import nz.co.searchwellington.model.{Feed, Geocode, Newsitem, PublishedResource, Resource, Tag, Website}
-import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, HandTagging, TaggingVote}
-import nz.co.searchwellington.model.taggingvotes.voters.{AncestorTagVoter, FeedTagAncestorTagVoter, FeedsTagsTagVoter, PublishersTagAncestorTagVoter, PublishersTagsVoter}
+import nz.co.searchwellington.model.taggingvotes.voters.FeedsTagsTagVoter
+import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
+import nz.co.searchwellington.model.{Geocode, PublishedResource, Resource, Tag}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,10 +33,10 @@ import scala.collection.mutable
     return null
   }
 
-  def compileTaggingVotes(resource: Resource): List[TaggingVote] = {
+  def compileTaggingVotes(resource: Resource): Seq[TaggingVote] = {
     val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
 
-    val handTaggings: List[HandTagging] = handTaggingDAO.getHandTaggingsForResource(resource).toList
+    val handTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
     votes ++= handTaggings;
 
     val shouldAppearOnPublisherAndParentTagPages = (resource.`type` == "L") || (resource.`type` == "N") || (resource.`type` == "C") || (resource.`type` == "F")
@@ -53,7 +52,7 @@ import scala.collection.mutable
      // }
     }
 
-    votes.toList
+    votes
   }
 
   def getGeotagVotesForResource(resource: Resource): List[GeotaggingVote] = {

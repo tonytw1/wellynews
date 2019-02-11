@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-
 public class UrlProcessorTest {
 	
 	@Mock UrlCleaner urlCleaner;
