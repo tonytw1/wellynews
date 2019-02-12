@@ -35,6 +35,9 @@ import scala.collection.JavaConverters._
         val tags = taggingReturnsOfficerService.getIndexTagsForResource(contentItem).
           map(mapTagToFrontendTag).toSeq
 
+        val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem).
+          map(mapTagToFrontendTag).toSeq
+
         FrontendNewsitem(
           id = n.id,
           `type` = n.`type`,
@@ -49,7 +52,8 @@ import scala.collection.JavaConverters._
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
           publisherName = publisher.flatMap(p => p.title).getOrElse(""),
-          tags = tags.asJava
+          tags = tags.asJava,
+          handTags = handTags.asJava
         )
 
       case f: Feed =>
