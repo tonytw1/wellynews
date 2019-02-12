@@ -53,6 +53,7 @@ class FrontendResourceMapperTest {
     val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
 
     assertFalse(frontendNewsitem.tags.isEmpty)
+    assertEquals(tag.id, frontendNewsitem.tags.get(0).id)
   }
 
 }
