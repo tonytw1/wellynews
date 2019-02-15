@@ -13,7 +13,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   private val log = Logger.getLogger(classOf[WhakaokoService])
 
   def createFeedSubscription(feedUrl: String): Option[String] = {
-    log.info("Requesting Whakakaoko subscription for feed")
+    log.info("Requesting Whakaoko subscription for feed: " + feedUrl)
     try {
       val createdFeedSubscription = getClient.createFeedSubscription(whakaokoUsername, whakaokoChannel, feedUrl)
       Some(createdFeedSubscription.getId)
