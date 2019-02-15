@@ -12,10 +12,12 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   private val log = Logger.getLogger(classOf[WhakaokoService])
 
+  private val client: WhakaoroClient = new WhakaoroClient(whakaokoUrl)
+
   def createFeedSubscription(feedUrl: String): Option[String] = {
     log.info("Requesting Whakaoko subscription for feed: " + feedUrl)
     try {
-      val createdFeedSubscription = getClient.createFeedSubscription(whakaokoUsername, whakaokoChannel, feedUrl)
+      val createdFeedSubscription = client.createFeedSubscription(whakaokoUsername, whakaokoChannel, feedUrl)
       Some(createdFeedSubscription.getId)
     }
     catch {
@@ -29,7 +31,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   def getSubscriptionFeedItems(subscriptionId: String): Seq[FeedItem] = {
     try {
       import scala.collection.JavaConversions._
-      getClient.getSubscriptionFeedItems(whakaokoUsername, subscriptionId)
+      client.getSubscriptionFeedItems(whakaokoUsername, subscriptionId)
     }
     catch {
       case e: Exception => {
@@ -55,7 +57,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       */
 
       import scala.collection.JavaConversions._
-      getClient.getChannelFeedItems(whakaokoUsername, whakaokoChannel, 0) // TODO restore pagination
+      client.getChannelFeedItems(whakaokoUsername, whakaokoChannel, 0) // TODO restore pagination
 
     } catch {
       case e: Exception => {
@@ -63,11 +65,6 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
         Seq()
       }
     }
-  }
-
-  private def getClient: WhakaoroClient = {
-    log.info("Creating whakaoko client for: " + whakaokoUrl)
-    new WhakaoroClient(whakaokoUrl)
   }
 
 }
