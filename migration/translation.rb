@@ -1,3 +1,16 @@
+table "comment" do
+	column "id", :key, :as => :integer
+	column "title", :text
+	column "comment_feed", :integer
+	column "comment_order", :integer
+end
+
+table "comment_feed" do
+	column "id", :key, :as => :integer
+	column "url", :string
+	column "last_read", :datetime
+end
+
 table "config" do
 	column "id", :key, :as => :integer
 	column "feedburner_widget", :string
@@ -14,15 +27,11 @@ table "discovered_feeds" do
 end
 
 table "discovered_urls_references" do
-	column "resource_id", :integer, :references => "resources"
+	column "resource_id", :integer, :references => "resource"
 	column "discovered_url_id", :integer, :references => "discovered_urls"
 end
 
 table "geocode" do
-   before_save do |row|
-            id = row.delete('pre_mongified_id')
-            row.id = id
-    end
 	column "id", :key, :as => :integer
 	column "address", :string
 	column "latitude", :float
@@ -33,19 +42,17 @@ table "geocode" do
 end
 
 table "image" do
-   before_save do |row|
-            id = row.delete('pre_mongified_id')
-            row.id = id
-    end
 	column "id", :key, :as => :integer
 	column "url", :string
 end
 
+table "newsitem_retwits" do
+	column "id", :key, :as => :integer
+	column "resource_id", :integer, :references => "resource"
+	column "twit_id", :integer, :references => "twits"
+end
+
 table "resource" do
-    before_save do |row|
-            id = row.delete('pre_mongified_id')
-            row.id = id
-    end
 	column "id", :key, :as => :integer
 	column "page", :string
 	column "title", :string
@@ -70,7 +77,7 @@ table "resource" do
 	column "calendar_publisher", :integer
 	column "technorati_count", :integer
 	column "geocode", :string
-	column "geocode_id", :integer, :references => "geocodes"
+	column "geocode_id", :integer, :references => "geocode"
 	column "url_words", :string
 	column "owner", :integer
 	column "twitter_id", :integer, :references => "twitters"
@@ -81,21 +88,17 @@ table "resource" do
 	column "image_id", :integer, :references => "images"
 	column "accepted", :datetime
 	column "accepted_by", :integer
-	column "whakaoko_id", :string
+	column "whakaoko_id", :string, :references => "whakaokos"
 end
 
 table "resource_tags" do
 	column "id", :key, :as => :integer
-	column "resource_id", :integer, :references => "resources"
-	column "tag_id", :integer, :references => "tags"
-	column "user_id", :integer, :references => "users"
+	column "resource_id", :integer, :references => "resource"
+	column "tag_id", :integer, :references => "tag"
+	column "user_id", :integer, :references => "user"
 end
 
 table "suggestion" do
-   before_save do |row|
-            id = row.delete('pre_mongified_id')
-            row.id = id
-    end
 	column "id", :key, :as => :integer
 	column "url", :string
 	column "feed", :integer
@@ -103,22 +106,14 @@ table "suggestion" do
 end
 
 table "supression" do
-   before_save do |row|
-            id = row.delete('pre_mongified_id')
-            row.id = id
-    end
 	column "id", :key, :as => :integer
 	column "url", :string
 end
 
 table "tag" do
-    before_save do |row|
-            id = row.delete('pre_mongified_id')
-            row.id = id
-    end
 	column "id", :key, :as => :integer
 	column "name", :string
-	column "parent", :integer
+	column "parent", :integer, :references => "tag"
 	column "display_name", :string
 	column "main_image", :string
 	column "secondary_image", :string
@@ -126,16 +121,29 @@ table "tag" do
 	column "related_twitter", :string
 	column "autotag_hints", :string
 	column "hidden", :boolean
-	column "geocode_id", :integer, :references => "geocodes"
+	column "geocode_id", :integer, :references => "geocode"
 	column "description", :string
 	column "featured", :boolean
 end
 
+table "temp" do
+	column "id", :key, :as => :integer
+end
+
+table "tmp" do
+	column "id", :key, :as => :integer
+end
+
+table "twits" do
+	column "id", :key, :as => :integer
+	column "twitterid", :integer
+	column "author", :string
+	column "profileImage", :string
+	column "text", :string
+	column "date", :datetime
+end
+
 table "user" do
-   before_save do |row|
-            id = row.delete('pre_mongified_id')
-            row.id = id
-    end
 	column "id", :key, :as => :integer
 	column "openid", :string
 	column "admin", :boolean
