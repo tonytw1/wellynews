@@ -54,12 +54,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def taggingReader = Macros.reader[Tagging]
   implicit def userReader = Macros.reader[User]
 
-  def getResourceById(id: Int): Future[Option[Resource]] = {
+  def getResourceById(id: String): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("id" -> id))
   }
 
   def getResourceByUrl(url: String): Future[Option[Resource]] = {
-    getResourceBy(BSONDocument("url" -> url))
+    getResourceBy(BSONDocument("page" -> url))
   }
 
   def getFeedByWhakaokoSubscription(subscription: String): Future[Option[Feed]] = {
@@ -103,12 +103,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
   }
 
-  def getAllResourceIds(): Future[Seq[Int]] = {
+  def getAllResourceIds(): Future[Seq[String]] = {
     val projection = BSONDocument("id" -> 1)
     resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](Integer.MAX_VALUE).map { r =>
-      r.flatMap { i =>
-        i.getAs[Int]("id")
-      }
+      r.flatMap(i => i.getAs[String]("id"))
     }
   }
 
@@ -128,7 +126,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     taggingCollection.find(BSONDocument.empty).cursor[Tagging]().toList()
   }
 
-  def getTaggingsFor(resourceId: Int): Future[Seq[Tagging]] = {
+  def getTaggingsFor(resourceId: BSONObjectID): Future[Seq[Tagging]] = {
     taggingCollection.find(BSONDocument("resource_id" -> resourceId)).cursor[Tagging]().collect[List]()
   }
 
@@ -158,7 +156,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  case class Tagging(resource_id: Int, tag_id: String)
+  case class Tagging(resource_id: BSONObjectID, tag_id: BSONObjectID)
 
   case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])
 

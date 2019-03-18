@@ -32,7 +32,7 @@ class TaggingReturnsOfficerServiceTest {
   }
 
   @Test def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
-    aroValleyNewsitem = Newsitem(1, "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
+    aroValleyNewsitem = Newsitem("1", "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
     val handTags = Seq(new HandTagging(-1, aroValleyNewsitem, null, aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 
@@ -42,7 +42,7 @@ class TaggingReturnsOfficerServiceTest {
   }
 
   @Test def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
-    aroValleyNewsitem = Newsitem(1, "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
+    aroValleyNewsitem = Newsitem("1", "Test newsitem", null, Some(".. Student flats in the Aro Valley... Test"))
     val handTags = Seq(new HandTagging(-1, aroValleyNewsitem, null, aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 

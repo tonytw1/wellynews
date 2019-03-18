@@ -1,8 +1,9 @@
 package nz.co.searchwellington.controllers
 
 import java.io.{IOException, UnsupportedEncodingException}
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import java.util.UUID
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import com.google.common.base.Strings
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService, RssfeedNewsitemService}
@@ -130,7 +131,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   @RequestMapping(Array("/edit/submit/website")) def submitWebsite(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWebsite")
     modelAndView.addObject("heading", "Submitting a Website")
-    val editResource = Website()
+    val editResource = Website(id = UUID.randomUUID().toString)
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
     modelAndView.addObject("publisher_select", null)
@@ -140,7 +141,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   @RequestMapping(Array("/edit/submit/newsitem")) def submitNewsitem(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitNewsitem")
     modelAndView.addObject("heading", "Submitting a Newsitem")
-    val editResource = Newsitem()
+    val editResource = Newsitem(id = UUID.randomUUID().toString)
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
     return modelAndView
@@ -149,7 +150,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   @RequestMapping(Array("/edit/submit/feed")) def submitFeed(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitFeed")
     modelAndView.addObject("heading", "Submitting a Feed")
-    val editResource = Feed()
+    val editResource = Feed(id = UUID.randomUUID().toString)
     modelAndView.addObject("resource", editResource)
     modelAndView.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect(null))
     populateSubmitCommonElements(request, modelAndView)
@@ -159,7 +160,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   @RequestMapping(Array("/edit/submit/watchlist")) def submitWatchlist(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWatchlist")
     modelAndView.addObject("heading", "Submitting a Watchlist Item")
-    val editResource = Website()
+    val editResource = Website(id = UUID.randomUUID().toString)
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
     return modelAndView
@@ -179,7 +180,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
         urlStack.setUrlStack(request, "")
       }
     }
-    return modelAndView
+    modelAndView
   }
 
   @RequestMapping(value = Array("/save"), method = Array(RequestMethod.POST))
@@ -201,25 +202,25 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       if (request.getParameter("type") != null) {
         val `type`: String = request.getParameter("type")
         if (`type` == "W") {
-          editResource = Website()
+          editResource = Website(id = UUID.randomUUID().toString)
         }
         else if (`type` == "N") {
-          editResource = Newsitem()
+          editResource = Newsitem(id = UUID.randomUUID().toString)
         }
         else if (`type` == "F") {
-          editResource = Feed()
+          editResource = Feed(id = UUID.randomUUID().toString)
         }
         else if (`type` == "L") {
-          editResource = Watchlist()
+          editResource = Watchlist(id = UUID.randomUUID().toString)
         }
         else {
-          editResource = Newsitem()
+          editResource = Newsitem(id = UUID.randomUUID().toString)
         }
       }
     }
     log.info("In save")
     if (editResource != null) {
-      val newSubmission: Boolean = editResource.id == 0
+      val newSubmission: Boolean = editResource.id == 0 // TODO
       if (loggedInUser == null) {
         loggedInUser = createAndSetAnonUser(request)
       }

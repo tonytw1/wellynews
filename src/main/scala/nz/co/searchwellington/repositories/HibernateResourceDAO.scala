@@ -28,8 +28,8 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getAllWatchlists(), Duration(10, SECONDS))
   }
 
-  def loadResourceById(resourceID: Int): Option[Resource] = {
-    Await.result(mongoRepository.getResourceById(resourceID), Duration(1, MINUTES))
+  def loadResourceById(resourceId: String): Option[Resource] = {
+    Await.result(mongoRepository.getResourceById(resourceId), Duration(1, MINUTES))
   }
 
   def loadResourceByUrl(url: String): Option[Resource] = {

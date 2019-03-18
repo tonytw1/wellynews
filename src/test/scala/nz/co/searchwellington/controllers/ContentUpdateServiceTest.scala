@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers
 
+import java.util.UUID
+
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
 import nz.co.searchwellington.model.{Newsitem, Website}
@@ -15,9 +17,10 @@ import org.mockito.MockitoAnnotations
 class ContentUpdateServiceTest {
   @Mock private val resourceDAO: HibernateResourceDAO = null
   @Mock private val linkCheckerQueue: LinkCheckerQueue = null
-  private val exitingResource= Newsitem(id = 1, page = Some("http://test/abc"))
-  private val updatedResource= Newsitem(id = 1, page = Some("http://test/123"))
-  private val newResource = Website(id = 0, page = Some("http://test/abc"))
+  private val resourceId: String = UUID.randomUUID().toString
+  private val exitingResource= Newsitem(id = resourceId, page = Some("http://test/abc"))
+  private val updatedResource= Newsitem(id = resourceId , page = Some("http://test/123"))
+  private val newResource = Website(id = "", page = Some("http://test/abc"))
 
   @Mock private val frontendContentUpdater: FrontendContentUpdater = null
   private var service: ContentUpdateService = null
@@ -26,7 +29,7 @@ class ContentUpdateServiceTest {
   @throws[Exception]
   def setUp {
     MockitoAnnotations.initMocks(this)
-    when(resourceDAO.loadResourceById(1)).thenReturn(Some(updatedResource))
+    when(resourceDAO.loadResourceById(resourceId)).thenReturn(Some(updatedResource))
     service = new ContentUpdateService(resourceDAO, linkCheckerQueue, frontendContentUpdater)
   }
 

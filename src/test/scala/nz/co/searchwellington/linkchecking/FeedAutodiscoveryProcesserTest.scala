@@ -6,6 +6,7 @@ import org.mockito.Mockito.never
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
 import java.util
+import java.util.UUID
 
 import nz.co.searchwellington.commentfeeds.CommentFeedDetectorService
 import nz.co.searchwellington.commentfeeds.CommentFeedGuesserService
@@ -28,7 +29,7 @@ class FeedAutodiscoveryProcesserTest {
   @Mock val commentFeedDetector: CommentFeedDetectorService = null
   @Mock val commentFeedGuesser: CommentFeedGuesserService = null
   @Mock private val resourceFactory: ResourceFactory = null
-  val resource = Newsitem()
+  val resource = Newsitem(id = UUID.randomUUID().toString)
   @Mock val existingFeed: Feed = null
   private val pageContent = "Meh"
   private var feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser = null

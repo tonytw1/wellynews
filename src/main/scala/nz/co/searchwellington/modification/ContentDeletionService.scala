@@ -2,8 +2,8 @@ package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.feeds.RssfeedNewsitemService
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, SupressionService, TagDAO}
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService
+import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, SupressionService, TagDAO}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -29,8 +29,7 @@ import org.springframework.stereotype.Component
         if (rssfeedNewsitemService.isUrlInAcceptedFeeds(p)) {
           log.info("Supressing deleted newsitem url as it still visible in an automatically deleted feed: " + p)
           suppressUrl(p)
-        }
-        else {
+        } else {
           log.info("Not found in live feeds; not supressing")
         }
       }

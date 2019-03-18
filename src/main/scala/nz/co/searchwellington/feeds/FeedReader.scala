@@ -24,12 +24,12 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO inject
 
-  def processFeed(feedId: Int, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
+  def processFeed(feedId: String, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
     val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
     processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy)
   }
 
-  def processFeed(feedId: Int, loggedInUser: User): Unit = {
+  def processFeed(feedId: String, loggedInUser: User): Unit = {
     val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
     // processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
@@ -70,7 +70,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       val acceptThisItem = acceptanceErrors.isEmpty
       if (acceptThisItem) {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
-        var acceptedNewsitem = feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed)
+        val acceptedNewsitem = feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed)
         linkCheckerQueue.add(acceptedNewsitem)
 
       } else {

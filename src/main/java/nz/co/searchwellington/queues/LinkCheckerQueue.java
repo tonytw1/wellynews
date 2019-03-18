@@ -25,7 +25,7 @@ public class LinkCheckerQueue {
 		//channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 	}
 	
-    public void add(int id) {
+    public void add(String id) {
     //    log.debug("Adding resource id to queue: " + id);
   //      try {
 			//channel.basicPublish("", QUEUE_NAME, null, Integer.toString(id).getBytes());

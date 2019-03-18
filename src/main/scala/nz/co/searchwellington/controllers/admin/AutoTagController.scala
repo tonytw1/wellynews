@@ -67,8 +67,7 @@ import org.springframework.web.servlet.ModelAndView
 
         val autotaggedResourceIds = request.getParameterValues("autotag")
 
-        val resourcesAutoTagged = autotaggedResourceIds.map { resourceIdString =>
-          val resourceId: Int = resourceIdString.toInt
+        val resourcesAutoTagged = autotaggedResourceIds.flatMap { resourceId =>
           resourceDAO.loadResourceById(resourceId).map { resource =>
             log.info("Applying tag " + tag.getName + " to:" + resource.title)
             if (!autoTagService.alreadyHasTag(resource, tag)) {
@@ -77,7 +76,7 @@ import org.springframework.web.servlet.ModelAndView
             contentUpateService.update(resource)
             resource
           }
-        }.flatten
+        }
 
         mv.addObject("resources_to_tag", resourcesAutoTagged)
         mv

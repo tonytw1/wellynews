@@ -1,12 +1,12 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.{Date, List}
+import java.util.{Date, List, UUID}
 
 import nz.co.searchwellington.model.Comment
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
-case class FrontendNewsitem(id: Int = 0,
+case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
                             urlWords: String = null,
                             `type`: String = null,
                             name: String = null,

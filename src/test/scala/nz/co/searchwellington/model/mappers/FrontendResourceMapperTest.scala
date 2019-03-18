@@ -31,7 +31,7 @@ class FrontendResourceMapperTest {
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
-    val newsitem = new Newsitem(id = 123)
+    val newsitem = new Newsitem(id = "123")
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
     val tag = Tag(id = UUID.randomUUID().toString, "123", "123", None)
     when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set(tag))
@@ -45,7 +45,7 @@ class FrontendResourceMapperTest {
 
   @Test
   def tagsShouldBeAppliedToFrontendNewsitems(): Unit = {
-    val newsitem = new Newsitem(id = 123)
+    val newsitem = new Newsitem(id = "123")
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
     val tag = Tag(id = UUID.randomUUID().toString, "123", "123", None)
@@ -60,7 +60,7 @@ class FrontendResourceMapperTest {
 
   @Test
   def handTaggingsShouldBeAppliedToFrontendNewsitems(): Unit = {
-    val newsitem = new Newsitem(id = 123)
+    val newsitem = new Newsitem(id = "123")
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
     val tag = Tag(id = UUID.randomUUID().toString, "123", "123", None)

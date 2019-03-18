@@ -5,7 +5,7 @@ import java.util.{Date, List}
 import nz.co.searchwellington.model.FeedAcceptancePolicy
 import uk.co.eelpieconsulting.common.geo.model.Place
 
-case class FrontendWatchlist(id: Int = 0,
+case class FrontendWatchlist(id: String,
                         urlWords: String = null,
                         `type`: String = null,
                         name: String = null,

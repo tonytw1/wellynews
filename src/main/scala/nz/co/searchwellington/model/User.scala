@@ -2,10 +2,10 @@ package nz.co.searchwellington.model
 
 import nz.co.searchwellington.model.taggingvotes.voters.TaggingVoter
 
-case class User(id: Int, openid: Option[String] = None, twitterId: Option[Long] = None, profilename: Option[String] = None, url: Option[String] = None,
+case class User(id: String, openid: Option[String] = None, twitterId: Option[Long] = None, profilename: Option[String] = None, url: Option[String] = None,
                 name: Option[String] = None, bio: Option[String] = None, apikey: Option[String]= None, admin: Boolean = false) extends TaggingVoter {
 
-  def getId: Int = id
+  def getId: String = id
 
   def getOpenId: String = openid.getOrElse(null)
 

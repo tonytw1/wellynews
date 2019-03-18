@@ -1,5 +1,7 @@
 package nz.co.searchwellington.filters.attributesetters
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.HibernateResourceDAO
 import org.junit.Assert.assertEquals
@@ -10,7 +12,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 class PublisherPageAttributeSetterTest {
   @Mock val resourceDAO: HibernateResourceDAO = null
-  private val publisher = Website(title = Some("Wellington City Council"))
+  private val publisher = Website(id = UUID.randomUUID().toString, title = Some("Wellington City Council"))
   private var request: MockHttpServletRequest = null
   private var pageAttributeSetter: PublisherPageAttributeSetter = null
 

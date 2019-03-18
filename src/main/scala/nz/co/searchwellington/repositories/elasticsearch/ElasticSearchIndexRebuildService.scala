@@ -24,7 +24,7 @@ import scala.concurrent.{Await, Future}
   }
 
   @throws[JsonProcessingException]
-  private def reindexResources(resourcesToIndex: Seq[Int]): Unit = {
+  private def reindexResources(resourcesToIndex: Seq[String]): Unit = {
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
 
     batches.foreach { batch =>
@@ -71,9 +71,9 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    mongoRepository.getTaggingsFor(resource.id).flatMap { taggings =>
+    mongoRepository.getTaggingsFor(resource._id.get).flatMap { taggings =>
       val eventualTags = Future.sequence(taggings.map { tagging =>
-        mongoRepository.getTagById(tagging.tag_id)
+        mongoRepository.getTagByObjectId(tagging.tag_id)
       }).map(_.flatten)
 
       eventualTags.flatMap { tags =>

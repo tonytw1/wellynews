@@ -12,14 +12,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation, urlBuilder: UrlBuilder) {
 
   def getResourceEditUrl(resource: FrontendResource): String = {
-    if (resource.getId > 0) {
-      siteInformation.getUrl + "/edit?resource=" + resource.getId
-    }
-    else if (!Strings.isNullOrEmpty(resource.getUrlWords)) {
-      siteInformation.getUrl + "/edit?resource=" + UrlParameterEncoder.encode(resource.getUrlWords)
-    } else {
-      null
-    }
+    siteInformation.getUrl + "/edit?resource=" + resource.getId
   }
 
   def getResourceEditUrl(resourceId: Int): String = {

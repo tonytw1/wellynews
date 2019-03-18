@@ -31,7 +31,7 @@ class AdminRequestFilterTest {
   @Before
   def setUp {
     when(tagDAO.loadTagByName("transport")).thenReturn(Some(transportTag))
-    when(resourceDAO.loadResourceById(567)).thenReturn(Some(resource))
+    when(resourceDAO.loadResourceById("567")).thenReturn(Some(resource))
   }
 
   @Test

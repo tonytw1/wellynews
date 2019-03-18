@@ -41,10 +41,12 @@ class MongoRepositoryTest {
 
   @Test
   def canReadTaggingsForResource = {
-    val taggings = Await.result(mongoRepository.getTaggingsFor(6833), TenSeconds)
-    println(taggings)
+    val taggedResource = Await.result(mongoRepository.getResourceByUrl("http://www.kitesurfers.co.nz/"), TenSeconds).get
+
+    val taggings= Await.result(mongoRepository.getTaggingsFor(taggedResource._id.get), TenSeconds)
     assertEquals(1, taggings.size)
-    assertEquals(8, taggings.head.tag_id)
+    val tag = Await.result(mongoRepository.getTagByObjectId(taggings.head.tag_id), TenSeconds).get
+    assertEquals("sport", tag.name)
   }
 
   @Test

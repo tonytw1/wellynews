@@ -289,7 +289,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     tagDAO.getFeaturedTags
   }
 
-  private def fetchByIds(ids: Seq[Int]): Future[Seq[FrontendResource]] = {
+  private def fetchByIds(ids: Seq[String]): Future[Seq[FrontendResource]] = {
     val eventualResources = Future.sequence{ ids.map { id =>
       mongoRepository.getResourceById(id)
     }}.map(_.flatten)

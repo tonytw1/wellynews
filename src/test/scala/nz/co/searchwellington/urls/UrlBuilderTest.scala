@@ -78,7 +78,7 @@ class UrlBuilderTest {
   @Test
   @throws[Exception]
   def urlForFeedsShouldPointToOurFeedPage(): Unit = {
-    val frontendFeed = new FrontendFeed(urlWords = "my-local-sports-team-match-reports")
+    val frontendFeed = new FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
 
     assertEquals(UrlBuilderTest.SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed))
   }

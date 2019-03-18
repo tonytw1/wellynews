@@ -7,7 +7,7 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 trait FrontendResource extends RssFeedable with Serializable {
-  val id: Int
+  val id: String
   val urlWords: String
   val `type`: String
   val name: String
@@ -22,9 +22,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   val place: Place
   val held: Boolean
 
-  def getId: Int = {
-    id
-  }
+  def getId: String = id
 
   final def getType: String = {
     `type`

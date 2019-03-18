@@ -1,5 +1,7 @@
 package nz.co.searchwellington.filters.attributesetters
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.repositories.HibernateResourceDAO
 import org.junit.Assert.assertEquals
@@ -10,7 +12,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 class FeedAttributeSetterTest {
   @Mock val resourceDAO: HibernateResourceDAO = null
-  private val feed = Feed(title = Some("Wellington City Council news"))
+  private val feed = Feed(id = UUID.randomUUID().toString, title = Some("Wellington City Council news"))
   private var request: MockHttpServletRequest = null
   private var feedAttributeSetter: FeedAttributeSetter = null
 

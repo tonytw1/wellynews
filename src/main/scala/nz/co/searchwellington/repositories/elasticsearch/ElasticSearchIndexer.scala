@@ -58,7 +58,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         r._1.date.map(d => Date -> new DateTime(d)),
         Some(Tags, r._2),
         publisher.map(p => Publisher -> p),
-        Some(Held -> r._1.held2)
+        Some(Held -> r._1.held)
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1.id.toString
@@ -95,11 +95,11 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
     }
   }
 
-  def getResources(query: ResourceQuery): Future[(Seq[Int], Long)] = {
+  def getResources(query: ResourceQuery): Future[(Seq[String], Long)] = {
     executeRequest(query)
   }
 
-  def getAllPublishers(): Future[Seq[Int]] = {
+  def getAllPublishers(): Future[Seq[String]] = {
     val allNewsitems = matchQuery(Type, "N")
 
     val aggs = Seq(termsAgg("publisher", "publisher") size Integer.MAX_VALUE)
@@ -110,9 +110,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
 
       val resultBuckets = r.map { rs =>
         val publisherAgg: TermsAggResult = rs.result.aggregations.terms("publisher")
-        publisherAgg.buckets.map { b =>
-          b.key.toInt
-        }
+        publisherAgg.buckets.map(b => b.key)
       }
 
       resultBuckets match {
@@ -150,7 +148,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
     }.map(_.filter(_.getCount > 0).reverse) // TODO can do this in elastic query?
   }
 
-  private def executeRequest(query: ResourceQuery): Future[(Seq[Int], Long)] = {
+  private def executeRequest(query: ResourceQuery): Future[(Seq[String], Long)] = {
     var conditions = Seq(
       query.`type`.map(t => matchQuery(Type, t)),
       query.tags.map { tags =>
@@ -179,14 +177,13 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
 
     client.execute(request).map { r =>
       r.map { rs =>
-        (rs.result.hits.hits.map(_.id.toInt).toSeq, rs.result.totalHits)
-
+        (rs.result.hits.hits.map(_.id).toSeq, rs.result.totalHits)
       } match {
-        case (Right(idsWithTotalCount)) => {
+        case Right(idsWithTotalCount) => {
           log.info(query + ": " + idsWithTotalCount._2)
           idsWithTotalCount
         }
-        case (Left(f)) =>
+        case Left(f) =>
           log.error(f)
           (Seq(), 0L)
       }

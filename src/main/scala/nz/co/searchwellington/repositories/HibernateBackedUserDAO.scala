@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -27,18 +29,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     Await.result(mongoRepository.getUserByTwitterId(twitterId),  Duration(10, SECONDS))
   }
 
-  def getNextAvailableAnonUserNumber: Int = {
-    /*
-    val iterate: java.util.Iterator[_] = sessionFactory.getCurrentSession.createQuery("select max(id) from UserImpl").iterate
-    if (iterate != null && iterate.hasNext) {
-      val next: Integer = iterate.next.asInstanceOf[Integer]
-      if (next != null) {
-        return next + 1
-      }
-    }
-    */
-    1 // TOOD
-  }
+  def getNextAvailableAnonUserNumber: String = UUID.randomUUID.toString
 
   def deleteUser(user: User) {
     // sessionFactory.getCurrentSession.delete(user)

@@ -1,5 +1,7 @@
 package nz.co.searchwellington.model
 
+import java.util.UUID
+
 import org.junit.Assert.assertEquals
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import org.joda.time.DateTime
@@ -13,7 +15,7 @@ class UrlWordsGeneratorTest {
 
   @Before def setup {
     val pubdate = new DateTime(2010, 4, 2, 0, 0, 0, 0, DateTimeZone.UTC).toDate
-    newsitem = FrontendNewsitem(name = "Something happening", date = pubdate)
+    newsitem = FrontendNewsitem(id = UUID.randomUUID().toString, name = "Something happening", date = pubdate)
     this.urlWordsGenerator = new UrlWordsGenerator
   }
 

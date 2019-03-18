@@ -29,7 +29,7 @@ import scala.collection.JavaConverters._
       case n: Newsitem =>
         val publisher = n.publisher.flatMap { pid =>
           val tenSeconds = Duration(10, SECONDS)
-          Await.result(mongoRepository.getResourceById(pid.toInt), tenSeconds)
+          Await.result(mongoRepository.getResourceById(pid), tenSeconds)
         }
 
         val tags = taggingReturnsOfficerService.getIndexTagsForResource(contentItem).
@@ -127,7 +127,9 @@ import scala.collection.JavaConverters._
   }
 
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
-    FrontendWebsite(name = website.title.getOrElse(""),
+    FrontendWebsite(
+      id = website.id,
+      name = website.title.getOrElse(""),
       url = website.page.getOrElse(""),
       urlWords = website.url_words.getOrElse(""),
       place = website.geocode.map { g =>

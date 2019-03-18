@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component
         suppressionDAO.isSupressed(u)
       }.getOrElse(false)
 
-      var localCopyIdAsJava: Integer = if (localCopyId.isEmpty) null else (localCopyId.get) // TODO not great but velocity views don't undertand Options
+      var localCopyIdAsJava: String = if (localCopyId.isEmpty) null else (localCopyId.get) // TODO not great but velocity views don't undertand Options
 
       new FeedNewsitemAcceptanceState(localCopyIdAsJava, isSuppressed)
     }

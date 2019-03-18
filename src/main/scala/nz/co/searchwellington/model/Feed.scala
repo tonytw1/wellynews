@@ -2,7 +2,7 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
-case class Feed(override var id: Int = 0,
+case class Feed(override val id: String,
                 override val `type`: String = "F",
                 override var title: Option[String] = None,
                 override var description: Option[String] = None,
@@ -13,7 +13,7 @@ case class Feed(override var id: Int = 0,
                 override var last_changed: Option[Date] = None,
                 override var live_time: Option[Date] = None,
                 override var embargoed_until: Option[Date] = None,
-                override var held2: Boolean = true,
+                override var held: Boolean = true,
                 override var url_words: Option[String] = None,
                 override var geocode: Option[Geocode] = None,
                 override var owner: Option[Int] = None,
@@ -21,7 +21,7 @@ case class Feed(override var id: Int = 0,
                 var latestItemDate: Option[Date] = null,
                 var lastRead: Option[Date] = null, // TODO
                 var whakaoko_id: Option[String] = None,
-                override var publisher: Option[Long] = None) extends PublishedResource {
+                override var publisher: Option[String] = None) extends PublishedResource {
 
   def getAcceptancePolicy: String = acceptance
 

@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers
 
+import java.util.UUID
+
 import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.CachingNominatimGeocodingService
@@ -30,7 +32,7 @@ class SubmissionProcessingServiceTest {
   @Mock val tagVoteDAO: HandTaggingDAO = null
   @Mock val resourceDAO: HibernateResourceDAO = null
   @Mock val resource: Newsitem = null
-  val feed = Feed(title = Some(FEED_NAME))
+  val feed = Feed(id = UUID.randomUUID().toString, title = Some(FEED_NAME))
   @Mock val loggedInUser: User = null
   @Mock val urlProcessor: UrlProcessor = null
   @Mock val nominatimGeocodingService: CachingNominatimGeocodingService = null

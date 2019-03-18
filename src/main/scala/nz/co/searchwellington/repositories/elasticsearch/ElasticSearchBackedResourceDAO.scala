@@ -402,7 +402,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
 
   private def searchRequestBuilder(query: QueryBuilder): SearchRequestBuilder = {
-    //elasticSearchClientFactory.getClient.prepareSearch().setIndices(ElasticSearchIndexUpdateService.INDEX).setTypes(ElasticSearchIndexUpdateService.TYPE).setQuery(query)
+    //elasticSearchClientFactory.getClient.prepareSearch().setIndices(nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService.INDEX).setTypes(nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService.TYPE).setQuery(query)
     null  // TODO
   }
 

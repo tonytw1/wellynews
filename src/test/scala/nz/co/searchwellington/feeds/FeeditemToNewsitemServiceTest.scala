@@ -1,5 +1,7 @@
 package nz.co.searchwellington.feeds
 
+import java.util.UUID
+
 import org.junit.Assert.assertEquals
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.FrontendFeed
@@ -27,7 +29,7 @@ class FeeditemToNewsitemServiceTest {
   @throws[Exception]
   def shouldSetGeocodeWhenAcceptingFeedNewsitem {
     when(place.getAddress).thenReturn("A place")
-    val frontendFeed = new FrontendFeed
+    val frontendFeed = new FrontendFeed(id = UUID.randomUUID().toString)
     val feedNewsitem = new FeedItem()
     feedNewsitem.setPlace(place)
 

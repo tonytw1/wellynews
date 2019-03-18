@@ -1,8 +1,11 @@
 package nz.co.searchwellington.model
 
-import java.util.Date
+import java.util.{Date, UUID}
 
-case class Website(override var id: Int = 0,
+import reactivemongo.bson.BSONObjectID
+
+case class Website(override val _id: Option[BSONObjectID] = None,
+                   override val id: String = UUID.randomUUID().toString,
                    override val `type`: String = "W",
                    override var title: Option[String] = None,
                    override var description: Option[String] = None,
@@ -13,7 +16,7 @@ case class Website(override var id: Int = 0,
                    override var last_changed: Option[Date] = None,
                    override var live_time: Option[Date] = None,
                    override var embargoed_until: Option[Date] = None,
-                   override var held2: Boolean = true,
+                   override var held: Boolean = true,
                    override var url_words: Option[String] = None,
                    override var geocode: Option[Geocode] = None,
                    override var owner: Option[Int] = None
@@ -25,7 +28,7 @@ case class Website(override var id: Int = 0,
 
   // TODO
   def setFeeds(feeds: Set[Feed]): Unit = {} // TODO
-  
+
   def getWatchlist: Set[Watchlist] = Set()
 
   // TODO

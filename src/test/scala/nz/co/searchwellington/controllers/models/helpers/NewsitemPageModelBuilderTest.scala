@@ -16,7 +16,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 
 class NewsitemPageModelBuilderTest {
 
-  private val NEWSITEM_ID = 123
+  private val NEWSITEM_ID = "123"
   private val VALID_NEWSITEM_PAGE_PATH = "/wellington-city-council/2010/feb/01/something-about-rates"
 
   @Mock var contentRetrievalService: ContentRetrievalService = null
@@ -50,10 +50,10 @@ class NewsitemPageModelBuilderTest {
   @Test
   @SuppressWarnings(Array("unchecked"))
   def shouldShowNewsitemOnMapIfItIsGeotagged {
-    when(geotaggedNewsitem.getId).thenReturn(123)
+    when(geotaggedNewsitem.getId).thenReturn("123")
     when(geotaggedNewsitem.getPlace).thenReturn(place)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(geotaggedNewsitem))
-    when(resourceDAO.loadResourceById(123)).thenReturn(None)  // TODO properly exercise mapped option branch
+    when(resourceDAO.loadResourceById("123")).thenReturn(None)  // TODO properly exercise mapped option branch
 
     val mv = builder.populateContentModel(request).get
 
@@ -64,9 +64,9 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
-    when(frontendNewsitem.getId).thenReturn(123)
+    when(frontendNewsitem.getId).thenReturn("123")
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
-    when(resourceDAO.loadResourceById(123)).thenReturn(None)  // TODO properly exercise mapped option branch
+    when(resourceDAO.loadResourceById("123")).thenReturn(None)  // TODO properly exercise mapped option branch
 
     val mv = builder.populateContentModel(request).get
 
@@ -75,7 +75,7 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldDisplayGeotaggingVotes {
-    when(frontendNewsitem.getId).thenReturn(123)
+    when(frontendNewsitem.getId).thenReturn("123")
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
     when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(Some(newsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(List(geotaggingVote))

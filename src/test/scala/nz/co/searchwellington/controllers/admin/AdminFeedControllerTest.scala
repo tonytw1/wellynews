@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
+import java.util.UUID
+
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -12,7 +14,7 @@ import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResp
 
 class AdminFeedControllerTest {
 
-  private val FEED_ID = 1
+  private val FEED_ID = UUID.randomUUID().toString
 
   @Mock val requestFilter: AdminRequestFilter = null
   @Mock val feedReader: FeedReader = null
@@ -21,7 +23,7 @@ class AdminFeedControllerTest {
   @Mock val loggedInUserFilter: LoggedInUserFilter = null
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
-  private val loggedInUser = User(id = 273)
+  private val loggedInUser = User(id ="273")
   private val feed = Feed(id = FEED_ID, title = Some("A feed"))
 
   @Before def setup(): Unit = {

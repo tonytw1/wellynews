@@ -18,12 +18,10 @@ import org.springframework.stereotype.Component
 
     def processResourceId(request: HttpServletRequest, resourceParameter: String) {
       try {
-        val resourceId = resourceParameter.toInt
-        if (resourceId > 0) {
-          resourceDAO.loadResourceById(resourceId).map { resource =>
-            log.debug("Found resource: " + resource.title)
-            request.setAttribute("resource", resource)
-          }
+        val resourceId = resourceParameter
+        resourceDAO.loadResourceById(resourceId).map { resource =>
+          log.debug("Found resource: " + resource.title)
+          request.setAttribute("resource", resource)
         }
       }
       catch {

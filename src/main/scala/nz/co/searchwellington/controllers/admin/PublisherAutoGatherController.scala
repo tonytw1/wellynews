@@ -45,10 +45,7 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("publisher", publisher)
     if (publisher != null) {
       val autotaggedResourceIds = request.getParameterValues("autotag")
-      val resources = autotaggedResourceIds.map { resourceIdString =>
-        resourceDAO.loadResourceById(resourceIdString.toInt)
-      }.flatten
-
+      val resources = autotaggedResourceIds.flatMap(resourceDAO.loadResourceById)
       val autotaggedNewsitems = resources.filter(resource => resource.`type` == "N").map { newsitem =>
         log.info("Applying publisher " + publisher.title + " to:" + newsitem.title)
         // TODO (newsitem.asInstanceOf[Newsitem]).setPublisher(publisher)

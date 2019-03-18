@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.UUID
+
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendResource}
@@ -22,7 +24,7 @@ class FeedModelBuilderTest {
   val feeditemToNewsitemService =  mock(classOf[FeeditemToNewsitemService])
   val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
-  var feed = Feed(page = Some("http://localhost/a-feed"))
+  var feed = Feed(id = UUID.randomUUID().toString, page = Some("http://localhost/a-feed"))
 
   val feedItem = mock(classOf[FeedItem])
   val anotherFeedItem = mock(classOf[FeedItem])

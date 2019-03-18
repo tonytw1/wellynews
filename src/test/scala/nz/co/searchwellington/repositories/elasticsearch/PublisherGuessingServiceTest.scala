@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import java.util.UUID
+
 import junit.framework.TestCase
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.HibernateResourceDAO
@@ -32,13 +34,13 @@ class PublisherGuessingServiceTest extends TestCase {
 
   @throws[Exception]
   def testShouldMatchIfMultipleAvailable {
-    val golfCourseSite = Website()
+    val golfCourseSite = Website(id = UUID.randomUUID().toString)
     golfCourseSite.setUrl("http://www.wellington.govt.nz/services/berhgolf/index.html")
 
-    val heritageInventory = Website()
+    val heritageInventory = Website(id = UUID.randomUUID().toString)
     heritageInventory.setUrl("http://www.wellington.govt.nz/services/heritage/inventory/index.html")
 
-    val wccMainSite = Website()
+    val wccMainSite = Website(id = UUID.randomUUID().toString)
     wccMainSite.setUrl("http://www.wellington.govt.nz")
 
     val possiblePublishers = Seq(golfCourseSite, heritageInventory, wccMainSite)

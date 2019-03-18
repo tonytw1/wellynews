@@ -1,9 +1,12 @@
 package nz.co.searchwellington.model
 
-import java.util.Date
+import java.util.{Date, UUID}
+
+import reactivemongo.bson.BSONObjectID
 
 trait Resource {
-  var id: Int
+  val _id: Option[BSONObjectID] = None
+  val id: String = UUID.randomUUID().toString
   val `type`: String
   var title: Option[String]
   var description: Option[String]
@@ -14,7 +17,7 @@ trait Resource {
   var last_changed: Option[Date]
   var live_time: Option[Date]
   var embargoed_until: Option[Date]
-  var held2: Boolean
+  var held: Boolean
   var url_words: Option[String]
   var geocode: Option[Geocode]
   var owner: Option[Int]
@@ -22,9 +25,7 @@ trait Resource {
   def setDate(date: Date): Unit = {}  // TODO
 
   def setDescription(description: String): Unit = {}  // TODO this.description = description
-
-  def setId(id: Int): Unit = this.id = id
-
+  
   def setName(name: String): Unit = {} // this.title = name
 
   def setUrl(url: String) = this.page = Some(url)
@@ -43,6 +44,6 @@ trait Resource {
 
   def setOwner(owner: User): Unit = {}  // TODO
 
-  def setHeld(held: Boolean): Unit = this.held2 = held
+  def setHeld(held: Boolean): Unit = this.held = held
 
 }

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component
   private val log = Logger.getLogger(classOf[AnonUserService])
 
   def createAnonUser: User = {
-    val userNumber = userDAO.getNextAvailableAnonUserNumber
-    val anonUser = User(id = userNumber, profilename = Some("anon" + userNumber))
+    val anonUser = User(id = userDAO.getNextAvailableAnonUserNumber,
+      profilename = Some("anon" + userDAO.getNextAvailableAnonUserNumber))
     userDAO.saveUser(anonUser)
     log.info("Created new anon user: " + anonUser.getProfilename)
     anonUser

@@ -5,7 +5,7 @@ import java.util.{Date, List}
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 @SerialVersionUID(1L)
-case class FrontendWebsite(id: Int = 0,
+case class FrontendWebsite(id: String,
                            urlWords: String = null,
                            `type`: String = null,
                            name: String = null,

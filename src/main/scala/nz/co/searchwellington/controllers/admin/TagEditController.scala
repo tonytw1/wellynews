@@ -1,8 +1,9 @@
 package nz.co.searchwellington.controllers.admin
 
+import java.util.UUID
 import java.util.regex.Pattern
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, SubmissionProcessingService, UrlStack}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Feed, Tag, UrlWordsGenerator, User}
@@ -98,7 +99,7 @@ import org.springframework.web.servlet.view.RedirectView
     }
     else {
       log.info("No tag seen on request; creating a new instance.")
-      editTag = Tag()
+      editTag = Tag(UUID.randomUUID().toString)
     }
     editTag.setName(request.getParameter("name"))
     editTag.setDisplayName(request.getParameter("displayName"))

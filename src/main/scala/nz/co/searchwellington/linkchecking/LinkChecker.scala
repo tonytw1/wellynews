@@ -19,10 +19,8 @@ import uk.co.eelpieconsulting.archiving.{FilesystemSnapshotArchive, Snapshot}
 
   val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
-  def scanResource(checkResourceId: Int) {
-
+  def scanResource(checkResourceId: String) {
     val processers: Seq[LinkCheckerProcessor] = Seq() // TODO inject
-
     resourceDAO.loadResourceById(checkResourceId).map { resource =>
       if (resource != null) {
         resource.page.map { p =>
