@@ -1,5 +1,7 @@
 package nz.co.searchwellington.model
 
+import java.util.UUID
+
 class TagBuilder() {
 
   var name, autotagHints, displayName: String = null
@@ -26,7 +28,7 @@ class TagBuilder() {
   }
 
   def build(): Tag = {
-    val tag: Tag = new Tag
+    val tag: Tag = new Tag(id = UUID.randomUUID().toString)
     tag.setAutotagHints(autotagHints)
     tag.setDisplayName(displayName)
     tag.setName(name)

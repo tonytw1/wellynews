@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
+import java.util.UUID
+
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, SubmissionProcessingService, UrlStack}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
@@ -24,8 +26,8 @@ class TagEditControllerTest {
    val commonModelObjectsService = mock(classOf[CommonModelObjectsService])
    val urlWordsGenerator = mock(classOf[UrlWordsGenerator])
 
-   val newTag = Tag(name = "A new tag")
-   val existingTag = Tag(name = "An existing tag")
+   val newTag = Tag(id = UUID.randomUUID().toString, name = "A new tag")
+   val existingTag = Tag(id = UUID.randomUUID().toString, name = "An existing tag")
 
   private val request = new MockHttpServletRequest
   private val response = null

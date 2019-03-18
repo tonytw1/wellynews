@@ -1,9 +1,12 @@
 package nz.co.searchwellington.repositories
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -11,11 +14,15 @@ import scala.concurrent.duration.{Duration, SECONDS}
 @Component class TagDAO @Autowired() (mongoRepository: MongoRepository) {
 
   def createNewTag(tagUrlWords: String, displayName: String): Tag = {
-    new Tag(name = tagUrlWords, display_name = displayName)
+    new Tag(id = UUID.randomUUID().toString, name = tagUrlWords, display_name = displayName)
   }
 
-  def loadTagById(tagID: Int): Option[Tag] = {
-    Await.result(mongoRepository.getTagById(tagID), Duration(10, SECONDS))
+  def loadTagById(tagId: String): Option[Tag] = {
+    Await.result(mongoRepository.getTagById(tagId), Duration(10, SECONDS))
+  }
+
+  def loadTagByObjectId(objectId: BSONObjectID): Option[Tag] = {
+    Await.result(mongoRepository.getTagByObjectId(objectId), Duration(10, SECONDS))
   }
 
   def loadTagByName(name: String): Option[Tag] = {
@@ -30,13 +37,13 @@ import scala.concurrent.duration.{Duration, SECONDS}
     getAllTags().filter(t => t.isFeatured)
   }
 
-  def loadTagsById(tagIds: Seq[Integer]): Seq[Tag] = {
+  def loadTagsById(tagIds: Seq[String]): Seq[Tag] = {
     tagIds.flatMap { id =>
       Option(loadTagById(id))
     }.flatten
   }
 
-  def loadTagsByParent(parentId: Int): Seq[Tag] = {
+  def loadTagsByParent(parentId: String): Seq[Tag] = {
     Await.result(mongoRepository.getTagsByParent(parentId), Duration(10, SECONDS))
   }
 

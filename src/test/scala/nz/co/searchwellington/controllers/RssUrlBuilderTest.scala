@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers
 
+import java.util.UUID
+
 import org.junit.Assert.assertEquals
 import nz.co.searchwellington.model.SiteInformation
 import nz.co.searchwellington.model.Tag
@@ -11,7 +13,7 @@ import org.mockito.MockitoAnnotations
 
 class RssUrlBuilderTest {
   @Mock val siteInformation: SiteInformation = null
-  val tag = Tag(description = Some("This is a tag about something..."))
+  val tag = Tag(id = UUID.randomUUID().toString, description = Some("This is a tag about something..."))
 
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)

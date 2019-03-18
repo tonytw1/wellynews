@@ -1,5 +1,7 @@
 package nz.co.searchwellington.urls
 
+import java.util.UUID
+
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import nz.co.searchwellington.model.{SiteInformation, Tag, UrlWordsGenerator}
@@ -34,7 +36,7 @@ class UrlBuilderTest {
       date = new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate,
       urlWords = "2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
 
-    tag = new Tag
+    tag = new Tag(id = UUID.randomUUID().toString)
     tag.setName("atag")
   }
 

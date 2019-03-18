@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.UUID
+
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Tag
@@ -32,7 +34,8 @@ class TagModelBuilderTest {
 
   private val TAG_DISPLAY_NAME = "Penguins"
 
-  private val tag = Tag(id = 123, display_name = TAG_DISPLAY_NAME)
+  private val parentId: String = UUID.randomUUID().toString
+  private val tag = Tag(id = parentId, display_name = TAG_DISPLAY_NAME)
 
   var request: MockHttpServletRequest = null
   private var modelBuilder: TagModelBuilder = null
@@ -45,7 +48,7 @@ class TagModelBuilderTest {
       contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
     request = new MockHttpServletRequest
 
-    when(tagDAO.loadTagsByParent(123)).thenReturn(Seq())
+    when(tagDAO.loadTagsByParent(parentId)).thenReturn(Seq())
   }
 
   @Test

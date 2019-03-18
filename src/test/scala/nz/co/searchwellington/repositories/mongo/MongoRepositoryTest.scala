@@ -22,7 +22,9 @@ class MongoRepositoryTest {
   @Test
   def canReadTagParent = {
     val tagWithParent = Await.result(mongoRepository.getTagByName("vuw"), TenSeconds).get
-    assertEquals(Some(28L), tagWithParent.parent)
+    val parentId = tagWithParent.parent.get
+    val parentTag = Await.result(mongoRepository.getTagByObjectId(parentId), TenSeconds).get
+    assertEquals("education", parentTag.name)
   }
 
   @Test

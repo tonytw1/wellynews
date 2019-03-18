@@ -1,5 +1,7 @@
 package nz.co.searchwellington.tagging
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.TagDAO
 import org.junit.Assert._
@@ -20,12 +22,12 @@ class PlaceAutoTaggerTest {
 
   @Before def setUp {
     MockitoAnnotations.initMocks(this)
-    placesTag = Tag(id = 123, name = "places", display_name = "Places")
-    aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag.id))
-    islandBayTag = Tag(name = "islandbay", display_name = "Island Bay", parent = Some(placesTag.id))
+    placesTag = Tag(id = UUID.randomUUID().toString, name = "places", display_name = "Places")
+    aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = None) // TODO places as parent
+    islandBayTag = Tag(id = UUID.randomUUID().toString, name = "islandbay", display_name = "Island Bay", parent = None)
 
     when(tagDAO.loadTagByName("places")).thenReturn(Some(placesTag))
-    when(tagDAO.loadTagsByParent(123)).thenReturn(Seq(aroValleyTag, islandBayTag))
+    when(tagDAO.loadTagsByParent(UUID.randomUUID().toString)).thenReturn(Seq(aroValleyTag, islandBayTag)) // TOOD parent id
 
     placeAutoTagger = new PlaceAutoTagger(tagDAO)
   }

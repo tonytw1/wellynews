@@ -1,5 +1,7 @@
 package nz.co.searchwellington.model.mappers
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -20,7 +22,7 @@ class FrontendResourceMapperTest {
 
   @Test
   def canMapTagToFrontendTag(): Unit = {
-    val tag = new Tag(id = 123)
+    val tag = new Tag(id = UUID.randomUUID().toString)
 
     val frontedTag = mapper.mapTagToFrontendTag(tag)
 
@@ -31,7 +33,7 @@ class FrontendResourceMapperTest {
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
     val newsitem = new Newsitem(id = 123)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
-    val tag = Tag(123, "123", "123", None)
+    val tag = Tag(id = UUID.randomUUID().toString, "123", "123", None)
     when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set(tag))
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Set[Tag]())
 
@@ -46,7 +48,7 @@ class FrontendResourceMapperTest {
     val newsitem = new Newsitem(id = 123)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
-    val tag = Tag(123, "123", "123", None)
+    val tag = Tag(id = UUID.randomUUID().toString, "123", "123", None)
     when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set(tag))
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Set[Tag]())
 
@@ -61,7 +63,7 @@ class FrontendResourceMapperTest {
     val newsitem = new Newsitem(id = 123)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
-    val tag = Tag(123, "123", "123", None)
+    val tag = Tag(id = UUID.randomUUID().toString, "123", "123", None)
     val tagging = new HandTagging(789, newsitem, null, tag)
     val taggingVotes: Set[HandTagging] = Set(tagging)
 

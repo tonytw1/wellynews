@@ -1,9 +1,9 @@
 package nz.co.searchwellington.controllers
 
-import java.util.{Calendar, Date}
-import javax.servlet.http.HttpServletRequest
+import java.util.{Calendar, Date, UUID}
 
 import com.google.common.base.Strings
+import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.{CachingNominatimGeocodingService, OsmIdParser}
@@ -12,7 +12,6 @@ import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO
 import nz.co.searchwellington.utils.UrlFilters
 import org.apache.commons.lang.{StringEscapeUtils, StringUtils}
 import org.apache.log4j.Logger
-import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
@@ -181,7 +180,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
             }.getOrElse {
               log.debug("Tag '" + field + "' is a new tag. Needs to be created.")
-              val newTag: Tag = Tag()
+              val newTag = Tag(UUID.randomUUID().toString)
               newTag.setName(field)
               newTag.setDisplayName(displayName)
               tagDAO.saveTag(newTag)

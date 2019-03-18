@@ -1,8 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
-case class FrontendTag(id: Int, name: String, displayName: String, description: String) {
+case class FrontendTag(id: String, name: String, displayName: String, description: String) {
 
-  def getId(): Int = {
+  def getId(): String = {
     id
   }
 

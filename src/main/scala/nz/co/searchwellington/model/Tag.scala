@@ -1,9 +1,11 @@
 package nz.co.searchwellington.model
 
-case class Tag(id: Int = 0,
+import reactivemongo.bson.BSONObjectID
+
+case class Tag(val id: String,
                var name: String = "",
                var display_name: String = "",
-               var parent: Option[Int] = None,
+               var parent: Option[BSONObjectID] = None,
                var flickrCount: Option[Int] = None,
                var hidden: Boolean = false,
                var featured: Boolean = false,
@@ -15,7 +17,7 @@ case class Tag(id: Int = 0,
                var related_twitter: Option[String] = None,
                var autotag_hints: Option[String] = None) {
 
-  def getId: Int = id
+  def getId: String = id
 
   def getName: String = name
   def setName(name: String): Unit = this.name = name
@@ -23,8 +25,8 @@ case class Tag(id: Int = 0,
   def getDisplayName: String = display_name
   def setDisplayName(displayName: String): Unit = this.display_name = displayName
 
-  def getParent: Option[Int] = parent
-  def setParent(parent: Int): Unit = this.parent = Some(parent)
+  def getParent: Option[BSONObjectID] = parent
+  def setParent(parent: BSONObjectID): Unit = this.parent = Some(parent)
 
   def getMainImage: Option[String] = main_image
   def setMainImage(mainImage: String): Unit = this.main_image = Some(mainImage)

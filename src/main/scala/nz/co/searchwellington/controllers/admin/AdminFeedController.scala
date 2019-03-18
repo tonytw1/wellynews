@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-@Controller class AdminFeedController @Autowired()(requestFilter: AdminRequestFilter, feedReader: FeedReader, urlBuilder: UrlBuilder, permissionService: EditPermissionService, loggedInUserFilter: LoggedInUserFilter) {
+@Controller class AdminFeedController @Autowired()(requestFilter: AdminRequestFilter, feedReader: FeedReader, urlBuilder: UrlBuilder,
+                                                   permissionService: EditPermissionService, loggedInUserFilter: LoggedInUserFilter) {
 
   private val log = Logger.getLogger(classOf[AdminFeedController])
 

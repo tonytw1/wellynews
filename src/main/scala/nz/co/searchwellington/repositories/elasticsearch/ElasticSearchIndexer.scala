@@ -40,7 +40,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
   val Publisher = "publisher"
   val Held = "held"
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Set[Int])]): Unit = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Set[String])]): Unit = {
     log.info("Index batch of size: " + resources.size)
 
     val indexDefinitions = resources.map { r =>

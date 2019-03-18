@@ -61,7 +61,7 @@ import org.springframework.web.servlet.ModelAndView
         mv.addObject("link", urlBuilder.getTagUrl(tag))
 
         tag.parent.map { pid =>
-          tagDAO.loadTagById(pid).map { p =>
+          tagDAO.loadTagByObjectId(pid).map { p =>
             mv.addObject("parent", frontendResourceMapper.mapTagToFrontendTag(p))
           }
         }

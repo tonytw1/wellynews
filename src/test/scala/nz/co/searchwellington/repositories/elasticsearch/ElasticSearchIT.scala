@@ -23,7 +23,7 @@ class ElasticSearchIT {
 
   @Test
   def canIndexResources {
-    rebuild.buildIndex(false)
+    //rebuild.buildIndex(false)
   }
 
   @Test

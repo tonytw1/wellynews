@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.UUID
+
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -14,7 +16,7 @@ class SearchModelBuilderTest {
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
   val urlBuilder = mock(classOf[UrlBuilder])
 
-  val tag = Tag(name = "A tag")
+  val tag = Tag(id = UUID.randomUUID().toString, name = "A tag")
   val tags = Seq(tag)
 
   private var request: MockHttpServletRequest = null

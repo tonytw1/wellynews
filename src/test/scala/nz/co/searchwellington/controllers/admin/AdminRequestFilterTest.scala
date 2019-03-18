@@ -5,7 +5,7 @@ import org.junit.Assert.assertNotNull
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
 import org.mockito.Mockito.when
-import java.util.Date
+import java.util.{Date, UUID}
 
 import nz.co.searchwellington.filters.{AdminRequestFilter, ResourceParameterFilter, TagsParameterFilter}
 import nz.co.searchwellington.model.Feed
@@ -20,7 +20,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 class AdminRequestFilterTest {
   val resourceDAO = mock(classOf[HibernateResourceDAO])
-  val transportTag = Tag(name = "transport")
+  val transportTag = Tag(id = UUID.randomUUID().toString, name = "transport")
   val feed = mock(classOf[Feed])
   val resource = mock(classOf[Resource])
   val tagDAO = mock(classOf[TagDAO])

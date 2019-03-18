@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDocument, BSONString, Macros}
+import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString, Macros}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -83,15 +83,19 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("type" -> "W", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
-  def getTagById(id: Int): Future[Option[Tag]] = {
+  def getTagById(id: String): Future[Option[Tag]] = {
     tagCollection.find(BSONDocument("id" -> id)).one[Tag]
+  }
+
+  def getTagByObjectId(objectId: BSONObjectID): Future[Option[Tag]] = {
+    tagCollection.find(BSONDocument("_id" -> objectId)).one[Tag]
   }
 
   def getTagByName(name: String): Future[Option[Tag]] = {
     tagCollection.find(BSONDocument("name" -> name)).one[Tag]
   }
 
-  def getTagsByParent(parent: Int): Future[List[Tag]] = {
+  def getTagsByParent(parent: String): Future[List[Tag]] = {
     tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag]().collect[List]()
   }
 
@@ -154,15 +158,15 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  case class Tagging(resource_id: Int, tag_id: Int)
+  case class Tagging(resource_id: Int, tag_id: String)
 
   case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])
 
   {
     log.info("Ensuring indexes")
-    log.info("taggings.resource_id index result: " + Await.result(taggingCollection.indexesManager.ensure(Index(Seq("resource_id" -> IndexType.Ascending), name = Some("resource_id"), unique = false)), Duration(10000, MILLISECONDS)))
-    log.info("resources.id index result: " + Await.result(resourceCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
-    log.info("tag.id index result: " + Await.result(tagCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
+    //log.info("taggings.resource_id index result: " + Await.result(taggingCollection.indexesManager.ensure(Index(Seq("resource_id" -> IndexType.Ascending), name = Some("resource_id"), unique = false)), Duration(10000, MILLISECONDS)))
+    //log.info("resources.id index result: " + Await.result(resourceCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
+    //log.info("tag.id index result: " + Await.result(tagCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
   }
 
 }

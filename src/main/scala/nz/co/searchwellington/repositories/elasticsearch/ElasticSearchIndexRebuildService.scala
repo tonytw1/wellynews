@@ -49,12 +49,11 @@ import scala.concurrent.{Await, Future}
     log.info("Index rebuild complete")
   }
 
-  private def getIndexTagIdsFor(resource: Resource): Future[Set[Int]] = {
+  private def getIndexTagIdsFor(resource: Resource): Future[Set[String]] = {
 
     def resolveParentsFor(tag: Tag, result: Seq[Tag]): Future[Seq[Tag]] = {
       tag.parent.map { p =>
-        val eventualMaybeParentTag = mongoRepository.getTagById(p)
-        eventualMaybeParentTag.flatMap { pto =>
+        mongoRepository.getTagByObjectId(p).flatMap { pto =>
           pto.map { pt =>
             val a = pt
             if (!result.contains(pt)) {
@@ -87,7 +86,6 @@ import scala.concurrent.{Await, Future}
         }
       }
     }
-
   }
 
 }
