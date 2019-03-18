@@ -15,6 +15,7 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
+import reactivemongo.bson.BSONObjectID
 
 class TagModelBuilderTest {
   @Mock var contentRetrievalService: ContentRetrievalService = null
@@ -34,8 +35,8 @@ class TagModelBuilderTest {
 
   private val TAG_DISPLAY_NAME = "Penguins"
 
-  private val parentId: String = UUID.randomUUID().toString
-  private val tag = Tag(id = parentId, display_name = TAG_DISPLAY_NAME)
+  private val parentId: BSONObjectID = BSONObjectID.generate
+  private val tag = Tag(_id = Some(parentId), id = UUID.randomUUID().toString, display_name = TAG_DISPLAY_NAME)
 
   var request: MockHttpServletRequest = null
   private var modelBuilder: TagModelBuilder = null

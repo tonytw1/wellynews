@@ -95,7 +95,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     tagCollection.find(BSONDocument("name" -> name)).one[Tag]
   }
 
-  def getTagsByParent(parent: String): Future[List[Tag]] = {
+  def getTagsByParent(parent: BSONObjectID): Future[List[Tag]] = {
     tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag]().collect[List]()
   }
 

@@ -8,6 +8,8 @@ import org.junit.Assert._
 import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
+import reactivemongo.bson.BSONObjectID
+import reactivemongo.bson.DefaultBSONHandlers.BSONDocumentIdentity
 
 class PlaceAutoTaggerTest {
 
@@ -22,12 +24,13 @@ class PlaceAutoTaggerTest {
 
   @Before def setUp {
     MockitoAnnotations.initMocks(this)
-    placesTag = Tag(id = UUID.randomUUID().toString, name = "places", display_name = "Places")
+    val placeTagObjectId = BSONObjectID.generate
+    placesTag = Tag(_id = Some(placeTagObjectId), id = UUID.randomUUID().toString, name = "places", display_name = "Places")
     aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = None) // TODO places as parent
     islandBayTag = Tag(id = UUID.randomUUID().toString, name = "islandbay", display_name = "Island Bay", parent = None)
 
     when(tagDAO.loadTagByName("places")).thenReturn(Some(placesTag))
-    when(tagDAO.loadTagsByParent(UUID.randomUUID().toString)).thenReturn(Seq(aroValleyTag, islandBayTag)) // TOOD parent id
+    when(tagDAO.loadTagsByParent(placeTagObjectId)).thenReturn(Seq(aroValleyTag, islandBayTag))
 
     placeAutoTagger = new PlaceAutoTagger(tagDAO)
   }

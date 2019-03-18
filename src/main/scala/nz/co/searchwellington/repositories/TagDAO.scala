@@ -43,7 +43,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     }.flatten
   }
 
-  def loadTagsByParent(parentId: String): Seq[Tag] = {
+  def loadTagsByParent(parentId: BSONObjectID): Seq[Tag] = {
     Await.result(mongoRepository.getTagsByParent(parentId), Duration(10, SECONDS))
   }
 

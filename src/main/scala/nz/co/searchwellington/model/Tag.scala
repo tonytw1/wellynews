@@ -2,7 +2,8 @@ package nz.co.searchwellington.model
 
 import reactivemongo.bson.BSONObjectID
 
-case class Tag(val id: String,
+case class Tag(val _id: Option[BSONObjectID] = None,
+               val id: String,
                var name: String = "",
                var display_name: String = "",
                var parent: Option[BSONObjectID] = None,

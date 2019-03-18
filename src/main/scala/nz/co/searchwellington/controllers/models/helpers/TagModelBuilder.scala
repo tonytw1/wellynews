@@ -66,7 +66,7 @@ import org.springframework.web.servlet.ModelAndView
           }
         }
 
-        val children = tagDAO.loadTagsByParent(tag.id).map(t => frontendResourceMapper.mapTagToFrontendTag(t))
+        val children = tagDAO.loadTagsByParent(tag._id.get).map(t => frontendResourceMapper.mapTagToFrontendTag(t))
         log.info("Children: " + children)
         if (children.nonEmpty) {
           import scala.collection.JavaConverters._

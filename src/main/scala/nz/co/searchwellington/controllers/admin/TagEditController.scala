@@ -99,7 +99,7 @@ import org.springframework.web.servlet.view.RedirectView
     }
     else {
       log.info("No tag seen on request; creating a new instance.")
-      editTag = Tag(UUID.randomUUID().toString)
+      editTag = Tag(id = UUID.randomUUID().toString)
     }
     editTag.setName(request.getParameter("name"))
     editTag.setDisplayName(request.getParameter("displayName"))

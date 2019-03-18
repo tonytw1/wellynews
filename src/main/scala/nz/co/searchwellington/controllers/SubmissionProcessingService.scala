@@ -180,7 +180,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
             }.getOrElse {
               log.debug("Tag '" + field + "' is a new tag. Needs to be created.")
-              val newTag = Tag(UUID.randomUUID().toString)
+              val newTag = Tag(id = UUID.randomUUID().toString)
               newTag.setName(field)
               newTag.setDisplayName(displayName)
               tagDAO.saveTag(newTag)
