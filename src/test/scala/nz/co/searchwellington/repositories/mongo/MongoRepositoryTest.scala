@@ -28,6 +28,13 @@ class MongoRepositoryTest {
   }
 
   @Test
+  def canReadTagGeocode = {
+    val tagWithGeocode = Await.result(mongoRepository.getTagByName("arovalley"), TenSeconds).get
+    assertTrue(tagWithGeocode.geocode_id.nonEmpty)
+    assertTrue(tagWithGeocode.geocode.nonEmpty)
+  }
+
+  @Test
   def canConnectToMongoAndReadFeeds {
     val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
     assertEquals(414, feeds.size)
