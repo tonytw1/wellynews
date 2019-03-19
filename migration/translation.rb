@@ -81,7 +81,7 @@ table "resource" do
 	column "whakaoko_id", :string, :references => "whakaokos"
 end
 
-table "resource_tags" do
+table "resource_tags", :embed_in => :resource, :on => :resource_id do
 	column "id", :key, :as => :integer
 	column "resource_id", :integer, :references => "resource"
 	column "tag_id", :integer, :references => "tag"

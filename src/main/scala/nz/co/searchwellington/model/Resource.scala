@@ -21,6 +21,7 @@ trait Resource {
   var url_words: Option[String]
   var geocode: Option[Geocode]
   var owner: Option[Int]
+  val resource_tags: Seq[Tagging] = Seq()
 
   def setDate(date: Date): Unit = {}  // TODO
 

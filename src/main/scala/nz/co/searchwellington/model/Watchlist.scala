@@ -17,5 +17,6 @@ case class Watchlist(override val id: String,
                      override var url_words: Option[String] = None,
                      override var geocode: Option[Geocode] = None,
                      override var owner: Option[Int] = None,
-                     override var publisher: Option[String] = None
+                     override var publisher: Option[String] = None,
+                     override val resource_tags: Seq[Tagging] = Seq()
                     ) extends PublishedResource

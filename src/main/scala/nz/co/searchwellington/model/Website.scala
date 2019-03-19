@@ -19,7 +19,8 @@ case class Website(override val _id: Option[BSONObjectID] = None,
                    override var held: Boolean = true,
                    override var url_words: Option[String] = None,
                    override var geocode: Option[Geocode] = None,
-                   override var owner: Option[Int] = None
+                   override var owner: Option[Int] = None,
+                   override val resource_tags: Seq[Tagging] = Seq()
                    // var feeds: Set[Feed] = Set(),
                    // var watchlist: Set[Watchlist] = Set()
                   ) extends Resource {

@@ -1,7 +1,6 @@
 package nz.co.searchwellington.repositories.mongo
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
 import scala.concurrent.Await
@@ -50,7 +49,8 @@ class MongoRepositoryTest {
   def canReadTaggingsForResource = {
     val taggedResource = Await.result(mongoRepository.getResourceByUrl("http://www.kitesurfers.co.nz/"), TenSeconds).get
 
-    val taggings= Await.result(mongoRepository.getTaggingsFor(taggedResource._id.get), TenSeconds)
+    val taggings = taggedResource.resource_tags
+
     assertEquals(1, taggings.size)
     val tag = Await.result(mongoRepository.getTagByObjectId(taggings.head.tag_id), TenSeconds).get
     assertEquals("sport", tag.name)

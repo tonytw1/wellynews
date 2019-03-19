@@ -71,21 +71,20 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    mongoRepository.getTaggingsFor(resource._id.get).flatMap { taggings =>
-      val eventualTags = Future.sequence(taggings.map { tagging =>
-        mongoRepository.getTagByObjectId(tagging.tag_id)
-      }).map(_.flatten)
+    val eventualTags = Future.sequence(resource.resource_tags.map { tagging =>
+      mongoRepository.getTagByObjectId(tagging.tag_id)
+    }).map(_.flatten)
 
-      eventualTags.flatMap { tags =>
-        Future.sequence {
-          tags.map { t =>
-            resolveParentsFor(t, Seq())
-          }
-        }.map { parents =>
-          (tags ++ parents.flatten).map(t => t.id).toSet
+    eventualTags.flatMap { tags =>
+      Future.sequence {
+        tags.map { t =>
+          resolveParentsFor(t, Seq())
         }
+      }.map { parents =>
+        (tags ++ parents.flatten).map(t => t.id).toSet
       }
     }
+
   }
 
 }

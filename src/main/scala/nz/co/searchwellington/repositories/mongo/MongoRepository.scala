@@ -5,7 +5,6 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString, Macros}
 
@@ -45,13 +44,13 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   def taggingCollection: BSONCollection = db.collection("resource_tags")
   def userCollection: BSONCollection = db.collection("user")
 
+  implicit def taggingReader = Macros.reader[Tagging]
   implicit def geocodeReader = Macros.reader[Geocode]
   implicit def feedReader = Macros.reader[Feed]
   implicit def newsitemReader = Macros.reader[Newsitem]
   implicit def websiteReader = Macros.reader[Website]
   implicit def watchlistReader = Macros.reader[Watchlist]
   implicit def tagReader = Macros.reader[Tag]
-  implicit def taggingReader = Macros.reader[Tagging]
   implicit def userReader = Macros.reader[User]
 
   def getResourceById(id: String): Future[Option[Resource]] = {
@@ -126,10 +125,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     taggingCollection.find(BSONDocument.empty).cursor[Tagging]().toList()
   }
 
-  def getTaggingsFor(resourceId: BSONObjectID): Future[Seq[Tagging]] = {
-    taggingCollection.find(BSONDocument("resource_id" -> resourceId)).cursor[Tagging]().collect[List]()
-  }
-
   def getAllUsers(): Future[Seq[User]] = {
     userCollection.find(BSONDocument.empty).cursor[User]().toList()
   }
@@ -155,8 +150,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
       }
     }
   }
-
-  case class Tagging(resource_id: BSONObjectID, tag_id: BSONObjectID)
 
   case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])
 

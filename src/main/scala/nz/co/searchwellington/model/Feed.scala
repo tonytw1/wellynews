@@ -17,6 +17,7 @@ case class Feed(override val id: String,
                 override var url_words: Option[String] = None,
                 override var geocode: Option[Geocode] = None,
                 override var owner: Option[Int] = None,
+                override val resource_tags: Seq[Tagging] = Seq(),
                 var acceptance: String = "IGNORE",
                 var latestItemDate: Option[Date] = null,
                 var lastRead: Option[Date] = null, // TODO
