@@ -234,17 +234,17 @@
 		<dependency>
 			<groupId>com.sksamuel.elastic4s</groupId>
 			<artifactId>elastic4s-core_2.12</artifactId>
-			<version>6.1.4</version>
+			<version>6.2.10</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sksamuel.elastic4s</groupId>
 			<artifactId>elastic4s-tcp_2.12</artifactId>
-			<version>6.1.4</version>
+			<version>6.2.10</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sksamuel.elastic4s</groupId>
 			<artifactId>elastic4s-http_2.12</artifactId>
-			<version>6.1.4</version>
+			<version>6.2.10</version>
 		</dependency>
 
 		<dependency>

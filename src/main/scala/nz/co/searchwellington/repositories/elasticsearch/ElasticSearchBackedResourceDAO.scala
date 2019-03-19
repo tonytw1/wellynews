@@ -6,23 +6,32 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.sksamuel.elastic4s.http.HttpClient
 import com.sksamuel.elastic4s.{ElasticsearchClientUri, TcpClient}
 import nz.co.searchwellington.controllers.LoggedInUserFilter
+import nz.co.searchwellington.filters.RequestFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.FrontendResource
+import org.apache.log4j.Logger
 import org.elasticsearch.action.search.SearchRequestBuilder
 import org.elasticsearch.index.query._
 import org.elasticsearch.search.SearchHits
 import org.elasticsearch.search.sort.SortOrder
 import org.joda.time.DateTime
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-@Component class ElasticSearchBackedResourceDAO @Autowired() (val loggedInUserFilter: LoggedInUserFilter) {
+@Component class ElasticSearchBackedResourceDAO @Autowired() (@Value("#{config['elasticsearch.host']}") elasticsearchHost: String,
+                                                              @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int,
+                                                              val loggedInUserFilter: LoggedInUserFilter) {
+
+  private val log = Logger.getLogger(classOf[RequestFilter])
 
   private val Index = "searchwellington"
   private val Resources = "resources"
 
-  val client = HttpClient(ElasticsearchClientUri("localhost", 9300))
+  val client = {
+    log.info("Connecting to elastic: " + elasticsearchHost + ":" + elasticsearchPort)
+    HttpClient(ElasticsearchClientUri(elasticsearchHost, elasticsearchPort))
+  }
 
   private val ID = "id"
   private val OWNER = "owner"
