@@ -40,12 +40,6 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def canReadResourceTagsFromMongo = {
-    val taggings = Await.result(mongoRepository.getAllTaggings(), TenSeconds)
-    assertEquals(30832, taggings.size)
-  }
-
-  @Test
   def canReadTaggingsForResource = {
     val taggedResource = Await.result(mongoRepository.getResourceByUrl("http://www.kitesurfers.co.nz/"), TenSeconds).get
 

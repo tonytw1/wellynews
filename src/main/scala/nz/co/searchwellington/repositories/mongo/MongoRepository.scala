@@ -121,10 +121,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     resourceCollection.find(BSONDocument("type" -> "W")).cursor[Website]().collect[List]()
   }
 
-  def getAllTaggings(): Future[Seq[Tagging]] = {
-    taggingCollection.find(BSONDocument.empty).cursor[Tagging]().toList()
-  }
-
   def getAllUsers(): Future[Seq[User]] = {
     userCollection.find(BSONDocument.empty).cursor[User]().toList()
   }
