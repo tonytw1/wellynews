@@ -19,9 +19,15 @@ db.resource.find({}).forEach(
 
 db.tag.find({}).forEach(
     function(doc) {
-	uuid = uuidv4();
-	doc.id = uuid;
-	db.tag.save(doc);
+        var geocode_id = doc.geocode_id;
+        if (geocode_id != null) {
+            print(geocode_id);
+            var geocode = db.geocode.find(geocode_id);
+            doc.geocode = geocode.next();
+        }
+
+        doc.id = uuidv4();
+        db.tag.save(doc);
     }
 );
 
