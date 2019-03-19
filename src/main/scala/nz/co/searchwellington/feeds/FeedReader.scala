@@ -31,7 +31,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   def processFeed(feedId: String, loggedInUser: User): Unit = {
     val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
-    // processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
+    processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
 
   private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {
