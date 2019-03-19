@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.mongo
 
+import nz.co.searchwellington.model.FeedAcceptancePolicy
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -44,6 +45,14 @@ class MongoRepositoryTest {
   def canConnectToMongoAndReadFeeds {
     val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
     assertEquals(414, feeds.size)
+  }
+
+  @Test
+  def feedAcceptancePolicyCanBeMappedToAnEnum: Unit = {
+    val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
+    val feed = feeds.head
+
+    assertEquals(FeedAcceptancePolicy.ACCEPT, feed.acceptance)
   }
 
   @Test
