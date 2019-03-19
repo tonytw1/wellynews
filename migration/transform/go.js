@@ -11,6 +11,15 @@ function booleanFromInt(booleanInt) {
 
 db.resource.find({}).forEach(
     function(doc) {
+      var geocode_id = null;
+      var geocode_id = doc.geocode_id;
+        if (geocode_id != null) {
+            print(geocode_id);
+            var geocode = db.geocode.find(geocode_id).next();
+            print(geocode.address);
+            doc.geocode = geocode;
+        }
+
         doc.id = uuidv4();
         doc.held = booleanFromInt(doc.held);
         db.resource.save(doc);
@@ -19,9 +28,9 @@ db.resource.find({}).forEach(
 
 db.tag.find({}).forEach(
     function(doc) {
+        var geocode_id = null
         var geocode_id = doc.geocode_id;
         if (geocode_id != null) {
-            print(geocode_id);
             var geocode = db.geocode.find(geocode_id);
             doc.geocode = geocode.next();
         }

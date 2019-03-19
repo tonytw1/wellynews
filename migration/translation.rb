@@ -53,7 +53,6 @@ table "resource" do
 	column "twitter_message", :string
 	column "calendar_publisher", :integer
 	column "technorati_count", :integer
-	column "geocode", :string
 	column "geocode_id", :integer, :references => "geocode"
 	column "url_words", :string
 	column "owner", :integer

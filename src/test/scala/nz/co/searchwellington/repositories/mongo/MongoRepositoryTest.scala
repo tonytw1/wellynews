@@ -34,6 +34,13 @@ class MongoRepositoryTest {
   }
 
   @Test
+  def canReadResourceGeocode = {
+    val resourceWithGeocode = Await.result(mongoRepository.getWebsiteByName("Aro Valley Community Centre"), TenSeconds).get
+    assertTrue(resourceWithGeocode.geocode.nonEmpty)
+    assertEquals("Aro Valley Community Centre, 48, Aro Street, Aro Valley, Wellington, 6021, New Zealand/Aotearoa", resourceWithGeocode.geocode.get.address.get)
+  }
+
+  @Test
   def canConnectToMongoAndReadFeeds {
     val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
     assertEquals(414, feeds.size)
