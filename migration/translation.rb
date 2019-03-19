@@ -116,14 +116,6 @@ table "tag" do
 	column "featured", :boolean
 end
 
-table "temp" do
-	column "id", :key, :as => :integer
-end
-
-table "tmp" do
-	column "id", :key, :as => :integer
-end
-
 table "twits" do
 	column "id", :key, :as => :integer
 	column "twitterid", :integer
