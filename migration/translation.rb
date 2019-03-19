@@ -1,16 +1,3 @@
-table "comment" do
-	column "id", :key, :as => :integer
-	column "title", :text
-	column "comment_feed", :integer
-	column "comment_order", :integer
-end
-
-table "comment_feed" do
-	column "id", :key, :as => :integer
-	column "url", :string
-	column "last_read", :datetime
-end
-
 table "config" do
 	column "id", :key, :as => :integer
 	column "feedburner_widget", :string

@@ -2,7 +2,6 @@ package nz.co.searchwellington.model.frontend
 
 import java.util.{Date, List, UUID}
 
-import nz.co.searchwellington.model.Comment
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
@@ -23,16 +22,11 @@ case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
                             publisherName: String = null,
                             acceptedFromFeedName: String = null,
                             acceptedByProfilename: String = null,
-                            comments: List[Comment] = null,
                             accepted: Date = null,
                             image: FrontendImage = null) extends FrontendResource with RssFeedable {
 
   def getAcceptedFromFeedName: String = {
     return acceptedFromFeedName
-  }
-
-  def getComments: List[Comment] = {
-    return comments
   }
 
   def getAcceptedByProfilename: String = {

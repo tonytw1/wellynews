@@ -103,11 +103,6 @@ import scala.concurrent.duration._
     Seq() // TODO
   }
 
-  @SuppressWarnings(Array("unchecked")) def getCommentFeedsToCheck(maxItems: Int): Seq[CommentFeed] = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[CommentFeed]).addOrder(Order.desc("lastRead")).setCacheable(false).setMaxResults(maxItems).list.asInstanceOf[List[CommentFeed]]
-    Seq() // TODO
-  }
-
   def getOwnedByUserCount(user: User): Int = {
     // return (sessionFactory.getCurrentSession.createQuery("select count(*) from Resource where owner = " + user.getId).iterate.next.asInstanceOf[Long]).intValue
     0 // TODO
@@ -133,11 +128,6 @@ import scala.concurrent.duration._
     null
   }
 
-  def loadCommentFeedByUrl(url: String): CommentFeed = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[CommentFeed]).add(Restrictions.eq("url", url)).setMaxResults(1).uniqueResult.asInstanceOf[CommentFeed]
-    null
-  }
-
   def loadDiscoveredFeedByUrl(url: String): DiscoveredFeed = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[DiscoveredFeed]).add(Restrictions.eq("url", url)).setMaxResults(1).setCacheable(true).uniqueResult.asInstanceOf[DiscoveredFeed]
     null
@@ -160,11 +150,6 @@ import scala.concurrent.duration._
 
   def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed) {
     // sessionFactory.getCurrentSession.saveOrUpdate(discoveredFeed)
-    null // TODO
-  }
-
-  def saveCommentFeed(commentFeed: CommentFeed) {
-    // sessionFactory.getCurrentSession.saveOrUpdate(commentFeed)
     null // TODO
   }
 

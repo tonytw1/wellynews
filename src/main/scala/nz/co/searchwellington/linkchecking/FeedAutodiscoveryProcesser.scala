@@ -4,7 +4,7 @@ import java.net.{MalformedURLException, URL}
 
 import nz.co.searchwellington.commentfeeds.{CommentFeedDetectorService, CommentFeedGuesserService}
 import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor
-import nz.co.searchwellington.model.{CommentFeed, DiscoveredFeed, Resource}
+import nz.co.searchwellington.model.{DiscoveredFeed, Resource}
 import nz.co.searchwellington.repositories.{HibernateResourceDAO, ResourceFactory}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,9 +39,6 @@ import org.springframework.stereotype.Component
           val isCommentFeedUrl: Boolean = commentFeedDetector.isCommentFeedUrl(discoveredUrl)
           if (isCommentFeedUrl) {
             log.debug("Discovered url is a comment feed: " + discoveredUrl)
-            if (checkResource.`type`.equals("N")) {
-              recordCommentFeed(checkResource, discoveredUrl)
-            }
 
           } else {
             val isUrlOfExistingFeed: Boolean = resourceDAO.loadFeedByUrl(discoveredUrl) != null
@@ -53,26 +50,8 @@ import org.springframework.stereotype.Component
             }
           }
         }
-
-        if (checkResource.`type`.equals("N")) {
-          addGuessedCommentFeeds(checkResource)
-        }
-
       }
     }
-  }
-
-  // TODO merge this with the discoveredFeedUrl method.
-  private def recordCommentFeed(checkResource: Resource, commentFeedUrl: String): Unit = {
-    log.info("Recording comment feed url for '" + checkResource.title + "': " + commentFeedUrl)
-    // TODO can hibernate take care of this?
-    var commentFeed: CommentFeed = resourceDAO.loadCommentFeedByUrl(commentFeedUrl)
-    if (commentFeed == null) {
-      log.debug("Comment feed url was not found in the database. Creating new comment feed: " + commentFeedUrl)
-      commentFeed = resourceFactory.createNewCommentFeed(commentFeedUrl)
-      resourceDAO.saveCommentFeed(commentFeed)
-    }
-    // TODO ((Newsitem) checkResource).setCommentFeed(commentFeed);
   }
 
   private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String): Unit = {
@@ -83,15 +62,6 @@ import org.springframework.stereotype.Component
     }
     discoveredFeed.getReferences.add(checkResource)
     resourceDAO.saveDiscoveredFeed(discoveredFeed)
-  }
-
-  private def addGuessedCommentFeeds(checkResource: Resource): Unit = {
-    checkResource.page.map { page =>
-      val commentFeedUrl = commentFeedGuesser.guessCommentFeedUrl(page)
-      if (commentFeedUrl != null) { // TODO migrate to Option
-        recordCommentFeed(checkResource, commentFeedUrl)
-      }
-    }
   }
 
 }
