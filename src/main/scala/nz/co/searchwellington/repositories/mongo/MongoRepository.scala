@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONString, Macros}
+import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, Macros}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -43,6 +43,13 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   def tagCollection: BSONCollection = db.collection("tag")
   def taggingCollection: BSONCollection = db.collection("resource_tags")
   def userCollection: BSONCollection = db.collection("user")
+
+  implicit object feedAcceptanceReader extends BSONReader[BSONValue, FeedAcceptancePolicy] {
+    override def read(bson: BSONValue): FeedAcceptancePolicy = bson match {
+      case s: BSONString => FeedAcceptancePolicy.valueOf(s.value)
+      case _ => throw new RuntimeException("Could not map FeedAcceptancePolicy from: " + bson)
+    }
+  }
 
   implicit def taggingReader = Macros.reader[Tagging]
   implicit def geocodeReader = Macros.reader[Geocode]

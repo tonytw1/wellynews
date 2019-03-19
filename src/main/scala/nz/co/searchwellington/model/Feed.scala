@@ -18,15 +18,15 @@ case class Feed(override val id: String,
                 override var geocode: Option[Geocode] = None,
                 override var owner: Option[Int] = None,
                 override val resource_tags: Seq[Tagging] = Seq(),
-                var acceptance: String = "IGNORE",
+                var acceptance: FeedAcceptancePolicy = FeedAcceptancePolicy.IGNORE,
                 var latestItemDate: Option[Date] = null,
                 var lastRead: Option[Date] = null, // TODO
                 var whakaoko_id: Option[String] = None,
                 override var publisher: Option[String] = None) extends PublishedResource {
 
-  def getAcceptancePolicy: String = acceptance
+  def getAcceptancePolicy: FeedAcceptancePolicy = acceptance
 
-  def setAcceptancePolicy(acceptancePolicy: String): Unit = this.acceptance = acceptancePolicy
+  def setAcceptancePolicy(acceptancePolicy: FeedAcceptancePolicy): Unit = this.acceptance = acceptancePolicy
 
   def getLatestItemDate: Date = latestItemDate.getOrElse(null)
 
