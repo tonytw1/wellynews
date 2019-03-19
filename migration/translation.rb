@@ -21,16 +21,6 @@ table "config" do
 	column "feed_reading_enabled", :integer
 end
 
-table "discovered_feeds" do
-	column "id", :key, :as => :integer
-	column "url", :string
-end
-
-table "discovered_urls_references" do
-	column "resource_id", :integer, :references => "resource"
-	column "discovered_url_id", :integer, :references => "discovered_urls"
-end
-
 table "geocode" do
 	column "id", :key, :as => :integer
 	column "address", :string
