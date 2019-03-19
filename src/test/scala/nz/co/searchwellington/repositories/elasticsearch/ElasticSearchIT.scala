@@ -12,18 +12,18 @@ import scala.concurrent.{Await, Future}
 class ElasticSearchIT {
 
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
-  val elasticSearchIndexer = new ElasticSearchIndexer("localhost", 9200)
+  val elasticSearchIndexer = new ElasticSearchIndexer("10.0.45.11", 32400)
 
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer)
 
-  @Test
+  //@Test
   def canCreateIndexes: Unit = {
     elasticSearchIndexer.createIndexes()
   }
 
-  @Test
+  //@Test
   def canIndexResources {
-    //rebuild.buildIndex(false)
+    rebuild.buildIndex(false)
   }
 
   @Test
@@ -37,7 +37,7 @@ class ElasticSearchIT {
     assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(10, SECONDS)).get.`type` == "W"))
   }
 
-  /*
+
   @Test
   def canFilterByTag {
     val tag = Await.result(mongoRepository.getTagByName("arovalley"), Duration(10, SECONDS)).get
@@ -46,14 +46,13 @@ class ElasticSearchIT {
     val taggedNewsitems = Await.result(elasticSearchIndexer.getResources(withTag.copy(`type` = Some("N"))), Duration(10, SECONDS))
     assertTrue(taggedNewsitems._1.nonEmpty)
     assertTrue(taggedNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
-    assertTrue(taggedNewsitems._1.forall(i => Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)))
+    //assertTrue(taggedNewsitems._1.forall(i => Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)))
 
     val taggedWebsites = Await.result(elasticSearchIndexer.getResources(withTag.copy(`type` = Some("W"))), Duration(10, SECONDS))
     assertTrue(taggedWebsites._1.nonEmpty)
     assertTrue(taggedWebsites._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "W"))
-    assertTrue(taggedWebsites._1.forall(i => Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)))
+    //assertTrue(taggedWebsites._1.forall(i => Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)))
   }
-  */
 
   @Test
   def canFilterByPublisher {
