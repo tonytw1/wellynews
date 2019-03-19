@@ -11,13 +11,18 @@ function booleanFromInt(booleanInt) {
 
 db.resource.find({}).forEach(
     function(doc) {
-      var geocode_id = null;
-      var geocode_id = doc.geocode_id;
+        var geocode_id = null;
+        var geocode_id = doc.geocode_id;
         if (geocode_id != null) {
             print(geocode_id);
             var geocode = db.geocode.find(geocode_id).next();
-            print(geocode.address);
             doc.geocode = geocode;
+        }
+
+        var resource_tags = null;
+        var resource_tags = doc.resource_tags;
+        if (resource_tags == null) {
+            doc.resource_tags = [];
         }
 
         doc.id = uuidv4();
