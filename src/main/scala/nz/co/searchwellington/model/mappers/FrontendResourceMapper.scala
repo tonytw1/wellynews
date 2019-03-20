@@ -16,8 +16,6 @@ import scala.collection.JavaConverters._
                                                       geocodeToPlaceMapper: GeocodeToPlaceMapper, mongoRepository: MongoRepository) {
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
-
-
     val contentItemGeocode: Geocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
     val place = if (contentItemGeocode != null) {
       geocodeToPlaceMapper.mapGeocodeToPlace(contentItemGeocode)
@@ -29,7 +27,7 @@ import scala.collection.JavaConverters._
       case n: Newsitem =>
         val publisher = n.publisher.flatMap { pid =>
           val tenSeconds = Duration(10, SECONDS)
-          Await.result(mongoRepository.getResourceById(pid), tenSeconds)
+          Await.result(mongoRepository.getResourceByObjectId(pid), tenSeconds)
         }
 
         val tags = taggingReturnsOfficerService.getIndexTagsForResource(contentItem).

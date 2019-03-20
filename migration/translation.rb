@@ -37,7 +37,7 @@ table "resource" do
 	column "date", :datetime
 	column "category", :integer
 	column "type", :string
-	column "publisher", :integer
+	column "publisher", :integer, :references => "resource"
 	column "checksum", :string
 	column "feed_publisher", :integer
 	column "acceptance", :string

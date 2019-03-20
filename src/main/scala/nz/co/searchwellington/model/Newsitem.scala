@@ -2,6 +2,8 @@ package nz.co.searchwellington.model
 
 import java.util.{Date, UUID}
 
+import reactivemongo.bson.BSONObjectID
+
 case class Newsitem(override val id: String = UUID.randomUUID().toString,
                     override val `type`: String = "N",
                     override var title: Option[String] = None,
@@ -17,7 +19,7 @@ case class Newsitem(override val id: String = UUID.randomUUID().toString,
                     override var url_words: Option[String] = None,
                     override var geocode: Option[Geocode] = None,
                     override var owner: Option[Int] = None,
-                    override var publisher: Option[String] = None,
+                    override var publisher: Option[BSONObjectID] = None,
                     override val resource_tags: Seq[Tagging] = Seq(),
                     var feed: Option[String] = None,
                     var commentFeed: Option[Int] = None,

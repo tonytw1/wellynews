@@ -1,6 +1,6 @@
 package nz.co.searchwellington.repositories.mongo
 
-import nz.co.searchwellington.model.FeedAcceptancePolicy
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -32,6 +32,12 @@ class MongoRepositoryTest {
     val tagWithGeocode = Await.result(mongoRepository.getTagByName("arovalley"), TenSeconds).get
     assertTrue(tagWithGeocode.geocode_id.nonEmpty)
     assertTrue(tagWithGeocode.geocode.nonEmpty)
+  }
+
+  @Test
+  def canReadNewsitemPublisher = {
+    val newsitemWithPublisher = Await.result(mongoRepository.getResourceByUrl("http://wellington.govt.nz/your-council/news/2016/11/wellington-quakes-21"), TenSeconds).get
+    assertTrue(newsitemWithPublisher.asInstanceOf[Newsitem].publisher.nonEmpty)
   }
 
   @Test

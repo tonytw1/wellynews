@@ -2,6 +2,8 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
+import reactivemongo.bson.BSONObjectID
+
 case class Feed(override val id: String,
                 override val `type`: String = "F",
                 override var title: Option[String] = None,
@@ -22,7 +24,7 @@ case class Feed(override val id: String,
                 var latestItemDate: Option[Date] = null,
                 var lastRead: Option[Date] = null, // TODO
                 var whakaoko_id: Option[String] = None,
-                override var publisher: Option[String] = None) extends PublishedResource {
+                override var publisher: Option[BSONObjectID] = None) extends PublishedResource {
 
   def getAcceptancePolicy: FeedAcceptancePolicy = acceptance
 

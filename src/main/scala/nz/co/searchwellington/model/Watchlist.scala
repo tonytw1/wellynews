@@ -2,6 +2,8 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
+import reactivemongo.bson.BSONObjectID
+
 case class Watchlist(override val id: String,
                      override val `type`: String = "L",
                      override var title: Option[String] = None,
@@ -17,6 +19,6 @@ case class Watchlist(override val id: String,
                      override var url_words: Option[String] = None,
                      override var geocode: Option[Geocode] = None,
                      override var owner: Option[Int] = None,
-                     override var publisher: Option[String] = None,
+                     override var publisher: Option[BSONObjectID] = None,
                      override val resource_tags: Seq[Tagging] = Seq()
                     ) extends PublishedResource
