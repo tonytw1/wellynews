@@ -124,8 +124,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     resourceCollection.find(BSONDocument("type" -> "F")).cursor[Feed]().collect[List]()
   }
 
-  def getAllWatchlists(): Future[Seq[Website]] = {
-    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Website]().collect[List]()
+  def getAllNewsitems(): Future[Seq[Newsitem]] = {
+    resourceCollection.find(BSONDocument("type" -> "N")).cursor[Newsitem]().collect[List]()
+  }
+
+  def getAllWatchlists(): Future[Seq[Watchlist]] = {
+    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List]()
   }
 
   def getAllWebsites(): Future[Seq[Website]] = {

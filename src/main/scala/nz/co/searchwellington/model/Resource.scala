@@ -5,8 +5,8 @@ import java.util.{Date, UUID}
 import reactivemongo.bson.BSONObjectID
 
 trait Resource {
-  val _id: Option[BSONObjectID] = None
-  val id: String = UUID.randomUUID().toString
+  val _id: Option[BSONObjectID]
+  val id: String
   val `type`: String
   var title: Option[String]
   var description: Option[String]
@@ -21,7 +21,7 @@ trait Resource {
   var url_words: Option[String]
   var geocode: Option[Geocode]
   var owner: Option[Int]
-  val resource_tags: Seq[Tagging] = Seq()
+  val resource_tags: Seq[Tagging]
 
   def setDate(date: Date): Unit = {}  // TODO
 
@@ -46,5 +46,4 @@ trait Resource {
   def setOwner(owner: User): Unit = {}  // TODO
 
   def setHeld(held: Boolean): Unit = this.held = held
-
 }

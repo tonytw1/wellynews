@@ -71,6 +71,9 @@ class MongoRepositoryTest {
 
     val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
     assertTrue(feeds.head._id.nonEmpty)
+
+    val newsitems = Await.result(mongoRepository.getAllNewsitems(), TenSeconds)
+    assertTrue(newsitems.head._id.nonEmpty)
   }
 
   @Test

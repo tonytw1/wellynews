@@ -4,7 +4,8 @@ import java.util.Date
 
 import reactivemongo.bson.BSONObjectID
 
-case class Watchlist(override val id: String,
+case class Watchlist(override val _id: Option[BSONObjectID] = None,
+                     override val id: String,
                      override val `type`: String = "L",
                      override var title: Option[String] = None,
                      override var description: Option[String] = None,

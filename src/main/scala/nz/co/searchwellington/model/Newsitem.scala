@@ -4,7 +4,8 @@ import java.util.{Date, UUID}
 
 import reactivemongo.bson.BSONObjectID
 
-case class Newsitem(override val id: String = UUID.randomUUID().toString,
+case class Newsitem(override val _id: Option[BSONObjectID] = None,
+                    override val id: String = UUID.randomUUID().toString,
                     override val `type`: String = "N",
                     override var title: Option[String] = None,
                     override var page: Option[String] = None,
@@ -22,7 +23,6 @@ case class Newsitem(override val id: String = UUID.randomUUID().toString,
                     override var publisher: Option[BSONObjectID] = None,
                     override val resource_tags: Seq[Tagging] = Seq(),
                     var feed: Option[String] = None,
-                    var commentFeed: Option[Int] = None,
-                    var image: Option[Int] = None,
-                    var accepted2: Option[Date] = None,
-                    var acceptedBy: Option[Int] = None) extends PublishedResource
+                    var accepted: Option[Date] = None,
+                    var acceptedBy: Option[Int] = None
+) extends PublishedResource
