@@ -70,6 +70,12 @@ class ElasticSearchIT {
   }
 
   @Test
+  def canGetAllPublisherIds: Unit = {
+    val publisherIds = Await.result(elasticSearchIndexer.getAllPublishers(), TenSeconds)
+    assertTrue(publisherIds.nonEmpty)
+  }
+
+  @Test
   def canCreateNewsitemDateRanges {
     val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths(true), TenSeconds)
     assertTrue(archiveLinks.nonEmpty)
