@@ -80,8 +80,8 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
             field(Type) typed TextType,
             field(Date) typed DateType,
             field(Description) typed TextType analyzer StandardAnalyzer,
-            field(Tags) typed IntegerType,
-            field(Publisher) typed IntegerType,
+            field(Tags) typed TextType,
+            field(Publisher) typed TextType,
             field(Held) typed BooleanType
           )
           )

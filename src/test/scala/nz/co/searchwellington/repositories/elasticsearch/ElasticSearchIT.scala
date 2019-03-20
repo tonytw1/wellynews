@@ -1,6 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.{Newsitem, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.assertTrue
@@ -8,6 +8,7 @@ import org.junit.Test
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ElasticSearchIT {
 
@@ -15,6 +16,8 @@ class ElasticSearchIT {
   val elasticSearchIndexer = new ElasticSearchIndexer("10.0.45.11", 32400)
 
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer)
+
+  private val TenSeconds = Duration(10, SECONDS)
 
   //@Test
   def canCreateIndexes: Unit = {
@@ -28,45 +31,52 @@ class ElasticSearchIT {
 
   @Test
   def canFilterByType {
-    val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), Duration(10, SECONDS))
+    val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), TenSeconds)
     assertTrue(newsitems._1.nonEmpty)
-    assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
+    assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), TenSeconds).get.`type` == "N"))
 
-    val websites = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"))), Duration(10, SECONDS))
+    val websites = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"))), TenSeconds)
     assertTrue(websites._1.nonEmpty)
-    assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(10, SECONDS)).get.`type` == "W"))
+    assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceById(i), TenSeconds).get.`type` == "W"))
   }
-
 
   @Test
   def canFilterByTag {
-    val tag = Await.result(mongoRepository.getTagByName("arovalley"), Duration(10, SECONDS)).get
+    def queryForResources(query: ResourceQuery): Seq[Resource] = {
+      Await.result(elasticSearchIndexer.getResources(query).flatMap { rs =>
+        Future.sequence(rs._1.map(mongoRepository.getResourceById)).map(_.flatten)
+      }, TenSeconds)
+    }
+
+    val tag = Await.result(mongoRepository.getTagByName("arovalley"), TenSeconds).get
     val withTag = ResourceQuery(tags = Some(Set(tag)))
+    val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
 
-    val taggedNewsitems = Await.result(elasticSearchIndexer.getResources(withTag.copy(`type` = Some("N"))), Duration(10, SECONDS))
-    assertTrue(taggedNewsitems._1.nonEmpty)
-    assertTrue(taggedNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "N"))
-    //assertTrue(taggedNewsitems._1.forall(i => Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)))
+    val taggedNewsitems = queryForResources(taggedNewsitemsQuery)
+    assertTrue(taggedNewsitems.nonEmpty)
+    assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
+    assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id.get)))
 
-    val taggedWebsites = Await.result(elasticSearchIndexer.getResources(withTag.copy(`type` = Some("W"))), Duration(10, SECONDS))
-    assertTrue(taggedWebsites._1.nonEmpty)
-    assertTrue(taggedWebsites._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.`type` == "W"))
-    //assertTrue(taggedWebsites._1.forall(i => Await.result(mongoRepository.getTaggingsFor(i), Duration(1, MINUTES)).exists(t => t.tag_id == tag.id)))
+    val taggedWebsitesQuery = withTag.copy(`type` = Some("W"))
+    val taggedWebsites = queryForResources(taggedWebsitesQuery)
+    assertTrue(taggedWebsites.nonEmpty)
+    assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
+    assertTrue(taggedWebsites.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id.get)))
   }
 
   @Test
   def canFilterByPublisher {
-    val publisher = Await.result(mongoRepository.getWebsiteByUrlwords("wellington-city-council"), Duration(10, SECONDS)).get
+    val publisher = Await.result(mongoRepository.getWebsiteByUrlwords("wellington-city-council"), TenSeconds).get
 
-    val publisherNewsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), publisher = Some(publisher))), Duration(10, SECONDS))
+    val publisherNewsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), publisher = Some(publisher))), TenSeconds)
 
     assertTrue(publisherNewsitems._1.nonEmpty)
-    assertTrue(publisherNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), Duration(1, MINUTES)).get.asInstanceOf[Newsitem].getPublisher == Some(1407)))
+    assertTrue(publisherNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), TenSeconds).get.asInstanceOf[Newsitem].getPublisher == Some(1407)))
   }
 
   @Test
   def canCreateNewsitemDateRanges {
-    val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths(true), Duration(10, SECONDS))
+    val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths(true), TenSeconds)
     assertTrue(archiveLinks.nonEmpty)
   }
 
@@ -76,10 +86,10 @@ class ElasticSearchIT {
     val interval = new Interval(startOfMonth, startOfMonth.plusMonths(1))
 
     val monthNewsitems = ResourceQuery(`type` = Some("N"), interval = Some(interval))
-    val results = Await.result(elasticSearchIndexer.getResources(monthNewsitems), Duration(10, SECONDS))
+    val results = Await.result(elasticSearchIndexer.getResources(monthNewsitems), TenSeconds)
 
     import scala.concurrent.ExecutionContext.Implicits.global
-    val newsitems = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceById(i))), Duration(10, SECONDS)).flatten
+    val newsitems = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceById(i))), TenSeconds).flatten
 
     assertTrue(newsitems.nonEmpty)
     assertTrue(newsitems.forall{n =>
