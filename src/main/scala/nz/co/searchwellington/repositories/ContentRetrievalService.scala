@@ -1,7 +1,5 @@
 package nz.co.searchwellington.repositories
 
-import java.util.Date
-
 import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model._
@@ -16,9 +14,9 @@ import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
 @Component class ContentRetrievalService @Autowired()( resourceDAO: HibernateResourceDAO,
                                                        keywordSearchService: KeywordSearchService,  showBrokenDecisionService: ShowBrokenDecisionService,
@@ -34,7 +32,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   val ALL_ITEMS = 1000
 
   private val tenSeconds = Duration(10, SECONDS)
-  private val oneMinute = Duration(1, MINUTES)
 
   def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     elasticSearchBackedResourceDAO.getGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken)
@@ -44,14 +41,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchBackedResourceDAO.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getAllPublishers: Seq[Website] = {
-    val eventualWebsites = elasticSearchIndexer.getAllPublishers().flatMap { ids =>
+  def getAllPublishers: Future[Seq[Website]] = {
+    elasticSearchIndexer.getAllPublishers().flatMap { ids =>
       log.info("Got " + ids.size + " publisher ids")
       Future.sequence(ids.map { id =>
         mongoRepository.getResourceByObjectId(BSONObjectID(id)).map(ro => ro.map(_.asInstanceOf[Website]))
       }).map(_.flatten)
     }
-    Await.result(eventualWebsites, oneMinute)
   }
 
   def getTopLevelTags: Seq[Tag] = {
@@ -123,7 +119,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getLatestNewsitems(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), oneMinute)
+    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), tenSeconds)
   }
 
   def getNewsitemsForInterval(interval: Interval): Seq[FrontendResource] = {

@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers
 
 import java.io.IOException
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -12,9 +12,14 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
+
 @Controller class SimplePageController @Autowired() (discoveredFeedRepository: DiscoveredFeedRepository, tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
                                                      commonModelObjectsService: CommonModelObjectsService, urlStack: UrlStack,
                                                      contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper) {
+
+  private val tenSeconds = Duration(10, SECONDS)
 
   @RequestMapping(Array("/about"))
   @Timed(timingNotes = "")
@@ -95,7 +100,7 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("heading", "All Publishers")
     import scala.collection.JavaConverters._
 
-    val publishers = contentRetrievalService.getAllPublishers.sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
+    val publishers = Await.result(contentRetrievalService.getAllPublishers, tenSeconds).sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
     mv.addObject("publishers", publishers.asJava)
 
     mv.setViewName("publishers")
