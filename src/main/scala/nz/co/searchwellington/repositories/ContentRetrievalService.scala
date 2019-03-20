@@ -288,9 +288,9 @@ import scala.concurrent.{Await, Future}
     tagDAO.getFeaturedTags
   }
 
-  private def fetchByIds(ids: Seq[String]): Future[Seq[FrontendResource]] = {
+  private def fetchByIds(ids: Seq[BSONObjectID]): Future[Seq[FrontendResource]] = {
     val eventualResources = Future.sequence{ ids.map { id =>
-      mongoRepository.getResourceById(id)
+      mongoRepository.getResourceByObjectId(id)
     }}.map(_.flatten)
 
     eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))

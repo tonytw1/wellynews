@@ -33,11 +33,11 @@ class ElasticSearchIT {
   def canFilterByType {
     val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), TenSeconds)
     assertTrue(newsitems._1.nonEmpty)
-    assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), TenSeconds).get.`type` == "N"))
+    assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "N"))
 
     val websites = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"))), TenSeconds)
     assertTrue(websites._1.nonEmpty)
-    assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceById(i), TenSeconds).get.`type` == "W"))
+    assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "W"))
   }
 
   @Test
@@ -102,7 +102,7 @@ class ElasticSearchIT {
     val results = Await.result(elasticSearchIndexer.getResources(monthNewsitems), TenSeconds)
 
     import scala.concurrent.ExecutionContext.Implicits.global
-    val newsitems = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceById(i))), TenSeconds).flatten
+    val newsitems = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceByObjectId(i))), TenSeconds).flatten
 
     assertTrue(newsitems.nonEmpty)
     assertTrue(newsitems.forall{n =>
@@ -112,7 +112,7 @@ class ElasticSearchIT {
 
   private def queryForResources(query: ResourceQuery): Seq[Resource] = {
     Await.result(elasticSearchIndexer.getResources(query).flatMap { rs =>
-      Future.sequence(rs._1.map(mongoRepository.getResourceById)).map(_.flatten)
+      Future.sequence(rs._1.map(mongoRepository.getResourceByObjectId)).map(_.flatten)
     }, TenSeconds)
   }
 

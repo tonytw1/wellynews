@@ -13,6 +13,7 @@ import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -61,7 +62,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         Some(Held -> r._1.held)
       )
 
-      indexInto(Index / Resources).fields(fields.flatten) id r._1.id.toString
+      indexInto(Index / Resources).fields(fields.flatten) id r._1._id.get.stringify
     }
 
     val result = Await.result(client.execute (bulk(indexDefinitions)), tenSeconds)
@@ -95,7 +96,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
     }
   }
 
-  def getResources(query: ResourceQuery): Future[(Seq[String], Long)] = executeRequest(query)
+  def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeRequest(query)
 
   def getAllPublishers(): Future[Seq[String]] = {
     val allNewsitems = matchQuery(Type, "N")
@@ -146,7 +147,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
     }.map(_.filter(_.getCount > 0).reverse) // TODO can do this in elastic query?
   }
 
-  private def executeRequest(query: ResourceQuery): Future[(Seq[String], Long)] = {
+  private def executeRequest(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = {
     var conditions = Seq(
       query.`type`.map(t => matchQuery(Type, t)),
       query.tags.map { tags =>
@@ -173,11 +174,11 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
 
     val q = must(withModerationConditions)
 
-    val request = search in Index -> Resources query q sortByFieldDesc (Date) limit (query.maxItems)
+    val request = search in Index -> Resources query q sortByFieldDesc Date limit query.maxItems
 
     client.execute(request).map { r =>
       r.map { rs =>
-        (rs.result.hits.hits.map(_.id).toSeq, rs.result.totalHits)
+        (rs.result.hits.hits.map(h => BSONObjectID(h.id)).toSeq, rs.result.totalHits)
       } match {
         case Right(idsWithTotalCount) => {
           log.info(query + ": " + idsWithTotalCount._2)
