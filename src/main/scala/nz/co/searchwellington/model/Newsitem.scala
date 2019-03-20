@@ -24,5 +24,5 @@ case class Newsitem(override val _id: Option[BSONObjectID] = None,
                     override val resource_tags: Seq[Tagging] = Seq(),
                     var feed: Option[String] = None,
                     var accepted: Option[Date] = None,
-                    var acceptedBy: Option[Int] = None
+                    var acceptedBy: Option[BSONObjectID] = None
 ) extends PublishedResource

@@ -45,7 +45,7 @@ import scala.collection.JavaConverters._
           description = n.description.getOrElse(null),
           place = place,
           acceptedFromFeedName = n.feed.map(f => f.toString).getOrElse(""),
-          acceptedByProfilename= n.feed.map(p => p.toString).getOrElse(""),
+          acceptedByProfilename = n.acceptedBy.map(a => a.stringify).getOrElse(""),
           accepted = n.accepted.getOrElse(null),
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),

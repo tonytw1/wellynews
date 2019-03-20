@@ -63,7 +63,7 @@ table "resource" do
 	column "held", :integer
 	column "image_id", :integer, :references => "images"
 	column "accepted", :datetime
-	column "accepted_by", :integer
+	column "accepted_by", :integer, :references => "user"
 	column "whakaoko_id", :string, :references => "whakaokos"
 end
 
