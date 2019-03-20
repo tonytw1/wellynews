@@ -53,6 +53,7 @@ import org.springframework.web.servlet.ModelAndView
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, publisherNewsitems.asJava)
 
+        mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher).asJava)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
         populatePagination(mv, startIndex, mainContentTotal)
       }

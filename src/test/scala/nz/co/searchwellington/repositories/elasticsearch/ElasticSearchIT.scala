@@ -1,6 +1,6 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import nz.co.searchwellington.model.{Newsitem, Resource}
+import nz.co.searchwellington.model.{Feed, Newsitem, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.assertTrue
@@ -67,6 +67,18 @@ class ElasticSearchIT {
 
     assertTrue(publisherNewsitems.nonEmpty)
     assertTrue(publisherNewsitems.forall(i => i.asInstanceOf[Newsitem].publisher.contains(publisher._id.get)))
+  }
+
+  @Test
+  def canGetFeedsForPublisher {
+    val publisher = Await.result(mongoRepository.getWebsiteByUrlwords("wellington-city-council"), TenSeconds).get
+
+    val publisherFeedsQuery = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
+    val publisherFeeds = queryForResources(publisherFeedsQuery)
+
+    assertTrue(publisherFeeds.nonEmpty)
+    assertTrue(publisherFeeds.forall(i => i.`type` == "F"))
+    assertTrue(publisherFeeds.forall(i => i.asInstanceOf[Feed].publisher.contains(publisher._id.get)))
   }
 
   @Test
