@@ -14,7 +14,6 @@ db.resource.find({}).forEach(
         var geocode_id = null;
         var geocode_id = doc.geocode_id;
         if (geocode_id != null) {
-            print(geocode_id);
             var geocode = db.geocode.find(geocode_id).next();
             doc.geocode = geocode;
         }
@@ -27,6 +26,18 @@ db.resource.find({}).forEach(
 
         doc.id = uuidv4();
         doc.held = booleanFromInt(doc.held);
+
+        if (doc.publisher == null) {
+            if (doc.feed_publisher != null) {
+                print(doc.feed_publisher);
+                doc.publisher = doc.feed_publisher;
+            }
+            if (doc.watchlist_publisher != null) {
+                print(doc.watchlist_publisher);
+                doc.publisher = doc.watchlist_publisher;
+            }
+        }
+
         db.resource.save(doc);
     }
 );

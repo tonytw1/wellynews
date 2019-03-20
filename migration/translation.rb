@@ -39,9 +39,9 @@ table "resource" do
 	column "type", :string
 	column "publisher", :integer, :references => "resource"
 	column "checksum", :string
-	column "feed_publisher", :integer
+	column "feed_publisher", :integer, :references => "resource"
 	column "acceptance", :string
-	column "watchlist_publisher", :integer
+	column "watchlist_publisher", :integer, :references => "resource"
 	column "http_status", :integer
 	column "last_scanned", :datetime
 	column "last_changed", :datetime
