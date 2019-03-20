@@ -77,11 +77,11 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         create index Index mappings (
           mapping(Resources).fields(
             field(Title) typed TextType analyzer StandardAnalyzer,
-            field(Type) typed TextType,
+            field(Type) typed KeywordType,
             field(Date) typed DateType,
             field(Description) typed TextType analyzer StandardAnalyzer,
-            field(Tags) typed TextType,
-            field(Publisher) typed TextType,
+            field(Tags) typed KeywordType,
+            field(Publisher) typed KeywordType,
             field(Held) typed BooleanType
           )
           )
@@ -157,7 +157,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         }
       },
       query.publisher.map { p =>
-        matchQuery(Publisher, p._id)
+        matchQuery(Publisher, p._id.get.stringify)
       },
       query.interval.map { i =>
         rangeQuery("date") gte i.getStartMillis lt i.getEndMillis
