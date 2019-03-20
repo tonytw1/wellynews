@@ -57,7 +57,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         r._1.description.map(d => Description -> d),
         r._1.date.map(d => Date -> new DateTime(d)),
         Some(Tags, r._2),
-        publisher.map(p => Publisher -> p),
+        publisher.map(p => Publisher -> p.stringify),
         Some(Held -> r._1.held)
       )
 
@@ -95,9 +95,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
     }
   }
 
-  def getResources(query: ResourceQuery): Future[(Seq[String], Long)] = {
-    executeRequest(query)
-  }
+  def getResources(query: ResourceQuery): Future[(Seq[String], Long)] = executeRequest(query)
 
   def getAllPublishers(): Future[Seq[String]] = {
     val allNewsitems = matchQuery(Type, "N")
@@ -158,7 +156,9 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
           }
         }
       },
-      query.publisher.map(p => matchQuery(Publisher, p.id)),
+      query.publisher.map { p =>
+        matchQuery(Publisher, p._id)
+      },
       query.interval.map { i =>
         rangeQuery("date") gte i.getStartMillis lt i.getEndMillis
       },

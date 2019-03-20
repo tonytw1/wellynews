@@ -42,16 +42,10 @@ class ElasticSearchIT {
 
   @Test
   def canFilterByTag {
-    def queryForResources(query: ResourceQuery): Seq[Resource] = {
-      Await.result(elasticSearchIndexer.getResources(query).flatMap { rs =>
-        Future.sequence(rs._1.map(mongoRepository.getResourceById)).map(_.flatten)
-      }, TenSeconds)
-    }
-
     val tag = Await.result(mongoRepository.getTagByName("arovalley"), TenSeconds).get
     val withTag = ResourceQuery(tags = Some(Set(tag)))
-    val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
 
+    val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
     val taggedNewsitems = queryForResources(taggedNewsitemsQuery)
     assertTrue(taggedNewsitems.nonEmpty)
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
@@ -68,10 +62,11 @@ class ElasticSearchIT {
   def canFilterByPublisher {
     val publisher = Await.result(mongoRepository.getWebsiteByUrlwords("wellington-city-council"), TenSeconds).get
 
-    val publisherNewsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), publisher = Some(publisher))), TenSeconds)
+    val publisherNewsitemsQuery = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+    val publisherNewsitems = queryForResources(publisherNewsitemsQuery)
 
-    assertTrue(publisherNewsitems._1.nonEmpty)
-    assertTrue(publisherNewsitems._1.forall(i => Await.result(mongoRepository.getResourceById(i), TenSeconds).get.asInstanceOf[Newsitem].getPublisher == Some(1407)))
+    assertTrue(publisherNewsitems.nonEmpty)
+    assertTrue(publisherNewsitems.forall(i => i.asInstanceOf[Newsitem].publisher.contains(publisher._id.get)))
   }
 
   @Test
@@ -95,6 +90,12 @@ class ElasticSearchIT {
     assertTrue(newsitems.forall{n =>
       interval.contains(n.date.get.getTime)
     })
+  }
+
+  private def queryForResources(query: ResourceQuery): Seq[Resource] = {
+    Await.result(elasticSearchIndexer.getResources(query).flatMap { rs =>
+      Future.sequence(rs._1.map(mongoRepository.getResourceById)).map(_.flatten)
+    }, TenSeconds)
   }
 
 }
