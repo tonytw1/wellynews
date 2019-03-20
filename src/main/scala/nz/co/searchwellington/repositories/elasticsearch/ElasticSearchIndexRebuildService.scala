@@ -4,8 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Duration, MINUTES}
@@ -24,15 +26,19 @@ import scala.concurrent.{Await, Future}
   }
 
   @throws[JsonProcessingException]
-  private def reindexResources(resourcesToIndex: Seq[String]): Unit = {
+  private def reindexResources(resourcesToIndex: Seq[BSONObjectID]): Unit = {
+    log.info("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
 
+    var i = 0
     batches.foreach { batch =>
-      log.info("Processing batch: " + batch.size)
+      log.info("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
 
-      val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceById(i))).map(_.flatten)
-
+      val start = DateTime.now
+      log.info("Loading batch")
+      val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
+        log.info("Loaded batch; applying tags")
         Future.sequence(rs.map { r =>
           getIndexTagIdsFor(r).map { tagIds =>
             (r, tagIds)
@@ -41,7 +47,9 @@ import scala.concurrent.{Await, Future}
       }
 
       val eventualIndexing = eventualWithIndexTags.map { rs =>
+        log.info("Submitting batch for indexing")
         elasticSearchIndexer.updateMultipleContentItems(rs)
+        i = i + rs.size
       }
       Await.result(eventualIndexing, Duration(1, MINUTES))
     }

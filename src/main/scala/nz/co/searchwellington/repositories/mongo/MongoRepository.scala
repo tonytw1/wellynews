@@ -64,6 +64,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("id" -> id))
   }
 
+  def getResourceByObjectId(id: BSONObjectID): Future[Option[Resource]] = {
+    getResourceBy(BSONDocument("_id" -> id))
+  }
+
   def getResourceByUrl(url: String): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("page" -> url))
   }
@@ -109,10 +113,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
   }
 
-  def getAllResourceIds(): Future[Seq[String]] = {
-    val projection = BSONDocument("id" -> 1)
+  def getAllResourceIds(): Future[Seq[BSONObjectID]] = {
+    val projection = BSONDocument("_id" -> 1)
     resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](Integer.MAX_VALUE).map { r =>
-      r.flatMap(i => i.getAs[String]("id"))
+      r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
   }
 
