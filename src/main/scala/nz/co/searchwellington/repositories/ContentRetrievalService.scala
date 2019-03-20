@@ -9,9 +9,11 @@ import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendTag}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, ElasticSearchIndexer, KeywordSearchService, ResourceQuery}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.apache.log4j.Logger
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.{Await, Future}
@@ -26,10 +28,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                        frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
                                                        mongoRepository: MongoRepository) {
 
+  private val log = Logger.getLogger(classOf[ContentRetrievalService])
+
   val MAX_NEWSITEMS_TO_SHOW = 30
   val ALL_ITEMS = 1000
 
   private val tenSeconds = Duration(10, SECONDS)
+  private val oneMinute = Duration(1, MINUTES)
 
   def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     elasticSearchBackedResourceDAO.getGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken)
@@ -40,15 +45,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getAllPublishers: Seq[Website] = {
-    val evenutalWebsites = elasticSearchIndexer.getAllPublishers().flatMap { ids =>
-      ids.map { id =>
-        mongoRepository.getResourceById(id).map(ro => ro.map(_.asInstanceOf[Website]))
-      }
+    val eventualWebsites = elasticSearchIndexer.getAllPublishers().flatMap { ids =>
+      log.info("Got " + ids.size + " publisher ids")
       Future.sequence(ids.map { id =>
-        mongoRepository.getResourceById(id).map(ro => ro.map(_.asInstanceOf[Website]))
-      }).map { wos => wos.flatten }
+        mongoRepository.getResourceByObjectId(BSONObjectID(id)).map(ro => ro.map(_.asInstanceOf[Website]))
+      }).map(_.flatten)
     }
-    Await.result(evenutalWebsites, tenSeconds)
+    Await.result(eventualWebsites, oneMinute)
   }
 
   def getTopLevelTags: Seq[Tag] = {
@@ -120,7 +123,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def getLatestNewsitems(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), oneMinute)
   }
 
   def getNewsitemsForInterval(interval: Interval): Seq[FrontendResource] = {
