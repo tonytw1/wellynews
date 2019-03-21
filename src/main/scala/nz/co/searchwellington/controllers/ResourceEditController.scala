@@ -255,7 +255,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
         editResource.page.map { p =>
           if (!Strings.isNullOrEmpty(p)) {
             whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
-              (editResource.asInstanceOf[Feed]).setWhakaokoId(createdFeedSubscription)
+              log.info("Created whakaoko subscription: " + createdFeedSubscription)
             }
           }
         }

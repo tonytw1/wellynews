@@ -25,9 +25,7 @@ import org.springframework.transaction.annotation.Transactional
         if (!Strings.isNullOrEmpty(p)) {
           log.info("Registering feed with whakaoko: " + feed.title)
           whakaokoService.createFeedSubscription(p).map { createdSubscriptionId =>
-            log.info("Setting feed whakaoko id to: " + createdSubscriptionId)
-            feed.setWhakaokoId(createdSubscriptionId)
-            resourceDAO.saveResource(feed)
+            log.info("Created whakaoko feed: " + createdSubscriptionId)
           }
         }
       }

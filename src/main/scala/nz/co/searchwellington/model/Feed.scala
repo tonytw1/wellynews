@@ -21,11 +21,10 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
                 override var geocode: Option[Geocode] = None,
                 override var owner: Option[Int] = None,
                 override val resource_tags: Seq[Tagging] = Seq(),
+                override var publisher: Option[BSONObjectID] = None,
                 var acceptance: FeedAcceptancePolicy = FeedAcceptancePolicy.IGNORE,
-                var latestItemDate: Option[Date] = null,
-                var lastRead: Option[Date] = null, // TODO
-                var whakaoko_id: Option[String] = None,
-                override var publisher: Option[BSONObjectID] = None) extends PublishedResource {
+                var latestItemDate: Option[Date] = None,
+                var lastRead: Option[Date] = None) extends PublishedResource {
 
   def getAcceptancePolicy: FeedAcceptancePolicy = acceptance
 
@@ -40,10 +39,5 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
   def setLastRead(lastRead: Date): Unit = {}
 
   def isScreenScraped: Boolean = page.map(p => p.startsWith("http://brownbag.wellington.gen.nz/")).getOrElse(false)
-
-  def getWhakaokoId: Option[String] = whakaoko_id
-
-  def setWhakaokoId(whakaokoId: String): Unit = this.whakaoko_id = Some(whakaokoId)
-
 }
 
