@@ -96,7 +96,7 @@ class MongoRepositoryTest {
   @Test
   def canReadUsers = {
     val users = Await.result(mongoRepository.getAllUsers(), TenSeconds)
-    println(users.size)
+    assertTrue(users.nonEmpty)
   }
 
   @Test
