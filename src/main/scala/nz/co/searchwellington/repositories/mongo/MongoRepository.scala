@@ -85,9 +85,8 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def tagWriter = Macros.writer[Tag]
   implicit def userWriter = Macros.writer[User]
 
-  def saveResource(resource: Resource) = {
-    val i = resource._id.get
-    val id = BSONDocument("_id" -> i)
+  def saveResource(resource: Resource): Future[UpdateWriteResult] = {
+    val id = BSONDocument("_id" -> resource._id)
     log.info("Updating resource: " + resource._id + " / " + resource.last_scanned)
     resource match { // TODO sick of dealing with Scala implicits and just want to write features so this hack
       case n: Newsitem => resourceCollection.update(id, n, upsert = true)

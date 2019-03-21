@@ -22,13 +22,13 @@ import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
     log.info("Queuing watchlist items for checking.")
     Await.result(mongoRepository.getAllWatchlists, tenSeconds).foreach{ w =>
       log.info("Queuing watchlist item for checking: " + w.title)
-      linkCheckerQueue.add(w._id.get.stringify)
+      linkCheckerQueue.add(w._id.stringify)
     }
   }
 
   @Scheduled(cron = "*/10 * * * * *")
   def queueExpiredItems {
-    val numberOfItemsToQueue: Int = 10
+    val numberOfItemsToQueue = 1000
     /*
     log.info("Queuing items launched within the last 24 hours with but not scanned within the last 4 hours")
     val oneDayAgo: Date = new DateTime(()).minusDays(1).toDate

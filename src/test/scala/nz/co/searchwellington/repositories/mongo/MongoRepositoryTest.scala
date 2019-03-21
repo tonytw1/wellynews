@@ -62,21 +62,6 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def idsAttachCorrectly: Unit = {
-    val websites = Await.result(mongoRepository.getAllWebsites(), TenSeconds)
-    assertTrue(websites.head._id.nonEmpty)
-
-    val watchlists = Await.result(mongoRepository.getAllWatchlists(), TenSeconds)
-    assertTrue(watchlists.head._id.nonEmpty)
-
-    val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
-    assertTrue(feeds.head._id.nonEmpty)
-
-    val newsitems = Await.result(mongoRepository.getAllNewsitems(), TenSeconds)
-    assertTrue(newsitems.head._id.nonEmpty)
-  }
-
-  @Test
   def canReadTaggingsForResource = {
     val taggedResource = Await.result(mongoRepository.getResourceByUrl("http://www.kitesurfers.co.nz/"), TenSeconds).get
 

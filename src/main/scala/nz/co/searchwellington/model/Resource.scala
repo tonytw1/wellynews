@@ -5,7 +5,7 @@ import java.util.Date
 import reactivemongo.bson.BSONObjectID
 
 trait Resource {
-  var _id: Option[BSONObjectID]
+  val _id: BSONObjectID
   val id: String
   val `type`: String
   var title: Option[String]
@@ -46,6 +46,4 @@ trait Resource {
   def setOwner(owner: User): Unit = {}  // TODO
 
   def setHeld(held: Boolean): Unit = this.held = held
-
-  def setObjectId(id: BSONObjectID): Unit = this._id = Some(id)
 }

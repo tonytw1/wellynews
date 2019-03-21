@@ -34,7 +34,7 @@ import org.springframework.web.servlet.view.RedirectView
       log.warn("Not allowed to read this feed") // TODO return http auth error
       throw new RuntimeException("Not allowed")
     }
-    feedReader.processFeed(feed._id.get, loggedInUserFilter.getLoggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
+    feedReader.processFeed(feed._id, loggedInUserFilter.getLoggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
     new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
   }
 

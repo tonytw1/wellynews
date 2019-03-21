@@ -62,7 +62,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         Some(Held -> r._1.held)
       )
 
-      indexInto(Index / Resources).fields(fields.flatten) id r._1._id.get.stringify
+      indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
     }
 
     val result = Await.result(client.execute (bulk(indexDefinitions)), tenSeconds)
@@ -113,10 +113,10 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
       }
 
       resultBuckets match {
-        case (Right(buckets)) => {
+        case Right(buckets) => {
           buckets
         }
-        case (Left(f)) =>
+        case Left(f) =>
           log.error(f)
           Seq()
       }
@@ -135,12 +135,12 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         dateAgg.buckets
       }
       resultBuckets match {
-        case (Right(buckets)) => {
+        case Right(buckets) => {
           buckets.map { b =>
             new ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
           }
         }
-        case (Left(f)) =>
+        case Left(f) =>
           log.error(f)
           Seq()
       }
@@ -158,7 +158,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
         }
       },
       query.publisher.map { p =>
-        matchQuery(Publisher, p._id.get.stringify)
+        matchQuery(Publisher, p._id.stringify)
       },
       query.interval.map { i =>
         rangeQuery("date") gte i.getStartMillis lt i.getEndMillis

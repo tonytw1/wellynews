@@ -4,7 +4,7 @@ import java.util.Date
 
 import reactivemongo.bson.BSONObjectID
 
-case class Feed(override var _id: Option[BSONObjectID] = None,
+case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
                 override val id: String,
                 override val `type`: String = "F",
                 override var title: Option[String] = None,

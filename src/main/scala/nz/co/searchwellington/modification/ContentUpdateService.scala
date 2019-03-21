@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component class ContentUpdateService @Autowired() (mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue, frontendContentUpdater: FrontendContentUpdater) {
 
@@ -18,6 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def update(resource: Resource) {
     log.info("Updating content for: " + resource.title + " - " + resource.page)
     try {
+      /*
       var resourceUrlHasChanged = false
       val newSubmission = resource._id.isEmpty
       if (!newSubmission) {
@@ -35,6 +37,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       if (newSubmission || resourceUrlHasChanged) {
         resource.setHttpStatus(0)
       }
+      */
 
       mongoRepository.saveResource(resource)
       frontendContentUpdater.update(resource)
@@ -45,13 +48,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def create(resource: Resource) {
+  def create(resource: Resource): Future[Unit] = {
     resource.setHttpStatus(0)
     log.info("Creating resource: " + resource.page )
-    resource.setObjectId(BSONObjectID.generate())
     mongoRepository.saveResource(resource).map { r =>
       log.info("Result of save for " + resource._id + " " + resource.page + ": " + r)
-      linkCheckerQueue.add(resource._id.get.stringify)
+      linkCheckerQueue.add(resource._id.stringify)
     }
   }
 
