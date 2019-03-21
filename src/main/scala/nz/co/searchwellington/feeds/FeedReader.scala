@@ -9,7 +9,7 @@ import nz.co.searchwellington.repositories.HibernateResourceDAO
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
-import org.joda.time.DateTimeZone
+import org.joda.time.{DateTime, DateTimeZone}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
@@ -29,15 +29,14 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy)
   }
 
-  def processFeed(feedId: String, loggedInUser: User): Unit = {
-    val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
+  def processFeed(feed: Feed, loggedInUser: User): Unit = {
     processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
 
   private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {
 
     def markFeedAsRead(feed: Feed): Unit = {
-      feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed))
+      feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed).getOrElse(DateTime.now.toDate)) // TODO None case? By Explict about the ordering
       log.info("Feed latest item publication date is: " + feed.getLatestItemDate)
       feed.setLastRead(Calendar.getInstance.getTime)
       contentUpdateService.update(feed)
@@ -47,7 +46,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.timeSince(feed.getLastRead))
       val feedNewsitems = rssfeedNewsitemService.getFeedItemsFor(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
-      feed.setHttpStatus(if (!feedNewsitems.isEmpty) 200 else -3)
+      feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
       if (acceptancePolicy.shouldReadFeed) processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems.map(i => i._1))
       markFeedAsRead(feed)
       log.info("Done processing feed.")

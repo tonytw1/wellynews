@@ -29,9 +29,13 @@ import scala.concurrent.duration.{Duration, MINUTES}
     whakaokoFeedReader.fetchFeedItems(feed).map(i => (i, Some(feed)))
   }
 
-  final def getLatestPublicationDate(feed: Feed): Date = {
-    val publicationDates = getFeedItemsFor(feed).map(i => Option(i._1.getDate)).flatten
-    publicationDates.max  // TODO None case? By Explict about the ordering
+  final def getLatestPublicationDate(feed: Feed): Option[Date] = {
+    val publicationDates = getFeedItemsFor(feed).flatMap(i => Option(i._1.getDate))
+    if (publicationDates.nonEmpty) {
+      Some(publicationDates.max)
+    } else {
+      None
+    }
   }
 
   def getFeedNewsitemByUrl(feed: Feed, url: String): Option[(FeedItem, Option[Feed])] = {

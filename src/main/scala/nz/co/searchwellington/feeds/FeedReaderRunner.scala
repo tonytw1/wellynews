@@ -13,17 +13,18 @@ import org.springframework.transaction.annotation.Transactional
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
   private val FEED_READER_PROFILE_NAME = "feedreader"
 
-  //@Scheduled(fixedRate = 1200000)
+  @Scheduled(cron = "0 * * * * *")
   def readFeeds {
     log.info("Running feed reader.")
     readAllFeeds(resourceDAO.getAllFeeds)
     log.info("Finished reading feeds.")
   }
 
-  def readAllFeeds(feeds: Seq[Feed]) {
+  def readAllFeeds(feeds: Seq[Feed]): Unit = {
     getFeedReaderUser.map { feedReaderUser =>
-      feeds.map { feed =>
-        feedReader.processFeed(feed.id, feedReaderUser)
+      log.info("Reading " + feeds.size + " feeds as user " + feedReaderUser.name)
+      feeds.foreach { feed =>
+        feedReader.processFeed(feed, feedReaderUser)
       }
     }
   }
