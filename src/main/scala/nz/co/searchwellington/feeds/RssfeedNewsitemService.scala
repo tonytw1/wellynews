@@ -48,7 +48,7 @@ import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
     }
   }
 
-  def isUrlInAcceptedFeeds(url: String): Boolean = {
+  def isUrlInAcceptedFeeds(url: String): Boolean = {  // TODO should be option
     val autoAcceptFeeds: Seq[Feed] = Await.result(mongoRepository.getAllFeeds, tenSeconds).
       filter(f => f.getAcceptancePolicy == "accept" || f.getAcceptancePolicy == "accept_without_dates")
     autoAcceptFeeds.exists { feed =>

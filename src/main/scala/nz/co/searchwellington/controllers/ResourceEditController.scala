@@ -108,13 +108,14 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     if (feed == null) {
       throw new RuntimeException("Could not find feed")
     }
-    var feeditemToAccept = rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url).get // TODO naked get
-    if (feeditemToAccept == null) {
+
+    val maybeTuple: Option[(FeedItem, Feed)] = rssfeedNewsitemService.getFeedNewsitemByUrl(feed, url)
+    maybeTuple.fold{
       log.warn("No matching newsitem found for url: " + url)
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       return null
 
-    } else {
+    }{ feeditemToAccept =>
       val acceptedNewsitem = feedItemAcceptor.acceptFeedItem(loggedInUser, feeditemToAccept)
       val modelAndView = new ModelAndView("acceptResource")
       commonModelObjectsService.populateCommonLocal(modelAndView)

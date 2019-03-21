@@ -10,7 +10,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   private val log = Logger.getLogger(classOf[FeedItemAcceptor])
 
-  def acceptFeedItem(user: User, feeditem: (FeedItem, Option[Feed])): Newsitem = {
+  def acceptFeedItem(user: User, feeditem: (FeedItem, Feed)): Newsitem = {
     feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feeditem._1, feeditem._2) // TODO user
   }
 

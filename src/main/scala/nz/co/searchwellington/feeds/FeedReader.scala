@@ -48,7 +48,9 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       val feedNewsitems = rssfeedNewsitemService.getFeedItemsFor(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
-      if (acceptancePolicy.shouldReadFeed) processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems.map(i => i._1))
+      if (acceptancePolicy.shouldReadFeed) {
+        processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems.map(i => i._1).getOrElse(Seq.empty))
+      }
       markFeedAsRead(feed)
       log.info("Done processing feed.")
 

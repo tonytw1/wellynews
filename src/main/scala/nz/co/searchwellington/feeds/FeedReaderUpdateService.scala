@@ -11,7 +11,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService, feednewsItemToNewsitemService: FeeditemToNewsitemService) {
 
   def acceptNewsitem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): String = {
-    val newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feednewsitem, Some(feed))
+    val newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed)
     contentUpdateService.create(newsitem).map { _ =>
       autoTagger.autotag(newsitem)
       contentUpdateService.update(newsitem)

@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.Feed
+import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -25,21 +25,17 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FeedItem]) {
-      val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
-      if (geotaggedItems.nonEmpty) {
-        mv.addObject("geocoded", geotaggedItems)
-      }
-    }
-
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
-      val feedItems = rssfeedNewsitemService.getFeedItemsFor(feed)
-      if (feedItems.nonEmpty) {
-        val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
-        val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
-        import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
-        populateGeotaggedFeedItems(mv, feedItems.map(i => i._1))
+      val maybeFeedItems: Option[(Seq[FeedItem], Feed)] = rssfeedNewsitemService.getFeedItemsFor(feed)
+      maybeFeedItems.map { feedItems =>
+        if (feedItems._1.nonEmpty) {
+          val feedNewsitems: Seq[Newsitem] = feedItems._1.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feedItems._2))
+          val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
+          import scala.collection.JavaConverters._
+          mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
+          val maybeItems = feedItems._1
+          populateGeotaggedFeedItems(mv, maybeItems)
+        }
       }
     }
 
@@ -69,6 +65,13 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   def getViewName(mv: ModelAndView): String = {
     return "viewfeed"
+  }
+
+  private def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FeedItem]) {
+    val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
+    if (geotaggedItems.nonEmpty) {
+      mv.addObject("geocoded", geotaggedItems)
+    }
   }
 
 }
