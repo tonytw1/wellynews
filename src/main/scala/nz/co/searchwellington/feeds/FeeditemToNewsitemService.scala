@@ -11,7 +11,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 @Component
 class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGeocodeMapper: PlaceToGeocodeMapper) {
 
-  private val MAXIMUM_BODY_LENGTH: Int = 400
+  private val MAXIMUM_BODY_LENGTH = 400
 
   def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Option[Feed]): Newsitem = {
     val newsitem = Newsitem(

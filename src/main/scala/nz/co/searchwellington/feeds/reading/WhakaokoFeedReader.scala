@@ -17,16 +17,14 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   def fetchFeedItems(feed: Feed): Seq[FeedItem] = {
     log.info("Fetching feed items for feed with whakaoko id: " + feed.getWhakaokoId)
 
-    def lookupWhakaokoIdByUrl(url: String): Option[Int] = None // TODO implement
-
-    feed.page.flatMap(lookupWhakaokoIdByUrl).map { id =>
-      log.info("Feed url mapped to whakaoko id: " + id)
-      val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(id)
+    feed.page.flatMap(whakaokoService.getWhakaokoSubscriptionByUrl).map { subscription =>
+      log.info("Feed url mapped to whakaoko subscription: " + subscription.getId)
+      val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(subscription.getId)
       log.info("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
       subscriptionFeedItems
 
     }.getOrElse {
-      log.warn("Feed has no whakaoko id; skipping: " + feed.title)
+      log.warn("Feed has no matching whakaoko subscription; skipping: " + feed.title)
       Seq()
     }
   }

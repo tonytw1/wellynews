@@ -4,7 +4,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.WhakaoroClient
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
+import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
 @Component class WhakaokoService @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUrl: String,
                                               @Value("#{config['whakaoko.username']}") whakaokoUsername: String,
@@ -26,6 +26,14 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
         None
       }
     }
+  }
+
+  def getWhakaokoSubscriptionByUrl(url: String): Option[Subscription] = {
+    log.info("Looking up subscription by url: " + url)
+    import scala.collection.JavaConverters._
+    val subscriptions = client.getChannelSubscriptions(whakaokoUsername, whakaokoChannel).asScala  // TODO API should allow us to pass the url rather than scanning the entire collection
+    log.info("Found " + subscriptions.size + " channel subscriptions to check"))
+    subscriptions.find(s => s.getUrl == url)
   }
 
   def getSubscriptionFeedItems(subscriptionId: String): Seq[FeedItem] = {
