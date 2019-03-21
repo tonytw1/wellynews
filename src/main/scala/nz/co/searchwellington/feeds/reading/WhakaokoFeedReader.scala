@@ -14,18 +14,13 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     whakaokoService.getChannelFeedItems()
   }
 
-  def fetchFeedItems(feed: Feed): Seq[FeedItem] = {
+  def fetchFeedItems(feed: Feed): Option[Seq[FeedItem]] = {
     log.debug("Fetching feed items for feed with url: " + feed.page)
-
     feed.page.flatMap(whakaokoService.getWhakaokoSubscriptionByUrl).map { subscription =>
       log.debug("Feed url mapped to whakaoko subscription: " + subscription.getId)
       val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(subscription.getId)
       log.debug("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
       subscriptionFeedItems
-
-    }.getOrElse {
-      log.warn("Feed has no matching whakaoko subscription; skipping: " + feed.title)
-      Seq()
     }
   }
 
