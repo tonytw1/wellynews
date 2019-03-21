@@ -15,12 +15,12 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   }
 
   def fetchFeedItems(feed: Feed): Seq[FeedItem] = {
-    log.info("Fetching feed items for feed with whakaoko id: " + feed.getWhakaokoId)
+    log.debug("Fetching feed items for feed with url: " + feed.page)
 
     feed.page.flatMap(whakaokoService.getWhakaokoSubscriptionByUrl).map { subscription =>
-      log.info("Feed url mapped to whakaoko subscription: " + subscription.getId)
+      log.debug("Feed url mapped to whakaoko subscription: " + subscription.getId)
       val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(subscription.getId)
-      log.info("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
+      log.debug("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
       subscriptionFeedItems
 
     }.getOrElse {
