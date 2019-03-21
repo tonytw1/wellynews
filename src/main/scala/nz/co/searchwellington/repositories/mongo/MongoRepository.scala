@@ -6,6 +6,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
+import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
@@ -71,7 +72,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   implicit object feedAcceptanceWriter extends BSONWriter[FeedAcceptancePolicy, BSONValue] {
     override def write(t: FeedAcceptancePolicy): BSONValue = {
-      BSONString(t.getLabel)
+      BSONString(t.name())
     }
   }
 
@@ -84,14 +85,15 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def tagWriter = Macros.writer[Tag]
   implicit def userWriter = Macros.writer[User]
 
-  def saveResource(resource: Resource): Unit = {
-    val id = BSONDocument("_id" -> resource._id.get)
+  def saveResource(resource: Resource) = {
+    val i = resource._id.get
+    val id = BSONDocument("_id" -> i)
     log.info("Updating resource: " + resource._id + " / " + resource.last_scanned)
-    resource match {  // TODO sick of dealing with Scala implicits and just want to write features so this hack
-      case n: Newsitem => resourceCollection.update(id, n)
-      case w: Website => resourceCollection.update(id, w)
-      case f: Feed => resourceCollection.update(id, f)
-      case l: Watchlist => resourceCollection.update(id, l)
+    resource match { // TODO sick of dealing with Scala implicits and just want to write features so this hack
+      case n: Newsitem => resourceCollection.update(id, n, upsert = true)
+      case w: Website => resourceCollection.update(id, w, upsert = true)
+      case f: Feed => resourceCollection.update(id, f, upsert = true)
+      case l: Watchlist => resourceCollection.update(id, l, upsert = true)
     }
   }
 

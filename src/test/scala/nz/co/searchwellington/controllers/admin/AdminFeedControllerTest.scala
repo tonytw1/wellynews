@@ -11,10 +11,12 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.{Before, Test}
 import org.mockito.{Mock, Mockito, MockitoAnnotations}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
+import reactivemongo.bson.BSONObjectID
 
 class AdminFeedControllerTest {
 
   private val FEED_ID = UUID.randomUUID().toString
+  private val FEED_OBJECT_ID = BSONObjectID.generate()
 
   @Mock val requestFilter: AdminRequestFilter = null
   @Mock val feedReader: FeedReader = null
@@ -43,7 +45,7 @@ class AdminFeedControllerTest {
 
     controller.acceptAllFrom(request, response)
 
-    Mockito.verify(feedReader).processFeed(FEED_ID, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
+    Mockito.verify(feedReader).processFeed(FEED_OBJECT_ID, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
   }
 
 }

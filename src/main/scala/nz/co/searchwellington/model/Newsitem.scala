@@ -4,7 +4,7 @@ import java.util.{Date, UUID}
 
 import reactivemongo.bson.BSONObjectID
 
-case class Newsitem(override val _id: Option[BSONObjectID] = None,
+case class Newsitem(override var _id: Option[BSONObjectID] = None,
                     override val id: String = UUID.randomUUID().toString,
                     override val `type`: String = "N",
                     override var title: Option[String] = None,

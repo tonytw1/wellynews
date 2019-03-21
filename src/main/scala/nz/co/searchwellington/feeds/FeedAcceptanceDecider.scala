@@ -1,7 +1,8 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
-import nz.co.searchwellington.repositories.{HibernateResourceDAO, SupressionDAO}
+import nz.co.searchwellington.repositories.SupressionDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -9,11 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Component class FeedAcceptanceDecider @Autowired()(resourceDAO: HibernateResourceDAO,
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
+
+@Component class FeedAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
                                                     supressionDAO: SupressionDAO,
                                                     urlCleaner: UrlCleaner) {
 
   private val log = Logger.getLogger(classOf[FeedAcceptanceDecider])
+  private val tenSeconds = Duration(10, SECONDS)
 
   def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Seq[String] = {
     val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)  // TODO duplication
@@ -80,7 +85,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     Seq(
       cannotBeSupressed(),
       titleCannotBeBlank(),
-      cannotBeMoreThanOneWeekOld(),
+      // cannotBeMoreThanOneWeekOld(),  TODO reinstate
       cannotHaveDateInTheFuture(),
       cannotAlreadyHaveThisFeedItem(),
       alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth()
@@ -93,7 +98,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem): Boolean = {
     val url = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)
-    resourceDAO.loadResourceByUrl(url) != null
+    Await.result(mongoRepository.getResourceByUrl(url), tenSeconds).nonEmpty
   }
 
 }

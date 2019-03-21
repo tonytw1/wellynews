@@ -7,6 +7,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -46,8 +47,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def create(resource: Resource) {
     resource.setHttpStatus(0)
-    mongoRepository.saveResource(resource)
-    linkCheckerQueue.add(resource.id)
+    log.info("Creating resource: " + resource.page )
+    resource.setObjectId(BSONObjectID.generate())
+    mongoRepository.saveResource(resource).map { r =>
+      log.info("Result of save for " + resource._id + " " + resource.page + ": " + r)
+      linkCheckerQueue.add(resource._id.get.stringify)
+    }
   }
 
 }

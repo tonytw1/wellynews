@@ -5,17 +5,18 @@ import java.util.Calendar
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
-import nz.co.searchwellington.repositories.HibernateResourceDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
 import org.joda.time.{DateTime, DateTimeZone}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Component class FeedReader @Autowired()(resourceDAO: HibernateResourceDAO, rssfeedNewsitemService: RssfeedNewsitemService,
+@Component class FeedReader @Autowired()(mongoRepository: MongoRepository, rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          linkCheckerQueue: LinkCheckerQueue, feedReaderUpdateService: FeedReaderUpdateService) {
@@ -24,8 +25,8 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO inject
 
-  def processFeed(feedId: String, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
-    val feed = resourceDAO.loadResourceById(feedId).asInstanceOf[Feed]
+  def processFeed(feedId: BSONObjectID, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
+    val feed = mongoRepository.getResourceByObjectId(feedId).asInstanceOf[Feed]
     processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy)
   }
 
@@ -66,8 +67,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       feednewsitem.setUrl(cleanSubmittedItemUrl)    // TODO do not mutate inputs
 
       val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy)
-      val acceptThisItem = acceptanceErrors.isEmpty
-      if (acceptThisItem) {
+      if (acceptanceErrors.isEmpty) {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
         val acceptedNewsitem = feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed)
         linkCheckerQueue.add(acceptedNewsitem)
