@@ -3,26 +3,30 @@ package nz.co.searchwellington.linkchecking
 import com.google.common.base.Strings
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.HibernateResourceDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.utils.HttpFetcher
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.archiving.{FilesystemSnapshotArchive, Snapshot}
+import reactivemongo.bson.BSONObjectID
 
-@Component class LinkChecker @Autowired() (resourceDAO: HibernateResourceDAO, contentUpdateService: ContentUpdateService, httpFetcher: HttpFetcher) {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+@Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService, httpFetcher: HttpFetcher) {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
 
-  val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
+  //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
   def scanResource(checkResourceId: String) {
+    log.info("Scanning resource: " + checkResourceId)
     val processers: Seq[LinkCheckerProcessor] = Seq() // TODO inject
-    resourceDAO.loadResourceById(checkResourceId).map { resource =>
-      if (resource != null) {
+    mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId)).map { maybeResource =>
+
+      maybeResource.map { resource =>
         resource.page.map { p =>
           if (!Strings.isNullOrEmpty(p)) {
             log.info("Checking: " + resource.title + " (" + p + ")")
@@ -42,15 +46,13 @@ import uk.co.eelpieconsulting.archiving.{FilesystemSnapshotArchive, Snapshot}
             log.debug("Saving resource and updating snapshot")
             resource.setLastScanned(DateTime.now.toDate)
             if (pageContent != null) {
-              snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
+              //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
             }
-            contentUpdateService.update(resource)
+
+            contentUpdateService.update(resource) // TODO should be a specific field set
             log.info("Finished linkchecking")
           }
         }
-
-      } else {
-        log.warn("Could not check resource with id #" + checkResourceId + " as it was not found in the database")
       }
     }
   }

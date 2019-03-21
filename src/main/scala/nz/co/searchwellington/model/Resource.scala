@@ -1,6 +1,6 @@
 package nz.co.searchwellington.model
 
-import java.util.{Date, UUID}
+import java.util.Date
 
 import reactivemongo.bson.BSONObjectID
 
@@ -33,13 +33,13 @@ trait Resource {
 
   def setHttpStatus(httpStatus: Int): Unit = this.http_status = httpStatus
 
-  def setLastScanned(lastScanned: Date): Unit = {}  // TODO
+  def setLastScanned(lastScanned: Date): Unit = this.last_scanned = Some(lastScanned)
 
-  def setLastChanged(lastChanged: Date): Unit = {}
+  def setLastChanged(lastChanged: Date): Unit = this.last_changed = Some(lastChanged)
 
-  def setLiveTime(liveTime: Date): Unit = {}
+  def setLiveTime(liveTime: Date): Unit = this.live_time = Some(liveTime)
 
-  def setEmbargoedUntil(embargoedUntil: Date): Unit = {}
+  def setEmbargoedUntil(embargoedUntil: Date): Unit = this.embargoed_until = Some(embargoedUntil)
 
   def setUrlWords(urlWords: String): Unit = {} // TODO this.url_words = urlWords
 

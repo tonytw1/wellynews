@@ -2,11 +2,12 @@ package nz.co.searchwellington.repositories.mongo
 
 import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, Macros}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -68,6 +69,32 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("_id" -> id))
   }
 
+  implicit object feedAcceptanceWriter extends BSONWriter[FeedAcceptancePolicy, BSONValue] {
+    override def write(t: FeedAcceptancePolicy): BSONValue = {
+      BSONString(t.getLabel)
+    }
+  }
+
+  implicit def taggingWriter = Macros.writer[Tagging]
+  implicit def geocodeWriter = Macros.writer[Geocode]
+  implicit def feedWriter = Macros.writer[Feed]
+  implicit def newsitemWriter = Macros.writer[Newsitem]
+  implicit def websiteWriter = Macros.writer[Website]
+  implicit def watchlistWriter = Macros.writer[Watchlist]
+  implicit def tagWriter = Macros.writer[Tag]
+  implicit def userWriter = Macros.writer[User]
+
+  def saveResource(resource: Resource): Unit = {
+    val id = BSONDocument("_id" -> resource._id.get)
+    log.info("Updating resource: " + resource._id + " / " + resource.last_scanned)
+    resource match {  // TODO sick of dealing with Scala implicits and just want to write features so this hack
+      case n: Newsitem => resourceCollection.update(id, n)
+      case w: Website => resourceCollection.update(id, w)
+      case f: Feed => resourceCollection.update(id, f)
+      case l: Watchlist => resourceCollection.update(id, l)
+    }
+  }
+
   def getResourceByUrl(url: String): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("page" -> url))
   }
@@ -118,6 +145,25 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](Integer.MAX_VALUE).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
+  }
+
+  def getNotCheckedSince(lastScanned: DateTime, maxItems: Int): Future[Seq[BSONObjectID]] = {
+    val projection = BSONDocument("_id" -> 1)
+
+    val selector = BSONDocument(
+      "last_scanned" -> BSONDocument(
+        "$lt" -> BSONDateTime(lastScanned.getMillis)
+      )
+    )
+
+    resourceCollection.find(selector, projection).cursor[BSONDocument]().collect[List](maxItems).map { r =>
+      r.flatMap(i => i.getAs[BSONObjectID]("_id"))
+    }
+
+    //return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).
+    // add(Restrictions.gt("liveTime", launchedDate)).
+    // add(Restrictions.lt("lastScanned", lastScanned)).
+    // addOrder(Order.asc("lastScanned")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
   }
 
   def getAllFeeds(): Future[Seq[Feed]] = {

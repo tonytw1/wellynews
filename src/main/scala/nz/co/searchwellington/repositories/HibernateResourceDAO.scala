@@ -93,16 +93,6 @@ import scala.concurrent.duration._
     Seq() // TODO
   }
 
-  @SuppressWarnings(Array("unchecked")) def getNotCheckedSince(oneMonthAgo: Date, maxItems: Int): Seq[Resource] = {
-    // sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.lt("lastScanned", oneMonthAgo)).addOrder(Order.asc("lastScanned")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
-    Seq() // TODO
-  }
-
-  @SuppressWarnings(Array("unchecked")) def getNotCheckedSince(launchedDate: Date, lastScanned: Date, maxItems: Int): Seq[Resource] = {
-    //return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.gt("liveTime", launchedDate)).add(Restrictions.lt("lastScanned", lastScanned)).addOrder(Order.asc("lastScanned")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
-    Seq() // TODO
-  }
-
   def getOwnedByUserCount(user: User): Int = {
     // return (sessionFactory.getCurrentSession.createQuery("select count(*) from Resource where owner = " + user.getId).iterate.next.asInstanceOf[Long]).intValue
     0 // TODO
