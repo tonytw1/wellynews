@@ -32,7 +32,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
     log.info("Looking up subscription by url: " + url)
     import scala.collection.JavaConverters._
     val subscriptions = client.getChannelSubscriptions(whakaokoUsername, whakaokoChannel).asScala  // TODO API should allow us to pass the url rather than scanning the entire collection
-    log.info("Found " + subscriptions.size + " channel subscriptions to check"))
+    log.info("Found " + subscriptions.size + " channel subscriptions to check")
     subscriptions.find(s => s.getUrl == url)
   }
 
