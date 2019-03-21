@@ -37,14 +37,14 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {
 
     def markFeedAsRead(feed: Feed): Unit = {
-      feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed).getOrElse(DateTime.now.toDate)) // TODO None case? By Explict about the ordering
+      feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed))
       log.info("Feed latest item publication date is: " + feed.getLatestItemDate)
       feed.setLastRead(Calendar.getInstance.getTime)
-      contentUpdateService.update(feed)
+      // TODO contentUpdateService.update(feed)
     }
 
     try {
-      log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + dateFormatter.timeSince(feed.getLastRead))
+      log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.lastRead.map(dateFormatter.timeSince))
       val feedNewsitems = rssfeedNewsitemService.getFeedItemsFor(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)

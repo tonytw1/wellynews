@@ -32,7 +32,7 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
 
   def getLatestItemDate: Date = latestItemDate.getOrElse(null)
 
-  def setLatestItemDate(latestPublicationDate: Date): Unit = {}
+  def setLatestItemDate(latestItemDate: Option[Date]): Unit = this.latestItemDate = latestItemDate
 
   def getLastRead: Date = lastRead.getOrElse(null)
 
