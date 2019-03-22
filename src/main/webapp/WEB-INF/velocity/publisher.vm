@@ -21,7 +21,7 @@
 
 #if ($publisher) 
 	<h2><a href="$publisher.url">$heading</a></h2>
-	
+
 	#set($page_content = $publisher) 
 	#parse("includes/page_content_tags.vm")
 		

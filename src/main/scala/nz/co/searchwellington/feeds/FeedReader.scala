@@ -42,7 +42,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed))
       log.info("Feed latest item publication date is: " + feed.getLatestItemDate)
       feed.setLastRead(Calendar.getInstance.getTime)
-      // TODO contentUpdateService.update(feed)
+      contentUpdateService.update(feed)
     }
 
     try {
