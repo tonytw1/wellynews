@@ -13,10 +13,11 @@ import scala.concurrent.Future
 
   def acceptNewsitem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Future[Newsitem] = {
     val newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed)
-    contentUpdateService.create(newsitem).map { _ =>
-      autoTagger.autotag(newsitem)
-      contentUpdateService.update(newsitem)
-      newsitem
+    val notHeld = newsitem.copy(held = false)
+    contentUpdateService.create(notHeld).map { _ =>
+      autoTagger.autotag(notHeld)
+      contentUpdateService.update(notHeld)
+      notHeld
     }
   }
 
