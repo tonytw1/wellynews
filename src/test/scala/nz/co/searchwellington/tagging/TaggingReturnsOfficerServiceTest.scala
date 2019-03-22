@@ -33,17 +33,17 @@ class TaggingReturnsOfficerServiceTest {
 
   @Test def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
     aroValleyNewsitem = Newsitem(id = "1", title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
-    val handTags = Seq(new HandTagging(-1, aroValleyNewsitem, null, aroValleyTag))
+    val handTags = Seq(new HandTagging(user = null, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 
     var taggings: java.util.List[TaggingVote] = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
 
-    assertTrue(taggings.get(0).getTag().equals(aroValleyTag)); // TODO not a great assert
+    assertTrue(taggings.get(0).tag.equals(aroValleyTag)); // TODO not a great assert
   }
 
   @Test def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
     aroValleyNewsitem = Newsitem(id = "1", title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
-    val handTags = Seq(new HandTagging(-1, aroValleyNewsitem, null, aroValleyTag))
+    val handTags = Seq(new HandTagging(user = null, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 
     var indexTags: util.Set[Tag] = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)

@@ -20,7 +20,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     resource.resource_tags.map { tagging =>
       val tag = Await.result(mongoRepository.getTagByObjectId(tagging.tag_id), TenSeconds).get  // TODO Naked get
       val user = Await.result(mongoRepository.getUserByObjectId(tagging.user_id), TenSeconds).get // TODO Naked get
-      new HandTagging(-1, resource, user, tag)
+      new HandTagging(user = user, tag = tag)
     }
   }
 
@@ -29,7 +29,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def getHandpickedTagsForThisResourceByUser(user: User, resource: Resource): Set[Tag] = {
-    getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.getTag).toSet
+    getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.tag).toSet
   }
 
   @SuppressWarnings(Array("unchecked")) def getVotesForTag(tag: Tag): Seq[HandTagging] = {
@@ -48,7 +48,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   def addTag(user: User, tag: Tag, resource: Resource) {
     val existingVotes = getHandpickedTagsForThisResourceByUser(user, resource)
     if (!existingVotes.contains(tag)) {
-      val newTagging: HandTagging = new HandTagging(0, resource, user, tag)
+      val newTagging = new HandTagging(user = user, tag = tag)
       log.info("Adding new hand tagging: " + newTagging)
       // sessionFactory.getCurrentSession.save(newTagging)
     }

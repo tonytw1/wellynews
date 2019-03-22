@@ -64,7 +64,7 @@ class FrontendResourceMapperTest {
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
-    val tagging = new HandTagging(789, newsitem, null, tag)
+    val tagging = new HandTagging(user = null, tag = tag)
     val taggingVotes: Set[HandTagging] = Set(tagging)
 
     when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set[Tag]())

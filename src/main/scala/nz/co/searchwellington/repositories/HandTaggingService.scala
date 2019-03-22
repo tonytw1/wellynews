@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
     log.debug(votesForTag.size + " votes will needs to be cleared and the frontend resources updated.")
     votesForTag.map { handTagging =>
       handTaggingDao.delete(handTagging)
-      frontendContentUpdater.update(handTagging.getResource)
+      // TODO frontendContentUpdater.update(handTagging.getResource)
     }
   }
 
@@ -24,8 +24,8 @@ import org.springframework.transaction.annotation.Transactional
     val previousUsersVotes = handTaggingDao.getUsersVotes(previousOwner)
     log.info("Transfering " + previousUsersVotes.size + " vote from user " + previousOwner.getName + " to " + newOwner.getName)
     previousUsersVotes.map { handTagging =>
-      handTagging.setUser(newOwner)
-      frontendContentUpdater.update(handTagging.getResource)
+      // TODO handTagging.setUser(newOwner)
+      // frontendContentUpdater.update(handTagging.getResource)
     }
   }
 

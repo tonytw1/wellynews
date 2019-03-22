@@ -26,15 +26,11 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def getIndexTagsForResource(resource: Resource): Set[Tag] = {
-    compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.getTag)).distinct.toSet
+    compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.tag)).distinct.toSet
   }
 
   def getIndexGeocodeForResource(resource: Resource): Geocode = {
-    val votes: List[GeotaggingVote] = getGeotagVotesForResource(resource)
-    if (!votes.isEmpty) {
-      return votes.get(0).getGeotag
-    }
-    return null
+    getGeotagVotesForResource(resource).headOption.map(_.geocode).orNull
   }
 
   def compileTaggingVotes(resource: Resource): Seq[TaggingVote] = {
