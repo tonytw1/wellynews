@@ -33,9 +33,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
           Await.result(mongoRepository.getResourceByObjectId(pid), tenSeconds)
         }
 
-        val tags = taggingReturnsOfficerService.getIndexTagsForResource(contentItem).
-          map(mapTagToFrontendTag).toSeq
-
         val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem).
           map(mapTagToFrontendTag).toSeq
 
@@ -53,7 +50,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
           publisher = publisher.map(_.asInstanceOf[Website]),
-          tags = tags.asJava,
+          tags = frontendTagsFor(n).asJava,
           handTags = handTags.asJava
         )
 
@@ -67,7 +64,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
           date = f.date.getOrElse(null),
           description = f.description.getOrElse(null),
           place = place,
-          latestItemDate = f.getLatestItemDate
+          latestItemDate = f.getLatestItemDate,
+          tags = frontendTagsFor(f).asJava,
         )
 
       case l: Watchlist =>
@@ -78,7 +76,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
           url = l.page.getOrElse(null),
           date = l.date.getOrElse(null),
           description = l.description.getOrElse(null),
-          place = place
+          place = place,
+          tags = frontendTagsFor(l).asJava
         )
 
       case w: Website =>
@@ -123,16 +122,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
     */
  // }
 
-  def mapTagToFrontendTag(tag: Tag): FrontendTag = {
-    FrontendTag(id = tag.id, name = tag.getName, displayName = tag.getDisplayName, description = tag.description.getOrElse(null))
-  }
 
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
-
-    val tags: Seq[FrontendTag] = website.resource_tags.map { tagging =>
-      FrontendTag(id = tagging.tag_id.stringify, name = tagging.tag_id.stringify, displayName = tagging.tag_id.stringify, description = null)
-    }
-
     FrontendWebsite(
       id = website.id,
       name = website.title.orNull,
@@ -141,8 +132,16 @@ import scala.concurrent.duration.{Duration, SECONDS}
       place = website.geocode.map { g =>
         geocodeToPlaceMapper.mapGeocodeToPlace(g)
       }.orNull,
-      tags = tags.asJava
+      tags = frontendTagsFor(website).asJava
     )
+  }
+
+  def mapTagToFrontendTag(tag: Tag): FrontendTag = {
+    FrontendTag(id = tag.id, name = tag.getName, displayName = tag.getDisplayName, description = tag.description.getOrElse(null))
+  }
+
+  private def frontendTagsFor(resource: Resource): Seq[FrontendTag] = resource.resource_tags.map { tagging =>
+    FrontendTag(id = tagging.tag_id.stringify, name = tagging.tag_id.stringify, displayName = tagging.tag_id.stringify, description = null)
   }
 
 }
