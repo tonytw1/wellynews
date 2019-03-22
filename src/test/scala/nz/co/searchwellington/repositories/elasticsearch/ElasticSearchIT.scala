@@ -1,7 +1,9 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.model.{Feed, Newsitem, Resource}
+import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -14,17 +16,18 @@ class ElasticSearchIT {
 
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
   val elasticSearchIndexer = new ElasticSearchIndexer("10.0.45.11", 32400)
+  val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
 
-  val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer)
+  val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
   private val TenSeconds = Duration(10, SECONDS)
 
-  //@Test
+  @Test
   def canCreateIndexes: Unit = {
     elasticSearchIndexer.createIndexes()
   }
 
-  //@Test
+  @Test
   def canIndexResources {
     rebuild.buildIndex(false)
   }
@@ -66,7 +69,7 @@ class ElasticSearchIT {
     val publisherNewsitems = queryForResources(publisherNewsitemsQuery)
 
     assertTrue(publisherNewsitems.nonEmpty)
-    assertTrue(publisherNewsitems.forall(i => i.asInstanceOf[Newsitem].publisher.contains(publisher._id.get)))
+    assertTrue(publisherNewsitems.forall(i => i.asInstanceOf[Newsitem].publisher.contains(publisher._id)))
   }
 
   @Test
@@ -78,7 +81,7 @@ class ElasticSearchIT {
 
     assertTrue(publisherFeeds.nonEmpty)
     assertTrue(publisherFeeds.forall(i => i.`type` == "F"))
-    assertTrue(publisherFeeds.forall(i => i.asInstanceOf[Feed].publisher.contains(publisher._id.get)))
+    assertTrue(publisherFeeds.forall(i => i.asInstanceOf[Feed].publisher.contains(publisher._id)))
   }
 
   @Test

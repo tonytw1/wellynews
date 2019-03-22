@@ -18,6 +18,7 @@ import scala.concurrent.{Await, Future}
 class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) {
 
   private val log = Logger.getLogger(classOf[MongoRepository])
+  private val OneMinute = Duration(1, MINUTES)
 
   def connect(): DefaultDB = {
     log.info("Connecting to Mongo: " + mongoUri)
@@ -36,7 +37,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
       }
     }.flatten
 
-    Await.result(eventualDatabase, Duration(1, MINUTES))
+    Await.result(eventualDatabase, OneMinute)
   }
 
   val db: DefaultDB = connect()
@@ -186,6 +187,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   def getAllUsers(): Future[Seq[User]] = {
     userCollection.find(BSONDocument.empty).cursor[User]().toList()
+  }
+
+  def getUserByObjectId(objectId: BSONObjectID): Future[Option[User]] = {
+    userCollection.find(BSONDocument("_id" -> objectId)).one[User]
   }
 
   def getUserByProfilename(profileName: String): Future[Option[User]] = {

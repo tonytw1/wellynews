@@ -7,13 +7,21 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
+
+@Deprecated // "tags are attached to resource document now"
 @Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository) {
   
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
+  private val TenSeconds = Duration(10, SECONDS)
 
   @SuppressWarnings(Array("unchecked")) def getHandTaggingsForResource(resource: Resource): Seq[HandTagging] = {
-    //sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
-    Seq() // TODO
+    resource.resource_tags.map { tagging =>
+      val tag = Await.result(mongoRepository.getTagByObjectId(tagging.tag_id), TenSeconds).get  // TODO Naked get
+      val user = Await.result(mongoRepository.getUserByObjectId(tagging.user_id), TenSeconds).get // TODO Naked get
+      new HandTagging(-1, resource, user, tag)
+    }
   }
 
   def delete(handTagging: HandTagging) {

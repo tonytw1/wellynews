@@ -28,7 +28,7 @@ class TaggingReturnsOfficerServiceTest {
     aroValleyTag = new TagBuilder().name("arovalley").displayName("Aro Valley").parent(placesTag).build
     // placesTag.addChild(aroValleyTag)
 
-    taggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO)
+    taggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, null) // TODO
   }
 
   @Test def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {

@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 import com.fasterxml.jackson.core.JsonProcessingException
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +14,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.{Duration, MINUTES}
 import scala.concurrent.{Await, Future}
 
-@Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer) {
+@Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer,
+                                                               taggingReturnsOfficerService: TaggingReturnsOfficerService) {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
 
@@ -63,7 +65,11 @@ import scala.concurrent.{Await, Future}
   }
 
   private def getIndexTagIdsFor(resource: Resource): Future[Set[String]] = {
-
+    val tags = taggingReturnsOfficerService.getIndexTagsForResource(resource)
+    val tagIds = tags.map(_._id.get.stringify)
+    log.info("Tags: " + resource._id + " " + resource.`type` + ": " + tagIds.mkString(", "))
+    Future.successful(tagIds)
+    /*
     def resolveParentsFor(tag: Tag, result: Seq[Tag]): Future[Seq[Tag]] = {
       tag.parent.map { p =>
         mongoRepository.getTagByObjectId(p).flatMap { pto =>
@@ -97,7 +103,7 @@ import scala.concurrent.{Await, Future}
         (tags ++ parents.flatten).map(t => t._id.get.stringify).toSet
       }
     }
-
+    */
   }
 
 }

@@ -1,22 +1,28 @@
 package nz.co.searchwellington.tagging
 
-import nz.co.searchwellington.model.taggingvotes.voters.FeedsTagsTagVoter
+import nz.co.searchwellington.model.taggingvotes.voters.{FeedsTagsTagVoter, PublishersTagsVoter}
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
 import nz.co.searchwellington.model.{Geocode, PublishedResource, Resource, Tag}
 import nz.co.searchwellington.repositories.HandTaggingDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
+import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
 
-@Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO) {
+@Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository) {
 
   private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
+  private val TenSeconds = Duration(10, SECONDS)
 
   def getHandTagsForResource(resource: Resource): Set[Tag] = {
-    handTaggingDAO.getHandTaggingsForResource(resource).toList.map(handTagging => (handTagging.getTag)).distinct.toSet
+    resource.resource_tags.flatMap { tagging =>
+      Await.result(mongoRepository.getTagByObjectId(tagging.tag_id), TenSeconds)
+    }.toSet
   }
 
   def getIndexTagsForResource(resource: Resource): Set[Tag] = {
@@ -35,7 +41,7 @@ import scala.collection.mutable
     val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
 
     val handTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
-    votes ++= handTaggings;
+    votes ++= handTaggings
 
     val shouldAppearOnPublisherAndParentTagPages = (resource.`type` == "L") || (resource.`type` == "N") || (resource.`type` == "C") || (resource.`type` == "F")
     if (shouldAppearOnPublisherAndParentTagPages) {
@@ -88,7 +94,17 @@ import scala.collection.mutable
   }
 
   private def generatePublisherDerivedTagVotes(resource: Resource): List[TaggingVote] = {
-    val publisherTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
+    val publisherTagVotes = resource match {
+      case p: PublishedResource =>
+        val publisherTags = getHandTagsForResource(p)
+        publisherTags.map { pt =>
+          new GeneratedTaggingVote(pt, new PublishersTagsVoter)
+        }
+      case _ =>
+        Seq.empty
+    }
+
+    log.info("Publisher derived tags: " + publisherTagVotes)
 
     /*
     if ((resource.asInstanceOf[PublishedResource]).getPublisher != null) {
