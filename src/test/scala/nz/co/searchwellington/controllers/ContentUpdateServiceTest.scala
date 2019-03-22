@@ -31,7 +31,7 @@ class ContentUpdateServiceTest {
   def setUp {
     MockitoAnnotations.initMocks(this)
     when(mongoReposity.getResourceByObjectId(resourceObjectId)).thenReturn(Future.successful(Some(updatedResource)))
-    service = new ContentUpdateService(mongoReposity, linkCheckerQueue, frontendContentUpdater)
+    service = new ContentUpdateService(mongoReposity, linkCheckerQueue, frontendContentUpdater, null) // TODO test
   }
 
   @Test

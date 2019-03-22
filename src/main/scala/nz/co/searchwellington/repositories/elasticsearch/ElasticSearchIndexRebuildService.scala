@@ -25,6 +25,10 @@ import scala.concurrent.{Await, Future}
     reindexResources(resourcesToIndex)
   }
 
+  def index(resource: Resource): Unit = {
+    reindexResources(Seq(resource._id))
+  }
+
   @throws[JsonProcessingException]
   private def reindexResources(resourcesToIndex: Seq[BSONObjectID]): Unit = {
     log.info("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
