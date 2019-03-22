@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories.mongo
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
@@ -32,6 +34,19 @@ class MongoRepositoryTest {
     val tagWithGeocode = Await.result(mongoRepository.getTagByName("arovalley"), TenSeconds).get
     assertTrue(tagWithGeocode.geocode_id.nonEmpty)
     assertTrue(tagWithGeocode.geocode.nonEmpty)
+  }
+
+  @Test
+  def canPersistResource = {
+    val title = "Test " + UUID.randomUUID.toString
+    val newsitem = Newsitem(title = Some(title))
+
+    mongoRepository.saveResource(newsitem)
+
+    val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds)
+    println(reloaded)
+    assertTrue(reloaded.nonEmpty)
+    assertEquals(title, reloaded.get.title.get)
   }
 
   @Test
