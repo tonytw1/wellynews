@@ -9,12 +9,14 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class FeedReader @Autowired()(mongoRepository: MongoRepository, rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
@@ -71,8 +73,9 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy)
       if (acceptanceErrors.isEmpty) {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
-        val acceptedNewsitem = feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed)
-        linkCheckerQueue.add(acceptedNewsitem)
+        feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed).map {acceptedNewsitem =>
+          linkCheckerQueue.add(acceptedNewsitem._id.stringify)
+        }
 
       } else {
         log.info("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
