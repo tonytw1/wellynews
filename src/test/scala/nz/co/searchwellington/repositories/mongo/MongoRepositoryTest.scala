@@ -37,16 +37,30 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def canPersistResource = {
+  def canPersistResources = {
     val title = "Test " + UUID.randomUUID.toString
     val newsitem = Newsitem(title = Some(title))
 
     mongoRepository.saveResource(newsitem)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds)
-    println(reloaded)
     assertTrue(reloaded.nonEmpty)
     assertEquals(title, reloaded.get.title.get)
+  }
+
+  @Test
+  def canUpdateResources = {
+    val title = "Test " + UUID.randomUUID.toString
+    val newsitem = Newsitem(title = Some(title))
+    mongoRepository.saveResource(newsitem)
+    val updatedTitle = title + " updated"
+    val updated = newsitem.copy(title = Some(updatedTitle), http_status = 200)
+
+    mongoRepository.saveResource(updated)
+
+    val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds).get
+    assertEquals(updatedTitle, reloaded.title.get)
+    assertEquals(200, reloaded.http_status)
   }
 
   @Test
