@@ -66,7 +66,7 @@ class UrlBuilderTest {
   @Test
   @throws[Exception]
   def shouldConstructPageUrlForFrontendResourceFromResourcesUrlWords(): Unit = {
-    assertNull(frontendNewsitem.publisherName)
+    assertNull(frontendNewsitem.getPublisherName)
     assertEquals(UrlBuilderTest.SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem))
   }
 

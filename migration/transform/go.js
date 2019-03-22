@@ -36,7 +36,6 @@ db.resource.find({}).forEach(
             print(doc.watchlist_publisher);
             doc.publisher = doc.watchlist_publisher;
         }
-        
 
         db.resource.save(doc);
     }
