@@ -41,6 +41,7 @@ import scala.concurrent.{Await, Future}
       val start = DateTime.now
       log.info("Loading batch")
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
+
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
         log.info("Loaded batch; applying tags")
         Future.sequence(rs.map { r =>
@@ -93,7 +94,7 @@ import scala.concurrent.{Await, Future}
           resolveParentsFor(t, Seq())
         }
       }.map { parents =>
-        (tags ++ parents.flatten).map(t => t.id).toSet
+        (tags ++ parents.flatten).map(t => t._id.get.stringify).toSet
       }
     }
 
