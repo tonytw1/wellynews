@@ -38,7 +38,7 @@ class TaggingReturnsOfficerServiceTest {
     val handTags = Seq(new HandTagging(user = null, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 
-    var taggings: java.util.List[TaggingVote] = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
+    val taggings = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
 
     assertTrue(taggings.get(0).tag.equals(aroValleyTag)); // TODO not a great assert
   }
