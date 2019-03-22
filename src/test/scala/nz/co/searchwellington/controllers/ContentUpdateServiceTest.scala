@@ -31,12 +31,12 @@ class ContentUpdateServiceTest {
   def setUp {
     MockitoAnnotations.initMocks(this)
     when(mongoReposity.getResourceByObjectId(resourceObjectId)).thenReturn(Future.successful(Some(updatedResource)))
-    service = new ContentUpdateService(mongoReposity, linkCheckerQueue, frontendContentUpdater, null) // TODO test
+    service = new ContentUpdateService(mongoReposity, linkCheckerQueue, frontendContentUpdater)
   }
 
   @Test
   @throws[Exception]
-  def shouldSaveThroughTheHibernateDAO {
+  def shouldPeristUpdatesInMongo {
     service.update(updatedResource)
     verify(mongoReposity).saveResource(updatedResource)
   }

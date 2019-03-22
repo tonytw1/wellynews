@@ -6,7 +6,6 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@deprecated
 @Component class FrontendContentUpdater @Autowired()(elasticSearchIndexUpdateService: ElasticSearchIndexUpdateService,
                                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService) {
 
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component
   def update(updatedResource: Resource): Unit = {
     log.info("Updating elastic search record for resource: " + updatedResource.title)
     elasticSearchIndexRebuildService.index(updatedResource)
-    // elasticSearchIndexUpdateService.updateSingleContentItem(updatedResource);
   }
 
 }
