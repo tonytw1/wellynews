@@ -6,13 +6,14 @@ import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
+import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 class FeeditemToNewsitemServiceTest {
   @Mock private[feeds] val textTrimmer: TextTrimmer = null
   @Mock private[feeds] val place: Place = null
-  private val feed: Feed = Feed()
+  private val feed: Feed = Feed(publisher = Some(BSONObjectID.generate))
   private var service: FeeditemToNewsitemService = null
 
   @Before def setup {
@@ -29,6 +30,16 @@ class FeeditemToNewsitemServiceTest {
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertEquals(Some("A place"), newsitem.geocode.map(_.getAddress))
+  }
+
+  @Test
+  def shouldPropogateFeedPublisherWhenAcceptingNewsitem: Unit = {
+    val feedNewsitem = new FeedItem()
+
+    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
+
+    assertTrue(feed.publisher.nonEmpty)
+    assertEquals(feed.publisher, newsitem.publisher)
   }
 
   @Test

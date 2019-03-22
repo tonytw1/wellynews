@@ -13,15 +13,15 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
 
   def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Feed): Newsitem = {
     val newsitem = Newsitem(
-      title = Some(feedItem.getTitle), page = Some(feedItem.getUrl),
+      title = Some(feedItem.getTitle),
+      page = Some(feedItem.getUrl),
       description = Some(composeDescription(feedItem)),
-      date = Some(feedItem.getDate), publisher = None,
+      date = Some(feedItem.getDate),
+      publisher = feed.publisher,
       feed = Some(feed._id),
       geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode)
-    ) // TODO publisher
+    )
     // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
-
-    // newsitem.setPublisher(feed.getPublisher)
 
     if (feedItem.getImageUrl != null) {
       // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
