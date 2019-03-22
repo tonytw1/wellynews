@@ -18,10 +18,11 @@ import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
   private val tenSeconds = Duration(10, SECONDS)
 
-  def getFeedItems(): Seq[(FeedItem, Option[Feed])] = {
-    whakaokoFeedReader.fetchFeedItems().map { i =>
-      val feed = Await.result(mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId), Duration(1, MINUTES))
-      (i, feed)
+  def getFeedItems(): Seq[(FeedItem, Feed)] = {
+    whakaokoFeedReader.fetchFeedItems().flatMap { i =>
+      Await.result(mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId), Duration(1, MINUTES)).map { feed =>
+        (i, feed)
+      } // TODO log about missing feeds
     }
   }
 

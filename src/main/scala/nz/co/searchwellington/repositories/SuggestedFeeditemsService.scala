@@ -17,9 +17,9 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
   def getSuggestionFeednewsitems(maxItems: Int): Seq[FrontendResource] = {
     val channelFeedItems = rssfeedNewsitemService.getFeedItems()
-    val notIgnoredFeedItems: Seq[(FeedItem, Option[Feed])] = channelFeedItems.filter(i => isNotIgnored(i._1))
+    val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1))
 
-    val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2.get)) // TODO Naked get
+    val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
     val suggestions = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems)
     val withLocalCopiesFilteredOut = suggestions.filter(i => noLocalCopy(i))
