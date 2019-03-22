@@ -1,16 +1,11 @@
 package nz.co.searchwellington.feeds
 
-import java.util.UUID
-
-import org.junit.Assert.assertEquals
 import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.frontend.FrontendFeed
 import nz.co.searchwellington.utils.TextTrimmer
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
+import org.junit.Assert.assertEquals
+import org.junit.{Before, Test}
 import org.mockito.Mockito.when
-import org.mockito.MockitoAnnotations
+import org.mockito.{Mock, MockitoAnnotations}
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
@@ -29,11 +24,10 @@ class FeeditemToNewsitemServiceTest {
   @throws[Exception]
   def shouldSetGeocodeWhenAcceptingFeedNewsitem {
     when(place.getAddress).thenReturn("A place")
-    val frontendFeed = new FrontendFeed(id = UUID.randomUUID().toString)
     val feedNewsitem = new FeedItem()
     feedNewsitem.setPlace(place)
 
-    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, Some(feed))
+    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertEquals(Some("A place"), newsitem.geocode.map(_.getAddress))
   }

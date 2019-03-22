@@ -28,7 +28,7 @@ class FeedModelBuilderTest {
 
   val feedItem = mock(classOf[FeedItem])
   val anotherFeedItem = mock(classOf[FeedItem])
-  var feeditems: Seq[(FeedItem, Option[Feed])] = Seq((feedItem, Some(feed)), (anotherFeedItem, Some(feed)))
+  var feeditems: (Seq[FeedItem], Feed) = (Seq(feedItem, anotherFeedItem), feed)
 
   val newsItem = mock(classOf[Newsitem])
   val anotherNewsitem = mock(classOf[Newsitem])
@@ -52,10 +52,10 @@ class FeedModelBuilderTest {
   @Before
   @throws(classOf[Exception])
   def setUp {
-    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(feeditems)
+    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(Some(feeditems))
 
-    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, Some(feed))).thenReturn(newsItem)
-    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, Some(feed))).thenReturn(anotherNewsitem)
+    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
+    when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
 
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
     request = new MockHttpServletRequest
@@ -73,7 +73,7 @@ class FeedModelBuilderTest {
   @throws(classOf[Exception])
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(Seq())
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -83,9 +83,9 @@ class FeedModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
-    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(feeditems)
+    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(Some(feeditems))
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(Seq())
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -96,7 +96,7 @@ class FeedModelBuilderTest {
   @Test
   @throws(classOf[Exception])
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems.map(_._1))).thenReturn(geotaggedFeedNewsitems)
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(geotaggedFeedNewsitems)
     when(contentRetrievalService.getAllFeedsOrderByLatestItemDate).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
