@@ -5,16 +5,18 @@ import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.collection.JavaConverters._
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
-import scala.collection.JavaConverters._
 
 @Component class FrontendResourceMapper @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
                                                       geocodeToPlaceMapper: GeocodeToPlaceMapper, mongoRepository: MongoRepository) {
 
+  private val log = Logger.getLogger(classOf[FrontendResourceMapper])
   private val tenSeconds = Duration(10, SECONDS)
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
@@ -37,6 +39,8 @@ import scala.collection.JavaConverters._
         val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem).
           map(mapTagToFrontendTag).toSeq
 
+        val publisherName: String = publisher.flatMap(p => p.title).getOrElse("")
+
         FrontendNewsitem(
           id = n.id,
           `type` = n.`type`,
@@ -50,7 +54,7 @@ import scala.collection.JavaConverters._
           accepted = n.accepted.getOrElse(null),
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
-          publisherName = publisher.flatMap(p => p.title).getOrElse(""),
+          publisherName = publisherName,
           tags = tags.asJava,
           handTags = handTags.asJava
         )

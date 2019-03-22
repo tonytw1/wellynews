@@ -25,6 +25,8 @@ case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
                             accepted: Date = null,
                             image: FrontendImage = null) extends FrontendResource with RssFeedable {
 
+  def getPublisherName(): String = publisherName
+
   def getAcceptedFromFeedName: String = {
     return acceptedFromFeedName
   }

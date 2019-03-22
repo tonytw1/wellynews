@@ -73,10 +73,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy)
       if (acceptanceErrors.isEmpty) {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
-        feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed).map {acceptedNewsitem =>
+        feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed).map { acceptedNewsitem =>
           linkCheckerQueue.add(acceptedNewsitem._id.stringify)
         }
-
       } else {
         log.info("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
       }

@@ -27,16 +27,16 @@ db.resource.find({}).forEach(
         doc.id = uuidv4();
         doc.held = booleanFromInt(doc.held);
 
-        if (doc.publisher == null) {
-            if (doc.feed_publisher != null) {
-                print(doc.feed_publisher);
-                doc.publisher = doc.feed_publisher;
-            }
-            if (doc.watchlist_publisher != null) {
-                print(doc.watchlist_publisher);
-                doc.publisher = doc.watchlist_publisher;
-            }
+        if (doc.type == 'F') {
+            print(doc.feed_publisher);
+            doc.publisher = doc.feed_publisher;
         }
+
+        if (doc.type == 'L') {
+            print(doc.watchlist_publisher);
+            doc.publisher = doc.watchlist_publisher;
+        }
+        
 
         db.resource.save(doc);
     }

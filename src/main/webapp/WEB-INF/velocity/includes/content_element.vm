@@ -12,7 +12,7 @@
 			#if ($item.date && ($item.type == "N" || $item.type == "FNI" || $item.type == "S") && $dateFormatter)
 				<li class="date">$dateFormatter.dayMonthYear($item.date)</li>
 			#end
-				
+
 			#if ($item.publisherName)
 				<li class="publisher">$item.publisherName</li>
 			#end
