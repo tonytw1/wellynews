@@ -37,9 +37,9 @@ class FeeditemToNewsitemServiceTest {
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
-    assertNotNull(feed.id)
+    assertNotNull(feed._id)
     assertTrue(newsitem.feed.nonEmpty)
-    assertEquals(Some(feed.id), newsitem.feed)
+    assertEquals(Some(feed._id), newsitem.feed)
   }
 
 }

@@ -16,7 +16,7 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
       title = Some(feedItem.getTitle), page = Some(feedItem.getUrl),
       description = Some(composeDescription(feedItem)),
       date = Some(feedItem.getDate), publisher = None,
-      feed = Some(feed.id), // TODO is this the right id?
+      feed = Some(feed._id),
       geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode)
     ) // TODO publisher
     // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)

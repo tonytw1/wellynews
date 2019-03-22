@@ -1,11 +1,11 @@
 package nz.co.searchwellington.model
 
-import java.util.Date
+import java.util.{Date, UUID}
 
 import reactivemongo.bson.BSONObjectID
 
 case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
-                override val id: String,
+                override val id: String = UUID.randomUUID().toString,
                 override val `type`: String = "F",
                 override var title: Option[String] = None,
                 override var description: Option[String] = None,

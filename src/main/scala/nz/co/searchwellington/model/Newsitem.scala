@@ -22,7 +22,7 @@ case class Newsitem(override val _id: BSONObjectID = BSONObjectID.generate,
                     override var owner: Option[Int] = None,
                     override var publisher: Option[BSONObjectID] = None,
                     override val resource_tags: Seq[Tagging] = Seq(),
-                    var feed: Option[String] = None,
+                    var feed: Option[BSONObjectID] = None,
                     var accepted: Option[Date] = None,
                     var acceptedBy: Option[BSONObjectID] = None
 ) extends PublishedResource
