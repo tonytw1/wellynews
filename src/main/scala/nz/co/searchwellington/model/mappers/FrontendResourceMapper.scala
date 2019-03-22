@@ -39,8 +39,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
         val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem).
           map(mapTagToFrontendTag).toSeq
 
-        val publisherName: String = publisher.flatMap(p => p.title).getOrElse("")
-
         FrontendNewsitem(
           id = n.id,
           `type` = n.`type`,
@@ -54,7 +52,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           accepted = n.accepted.getOrElse(null),
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
-          publisherName = publisherName,
+          publisher = publisher.map(_.asInstanceOf[Website]),
           tags = tags.asJava,
           handTags = handTags.asJava
         )
@@ -130,14 +128,20 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
+
+    val tags: Seq[FrontendTag] = website.resource_tags.map { tagging =>
+      FrontendTag(id = tagging.tag_id.stringify, name = tagging.tag_id.stringify, displayName = tagging.tag_id.stringify, description = null)
+    }
+
     FrontendWebsite(
       id = website.id,
-      name = website.title.getOrElse(""),
-      url = website.page.getOrElse(""),
-      urlWords = website.url_words.getOrElse(""),
+      name = website.title.orNull,
+      url = website.page.orNull,
+      urlWords = website.url_words.orNull,
       place = website.geocode.map { g =>
         geocodeToPlaceMapper.mapGeocodeToPlace(g)
-      }.getOrElse(null)
+      }.orNull,
+      tags = tags.asJava
     )
   }
 
