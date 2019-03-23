@@ -3,7 +3,7 @@ package nz.co.searchwellington.tagging
 import java.util
 
 import nz.co.searchwellington.model.taggingvotes.HandTagging
-import nz.co.searchwellington.model.{Newsitem, Tag}
+import nz.co.searchwellington.model.{Newsitem, Tag, User}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import org.junit.Assert._
 import org.junit.{Before, Test}
@@ -16,8 +16,8 @@ class TaggingReturnsOfficerServiceTest {
 
   private val placesTag = Tag(name = "places", display_name = "Places")
   private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = placesTag._id)
-
-  private var aroValleyNewsitem: Newsitem = null
+  private val aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
+  private val taggingUser = User(name = Some("auser"))
 
   @Mock private var handTaggingDAO: HandTaggingDAO = null
 
@@ -31,8 +31,7 @@ class TaggingReturnsOfficerServiceTest {
 
   @Test
   def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
-    aroValleyNewsitem = Newsitem(id = "1", title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
-    val handTags = Seq(new HandTagging(user = null, tag = aroValleyTag))
+    val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 
     val taggings = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
@@ -42,8 +41,7 @@ class TaggingReturnsOfficerServiceTest {
 
   @Test
   def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
-    aroValleyNewsitem = Newsitem(id = "1", title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
-    val handTags = Seq(new HandTagging(user = null, tag = aroValleyTag))
+    val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
 
     var indexTags: util.Set[Tag] = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)

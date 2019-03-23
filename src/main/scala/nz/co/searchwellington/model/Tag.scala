@@ -1,9 +1,11 @@
 package nz.co.searchwellington.model
 
+import java.util.UUID
+
 import reactivemongo.bson.BSONObjectID
 
 case class Tag(val _id: Option[BSONObjectID] = None,
-               val id: String,
+               val id: String = UUID.randomUUID.toString,
                var name: String = "",
                var display_name: String = "",
                var parent: Option[BSONObjectID] = None,

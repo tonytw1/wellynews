@@ -1,9 +1,18 @@
 package nz.co.searchwellington.model
 
+import java.util.UUID
+
 import nz.co.searchwellington.model.taggingvotes.voters.TaggingVoter
 
-case class User(id: String, openid: Option[String] = None, twitterId: Option[Long] = None, profilename: Option[String] = None, url: Option[String] = None,
-                name: Option[String] = None, bio: Option[String] = None, apikey: Option[String]= None, admin: Boolean = false) extends TaggingVoter {
+case class User(id: String = UUID.randomUUID.toString,
+                name: Option[String] = None,
+                profilename: Option[String] = None,
+                bio: Option[String] = None,
+                openid: Option[String] = None,
+                twitterId: Option[Long] = None,
+                url: Option[String] = None,
+                apikey: Option[String] = None,
+                admin: Boolean = false) extends TaggingVoter {
 
   def getId: String = id
 
