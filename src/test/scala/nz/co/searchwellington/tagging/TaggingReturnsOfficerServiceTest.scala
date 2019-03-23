@@ -2,8 +2,8 @@ package nz.co.searchwellington.tagging
 
 import java.util
 
-import nz.co.searchwellington.model.taggingvotes.{HandTagging, TaggingVote}
-import nz.co.searchwellington.model.{Newsitem, Tag, TagBuilder}
+import nz.co.searchwellington.model.taggingvotes.HandTagging
+import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import org.junit.Assert._
 import org.junit.{Before, Test}
@@ -14,8 +14,9 @@ import scala.collection.JavaConversions._
 
 class TaggingReturnsOfficerServiceTest {
 
-  private var placesTag: Tag = null
-  private var aroValleyTag: Tag = null
+  private val placesTag = Tag(name = "places", display_name = "Places")
+  private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = placesTag._id)
+
   private var aroValleyNewsitem: Newsitem = null
 
   @Mock private var handTaggingDAO: HandTaggingDAO = null
@@ -25,10 +26,6 @@ class TaggingReturnsOfficerServiceTest {
   @Before
   def setUp {
     MockitoAnnotations.initMocks(this)
-    placesTag = new TagBuilder().name("places").displayName("Places").build
-    aroValleyTag = new TagBuilder().name("arovalley").displayName("Aro Valley").parent(placesTag).build
-    // placesTag.addChild(aroValleyTag)
-
     taggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, null) // TODO
   }
 
