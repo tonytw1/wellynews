@@ -85,33 +85,20 @@ import scala.concurrent.duration.{Duration, SECONDS}
     feedTagVotes.toList
   }
 
-  private def generatePublisherDerivedTagVotes(resource: Resource): List[TaggingVote] = {
-    val publisherTagVotes = resource match {
+  private def generatePublisherDerivedTagVotes(resource: Resource): Seq[TaggingVote] = {
+    val publisherTagVotes: Option[Seq[GeneratedTaggingVote]] = resource match {
       case p: PublishedResource =>
         p.publisher.map { pid =>
           handTaggingDAO.getHandTaggingsForResourceId(pid).map { pt =>
+            // TODO publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
             new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
           }
-        }.getOrElse {
-          Seq.empty
         }
       case _ =>
-        Seq.empty
+       None
     }
 
-    log.info("Publisher derived tags: " + publisherTagVotes)
-
-    /*
-    if ((resource.asInstanceOf[PublishedResource]).getPublisher != null) {
-      val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
-      for (publisherTag <- this.getHandTagsForResource(publisher)) {
-        publisherTagVotes += new GeneratedTaggingVote(publisherTag, new PublishersTagsVoter)
-        // TODO publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
-      }
-    }
-    */
-
-    publisherTagVotes.toList
+    publisherTagVotes.getOrElse(Seq.empty)
   }
 
   private def generateAncestorTagVotes(resource: Resource): List[TaggingVote] = {
