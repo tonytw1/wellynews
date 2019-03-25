@@ -3,6 +3,7 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.model.{Feed, Newsitem, User}
 import nz.co.searchwellington.utils.TextTrimmer
 import org.joda.time.DateTime
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.{Before, Test}
 import org.mockito.Mockito.mock
@@ -17,7 +18,7 @@ class FeedItemAcceptorTest {
   @Mock private[feeds] val place: Place = null
   private val feed: Feed = Feed(publisher = Some(BSONObjectID.generate))
   private var service: FeedItemAcceptor = null
-  private val user = User(name = Some("Feed reading user"))
+  private val feedReadingUser = User(name = Some("Feed reading feedReadingUser"))
 
   private val feeditemToNewsItemSerice = mock(classOf[FeeditemToNewsitemService])
 
@@ -33,10 +34,40 @@ class FeedItemAcceptorTest {
     when(feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feedNewsitem, feed)).thenReturn(newsitem)
     val before = DateTime.now
 
-    val acceptedNewsitem = service.acceptFeedItem(user, (feedNewsitem, feed))
+    val acceptedNewsitem = service.acceptFeedItem(feedReadingUser, (feedNewsitem, feed))
 
     assertTrue(acceptedNewsitem.accepted.nonEmpty)
     assertTrue(acceptedNewsitem.accepted.get.after(before.toDate))
   }
+
+  @Test
+  def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
+    val feedNewsitem = new FeedItem()
+    val newsitem = Newsitem()
+    when(feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feedNewsitem, feed)).thenReturn(newsitem)
+
+
+    val acceptedNewsitem = service.acceptFeedItem(feedReadingUser, (feedNewsitem, feed))
+
+    assertTrue(acceptedNewsitem.accepted.nonEmpty)
+    assertEquals(Some(feedReadingUser._id), acceptedNewsitem.acceptedBy)
+  }
+
+  /*
+  @Test
+  def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
+    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, feednewsitem, null)
+
+    assertEquals(Some(feedReadingUser.id), accepted.acceptedBy)
+    assertEquals(Some(feedReadingUser.id), accepted.owner)
+  }
+
+  @Test
+  @throws[Exception]
+  def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
+    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, feednewsitem, null)
+    assertEquals("Headline", accepted.title.get)
+  }
+  */
 
 }

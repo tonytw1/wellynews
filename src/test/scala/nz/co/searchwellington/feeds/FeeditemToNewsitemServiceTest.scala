@@ -2,7 +2,6 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.utils.TextTrimmer
-import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.when
@@ -22,7 +21,6 @@ class FeeditemToNewsitemServiceTest {
     MockitoAnnotations.initMocks(this)
     service = new FeeditemToNewsitemService(textTrimmer, new PlaceToGeocodeMapper)
   }
-
 
   @Test
   def shouldSetGeocodeWhenAcceptingFeedNewsitem {
@@ -65,25 +63,5 @@ class FeeditemToNewsitemServiceTest {
     assertTrue(newsitem.accepted.isEmpty)
     assertTrue(newsitem.acceptedBy.isEmpty)
   }
-
-
-
-  /*
-  @Test
-  @throws[Exception]
-  def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
-    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
-
-    assertEquals(Some(user.id), accepted.acceptedBy)
-    assertEquals(Some(user.id), accepted.owner)
-  }
-
-  @Test
-  @throws[Exception]
-  def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
-    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
-    assertEquals("Headline", accepted.title.get)
-  }
-  */
 
 }
