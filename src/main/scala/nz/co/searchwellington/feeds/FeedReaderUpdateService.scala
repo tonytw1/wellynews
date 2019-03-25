@@ -9,10 +9,11 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService, feednewsItemToNewsitemService: FeeditemToNewsitemService) {
+@Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
+                                         feedItemAcceptor: FeedItemAcceptor) {
 
   def acceptNewsitem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Future[Newsitem] = {
-    val newsitem = feednewsItemToNewsitemService.makeNewsitemFromFeedItem(feednewsitem, feed)
+    val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
     val notHeld = newsitem.copy(held = false)
     contentUpdateService.create(notHeld).map { _ =>
       autoTagger.autotag(notHeld)
