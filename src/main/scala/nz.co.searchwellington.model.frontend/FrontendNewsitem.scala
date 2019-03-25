@@ -21,16 +21,14 @@ case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
                             place: Place = null,
                             held: Boolean = false,
                             publisher: Option[Website] = None,
-                            acceptedFromFeedName: String = null,
+                            acceptedFrom: Option[FrontendFeed] = None,
                             acceptedByProfilename: String = null,
                             accepted: Date = null,
                             image: FrontendImage = null) extends FrontendResource with RssFeedable {
 
   def getPublisherName: String = publisher.flatMap(_.title).orNull
 
-  def getAcceptedFromFeedName: String = {
-    return acceptedFromFeedName
-  }
+  def getAcceptedFromFeedName: String = acceptedFrom.map(_.name).orNull
 
   def getAcceptedByProfilename: String = {
     return acceptedByProfilename

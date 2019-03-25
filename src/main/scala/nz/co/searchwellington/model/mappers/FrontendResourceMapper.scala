@@ -33,8 +33,15 @@ import scala.concurrent.duration.{Duration, SECONDS}
           Await.result(mongoRepository.getResourceByObjectId(pid), tenSeconds)
         }
 
+        val feed: Option[FrontendFeed] = n.feed.flatMap { fid =>
+          Await.result(mongoRepository.getResourceByObjectId(fid), tenSeconds).map { f =>
+            createFrontendResourceFrom(f).asInstanceOf[FrontendFeed]
+          }
+        }
+
         val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem).
-          map(mapTagToFrontendTag).toSeq
+        map(mapTagToFrontendTag).toSeq
+
 
         FrontendNewsitem(
           id = n.id,
@@ -44,7 +51,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           date = n.date.getOrElse(null),
           description = n.description.getOrElse(null),
           place = place,
-          acceptedFromFeedName = n.feed.map(f => f.toString).getOrElse(""),
+          acceptedFrom = feed,
           acceptedByProfilename = n.acceptedBy.map(a => a.stringify).getOrElse(""),
           accepted = n.accepted.getOrElse(null),
           image = null,  // TODO
