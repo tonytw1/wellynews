@@ -3,8 +3,10 @@ package nz.co.searchwellington.model
 import java.util.UUID
 
 import nz.co.searchwellington.model.taggingvotes.voters.TaggingVoter
+import reactivemongo.bson.BSONObjectID
 
-case class User(id: String = UUID.randomUUID.toString,
+case class User(_id: BSONObjectID = BSONObjectID.generate,
+                id: String = UUID.randomUUID.toString,
                 name: Option[String] = None,
                 profilename: Option[String] = None,
                 bio: Option[String] = None,

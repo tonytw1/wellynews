@@ -1,6 +1,6 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.model.Feed
+import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.utils.TextTrimmer
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
@@ -16,22 +16,13 @@ class FeeditemToNewsitemServiceTest {
   @Mock private[feeds] val place: Place = null
   private val feed: Feed = Feed(publisher = Some(BSONObjectID.generate))
   private var service: FeeditemToNewsitemService = null
+  private val user = User(name = Some("Feed reading user"))
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
     service = new FeeditemToNewsitemService(textTrimmer, new PlaceToGeocodeMapper)
   }
 
-  @Test
-  def shouldSetAcceptedTimeWhenAccepting(): Unit = {
-    val feedNewsitem = new FeedItem()
-    val before = DateTime.now
-
-    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
-
-    assertTrue(newsitem.accepted.nonEmpty)
-    assertTrue(newsitem.accepted.get.after(before.toDate))
-  }
 
   @Test
   def shouldSetGeocodeWhenAcceptingFeedNewsitem {
@@ -64,6 +55,18 @@ class FeeditemToNewsitemServiceTest {
     assertTrue(newsitem.feed.nonEmpty)
     assertEquals(Some(feed._id), newsitem.feed)
   }
+
+  @Test
+  def shouldNotSetAcceptanceDetails(): Unit = {
+    val feedNewsitem = new FeedItem()
+
+    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
+
+    assertTrue(newsitem.accepted.isEmpty)
+    assertTrue(newsitem.acceptedBy.isEmpty)
+  }
+
+
 
   /*
   @Test

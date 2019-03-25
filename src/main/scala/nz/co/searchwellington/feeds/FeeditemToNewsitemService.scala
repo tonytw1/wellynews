@@ -1,6 +1,6 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.model.{Feed, Newsitem}
+import nz.co.searchwellington.model.{Feed, Newsitem, User}
 import nz.co.searchwellington.utils.{TextTrimmer, UrlFilters}
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
@@ -20,8 +20,7 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
       date = Some(feedItem.getDate),
       publisher = feed.publisher,
       feed = Some(feed._id),
-      geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode),
-      accepted = Some(DateTime.now.toDate)
+      geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode)
     )
     // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
 

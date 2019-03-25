@@ -2,6 +2,7 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.model.{Feed, Newsitem, User}
 import org.apache.log4j.Logger
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
@@ -11,7 +12,8 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   private val log = Logger.getLogger(classOf[FeedItemAcceptor])
 
   def acceptFeedItem(user: User, feeditem: (FeedItem, Feed)): Newsitem = {
-    feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feeditem._1, feeditem._2) // TODO user
+    val newsitem = feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feeditem._1, feeditem._2)
+    newsitem.copy(accepted = Some(DateTime.now.toDate))
   }
 
 }
