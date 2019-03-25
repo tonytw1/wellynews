@@ -153,7 +153,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
       query.tags.map { tags =>
         should { // TODO AND or OR
           tags.map { t =>
-            matchQuery(Tags, t._id.get.stringify)
+            matchQuery(Tags, t._id.stringify)
           }
         }
       },

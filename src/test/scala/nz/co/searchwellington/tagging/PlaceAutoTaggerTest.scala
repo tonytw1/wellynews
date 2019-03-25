@@ -25,7 +25,7 @@ class PlaceAutoTaggerTest {
   @Before def setUp {
     MockitoAnnotations.initMocks(this)
     val placeTagObjectId = BSONObjectID.generate
-    placesTag = Tag(_id = Some(placeTagObjectId), id = UUID.randomUUID().toString, name = "places", display_name = "Places")
+    placesTag = Tag(_id = placeTagObjectId, id = UUID.randomUUID().toString, name = "places", display_name = "Places")
     aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = None) // TODO places as parent
     islandBayTag = Tag(id = UUID.randomUUID().toString, name = "islandbay", display_name = "Island Bay", parent = None)
 

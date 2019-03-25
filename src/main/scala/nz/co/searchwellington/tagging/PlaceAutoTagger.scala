@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 
     def getPlaces: Set[Tag] = {
       tagDAO.loadTagByName(PLACES_TAG_NAME).map { placesTag =>
-        tagDAO.loadTagsByParent(placesTag._id.get)
+        tagDAO.loadTagsByParent(placesTag._id)
       }.getOrElse {
         Seq()
       }.toSet

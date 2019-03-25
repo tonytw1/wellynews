@@ -4,8 +4,8 @@ import java.util.UUID
 
 import reactivemongo.bson.BSONObjectID
 
-case class Tag(val _id: Option[BSONObjectID] = None,
-               val id: String = UUID.randomUUID.toString,
+case class Tag(_id: BSONObjectID = BSONObjectID.generate,
+               id: String = UUID.randomUUID.toString,
                var name: String = "",
                var display_name: String = "",
                var parent: Option[BSONObjectID] = None,

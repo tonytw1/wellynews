@@ -142,7 +142,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
   private def frontendTagsFor(resource: Resource): Seq[FrontendTag] = {
     taggingReturnsOfficerService.getHandTagsForResource(resource).map { tag =>
-      FrontendTag(id = tag._id.get.stringify, name = tag.name, displayName = tag.display_name, description = tag.description.orNull)
+      FrontendTag(id = tag._id.stringify, name = tag.name, displayName = tag.display_name, description = tag.description.orNull)
     }.toSeq
   }
 

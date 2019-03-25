@@ -52,13 +52,13 @@ class ElasticSearchIT {
     val taggedNewsitems = queryForResources(taggedNewsitemsQuery)
     assertTrue(taggedNewsitems.nonEmpty)
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
-    assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id.get)))
+    assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
 
     val taggedWebsitesQuery = withTag.copy(`type` = Some("W"))
     val taggedWebsites = queryForResources(taggedWebsitesQuery)
     assertTrue(taggedWebsites.nonEmpty)
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
-    assertTrue(taggedWebsites.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id.get)))
+    assertTrue(taggedWebsites.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
   }
 
   @Test

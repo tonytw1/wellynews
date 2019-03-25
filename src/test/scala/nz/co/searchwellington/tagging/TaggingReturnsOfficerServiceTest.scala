@@ -14,7 +14,7 @@ import scala.collection.JavaConversions._
 class TaggingReturnsOfficerServiceTest {
 
   private val placesTag = Tag(name = "places", display_name = "Places")
-  private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = placesTag._id)
+  private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
   private val educationTag = Tag(name = "education", display_name = "Education")
 
   private val taggingUser = User(name = Some("auser"))

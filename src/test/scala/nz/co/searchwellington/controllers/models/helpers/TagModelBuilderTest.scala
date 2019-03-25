@@ -36,7 +36,7 @@ class TagModelBuilderTest {
   private val TAG_DISPLAY_NAME = "Penguins"
 
   private val parentId: BSONObjectID = BSONObjectID.generate
-  private val tag = Tag(_id = Some(parentId), id = UUID.randomUUID().toString, display_name = TAG_DISPLAY_NAME)
+  private val tag = Tag(_id = parentId, id = UUID.randomUUID().toString, display_name = TAG_DISPLAY_NAME)
 
   var request: MockHttpServletRequest = null
   private var modelBuilder: TagModelBuilder = null
