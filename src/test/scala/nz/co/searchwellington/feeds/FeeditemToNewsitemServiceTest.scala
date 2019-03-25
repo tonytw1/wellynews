@@ -2,6 +2,7 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.utils.TextTrimmer
+import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.when
@@ -24,10 +25,12 @@ class FeeditemToNewsitemServiceTest {
   @Test
   def shouldSetAcceptedTimeWhenAccepting(): Unit = {
     val feedNewsitem = new FeedItem()
+    val before = DateTime.now
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
     assertTrue(newsitem.accepted.nonEmpty)
+    assertTrue(newsitem.accepted.get.after(before.toDate))
   }
 
   @Test
