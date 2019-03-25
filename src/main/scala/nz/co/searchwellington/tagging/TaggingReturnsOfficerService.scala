@@ -9,9 +9,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.collection.JavaConversions._
 import scala.collection.mutable
-import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository) {
@@ -20,9 +18,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private val TenSeconds = Duration(10, SECONDS)
 
   def getHandTagsForResource(resource: Resource): Set[Tag] = {
-    resource.resource_tags.flatMap { tagging =>
-      Await.result(mongoRepository.getTagByObjectId(tagging.tag_id), TenSeconds)
-    }.toSet
+    handTaggingDAO.getHandTaggingsForResource(resource).map { ht => ht.tag}.toSet
   }
 
   def getIndexTagsForResource(resource: Resource): Set[Tag] = {
@@ -92,9 +88,12 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private def generatePublisherDerivedTagVotes(resource: Resource): List[TaggingVote] = {
     val publisherTagVotes = resource match {
       case p: PublishedResource =>
-        val publisherTags = getHandTagsForResource(p)
-        publisherTags.map { pt =>
-          new GeneratedTaggingVote(pt, new PublishersTagsVoter)
+        p.publisher.map { pid =>
+          handTaggingDAO.getHandTaggingsForResourceId(pid).map { pt =>
+            new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
+          }
+        }.getOrElse {
+          Seq.empty
         }
       case _ =>
         Seq.empty

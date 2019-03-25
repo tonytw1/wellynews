@@ -6,6 +6,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -16,12 +17,17 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
   private val TenSeconds = Duration(10, SECONDS)
 
-  @SuppressWarnings(Array("unchecked")) def getHandTaggingsForResource(resource: Resource): Seq[HandTagging] = {
+  def getHandTaggingsForResource(resource: Resource): Seq[HandTagging] = {
     resource.resource_tags.map { tagging =>
       val tag = Await.result(mongoRepository.getTagByObjectId(tagging.tag_id), TenSeconds).get  // TODO Naked get
       val user = Await.result(mongoRepository.getUserByObjectId(tagging.user_id), TenSeconds).get // TODO Naked get
       new HandTagging(user = user, tag = tag)
     }
+  }
+
+  def getHandTaggingsForResourceId(id: BSONObjectID): Seq[HandTagging] = {
+    val resource = Await.result(mongoRepository.getResourceByObjectId(id), TenSeconds).get
+    getHandTaggingsForResource(resource)
   }
 
   def delete(handTagging: HandTagging) {

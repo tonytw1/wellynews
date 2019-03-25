@@ -3,9 +3,10 @@ package nz.co.searchwellington.tagging
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model.{Newsitem, Tag, User, Website}
 import nz.co.searchwellington.repositories.HandTaggingDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
 import org.junit.{Before, Test}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{mock, when}
 import org.mockito.{Mock, MockitoAnnotations}
 
 import scala.collection.JavaConversions._
@@ -28,17 +29,19 @@ class TaggingReturnsOfficerServiceTest {
   @Mock private var handTaggingDAO: HandTaggingDAO = null
 
   private var taggingReturnsOfficerService: TaggingReturnsOfficerService = null
+  private val mongoRepository = mock(classOf[MongoRepository])
 
   @Before
   def setUp {
     MockitoAnnotations.initMocks(this)
-    taggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, null) // TODO
+    taggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
   }
 
   @Test
   def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
+    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
 
     val taggings = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
 
@@ -49,6 +52,7 @@ class TaggingReturnsOfficerServiceTest {
   def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
+    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
 
     var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
 
@@ -58,7 +62,7 @@ class TaggingReturnsOfficerServiceTest {
   @Test
   def shouldIncludePublishersTagsInNewsitemsIndexTags = {
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = aroValleyTag)))
-    when(handTaggingDAO.getHandTaggingsForResource(victoriaUniversity)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
+    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
 
     var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
 
