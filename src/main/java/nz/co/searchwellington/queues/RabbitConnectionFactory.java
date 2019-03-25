@@ -15,9 +15,13 @@ public class RabbitConnectionFactory {
 	private final ConnectionFactory factory;
 	
 	@Autowired
-	public RabbitConnectionFactory(@Value("#{config['rabbit.hostname']}") String rabbitHost) {
+	public RabbitConnectionFactory(
+			@Value("#{config['rabbit.hostname']}") String rabbitHost,
+			@Value("#{config['rabbit.port']}") Integer rabbitPort
+	) {
 		this.factory = new ConnectionFactory();
 		factory.setHost(rabbitHost);
+		factory.setPort(rabbitPort);
 	}
 	
 	public Connection connect() throws IOException {
