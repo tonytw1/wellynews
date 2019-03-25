@@ -78,7 +78,7 @@
 				#end
 			#end
 						
-			#if ($item.type == "N" && $item.acceptedFromFeedName) 
+			#if ($item.type == "N" && $item.accepted)
 				<li>
 				#parse('includes/accepted_details.vm')
 				</li>
