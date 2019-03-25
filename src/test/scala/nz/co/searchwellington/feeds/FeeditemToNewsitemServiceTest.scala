@@ -22,6 +22,15 @@ class FeeditemToNewsitemServiceTest {
   }
 
   @Test
+  def shouldSetAcceptedTimeWhenAccepting(): Unit = {
+    val feedNewsitem = new FeedItem()
+
+    val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
+
+    assertTrue(newsitem.accepted.nonEmpty)
+  }
+
+  @Test
   def shouldSetGeocodeWhenAcceptingFeedNewsitem {
     when(place.getAddress).thenReturn("A place")
     val feedNewsitem = new FeedItem()
@@ -52,5 +61,23 @@ class FeeditemToNewsitemServiceTest {
     assertTrue(newsitem.feed.nonEmpty)
     assertEquals(Some(feed._id), newsitem.feed)
   }
+
+  /*
+  @Test
+  @throws[Exception]
+  def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
+    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
+
+    assertEquals(Some(user.id), accepted.acceptedBy)
+    assertEquals(Some(user.id), accepted.owner)
+  }
+
+  @Test
+  @throws[Exception]
+  def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
+    val accepted = feedItemAcceptor.acceptFeedItem(user, feednewsitem, null)
+    assertEquals("Headline", accepted.title.get)
+  }
+  */
 
 }
