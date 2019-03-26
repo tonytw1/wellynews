@@ -27,7 +27,6 @@ class ContentUpdateServiceTest {
   private var service: ContentUpdateService = null
 
   @Before
-  @throws[Exception]
   def setUp {
     MockitoAnnotations.initMocks(this)
     when(mongoReposity.getResourceByObjectId(resourceObjectId)).thenReturn(Future.successful(Some(updatedResource)))
@@ -35,14 +34,12 @@ class ContentUpdateServiceTest {
   }
 
   @Test
-  @throws[Exception]
   def shouldPeristUpdatesInMongo {
     service.update(updatedResource)
     verify(mongoReposity).saveResource(updatedResource)
   }
 
   @Test
-  @throws[Exception]
   def shouldUpdateTheFrontendSolrIndexOnSave {
     service.update(updatedResource)
     verify(frontendContentUpdater).update(updatedResource)
