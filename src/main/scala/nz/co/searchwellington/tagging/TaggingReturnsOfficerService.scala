@@ -49,6 +49,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
            GeneratedTaggingVote(tv.tag, new FeedsTagsTagVoter())  // TODO Test coverage 2nd argument looks like it should be an emun
           }
         }
+      case _ =>
     }
 
     votes
