@@ -1,8 +1,8 @@
 package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.model.taggingvotes.voters.{FeedsTagsTagVoter, PublishersTagsVoter}
-import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
-import nz.co.searchwellington.model.{Geocode, PublishedResource, Resource, Tag}
+import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, HandTagging, TaggingVote}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -41,11 +41,14 @@ import scala.concurrent.duration.{Duration, SECONDS}
       votes ++= generatePublisherDerivedTagVotes(resource)
     }
 
-    if (resource.`type` == "N") {
-      //val acceptedFeed: Feed = (resource.asInstanceOf[Newsitem]).getFeed
-      //if (acceptedFeed != null) {
-       // votes ++= addAcceptedFromFeedTags(this.getHandTagsForResource(acceptedFeed).toSet)
-     // }
+    resource match {
+      case n: Newsitem =>
+        n.feed.map { fid =>
+          val taggingsForFeed = handTaggingDAO.getHandTaggingsForResourceId(fid)
+          votes ++= taggingsForFeed.map { tv =>
+           GeneratedTaggingVote(tv.tag, new FeedsTagsTagVoter())  // TODO Test coverage 2nd argument looks like it should be an emun
+          }
+        }
     }
 
     votes
