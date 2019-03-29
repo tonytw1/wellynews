@@ -2,7 +2,7 @@ package nz.co.searchwellington.model.frontend
 
 import java.util.{Date, List, UUID}
 
-import nz.co.searchwellington.model.Website
+import nz.co.searchwellington.model.{User, Website}
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
@@ -22,7 +22,7 @@ case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
                             held: Boolean = false,
                             publisher: Option[Website] = None,
                             acceptedFrom: Option[FrontendFeed] = None,
-                            acceptedByProfilename: String = null,
+                            acceptedBy: Option[User] = None,  // TODO Frontend user
                             accepted: Date = null,
                             image: FrontendImage = null) extends FrontendResource with RssFeedable {
 
@@ -30,24 +30,14 @@ case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
 
   def getAcceptedFromFeedName: String = acceptedFrom.map(_.name).orNull
 
-  def getAcceptedByProfilename: String = {
-    return acceptedByProfilename
-  }
+  def getAcceptedByProfilename: String = acceptedBy.flatMap(_.profilename).orNull
 
-  def getAccepted: Date = {
-    return accepted
-  }
+  def getAccepted: Date = accepted
 
-  override def getAuthor: String = {
-    return getPublisherName
-  }
+  override def getAuthor: String = getPublisherName
 
-  def getFrontendImage: FrontendImage = {
-    return image
-  }
+  def getFrontendImage: FrontendImage = image
 
-  override def getImageUrl: String = {
-    return if (image != null) image.getUrl else null
-  }
+  override def getImageUrl: String = if (image != null) image.getUrl else null
 
 }

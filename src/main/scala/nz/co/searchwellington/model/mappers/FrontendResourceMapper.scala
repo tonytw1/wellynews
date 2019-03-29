@@ -42,6 +42,9 @@ import scala.concurrent.duration.{Duration, SECONDS}
         val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem).
         map(mapTagToFrontendTag).toSeq
 
+        val acceptedByUser = n.acceptedBy.flatMap { uid =>
+          Await.result(mongoRepository.getUserByObjectId(uid), tenSeconds)
+        }
 
         FrontendNewsitem(
           id = n.id,
@@ -52,7 +55,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           description = n.description.getOrElse(null),
           place = place,
           acceptedFrom = feed,
-          acceptedByProfilename = n.acceptedBy.map(a => a.stringify).getOrElse(""),
+          acceptedBy = acceptedByUser,
           accepted = n.accepted.getOrElse(null),
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
