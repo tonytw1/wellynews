@@ -67,7 +67,6 @@ import org.springframework.web.servlet.ModelAndView
         }
 
         val children = tagDAO.loadTagsByParent(tag._id).map(t => frontendResourceMapper.mapTagToFrontendTag(t))
-        log.info("Children: " + children)
         if (children.nonEmpty) {
           import scala.collection.JavaConverters._
           mv.addObject("children", children.asJava)
