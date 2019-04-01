@@ -1,7 +1,7 @@
 package nz.co.searchwellington.tagging
 
-import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
@@ -10,6 +10,7 @@ import org.mockito.Mockito.{mock, when}
 import org.mockito.{Mock, MockitoAnnotations}
 
 import scala.collection.JavaConversions._
+import scala.concurrent.Future
 
 class TaggingReturnsOfficerServiceTest {
 
@@ -17,8 +18,8 @@ class TaggingReturnsOfficerServiceTest {
   private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
   private val educationTag = Tag(name = "education", display_name = "Education")
   private val consultationTag = Tag(name = "consultation", display_name = "Consultation")
-  private val cricketTag = Tag(name = "cricket", display_name = "Cricket")
-  private val sportTag = Tag(name = "sport", display_name = "Sport", parent = Some(cricketTag._id))
+  private val sportTag = Tag(name = "sport", display_name = "Sport")
+  private val cricketTag = Tag(name = "cricket", display_name = "Cricket", parent = Some(sportTag._id))
 
   private val taggingUser = User(name = Some("auser"))
 
@@ -80,6 +81,7 @@ class TaggingReturnsOfficerServiceTest {
       publisher = Some(cricketWellington._id)
     )
 
+    when(mongoRepository.getTagByObjectId(sportTag._id)).thenReturn(Future.successful(Some(sportTag)))
     when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Seq.empty)
     when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellington._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = cricketTag)))
 

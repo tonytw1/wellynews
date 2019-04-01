@@ -1,8 +1,8 @@
 package nz.co.searchwellington.tagging
 
-import nz.co.searchwellington.model.taggingvotes.voters.{FeedsTagsTagVoter, PublishersTagsVoter}
-import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, HandTagging, TaggingVote}
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.model.taggingvotes.voters.{FeedsTagsTagVoter, PublishersTagAncestorTagVoter, PublishersTagsVoter}
+import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.collection.mutable
+import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository) {
@@ -90,18 +91,17 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   private def generatePublisherDerivedTagVotes(resource: Resource): Seq[TaggingVote] = {
-    val publisherTagVotes: Option[Seq[GeneratedTaggingVote]] = resource match {
+    val publisherTagVotes = resource match {
       case p: PublishedResource =>
         p.publisher.map { pid =>
-          handTaggingDAO.getHandTaggingsForResourceId(pid).map { pt =>
-            // TODO publisherTagVotes ++= publisherTag.getAncestors.toList.map(publishersTagAncestor => (new GeneratedTaggingVote(publishersTagAncestor, new PublishersTagAncestorTagVoter)))
-            new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
+          handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { pt =>
+            val publisherAncestorTagVotes = parentsOf(pt.tag).map ( pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
+            publisherAncestorTagVotes :+ new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
           }
         }
       case _ =>
-       None
+        None
     }
-
     publisherTagVotes.getOrElse(Seq.empty)
   }
 
@@ -111,6 +111,16 @@ import scala.concurrent.duration.{Duration, SECONDS}
       // TODO ancestorTagVotes ++= tag.getAncestors.toList.map(ancestorTag => (new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)))
     }
     ancestorTagVotes.toList
+  }
+
+  private def parentsOf(tag: Tag, soFar: Seq[Tag] = Seq.empty): Seq[Tag] = {
+    tag.parent.flatMap { pid =>
+      Await.result(mongoRepository.getTagByObjectId(pid), TenSeconds)
+    }.map { p =>
+      parentsOf(p, soFar :+ p)
+    }.getOrElse {
+      soFar
+    }
   }
 
 }
