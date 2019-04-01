@@ -1,7 +1,7 @@
 package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.taggingvotes.voters.{FeedsTagsTagVoter, PublishersTagAncestorTagVoter, PublishersTagsVoter}
+import nz.co.searchwellington.model.taggingvotes.voters.{FeedTagAncestorTagVoter, FeedsTagsTagVoter, PublishersTagAncestorTagVoter, PublishersTagsVoter}
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -84,11 +84,11 @@ import scala.concurrent.duration.{Duration, SECONDS}
     votes.toList
   }
 
-  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): Seq[TaggingVote] = {
-    // TODO feedTagVotes ++= tag.getAncestors.toList.map(t => {new GeneratedTaggingVote(t, new FeedTagAncestorTagVoter)})
-    feedsHandTags.map { ft =>
-      new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
-    }.toSeq
+  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): Set[TaggingVote] = {
+    feedsHandTags.flatMap { ft =>
+      val feedAncestorTagVotes = parentsOf(ft).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter)) // TODO test coverage
+      feedAncestorTagVotes :+ new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
+    }
   }
 
   private def generatePublisherDerivedTagVotes(resource: Resource): Seq[TaggingVote] = {
