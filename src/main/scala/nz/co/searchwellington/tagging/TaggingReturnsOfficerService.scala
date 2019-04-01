@@ -15,7 +15,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository) {
 
-  private var log: Logger = Logger.getLogger(classOf[TaggingReturnsOfficerService])
+  private var log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
   private val TenSeconds = Duration(10, SECONDS)
 
   def getHandTagsForResource(resource: Resource): Set[Tag] = {
