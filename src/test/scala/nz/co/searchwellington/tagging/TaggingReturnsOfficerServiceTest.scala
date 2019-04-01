@@ -17,10 +17,13 @@ class TaggingReturnsOfficerServiceTest {
   private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
   private val educationTag = Tag(name = "education", display_name = "Education")
   private val consultationTag = Tag(name = "consultation", display_name = "Consultation")
+  private val cricketTag = Tag(name = "cricket", display_name = "Cricket")
+  private val sportTag = Tag(name = "sport", display_name = "Sport", parent = Some(cricketTag._id))
 
   private val taggingUser = User(name = Some("auser"))
 
   private val victoriaUniversity = Website(title = Some("Victoria University"))
+  private val cricketWellington = Website(title = Some("Cricket Wellington"))
 
   private val aroValleyNewsitem = Newsitem(title = Some("Test newsitem"),
     description = Some(".. Student flats in the Aro Valley... Test"),
@@ -68,6 +71,21 @@ class TaggingReturnsOfficerServiceTest {
     val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
 
     assertTrue(indexTags.contains(educationTag))
+  }
+
+  @Test
+  def shouldIncludeAncestorsOfPublishersTags = {
+    val cricketWellingtonNewsitem = Newsitem(title = Some("Cricket"),
+      description = Some("Cricket thing"),
+      publisher = Some(cricketWellington._id)
+    )
+
+    when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Seq.empty)
+    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellington._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = cricketTag)))
+
+    val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem)
+
+    assertTrue(indexTags.contains(sportTag))
   }
 
   @Test
