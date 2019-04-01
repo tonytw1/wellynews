@@ -23,6 +23,7 @@ object UrlBuilderTest {
 }
 
 class UrlBuilderTest {
+
   @Mock private[urls] val siteInformation: SiteInformation = null
   private var urlBuilder: UrlBuilder = null
   private var frontendNewsitem: FrontendNewsitem = null
@@ -41,42 +42,34 @@ class UrlBuilderTest {
   }
 
   @Test
-  @throws[Exception]
   def testTagSearchRefinementsShouldBeOnTheTagPages(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/atag?keywords=something", urlBuilder.getTagSearchUrl(tag, "something"))
 
   @Test
-  @throws[Exception]
   def canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl("Wellington City Council", tag))
 
   @Test
-  @throws[Exception]
   def useLatLongWhenBuildingUrlsToPlacesWithNoOsmId(): Unit = {
     val somewhere = new Place("Somewhere,Far away", new LatLong(3.1, 4.2), null)
     assertEquals(UrlBuilderTest.SITE_URL + "/geotagged?latitude=3.1&longitude=4.2", urlBuilder.getLocationUrlFor(somewhere))
   }
 
   @Test
-  @throws[Exception]
   def locationsShouldBeLinkedByOSMIdIfAvailable(): Unit = {
     val somewhereWithOSMid = new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, OsmType.NODE))
     assertEquals(UrlBuilderTest.SITE_URL + "/geotagged?osm=12345%2FNODE", urlBuilder.getLocationUrlFor(somewhereWithOSMid))
   }
 
-
   @Test
-  @throws[Exception]
   def shouldConstructPageUrlForFrontendResourceFromResourcesUrlWords(): Unit = {
     assertNull(frontendNewsitem.getPublisherName)
     assertEquals(UrlBuilderTest.SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem))
   }
 
   @Test
-  @throws[Exception]
   def canGenerateFrontendPublisherPageUrl(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl("Wellington City Council"))
 
 
   @Test
-  @throws[Exception]
   def urlForFeedsShouldPointToOurFeedPage(): Unit = {
     val frontendFeed = new FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
 
@@ -84,7 +77,6 @@ class UrlBuilderTest {
   }
 
   @Test
-  @throws[Exception]
   def canComposeOsmWebsiteLinkforOsmIds(): Unit = {
     val osmId = new OsmId(24724709, OsmType.WAY)
     assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId))

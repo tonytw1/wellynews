@@ -3,7 +3,7 @@
 						
 		#set($itemUrl = $item.url) 				
 		#if ($item.type == ('F'))
-			#set($itemUrl = $item.urlWords)			
+            #set($itemUrl = $urlBuilder.getFeedUrl($item))
 		#end
 		
 		<h5><a href="$itemUrl">$escape.html($item.name)</a></h5>
@@ -33,8 +33,7 @@
 					<li class="bodytext">$escape.html($snippet)</li>
 				#end
 			#end
-			
-			
+
 			#if ($item.frontendImage) 
 				<p><a href="$item.url"><img src="$item.frontendImage.url" border="0"></a></p>
 			#end
@@ -42,7 +41,7 @@
 			#if ($item.image) 
 				<p><a href="$item.url"><img src="$item.image.url" border="0"></a></p>
 			#end
-											
+
 			#if ($item.type == ('F'))				
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>

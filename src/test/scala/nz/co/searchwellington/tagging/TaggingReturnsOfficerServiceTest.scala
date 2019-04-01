@@ -1,7 +1,7 @@
 package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.model.taggingvotes.HandTagging
-import nz.co.searchwellington.model.{Newsitem, Tag, User, Website}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
@@ -16,6 +16,7 @@ class TaggingReturnsOfficerServiceTest {
   private val placesTag = Tag(name = "places", display_name = "Places")
   private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
   private val educationTag = Tag(name = "education", display_name = "Education")
+  private val consultationTag = Tag(name = "consultation", display_name = "Consultation")
 
   private val taggingUser = User(name = Some("auser"))
 
@@ -64,9 +65,26 @@ class TaggingReturnsOfficerServiceTest {
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = aroValleyTag)))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
 
-    var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
+    val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
 
     assertTrue(indexTags.contains(educationTag))
+  }
+
+  @Test
+  def shouldIncludeFeedsTagsInNewsitemIndexTags = {
+    val publicInputFeed = Feed(title = Some("Wellington City Council - Public Input"))
+
+    val publicInputNewsitem = Newsitem(
+      title = Some("Proposal to Discharge Encumbrance - 79 Dixon Street, Te Aro"),
+      feed = Some(publicInputFeed._id)
+    )
+
+    when(handTaggingDAO.getHandTaggingsForResourceId(publicInputFeed._id)).thenReturn(Seq(new HandTagging(user =taggingUser, tag = consultationTag)))
+    when(handTaggingDAO.getHandTaggingsForResource(publicInputNewsitem)).thenReturn(Seq.empty)
+
+    var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(publicInputNewsitem)
+
+    assertTrue(indexTags.contains(consultationTag))
   }
 
 }
