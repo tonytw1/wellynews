@@ -84,13 +84,11 @@ import scala.concurrent.duration.{Duration, SECONDS}
     votes.toList
   }
 
-  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): List[TaggingVote] = {
-    val feedTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
-    for (tag <- feedsHandTags) {
-      feedTagVotes += new GeneratedTaggingVote(tag, new FeedsTagsTagVoter)
-      // TODO feedTagVotes ++= tag.getAncestors.toList.map(t => {new GeneratedTaggingVote(t, new FeedTagAncestorTagVoter)})
-    }
-    feedTagVotes.toList
+  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): Seq[TaggingVote] = {
+    // TODO feedTagVotes ++= tag.getAncestors.toList.map(t => {new GeneratedTaggingVote(t, new FeedTagAncestorTagVoter)})
+    feedsHandTags.map { ft =>
+      new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
+    }.toSeq
   }
 
   private def generatePublisherDerivedTagVotes(resource: Resource): Seq[TaggingVote] = {
