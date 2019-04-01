@@ -18,14 +18,17 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private var log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
   private val TenSeconds = Duration(10, SECONDS)
 
+  // TODO These are a different responsibility to tagging votes
   def getHandTagsForResource(resource: Resource): Set[Tag] = {
     handTaggingDAO.getHandTaggingsForResource(resource).map { ht => ht.tag}.toSet
   }
 
+  // TODO These are a different responsibility to tagging votes
   def getIndexTagsForResource(resource: Resource): Set[Tag] = {
     compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.tag)).distinct.toSet
   }
 
+  // TODO These are a different responsibility to tagging votes
   def getIndexGeocodeForResource(resource: Resource): Geocode = {
     getGeotagVotesForResource(resource).headOption.map(_.geocode).orNull
   }
