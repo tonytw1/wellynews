@@ -100,4 +100,22 @@ class TaggingReturnsOfficerServiceTest {
     assertTrue(indexTags.contains(consultationTag))
   }
 
+  @Test
+  def shouldIncludeAncestorsOfFeedTags = {
+    val cricketWellingtonNewsFeed = Feed(title = Some("Cricket Wellington news"))
+
+    val cricketWellingtonNewsitem = Newsitem(title = Some("Cricket"),
+      description = Some("Cricket thing"),
+      feed = Some(cricketWellingtonNewsFeed._id)
+    )
+
+    when(mongoRepository.getTagByObjectId(sportTag._id)).thenReturn(Future.successful(Some(sportTag)))
+    when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Seq.empty)
+    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellingtonNewsFeed._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = cricketTag)))
+
+    val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem)
+
+    assertTrue(indexTags.contains(sportTag))
+  }
+
 }

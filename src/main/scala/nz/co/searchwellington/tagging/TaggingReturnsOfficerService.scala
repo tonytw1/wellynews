@@ -49,9 +49,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
       case n: Newsitem =>
         n.feed.map { fid =>
           val taggingsForFeed = handTaggingDAO.getHandTaggingsForResourceId(fid)
-          votes ++= taggingsForFeed.map { tv =>
-           GeneratedTaggingVote(tv.tag, new FeedsTagsTagVoter())  // TODO Test coverage 2nd argument looks like it should be an emun
-          }
+          val feedTags = taggingsForFeed.map(_.tag).toSet
+          votes ++= generateAcceptedFromFeedTags(feedTags)
         }
       case _ =>
     }
@@ -84,9 +83,9 @@ import scala.concurrent.duration.{Duration, SECONDS}
     votes.toList
   }
 
-  private def addAcceptedFromFeedTags(feedsHandTags: Set[Tag]): Set[TaggingVote] = {
+  private def generateAcceptedFromFeedTags(feedsHandTags: Set[Tag]): Set[TaggingVote] = {
     feedsHandTags.flatMap { ft =>
-      val feedAncestorTagVotes = parentsOf(ft).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter)) // TODO test coverage
+      val feedAncestorTagVotes = parentsOf(ft).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
       feedAncestorTagVotes :+ new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
     }
   }
