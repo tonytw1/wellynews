@@ -19,10 +19,10 @@ class ContentUpdateServiceTest {
   private val linkCheckerQueue = mock(classOf[LinkCheckerQueue])
   private val frontendContentUpdater = mock(classOf[FrontendContentUpdater])
 
-  private val resourceObjectId: BSONObjectID = BSONObjectID.generate()
-  private val resourceId: String = UUID.randomUUID().toString
-  private val exitingResource= Newsitem(id = resourceId, page = Some("http://test/abc"))
-  private val updatedResource= Newsitem(id = resourceId , page = Some("http://test/123"))
+  private val resourceObjectId = BSONObjectID.generate()
+  private val resourceId = UUID.randomUUID().toString
+  private val exitingResource = Newsitem(id = resourceId, page = Some("http://test/abc"))
+  private val updatedResource = Newsitem(id = resourceId , page = Some("http://test/123"))
   private val newResource = Website(id = "", page = Some("http://test/abc"))
 
   private var service =  new ContentUpdateService(mongoReposity, linkCheckerQueue, frontendContentUpdater)
