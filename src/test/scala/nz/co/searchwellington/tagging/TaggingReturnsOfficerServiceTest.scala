@@ -5,9 +5,8 @@ import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Mockito.{mock, when}
-import org.mockito.{Mock, MockitoAnnotations}
 
 import scala.collection.JavaConversions._
 import scala.concurrent.Future
@@ -31,16 +30,10 @@ class TaggingReturnsOfficerServiceTest {
     publisher = Some(victoriaUniversity._id)
   )
 
-  @Mock private var handTaggingDAO: HandTaggingDAO = null
-
-  private var taggingReturnsOfficerService: TaggingReturnsOfficerService = null
+  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  @Before
-  def setUp {
-    MockitoAnnotations.initMocks(this)
-    taggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
-  }
+  private val taggingReturnsOfficerService: TaggingReturnsOfficerService =  new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
 
   @Test
   def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
