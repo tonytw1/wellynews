@@ -97,6 +97,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
+  def saveUser(user: User): Future[UpdateWriteResult] = {
+    val id = BSONDocument("_id" -> user._id)
+    log.info("Updating user: " + user._id)
+    resourceCollection.update(id, user, upsert = true)
+  }
+
   def getResourceByUrl(url: String): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("page" -> url))
   }

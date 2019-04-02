@@ -99,6 +99,7 @@ import scala.concurrent.Await
     Await.result(mongoRepository.getUserByTwitterId(twitterUser.getId), TenSeconds)
   }
 
+  // TODO The calling code will persist the mutated user; probably best to return that changed user though.
   override def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): Unit = {
     val twitterUser: twitter4j.User = externalIdentifier.asInstanceOf[twitter4j.User]
     if (user.getProfilename == null || user.isUnlinkedAccount) {

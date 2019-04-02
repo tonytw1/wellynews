@@ -1,10 +1,9 @@
 package nz.co.searchwellington.signin
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-
 import nz.co.searchwellington.controllers.{AnonUserService, LoggedInUserFilter, LoginResourceOwnershipService, UrlStack}
 import nz.co.searchwellington.model.User
-import nz.co.searchwellington.repositories.HibernateBackedUserDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-@Controller class SigninController @Autowired()(loggedInUserFilter: LoggedInUserFilter, userDAO: HibernateBackedUserDAO, anonUserService: AnonUserService, loginResourceOwnershipService: LoginResourceOwnershipService, urlStack: UrlStack, signinHandler: SigninHandler) {
+@Controller class SigninController @Autowired()(loggedInUserFilter: LoggedInUserFilter, mongoRepository: MongoRepository, anonUserService: AnonUserService, loginResourceOwnershipService: LoginResourceOwnershipService, urlStack: UrlStack, signinHandler: SigninHandler) {
 
   private val log = Logger.getLogger(classOf[SigninController])
 
@@ -72,7 +71,7 @@ import org.springframework.web.servlet.view.RedirectView
   private def createNewUser(externalIdentifier: Any): User = {
     val newUser = anonUserService.createAnonUser
     signinHandler.decorateUserWithExternalSigninIdentifier(newUser, externalIdentifier)
-    userDAO.saveUser(newUser)
+    mongoRepository.saveUser(newUser)
     log.info("Created new user with external identifier: " + externalIdentifier.toString)
     newUser
   }
