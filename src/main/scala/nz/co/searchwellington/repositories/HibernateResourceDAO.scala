@@ -24,16 +24,8 @@ import scala.concurrent.duration._
     getAllFeeds.filterNot(f => f.acceptance == "ignore").sortBy(_.getLastRead).reverse
   }
 
-  def getAllWatchlists: Seq[Resource] = {
-    Await.result(mongoRepository.getAllWatchlists(), Duration(10, SECONDS))
-  }
-
   def loadResourceById(resourceId: String): Option[Resource] = {
     Await.result(mongoRepository.getResourceById(resourceId), Duration(1, MINUTES))
-  }
-
-  def loadResourceByUrl(url: String): Option[Resource] = {
-    Await.result(mongoRepository.getResourceByUrl(url), Duration(1, MINUTES))
   }
 
   @Deprecated // UI should be passing id
