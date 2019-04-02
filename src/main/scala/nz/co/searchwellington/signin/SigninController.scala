@@ -30,10 +30,7 @@ import org.springframework.web.servlet.view.RedirectView
     signinHandler.getExternalUserIdentifierFromCallbackRequest(request).map { externalIdentifier =>
       log.info("External user identifier is: " + externalIdentifier.toString)
 
-      val maybeUser = signinHandler.getUserByExternalIdentifier(externalIdentifier)
-      log.info("Maybe user: " + maybeUser)
-
-      val userToSignIn: User = maybeUser.map { user =>
+      val userToSignIn = signinHandler.getUserByExternalIdentifier(externalIdentifier).map { user =>
         // Don't know what this does
         val loggedInUser = loggedInUserFilter.getLoggedInUser
         if (loggedInUserFilter.getLoggedInUser == null) {
@@ -44,7 +41,6 @@ import org.springframework.web.servlet.view.RedirectView
         user
 
       }.getOrElse {
-        // No existing user for this identity.
         createNewUser(externalIdentifier)
       }
 
@@ -67,13 +63,12 @@ import org.springframework.web.servlet.view.RedirectView
 
   private def signinErrorView(request: HttpServletRequest) = new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
 
-  // TODO replace with something meaningful
   private def createNewUser(externalIdentifier: Any): User = {
+    log.info("Creating new user with external identifier: " + externalIdentifier.toString)
     val newUser = anonUserService.createAnonUser
-    signinHandler.decorateUserWithExternalSigninIdentifier(newUser, externalIdentifier)
-    mongoRepository.saveUser(newUser)
-    log.info("Created new user with external identifier: " + externalIdentifier.toString)
-    newUser
+    val withLinkedExternalIdentifier = signinHandler.decorateUserWithExternalSigninIdentifier(newUser, externalIdentifier)
+    mongoRepository.saveUser(withLinkedExternalIdentifier)
+    withLinkedExternalIdentifier
   }
 
 }

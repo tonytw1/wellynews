@@ -99,22 +99,26 @@ import scala.concurrent.Await
     Await.result(mongoRepository.getUserByTwitterId(twitterUser.getId), TenSeconds)
   }
 
-  // TODO The calling code will persist the mutated user; probably best to return that changed user though.
-  override def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): Unit = {
-    val twitterUser: twitter4j.User = externalIdentifier.asInstanceOf[twitter4j.User]
-    if (user.getProfilename == null || user.isUnlinkedAccount) {
-      val twitterScreenName: String = twitterUser.getScreenName()
-
-      //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
-      // user.setProfilename(twitterScreenName) TODO
-      //}
+  override def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): User = {
+    if (user.twitterId.isEmpty) {
+      externalIdentifier match {
+        case twitterUser: twitter4j.User =>
+          user.copy(twitterId = Some(twitterUser.getId))
+        // val twitterScreenName: String = twitterUser.getScreenName()
+        //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
+        // user.setProfilename(twitterScreenName) TODO
+        //}
+        case _ =>
+          user
+      }
+    } else {
+      user
     }
-    // user.setTwitterId(twitterUser.getId) TODO
   }
 
   private def getTwitteUserCredentials(accessToken: AccessToken): Option[twitter4j.User] = {
-    val twitterApi = twitterApiFactory.getOauthedTwitterApiForAccessToken(accessToken.getToken, accessToken.getTokenSecret)
     try {
+      val twitterApi = twitterApiFactory.getOauthedTwitterApiForAccessToken(accessToken.getToken, accessToken.getTokenSecret)
       Some(twitterApi.verifyCredentials)
     } catch {
       case e: TwitterException =>

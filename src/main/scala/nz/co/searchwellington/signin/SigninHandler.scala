@@ -6,12 +6,9 @@ import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 trait SigninHandler {
-  @throws[Exception]
+
   def getLoginView(request: HttpServletRequest, response: HttpServletResponse): ModelAndView
-
   def getExternalUserIdentifierFromCallbackRequest(request: HttpServletRequest): Option[Any]
-
   def getUserByExternalIdentifier(externalIdentifier: Any): Option[User]
-
-  def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): Unit
+  def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): User
 }
