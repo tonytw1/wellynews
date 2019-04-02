@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model._
@@ -15,24 +16,22 @@ import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 @Component class ContentRetrievalService @Autowired()( resourceDAO: HibernateResourceDAO,
-                                                       keywordSearchService: KeywordSearchService,  showBrokenDecisionService: ShowBrokenDecisionService,
+                                                       keywordSearchService: KeywordSearchService,
+                                                       showBrokenDecisionService: ShowBrokenDecisionService,
                                                        tagDAO: TagDAO,  relatedTagsService: RelatedTagsService,
                                                        discoveredFeedsDAO: DiscoveredFeedRepository,
                                                        elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
                                                        frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
-                                                       mongoRepository: MongoRepository) {
+                                                       mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ContentRetrievalService])
 
   val MAX_NEWSITEMS_TO_SHOW = 30
   val ALL_ITEMS = 1000
-
-  private val tenSeconds = Duration(10, SECONDS)
-
+  
   def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     elasticSearchBackedResourceDAO.getGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken)
   }
@@ -64,22 +63,22 @@ import scala.concurrent.{Await, Future}
 
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
     val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
-    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     val query = ResourceQuery(`type` = Some("N"), q = Some(keywords), tags = Some(Set(tag)))
-    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getTagWatchlist(tag: Tag): Seq[FrontendResource] = {
     val taggedWebsites = ResourceQuery(`type` = Some("L"), tags = Some(Set(tag)))
-    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getTaggedFeeds(tag: Tag): Seq[FrontendResource] = {
     val taggedWebsites = ResourceQuery(`type` = Some("F"), tags = Some(Set(tag)))
-    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getTaggedGeotaggedNewsitems(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
@@ -119,16 +118,16 @@ import scala.concurrent.{Await, Future}
   }
 
   def getLatestNewsitems(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getNewsitemsForInterval(interval: Interval): Seq[FrontendResource] = {
     val newsitemsForMonth = ResourceQuery(`type` = Some("N"), interval = Some(interval), maxItems = ALL_ITEMS)
-    Await.result(elasticSearchIndexer.getResources(newsitemsForMonth).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(newsitemsForMonth).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getLatestWebsites(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {
@@ -156,7 +155,7 @@ import scala.concurrent.{Await, Future}
   }
 
   def getArchiveMonths: Seq[ArchiveLink] = {
-    Await.result(elasticSearchIndexer.getArchiveMonths(showBrokenDecisionService.shouldShowBroken), tenSeconds)
+    Await.result(elasticSearchIndexer.getArchiveMonths(showBrokenDecisionService.shouldShowBroken), TenSeconds)
   }
 
   def getArchiveStatistics: Map[String, Int] = {
@@ -177,56 +176,56 @@ import scala.concurrent.{Await, Future}
 
   def getAllFeeds: Seq[FrontendResource] = {
     val allFeeds = ResourceQuery(`type` = Some("F"), maxItems = ALL_ITEMS)
-    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), tenSeconds).sortBy(_.getName)
+    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), TenSeconds).sortBy(_.getName)
   }
 
   def getAllFeedsOrderByLatestItemDate(): Seq[FrontendResource] = {
     val allFeeds = ResourceQuery(`type` = Some("F"))
-    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), tenSeconds) // TODO order
+    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), TenSeconds) // TODO order
   }
 
   def getTaggedNewsitemsCount(tags: Set[Tag]): Long = {
     val query = ResourceQuery(`type` = Some("N"), tags = Some(tags))
-    Await.result(elasticSearchIndexer.getResources(query), tenSeconds)._2      // TODO show broken
+    Await.result(elasticSearchIndexer.getResources(query), TenSeconds)._2      // TODO show broken
   }
 
   def getTaggedNewsitems(tags: Set[Tag], startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
     val query = ResourceQuery(`type` = Some("N"), tags = Some(tags), startIndex = startIndex, maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getTaggedWebsites(tags: Set[Tag], maxItems: Int): Seq[FrontendResource] = { // TODO no usages
     val query = ResourceQuery(`type` = Some("W"), tags = Some(tags), maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getTaggedWebsites(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
     val taggedWebsites = ResourceQuery(`type` = Some("W"), tags = Some(Set(tag)), maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getPublisherNewsitemsCount(publisher: Website): Long = {
     val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
-    Await.result(elasticSearchIndexer.getResources(publisherNewsitems), tenSeconds)._2      // TODO show broken
+    Await.result(elasticSearchIndexer.getResources(publisherNewsitems), TenSeconds)._2      // TODO show broken
   }
 
   def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int): Seq[FrontendResource] = {
     val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher), startIndex = startIndex, maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(publisherNewsitems).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(publisherNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getPublisherFeeds(publisher: Website): Seq[FrontendResource] = {
     val publisherFeeds = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
-    Await.result(elasticSearchIndexer.getResources(publisherFeeds).flatMap(i => fetchByIds(i._1)), tenSeconds)  }
+    Await.result(elasticSearchIndexer.getResources(publisherFeeds).flatMap(i => fetchByIds(i._1)), TenSeconds)  }
 
   def getAllWatchlists: Seq[FrontendResource] = {
     val allWatchlists = ResourceQuery(`type` = Some("L"))
-    Await.result(elasticSearchIndexer.getResources(allWatchlists).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(allWatchlists).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getPublisherWatchlist(publisher: Website): Seq[FrontendResource] = {
     val publisherWatchlist = ResourceQuery(`type` = Some("L"), publisher = Some(publisher))
-    Await.result(elasticSearchIndexer.getResources(publisherWatchlist).flatMap(i => fetchByIds(i._1)), tenSeconds)
+    Await.result(elasticSearchIndexer.getResources(publisherWatchlist).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int): Seq[FrontendResource] = {
