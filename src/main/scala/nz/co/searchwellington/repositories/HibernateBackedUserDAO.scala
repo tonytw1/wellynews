@@ -11,22 +11,9 @@ import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class HibernateBackedUserDAO @Autowired() (mongoRepository: MongoRepository) {
-
-  def getActiveUsers(): Seq[User] = {
-    //sessionFactory.getCurrentSession.createCriteria(classOf[User]).addOrder(Order.asc("profilename")).setCacheable(true).list.asInstanceOf[java.util.List[User]]
-    Seq() // TODO
-  }
-
+  
   def saveUser(user: User) {
     //sessionFactory.getCurrentSession.saveOrUpdate(user)
-  }
-
-  def getUserByProfileName(profilename: String): Option[User] = {
-    Await.result(mongoRepository.getUserByProfilename(profilename),  Duration(10, SECONDS))
-  }
-
-  def getUserByTwitterId(twitterId: Long): Option[User] = {
-    Await.result(mongoRepository.getUserByTwitterId(twitterId),  Duration(10, SECONDS))
   }
 
   def getNextAvailableAnonUserNumber: String = UUID.randomUUID.toString
