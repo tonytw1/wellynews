@@ -1,37 +1,33 @@
 package nz.co.searchwellington.controllers.admin
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.when
 import java.util.{Date, UUID}
 
 import nz.co.searchwellington.filters.{AdminRequestFilter, ResourceParameterFilter, TagsParameterFilter}
-import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.repositories.HibernateResourceDAO
+import nz.co.searchwellington.model.{Feed, Resource, Tag}
 import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.DateTime
-import org.junit.Before
-import org.junit.Test
+import org.junit.Assert.{assertEquals, assertNotNull}
+import org.junit.{Before, Test}
+import org.mockito.Mockito.{mock, verify, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import scala.concurrent.Future
+
 class AdminRequestFilterTest {
-  val resourceDAO = mock(classOf[HibernateResourceDAO])
+  val mongoRepository = mock(classOf[MongoRepository])
   val transportTag = Tag(id = UUID.randomUUID().toString, name = "transport")
   val feed = mock(classOf[Feed])
   val resource = mock(classOf[Resource])
   val tagDAO = mock(classOf[TagDAO])
   val request = new MockHttpServletRequest
 
-  val filter = new AdminRequestFilter(resourceDAO, tagDAO, new ResourceParameterFilter(resourceDAO), new TagsParameterFilter(tagDAO))
+  val filter = new AdminRequestFilter(mongoRepository, tagDAO, new ResourceParameterFilter(mongoRepository), new TagsParameterFilter(tagDAO))
 
   @Before
   def setUp {
     when(tagDAO.loadTagByName("transport")).thenReturn(Some(transportTag))
-    when(resourceDAO.loadResourceById("567")).thenReturn(Some(resource))
+    when(mongoRepository.getResourceById("567")).thenReturn(Future.successful(Some(resource)))
   }
 
   @Test
@@ -109,7 +105,7 @@ class AdminRequestFilterTest {
   def shouldPopulateFeedAttributeFromParameter {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("feed", "a-feed")
-    when(resourceDAO.loadFeedByUrlWords("a-feed")).thenReturn(Some(feed))
+    when(mongoRepository.getFeedByUrlwords("a-feed")).thenReturn(Future.successful(Some(feed)))
 
     filter.loadAttributesOntoRequest(request)
 

@@ -2,21 +2,25 @@ package nz.co.searchwellington.filters
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
-import java.util.regex.{Matcher, Pattern}
-import javax.servlet.http.HttpServletRequest
 
 import com.clutch.dates.StringToTime
 import com.google.common.base.Strings
-import nz.co.searchwellington.model.{Image, Resource}
-import nz.co.searchwellington.repositories.{HibernateResourceDAO, TagDAO}
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.Image
+import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
+
+import scala.concurrent.Await
   
 @Component
-@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS) class AdminRequestFilter @Autowired() (resourceDAO: HibernateResourceDAO, tagDAO: TagDAO, resourceParameterFilter: ResourceParameterFilter, tagsParameterFilter: TagsParameterFilter) {
+@Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+class AdminRequestFilter @Autowired() (mongoRepository: MongoRepository, tagDAO: TagDAO, resourceParameterFilter: ResourceParameterFilter, tagsParameterFilter: TagsParameterFilter) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[AdminRequestFilter])
   private val DATE_FIELD = "date"
@@ -46,8 +50,8 @@ import org.springframework.stereotype.Component
 
     log.debug("Looking for date field")
     if (request.getParameter(DATE_FIELD) != null && !request.getParameter(DATE_FIELD).isEmpty) {
-      val dateString: String = request.getParameter(DATE_FIELD).asInstanceOf[String]
-      val df: SimpleDateFormat = new SimpleDateFormat("dd MMM yyyy")
+      val dateString = request.getParameter(DATE_FIELD).asInstanceOf[String]
+      val df = new SimpleDateFormat("dd MMM yyyy")
       try {
         val date: Date = df.parse(dateString)
         if (date != null) {
@@ -67,7 +71,7 @@ import org.springframework.stereotype.Component
     }
     if (request.getParameter("publisher") != null && !(request.getParameter("publisher") == "")) {
       val publisherUrlWords: String = request.getParameter("publisher")
-      resourceDAO.getPublisherByUrlWords(publisherUrlWords).map { publisher =>
+      Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).map { publisher =>
         request.setAttribute("publisher", publisher)
       }
     }
@@ -77,8 +81,8 @@ import org.springframework.stereotype.Component
     if (request.getParameter("feed") != null) {
       val feedParameter: String = request.getParameter("feed")
       log.debug("Loading feed by url words: " + feedParameter)
-      resourceDAO.loadFeedByUrlWords(feedParameter).map { feed =>
-        log.debug("Found feed: " + feed.title)
+      Await.result(mongoRepository.getFeedByUrlwords(feedParameter), TenSeconds).map { feed =>
+        log.debug("Found feed: " + feed)
         request.setAttribute("feedAttribute", feed)
       }
     }
@@ -93,7 +97,6 @@ import org.springframework.stereotype.Component
   }
 
   private def parseEmbargoDate(dateString: String): Option[Date] = {
-
     val supportedEmbargoDateFormats = Seq(new SimpleDateFormat("dd MMM yyyy HH:mm"), new SimpleDateFormat("HH:mm"))
 
     val parsed = supportedEmbargoDateFormats.flatMap { dateFormat =>
