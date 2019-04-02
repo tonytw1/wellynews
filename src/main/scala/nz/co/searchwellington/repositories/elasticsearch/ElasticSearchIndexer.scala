@@ -50,7 +50,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
       }
 
       // TODO This is silly; just pass in the whole domain object as JSON
-      val fields = Seq (
+      val fields = Seq(
         Some(Type -> r._1.`type`),
         r._1.title.map(t => Title -> t),
         Some(HttpStatus -> r._1.http_status.toString),
@@ -173,7 +173,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
 
     val q = must(withModerationConditions)
 
-    val request = search in Index -> Resources query q sortByFieldDesc Date limit query.maxItems
+    val request = search in Index -> Resources query q sortByFieldDesc Date start query.startIndex limit query.maxItems
 
     client.execute(request).map { r =>
       r.map { rs =>
