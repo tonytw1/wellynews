@@ -1,5 +1,6 @@
 package nz.co.searchwellington.tagging
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.voters._
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
@@ -11,12 +12,11 @@ import org.springframework.stereotype.Component
 
 import scala.collection.mutable
 import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
 
-@Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository) {
+@Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository)
+  extends ReasonableWaits {
 
   private var log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
-  private val TenSeconds = Duration(10, SECONDS)
 
   // TODO These are a different responsibility to tagging votes
   def getHandTagsForResource(resource: Resource): Set[Tag] = {
