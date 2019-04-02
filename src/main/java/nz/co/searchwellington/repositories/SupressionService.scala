@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 
 @Component class SupressionService @Autowired() (suppressionDAO: SupressionDAO) {
 
-  def suppressUrl(urlToSupress: String): Unit = if (!suppressionDAO.isSupressed(urlToSupress)) suppressionDAO.addSuppression(urlToSupress)
+  def suppressUrl(urlToSupress: String): Unit = suppressionDAO.addSuppression(urlToSupress)
 
   def unsupressUrl(url: String): Unit = suppressionDAO.removeSupressionForUrl(url)
   

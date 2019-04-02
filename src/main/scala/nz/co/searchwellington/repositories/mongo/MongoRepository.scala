@@ -6,7 +6,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
-import reactivemongo.api.commands.UpdateWriteResult
+import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
@@ -43,6 +43,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   val db: DefaultDB = connect()
 
   def resourceCollection: BSONCollection = db.collection("resource")
+  def supressionCollection: BSONCollection = db.collection("supression")
   def tagCollection: BSONCollection = db.collection("tag")
   def taggingCollection: BSONCollection = db.collection("resource_tags")
   def userCollection: BSONCollection = db.collection("user")
@@ -58,10 +59,11 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def geocodeReader = Macros.reader[Geocode]
   implicit def feedReader = Macros.reader[Feed]
   implicit def newsitemReader = Macros.reader[Newsitem]
-  implicit def websiteReader = Macros.reader[Website]
-  implicit def watchlistReader = Macros.reader[Watchlist]
+  implicit def supressionReader = Macros.reader[Supression]
   implicit def tagReader = Macros.reader[Tag]
   implicit def userReader = Macros.reader[User]
+  implicit def watchlistReader = Macros.reader[Watchlist]
+  implicit def websiteReader = Macros.reader[Website]
 
   def getResourceById(id: String): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("id" -> id))
@@ -81,10 +83,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def geocodeWriter = Macros.writer[Geocode]
   implicit def feedWriter = Macros.writer[Feed]
   implicit def newsitemWriter = Macros.writer[Newsitem]
-  implicit def websiteWriter = Macros.writer[Website]
-  implicit def watchlistWriter = Macros.writer[Watchlist]
+  implicit def supressionWriter = Macros.writer[Supression]
   implicit def tagWriter = Macros.writer[Tag]
   implicit def userWriter = Macros.writer[User]
+  implicit def watchlistWriter = Macros.writer[Watchlist]
+  implicit def websiteWriter = Macros.writer[Website]
+
 
   def saveResource(resource: Resource): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> resource._id)
@@ -97,10 +101,25 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
+  def saveSupression(suppression: Supression): Future[UpdateWriteResult] = {
+    val id = BSONDocument("_id" -> suppression._id)
+    supressionCollection.update(id, suppression, upsert = true)
+  }
+
+  def removeSupressionFor(url: String): Future[WriteResult] = {
+    val byUrl = BSONDocument("url" -> url)
+    supressionCollection.remove(byUrl)
+  }
+
   def saveUser(user: User): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> user._id)
     log.info("Updating user: " + user._id)
-    resourceCollection.update(id, user, upsert = true)
+    userCollection.update(id, user, upsert = true)
+  }
+
+  def getSupressionByUrl(url: String): Future[Option[Supression]] = {
+    val byUrl = BSONDocument("url" -> url)
+    supressionCollection.find(byUrl).one[Supression]
   }
 
   def getResourceByUrl(url: String): Future[Option[Resource]] = {
