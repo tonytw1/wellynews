@@ -45,7 +45,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           parentsOf(rt).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
         }
         votes ++= ancestorTagVotes  // TODO test coverage
-        votes ++= generatePublisherDerivedTagVotes(resource)
+        votes ++= generatePublisherDerivedTagVotes(p)
       case _ =>
     }
 
@@ -94,19 +94,13 @@ import scala.concurrent.duration.{Duration, SECONDS}
     }
   }
 
-  private def generatePublisherDerivedTagVotes(resource: Resource): Seq[TaggingVote] = {
-    val publisherTagVotes = resource match {
-      case p: PublishedResource =>
-        p.publisher.map { pid =>
-          handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { pt =>
-            val publisherAncestorTagVotes = parentsOf(pt.tag).map ( pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
-            publisherAncestorTagVotes :+ new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
-          }
-        }
-      case _ =>
-        None
-    }
-    publisherTagVotes.getOrElse(Seq.empty)
+  private def generatePublisherDerivedTagVotes(p: PublishedResource): Seq[TaggingVote] = {
+    p.publisher.map { pid =>
+      handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { pt =>
+        val publisherAncestorTagVotes = parentsOf(pt.tag).map(pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
+        publisherAncestorTagVotes :+ new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
+      }
+    }.getOrElse(Seq.empty)
   }
 
   private def parentsOf(tag: Tag, soFar: Seq[Tag] = Seq.empty): Seq[Tag] = {
