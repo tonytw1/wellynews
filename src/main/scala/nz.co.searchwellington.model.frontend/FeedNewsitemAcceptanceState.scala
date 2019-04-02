@@ -1,6 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
-case class FeedNewsitemAcceptanceState(localCopy: String, suppressed: Boolean) {
-  def getLocalCopy: String = localCopy
+import nz.co.searchwellington.model.Resource
+
+case class FeedNewsitemAcceptanceState(localCopy: Option[Resource], suppressed: Boolean) {
+  def getLocalCopy: String = localCopy.map(_.id).orNull
   def isSuppressed: Boolean = suppressed
 }

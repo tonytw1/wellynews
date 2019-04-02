@@ -1,34 +1,30 @@
 package nz.co.searchwellington.feeds
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.model.frontend.{FeedNewsitemAcceptanceState, FeedNewsitemForAcceptance}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.repositories.{HibernateResourceDAO, SupressionDAO}
+import nz.co.searchwellington.repositories.SupressionDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class FeedItemLocalCopyDecorator @Autowired()(resourceDAO: HibernateResourceDAO, suppressionDAO: SupressionDAO,
-                                                         frontendResourceMapper: FrontendResourceMapper) {
+import scala.concurrent.Await
+
+@Component class FeedItemLocalCopyDecorator @Autowired()(mongoRepository: MongoRepository, suppressionDAO: SupressionDAO,
+                                                         frontendResourceMapper: FrontendResourceMapper) extends ReasonableWaits {
 
   def addSupressionAndLocalCopyInformation(feedNewsitems: Seq[Newsitem]): Seq[FeedNewsitemForAcceptance] = {
 
     def acceptanceStateOf(feedNewsitem: Newsitem): FeedNewsitemAcceptanceState = {
-      val localCopyId = feedNewsitem.page.flatMap { u =>
-        resourceDAO.loadResourceByUrl(u).map { lc =>
-          lc.id
-        }
+      val localCopy = feedNewsitem.page.flatMap { u =>
+        Await.result(mongoRepository.getResourceByUrl(u), TenSeconds)
       }
-
-      var isSuppressed = feedNewsitem.page.map { u =>
-        suppressionDAO.isSupressed(u)
-      }.getOrElse(false)
-
-      var localCopyIdAsJava: String = if (localCopyId.isEmpty) null else (localCopyId.get) // TODO not great but velocity views don't undertand Options
-
-      new FeedNewsitemAcceptanceState(localCopyIdAsJava, isSuppressed)
+      val isSuppressed = feedNewsitem.page.exists(suppressionDAO.isSupressed)
+      FeedNewsitemAcceptanceState(localCopy, isSuppressed)
     }
 
-    feedNewsitems.map(f => new FeedNewsitemForAcceptance(frontendResourceMapper.createFrontendResourceFrom(f), acceptanceStateOf(f)))
+    feedNewsitems.map(f => FeedNewsitemForAcceptance(frontendResourceMapper.createFrontendResourceFrom(f), acceptanceStateOf(f)))
   }
 
 }
