@@ -12,43 +12,38 @@ import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.Mockito.when
-import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.bson.BSONObjectID
 
 class TagModelBuilderTest {
-  @Mock var contentRetrievalService: ContentRetrievalService = null
-  @Mock var rssUrlBuilder: RssUrlBuilder = null
-  @Mock var urlBuilder: UrlBuilder = null
-  @Mock var relatedTagsService: RelatedTagsService = null
-  @Mock var rssfeedNewsitemService: RssfeedNewsitemService = null
-  @Mock var feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator = null
-  @Mock var geocodeToPlaceMapper: GeocodeToPlaceMapper = null
-  @Mock var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock var tagDAO: TagDAO = null
-  @Mock var frontendResourceMapper: FrontendResourceMapper = null
 
-  @Mock val newsitem1: FrontendResource = null
-  @Mock val newsitem2: FrontendResource = null
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
+  private val urlBuilder = mock(classOf[UrlBuilder])
+  private val relatedTagsService = mock(classOf[RelatedTagsService])
+  private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
+  private val feedItemLocalCopyDecorator = mock(classOf[FeedItemLocalCopyDecorator])
+  private val geocodeToPlaceMapper = mock(classOf[GeocodeToPlaceMapper])
+  private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val tagDAO = mock(classOf[TagDAO])
+  private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
+  private val newsitem1 = mock(classOf[FrontendResource])
+  private val newsitem2 = mock(classOf[FrontendResource])
 
   private val TAG_DISPLAY_NAME = "Penguins"
 
-  private val parentId: BSONObjectID = BSONObjectID.generate
+  private val parentId = BSONObjectID.generate
   private val tag = Tag(_id = parentId, id = UUID.randomUUID().toString, display_name = TAG_DISPLAY_NAME)
 
-  var request: MockHttpServletRequest = null
-  private var modelBuilder: TagModelBuilder = null
+  val request = new MockHttpServletRequest()
 
+  private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
+    contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
 
-  @Before def setup {
-    MockitoAnnotations.initMocks(this)
-
-    modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
-      contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
-    request = new MockHttpServletRequest
-
+  @Before
+  def setup {
     when(tagDAO.loadTagsByParent(parentId)).thenReturn(Seq())
   }
 
@@ -59,21 +54,18 @@ class TagModelBuilderTest {
   }
 
   @Test
-  @throws(classOf[Exception])
   def isValidIsOneTagIsOnTheRequest {
     request.setAttribute("tags", Seq(tag))
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  @throws(classOf[Exception])
   def isNotValidIfMoreThanOneTagIsOnTheRequest {
     request.setAttribute("tags", Seq(tag, tag))
     assertFalse(modelBuilder.isValid(request))
   }
 
   @Test
-  @throws(classOf[Exception])
   def tagPageHeadingShouldBeTheTagDisplayName {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
@@ -85,7 +77,6 @@ class TagModelBuilderTest {
   }
 
   @Test
-  @throws(classOf[Exception])
   def mainContentShouldBeTagNewsitems {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
