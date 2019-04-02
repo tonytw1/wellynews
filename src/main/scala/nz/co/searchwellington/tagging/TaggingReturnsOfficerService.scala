@@ -51,11 +51,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
     resource match {
       case n: Newsitem =>
-        n.feed.map { fid =>
-          val taggingsForFeed = handTaggingDAO.getHandTaggingsForResourceId(fid)
-          val feedTags = taggingsForFeed.map(_.tag).toSet
-          votes ++= generateAcceptedFromFeedTags(feedTags)
-        }
+        votes ++= generateFeedRelatedTags(n)
       case _ =>
     }
 
@@ -87,19 +83,27 @@ import scala.concurrent.duration.{Duration, SECONDS}
     votes.toList
   }
 
-  private def generateAcceptedFromFeedTags(feedsHandTags: Set[Tag]): Set[TaggingVote] = {
-    feedsHandTags.flatMap { ft =>
-      val feedAncestorTagVotes = parentsOf(ft).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
-      feedAncestorTagVotes :+ new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
-    }
-  }
-
   private def generatePublisherDerivedTagVotes(p: PublishedResource): Seq[TaggingVote] = {
     p.publisher.map { pid =>
       handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { pt =>
         val publisherAncestorTagVotes = parentsOf(pt.tag).map(pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
         publisherAncestorTagVotes :+ new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
       }
+    }.getOrElse(Seq.empty)
+  }
+
+  private def generateFeedRelatedTags(n: Newsitem) = {
+    def generateAcceptedFromFeedTags(feedTags: Set[Tag]): Set[TaggingVote] = {
+      feedTags.flatMap { ft =>
+        val feedAncestorTagVotes = parentsOf(ft).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
+        feedAncestorTagVotes :+ new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
+      }
+    }
+
+    n.feed.map { fid =>
+      val taggingsForFeed = handTaggingDAO.getHandTaggingsForResourceId(fid)
+      val feedTags = taggingsForFeed.map(_.tag).toSet
+      generateAcceptedFromFeedTags(feedTags)
     }.getOrElse(Seq.empty)
   }
 
