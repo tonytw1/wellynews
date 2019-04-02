@@ -1,15 +1,13 @@
 package nz.co.searchwellington.controllers;
 
-import javax.servlet.http.HttpServletRequest;
-
 import nz.co.searchwellington.model.User;
-import nz.co.searchwellington.repositories.HibernateBackedUserDAO;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Component("loggedInUserFilter")
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -18,15 +16,10 @@ public class LoggedInUserFilter {
     private static Logger log = Logger.getLogger(LoggedInUserFilter.class);
 
     private User loggedInUser;
-    private HibernateBackedUserDAO userDAO;
-
-    public LoggedInUserFilter() {
-    }
 
     @Autowired
-    public LoggedInUserFilter(HibernateBackedUserDAO userDAO) {
+    public LoggedInUserFilter() {
         this.loggedInUser = null;
-        this.userDAO = userDAO;
     }
 
     public void loadLoggedInUser(HttpServletRequest request) {
@@ -35,10 +28,9 @@ public class LoggedInUserFilter {
             User sessionUser = (User) request.getSession().getAttribute("user");
             log.info("Found user on session: " + sessionUser.getName());
             loggedInUser = sessionUser;
-            return;
+        } else {
+            loggedInUser = null;
         }
-
-        loggedInUser = null;
     }
 
     public User getLoggedInUser() {
