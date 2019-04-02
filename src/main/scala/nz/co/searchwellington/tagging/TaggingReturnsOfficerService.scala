@@ -39,7 +39,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     val handTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
     votes ++= handTaggings
 
-    val shouldAppearOnPublisherAndParentTagPages = (resource.`type` == "L") || (resource.`type` == "N") || (resource.`type` == "C") || (resource.`type` == "F")
+    val shouldAppearOnPublisherAndParentTagPages = (resource.`type` == "L") || (resource.`type` == "N") || (resource.`type` == "F")
     if (shouldAppearOnPublisherAndParentTagPages) {
       val ancestorTagVotes = getHandTagsForResource(resource).flatMap { rt =>
         parentsOf(rt).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
