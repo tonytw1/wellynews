@@ -7,6 +7,7 @@ import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.HttpClient
 import com.sksamuel.elastic4s.http.search.TermsAggResult
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{ArchiveLink, PublishedResource, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -21,11 +22,9 @@ import scala.concurrent.{Await, Future}
 
 @Component
 class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}") elasticsearchHost: String,
-                                         @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int) {
+                                         @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
-
-  private val tenSeconds = Duration(10000, MILLISECONDS)
 
   private val Index = "searchwellington"
   private val Resources = "resources"
@@ -65,7 +64,7 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
     }
 
-    val result = Await.result(client.execute (bulk(indexDefinitions)), tenSeconds)
+    val result = Await.result(client.execute (bulk(indexDefinitions)), TenSeconds)
     log.info(result)
   }
 
