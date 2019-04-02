@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories.mongo
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -15,10 +16,9 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 @Component
-class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) {
+class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[MongoRepository])
-  private val OneMinute = Duration(1, MINUTES)
 
   def connect(): DefaultDB = {
     log.info("Connecting to Mongo: " + mongoUri)
