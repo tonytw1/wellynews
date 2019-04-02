@@ -2,8 +2,9 @@ package nz.co.searchwellington.feeds
 
 import java.util.Date
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader
-import nz.co.searchwellington.model.Feed
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,16 +12,15 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
 
-@Component class RssfeedNewsitemService @Autowired() (whakaokoFeedReader: WhakaokoFeedReader, mongoRepository: MongoRepository) {
+@Component class RssfeedNewsitemService @Autowired()(whakaokoFeedReader: WhakaokoFeedReader, mongoRepository: MongoRepository)
+  extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
-  private val tenSeconds = Duration(10, SECONDS)
 
   def getFeedItems(): Seq[(FeedItem, Feed)] = {
     whakaokoFeedReader.fetchFeedItems().flatMap { i =>
-      Await.result(mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId), Duration(1, MINUTES)).map { feed =>
+      Await.result(mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId), TenSeconds).map { feed =>
         (i, feed)
       } // TODO log about missing feeds
     }
@@ -49,9 +49,10 @@ import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
     }
   }
 
-  def isUrlInAcceptedFeeds(url: String): Boolean = {  // TODO should be option
-    val autoAcceptFeeds: Seq[Feed] = Await.result(mongoRepository.getAllFeeds, tenSeconds).
-      filter(f => f.getAcceptancePolicy == "accept" || f.getAcceptancePolicy == "accept_without_dates")
+  def isUrlInAcceptedFeeds(url: String): Boolean = { // TODO should be option
+    val autoAcceptFeeds = Await.result(mongoRepository.getAllFeeds, TenSeconds).filter { f =>
+      f.acceptance == FeedAcceptancePolicy.ACCEPT || f.getAcceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES
+    }
     autoAcceptFeeds.exists { feed =>
       getFeedItemsFor(feed).map(i => i._1).getOrElse(Seq.empty).exists(ni => ni.getUrl == url)
     }
