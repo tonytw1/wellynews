@@ -1,24 +1,24 @@
 package nz.co.searchwellington.controllers.profiles
 
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.annotations.Timed
-import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.LoggedInUserFilter
+import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter}
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import nz.co.searchwellington.repositories.HibernateBackedUserDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.transaction.annotation.Transactional
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestMethod
+import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-@Controller class ProfileController @Autowired()(userDAO: HibernateBackedUserDAO, loggerInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, contentRetrievalService: ContentRetrievalService, commonModelObjectsService: CommonModelObjectsService) {
+import scala.concurrent.Await
+
+@Controller class ProfileController @Autowired()(mongoRepository: MongoRepository, loggerInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder,
+                                                 contentRetrievalService: ContentRetrievalService, commonModelObjectsService: CommonModelObjectsService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ProfileController])
 
@@ -27,12 +27,12 @@ import org.springframework.web.servlet.view.RedirectView
     val mv: ModelAndView = new ModelAndView("profiles")
     mv.addObject("heading", "Profiles")
     commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("profiles", userDAO.getActiveUsers)
+    mv.addObject("profiles", Await.result(mongoRepository.getAllUsers, TenSeconds))
     return mv
   }
 
   @RequestMapping(Array("/profile/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView("editProfile")
+    val mv = new ModelAndView("editProfile")
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "Editing your profile")
     val loggedInUser: User = loggerInUserFilter.getLoggedInUser
@@ -40,19 +40,19 @@ import org.springframework.web.servlet.view.RedirectView
     return mv
   }
 
+  // TODO reinstate
   @RequestMapping(value = Array("/profile/edit"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mayByloggedInUser = Option(loggerInUserFilter.getLoggedInUser)
-    mayByloggedInUser.map { loggedInUser =>
-      if (request.getParameter("profilename") != null && isValidNewProfilename(request.getParameter("profilename"))) {
+    Option(loggerInUserFilter.getLoggedInUser).map { loggedInUser =>
+      if (request.getParameter("profilename") != null && isValidAvailableProfilename(request.getParameter("profilename"))) {
         //  loggedInUser.setProfilename(request.getParameter("profilename"))
       }
       //  loggedInUser.setName(request.getParameter("name"))
       // loggedInUser.setBio(request.getParameter("bio"))
       //   loggedInUser.setUrl(request.getParameter("url"))
-      userDAO.saveUser(loggedInUser)
+      mongoRepository.saveUser(loggedInUser)
     }
 
-    return new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(mayByloggedInUser.get.getProfilename)))
+    return new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(Option(loggerInUserFilter.getLoggedInUser).get.getProfilename)))
   }
 
   @RequestMapping(Array("/profiles/*"))
@@ -61,7 +61,7 @@ import org.springframework.web.servlet.view.RedirectView
     def userByPath(path: String): Option[User] = {
       if (path.matches("^/profiles/.*$")) {
         val profilename = path.split("/")(2)
-        userDAO.getUserByProfileName(profilename)
+        Await.result(mongoRepository.getUserByProfilename(profilename), TenSeconds)
       } else {
         None
       }
@@ -86,8 +86,8 @@ import org.springframework.web.servlet.view.RedirectView
     }
   }
 
-  def isValidNewProfilename(profilename: String): Boolean = {
-    profilename.matches("[a-z|A-Z|0-9]+") && userDAO.getUserByProfileName(profilename) == null
+  def isValidAvailableProfilename(profilename: String): Boolean = {
+    profilename.matches("[a-z|A-Z|0-9]+") && Await.result(mongoRepository.getUserByProfilename(profilename), TenSeconds).isEmpty
   }
 
 }
