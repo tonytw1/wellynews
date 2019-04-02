@@ -110,6 +110,11 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     supressionCollection.remove(byUrl)
   }
 
+  def removeUser(user: User): Future[WriteResult] = {
+    val id = BSONDocument("_id" -> user._id)
+    userCollection.remove(id)
+  }
+
   def saveUser(user: User): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> user._id)
     log.info("Updating user: " + user._id)
