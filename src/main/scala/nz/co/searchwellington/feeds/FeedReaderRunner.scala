@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.Await
 
-@Component class FeedReaderRunner @Autowired()(feedReader: FeedReader, userDAO: MongoRepository, resourceDAO: HibernateResourceDAO)
+@Component class FeedReaderRunner @Autowired()(feedReader: FeedReader, mongoRepository: MongoRepository, resourceDAO: HibernateResourceDAO)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
@@ -35,7 +35,7 @@ import scala.concurrent.Await
   }
 
   private def getFeedReaderUser: Option[User] = {
-    val feedReaderUser = Await.result(userDAO.getUserByProfilename(FEED_READER_PROFILE_NAME), TenSeconds)
+    val feedReaderUser = Await.result(mongoRepository.getUserByProfilename(FEED_READER_PROFILE_NAME), TenSeconds)
     if (feedReaderUser.isEmpty) {
       log.warn("Feed reader could not run as no user was found with profile name: " + FEED_READER_PROFILE_NAME)
     }

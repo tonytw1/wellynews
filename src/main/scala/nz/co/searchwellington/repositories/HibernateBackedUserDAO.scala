@@ -11,12 +11,10 @@ import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class HibernateBackedUserDAO @Autowired() (mongoRepository: MongoRepository) {
-  
+
   def saveUser(user: User) {
     //sessionFactory.getCurrentSession.saveOrUpdate(user)
   }
-
-  def getNextAvailableAnonUserNumber: String = UUID.randomUUID.toString
 
   def deleteUser(user: User) {
     // sessionFactory.getCurrentSession.delete(user)
