@@ -1,10 +1,9 @@
 package nz.co.searchwellington.signin
 
-import java.util
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.User
-import nz.co.searchwellington.repositories.HibernateBackedUserDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.twitter.TwitterApiFactory
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -12,17 +11,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
-import twitter4j.Twitter
-import twitter4j.TwitterException
-import twitter4j.auth.AccessToken
-import twitter4j.auth.RequestToken
-import com.google.common.collect.Maps
+import twitter4j.auth.{AccessToken, RequestToken}
+import twitter4j.{Twitter, TwitterException}
 
-@Component class TwitterLoginHandler @Autowired()(var userDAO: HibernateBackedUserDAO, var twitterApiFactory: TwitterApiFactory, val urlBuilder: UrlBuilder) extends SigninHandler {
+import scala.collection.mutable
+import scala.concurrent.Await
+
+@Component class TwitterLoginHandler @Autowired()(mongoRepository: MongoRepository, twitterApiFactory: TwitterApiFactory,
+                                                  urlBuilder: UrlBuilder) extends SigninHandler with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TwitterLoginHandler])
 
-  private var tokens: util.Map[String, RequestToken] = Maps.newConcurrentMap()
+  private var tokens = mutable.Map.empty[String, RequestToken]
 
   @throws[Exception]
   override def getLoginView(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -55,7 +55,7 @@ import com.google.common.collect.Maps
         log.info("oauth_verifier: " + verifier)
         log.info("Looking for request token: " + token)
 
-        Option(tokens.get(token)).flatMap { requestToken =>
+        tokens.get(token).flatMap { requestToken =>
           log.info("Found stored request token: " + requestToken)
           try {
             log.debug("Exchanging request token for access token")
@@ -94,18 +94,19 @@ import com.google.common.collect.Maps
   }
 
   override def getUserByExternalIdentifier(externalIdentifier: Any): Option[User] = {
-    val twitterUser: twitter4j.User = externalIdentifier.asInstanceOf[twitter4j.User]
+    val twitterUser = externalIdentifier.asInstanceOf[twitter4j.User]
     log.info("Looking of local user by twitter id: " + twitterUser.getId)
-    userDAO.getUserByTwitterId(twitterUser.getId)
+    Await.result(mongoRepository.getUserByTwitterId(twitterUser.getId), TenSeconds)
   }
 
   override def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): Unit = {
     val twitterUser: twitter4j.User = externalIdentifier.asInstanceOf[twitter4j.User]
     if (user.getProfilename == null || user.isUnlinkedAccount) {
       val twitterScreenName: String = twitterUser.getScreenName()
-      if (userDAO.getUserByProfileName(twitterScreenName) == null) {
-       // user.setProfilename(twitterScreenName) TODO
-      }
+
+      //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
+      // user.setProfilename(twitterScreenName) TODO
+      //}
     }
     // user.setTwitterId(twitterUser.getId) TODO
   }
