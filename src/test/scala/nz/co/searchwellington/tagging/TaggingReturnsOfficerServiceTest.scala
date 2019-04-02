@@ -8,7 +8,6 @@ import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
-import scala.collection.JavaConversions._
 import scala.concurrent.Future
 
 class TaggingReturnsOfficerServiceTest {
@@ -40,10 +39,11 @@ class TaggingReturnsOfficerServiceTest {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
+    when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     val taggings = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
 
-    assertTrue(taggings.get(0).tag.equals(aroValleyTag)); // TODO not a great assert
+    assertTrue(taggings.head.tag.equals(aroValleyTag)); // TODO not a great assert
   }
 
   @Test
@@ -51,6 +51,7 @@ class TaggingReturnsOfficerServiceTest {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
+    when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
 
@@ -61,6 +62,7 @@ class TaggingReturnsOfficerServiceTest {
   def shouldIncludePublishersTagsInNewsitemsIndexTags = {
     when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = aroValleyTag)))
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
+    when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
 

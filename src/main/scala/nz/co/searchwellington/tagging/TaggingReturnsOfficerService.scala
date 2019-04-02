@@ -1,7 +1,7 @@
 package nz.co.searchwellington.tagging
 
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.taggingvotes.voters.{FeedTagAncestorTagVoter, FeedsTagsTagVoter, PublishersTagAncestorTagVoter, PublishersTagsVoter}
+import nz.co.searchwellington.model.taggingvotes.voters._
 import nz.co.searchwellington.model.taggingvotes.{GeneratedTaggingVote, GeotaggingVote, TaggingVote}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -41,7 +41,10 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
     val shouldAppearOnPublisherAndParentTagPages = (resource.`type` == "L") || (resource.`type` == "N") || (resource.`type` == "C") || (resource.`type` == "F")
     if (shouldAppearOnPublisherAndParentTagPages) {
-      votes ++= generateAncestorTagVotes(resource)
+      val ancestorTagVotes = getHandTagsForResource(resource).flatMap { rt =>
+        parentsOf(rt).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
+      }
+      votes ++= ancestorTagVotes  // TODO test coverage
       votes ++= generatePublisherDerivedTagVotes(resource)
     }
 
@@ -103,14 +106,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
         None
     }
     publisherTagVotes.getOrElse(Seq.empty)
-  }
-
-  private def generateAncestorTagVotes(resource: Resource): List[TaggingVote] = {
-    val ancestorTagVotes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
-    for (tag <- this.getHandTagsForResource(resource)) {
-      // TODO ancestorTagVotes ++= tag.getAncestors.toList.map(ancestorTag => (new GeneratedTaggingVote(ancestorTag, new AncestorTagVoter)))
-    }
-    ancestorTagVotes.toList
   }
 
   private def parentsOf(tag: Tag, soFar: Seq[Tag] = Seq.empty): Seq[Tag] = {
