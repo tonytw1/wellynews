@@ -24,7 +24,7 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
                 override var publisher: Option[BSONObjectID] = None,
                 var acceptance: FeedAcceptancePolicy = FeedAcceptancePolicy.IGNORE,
                 var latestItemDate: Option[Date] = None,
-                var lastRead: Option[Date] = None) extends PublishedResource {
+                var last_read: Option[Date] = None) extends PublishedResource {
 
   def getAcceptancePolicy: FeedAcceptancePolicy = acceptance
 
@@ -32,11 +32,7 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
 
   def getLatestItemDate: Date = latestItemDate.getOrElse(null)
 
-  def setLatestItemDate(latestItemDate: Option[Date]): Unit = this.latestItemDate = latestItemDate
-
-  def getLastRead: Date = lastRead.getOrElse(null)
-
-  def setLastRead(lastRead: Date): Unit = {}
+  def getLastRead: Date = last_read.getOrElse(null)
 
   def isScreenScraped: Boolean = page.map(p => p.startsWith("http://brownbag.wellington.gen.nz/")).getOrElse(false)
 }

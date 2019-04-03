@@ -9,7 +9,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
-import org.joda.time.DateTimeZone
+import org.joda.time.{DateTime, DateTimeZone}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
@@ -36,17 +36,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
     processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
 
-  private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy) = {
+  private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy): Unit = {
 
     def markFeedAsRead(feed: Feed): Unit = {
-      feed.setLatestItemDate(rssfeedNewsitemService.getLatestPublicationDate(feed))
-      log.info("Feed latest item publication date is: " + feed.getLatestItemDate)
-      feed.setLastRead(Calendar.getInstance.getTime)
-      contentUpdateService.update(feed)
+      contentUpdateService.update(feed.copy(
+        last_read = Some(DateTime.now.toDate),
+        latestItemDate = rssfeedNewsitemService.getLatestPublicationDate(feed)
+      ))
     }
 
     try {
-      log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.lastRead.map(dateFormatter.timeSince))
+      log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read.map(dateFormatter.timeSince))
       val feedNewsitems = rssfeedNewsitemService.getFeedItemsFor(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
