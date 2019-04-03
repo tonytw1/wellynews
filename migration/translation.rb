@@ -55,7 +55,7 @@ table "resource" do
 	column "technorati_count", :integer
 	column "geocode_id", :integer, :references => "geocode"
 	column "url_words", :string
-	column "owner", :integer
+	column "owner", :integer, :references => "user"
 	column "twitter_id", :integer, :references => "twitters"
 	column "submitting_twit", :integer
 	column "feed", :integer

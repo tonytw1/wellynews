@@ -22,7 +22,7 @@ class ElasticSearchIT {
 
   private val TenSeconds = Duration(10, SECONDS)
 
-  @Test
+  //@Test
   def canCreateIndexes: Unit = {
     elasticSearchIndexer.createIndexes()
   }

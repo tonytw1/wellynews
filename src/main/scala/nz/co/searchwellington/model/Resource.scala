@@ -20,7 +20,7 @@ trait Resource {
   var held: Boolean
   var url_words: Option[String]
   var geocode: Option[Geocode]
-  var owner: Option[Int]
+  var owner: Option[BSONObjectID]
   val resource_tags: Seq[Tagging]
 
   def setDate(date: Date): Unit = {}  // TODO

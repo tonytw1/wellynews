@@ -130,12 +130,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("page" -> url))
   }
 
-  def getPublisherByUrlWords(publisherUrlWords: String) = {
-
-
-  }
-
-
   def getFeedByWhakaokoSubscription(subscription: String): Future[Option[Feed]] = {
     // TODO needs to be done by the feed service
     getResourceBy(BSONDocument("type" -> "F", "whakaoko_id" -> subscription)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
@@ -240,6 +234,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
         }
       }
     }
+  }
+
+  def getResourcesOwnedBy(owner: User): Future[Seq[Resource]] = {
+    Future.successful(Seq.empty)  // TODO implement
   }
 
   case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])

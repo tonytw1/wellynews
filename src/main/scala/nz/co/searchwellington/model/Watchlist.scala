@@ -19,7 +19,7 @@ case class Watchlist(override val _id: BSONObjectID = BSONObjectID.generate,
                      override var held: Boolean = true,
                      override var url_words: Option[String] = None,
                      override var geocode: Option[Geocode] = None,
-                     override var owner: Option[Int] = None,
+                     override var owner: Option[BSONObjectID] = None,
                      override var publisher: Option[BSONObjectID] = None,
                      override val resource_tags: Seq[Tagging] = Seq()
                     ) extends PublishedResource

@@ -1,42 +1,41 @@
 package nz.co.searchwellington.controllers
 
-import org.mockito.Mockito.verify
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.HandTaggingService
-import nz.co.searchwellington.repositories.HibernateBackedUserDAO
-import nz.co.searchwellington.repositories.HibernateResourceDAO
-import org.junit.Before
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{mock, verify, when}
+
+import scala.concurrent.Future
 
 class LoginResourceOwnershipServiceTest {
-  @Mock val resourceDAO: HibernateResourceDAO = null
-  @Mock val userDAO: HibernateBackedUserDAO = null
-  @Mock val handTaggingService: HandTaggingService = null
-  @Mock val previousOwner: User = null
-  @Mock val newOwner: User = null
-  private var loginResourceOwnershipService: LoginResourceOwnershipService = null
+  private val mongoRepository = mock(classOf[MongoRepository])
+  private val handTaggingService =  mock(classOf[HandTaggingService])
 
-  @Before def setup {
-    MockitoAnnotations.initMocks(this)
-    loginResourceOwnershipService = new LoginResourceOwnershipService(resourceDAO, userDAO, handTaggingService)
-  }
+  private val previousOwner =  mock(classOf[User])
+  private val newOwner =  mock(classOf[User])
+
+  private val resourcesOwnedByUser = Seq.empty  // TODO content
+
+  private val loginResourceOwnershipService = new LoginResourceOwnershipService(mongoRepository, handTaggingService)
 
   @Test
   @throws[Exception]
   def shouldDeletePreviousUserAfterReassigningResources {
-    when(resourceDAO.getOwnedBy(previousOwner, 1000)).thenReturn(Seq())
+    when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
+
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)
-    verify(userDAO).deleteUser(previousOwner)
+
+    verify(mongoRepository).removeUser(previousOwner)
   }
 
   @Test
   @throws[Exception]
   def shouldTransferAllTaggingVotesWhenReassigningUser {
-    when(resourceDAO.getOwnedBy(previousOwner, 1000)).thenReturn(Seq())
+    when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
+
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)
+
     verify(handTaggingService).transferVotes(previousOwner, newOwner)
   }
 
