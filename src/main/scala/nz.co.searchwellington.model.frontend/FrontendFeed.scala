@@ -21,7 +21,8 @@ case class FrontendFeed(id: String,
                         held: Boolean = false,
                         latestItemDate: Date = null,
                         acceptancePolicy: FeedAcceptancePolicy = null,
-                        lastRead: Option[Date] = None
+                        lastRead: Option[Date] = None,
+                        publisher: Option[FrontendWebsite] = None
                        ) extends FrontendResource {
 
   def getLatestItemDate: Date = {
@@ -35,5 +36,7 @@ case class FrontendFeed(id: String,
   def getLastRead: Date = {
     lastRead.orNull
   }
+
+  def getPublisher: FrontendWebsite = publisher.orNull
 
 }

@@ -65,6 +65,13 @@ import scala.concurrent.duration.{Duration, SECONDS}
         )
 
       case f: Feed =>
+
+        val publisher = f.publisher.flatMap { pid =>
+          Await.result(mongoRepository.getResourceByObjectId(pid), tenSeconds)
+        }
+
+        val frontendPublisher = publisher.map(p => createFrontendResourceFrom(p).asInstanceOf[FrontendWebsite])
+
         FrontendFeed(
           id = f.id,
           `type` = f.`type`,
@@ -76,7 +83,9 @@ import scala.concurrent.duration.{Duration, SECONDS}
           place = place,
           latestItemDate = f.getLatestItemDate,
           tags = frontendTagsFor(f).asJava,
-          lastRead = f.last_read
+          lastRead = f.last_read,
+          acceptancePolicy = f.acceptance,
+          publisher = frontendPublisher
         )
 
       case l: Watchlist =>

@@ -18,9 +18,10 @@
 		<ul>
 			#if ($editPermissionService.canEdit($feed))
 				<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($feed)">Edit</a></li>
-				<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($feed)">Delete</a></li>			
+				<li class="admin"><a href="$adminUrlBuilder.getResourceDeleteUrl($feed)">Delete</a></li>
+                $feed.acceptancePolicy
 			#end
-					
+
 			#if ($editPermissionService.canAcceptAllFrom($feed))			
 				<li class="admin"><a href="$adminUrlBuilder.getAcceptAllFromFeed($feed)">Accept all</a></li>
 			#end
@@ -30,15 +31,14 @@
 			<p>This feed was last read $dateFormatter.timeSince($feed.lastRead)</p>
 		#end
 		
-		#if($feed.isScreenScraped()) 
+		#if($feed.isScreenScraped())
 			#if($feed.publisher) 
 				<p>This feed is produced by screen scraping a page from the <a href="$feed.publisher.url">$feed.publisher.name</a> site.</p>
 			#else		
 				<p>This feed is provided by screen scraping a third parties site.</p>
 			#end		
 		#else
-		
-			#if($feed.publisher) 
+			#if($feed.publisher)
 				<p>This feed is published by: <a href="$urlBuilder.getPublisherUrl($feed.publisher.name)">$feed.publisher.name</a>.</p>
 			#else
 				<p>This feed is provided by a third party.</p>
