@@ -23,10 +23,9 @@ public class LoggedInUserFilter {
     }
 
     public void loadLoggedInUser(HttpServletRequest request) {
-        log.debug("Looking for logged in user in session");
         if (request.getSession().getAttribute("user") != null) {
             User sessionUser = (User) request.getSession().getAttribute("user");
-            log.info("Found user on session: " + sessionUser.getName());
+            log.debug("Found user on session: " + sessionUser.getName());
             loggedInUser = sessionUser;
         } else {
             loggedInUser = null;
