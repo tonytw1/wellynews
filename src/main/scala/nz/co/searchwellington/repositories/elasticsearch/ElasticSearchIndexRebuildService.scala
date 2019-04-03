@@ -66,9 +66,7 @@ import scala.concurrent.{Await, Future}
 
   private def getIndexTagIdsFor(resource: Resource): Future[Set[String]] = {
     val tags = taggingReturnsOfficerService.getIndexTagsForResource(resource)
-    val tagIds = tags.map(_._id.stringify)
-    log.info("Tags: " + resource._id + " " + resource.`type` + ": " + tagIds.mkString(", "))
-    Future.successful(tagIds)
+    Future.successful(tags.map(_._id.stringify))
     /*
     def resolveParentsFor(tag: Tag, result: Seq[Tag]): Future[Seq[Tag]] = {
       tag.parent.map { p =>
