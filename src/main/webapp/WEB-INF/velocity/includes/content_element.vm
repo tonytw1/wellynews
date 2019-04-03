@@ -42,8 +42,7 @@
 				<p><a href="$item.url"><img src="$item.image.url" border="0"></a></p>
 			#end
 
-            $item.type
-			#if ($item.type == ('F'))				
+			#if ($item.type == ('F'))
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
 				#end				
