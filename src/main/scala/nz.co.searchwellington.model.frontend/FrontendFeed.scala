@@ -19,7 +19,10 @@ case class FrontendFeed(id: String,
                         owner: String = null,
                         place: Place = null,
                         held: Boolean = false,
-                        latestItemDate: Date = null, acceptancePolicy: FeedAcceptancePolicy = null) extends FrontendResource {
+                        latestItemDate: Date = null,
+                        acceptancePolicy: FeedAcceptancePolicy = null,
+                        lastRead: Option[Date] = None
+                       ) extends FrontendResource {
 
   def getLatestItemDate: Date = {
     latestItemDate
@@ -27,6 +30,10 @@ case class FrontendFeed(id: String,
 
   def getAcceptancePolicy: FeedAcceptancePolicy = {
     acceptancePolicy
+  }
+
+  def getLastRead: Date = {
+    lastRead.orNull
   }
 
 }

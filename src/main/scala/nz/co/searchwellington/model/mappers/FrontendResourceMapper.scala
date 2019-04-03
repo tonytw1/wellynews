@@ -76,6 +76,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           place = place,
           latestItemDate = f.getLatestItemDate,
           tags = frontendTagsFor(f).asJava,
+          lastRead = f.lastRead
         )
 
       case l: Watchlist =>

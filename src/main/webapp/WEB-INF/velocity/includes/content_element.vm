@@ -1,6 +1,6 @@
 	
 	<li>
-						
+
 		#set($itemUrl = $item.url) 				
 		#if ($item.type == ('F'))
             #set($itemUrl = $urlBuilder.getFeedUrl($item))
@@ -42,6 +42,7 @@
 				<p><a href="$item.url"><img src="$item.image.url" border="0"></a></p>
 			#end
 
+            $item.type
 			#if ($item.type == ('F'))				
 				#if ($item.lastRead)
 					<li class="lastread">Last Read: $dateFormatter.timeSince($item.lastRead)</li>
@@ -49,8 +50,7 @@
 				#if ($editPermissionService.canEdit($item))
 					#if ($item.acceptancePolicy)
 						<li class="acceptance">$item.acceptancePolicy</li>
-					#end						
-																	
+					#end
 					#if ($item.acceptanceErrors && $item.acceptanceErrors.size() > 0)				
 						<ul>
 						#foreach($error in $item.acceptanceErrors)
