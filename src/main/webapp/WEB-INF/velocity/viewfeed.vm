@@ -26,8 +26,6 @@
 			#end
 		</ul>
 
-		<p>LAST READ: $feed.lastRead</p>
-		
 		#if ($feed.lastRead)
 			<p>This feed was last read $dateFormatter.timeSince($feed.lastRead)</p>
 		#end
@@ -62,26 +60,23 @@
 
             <div class="section" id="maincontent">
                 <ul class="flat_list">
-					#foreach($item in $main_content)
+					#foreach($feeditem in $main_content)
                         <li class="content_item">
                             <ul class="main_content_item">
+                                #set($item = $feeditem.newsitem)
+                                #parse("includes/content_element.vm")
 
-                            #if ($item.localCopy)
-                            					<li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($item.localCopy)">edit local copy</a></li>
-                            				#else
-                            					<li class="admin"><a href="$adminUrlBuilder.getFeednewsItemAcceptUrl($item.feed, $item)">accept</a></li>
-                            				#end
+                                #if ($feeditem.localCopy)
+                                    <li class="admin"><a href="$adminUrlBuilder.getResourceEditUrl($feeditem.localCopy)">edit local copy</a></li>
+                                #else
+                                    <li class="admin"><a href="$adminUrlBuilder.getFeednewsItemAcceptUrl($feed, $feeditem.newsitem)">accept</a></li>
+                                #end
 
-                            				#if ($item.suppressed)
-                            					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemUnsuppressUrl($item)">unsuppress</a></li>
-                            				#else
-                            					<li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemSuppressUrl($item)">suppress</a></li>
-                            				#end
-
-								#set($item = $item.getFeednewsitem())
-								#parse("includes/content_element.vm")
-
-
+                                #if ($item.suppressed)
+                                    <li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemUnsuppressUrl($item)">unsuppress</a></li>
+                                #else
+                                    <li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemSuppressUrl($item)">suppress</a></li>
+                                #end
 
                             </ul>
                         </li>

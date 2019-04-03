@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers.admin
 
 import com.google.common.base.Strings
-import nz.co.searchwellington.model.SiteInformation
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.{Resource, SiteInformation}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -13,6 +13,10 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation, urlBuilder:
 
   def getResourceEditUrl(resource: FrontendResource): String = {
     siteInformation.getUrl + "/edit?resource=" + resource.getId
+  }
+
+  def getResourceEditUrl(resource: Resource): String = {
+    siteInformation.getUrl + "/edit?resource=" + resource.id
   }
 
   def getResourceEditUrl(resourceId: Int): String = {
@@ -35,20 +39,20 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation, urlBuilder:
     siteInformation.getUrl + "/" + resource.getUrlWords + "/viewsnapshot"
   }
 
-  def getFeednewsItemAcceptUrl(feed: FrontendFeed, feednewsitem: FeedItem): String = {
-    siteInformation.getUrl + "/edit/accept?feed=" + feed.getUrlWords + "&url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
+  def getFeednewsItemAcceptUrl(feed: FrontendFeed, newsitem: FrontendNewsitem): String = {
+    siteInformation.getUrl + "/edit/accept?feed=" + feed.urlWords + "&url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
   def getAcceptAllFromFeed(feed: FrontendFeed): String = {
     siteInformation.getUrl + "/admin/feed/acceptall?feed=" + feed.getUrlWords
   }
 
-  def getFeedNewsitemSuppressUrl(feednewsitem: FeedItem): String = {
-    siteInformation.getUrl + "/supress/supress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
+  def getFeedNewsitemSuppressUrl(newsitem: FrontendNewsitem): String = {
+    siteInformation.getUrl + "/supress/supress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
-  def getFeedNewsitemUnsuppressUrl(feednewsitem: FeedItem): String = {
-    siteInformation.getUrl + "/supress/unsupress?url=" + UrlParameterEncoder.encode(feednewsitem.getUrl)
+  def getFeedNewsitemUnsuppressUrl(newsitem: FrontendNewsitem): String = {
+    siteInformation.getUrl + "/supress/unsupress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
   def getPublisherAutoGatherUrl(resource: FrontendWebsite): String = {

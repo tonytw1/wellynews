@@ -1,13 +1,13 @@
 package nz.co.searchwellington.model.frontend
 
-case class FeedNewsitemForAcceptance(feedNewsitem: FrontendResource, acceptanceState: FeedNewsitemAcceptanceState) {
+import nz.co.searchwellington.model.Resource
 
-  def getFeednewsitem: FrontendResource = {
-    feedNewsitem
-  }
+case class FeedNewsitemForAcceptance(newsitem: FrontendNewsitem, localCopy: Option[Resource], suppressed: Boolean) {
 
-  def getAcceptanceState: FeedNewsitemAcceptanceState = {
-    acceptanceState
-  }
+  def getNewsitem: FrontendResource = newsitem
+
+  def getLocalCopy: Resource = localCopy.orNull
+
+  def isSupressed: Boolean = suppressed
 
 }
