@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
+import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
@@ -244,9 +245,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   {
     log.info("Ensuring indexes")
-    //log.info("taggings.resource_id index result: " + Await.result(taggingCollection.indexesManager.ensure(Index(Seq("resource_id" -> IndexType.Ascending), name = Some("resource_id"), unique = false)), Duration(10000, MILLISECONDS)))
-    //log.info("resources.id index result: " + Await.result(resourceCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
-    //log.info("tag.id index result: " + Await.result(tagCollection.indexesManager.ensure(Index(Seq("id" -> IndexType.Ascending), name = Some("id"), unique = true)), Duration(10000, MILLISECONDS)))
+    log.info("resource type/url_words index result: " +
+      Await.result(resourceCollection.indexesManager.ensure(
+        Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"),
+        unique = false)), OneMinute))
   }
 
 }
