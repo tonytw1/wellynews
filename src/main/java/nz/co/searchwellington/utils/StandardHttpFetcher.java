@@ -69,7 +69,6 @@ public class StandardHttpFetcher implements HttpFetcher {    // TODO migrate to 
         return userAgent;
     }
 
-
     private HttpClient setupClient() {
         final HttpClient client = new HttpClient();
         if (!Strings.isNullOrEmpty(userAgent)) {
