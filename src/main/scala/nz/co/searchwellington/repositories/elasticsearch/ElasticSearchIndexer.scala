@@ -60,8 +60,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
     }
 
-    val result = Await.result(client.execute (bulk(indexDefinitions)), TenSeconds)
-    log.info(result)
+    Await.result(client.execute (bulk(indexDefinitions)), TenSeconds)
   }
 
   def deleteResource(id: BSONObjectID): Future[Either[RequestFailure, RequestSuccess[DeleteResponse]]] = {
@@ -84,7 +83,8 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
             field(Description) typed TextType analyzer StandardAnalyzer,
             field(Tags) typed KeywordType,
             field(Publisher) typed KeywordType,
-            field(Held) typed BooleanType
+            field(Held) typed BooleanType,
+            field(Owner) typed KeywordType
           )
           )
       }
@@ -107,7 +107,6 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     val request = (search in Index / Resources query allNewsitems) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
-
       val resultBuckets = r.map { rs =>
         val publisherAgg: TermsAggResult = rs.result.aggregations.terms("publisher")
         publisherAgg.buckets.map(b => b.key)

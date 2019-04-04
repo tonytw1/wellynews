@@ -78,7 +78,6 @@
 		
 	<div class="tag_main_content">
 		<h3>Submissions</h3>
-		
 		#if ($submitted.size() > 0) 
 			<ul class="flat_list">
 				#foreach($item in $submitted)

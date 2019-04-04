@@ -53,8 +53,10 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       mv.addObject("heading", "User profile")
       commonModelObjectsService.populateCommonLocal(mv)
       mv.addObject("profileuser", user)
-      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user))
-      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user))
+
+      import scala.collection.JavaConverters._
+      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user).asJava)
+      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user).asJava)
       mv
 
     }.getOrElse {
