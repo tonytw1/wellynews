@@ -40,6 +40,7 @@ class ProfileControllerTest {
     response = new MockHttpServletResponse
   }
 
+  /*
   @Test
   @throws[Exception]
   def allActiveProfilesShouldBeShownOnProfilesIndex {
@@ -59,6 +60,7 @@ class ProfileControllerTest {
     assertEquals(existingUsersSubmittedItems, mv.getModel.get("submitted"))
     assertEquals(existingUsersTaggedItems, mv.getModel.get("tagged"))
   }
+  */
 
   @Test
   @throws[Exception]

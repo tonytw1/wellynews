@@ -22,15 +22,6 @@ import scala.concurrent.Await
 
   private val log = Logger.getLogger(classOf[ProfileController])
 
-  @RequestMapping(Array("/profiles"))
-  @Timed(timingNotes = "") def all(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView("profiles")
-    mv.addObject("heading", "Profiles")
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("profiles", Await.result(mongoRepository.getAllUsers, TenSeconds))
-    return mv
-  }
-
   @RequestMapping(Array("/profile/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("editProfile")
     commonModelObjectsService.populateCommonLocal(mv)
@@ -53,37 +44,6 @@ import scala.concurrent.Await
     }
 
     return new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(Option(loggerInUserFilter.getLoggedInUser).get.getProfilename)))
-  }
-
-  @RequestMapping(Array("/profiles/*"))
-  @Timed(timingNotes = "") def view(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-
-    def userByPath(path: String): Option[User] = {
-      if (path.matches("^/profiles/.*$")) {
-        val profilename = path.split("/")(2)
-        Await.result(mongoRepository.getUserByProfilename(profilename), TenSeconds)
-      } else {
-        None
-      }
-    }
-
-    userByPath(request.getPathInfo).map { user =>
-      var mv = new ModelAndView("viewProfile")
-      val loggedInUser: User = loggerInUserFilter.getLoggedInUser
-      if (loggedInUser != null && loggedInUser.getId == user.getId) {
-        mv = new ModelAndView("profile")
-      }
-      mv.addObject("heading", "User profile")
-      commonModelObjectsService.populateCommonLocal(mv)
-      mv.addObject("profileuser", user)
-      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user))
-      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user))
-      mv
-
-    }.getOrElse {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      null
-    }
   }
 
   def isValidAvailableProfilename(profilename: String): Boolean = {
