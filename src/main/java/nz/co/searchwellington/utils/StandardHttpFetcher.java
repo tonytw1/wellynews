@@ -37,7 +37,7 @@ public class StandardHttpFetcher implements HttpFetcher {    // TODO migrate to 
     }
 
     public HttpFetchResult httpFetch(String url) {
-        log.info("Attempting fetch of url: " + url);
+        log.info("Attempting fetch of url: " + url + " using " + this.getClass().getCanonicalName());
         HttpClient client = setupClient();
         try {
             HttpMethod method = new GetMethod(url);
@@ -73,10 +73,12 @@ public class StandardHttpFetcher implements HttpFetcher {    // TODO migrate to 
     private HttpClient setupClient() {
         final HttpClient client = new HttpClient();
         if (!Strings.isNullOrEmpty(userAgent)) {
+            log.info("Setting http client user agent to: " + userAgent);
             client.getParams().setParameter(HttpClientParams.USER_AGENT, userAgent);
         }
 
         if (!Strings.isNullOrEmpty(httpProxyHostname)) {
+            log.info("Setting http proxy to: " + httpProxyHostname + ":" + httpProxyPort);
             client.getHostConfiguration().setProxy(httpProxyHostname, httpProxyPort);
         }
 

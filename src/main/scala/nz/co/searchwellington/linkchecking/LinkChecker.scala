@@ -14,7 +14,8 @@ import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService, httpFetcher: HttpFetcher) {
+@Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
+                                           httpFetcher: HttpFetcher) {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
