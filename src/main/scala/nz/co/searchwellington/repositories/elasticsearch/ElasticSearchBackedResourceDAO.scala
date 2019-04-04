@@ -206,18 +206,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Seq.empty //TODO
   }
 
-  def getCommentedNewsitems(maxItems: Int, shouldShowBroken: Boolean, b: Boolean, startIndex: Int): Seq[FrontendResource] = {
-    Seq.empty //TODO
-  }
-
-  def getCommentedNewsitemsCount(shouldShowBroken: Boolean): Int = {
-    return 0
-  }
-
-  def getCommentedTags(shouldShowBroken: Boolean): Seq[Tag] = {
-    Seq.empty //TODO
-  }
-
   def getTwitteredNewsitems(startIndex: Int, maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
    /* val builder = searchRequestBuilder(twitternMentionedNewsitemsQuery(shouldShowBroken)).setSize(maxItems)
     addDateDescendingOrder(builder)

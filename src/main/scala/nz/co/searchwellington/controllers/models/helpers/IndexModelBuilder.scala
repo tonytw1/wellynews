@@ -54,19 +54,6 @@ import scala.collection.JavaConverters._
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
 
-    val COMMENTED_NEWSITEMS = "commented_newsitems"
-
-    def populateCommentedNewsitems(mv: ModelAndView) {
-      val recentCommentedNewsitems = contentRetrievalService.getCommentedNewsitems(NUMBER_OF_COMMENTED_TO_SHOW + 1, 0).toList
-      if (recentCommentedNewsitems.size <= NUMBER_OF_COMMENTED_TO_SHOW) {
-        mv.addObject(COMMENTED_NEWSITEMS, recentCommentedNewsitems)
-      }
-      else {
-        mv.addObject(COMMENTED_NEWSITEMS, recentCommentedNewsitems.take(NUMBER_OF_COMMENTED_TO_SHOW))
-        mv.addObject("commented_newsitems_moreurl", "comment")
-      }
-    }
-
     def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
       if (loggedInUser != null) {
         val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
@@ -80,7 +67,6 @@ import scala.collection.JavaConverters._
     }
 
     populateSecondaryJustin(mv)
-    populateCommentedNewsitems(mv)
     populateGeocoded(mv)
     populateFeatured(mv)
     populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)

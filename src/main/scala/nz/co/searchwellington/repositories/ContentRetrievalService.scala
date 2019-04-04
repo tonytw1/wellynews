@@ -101,18 +101,6 @@ import scala.concurrent.{Await, Future}
     elasticSearchBackedResourceDAO.getGeotaggedTags(showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getCommentedNewsitems(maxItems: Int, startIndex: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getCommentedNewsitems(maxItems, showBrokenDecisionService.shouldShowBroken, true, startIndex)
-  }
-
-  def getCommentedNewsitemsCount: Int = {
-    elasticSearchBackedResourceDAO.getCommentedNewsitemsCount(showBrokenDecisionService.shouldShowBroken)
-  }
-
-  def getCommentedTags: Seq[Tag] = {
-    elasticSearchBackedResourceDAO.getCommentedTags(showBrokenDecisionService.shouldShowBroken)
-  }
-
   def getLatestNewsitems: Seq[FrontendResource] = {
     getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW, 1)
   }
