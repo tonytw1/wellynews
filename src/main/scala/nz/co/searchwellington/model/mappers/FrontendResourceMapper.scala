@@ -144,7 +144,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
     */
  // }
 
-
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
     FrontendWebsite(
       id = website.id,
@@ -155,7 +154,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
         geocodeToPlaceMapper.mapGeocodeToPlace(g)
       }.orNull,
       tags = frontendTagsFor(website).asJava,
-      httpStatus = website.http_status
+      httpStatus = website.http_status,
+      date = website.date.orNull
     )
   }
 
