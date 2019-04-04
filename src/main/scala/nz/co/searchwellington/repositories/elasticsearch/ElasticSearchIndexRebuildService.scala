@@ -39,13 +39,10 @@ import scala.concurrent.{Await, Future}
     var i = 0
     batches.foreach { batch =>
       log.info("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
-
       val start = DateTime.now
-      log.info("Loading batch")
-      val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
 
+      val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
-        log.info("Loaded batch; applying tags")
         Future.sequence(rs.map { r =>
           getIndexTagIdsFor(r).map { tagIds =>
             (r, tagIds)
