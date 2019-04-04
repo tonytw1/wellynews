@@ -35,28 +35,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def compileTaggingVotes(resource: Resource): Seq[TaggingVote] = {
-    val votes: mutable.MutableList[TaggingVote] = mutable.MutableList.empty
-
     val handTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
-    votes ++= handTaggings
 
-    resource match {
+    val publisherVotes = resource match {
       case p: PublishedResource =>
         val ancestorTagVotes = getHandTagsForResource(resource).flatMap { rt =>
           Await.result(parentsOf(rt), TenSeconds).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
         }
-        votes ++= ancestorTagVotes  // TODO test coverage
-        votes ++= generatePublisherDerivedTagVotes(p)
+        ancestorTagVotes ++ generatePublisherDerivedTagVotes(p) // TODO test coverage for ancestor tag votes
       case _ =>
+        Seq.empty
     }
 
-    resource match {
+
+    val newsitemSpecificVotes = resource match {
       case n: Newsitem =>
-        votes ++= generateFeedRelatedTags(n)
+        generateFeedRelatedTags(n)
       case _ =>
+        Seq.empty
     }
 
-    votes
+    handTaggings ++ publisherVotes ++ newsitemSpecificVotes
   }
 
   def getGeotagVotesForResource(resource: Resource): Seq[GeotaggingVote] = {
