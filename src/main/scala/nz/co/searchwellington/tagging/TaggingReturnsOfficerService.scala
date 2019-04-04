@@ -37,15 +37,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def compileTaggingVotes(resource: Resource): Seq[TaggingVote] = {
     val handTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
 
-    val publisherVotes: Seq[TaggingVote] = resource match {
+    val publisherVotes: Future[Seq[TaggingVote]] = resource match {
       case p: PublishedResource =>
-        val ancestorTagVotes: Seq[GeneratedTaggingVote] = getHandTagsForResource(resource).flatMap { rt =>
-          Await.result(parentsOf(rt), TenSeconds).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
-        }
-        val votes  = ancestorTagVotes ++ generatePublisherDerivedTagVotes(p)
-        votes // TODO test coverage for ancestor tag votes
+        val ancestorTagVotes: Future[Seq[GeneratedTaggingVote]] = Future.sequence {
+          getHandTagsForResource(resource).map { rt =>
+            parentsOf(rt).map(parents => parents.map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter())))
+          }
+        }.map(_.flatten)
+        Future.sequence(Seq(ancestorTagVotes, Future.successful(generatePublisherDerivedTagVotes(p)))).map(_.flatten) // TODO test coverage for ancestor tag votes
+
       case _ =>
-        Seq.empty
+        Future.successful(Seq.empty)
     }
 
     val newsitemSpecificVotes: Seq[TaggingVote] = resource match {
@@ -55,7 +57,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         Seq.empty
     }
 
-    handTaggings ++ publisherVotes ++ newsitemSpecificVotes
+    handTaggings ++ Await.result(publisherVotes, TenSeconds) ++ newsitemSpecificVotes
   }
 
   def getGeotagVotesForResource(resource: Resource): Seq[GeotaggingVote] = {
