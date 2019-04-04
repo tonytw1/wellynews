@@ -14,6 +14,7 @@ import scala.concurrent.Await
   private val log = Logger.getLogger(classOf[SupressionDAO])
 
   def addSuppression(urlToSupress: String) {
+    log.info("Supression url: " + urlToSupress)
     Await.result(mongoRepository.saveSupression(Supression(url = urlToSupress)), TenSeconds)
   }
 

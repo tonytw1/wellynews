@@ -72,7 +72,7 @@
                                     <li class="admin"><a href="$adminUrlBuilder.getFeednewsItemAcceptUrl($feed, $feeditem.newsitem)">accept</a></li>
                                 #end
 
-                                #if ($item.suppressed)
+                                #if ($feeditem.isSupressed())
                                     <li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemUnsuppressUrl($item)">unsuppress</a></li>
                                 #else
                                     <li class="admin"><a href="$adminUrlBuilder.getFeedNewsitemSuppressUrl($item)">suppress</a></li>
