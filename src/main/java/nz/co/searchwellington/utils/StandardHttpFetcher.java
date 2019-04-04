@@ -24,13 +24,13 @@ public class StandardHttpFetcher implements HttpFetcher {    // TODO migrate to 
 
     private final String userAgent;
     private final String httpProxyHostname;
-    private final int httpProxyPort;
+    private final Integer httpProxyPort;
 
     @Autowired
     public StandardHttpFetcher(
             @Value("#{config['http.useragent']}") String userAgent,
             @Value("#{config['http.proxy.hostname']}") String httpProxyHostname,
-            @Value("#{config['http.proxy.port']}") int httpProxyPort) {
+            @Value("#{config['http.proxy.port']}") Integer httpProxyPort) {
         this.userAgent = userAgent;
         this.httpProxyHostname = httpProxyHostname;
         this.httpProxyPort = httpProxyPort;
@@ -77,7 +77,7 @@ public class StandardHttpFetcher implements HttpFetcher {    // TODO migrate to 
             client.getParams().setParameter(HttpClientParams.USER_AGENT, userAgent);
         }
 
-        if (!Strings.isNullOrEmpty(httpProxyHostname)) {
+        if (!Strings.isNullOrEmpty(httpProxyHostname) && httpProxyPort != null) {
             log.info("Setting http proxy to: " + httpProxyHostname + ":" + httpProxyPort);
             client.getHostConfiguration().setProxy(httpProxyHostname, httpProxyPort);
         }
