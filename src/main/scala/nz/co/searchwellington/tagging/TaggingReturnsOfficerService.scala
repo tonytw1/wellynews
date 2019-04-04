@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.collection.mutable
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository)
   extends ReasonableWaits {
@@ -42,7 +43,7 @@ import scala.concurrent.Await
     resource match {
       case p: PublishedResource =>
         val ancestorTagVotes = getHandTagsForResource(resource).flatMap { rt =>
-          parentsOf(rt).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
+          Await.result(parentsOf(rt), TenSeconds).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
         }
         votes ++= ancestorTagVotes  // TODO test coverage
         votes ++= generatePublisherDerivedTagVotes(p)
@@ -87,7 +88,7 @@ import scala.concurrent.Await
   private def generatePublisherDerivedTagVotes(p: PublishedResource): Seq[TaggingVote] = {
     p.publisher.map { pid =>
       handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { pt =>
-        val publisherAncestorTagVotes = parentsOf(pt.tag).map(pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
+        val publisherAncestorTagVotes = Await.result(parentsOf(pt.tag), TenSeconds).map(pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
         publisherAncestorTagVotes :+ new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
       }
     }.getOrElse(Seq.empty)
@@ -96,7 +97,7 @@ import scala.concurrent.Await
   private def generateFeedRelatedTags(n: Newsitem) = {
     def generateAcceptedFromFeedTags(feedTags: Set[Tag]): Set[TaggingVote] = {
       feedTags.flatMap { ft =>
-        val feedAncestorTagVotes = parentsOf(ft).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
+        val feedAncestorTagVotes = Await.result(parentsOf(ft), TenSeconds).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
         feedAncestorTagVotes :+ new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
       }
     }
@@ -108,13 +109,17 @@ import scala.concurrent.Await
     }.getOrElse(Seq.empty)
   }
 
-  private def parentsOf(tag: Tag, soFar: Seq[Tag] = Seq.empty): Seq[Tag] = {
-    tag.parent.flatMap { pid =>
-      Await.result(mongoRepository.getTagByObjectId(pid), TenSeconds)
-    }.map { p =>
-      parentsOf(p, soFar :+ p)
+  private def parentsOf(tag: Tag, soFar: Seq[Tag] = Seq.empty): Future[Seq[Tag]] = {
+    tag.parent.map { pid =>
+      mongoRepository.getTagByObjectId(pid).flatMap { pto =>
+        pto.map { p =>
+          parentsOf(p, soFar :+ p)
+        }.getOrElse {
+          Future.successful(soFar)
+        }
+      }
     }.getOrElse {
-      soFar
+      Future.successful(soFar)
     }
   }
 
