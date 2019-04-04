@@ -15,7 +15,7 @@ import scala.concurrent.{Await, Future}
 class ElasticSearchIT {
 
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
-  val elasticSearchIndexer = new ElasticSearchIndexer("10.0.45.11", 32400)
+  val elasticSearchIndexer = new ElasticSearchIndexer(???, "10.0.45.11", 32400)
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
 
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
@@ -115,7 +115,7 @@ class ElasticSearchIT {
 
   @Test
   def canCountArchiveTypes: Unit = {
-    val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts(true), TenSeconds)
+    val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts, TenSeconds)
 
     val typesFound = typeCounts.keys.toSet
     assertEquals(Set("W", "N", "F", "L"), typesFound)

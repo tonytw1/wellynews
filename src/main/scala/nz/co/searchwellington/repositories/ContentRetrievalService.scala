@@ -147,7 +147,7 @@ import scala.concurrent.{Await, Future}
   }
 
   def getArchiveCounts: Map[String, Long] = {
-    Await.result(elasticSearchIndexer.getArchiveCounts(showBrokenDecisionService.shouldShowBroken), TenSeconds)
+    Await.result(elasticSearchIndexer.getArchiveCounts, TenSeconds)
   }
 
   def getCommentedNewsitemsForTag(tag: Tag, maxNewsitems: Int, startIndex: Int): Seq[FrontendResource] = {

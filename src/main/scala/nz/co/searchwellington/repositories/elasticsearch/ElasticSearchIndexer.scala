@@ -7,8 +7,8 @@ import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.HttpClient
 import com.sksamuel.elastic4s.http.search.TermsAggResult
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
-import com.sksamuel.elastic4s.searches.queries.QueryDefinition
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model.{ArchiveLink, PublishedResource, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
@@ -22,8 +22,10 @@ import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
 @Component
-class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}") elasticsearchHost: String,
-                                         @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int) extends ReasonableWaits {
+class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrokenDecisionService,
+                                         @Value("#{config['elasticsearch.host']}") elasticsearchHost: String,
+                                         @Value("#{config['elasticsearch.port']}") elasticsearchPort: Int)
+  extends ElasticFields with ModeratedQueries with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexer])
 
@@ -31,15 +33,6 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
   private val Resources = "resources"
 
   val client = HttpClient(ElasticsearchClientUri(elasticsearchHost, elasticsearchPort))
-
-  val Title = "title"
-  val Type = "type"
-  val HttpStatus = "http_status"
-  val Description = "description"
-  val Date = "date"
-  val Tags = "tags"
-  val Publisher = "publisher"
-  val Held = "held"
 
   def updateMultipleContentItems(resources: Seq[(Resource, Set[String])]): Unit = {
     log.info("Index batch of size: " + resources.size)
@@ -146,42 +139,10 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
     }.map(_.filter(_.getCount > 0).reverse) // TODO can do this in elastic query?
   }
 
-  def getArchiveCounts(shouldShowBroken: Boolean): Future[Map[String, Long]] = {
-
-    log.info("Getting archive counts with should show broken: " + shouldShowBroken)
-    def withModeration(query: QueryDefinition): QueryDefinition = {
-      if (!shouldShowBroken) {
-        /*
-          if (!shouldShowBroken) {
-            val contentIsOk: TermQueryBuilder = QueryBuilders.termQuery(HTTP_STATUS, "200")
-            val contentIsApproved: TermQueryBuilder = QueryBuilders.termQuery(HELD, false)
-            val contentIsPublic = QueryBuilders.boolQuery.must(contentIsOk).must(contentIsApproved)
-            val userCanViewContent = QueryBuilders.boolQuery.minimumNumberShouldMatch(1).should(contentIsPublic)
-            if (loggedInUserFilter.getLoggedInUser != null) {
-              userCanViewContent.should(QueryBuilders.termQuery(OWNER, loggedInUserFilter.getLoggedInUser.getProfilename))
-            }
-            query.must(userCanViewContent)
-          }
-        */
-        val contentIsOk = termQuery(HttpStatus, 200)
-        val contentIsApproved = termQuery(Held, false)
-        val contentIsPublic = bool {
-          must(contentIsOk, contentIsApproved)
-        }
-        // val isContentOwner = ???
-        bool {
-          must(query, contentIsPublic)
-        }
-      } else {
-        query
-      }
-    }
-
+  def getArchiveCounts: Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
-    val withModerationClause = withModeration(everyThing)
-
     val aggs = Seq(termsAgg("type", "type"))
-    val request = search in Index / Resources query withModerationClause limit 0 aggregations (aggs)
+    val request = search in Index / Resources query withModeration(everyThing) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
       val resultBuckets = r.map { rs =>
