@@ -17,5 +17,5 @@ case class FrontendWebsite(id: String,
                            tags: List[FrontendTag] = null,
                            handTags: List[FrontendTag] = null,
                            owner: String = null,
-                           place: Place = null,
+                           place: Option[Place] = None,
                            held: Boolean = false) extends FrontendResource

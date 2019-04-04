@@ -19,7 +19,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   val tags: List[FrontendTag]
   val handTags: List[FrontendTag]
   val owner: String
-  val place: Place
+  val place: Option[Place]
   val held: Boolean
 
   def getId: String = id
@@ -72,16 +72,16 @@ trait FrontendResource extends RssFeedable with Serializable {
     urlWords
   }
 
-  def getPlace: Place = {
-    place
-  }
+  def getPlace: Place = place.orNull
 
   def getLocation: String = {
-    if (place != null && place.getLatLong != null) {
-      place.getLatLong.getLatitude + "," + place.getLatLong.getLongitude
-    } else {
-      null
-    }
+    place.flatMap { p =>
+      if (p.getLatLong != null) {
+        Some(p.getLatLong.getLatitude + "," + p.getLatLong.getLongitude)
+      } else {
+        None
+      }
+    }.orNull
   }
 
   def isHeld: Boolean = {
@@ -93,7 +93,9 @@ trait FrontendResource extends RssFeedable with Serializable {
   }
 
   def getLatLong: LatLong = {
-    if (place != null) place.getLatLong else null
+    place.map { p =>
+      p.getLatLong
+    }.orNull
   }
 
   def getWebUrl: String = {

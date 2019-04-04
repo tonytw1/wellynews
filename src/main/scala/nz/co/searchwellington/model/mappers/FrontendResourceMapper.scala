@@ -8,6 +8,7 @@ import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Await
@@ -20,12 +21,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private val tenSeconds = Duration(10, SECONDS)
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
-    val contentItemGeocode: Geocode = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
-    val place = if (contentItemGeocode != null) {
-      geocodeToPlaceMapper.mapGeocodeToPlace(contentItemGeocode)
-    } else {
-      null
-    }
+    val place = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem).map(geocodeToPlaceMapper.mapGeocodeToPlace)
 
     contentItem match {
       case n: Newsitem =>
@@ -152,7 +148,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
       urlWords = website.url_words.orNull,
       place = website.geocode.map { g =>
         geocodeToPlaceMapper.mapGeocodeToPlace(g)
-      }.orNull,
+      },
       tags = frontendTagsFor(website).asJava,
       httpStatus = website.http_status,
       date = website.date.orNull

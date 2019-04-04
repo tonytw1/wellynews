@@ -29,8 +29,8 @@ import scala.concurrent.Await
   }
 
   // TODO These are a different responsibility to tagging votes
-  def getIndexGeocodeForResource(resource: Resource): Geocode = {
-    getGeotagVotesForResource(resource).headOption.map(_.geocode).orNull
+  def getIndexGeocodeForResource(resource: Resource): Option[Geocode] = {
+    getGeotagVotesForResource(resource).headOption.map(_.geocode)
   }
 
   def compileTaggingVotes(resource: Resource): Seq[TaggingVote] = {
@@ -58,29 +58,30 @@ import scala.concurrent.Await
     votes
   }
 
-  def getGeotagVotesForResource(resource: Resource): List[GeotaggingVote] = {
-    val votes: mutable.MutableList[GeotaggingVote] = mutable.MutableList.empty
+  def getGeotagVotesForResource(resource: Resource): Seq[GeotaggingVote] = {
 
-    resource.geocode.map { g =>
-      if (g.isValid) {
-        // TODO votes += new GeotaggingVote(g, resource.getOwner, 1)
-      }
+    val resourceGeocodeVote: Option[GeotaggingVote] = resource.geocode.map { g =>
+      new GeotaggingVote(g, new PublishersTagsVoter, 1) // TODO resource owner as the voter
     }
 
-    if ((resource.`type` == "N") && (resource.asInstanceOf[PublishedResource]).getPublisher != null) {
-      /*
-      val publisher: Website = (resource.asInstanceOf[PublishedResource]).getPublisher
-      if (publisher.getGeocode != null && publisher.getGeocode.isValid) {
-        log.debug("Adding publisher geotag: " + publisher.getGeocode.toString)
-        votes += new GeotaggingVote(publisher.getGeocode, new PublishersTagsVoter, 1)
-      }
-      */
+    val publisherGeocodeVote = resource match {
+      case pr: PublishedResource =>
+        pr.publisher.flatMap { p =>
+          Await.result(mongoRepository.getResourceByObjectId(p), TenSeconds).flatMap { publisher =>
+            publisher.geocode.map { pg =>
+              log.debug("Adding publisher geotag: " + pg)
+              new GeotaggingVote(pg, new PublishersTagsVoter, 1)
+            }
+          }
+        }
+      case _ =>
+        None
     }
 
     // TODO val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
     // TODO votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
 
-    votes.toList
+    Seq(resourceGeocodeVote, publisherGeocodeVote).flatten.filter(gv => gv.geocode.isValid)
   }
 
   private def generatePublisherDerivedTagVotes(p: PublishedResource): Seq[TaggingVote] = {
