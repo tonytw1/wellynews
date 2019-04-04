@@ -55,12 +55,7 @@ import scala.concurrent.duration._
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("publisher", publisher)).list.asInstanceOf[List[PublishedResource]]
     Seq() // TODO
   }
-
-  @SuppressWarnings(Array("unchecked")) def getOwnedBy(owner: User, maxItems: Int): Seq[Resource] = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("owner", owner)).addOrder(Order.desc("date")).addOrder(Order.desc("id")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
-    Seq() // TODO
-  }
-
+  
   @SuppressWarnings(Array("unchecked")) def getRecentUntaggedNewsitems: Seq[Newsitem] = {
     //return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.isEmpty("tags")).add(Restrictions.eq("httpStatus", 200)).addOrder(Order.desc("date")).setMaxResults(12).setCacheable(true).list.asInstanceOf[List[Newsitem]]
     Seq() // TODO

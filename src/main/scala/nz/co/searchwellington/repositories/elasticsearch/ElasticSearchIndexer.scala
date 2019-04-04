@@ -53,7 +53,8 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         r._1.date.map(d => Date -> new DateTime(d)),
         Some(Tags, r._2),
         publisher.map(p => Publisher -> p.stringify),
-        Some(Held -> r._1.held)
+        Some(Held -> r._1.held),
+        r._1.owner.map(o => Owner -> o.stringify)
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
@@ -189,6 +190,9 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         val titleMatches = matchQuery(Title, qt).boost(5)
         val descriptionMatches = matchQuery(Description, qt)
         should(titleMatches, descriptionMatches)
+      },
+      query.owner.map { o =>
+        termQuery(Owner, o.stringify)
       }
     ).flatten
 

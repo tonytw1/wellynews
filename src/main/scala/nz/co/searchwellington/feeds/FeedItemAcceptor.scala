@@ -15,7 +15,8 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     val newsitem = feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feeditem._1, feeditem._2)
     newsitem.copy(
       accepted = Some(DateTime.now.toDate),
-      acceptedBy = Some(feedReadingUser._id)
+      acceptedBy = Some(feedReadingUser._id),
+      owner = Some(feedReadingUser._id)
     )
   }
 

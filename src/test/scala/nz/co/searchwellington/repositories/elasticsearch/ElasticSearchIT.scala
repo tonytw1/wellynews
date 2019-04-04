@@ -1,5 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
+import nz.co.searchwellington.controllers.ShowBrokenDecisionService
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Feed, Newsitem, Resource}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -7,6 +9,7 @@ import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -14,15 +17,17 @@ import scala.concurrent.{Await, Future}
 
 class ElasticSearchIT {
 
+  private val showBrokenDecisionService = mock(classOf[ShowBrokenDecisionService])
+
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
-  val elasticSearchIndexer = new ElasticSearchIndexer(???, "10.0.45.11", 32400)
+  val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, "10.0.45.11", 32400)
   val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
 
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
   private val TenSeconds = Duration(10, SECONDS)
 
-  //@Test
+  @Test
   def canCreateIndexes: Unit = {
     elasticSearchIndexer.createIndexes()
   }

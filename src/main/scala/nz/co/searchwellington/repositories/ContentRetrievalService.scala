@@ -118,6 +118,15 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
+  def getOwnedBy(loggedInUser: User): Seq[FrontendResource] = {
+    Await.result(elasticSearchIndexer.getResources(
+      ResourceQuery(
+        maxItems = MAX_NEWSITEMS_TO_SHOW,
+        owner = Some(loggedInUser._id)
+      )
+    ).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  }
+
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {
     relatedTagsService.getKeywordSearchFacets(keywords, null) // TODO This is abit odd - it's the only facet one which comes through here.
   }
@@ -239,15 +248,6 @@ import scala.concurrent.{Await, Future}
 
   def getDiscoveredFeeds: Seq[DiscoveredFeed] = {
     discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds
-  }
-
-  def getOwnedBy(loggedInUser: User): Seq[FrontendResource] = {
-    var owned: Seq[FrontendResource] = Seq()
-    import scala.collection.JavaConversions._
-    for (resource <- resourceDAO.getOwnedBy(loggedInUser, MAX_NEWSITEMS_TO_SHOW)) {
-      owned.add(frontendResourceMapper.createFrontendResourceFrom(resource))
-    }
-    owned
   }
 
   def getTaggedBy(user: User): Seq[FrontendResource] = {

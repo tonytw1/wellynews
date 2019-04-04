@@ -10,5 +10,6 @@ trait ElasticFields {
   val Tags = "tags"
   val Publisher = "publisher"
   val Held = "held"
+  val Owner = "owner"
 
 }

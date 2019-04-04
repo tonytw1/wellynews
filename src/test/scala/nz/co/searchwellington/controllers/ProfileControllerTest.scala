@@ -19,17 +19,17 @@ class ProfileControllerTest {
   private val INVALID_PROFILE_NAME: String = "tony-tw1"
 
   private val mongoRepository = mock(classOf[MongoRepository])
-  @Mock private[profiles] val loggedInUserFilter: LoggedInUserFilter = null
-  @Mock private[profiles] val urlBuilder: UrlBuilder = null
-  @Mock private[profiles] val contentRetrievalService: ContentRetrievalService = null
-  @Mock private[profiles] val commonModelObjectsService: CommonModelObjectsService = null
-  @Mock private[profiles] val existingUser: User = null
+  @Mock private val loggedInUserFilter: LoggedInUserFilter = null
+  @Mock private val urlBuilder: UrlBuilder = null
+  @Mock private val contentRetrievalService: ContentRetrievalService = null
+  @Mock private val commonModelObjectsService: CommonModelObjectsService = null
+  @Mock private val existingUser: User = null
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
   private val allActiveUsers: Seq[User] = null
   private var controller: ProfileController = null
-  @Mock private[profiles] val existingUsersSubmittedItems: Seq[FrontendResource] = null
-  @Mock private[profiles] val existingUsersTaggedItems: Seq[FrontendResource] = null
+  @Mock private val existingUsersSubmittedItems: Seq[FrontendResource] = null
+  @Mock private val existingUsersTaggedItems: Seq[FrontendResource] = null
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
