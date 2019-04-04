@@ -143,7 +143,7 @@ import scala.concurrent.{Await, Future}
   }
 
   def getArchiveMonths: Seq[ArchiveLink] = {
-    Await.result(elasticSearchIndexer.getArchiveMonths(showBrokenDecisionService.shouldShowBroken), TenSeconds)
+    Await.result(elasticSearchIndexer.getArchiveMonths, TenSeconds)
   }
 
   def getArchiveCounts: Map[String, Long] = {

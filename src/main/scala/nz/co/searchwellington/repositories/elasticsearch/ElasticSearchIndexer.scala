@@ -89,7 +89,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     }
   }
 
-  def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeRequest(query)
+  def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query)
 
   def getAllPublishers(): Future[Seq[String]] = {
     val allNewsitems = matchQuery(Type, "N")
@@ -116,10 +116,10 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     }
   }
 
-  def getArchiveMonths(shouldShowBroken: Boolean): Future[Seq[ArchiveLink]] = {
+  def getArchiveMonths: Future[Seq[ArchiveLink]] = {
     val allNewsitems = matchQuery(Type, "N")
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-    val request = search in Index / Resources query allNewsitems limit 0 aggregations (aggs)
+    val request = search in Index / Resources query withModeration(allNewsitems) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
       val resultBuckets = r.map { rs =>
@@ -162,7 +162,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     }
   }
 
-  private def executeRequest(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = {
+  private def executeResourceQuery(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = {
     var conditions = Seq(
       query.`type`.map(t => matchQuery(Type, t)),
       query.tags.map { tags =>
@@ -185,11 +185,9 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       }
     ).flatten
 
-    val withModerationConditions = conditions :+ matchQuery(Held, false)
+    val q = must(conditions)
 
-    val q = must(withModerationConditions)
-
-    val request = search in Index -> Resources query q sortByFieldDesc Date start query.startIndex limit query.maxItems
+    val request = search in Index -> Resources query withModeration(q) sortByFieldDesc Date start query.startIndex limit query.maxItems
 
     client.execute(request).map { r =>
       r.map { rs =>
