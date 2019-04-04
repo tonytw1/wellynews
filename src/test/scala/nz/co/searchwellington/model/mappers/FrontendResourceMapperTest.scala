@@ -31,7 +31,7 @@ class FrontendResourceMapperTest {
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
-    val newsitem = new Newsitem(id = "123")
+    val newsitem = new Newsitem(id = "123", http_status = 200)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
     when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set(tag))
@@ -41,6 +41,7 @@ class FrontendResourceMapperTest {
 
     assertEquals(newsitem.id, frontendNewsitem.id)
     assertEquals("some-url-words", frontendNewsitem.getUrlWords)
+    assertEquals(200, frontendNewsitem.httpStatus)
   }
 
   @Test

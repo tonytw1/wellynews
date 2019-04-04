@@ -61,11 +61,11 @@ import scala.concurrent.duration.{Duration, SECONDS}
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
           publisher = publisher.map(_.asInstanceOf[Website]),
           tags = frontendTagsFor(n).asJava,
-          handTags = handTags.asJava
+          handTags = handTags.asJava,
+          httpStatus = n.http_status
         )
 
       case f: Feed =>
-
         val publisher = f.publisher.flatMap { pid =>
           Await.result(mongoRepository.getResourceByObjectId(pid), tenSeconds)
         }
@@ -85,7 +85,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
           tags = frontendTagsFor(f).asJava,
           lastRead = f.last_read,
           acceptancePolicy = f.acceptance,
-          publisher = frontendPublisher
+          publisher = frontendPublisher,
+          httpStatus = f.http_status
         )
 
       case l: Watchlist =>
@@ -97,7 +98,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
           date = l.date.getOrElse(null),
           description = l.description.getOrElse(null),
           place = place,
-          tags = frontendTagsFor(l).asJava
+          tags = frontendTagsFor(l).asJava,
+          httpStatus = l.http_status
         )
 
       case w: Website =>
@@ -152,7 +154,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
       place = website.geocode.map { g =>
         geocodeToPlaceMapper.mapGeocodeToPlace(g)
       }.orNull,
-      tags = frontendTagsFor(website).asJava
+      tags = frontendTagsFor(website).asJava,
+      httpStatus = website.http_status
     )
   }
 
