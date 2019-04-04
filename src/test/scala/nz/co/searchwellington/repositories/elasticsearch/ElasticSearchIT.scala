@@ -5,12 +5,12 @@ import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.assertTrue
+import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class ElasticSearchIT {
 
@@ -111,6 +111,14 @@ class ElasticSearchIT {
     assertTrue(newsitems.forall{n =>
       interval.contains(n.date.get.getTime)
     })
+  }
+
+  @Test
+  def canCountArchiveTypes: Unit = {
+    val typeCounts = Await.result(elasticSearchIndexer.getArchiveStatistics(true), TenSeconds)
+
+    val typesFound = typeCounts.keys.toSet
+    assertEquals(Set("W", "N", "F", "L"), typesFound)
   }
 
   private def queryForResources(query: ResourceQuery): Seq[Resource] = {

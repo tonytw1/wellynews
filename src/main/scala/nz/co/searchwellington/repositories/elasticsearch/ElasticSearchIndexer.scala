@@ -123,10 +123,9 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
   }
 
   def getArchiveMonths(shouldShowBroken: Boolean): Future[Seq[ArchiveLink]] = {
-    val newsitems = matchQuery(Type, "N")
+    val allNewsitems = matchQuery(Type, "N")
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-
-    val request = (search in Index / Resources query newsitems) limit 0 aggregations (aggs)
+    val request = search in Index / Resources query allNewsitems limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
       val resultBuckets = r.map { rs =>
@@ -144,6 +143,29 @@ class ElasticSearchIndexer  @Autowired()(@Value("#{config['elasticsearch.host']}
           Seq()
       }
     }.map(_.filter(_.getCount > 0).reverse) // TODO can do this in elastic query?
+  }
+
+  def getArchiveStatistics(shouldShowBroken: Boolean): Future[Map[String, Long]] = {
+    val everyThing = matchAllQuery()  // TODO show broken
+    val aggs = Seq(termsAgg("type", "type"))
+    val request = search in Index / Resources query everyThing limit 0 aggregations (aggs)
+
+    client.execute(request).map { r =>
+      val resultBuckets = r.map { rs =>
+        val typeAgg = rs.result.aggregations.terms("type")
+        typeAgg.buckets
+      }
+      resultBuckets match {
+        case Right(buckets) => {
+          buckets.map { b =>
+            (b.key, b.docCount)
+          }.toMap
+        }
+        case Left(f) =>
+          log.error(f)
+          Map.empty[String, Long]
+      }
+    }
   }
 
   private def executeRequest(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = {

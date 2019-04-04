@@ -169,17 +169,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Seq.empty //TODO
   }
 
-  def getArchiveStatistics(shouldShowBroken: Boolean): Map[String, Int] = {
-    /*
-    val searchResponse = searchRequestBuilder(QueryBuilders.boolQuery()).addFacet(FacetBuilders.termsFacet(TYPE).field(TYPE)).execute.actionGet
-    val facet = searchResponse.getFacets.getFacets.get(TYPE).asInstanceOf[TermsFacet]
-    facet.getEntries.asInstanceOf[Seq[_ <: Entry]].map { entry =>
-      (entry.getTerm.string, entry.getCount)
-    }.toMap
-    */
-    Map()
-  }
-
   def getCommentedNewsitemsForTag(tag: Tag, shouldShowBroken: Boolean, maxNewsitems: Int, startIndex: Int): Seq[FrontendResource] = {
     Seq.empty // TODO
   }

@@ -146,8 +146,8 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getArchiveMonths(showBrokenDecisionService.shouldShowBroken), TenSeconds)
   }
 
-  def getArchiveStatistics: Map[String, Int] = {
-    elasticSearchBackedResourceDAO.getArchiveStatistics(showBrokenDecisionService.shouldShowBroken)
+  def getArchiveStatistics: Map[String, Long] = {
+    Await.result(elasticSearchIndexer.getArchiveStatistics(showBrokenDecisionService.shouldShowBroken), TenSeconds)
   }
 
   def getCommentedNewsitemsForTag(tag: Tag, maxNewsitems: Int, startIndex: Int): Seq[FrontendResource] = {

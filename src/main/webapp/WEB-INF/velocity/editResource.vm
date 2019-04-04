@@ -10,6 +10,8 @@
 	<div class="main">
 		<h2>Editing a Resource</h2>
 
+        $resource
+
 		#if ($resource)
 			<form id="editForm" action="$adminUrlBuilder.getSaveUrl()" method="POST">
 				<input type="hidden" name="resource" value="$resource.id" />
