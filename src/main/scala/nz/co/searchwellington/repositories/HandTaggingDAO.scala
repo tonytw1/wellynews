@@ -8,8 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Deprecated // "tags are attached to resource document now"
 @Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository) {
@@ -17,15 +18,19 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
   private val TenSeconds = Duration(10, SECONDS)
 
-  def getHandTaggingsForResource(resource: Resource): Seq[HandTagging] = {
-    resource.resource_tags.map { tagging =>
-      val tag = Await.result(mongoRepository.getTagByObjectId(tagging.tag_id), TenSeconds).get  // TODO Naked get
-      val user = Await.result(mongoRepository.getUserByObjectId(tagging.user_id), TenSeconds).get // TODO Naked get
-      new HandTagging(user = user, tag = tag)
+  def getHandTaggingsForResource(resource: Resource): Future[Seq[HandTagging]] = {
+    Future.sequence {
+      resource.resource_tags.map { tagging =>
+        mongoRepository.getTagByObjectId(tagging.tag_id).flatMap { tag =>
+          mongoRepository.getUserByObjectId(tagging.user_id).map { user =>
+            new HandTagging(user = user.get, tag = tag.get) // TODO Naked gets
+          }
+        }
+      }
     }
   }
 
-  def getHandTaggingsForResourceId(id: BSONObjectID): Seq[HandTagging] = {
+  def getHandTaggingsForResourceId(id: BSONObjectID): Future[Seq[HandTagging]] = {
     val resource = Await.result(mongoRepository.getResourceByObjectId(id), TenSeconds).get
     getHandTaggingsForResource(resource)
   }

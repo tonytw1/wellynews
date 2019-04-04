@@ -37,8 +37,8 @@ class TaggingReturnsOfficerServiceTest {
   @Test
   def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
-    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
-    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
+    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(handTags))
+    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     val taggings = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
@@ -49,8 +49,8 @@ class TaggingReturnsOfficerServiceTest {
   @Test
   def indexTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
     val handTags = Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))
-    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(handTags)
-    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
+    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(handTags))
+    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
@@ -60,8 +60,8 @@ class TaggingReturnsOfficerServiceTest {
 
   @Test
   def shouldIncludePublishersTagsInNewsitemsIndexTags = {
-    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = aroValleyTag)))
-    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = educationTag)))
+    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))))
+    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
     val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
@@ -77,8 +77,8 @@ class TaggingReturnsOfficerServiceTest {
     )
 
     when(mongoRepository.getTagByObjectId(sportTag._id)).thenReturn(Future.successful(Some(sportTag)))
-    when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Seq.empty)
-    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellington._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = cricketTag)))
+    when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellington._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = cricketTag))))
 
     val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem)
 
@@ -94,8 +94,8 @@ class TaggingReturnsOfficerServiceTest {
       feed = Some(publicInputFeed._id)
     )
 
-    when(handTaggingDAO.getHandTaggingsForResourceId(publicInputFeed._id)).thenReturn(Seq(new HandTagging(user =taggingUser, tag = consultationTag)))
-    when(handTaggingDAO.getHandTaggingsForResource(publicInputNewsitem)).thenReturn(Seq.empty)
+    when(handTaggingDAO.getHandTaggingsForResourceId(publicInputFeed._id)).thenReturn(Future.successful(Seq(new HandTagging(user =taggingUser, tag = consultationTag))))
+    when(handTaggingDAO.getHandTaggingsForResource(publicInputNewsitem)).thenReturn(Future.successful(Seq.empty))
 
     var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(publicInputNewsitem)
 
@@ -112,8 +112,8 @@ class TaggingReturnsOfficerServiceTest {
     )
 
     when(mongoRepository.getTagByObjectId(sportTag._id)).thenReturn(Future.successful(Some(sportTag)))
-    when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Seq.empty)
-    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellingtonNewsFeed._id)).thenReturn(Seq(new HandTagging(user = taggingUser, tag = cricketTag)))
+    when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Future.successful(Seq.empty))
+    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellingtonNewsFeed._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = cricketTag))))
 
     val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem)
 
