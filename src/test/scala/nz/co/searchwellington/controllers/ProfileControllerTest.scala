@@ -1,17 +1,15 @@
-package nz.co.searchwellington.controllers.profiles
+package nz.co.searchwellington.controllers
 
-import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter}
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
-import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
+import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
-import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Future
 

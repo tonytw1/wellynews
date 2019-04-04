@@ -5,7 +5,6 @@ import java.io.IOException
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.feeds.DiscoveredFeedRepository
-import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
@@ -36,46 +35,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
     import scala.collection.JavaConverters._
     mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
     mv
-  }
-
-  @RequestMapping(Array("/profiles"))
-  @Timed(timingNotes = "") def all(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView("profiles")
-    mv.addObject("heading", "Profiles")
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("profiles", Await.result(mongoRepository.getAllUsers, tenSeconds))
-    return mv
-  }
-
-  @RequestMapping(Array("/profiles/*"))
-  @Timed(timingNotes = "") def view(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-
-    def userByPath(path: String): Option[User] = {
-      if (path.matches("^/profiles/.*$")) {
-        val profilename = path.split("/")(2)
-        Await.result(mongoRepository.getUserByProfilename(profilename), tenSeconds)
-      } else {
-        None
-      }
-    }
-
-    userByPath(request.getPathInfo).map { user =>
-      var mv = new ModelAndView("viewProfile")
-      val loggedInUser = loggedInUserFilter.getLoggedInUser
-      if (loggedInUser != null && loggedInUser.getId == user.getId) {
-        mv = new ModelAndView("profile")
-      }
-      mv.addObject("heading", "User profile")
-      commonModelObjectsService.populateCommonLocal(mv)
-      mv.addObject("profileuser", user)
-      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user))
-      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user))
-      mv
-
-    }.getOrElse {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      null
-    }
   }
 
   @RequestMapping(Array("/archive"))
