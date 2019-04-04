@@ -8,7 +8,6 @@ import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Await

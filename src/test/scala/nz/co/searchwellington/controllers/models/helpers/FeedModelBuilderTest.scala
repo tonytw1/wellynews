@@ -50,7 +50,6 @@ class FeedModelBuilderTest {
       feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService)
 
   @Before
-  @throws(classOf[Exception])
   def setUp {
     when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(Some(feeditems))
 
@@ -64,13 +63,11 @@ class FeedModelBuilderTest {
   }
 
   @Test
-  @throws(classOf[Exception])
   def feedPathsAreValid {
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  @throws(classOf[Exception])
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(Seq())
@@ -81,7 +78,6 @@ class FeedModelBuilderTest {
   }
 
   @Test
-  @throws(classOf[Exception])
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(Some(feeditems))
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
@@ -94,15 +90,15 @@ class FeedModelBuilderTest {
   }
 
   @Test
-  @throws(classOf[Exception])
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(geotaggedFeedNewsitems)
-    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate).thenReturn(Seq())
+    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate()).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
     modelBuilder.populateExtraModelContent(request, mv)
 
-    assertEquals(geotaggedFeedNewsitems, mv.getModel.get("geocoded"))
+    import scala.collection.JavaConverters._
+    assertEquals(geotaggedFeedNewsitems.asJava, mv.getModel.get("geocoded"))
   }
 
 }
