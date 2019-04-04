@@ -4,8 +4,9 @@ import com.sksamuel.elastic4s.ElasticDsl.search
 import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
-import com.sksamuel.elastic4s.http.HttpClient
+import com.sksamuel.elastic4s.http.delete.DeleteResponse
 import com.sksamuel.elastic4s.http.search.TermsAggResult
+import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
@@ -60,6 +61,12 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
 
     val result = Await.result(client.execute (bulk(indexDefinitions)), TenSeconds)
     log.info(result)
+  }
+
+  def deleteResource(id: BSONObjectID): Future[Either[RequestFailure, RequestSuccess[DeleteResponse]]] = {
+    client execute(
+      delete(id.stringify) from Index / Resources
+    )
   }
 
   def createIndexes() = {

@@ -1,18 +1,27 @@
 package nz.co.searchwellington.modification
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.RssfeedNewsitemService
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService
-import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, SupressionService, TagDAO}
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
+import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.{HandTaggingDAO, SupressionService, TagDAO}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class ContentDeletionService @Autowired()(supressionService: SupressionService, rssfeedNewsitemService: RssfeedNewsitemService, resourceDAO: HibernateResourceDAO, handTaggingDAO: HandTaggingDAO, tagDAO: TagDAO, elasticSearchIndexUpdateService: ElasticSearchIndexUpdateService) {
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+
+@Component class ContentDeletionService @Autowired()(supressionService: SupressionService,
+                                                     rssfeedNewsitemService: RssfeedNewsitemService,
+                                                     mongoRepository: MongoRepository, handTaggingDAO: HandTaggingDAO,
+                                                     tagDAO: TagDAO, elasticSearchIndexer: ElasticSearchIndexer)
+  extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ContentDeletionService])
 
-  def performDelete(resource: Resource) {
+  def performDelete(resource: Resource): Unit = {
     handTaggingDAO.clearTags(resource)
     if (resource.`type` == "W") {
       removePublisherFromPublishersContent(resource)
@@ -27,15 +36,18 @@ import org.springframework.stereotype.Component
 
       deletedNewsitem.page.map { p =>
         if (rssfeedNewsitemService.isUrlInAcceptedFeeds(p)) {
-          log.info("Supressing deleted newsitem url as it still visible in an automatically deleted feed: " + p)
+          log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
           suppressUrl(p)
         } else {
           log.info("Not found in live feeds; not supressing")
         }
       }
     }
-    //elasticSearchIndexUpdateService.deleteContentItem(resource.getId)
-    resourceDAO.deleteResource(resource)
+
+    Await.result(elasticSearchIndexer.deleteResource(resource._id).flatMap { dr =>
+      log.info("Elastic delete result: " + dr)
+      mongoRepository.removeResource(resource)
+    }, TenSeconds)
   }
 
   private def removeRelatedFeedFromTags(editResource: Feed) {
@@ -52,6 +64,8 @@ import org.springframework.stereotype.Component
   }
 
   private def removePublisherFromPublishersContent(editResource: Resource) {
+    throw new UnsupportedOperationException
+    /*
     val publisher = editResource.asInstanceOf[Website]
     resourceDAO.getNewsitemsForPublishers(publisher).map { published =>
       // published.setPublisher(null)
@@ -65,13 +79,17 @@ import org.springframework.stereotype.Component
       // watchlist.setPublisher(null)
       resourceDAO.saveResource(watchlist)
     }
+    */
   }
 
   private def removeFeedFromFeedNewsitems(feed: Feed) {
+    throw new UnsupportedOperationException
+    /*
     resourceDAO.getNewsitemsForFeed(feed).map { newsitem =>
       // newsitem.setFeed(null)
       resourceDAO.saveResource(newsitem)
     }
+    */
   }
 
 }
