@@ -20,13 +20,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private var log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
   // TODO These are a different responsibility to tagging votes
-  def getHandTagsForResource(resource: Resource): Set[Tag] = {
-    handTaggingDAO.getHandTaggingsForResource(resource).map { ht => ht.tag}.toSet
+  def getHandTagsForResource(resource: Resource): Seq[Tag] = {
+    handTaggingDAO.getHandTaggingsForResource(resource).map(_.tag)
   }
 
   // TODO These are a different responsibility to tagging votes
-  def getIndexTagsForResource(resource: Resource): Set[Tag] = {
-    compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.tag)).distinct.toSet
+  def getIndexTagsForResource(resource: Resource): Seq[Tag] = {
+    compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.tag)).distinct
   }
 
   // TODO These are a different responsibility to tagging votes
@@ -37,18 +37,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def compileTaggingVotes(resource: Resource): Seq[TaggingVote] = {
     val handTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
 
-    val publisherVotes = resource match {
+    val publisherVotes: Seq[TaggingVote] = resource match {
       case p: PublishedResource =>
-        val ancestorTagVotes = getHandTagsForResource(resource).flatMap { rt =>
+        val ancestorTagVotes: Seq[GeneratedTaggingVote] = getHandTagsForResource(resource).flatMap { rt =>
           Await.result(parentsOf(rt), TenSeconds).map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter()))
         }
-        ancestorTagVotes ++ generatePublisherDerivedTagVotes(p) // TODO test coverage for ancestor tag votes
+        val votes  = ancestorTagVotes ++ generatePublisherDerivedTagVotes(p)
+        votes // TODO test coverage for ancestor tag votes
       case _ =>
         Seq.empty
     }
 
-
-    val newsitemSpecificVotes = resource match {
+    val newsitemSpecificVotes: Seq[TaggingVote] = resource match {
       case n: Newsitem =>
         generateFeedRelatedTags(n)
       case _ =>
@@ -94,7 +94,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def generateFeedRelatedTags(n: Newsitem) = {
-    def generateAcceptedFromFeedTags(feedTags: Set[Tag]): Set[TaggingVote] = {
+    def generateAcceptedFromFeedTags(feedTags: Seq[Tag]): Seq[TaggingVote] = {
       feedTags.flatMap { ft =>
         val feedAncestorTagVotes = Await.result(parentsOf(ft), TenSeconds).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
         feedAncestorTagVotes :+ new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
@@ -103,7 +103,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     n.feed.map { fid =>
       val taggingsForFeed = handTaggingDAO.getHandTaggingsForResourceId(fid)
-      val feedTags = taggingsForFeed.map(_.tag).toSet
+      val feedTags: Seq[Tag] = taggingsForFeed.map(_.tag)
       generateAcceptedFromFeedTags(feedTags)
     }.getOrElse(Seq.empty)
   }

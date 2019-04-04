@@ -61,7 +61,7 @@ import scala.concurrent.{Await, Future}
     log.info("Index rebuild complete")
   }
 
-  private def getIndexTagIdsFor(resource: Resource): Future[Set[String]] = {
+  private def getIndexTagIdsFor(resource: Resource): Future[Seq[String]] = {
     val tags = taggingReturnsOfficerService.getIndexTagsForResource(resource)
     Future.successful(tags.map(_._id.stringify))
   }

@@ -35,7 +35,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
 
   val client = HttpClient(ElasticsearchClientUri(elasticsearchHost, elasticsearchPort))
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Set[String])]): Unit = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Unit = {
     log.info("Index batch of size: " + resources.size)
 
     val indexDefinitions = resources.map { r =>

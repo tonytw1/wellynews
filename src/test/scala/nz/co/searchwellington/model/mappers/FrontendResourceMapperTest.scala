@@ -34,8 +34,8 @@ class FrontendResourceMapperTest {
     val newsitem = new Newsitem(id = "123", http_status = 200)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
-    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set(tag))
-    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Set[Tag]())
+    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Seq(tag))
+    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Seq[Tag]())
 
     val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
 
@@ -53,8 +53,8 @@ class FrontendResourceMapperTest {
     val tagging = new HandTagging(user = null, tag = tag)
     val taggingVotes: Set[HandTagging] = Set(tagging)
 
-    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set[Tag]())
-    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Set(tag))
+    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Seq[Tag]())
+    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Seq(tag))
 
     val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
 
@@ -68,8 +68,8 @@ class FrontendResourceMapperTest {
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
-    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Set(tag))
-    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Set[Tag]())
+    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Seq(tag))
+    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Seq[Tag]())
 
     val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
 
