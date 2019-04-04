@@ -3,8 +3,8 @@ package nz.co.searchwellington.repositories.elasticsearch
 import java.util.Date
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.http.HttpClient
-import com.sksamuel.elastic4s.{ElasticsearchClientUri, TcpClient}
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.filters.RequestFilter
 import nz.co.searchwellington.model._
@@ -51,65 +51,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     val om = new ObjectMapper
     om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
     om
-  }
-
-  def getLatestNewsitems(maxItems: Int, shouldShowBroken: Boolean, from: Int): Seq[FrontendResource] = {
-    val latestNewsitems = QueryBuilders.boolQuery.must(isNewsitem)
-    addShouldShowBrokenClause(latestNewsitems, shouldShowBroken)
-    val builder: SearchRequestBuilder = searchRequestBuilder(latestNewsitems).setFrom(from).setSize(maxItems)
-    addDateDescendingOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
-  def getTaggedNewsitems(tag: Tag, shouldShowBroken: Boolean, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    val query = tagNewsitemsQuery(tag)
-    addShouldShowBrokenClause(query, shouldShowBroken)
-
-    val builder = searchRequestBuilder(query).setFrom(startIndex).setSize(maxItems)
-    addDateDescendingOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
-  def getPublisherNewsitems(publisher: Website, maxItems: Int, shouldShowBroken: Boolean, startIndex: Int): Seq[FrontendResource] = {
-    /*
-    val response = publisherNewsitemsRequest(publisher, maxItems, shouldShowBroken, startIndex).execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-    */
-    Seq()
-  }
-
-  def getPublisherNewsitemsCount(publisher: Website, shouldShowBroken: Boolean): Long = {
-    /*
-    val response = publisherNewsitemsRequest(publisher, 0, shouldShowBroken, 0).execute.actionGet
-    return response.getHits.getTotalHits
-    */
-    0 // TODO
-  }
-
-  def getLatestWebsites(maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    val isWebsite: TermQueryBuilder = QueryBuilders.termQuery(TYPE, "W")
-    val websites = QueryBuilders.boolQuery.must(isWebsite)
-    addShouldShowBrokenClause(websites, shouldShowBroken)
-    val justinWebsites: SearchRequestBuilder = searchRequestBuilder(websites).setSize(maxItems)
-    addDateDescendingOrder(justinWebsites)
-    val response = justinWebsites.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-  }
-
-  def getAllFeeds(shouldShowBroken: Boolean, latestFirst: Boolean): Seq[FrontendResource] = {
-    val feeds = QueryBuilders.boolQuery.must(isFeed)
-    addShouldShowBrokenClause(feeds, shouldShowBroken)
-    val builder = searchRequestBuilder(feeds).setSize(ALL)
-    if (latestFirst) {
-      addLatestFeedItemOrder(builder)
-    }
-    else {
-      addNameOrder(builder)
-    }
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
   }
 
   def getGeotagged(startIndex: Int, maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
