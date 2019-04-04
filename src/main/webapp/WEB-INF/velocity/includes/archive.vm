@@ -6,25 +6,22 @@
 #end
 
 <ul>
-#set ($first = 1)
-#foreach($link in $archive_links)
-	
-	#if ($velocityCount <=6 ) 
-		<li class="archive_link">
-        	#if ($archive_month && $link == $archive_month)
-	         	<b>$dateFormatter.fullMonthYear($link.month)</b>
-           	#else
-	         	<a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.fullMonthYear($link.month)</a>
-          	#end
-          	#if ($first == 1)
-           		($link.count #showPluralWord($link.count "newsitem"))
-             	#set ($first = 0)
-           	#else
-              	($link.count)
-           	#end
-       	</li>
-     #end
-#end
-<li class="more"><a href="$site_information.url/archive">More...</a></li>
+    #set ($first = 1)
+    #foreach($link in $archive_links)
+        <li class="archive_link">
+            #if ($archive_month && $link == $archive_month)
+                <b>$dateFormatter.fullMonthYear($link.month)</b>
+            #else
+                <a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.fullMonthYear($link.month)</a>
+            #end
+            #if ($first == 1)
+                ($link.count #showPluralWord($link.count "newsitem"))
+                #set ($first = 0)
+            #else
+                ($link.count)
+            #end
+        </li>
+    #end
+    <li class="more"><a href="$site_information.url/archive">More...</a></li>
 </ul>
 #end

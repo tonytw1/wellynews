@@ -21,7 +21,8 @@ class ArchiveLinksService @Autowired()(contentRetrievalService: ContentRetrieval
       mv.addObject("feed_count", archiveStatistics.get("F").orNull)
     }
 
-    mv.addObject("archive_links", archiveMonths.take(MaxBackIssues))
+    import scala.collection.JavaConverters._
+    mv.addObject("archive_links", archiveMonths.take(MaxBackIssues).asJava)
 
     populateArchiveStatistics(mv)
   }
