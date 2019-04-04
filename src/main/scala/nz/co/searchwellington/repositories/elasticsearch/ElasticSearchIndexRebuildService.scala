@@ -64,41 +64,6 @@ import scala.concurrent.{Await, Future}
   private def getIndexTagIdsFor(resource: Resource): Future[Set[String]] = {
     val tags = taggingReturnsOfficerService.getIndexTagsForResource(resource)
     Future.successful(tags.map(_._id.stringify))
-    /*
-    def resolveParentsFor(tag: Tag, result: Seq[Tag]): Future[Seq[Tag]] = {
-      tag.parent.map { p =>
-        mongoRepository.getTagByObjectId(p).flatMap { pto =>
-          pto.map { pt =>
-            val a = pt
-            if (!result.contains(pt)) {
-              resolveParentsFor(pt, result :+ pt)
-            } else {
-              log.warn("Tag parent loop detected")
-              Future.successful(result)
-            }
-          }.getOrElse {
-            Future.successful(result)
-          }
-        }
-      }.getOrElse{
-        Future.successful(result)
-      }
-    }
-
-    val eventualTags = Future.sequence(resource.resource_tags.map { tagging =>
-      mongoRepository.getTagByObjectId(tagging.tag_id)
-    }).map(_.flatten)
-
-    eventualTags.flatMap { tags =>
-      Future.sequence {
-        tags.map { t =>
-          resolveParentsFor(t, Seq())
-        }
-      }.map { parents =>
-        (tags ++ parents.flatten).map(t => t._id.get.stringify).toSet
-      }
-    }
-    */
   }
 
 }
