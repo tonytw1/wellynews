@@ -115,7 +115,7 @@ class ElasticSearchIT {
 
   @Test
   def canCountArchiveTypes: Unit = {
-    val typeCounts = Await.result(elasticSearchIndexer.getArchiveStatistics(true), TenSeconds)
+    val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts(true), TenSeconds)
 
     val typesFound = typeCounts.keys.toSet
     assertEquals(Set("W", "N", "F", "L"), typesFound)

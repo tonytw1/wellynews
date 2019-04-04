@@ -15,7 +15,7 @@ class ArchiveLinksService @Autowired()(contentRetrievalService: ContentRetrieval
   def populateArchiveLinks(mv: ModelAndView, archiveMonths: Seq[ArchiveLink]): Unit = {
 
     def populateArchiveStatistics(mv: ModelAndView): Unit = {
-      val archiveStatistics = contentRetrievalService.getArchiveStatistics
+      val archiveStatistics = contentRetrievalService.getArchiveCounts
       mv.addObject("site_count", archiveStatistics.get("W").orNull)
       mv.addObject("newsitem_count", archiveStatistics.get("N").orNull)
       mv.addObject("feed_count", archiveStatistics.get("F").orNull)
