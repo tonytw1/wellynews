@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
     if (resource.`type` == "N") {
       log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
-      val deletedNewsitem: Newsitem = resource.asInstanceOf[Newsitem]
+      val deletedNewsitem = resource.asInstanceOf[Newsitem]
 
       deletedNewsitem.page.map { p =>
         if (rssfeedNewsitemService.isUrlInAcceptedFeeds(p)) {
