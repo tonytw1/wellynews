@@ -24,7 +24,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
   private val log = Logger.getLogger(classOf[ProfileController])
 
   @RequestMapping(Array("/profiles"))
-  def all(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def profiles(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv: ModelAndView = new ModelAndView("profiles")
     mv.addObject("heading", "Profiles")
     commonModelObjectsService.populateCommonLocal(mv)
@@ -33,7 +33,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
   }
 
   @RequestMapping(Array("/profiles/*"))
-  def view(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def profile(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
 
     def userByPath(path: String): Option[User] = {
       if (path.matches("^/profiles/.*$")) {
