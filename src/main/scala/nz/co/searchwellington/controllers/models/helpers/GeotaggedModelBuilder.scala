@@ -64,11 +64,11 @@ import scala.collection.JavaConverters._
         }
         else {
           val relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW).toList
-          if (!relatedTagLinks.isEmpty) {
+          if (relatedTagLinks.nonEmpty) {
             mv.addObject("related_tags", relatedTagLinks.asJava)
           }
-          val relatedPublisherLinks: List[PublisherContentCount] = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius).toList
-          if (!relatedPublisherLinks.isEmpty) {
+          val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius).toList
+          if (relatedPublisherLinks.nonEmpty) {
             mv.addObject("related_publishers", relatedPublisherLinks.asJava)
           }
         }

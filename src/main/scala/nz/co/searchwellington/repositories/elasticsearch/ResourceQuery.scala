@@ -13,7 +13,8 @@ case class ResourceQuery(`type`: Option[String] = None,
                          interval: Option[Interval] = None,
                          q: Option[String] = None,
                          owner: Option[BSONObjectID] = None,
-                         circle: Option[Circle] = None
+                         circle: Option[Circle] = None,
+                         geocoded: Option[Boolean] = None
                         )
 
 case class Circle(centre: LatLong, radius: Double)

@@ -53,16 +53,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     om
   }
 
-  def getGeotagged(startIndex: Int, maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    /*
-    val builder = searchRequestBuilder(geotaggedNewsitems(shouldShowBroken)).setFrom(startIndex).setSize(maxItems)
-    addDateDescendingOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-    */
-    Seq()  // TODO
-  }
-
   def getGeotaggedCount(shouldShowBroken: Boolean): Long = {
     /*
     val builder = searchRequestBuilder(geotaggedNewsitems(shouldShowBroken)).setSize(0)
@@ -70,16 +60,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     return response.getHits.getTotalHits
     */
     0 // TODO
-  }
-
-  def getGeotaggedNewsitemsNear(latLong: LatLong, radius: Double, shouldShowBroken: Boolean, startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    /*
-    val builder = searchRequestBuilder(geotaggedNearQuery(latLong, radius, shouldShowBroken)).setFrom(startIndex).setSize(maxItems)
-    addDateDescendingOrder(builder)
-    val response = builder.execute.actionGet
-    deserializeFrontendResourceHits(response.getHits)
-    */
-    Seq()  // TODO
   }
 
   def getPublisherFacetsNear(latLong: LatLong, radius: Double, shouldShowBroken: Boolean): Map[String, Int] = {

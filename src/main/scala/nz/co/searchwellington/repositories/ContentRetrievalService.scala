@@ -31,10 +31,6 @@ import scala.concurrent.{Await, Future}
 
   val MAX_NEWSITEMS_TO_SHOW = 30
   val ALL_ITEMS = 1000
-  
-  def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getGeotagged(startIndex, maxItems, showBrokenDecisionService.shouldShowBroken)
-  }
 
   def getGeotaggedCount: Long = {
     elasticSearchBackedResourceDAO.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken)
@@ -79,6 +75,11 @@ import scala.concurrent.{Await, Future}
   def getTaggedFeeds(tag: Tag): Seq[FrontendResource] = {
     val taggedWebsites = ResourceQuery(`type` = Some("F"), tags = Some(Set(tag)))
     Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  }
+
+  def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
+    val geotaggedNewsitems = ResourceQuery(`type` = Some("N"), geocoded = Some(true))
+    Await.result(elasticSearchIndexer.getResources(geotaggedNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {

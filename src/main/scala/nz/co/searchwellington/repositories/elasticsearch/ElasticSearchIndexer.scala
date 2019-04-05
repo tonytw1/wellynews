@@ -203,6 +203,13 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       query.owner.map { o =>
         termQuery(Owner, o.stringify)
       },
+      query.geocoded.map { g =>
+        if (g) {
+          existsQuery(LatLong)
+        } else {
+          not(existsQuery(LatLong))
+        }
+      },
       query.circle.map { c =>
         geoDistanceQuery(LatLong).point(c.centre.getLatitude, c.centre.getLongitude).distance(c.radius, DistanceUnit.KILOMETERS)
       }
