@@ -73,7 +73,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     if (geotaggedItems.nonEmpty) {
       log.info("Adding " + geotaggedItems.size + " geotagged feed items")
       import scala.collection.JavaConverters._
-      mv.addObject("geocoded", geotaggedItems.asJava)
+      mv.addObject("geocoded", geotaggedItems.asJava) // TODO deduplicate overlapping
     }
   }
 
