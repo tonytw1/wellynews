@@ -223,10 +223,9 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       r.map { rs =>
         (rs.result.hits.hits.map(h => BSONObjectID(h.id)).toSeq, rs.result.totalHits)
       } match {
-        case Right(idsWithTotalCount) => {
+        case Right(idsWithTotalCount) =>
           log.info(query + ": " + idsWithTotalCount._2)
           idsWithTotalCount
-        }
         case Left(f) =>
           log.error(f)
           (Seq(), 0L)
