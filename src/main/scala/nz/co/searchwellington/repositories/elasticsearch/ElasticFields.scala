@@ -11,5 +11,6 @@ trait ElasticFields {
   val Publisher = "publisher"
   val Held = "held"
   val Owner = "owner"
+  val LatLong = "lat_long"
 
 }

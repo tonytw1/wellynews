@@ -6,7 +6,7 @@ import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendTag}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, ElasticSearchIndexer, KeywordSearchService, ResourceQuery}
+import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.joda.time.Interval
@@ -81,12 +81,15 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getTaggedGeotaggedNewsitems(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken)
+  def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
+    val nearbyNewsitems = ResourceQuery(`type` = Some("N"),
+      startIndex = startIndex, maxItems = maxNewsitems,
+      circle = Some(Circle(latLong, radius)))
+    Await.result(elasticSearchIndexer.getResources(nearbyNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNear(latLong, radius, showBrokenDecisionService.shouldShowBroken, startIndex, maxNewsitems)
+  def getTaggedGeotaggedNewsitems(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
+    elasticSearchBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getNewsitemsNearDistanceFacet(latLong: LatLong): Map[Double, Long] = {

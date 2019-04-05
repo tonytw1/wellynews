@@ -118,10 +118,10 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, Place}
 
   private def getRssUrlForPlace(place: Place): String = {
     if (place.getOsmId != null) {
-      getRssUrlForOsmId(place.getOsmId)
+      return getRssUrlForOsmId(place.getOsmId)
     }
     else if (place.getLatLong != null) {
-      getRssUrlForLatLong(place.getLatLong)
+      return getRssUrlForLatLong(place.getLatLong)
     }
     throw new RuntimeException("No location information attached to place")
   }

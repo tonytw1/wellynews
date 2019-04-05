@@ -1,13 +1,13 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import com.sksamuel.elastic4s.ElasticDsl.search
-import com.sksamuel.elastic4s.ElasticsearchClientUri
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.delete.DeleteResponse
 import com.sksamuel.elastic4s.http.search.TermsAggResult
 import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
+import com.sksamuel.elastic4s.{DistanceUnit, ElasticsearchClientUri}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model.{ArchiveLink, PublishedResource, Resource}
@@ -44,6 +44,14 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         case _ => None
       }
 
+      val latLong = r._1.geocode.flatMap { gc =>
+        gc.latitude.flatMap { lat =>
+          gc.longitude.map { lon =>
+            new uk.co.eelpieconsulting.common.geo.model.LatLong(lat, lon)
+          }
+        }
+      }
+
       // TODO This is silly; just pass in the whole domain object as JSON
       val fields = Seq(
         Some(Type -> r._1.`type`),
@@ -54,7 +62,8 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         Some(Tags, r._2),
         publisher.map(p => Publisher -> p.stringify),
         Some(Held -> r._1.held),
-        r._1.owner.map(o => Owner -> o.stringify)
+        r._1.owner.map(o => Owner -> o.stringify),
+        latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude))
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
@@ -84,7 +93,8 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
             field(Tags) typed KeywordType,
             field(Publisher) typed KeywordType,
             field(Held) typed BooleanType,
-            field(Owner) typed KeywordType
+            field(Owner) typed KeywordType,
+            field(LatLong) typed GeoPointType
           )
           )
       }
@@ -192,6 +202,9 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       },
       query.owner.map { o =>
         termQuery(Owner, o.stringify)
+      },
+      query.circle.map { c =>
+        geoDistanceQuery(LatLong).point(c.centre.getLatitude, c.centre.getLongitude).distance(c.radius, DistanceUnit.KILOMETERS)
       }
     ).flatten
 

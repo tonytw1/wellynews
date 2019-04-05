@@ -10,25 +10,30 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-@Component class ContentModelBuilderService @Autowired() (viewFactory: ViewFactory, commonModelObjectsService: CommonModelObjectsService,
-                                                          indexModelBuilder: IndexModelBuilder, tagsModelBuilder: TagsModelBuilder,
-                                                          tagModelBuilder: TagModelBuilder,
-                                                          feedsModelBuilder: FeedsModelBuilder,
-                                                          publisherModelBuilder: PublisherModelBuilder,
-                                                          watchlistModelBuilder: WatchlistModelBuilder,
-                                                          feedModelBuilder: FeedModelBuilder,
-                                                          justinModelBuilder: JustinModelBuilder,
-                                                          suggestionsModelBuilder: SuggestionsModelBuilder,
-                                                          archiveModelBuilder: ArchiveModelBuilder,
-                                                          searchModelBuilder: SearchModelBuilder) {
+@Component class ContentModelBuilderService @Autowired()(viewFactory: ViewFactory,
+                                                         commonModelObjectsService: CommonModelObjectsService,
+                                                         indexModelBuilder: IndexModelBuilder,
+                                                         tagsModelBuilder: TagsModelBuilder,
+                                                         tagModelBuilder: TagModelBuilder,
+                                                         feedsModelBuilder: FeedsModelBuilder,
+                                                         publisherModelBuilder: PublisherModelBuilder,
+                                                         watchlistModelBuilder: WatchlistModelBuilder,
+                                                         feedModelBuilder: FeedModelBuilder,
+                                                         justinModelBuilder: JustinModelBuilder,
+                                                         suggestionsModelBuilder: SuggestionsModelBuilder,
+                                                         archiveModelBuilder: ArchiveModelBuilder,
+                                                         searchModelBuilder: SearchModelBuilder,
+                                                         geotaggedModelBuilder: GeotaggedModelBuilder
+                                                        ) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder, feedsModelBuilder,
-      publisherModelBuilder, watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder, searchModelBuilder, suggestionsModelBuilder)
+      publisherModelBuilder, watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder,
+      searchModelBuilder, suggestionsModelBuilder, geotaggedModelBuilder)
 
-    modelBuilders.filter(mb => mb.isValid(request)).headOption.map { mb => // TODO collect first?
+    modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
 
       mb.populateContentModel(request).map { mv =>
