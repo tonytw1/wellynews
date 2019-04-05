@@ -9,9 +9,7 @@
 	<description>Search Wellington application.</description>
 
 	<properties>
-		<org.springframework.version>4.3.9.RELEASE</org.springframework.version>
-		<hibernate-annotations.version>3.4.0.GA</hibernate-annotations.version>
-		<hibernate-core.version>3.3.2.GA</hibernate-core.version>
+		<org.springframework.version>4.3.23.RELEASE</org.springframework.version>
 	</properties>
 
 	<pluginRepositories>
