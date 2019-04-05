@@ -7,10 +7,11 @@ public class NewFeed {
     @NotBlank
     private String title, url;
 
+    private String publisher;
+
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -18,9 +19,16 @@ public class NewFeed {
     public String getUrl() {
         return url;
     }
-
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     @Override
@@ -28,6 +36,7 @@ public class NewFeed {
         return "NewFeed{" +
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
+                ", publisher='" + publisher + '\'' +
                 '}';
     }
 }

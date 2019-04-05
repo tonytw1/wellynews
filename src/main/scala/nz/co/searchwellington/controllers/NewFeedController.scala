@@ -1,10 +1,12 @@
 package nz.co.searchwellington.controllers
 
 import javax.validation.Valid
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,10 +16,13 @@ import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, 
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import scala.concurrent.Await
+
 @Controller
 class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
+                                     mongoRepository: MongoRepository,
                                      urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                     whakaokoService: WhakaokoService) {
+                                     whakaokoService: WhakaokoService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NewFeedController])
 
@@ -40,7 +45,21 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
     } else {
       log.info("Got valid new feed submission: " + newFeed)
 
-      val feed = Feed(title = Some(newFeed.getTitle), page = Some(newFeed.getUrl), url_words = Some(urlWordsGenerator.makeUrlWordsFromName(newFeed.getTitle)))
+
+      val publisherName = if (newFeed.getPublisher.trim.nonEmpty) {
+        Some(newFeed.getPublisher.trim)
+      } else {
+        None
+      }
+      val publisher = publisherName.flatMap { publisherName =>
+        Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
+      }
+
+      val feed = Feed(title = Some(newFeed.getTitle),
+        page = Some(newFeed.getUrl),
+        url_words = Some(urlWordsGenerator.makeUrlWordsFromName(newFeed.getTitle)),
+        publisher = publisher.map(_._id)
+      )
 
       val mv = new ModelAndView("newFeed")
       mv.addObject("newFeed", newFeed)
@@ -52,7 +71,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
         whakaokoService.createFeedSubscription(feedUrl)
       }
 
-      return new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
+      new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
     }
   }
 

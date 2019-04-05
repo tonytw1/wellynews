@@ -22,6 +22,12 @@
                 <label for="${status.expression}">URL:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
+
+                #springBind("newFeed.publisher")
+                <label for="${status.expression}">Publisher:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
 				<input type="submit" value="Save" />
 			</fieldset>
 		</form>
