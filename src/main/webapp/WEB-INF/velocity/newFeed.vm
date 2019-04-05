@@ -1,0 +1,37 @@
+#parse("includes/header.vm")
+
+<div class="page">
+	#parse("includes/topbar.vm")
+
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
+
+
+	<div class="main">
+		<h2>Submitting a Feed</h2>
+		
+		<form id="editForm" action="/new-feed" method="POST">
+            <fieldset>
+                #springBind("newFeed.title")
+                <label for="${status.expression}">Title:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("newFeed.url")
+                <label for="${status.expression}">URL:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+				<input type="submit" value="Save" />
+			</fieldset>
+		</form>
+	
+		<form action="/cancel" method="POST">
+			<input type="submit" value="Cancel" />
+		</form>
+
+	</div>
+
+</div>
+
+#parse("includes/footer.vm")
