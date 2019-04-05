@@ -10,6 +10,7 @@
 
     <properties>
         <org.springframework.version>4.3.23.RELEASE</org.springframework.version>
+        <elastic4s.version>6.3.8</elastic4s.version>
     </properties>
 
     <repositories>
@@ -147,7 +148,7 @@
         <dependency>
             <groupId>org.reactivemongo</groupId>
             <artifactId>reactivemongo_2.12</artifactId>
-            <version>0.13.0</version>
+            <version>0.14.0</version>
         </dependency>
 
         <dependency>
@@ -218,17 +219,12 @@
         <dependency>
             <groupId>com.sksamuel.elastic4s</groupId>
             <artifactId>elastic4s-core_2.12</artifactId>
-            <version>6.2.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sksamuel.elastic4s</groupId>
-            <artifactId>elastic4s-tcp_2.12</artifactId>
-            <version>6.2.10</version>
+            <version>${elastic4s.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sksamuel.elastic4s</groupId>
             <artifactId>elastic4s-http_2.12</artifactId>
-            <version>6.2.10</version>
+            <version>${elastic4s.version}</version>
         </dependency>
 
         <dependency>

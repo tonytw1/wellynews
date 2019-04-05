@@ -230,7 +230,8 @@ import scala.concurrent.{Await, Future}
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken, maxNewsitems)
+    Seq.empty // TODO
+    //elasticSearchBackedResourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken, maxNewsitems)
   }
 
   def getPublisherTagCombinerNewsitems(publisherUrlWords: String, tagName: String, maxNewsitems: Int): Seq[FrontendResource] = {
@@ -255,7 +256,8 @@ import scala.concurrent.{Await, Future}
   }
 
   def getTaggedBy(user: User): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken)
+    Seq.empty  // TODO
+    // elasticSearchBackedResourceDAO.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getTagNamesStartingWith(q: String): Seq[String] = {

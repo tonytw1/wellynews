@@ -1,14 +1,14 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import com.sksamuel.elastic4s.http.ElasticDsl.{bool, must, termQuery}
-import com.sksamuel.elastic4s.searches.queries.QueryDefinition
+import com.sksamuel.elastic4s.searches.queries.Query
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 
 trait ModeratedQueries extends ElasticFields {
 
   def showBrokenDecisionService: ShowBrokenDecisionService
 
-  def withModeration(query: QueryDefinition): QueryDefinition = {
+  def withModeration(query: Query): Query = {
 
     if (!showBrokenDecisionService.shouldShowBroken) {
       /*

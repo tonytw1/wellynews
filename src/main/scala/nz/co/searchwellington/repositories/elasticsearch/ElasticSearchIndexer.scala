@@ -1,13 +1,12 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import com.sksamuel.elastic4s.ElasticDsl.search
+import com.sksamuel.elastic4s.DistanceUnit
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.delete.DeleteResponse
-import com.sksamuel.elastic4s.http.search.TermsAggResult
-import com.sksamuel.elastic4s.http.{HttpClient, RequestFailure, RequestSuccess}
+import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
+import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
-import com.sksamuel.elastic4s.{DistanceUnit, ElasticsearchClientUri}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model.{ArchiveLink, PublishedResource, Resource}
@@ -33,7 +32,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
   private val Index = "searchwellington"
   private val Resources = "resources"
 
-  val client = HttpClient(ElasticsearchClientUri(elasticsearchHost, elasticsearchPort))
+  val client = ElasticClient(ElasticProperties("http://" + elasticsearchHost + ":" + elasticsearchPort))
 
   def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Unit = {
     log.info("Index batch of size: " + resources.size)
@@ -72,19 +71,17 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     Await.result(client.execute (bulk(indexDefinitions)), TenSeconds)
   }
 
-  def deleteResource(id: BSONObjectID): Future[Either[RequestFailure, RequestSuccess[DeleteResponse]]] = {
+  def deleteResource(id: BSONObjectID): Future[Response[DeleteResponse]] = {
     client execute(
       delete(id.stringify) from Index / Resources
     )
   }
 
   def createIndexes() = {
-    import com.sksamuel.elastic4s.ElasticDsl._
-    import com.sksamuel.elastic4s.mappings.FieldType._
 
     try {
       val eventualCreateIndexResult = client.execute {
-        create index Index mappings (
+        createIndex(Index) mappings (
           mapping(Resources).fields(
             field(Title) typed TextType analyzer StandardAnalyzer,
             field(Type) typed KeywordType,
@@ -111,71 +108,38 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
 
   def getAllPublishers(): Future[Seq[String]] = {
     val allNewsitems = matchQuery(Type, "N")
-
     val aggs = Seq(termsAgg("publisher", "publisher") size Integer.MAX_VALUE)
-
-    val request = (search in Index / Resources query allNewsitems) limit 0 aggregations (aggs)
-
+    val request = (search(Index / Resources) query allNewsitems) limit 0 aggregations (aggs)
     client.execute(request).map { r =>
-      val resultBuckets = r.map { rs =>
-        val publisherAgg: TermsAggResult = rs.result.aggregations.terms("publisher")
-        publisherAgg.buckets.map(b => b.key)
-      }
-
-      resultBuckets match {
-        case Right(buckets) => {
-          buckets
-        }
-        case Left(f) =>
-          log.error(f)
-          Seq()
-      }
+      r.result.aggregations.terms("publisher").buckets.map(b => b.key)
     }
   }
 
   def getArchiveMonths: Future[Seq[ArchiveLink]] = {
     val allNewsitems = matchQuery(Type, "N")
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-    val request = search in Index / Resources query withModeration(allNewsitems) limit 0 aggregations (aggs)
+    val request = search(Index / Resources) query withModeration(allNewsitems) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
-      val resultBuckets = r.map { rs =>
-        val dateAgg = rs.result.aggregations.dateHistogram("date")
-        dateAgg.buckets
+      val dateAgg = r.result.aggregations.dateHistogram("date")
+      val archiveLinks = dateAgg.buckets.map { b =>
+        new ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
       }
-      resultBuckets match {
-        case Right(buckets) => {
-          buckets.map { b =>
-            new ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
-          }
-        }
-        case Left(f) =>
-          log.error(f)
-          Seq()
-      }
-    }.map(_.filter(_.getCount > 0).reverse) // TODO can do this in elastic query?
+      archiveLinks.filter(_.getCount > 0).reverse
+    }
   }
+
 
   def getArchiveCounts: Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
-    val request = search in Index / Resources query withModeration(everyThing) limit 0 aggregations (aggs)
+    val request = search(Index / Resources) query withModeration(everyThing) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
-      val resultBuckets = r.map { rs =>
-        val typeAgg = rs.result.aggregations.terms("type")
-        typeAgg.buckets
-      }
-      resultBuckets match {
-        case Right(buckets) => {
-          buckets.map { b =>
-            (b.key, b.docCount)
-          }.toMap
-        }
-        case Left(f) =>
-          log.error(f)
-          Map.empty[String, Long]
-      }
+      val typeAgg = r.result.aggregations.terms("type")
+      typeAgg.buckets.map { b =>
+        (b.key, b.docCount)
+      }.toMap
     }
   }
 
@@ -217,19 +181,13 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
 
     val q = must(conditions)
 
-    val request = search in Index -> Resources query withModeration(q) sortByFieldDesc Date start query.startIndex limit query.maxItems
+    val request = search(Index / Resources) query withModeration(q) sortByFieldDesc Date start query.startIndex limit query.maxItems
 
     client.execute(request).map { r =>
-      r.map { rs =>
-        (rs.result.hits.hits.map(h => BSONObjectID(h.id)).toSeq, rs.result.totalHits)
-      } match {
-        case Right(idsWithTotalCount) =>
-          log.info(query + ": " + idsWithTotalCount._2)
-          idsWithTotalCount
-        case Left(f) =>
-          log.error(f)
-          (Seq(), 0L)
-      }
+      val hits = r.result.hits.hits
+      val ids = hits.map(h => BSONObjectID(h.id))
+      val total = r.result.totalHits
+      (ids, total)
     }
   }
 

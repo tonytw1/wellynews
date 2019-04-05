@@ -1,20 +1,11 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import java.util.Date
-
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
-import com.sksamuel.elastic4s.ElasticsearchClientUri
-import com.sksamuel.elastic4s.http.HttpClient
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.filters.RequestFilter
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.FrontendResource
 import org.apache.log4j.Logger
-import org.elasticsearch.action.search.SearchRequestBuilder
-import org.elasticsearch.index.query._
-import org.elasticsearch.search.SearchHits
-import org.elasticsearch.search.sort.SortOrder
-import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.LatLong
@@ -27,11 +18,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 
   private val Index = "searchwellington"
   private val Resources = "resources"
-
-  val client = {
-    log.info("Connecting to elastic: " + elasticsearchHost + ":" + elasticsearchPort)
-    HttpClient(ElasticsearchClientUri(elasticsearchHost, elasticsearchPort))
-  }
 
   private val ID = "id"
   private val OWNER = "owner"
@@ -153,6 +139,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Seq.empty // TODO
   }
 
+  /*
   def getNewsitemsForMonth(month: Date, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val monthDateTime = new DateTime(month)
     val startOfMonth = monthDateTime.toDateMidnight.withDayOfMonth(1).toDateTime
@@ -180,6 +167,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   def getHandTaggingsForUser(user: User, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     Seq.empty // TODO
   }
+  */
 
   /*
   def getNewspage(urlWords: String, shouldShowBroken: Boolean): Option[FrontendResource] = {
@@ -222,10 +210,11 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Map()
   }
 
-
+  /*
   private def tagNewsitemsQuery(tag: Tag): BoolQueryBuilder = {
     QueryBuilders.boolQuery.must(hasTag(tag)).must(isNewsitem)
   }
+  */
 
   /*
   private def publisherNewsitemsRequest(publisher: Website, maxItems: Int, shouldShowBroken: Boolean, startIndex: Int): SearchRequestBuilder = {
@@ -256,6 +245,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
   */
 
+  /*
   private def hasPublisher(publisher: Website): TermQueryBuilder = {
     QueryBuilders.termQuery(PUBLISHER_NAME, publisher.title.getOrElse(""))
   }
@@ -275,8 +265,9 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   private def isFeed: TermQueryBuilder = {
     QueryBuilders.termQuery(TYPE, "F")
   }
+  */
 
-
+  /*
   private def addShouldShowBrokenClause(query: BoolQueryBuilder, shouldShowBroken: Boolean) {
     /*
     if (!shouldShowBroken) {
@@ -293,8 +284,9 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     */
     query
   }
+  */
 
-
+  /*
   private def addDateDescendingOrder(searchRequestBuilder: SearchRequestBuilder) {
     searchRequestBuilder.addSort(DATE, SortOrder.DESC)
     searchRequestBuilder.addSort(ID, SortOrder.DESC)
@@ -312,32 +304,8 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     //elasticSearchClientFactory.getClient.prepareSearch().setIndices(nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService.INDEX).setTypes(nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexUpdateService.TYPE).setQuery(query)
     null  // TODO
   }
+  */
 
 
-  private def deserializeFrontendResourceHits(hits: SearchHits): Seq[FrontendResource] = {
-    /*
-    hits.hits.map { next =>
-      try {
-        next.getSource.get(TYPE).toString match {
-          case "N" => objectMapper.readValue(next.getSourceAsString, classOf[FrontendNewsitem])
-          case "F" => objectMapper.readValue(next.getSourceAsString, classOf[FrontendFeed])
-          case _ => objectMapper.readValue(next.getSourceAsString, classOf[FrontendResource])
-        }
-      }
-      catch {
-        case e: JsonParseException => {
-          throw new RuntimeException(e)
-        }
-        case e: JsonMappingException => {
-          throw new RuntimeException(e)
-        }
-        case e: IOException => {
-          throw new RuntimeException(e)
-        }
-      }
-    }
-    */
-    Seq()
-  }
     
 }
