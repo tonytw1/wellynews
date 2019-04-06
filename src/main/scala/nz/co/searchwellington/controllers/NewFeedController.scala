@@ -4,7 +4,7 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{Feed, UrlWordsGenerator}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -22,7 +22,8 @@ import scala.concurrent.Await
 class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository,
                                      urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                     whakaokoService: WhakaokoService) extends ReasonableWaits {
+                                     whakaokoService: WhakaokoService,
+                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NewFeedController])
 
@@ -55,11 +56,14 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
         Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
       }
 
+      val owner = Option(loggedInUserFilter.getLoggedInUser)
+
       val feed = Feed(title = Some(newFeed.getTitle),
         page = Some(newFeed.getUrl),
         url_words = Some(urlWordsGenerator.makeUrlWordsFromName(newFeed.getTitle)),
         publisher = publisher.map(_._id),
-        acceptance =  newFeed.getAcceptancePolicy
+        acceptance =  newFeed.getAcceptancePolicy,
+        owner = owner.map(_._id)
       )
 
       val mv = new ModelAndView("newFeed")
