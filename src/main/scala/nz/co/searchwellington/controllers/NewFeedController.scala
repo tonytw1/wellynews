@@ -58,7 +58,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       val feed = Feed(title = Some(newFeed.getTitle),
         page = Some(newFeed.getUrl),
         url_words = Some(urlWordsGenerator.makeUrlWordsFromName(newFeed.getTitle)),
-        publisher = publisher.map(_._id)
+        publisher = publisher.map(_._id),
+        acceptance =  newFeed.getAcceptancePolicy
       )
 
       val mv = new ModelAndView("newFeed")

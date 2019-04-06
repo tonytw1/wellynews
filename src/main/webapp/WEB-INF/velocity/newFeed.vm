@@ -28,6 +28,11 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("newFeed.acceptancePolicy")
+                <label for="${status.expression}">Acceptance policy:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
 				<input type="submit" value="Save" />
 			</fieldset>
 		</form>
