@@ -14,28 +14,31 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
   private val commaSplitter: Splitter = Splitter.on(",")
 
   def suggestTags(resource: Resource) : Set[Tag] = {
+
+    def matches(resource: Resource, tag: Tag) : Boolean = {
+
+      def resourceMatchesHint(resource: Resource, hint: String) : Boolean = {
+
+        def matches(hint: String, value: String): Boolean = {
+          !Strings.isNullOrEmpty(value) && value.toLowerCase().contains(hint.toLowerCase())
+        }
+
+        val headlineMatchesHint = resource.title.exists(t => matches(hint, t))
+        val bodyMatchesTag = resource.description.exists(d => matches(hint, d))
+        headlineMatchesHint || bodyMatchesTag
+      }
+
+      tag.getAutotagHints.exists { hintsString =>
+        if (!Strings.isNullOrEmpty(hintsString)) {
+          var hints = commaSplitter.split(hintsString)
+          hints.exists(hint => resourceMatchesHint(resource, hint))
+        } else {
+          false
+        }
+      }
+    }
+
     tagDAO.getAllTags().filter(tag => matches(resource, tag)).toSet
-  }
-
-  private def matches(resource: Resource, tag: Tag) : Boolean = {
-   tag.getAutotagHints.map { hintsString =>
-     if (!Strings.isNullOrEmpty(hintsString)) {
-       var hints = commaSplitter.split(hintsString).toList
-       hints.exists(hint => resourceMatchesHint(resource, hint))
-     } else {
-       false
-     }
-   }.getOrElse(false)
-  }
-
-  private def resourceMatchesHint(resource: Resource, hint: String) : Boolean = {
-    val headlineMatchesHint = resource.title.map(t => matches(hint, t)).getOrElse(false)
-    val bodyMatchesTag = resource.description.map(d => matches(hint, d)).getOrElse(false)
-    headlineMatchesHint || bodyMatchesTag
-  }
-
-  private def matches(hint: String, value: String): Boolean = {
-    !Strings.isNullOrEmpty(value) && value.toLowerCase().contains(hint.toLowerCase())
   }
 
 }
