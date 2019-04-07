@@ -7,7 +7,6 @@
 		#parse("includes/tag_tree.vm")
 	</div>
 
-
 	<div class="main">
 		<h2>Submitting a Website</h2>
 		

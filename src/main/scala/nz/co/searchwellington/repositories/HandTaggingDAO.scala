@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.model.taggingvotes.HandTagging
-import nz.co.searchwellington.model.{Resource, Tag, User}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -13,7 +13,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Deprecated // "tags are attached to resource document now"
-@Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository) {
+@Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository, contentUpdater: FrontendContentUpdater) {
   
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
   private val TenSeconds = Duration(10, SECONDS)
@@ -50,16 +50,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def setUsersTagVotesForResource(resource: Resource, user: User, tags: Set[Tag]) {
-    def clearTagsForResourceByUser(resource: Resource, user: User) {
-      for (handTagging <- getHandTaggingsForResourceByUser(resource, user)) {
-        // sessionFactory.getCurrentSession.delete(handTagging)
-      }
+    val withoutUsersTaggings = resource.resource_tags.filterNot(_.user_id == user._id).toSet
+    val newTaggings = tags.map(t => Tagging(tag_id = t._id, user_id = user._id))
+    val withNewTaggings = (withoutUsersTaggings ++ newTaggings).toSeq
+
+    val updated = resource match {
+      case n: Newsitem => n.copy(resource_tags = withNewTaggings)
+      case w: Website => w.copy(resource_tags = withNewTaggings)
+      case f: Feed => f.copy(resource_tags = withNewTaggings)
+      case l: Watchlist => l.copy(resource_tags = withNewTaggings)
     }
 
-    clearTagsForResourceByUser(resource, user)
-
-    for (tag <- tags) {
-      this.addTag(user, tag, resource)
+    mongoRepository.saveResource(updated).map { _ =>
+      contentUpdater.update(resource)
     }
   }
 

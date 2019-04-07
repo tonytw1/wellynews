@@ -24,7 +24,7 @@ import scala.concurrent.Await
     } { autotagUser =>
       val suggestedTags = placeAutoTagger.suggestTags(resource) ++ tagHintAutoTagger.suggestTags(resource);
       log.debug("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
-      if (!suggestedTags.isEmpty) {
+      if (suggestedTags.nonEmpty) {
         handTaggingDAO.setUsersTagVotesForResource(resource, autotagUser, suggestedTags)
       }
     }
