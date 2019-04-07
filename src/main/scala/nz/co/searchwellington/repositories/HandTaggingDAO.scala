@@ -49,10 +49,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   }
 
-  def setUsersTagVotesForResource(editResource: Resource, user: User, tags: Set[Tag]) {
-    this.clearTagsForResourceByUser(editResource, user)
+  def setUsersTagVotesForResource(resource: Resource, user: User, tags: Set[Tag]) {
+    def clearTagsForResourceByUser(resource: Resource, user: User) {
+      for (handTagging <- getHandTaggingsForResourceByUser(resource, user)) {
+        // sessionFactory.getCurrentSession.delete(handTagging)
+      }
+    }
+
+    clearTagsForResourceByUser(resource, user)
+
     for (tag <- tags) {
-      this.addTag(user, tag, editResource)
+      this.addTag(user, tag, resource)
     }
   }
 
@@ -74,12 +81,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @SuppressWarnings(Array("unchecked")) def getUsersVotes(user: User): Seq[HandTagging] = {
     // sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("user", user)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
     Seq() // TODO
-  }
-
-  private def clearTagsForResourceByUser(resource: Resource, user: User) {
-    for (handTagging <- getHandTaggingsForResourceByUser(resource, user)) {
-      // sessionFactory.getCurrentSession.delete(handTagging)
-    }
   }
 
   @SuppressWarnings(Array("unchecked")) private def getHandTaggingsForResourceByUser(resource: Resource, user: User): Seq[HandTagging] = {
