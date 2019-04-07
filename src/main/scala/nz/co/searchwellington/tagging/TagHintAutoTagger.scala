@@ -30,8 +30,7 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
       }
     }
 
-    val allTags = tagDAO.getAllTags()
-    val autoTags = allTags.filter(t => t.autotag_hints.exists(!Strings.isNullOrEmpty(_)))
+    val autoTags = tagDAO.getAllTags().filter(t => t.autotag_hints.exists(!Strings.isNullOrEmpty(_)))
 
     autoTags.filter(tag => matches(resource, tag)).toSet
   }
