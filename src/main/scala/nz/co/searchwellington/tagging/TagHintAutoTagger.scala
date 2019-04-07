@@ -18,27 +18,22 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
     def matches(resource: Resource, tag: Tag) : Boolean = {
 
       def resourceMatchesHint(resource: Resource, hint: String) : Boolean = {
-
         def matches(hint: String, value: String): Boolean = {
           !Strings.isNullOrEmpty(value) && value.toLowerCase().contains(hint.toLowerCase())
         }
-
-        val headlineMatchesHint = resource.title.exists(t => matches(hint, t))
-        val bodyMatchesTag = resource.description.exists(d => matches(hint, d))
-        headlineMatchesHint || bodyMatchesTag
+        resource.title.exists(t => matches(hint, t)) || resource.description.exists(d => matches(hint, d))
       }
 
       tag.getAutotagHints.exists { hintsString =>
-        if (!Strings.isNullOrEmpty(hintsString)) {
-          var hints = commaSplitter.split(hintsString)
-          hints.exists(hint => resourceMatchesHint(resource, hint))
-        } else {
-          false
-        }
+        val hints = commaSplitter.split(hintsString)
+        hints.exists(hint => resourceMatchesHint(resource, hint))
       }
     }
 
-    tagDAO.getAllTags().filter(tag => matches(resource, tag)).toSet
+    val allTags = tagDAO.getAllTags()
+    val autoTags = allTags.filter(t => t.autotag_hints.map(!Strings.isNullOrEmpty).getOrElse(false))
+
+    autoTags.filter(tag => matches(resource, tag)).toSet
   }
 
 }
