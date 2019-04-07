@@ -66,9 +66,6 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
         owner = owner.map(_._id)
       )
 
-      val mv = new ModelAndView("newFeed")
-      mv.addObject("newFeed", newFeed)
-
       contentUpdateService.create(feed)
       log.info("Created feed: " + feed)
 

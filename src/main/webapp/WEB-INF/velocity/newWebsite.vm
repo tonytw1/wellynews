@@ -7,10 +7,11 @@
 		#parse("includes/tag_tree.vm")
 	</div>
 
+
 	<div class="main">
-		<h2>Submitting a Feed</h2>
+		<h2>Submitting a Website</h2>
 		
-		<form id="editForm" action="/new-feed" method="POST">
+		<form id="editForm" action="/new-website" method="POST">
             <fieldset>
                 #springBind("newFeed.title")
                 <label for="${status.expression}">Title:</label>
@@ -19,16 +20,6 @@
 
                 #springBind("newFeed.url")
                 <label for="${status.expression}">URL:</label>
-                <input name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
-
-                #springBind("newFeed.publisher")
-                <label for="${status.expression}">Publisher:</label>
-                <input name="${status.expression}" class="title" value="$!{status.value}" />
-                <br />
-
-                #springBind("newFeed.acceptancePolicy")
-                <label for="${status.expression}">Acceptance policy:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
