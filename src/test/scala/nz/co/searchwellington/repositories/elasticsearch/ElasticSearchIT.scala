@@ -21,7 +21,8 @@ class ElasticSearchIT {
 
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
   val elasticSearchIndexer = new ElasticSearchIndexer(showBrokenDecisionService, "10.0.45.11", 32400)
-  val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository), mongoRepository)
+  val contentUpdater = null
+  val taggingReturnsOfficerService = new TaggingReturnsOfficerService(new HandTaggingDAO(mongoRepository, contentUpdater), mongoRepository)
 
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
