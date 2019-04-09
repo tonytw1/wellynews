@@ -15,7 +15,7 @@ import scala.concurrent.Await
                                                  mongoRepository: MongoRepository)
   extends ReasonableWaits {
 
-  private var log = Logger.getLogger(classOf[AutoTaggingService])
+  private val log = Logger.getLogger(classOf[AutoTaggingService])
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
   def autotag(resource: Newsitem): Set[HandTagging] = {

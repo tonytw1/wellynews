@@ -13,7 +13,7 @@ import scala.concurrent.Future
 @Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          feedItemAcceptor: FeedItemAcceptor) {
 
-  private var log = Logger.getLogger(classOf[AutoTaggingService])
+  private val log = Logger.getLogger(classOf[AutoTaggingService])
 
   def acceptNewsitem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Future[Newsitem] = {
     val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))

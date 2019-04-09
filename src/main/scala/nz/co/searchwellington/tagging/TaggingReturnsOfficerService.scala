@@ -17,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository)
   extends ReasonableWaits {
 
-  private var log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
+  private val log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
   // TODO These are a different responsibility to tagging votes
   def getHandTagsForResource(resource: Resource): Seq[Tag] = {
