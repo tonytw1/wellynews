@@ -269,7 +269,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
         submissionProcessingService.processTags(request, editResource, loggedInUser)
         if (newSubmission) {
           log.info("Applying the auto tagger to new submission.")
-          autoTagger.autotag(editResource)
+          // autoTagger.autotag(editResource) TODO
         }
         saveResource(request, loggedInUser, editResource)
         linkCheckerQueue.add(editResource.id)
