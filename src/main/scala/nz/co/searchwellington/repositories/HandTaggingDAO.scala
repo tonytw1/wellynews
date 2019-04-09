@@ -13,7 +13,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Deprecated // "tags are attached to resource document now"
-@Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository, contentUpdater: FrontendContentUpdater) {
+@Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository) {
   
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
   private val TenSeconds = Duration(10, SECONDS)
@@ -62,7 +62,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
 
     mongoRepository.saveResource(updated).map { _ =>
-      contentUpdater.update(resource)
+      //contentUpdater.update(resource)
     }
   }
 
