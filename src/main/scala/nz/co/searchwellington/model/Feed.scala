@@ -26,6 +26,8 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
                 var latestItemDate: Option[Date] = None,
                 var last_read: Option[Date] = None) extends PublishedResource {
 
+  def getId: String = id
+
   def getAcceptancePolicy: FeedAcceptancePolicy = acceptance
 
   def setAcceptancePolicy(acceptancePolicy: FeedAcceptancePolicy): Unit = this.acceptance = acceptancePolicy
