@@ -54,7 +54,6 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("newFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
-
     Await.result(mongoRepository.getResourceById(id), TenSeconds).map { r =>
       r match {
         case f: Feed =>
@@ -95,11 +94,12 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed)))
           }
         case _ =>
+          null
       }
 
     }.getOrElse {
       null
     }
-
   }
+
 }
