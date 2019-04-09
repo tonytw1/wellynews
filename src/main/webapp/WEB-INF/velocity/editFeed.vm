@@ -10,7 +10,7 @@
 	<div class="main">
 		<h2>Editing a feed</h2>
 		
-		<form id="editForm" action="/edit-feed/$feed.id" method="POST">
+		<form id="editForm" action="$adminUrlBuilder.getResourceEditUrl($feed)" method="POST">
             <fieldset>
                 #springBind("editFeed.title")
                 <label for="${status.expression}">Title:</label>

@@ -1,12 +1,10 @@
 package nz.co.searchwellington.controllers.admin
 
-import com.google.common.base.Strings
-import nz.co.searchwellington.model.{Resource, SiteInformation}
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.{Feed, Resource, SiteInformation}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component
 class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation, urlBuilder: UrlBuilder) {
@@ -16,7 +14,12 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation, urlBuilder:
   }
 
   def getResourceEditUrl(resource: Resource): String = {
-    siteInformation.getUrl + "/edit?resource=" + resource.id
+    resource match {
+      case f: Feed =>
+        "/edit-feed/" + f.id
+      case _ =>
+        siteInformation.getUrl + "/edit?resource=" + resource.id
+    }
   }
 
   def getResourceEditUrl(resourceId: Int): String = {
