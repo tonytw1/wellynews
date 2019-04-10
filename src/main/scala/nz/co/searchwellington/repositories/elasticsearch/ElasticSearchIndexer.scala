@@ -4,6 +4,7 @@ import com.sksamuel.elastic4s.DistanceUnit
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.delete.DeleteResponse
+import com.sksamuel.elastic4s.http.index.admin.IndexExistsResponse
 import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
 import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
@@ -33,6 +34,49 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
   private val Resources = "resources"
 
   val client = ElasticClient(ElasticProperties("http://" + elasticsearchHost + ":" + elasticsearchPort))
+
+  def ensureIndexes()= {
+    val exists = Await.result((client execute indexExists(Index)).map { r =>
+      val a: Response[IndexExistsResponse] = r
+      if(a.isSuccess) {
+        r.result.exists
+      } else {
+        throw new RuntimeException("Could not determine if index exists")
+      }
+    }, TenSeconds)
+
+    if (!exists) {
+      log.info("Index does not exist; creating")
+      createIndexes()
+    }
+  }
+
+  def createIndexes() = {
+    try {
+      val eventualCreateIndexResult = client.execute {
+        createIndex(Index) mappings (
+          mapping(Resources).fields(
+            field(Title) typed TextType analyzer StandardAnalyzer,
+            field(Type) typed KeywordType,
+            field(Date) typed DateType,
+            field(Description) typed TextType analyzer StandardAnalyzer,
+            field(Tags) typed KeywordType,
+            field(TaggingUsers) typed KeywordType,
+            field(Publisher) typed KeywordType,
+            field(Held) typed BooleanType,
+            field(Owner) typed KeywordType,
+            field(LatLong) typed GeoPointType
+          )
+          )
+      }
+
+      val result = Await.result(eventualCreateIndexResult, Duration(10, SECONDS))
+      log.info("Create indexes result: " + result)
+
+    } catch {
+      case e: Exception => log.error("Failed to created index", e)
+    }
+  }
 
   def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Unit = {
     log.info("Index batch of size: " + resources.size)
@@ -76,34 +120,6 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     client execute(
       delete(id.stringify) from Index / Resources
     )
-  }
-
-  def createIndexes() = {
-
-    try {
-      val eventualCreateIndexResult = client.execute {
-        createIndex(Index) mappings (
-          mapping(Resources).fields(
-            field(Title) typed TextType analyzer StandardAnalyzer,
-            field(Type) typed KeywordType,
-            field(Date) typed DateType,
-            field(Description) typed TextType analyzer StandardAnalyzer,
-            field(Tags) typed KeywordType,
-            field(TaggingUsers) typed KeywordType,
-            field(Publisher) typed KeywordType,
-            field(Held) typed BooleanType,
-            field(Owner) typed KeywordType,
-            field(LatLong) typed GeoPointType
-          )
-          )
-      }
-
-      val result = Await.result(eventualCreateIndexResult, Duration(10, SECONDS))
-      log.info("Create indexes result: " + result)
-
-    } catch {
-      case e: Exception => log.error("Failed to created index", e)
-    }
   }
 
   def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query)
