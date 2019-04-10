@@ -122,11 +122,20 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getOwnedBy(loggedInUser: User): Seq[FrontendResource] = {
+  def getOwnedBy(user: User): Seq[FrontendResource] = {
     Await.result(elasticSearchIndexer.getResources(
       ResourceQuery(
-        maxItems = MAX_NEWSITEMS_TO_SHOW,
-        owner = Some(loggedInUser._id)
+        owner = Some(user._id),
+        maxItems = MAX_NEWSITEMS_TO_SHOW
+      )
+    ).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  }
+
+  def getTaggedBy(user: User): Seq[FrontendResource] = {
+    Await.result(elasticSearchIndexer.getResources(
+      ResourceQuery(
+        taggingUser = Some(user._id),
+        maxItems = MAX_NEWSITEMS_TO_SHOW
       )
     ).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
@@ -253,11 +262,6 @@ import scala.concurrent.{Await, Future}
 
   def getDiscoveredFeeds: Seq[DiscoveredFeed] = {
     discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds
-  }
-
-  def getTaggedBy(user: User): Seq[FrontendResource] = {
-    Seq.empty  // TODO
-    // elasticSearchBackedResourceDAO.getHandTaggingsForUser(user, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getTagNamesStartingWith(q: String): Seq[String] = {

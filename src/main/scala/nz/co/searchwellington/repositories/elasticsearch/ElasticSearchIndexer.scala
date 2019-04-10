@@ -62,7 +62,8 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         publisher.map(p => Publisher -> p.stringify),
         Some(Held -> r._1.held),
         r._1.owner.map(o => Owner -> o.stringify),
-        latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude))
+        latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
+        Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify))
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
@@ -88,6 +89,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
             field(Date) typed DateType,
             field(Description) typed TextType analyzer StandardAnalyzer,
             field(Tags) typed KeywordType,
+            field(TaggingUsers) typed KeywordType,
             field(Publisher) typed KeywordType,
             field(Held) typed BooleanType,
             field(Owner) typed KeywordType,
@@ -176,6 +178,9 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       },
       query.circle.map { c =>
         geoDistanceQuery(LatLong).point(c.centre.getLatitude, c.centre.getLongitude).distance(c.radius, DistanceUnit.KILOMETERS)
+      },
+      query.taggingUser.map { tu =>
+        matchQuery(TaggingUsers, tu.stringify)
       }
     ).flatten
 
