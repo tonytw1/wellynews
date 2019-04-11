@@ -28,7 +28,7 @@ class FeedModelBuilderTest {
 
   val feedItem = mock(classOf[FeedItem])
   val anotherFeedItem = mock(classOf[FeedItem])
-  var feeditems: (Seq[FeedItem], Feed) = (Seq(feedItem, anotherFeedItem), feed)
+  var feeditems = Seq(feedItem, anotherFeedItem)
 
   val newsItem = mock(classOf[Newsitem])
   val anotherNewsitem = mock(classOf[Newsitem])
@@ -70,7 +70,7 @@ class FeedModelBuilderTest {
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(Seq())
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -81,7 +81,7 @@ class FeedModelBuilderTest {
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(Some(feeditems))
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(Seq())
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -91,7 +91,7 @@ class FeedModelBuilderTest {
 
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems._1)).thenReturn(geotaggedFeedNewsitems)
+    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(geotaggedFeedNewsitems)
     when(contentRetrievalService.getAllFeedsOrderByLatestItemDate()).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
