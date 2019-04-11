@@ -27,6 +27,10 @@
 			#end
 		</ul>
 
+        #if ($editPermissionService.canEdit($feed))
+            <p>$whakaoko_subcription</p>
+        #end
+
 		#if ($feed.lastRead)
 			<p>This feed was last read $dateFormatter.timeSince($feed.lastRead)</p>
 		#end

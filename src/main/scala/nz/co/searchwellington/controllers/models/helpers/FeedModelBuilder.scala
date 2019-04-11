@@ -37,6 +37,9 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
           val maybeItems = feedItems._1
           populateGeotaggedFeedItems(mv, maybeItems)
         }
+
+        val subscription = feedItems._2
+        mv.addObject("whakaoko_subscription", subscription)
       }
     }
 
