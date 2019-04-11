@@ -38,32 +38,25 @@ class AdminUrlBuilderTest {
   }
 
   @Test
-  @throws[Exception]
   def canConstructEditUrlForFrontendWebsite(): Unit = assertEquals("http://somesite.local/edit?resource=123", adminUrlBuilder.getResourceEditUrl(frontendWebsite))
 
   @Test
-  @throws[Exception]
   def canBuildEditUrlForNewsitems(): Unit = { //assertEquals("http://somesite.local/my-local-sports-team/2011/may/20/a-news-item/edit", adminUrlBuilder.getResourceEditUrl(frontendNewsitem));
     assertEquals("http://somesite.local/edit?resource=123", adminUrlBuilder.getResourceEditUrl(frontendNewsitem))
   }
 
   @Test
-  @throws[Exception]
   def canConstructEditUrlForFrontendFeed(): Unit = assertEquals("http://somesite.local/edit?resource=124", adminUrlBuilder.getResourceEditUrl(frontendFeed))
 
   @Test
-  @throws[Exception]
   def canConstructDeleteUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/delete?resource=123", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite))
 
   @Test
-  @throws[Exception]
   def canConstructCheckUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/admin/linkchecker/add?resource=123", adminUrlBuilder.getResourceCheckUrl(frontendWebsite))
 
   @Test
-  @throws[Exception]
   def canConstructViewSnapshotUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/my-local-sports-team/viewsnapshot", adminUrlBuilder.getViewSnapshotUrl(frontendWebsite))
 
   @Test
-  @throws[Exception]
   def canConstructAutoGatherUrlForPublisher(): Unit = assertEquals("http://somesite.local/my-local-sports-team/gather", adminUrlBuilder.getPublisherAutoGatherUrl(frontendWebsite))
 }
