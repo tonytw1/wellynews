@@ -29,17 +29,14 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
       rssfeedNewsitemService.getFeedItemsFor(feed).map { feedItems =>
-        if (feedItems._1.nonEmpty) {
-          val feedNewsitems = feedItems._1.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feedItems._2))
+        if (feedItems.nonEmpty) {
+          val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
           val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
-          val maybeItems = feedItems._1
+          val maybeItems = feedItems
           populateGeotaggedFeedItems(mv, maybeItems)
         }
-
-        val subscription = feedItems._2
-        mv.addObject("whakaoko_subscription", subscription)
       }
     }
 

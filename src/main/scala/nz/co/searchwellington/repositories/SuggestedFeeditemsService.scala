@@ -13,7 +13,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
                                                         feeditemToNewsitemService: FeeditemToNewsitemService) {
 
   def getSuggestionFeednewsitems(maxItems: Int): Seq[FrontendResource] = {
-    val channelFeedItems = rssfeedNewsitemService.getFeedItems()
+    val channelFeedItems = rssfeedNewsitemService.getChannelFeedItems()
     val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
 
     val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))

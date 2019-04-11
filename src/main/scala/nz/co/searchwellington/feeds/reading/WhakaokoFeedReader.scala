@@ -10,26 +10,26 @@ import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedReader])
 
-  def fetchFeedItems(): Seq[FeedItem] = {
+  def fetchChannelFeedItems(): Seq[FeedItem] = {
     whakaokoService.getChannelFeedItems()
   }
 
-  def fetchFeedItems(feed: Feed): Option[(Seq[FeedItem], Subscription)] = {
+  def fetchFeedItems(feed: Feed): Either[String, (Seq[FeedItem], Subscription)] = {
     log.debug("Fetching feed items for feed with url: " + feed.page)
-    feed.page.flatMap(whakaokoService.getWhakaokoSubscriptionByUrl).flatMap { subscription =>
+    feed.page.flatMap(whakaokoService.getWhakaokoSubscriptionByUrl).map { subscription =>
       log.debug("Feed url mapped to whakaoko subscription: " + subscription.getId)
 
       whakaokoService.getSubscriptionFeedItems(subscription.getId).fold(
         { l =>
-          log.warn("Feed fetch failed with: " + l)
-          None
+          Left(l)
         },
-        { result =>
-          val subscriptionFeedItems: Seq[FeedItem] = result
-          log.debug("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
-          Some((subscriptionFeedItems, subscription))
+        { subscriptionFeedItems =>
+          Right((subscriptionFeedItems, subscription))
         }
       )
+
+    }.getOrElse {
+      Left("No whakaoko subscription found for feed url")
     }
   }
 

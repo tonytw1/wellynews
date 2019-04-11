@@ -51,7 +51,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
       if (acceptancePolicy.shouldReadFeed) {
-        processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems.map(i => i._1).getOrElse(Seq.empty))
+        processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems.getOrElse(Seq.empty))
       }
       markFeedAsRead(feed)
       log.info("Done processing feed.")

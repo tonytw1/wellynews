@@ -87,6 +87,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
   }
 
+  /*  TODO reimplement
   @RequestMapping(Array("/edit/accept"))
   @throws[IllegalArgumentException]
   @throws[IOException]
@@ -128,6 +129,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       modelAndView
     }
   }
+  */
 
   @RequestMapping(Array("/edit/submit/website")) def submitWebsite(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWebsite")
