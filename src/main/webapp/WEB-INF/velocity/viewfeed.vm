@@ -22,6 +22,10 @@
                 $feed.acceptancePolicy
 			#end
 
+            #if ($editPermissionService.canEdit($feed))
+                <p>$whakaoko_subscription</p>
+            #end
+
 			#if ($editPermissionService.canAcceptAllFrom($feed))			
 				<li class="admin"><a href="$adminUrlBuilder.getAcceptAllFromFeed($feed)">Accept all</a></li>
 			#end
@@ -89,10 +93,11 @@
 					#end
                 </ul>
             </div>
-
-		#else 
-			<p>There was a problem loading this feed. No feed newsitems could be displayed.</p>
 		#end
+
+        #if($feed_error)
+			<p>There was a problem loading this feed. No feed newsitems could be displayed: $feed_error</p>
+        #end
 	</div>
 
 	<div class="right">

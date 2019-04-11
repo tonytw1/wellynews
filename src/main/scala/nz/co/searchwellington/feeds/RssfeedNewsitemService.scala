@@ -9,7 +9,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
+import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
 import scala.concurrent.Await
 
@@ -26,6 +26,12 @@ import scala.concurrent.Await
     }
   }
 
+  def getFeedItemsAndDetailsFor(feed: Feed): Either[String, (Seq[FeedItem], Subscription)] = {
+    log.info("Getting feed items for: " + feed.title + " / " + feed.page)
+    whakaokoFeedReader.fetchFeedItems(feed)
+  }
+
+  @Deprecated() // Should really use the above
   def getFeedItemsFor(feed: Feed): Option[Seq[FeedItem]] = {
     log.info("Getting feed items for: " + feed.title + " / " + feed.page)
     whakaokoFeedReader.fetchFeedItems(feed).fold(
