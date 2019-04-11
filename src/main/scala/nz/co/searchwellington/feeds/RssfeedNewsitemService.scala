@@ -28,7 +28,14 @@ import scala.concurrent.Await
 
   def getFeedItemsFor(feed: Feed): Option[(Seq[FeedItem], Feed)] = {
     log.info("Getting feed items for: " + feed.title + " / " + feed.page)
-    whakaokoFeedReader.fetchFeedItems(feed).map(i => (i._1, feed))
+    whakaokoFeedReader.fetchFeedItems(feed).fold(
+      { l =>
+        log.warn("Fetch feed items failed for " + feed.title + ": " + l)
+        None
+      }, { r =>
+        Some(r._1, feed)
+      }
+    )
   }
 
   def getLatestPublicationDate(feed: Feed): Option[Date] = {
