@@ -19,6 +19,7 @@ import scala.concurrent.{Await, Future}
 class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[MongoRepository])
+  private val AllDocuments: Int = Integer.MAX_VALUE
 
   def connect(): DefaultDB = {
     log.info("Connecting to Mongo: " + mongoUri)
@@ -175,12 +176,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getAllTags(): Future[Seq[Tag]] = {
-    tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
+    tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List](AllDocuments)
   }
 
   def getAllResourceIds(): Future[Seq[BSONObjectID]] = {
     val projection = BSONDocument("_id" -> 1)
-    resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](Integer.MAX_VALUE).map { r =>
+    resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](AllDocuments).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
   }
@@ -205,15 +206,17 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getAllFeeds(): Future[Seq[Feed]] = {
-    resourceCollection.find(BSONDocument("type" -> "F")).cursor[Feed]().collect[List]()
+    resourceCollection.find(BSONDocument("type" -> "F")).
+      cursor[Feed]().
+      collect[List](maxDocs = AllDocuments)
   }
 
   def getAllWatchlists(): Future[Seq[Watchlist]] = {
-    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List]()
+    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List](AllDocuments)
   }
 
   def getAllUsers(): Future[Seq[User]] = {
-    userCollection.find(BSONDocument.empty).cursor[User]().toList()
+    userCollection.find(BSONDocument.empty).cursor[User]().collect[List](AllDocuments)
   }
 
   def getUserByObjectId(objectId: BSONObjectID): Future[Option[User]] = {
