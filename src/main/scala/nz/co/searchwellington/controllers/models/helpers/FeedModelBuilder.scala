@@ -30,7 +30,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
       rssfeedNewsitemService.getFeedItemsFor(feed).map { feedItems =>
         if (feedItems._1.nonEmpty) {
-          val feedNewsitems: Seq[Newsitem] = feedItems._1.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feedItems._2))
+          val feedNewsitems = feedItems._1.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feedItems._2))
           val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
@@ -41,18 +41,15 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     }
 
     if (isValid(request)) {
-      val feed = request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed]
-      if (feed != null) {
+      val feedOnRequest = Option(request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed])
+      feedOnRequest.flatMap { feed =>
         feed.page.map { p =>
           val mv = new ModelAndView
-          val resource = frontendResourceMapper.createFrontendResourceFrom(feed)
-          mv.addObject("feed", resource)
+          mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed))
           commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), p)
           populateFeedItems(mv, feed)
           mv
         }
-      } else {
-        None
       }
 
     } else {
