@@ -8,7 +8,8 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.Subscription
 
 @Component
-class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation, urlBuilder: UrlBuilder,
+class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
+                                   urlBuilder: UrlBuilder,
                                    @Value("#{config['whakaoko.url']}") whakaokoUrl: String,
                                    @Value("#{config['whakaoko.username']}") whakaokoUsername: String) {
 

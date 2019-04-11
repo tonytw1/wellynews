@@ -27,7 +27,7 @@ class AdminUrlBuilderTest {
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
     when(siteInformation.getUrl).thenReturn(SITE_URL)
-    adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, new UrlWordsGenerator))
+    adminUrlBuilder = new AdminUrlBuilder(siteInformation, new UrlBuilder(siteInformation, new UrlWordsGenerator), "", "")
     frontendWebsite = FrontendWebsite(id = "123", name = "My local sports team", urlWords = "my-local-sports-team")
 
     frontendNewsitem = FrontendNewsitem(id = "123", name = "A news item", publisher = None,
