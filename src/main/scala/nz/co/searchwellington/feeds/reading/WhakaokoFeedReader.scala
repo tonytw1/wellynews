@@ -16,11 +16,20 @@ import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
   def fetchFeedItems(feed: Feed): Option[(Seq[FeedItem], Subscription)] = {
     log.debug("Fetching feed items for feed with url: " + feed.page)
-    feed.page.flatMap(whakaokoService.getWhakaokoSubscriptionByUrl).map { subscription =>
+    feed.page.flatMap(whakaokoService.getWhakaokoSubscriptionByUrl).flatMap { subscription =>
       log.debug("Feed url mapped to whakaoko subscription: " + subscription.getId)
-      val subscriptionFeedItems = whakaokoService.getSubscriptionFeedItems(subscription.getId)
-      log.debug("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
-      (subscriptionFeedItems, subscription)
+
+      whakaokoService.getSubscriptionFeedItems(subscription.getId).fold(
+        { l =>
+          log.warn("Feed fetch failed with: " + l)
+          None
+        },
+        { result =>
+          val subscriptionFeedItems: Seq[FeedItem] = result
+          log.debug("Got " + subscriptionFeedItems.size + " feed news items from whakaoko")
+          Some((subscriptionFeedItems, subscription))
+        }
+      )
     }
   }
 
