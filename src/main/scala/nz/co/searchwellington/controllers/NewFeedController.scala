@@ -23,7 +23,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository,
                                      urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                      whakaokoService: WhakaokoService,
-                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
+                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions {
 
   private val log = Logger.getLogger(classOf[NewFeedController])
 
@@ -87,8 +87,6 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   private def renderForm(newFeed: NewFeed) = {
-    val acceptancePolicyOptions = FeedAcceptancePolicy.values().map(_.name()).toSeq
-
     val mv = new ModelAndView("newFeed")
     import scala.collection.JavaConverters._
     mv.addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)

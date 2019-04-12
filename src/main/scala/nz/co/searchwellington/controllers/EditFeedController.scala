@@ -21,7 +21,7 @@ import scala.concurrent.Await
 class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                       mongoRepository: MongoRepository,
                                       urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                      loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
+                                      loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions {
 
   private val log = Logger.getLogger(classOf[EditFeedController])
 
@@ -100,6 +100,8 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     val mv = new ModelAndView("editFeed")
     mv.addObject("feed", f)
     mv.addObject("editFeed", editFeed)
+    import scala.collection.JavaConverters._
+    mv.addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
     return mv
   }
 

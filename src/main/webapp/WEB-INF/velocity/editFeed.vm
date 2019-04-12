@@ -29,7 +29,11 @@
 
                 #springBind("editFeed.acceptancePolicy")
                 <label for="${status.expression}">Acceptance policy:</label>
-                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <select name="${status.expression}">
+                  #foreach($option in $acceptancePolicyOptions)
+                      <option value="$option" #if($option == ${status.value}) SELECTED #end>$option
+                  #end
+                </select>
                 <br />
 
 				<input type="submit" value="Submit" />
