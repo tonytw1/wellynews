@@ -5,9 +5,9 @@ $(function() {
 			source: "http://wellington.gen.nz/ajax/tags"});
 	}
 	
-	if ($('#publisherName').length) {
-	    	$("#publisherName").autocomplete({
-        	    source: "http://wellington.gen.nz/ajax/publishers"});
+	if ($('#publisher').length) {
+	    	$("#publisher").autocomplete({
+        	    source: "/ajax/publishers"});
     	}
 	
 	if ($('#addTag').length) {

@@ -16,7 +16,6 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
   private val log = Logger.getLogger(classOf[PublisherAjaxController])
 
   @RequestMapping(Array("/ajax/publishers"))
-  @throws[IOException]
   override def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = super.handleRequest(request, response)
 
   override protected def getSuggestions(q: String): Seq[String] = {
