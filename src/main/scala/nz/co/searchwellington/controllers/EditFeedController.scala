@@ -32,16 +32,13 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
         case f: Feed =>
           val publisher = f.publisher.flatMap(pid => Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds))
 
-          val mv = new ModelAndView("editFeed")
           val editFeed = new EditFeed()
           editFeed.setTitle(f.title.getOrElse(""))
           editFeed.setUrl(f.page.getOrElse(""))
           editFeed.setPublisher(publisher.flatMap(_.title).getOrElse(""))
           editFeed.setAcceptancePolicy(f.acceptance)
 
-          mv.addObject("feed", f)
-          mv.addObject("editFeed", editFeed)
-          return mv
+          return renderEditForm(f, editFeed)
 
         case _ =>
           null   // TODO 404
@@ -60,10 +57,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
 
           if (result.hasErrors) {
             log.warn("Edit feed submission has errors: " + result)
-            val mv = new ModelAndView("editFeed")
-            mv.addObject("feed", f)
-            mv.addObject("editFeed", editFeed)
-            return mv
+            return renderEditForm(f, editFeed)
 
           } else {
             log.info("Got valid edit feed submission: " + editFeed)
@@ -100,6 +94,13 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
     }.getOrElse {
       null
     }
+  }
+
+  private def renderEditForm(f: Feed, editFeed: EditFeed): ModelAndView = {
+    val mv = new ModelAndView("editFeed")
+    mv.addObject("feed", f)
+    mv.addObject("editFeed", editFeed)
+    return mv
   }
 
 }
