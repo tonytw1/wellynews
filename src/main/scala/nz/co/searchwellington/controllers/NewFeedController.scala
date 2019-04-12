@@ -4,7 +4,7 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, UrlWordsGenerator}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -87,8 +87,13 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   private def renderForm(newFeed: NewFeed) = {
+    val acceptancePolicyOptions = FeedAcceptancePolicy.values().map(_.name()).toSeq
+
     val mv = new ModelAndView("newFeed")
+    import scala.collection.JavaConverters._
+    mv.addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
     mv.addObject("newFeed", newFeed)
     mv
   }
+
 }
