@@ -79,7 +79,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
   }
 
   def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Unit = {
-    log.info("Index batch of size: " + resources.size)
+    log.debug("Index batch of size: " + resources.size)
 
     val indexDefinitions = resources.map { r =>
       val publisher = r._1 match {

@@ -34,12 +34,12 @@ import scala.concurrent.{Await, Future}
 
   @throws[JsonProcessingException]
   private def reindexResources(resourcesToIndex: Seq[BSONObjectID]): Unit = {
-    log.info("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
+    log.debug("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
 
     var i = 0
     batches.foreach { batch =>
-      log.info("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
+      log.debug("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
       val start = DateTime.now
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
@@ -52,7 +52,7 @@ import scala.concurrent.{Await, Future}
       }
 
       val eventualIndexing = eventualWithIndexTags.map { rs =>
-        log.info("Submitting batch for indexing")
+        log.debug("Submitting batch for indexing")
         elasticSearchIndexer.updateMultipleContentItems(rs)
         i = i + rs.size
       }
