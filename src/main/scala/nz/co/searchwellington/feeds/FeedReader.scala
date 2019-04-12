@@ -77,7 +77,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           linkCheckerQueue.add(acceptedNewsitem._id.stringify)
         }
       } else {
-        log.info("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
+        log.debug("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
       }
     }
   }
