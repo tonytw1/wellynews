@@ -29,9 +29,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
   @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    val mv = new ModelAndView("newFeed")
-    mv.addObject("newFeed", new NewFeed())
-    return mv
+    renderForm(new NewFeed());
   }
 
   @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.POST))
@@ -78,17 +76,19 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
       } else {
         log.warn("New feed submission has errors: " + result)
-        val mv = new ModelAndView("newFeed")
-        mv.addObject("newFeed", newFeed)
-        mv
+        renderForm(newFeed)
+
       }
 
     } else {
       log.warn("New feed submission has errors: " + result)
-      val mv = new ModelAndView("newFeed")
-      mv.addObject("newFeed", newFeed)
-      mv
+      renderForm(newFeed)
     }
   }
 
+  private def renderForm(newFeed: NewFeed) = {
+    val mv = new ModelAndView("newFeed")
+    mv.addObject("newFeed", newFeed)
+    mv
+  }
 }
