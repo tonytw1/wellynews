@@ -147,12 +147,12 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getWebsiteByName(name: String): Future[Option[Website]] = {
-    getResourceBy(BSONDocument("type" -> "W", "title" -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
+    getResourceBy(BSONDocument("type" -> "W", "wellynews-7fc8868457-h2m5s " -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
   def getWebsiteByNamePrefix(q: String): Future[List[Website]] = {
     val prefixRegex = BSONDocument("$regex" -> ("/^" + q + "/i")) // TODO How to escape
-    resourceCollection.find(BSONDocument("type" -> "W", "name" -> prefixRegex)).cursor[Website]().collect[List]()
+    resourceCollection.find(BSONDocument("type" -> "W", "title" -> prefixRegex)).cursor[Website]().collect[List](10)
   }
 
   def getWebsiteByUrlwords(urlWords: String): Future[Option[Website]] = {
