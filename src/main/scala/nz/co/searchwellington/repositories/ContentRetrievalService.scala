@@ -16,6 +16,7 @@ import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.duration.{Duration, MINUTES}
 import scala.concurrent.{Await, Future}
 
 @Component class ContentRetrievalService @Autowired()( resourceDAO: HibernateResourceDAO,
@@ -269,7 +270,10 @@ import scala.concurrent.{Await, Future}
   }
 
   def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
-    resourceDAO.getPublisherNamesByStartingLetters(q)
+    log.info("Get publishers starting with '" + q + "'")
+    val results = Await.result(mongoRepository.getWebsiteByNamePrefix(q), TenSeconds).map(p => p.title.getOrElse(""))
+    log.info("Got: " + results.size)
+    results
   }
 
   def getOwnedByCount(loggedInUser: User): Int = {

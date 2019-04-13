@@ -11,11 +11,9 @@ abstract class BaseAjaxController {
   def viewFactory: ViewFactory
 
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val suggestions = if (request.getParameter(TERM) != null) {
-      getSuggestions(request.getParameter(TERM))
-    } else {
-      Seq.empty
-    }
+    val suggestions = Option(request.getParameter(TERM)).map { q =>
+      getSuggestions(q)
+    }.getOrElse(Seq.empty)
 
     val mv = new ModelAndView(viewFactory.getJsonView)
     import scala.collection.JavaConverters._

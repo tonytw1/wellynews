@@ -12,10 +12,6 @@ import scala.concurrent.duration._
 
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) {
 
-  def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
-    Await.result(mongoRepository.getWebsiteByNamePrefix(q), Duration(1, MINUTES)).map(p => p.title.getOrElse(""))
-  }
-
   def getAllFeeds: Seq[Feed] = {
     Await.result(mongoRepository.getAllFeeds(), Duration(10, SECONDS))
   }
