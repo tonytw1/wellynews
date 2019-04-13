@@ -151,7 +151,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getWebsiteByNamePrefix(q: String): Future[List[Website]] = {
-    val prefixRegex = BSONDocument("$regex" -> ("/^" + q + ".*/")) // TODO How to escape
+    val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*")) // TODO How to escape
     resourceCollection.find(BSONDocument("type" -> "W", "title" -> prefixRegex)).
       sort(BSONDocument("title" -> 1)).
       cursor[Website]().collect[List](10)
