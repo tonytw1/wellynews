@@ -63,13 +63,16 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             log.info("Got valid edit feed submission: " + editFeed)
 
             val publisherName = if (editFeed.getPublisher.trim.nonEmpty) {
+              log.info("Publisher is: " + editFeed.getPublisher.trim)
               Some(editFeed.getPublisher.trim)
             } else {
               None
             }
+
             val publisher = publisherName.flatMap { publisherName =>
               Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
             }
+            log.info("Resolved publisher: " + publisher)
 
             val owner = Option(loggedInUserFilter.getLoggedInUser)
 
