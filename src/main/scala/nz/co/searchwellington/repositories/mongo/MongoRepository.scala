@@ -147,7 +147,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getWebsiteByName(name: String): Future[Option[Website]] = {
-    getResourceBy(BSONDocument("type" -> "W", "wellynews-7fc8868457-h2m5s " -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
+    getResourceBy(BSONDocument("type" -> "W", "title" -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
   def getWebsiteByNamePrefix(q: String): Future[List[Website]] = {
