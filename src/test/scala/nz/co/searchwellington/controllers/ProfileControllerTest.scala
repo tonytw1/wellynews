@@ -10,6 +10,7 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
+import org.junit.Assert.assertEquals
 
 import scala.concurrent.Future
 
@@ -26,7 +27,11 @@ class ProfileControllerTest {
   @Mock private val existingUser: User = null
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
-  private val allActiveUsers: Seq[User] = null
+  
+  private val aUser = mock(classOf[User])
+  private val anotherUser = mock(classOf[User])
+  private val allActiveUsers = Seq(aUser, anotherUser)
+
   private var controller: ProfileController = null
   @Mock private val existingUsersSubmittedItems: Seq[FrontendResource] = null
   @Mock private val existingUsersTaggedItems: Seq[FrontendResource] = null
@@ -38,15 +43,14 @@ class ProfileControllerTest {
     response = new MockHttpServletResponse
   }
 
-  /*
   @Test
-  @throws[Exception]
   def allActiveProfilesShouldBeShownOnProfilesIndex {
     when(mongoRepository.getAllUsers()).thenReturn(Future.successful(allActiveUsers))
-    val mv = controller.all(request, response)
+    val mv = controller.profiles(request, response)
     assertEquals(allActiveUsers, mv.getModel.get("profiles"))
   }
 
+  /*
   @Test
   @throws[Exception]
   def usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService {
@@ -54,7 +58,7 @@ class ProfileControllerTest {
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
     when(contentRetrievalService.getOwnedBy(existingUser)).thenReturn(existingUsersSubmittedItems)
     when(contentRetrievalService.getTaggedBy(existingUser)).thenReturn(existingUsersTaggedItems)
-    val mv: ModelAndView = controller.view(request, response)
+    val mv = controller.view(request, response)
     assertEquals(existingUsersSubmittedItems, mv.getModel.get("submitted"))
     assertEquals(existingUsersTaggedItems, mv.getModel.get("tagged"))
   }
