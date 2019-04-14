@@ -14,11 +14,11 @@ import scala.concurrent.Future
 
 class ProfileControllerTest {
 
-  private val VALID_PROFILE_NAME: String = "tonytw1"
-  private val INVALID_PROFILE_NAME: String = "tony-tw1"
+  private val VALID_PROFILE_NAME = "tonytw1"
+  private val INVALID_PROFILE_NAME = "tony-tw1"
 
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val loggedInUserFilter: LoggedInUserFilter = mock(classOf[LoggedInUserFilter])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val commonModelObjectsService = mock(classOf[CommonModelObjectsService])
@@ -33,7 +33,7 @@ class ProfileControllerTest {
   private val existingUsersSubmittedItems = Seq(aResource, anotherResource)
   private val existingUsersTaggedItems = Seq(anotherResource)
 
-  private val controller: ProfileController = new ProfileController(mongoRepository, loggedInUserFilter, urlBuilder, contentRetrievalService, commonModelObjectsService)
+  private val controller = new ProfileController(mongoRepository, loggedInUserFilter, urlBuilder, contentRetrievalService, commonModelObjectsService)
 
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
