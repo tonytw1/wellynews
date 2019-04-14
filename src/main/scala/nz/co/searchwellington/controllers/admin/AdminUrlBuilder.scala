@@ -19,7 +19,7 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
 
   def getResourceEditUrl(resource: Resource): String = {
     resource match {
-      case f: Feed =>
+      case f: FrontendFeed =>
         "/edit-feed/" + f.id
       case _ =>
         siteInformation.getUrl + "/edit?resource=" + resource.id
