@@ -25,7 +25,7 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
   @Deprecated
   def getResourceEditUrl(resource: Resource): String = {
     resource match {
-      case f: FrontendFeed =>
+      case f: Feed =>
         "/edit-feed/" + f.id
       case _ =>
         siteInformation.getUrl + "/edit?resource=" + resource.id
