@@ -27,7 +27,7 @@ class ProfileControllerTest {
   @Mock private val existingUser: User = null
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
-  
+
   private val aUser = mock(classOf[User])
   private val anotherUser = mock(classOf[User])
   private val allActiveUsers = Seq(aUser, anotherUser)
@@ -80,7 +80,7 @@ class ProfileControllerTest {
 
   @Test
   @throws[Exception]
-  def newProfileNamesMustNotAlreadyBeTaken {
+  def newProfileNamesMustBeValidNotAlreadyTaken {
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
     assertFalse(controller.isValidAvailableProfilename(VALID_PROFILE_NAME))
   }
