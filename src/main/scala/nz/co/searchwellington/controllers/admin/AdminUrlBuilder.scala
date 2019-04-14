@@ -14,9 +14,15 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
                                    @Value("#{config['whakaoko.username']}") whakaokoUsername: String) {
 
   def getResourceEditUrl(resource: FrontendResource): String = {
-    siteInformation.getUrl + "/edit?resource=" + resource.getId
+    resource match {
+      case f: FrontendFeed =>
+        "/edit-feed/" + f.id
+      case _ =>
+        siteInformation.getUrl + "/edit?resource=" + resource.id
+    }
   }
 
+  @Deprecated
   def getResourceEditUrl(resource: Resource): String = {
     resource match {
       case f: FrontendFeed =>
