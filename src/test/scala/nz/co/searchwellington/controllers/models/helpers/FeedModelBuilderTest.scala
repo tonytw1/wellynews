@@ -13,7 +13,7 @@ import org.junit.{Before, Test}
 import org.mockito.Mock
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
+import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
 class FeedModelBuilderTest {
   val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
@@ -42,6 +42,8 @@ class FeedModelBuilderTest {
   val anotherGeotaggedFeeditem = mock(classOf[FeedItem])
   val geotaggedFeedNewsitems = Seq(geotaggedFeeditem, anotherGeotaggedFeeditem)
 
+  val subscription = mock(classOf[Subscription])
+
   @Mock var frontendFeed: FrontendResource = null
 
   var request: MockHttpServletRequest = null
@@ -51,7 +53,7 @@ class FeedModelBuilderTest {
 
   @Before
   def setUp {
-    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(Some(feeditems))
+    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Right((feeditems, subscription)))
 
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
@@ -79,7 +81,7 @@ class FeedModelBuilderTest {
 
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
-    when(rssfeedNewsitemService.getFeedItemsFor(feed)).thenReturn(Some(feeditems))
+    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Right((feeditems, subscription)))
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(Seq())
 

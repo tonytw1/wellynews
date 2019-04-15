@@ -31,19 +31,6 @@ import scala.concurrent.Await
     whakaokoFeedReader.fetchFeedItems(feed)
   }
 
-  @Deprecated() // Should really use the above
-  def getFeedItemsFor(feed: Feed): Option[Seq[FeedItem]] = {
-    log.info("Getting feed items for: " + feed.title + " / " + feed.page)
-    whakaokoFeedReader.fetchFeedItems(feed).fold(
-      { l =>
-        log.warn("Fetch feed items failed for " + feed.title + ": " + l)
-        None
-      }, { r =>
-        Some(r._1)
-      }
-    )
-  }
-
   def getLatestPublicationDate(feed: Feed): Option[Date] = {
     getFeedItemsFor(feed).flatMap { fis =>
       val publicationDates = fis.flatMap(fi => Option(fi.getDate))
@@ -68,6 +55,19 @@ import scala.concurrent.Await
     autoAcceptFeeds.exists { feed =>
       getFeedItemsFor(feed).getOrElse(Seq.empty).exists(ni => ni.getUrl == url)
     }
+  }
+
+  @Deprecated() // Should really use the Either return
+  private def getFeedItemsFor(feed: Feed): Option[Seq[FeedItem]] = {
+    log.info("Getting feed items for: " + feed.title + " / " + feed.page)
+    whakaokoFeedReader.fetchFeedItems(feed).fold(
+      { l =>
+        log.warn("Fetch feed items failed for " + feed.title + ": " + l)
+        None
+      }, { r =>
+        Some(r._1)
+      }
+    )
   }
 
 }
