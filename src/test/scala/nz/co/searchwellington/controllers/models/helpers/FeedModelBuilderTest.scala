@@ -4,16 +4,17 @@ import java.util.UUID
 
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendResource}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.Mock
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
+
+import scala.concurrent.Future
 
 class FeedModelBuilderTest {
   val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
@@ -32,7 +33,7 @@ class FeedModelBuilderTest {
 
   val newsItem = mock(classOf[Newsitem])
   val anotherNewsitem = mock(classOf[Newsitem])
-  var feedNewsitems: Seq[Newsitem] = Seq(newsItem, anotherNewsitem)
+  var feedNewsitems = Seq(newsItem, anotherNewsitem)
 
   val decoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
   val anotherDecoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
@@ -44,7 +45,7 @@ class FeedModelBuilderTest {
 
   val subscription = mock(classOf[Subscription])
 
-  @Mock var frontendFeed: FrontendResource = null
+  val frontendFeed = mock(classOf[FrontendFeed])
 
   var request: MockHttpServletRequest = null
 
@@ -53,7 +54,7 @@ class FeedModelBuilderTest {
 
   @Before
   def setUp {
-    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Right((feeditems, subscription)))
+    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right((feeditems, subscription))))
 
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
@@ -81,7 +82,7 @@ class FeedModelBuilderTest {
 
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
-    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Right((feeditems, subscription)))
+    when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right((feeditems, subscription))))
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation)
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(Seq())
 
