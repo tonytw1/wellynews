@@ -1,16 +1,17 @@
 package nz.co.searchwellington.widgets
 
-import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.repositories.HibernateResourceDAO
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.{Feed, Tag}
 import nz.co.searchwellington.repositories.TagDAO
-import org.apache.ecs.html.Option
-import org.apache.ecs.html.Select
+import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.apache.ecs.html.{Option, Select}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class TagsWidgetFactory @Autowired() (tagDAO: TagDAO, resourceDAO: HibernateResourceDAO) {
+import scala.concurrent.Await
+
+@Component class TagsWidgetFactory @Autowired() (tagDAO: TagDAO, mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagsWidgetFactory])
 
@@ -40,7 +41,7 @@ import org.springframework.stereotype.Component
     }
     relatedFeedSelect.addElement(noFeedOption)
 
-    resourceDAO.getAllFeeds.map { feed =>
+    Await.result(mongoRepository.getAllFeeds, TenSeconds).map { feed =>
       val option = new Option(feed.id)
       option.setFilterState(true)
       option.addElement(feed.title.getOrElse(feed.id.toString))

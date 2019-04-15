@@ -1,7 +1,5 @@
 package nz.co.searchwellington.repositories
 
-import java.util.Date
-
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,14 +9,6 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) {
-
-  def getAllFeeds: Seq[Feed] = {
-    Await.result(mongoRepository.getAllFeeds(), Duration(10, SECONDS))
-  }
-
-  def getFeedsToRead: Seq[Feed] = {
-    getAllFeeds.filterNot(f => f.acceptance == "ignore").sortBy(_.getLastRead).reverse
-  }
 
   def loadResourceById(resourceId: String): Option[Resource] = {
     Await.result(mongoRepository.getResourceById(resourceId), Duration(1, MINUTES))
