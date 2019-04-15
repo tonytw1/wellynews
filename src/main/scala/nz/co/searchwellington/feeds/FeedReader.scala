@@ -36,14 +36,20 @@ import scala.concurrent.Future
 
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read)
-      val feedNewsitems = rssfeedNewsitemService.getFeedItemsFor(feed)
-      log.info("Feed contains " + feedNewsitems.size + " items")
-      feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
-      if (acceptancePolicy.shouldReadFeed) {
-        processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems.getOrElse(Seq.empty))
-      }
-      markFeedAsRead(feed)
-      log.info("Done processing feed.")
+
+      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).fold({ l =>
+        log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
+
+      }, { r =>
+        val feedNewsitems = r._1
+        log.info("Feed contains " + feedNewsitems.size + " items")
+        feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
+        if (acceptancePolicy.shouldReadFeed) {
+          processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
+        }
+        markFeedAsRead(feed)
+        log.info("Done processing feed.")
+      })
 
     } catch {
       case e: Exception =>
