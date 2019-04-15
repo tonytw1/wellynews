@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.tagging.AutoTaggingService
@@ -23,45 +23,50 @@ extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
-  def processFeed(feed: Feed, loggedInUser: User): Unit = {
+  def processFeed(feed: Feed, loggedInUser: User): Future[Unit] = {
     processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
 
-  def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy): Unit = {
-
+  def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy): Future[Unit] = {
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read)
-
-      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { feedItems =>
-        feedItems.fold({ l =>
+      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsFetch =>
+        feedItemsFetch.fold({ l =>
           log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
+          Future.successful()
 
         }, { r =>
           val feedNewsitems = r._1
           log.info("Feed contains " + feedNewsitems.size + " items")
           feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
-          if (acceptancePolicy.shouldReadFeed) {
+
+          val eventualAccepted: Future[Seq[Newsitem]] = if (acceptancePolicy.shouldReadFeed) {
             processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
+          } else {
+            Future.successful(Seq.empty)
           }
 
-          contentUpdateService.update(feed.copy(
-            last_read = Some(DateTime.now.toDate),
-            latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(r._1)
-          ))
-          log.info("Done processing feed.")
+          eventualAccepted.map { accepted =>
+            log.info("Accepted " + accepted.size + " newsitems from " + feed.title)
+            contentUpdateService.update(feed.copy(
+              last_read = Some(DateTime.now.toDate),
+              latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems)
+            ))
+          }
         })
       }
 
     } catch {
       case e: Exception =>
         log.error(e, e)
+        Future.failed(e)
     }
   }
 
-  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem]): Future[Seq[Unit]] = {
+  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem]): Future[Seq[Newsitem]] = {
     log.info("Accepting feed items")
 
-    val eventualProcessed = feedNewsitems.map { feednewsitem => // TODO new up a new copy before modifying
+    val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>
 
       val cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl)
       feednewsitem.setUrl(cleanSubmittedItemUrl)    // TODO do not mutate inputs
@@ -71,15 +76,16 @@ extends ReasonableWaits {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
         feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed).map { acceptedNewsitem =>
           linkCheckerQueue.add(acceptedNewsitem._id.stringify)
+          Some(acceptedNewsitem)
         }
 
       } else {
         log.debug("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
-        Future.unit
+        Future.successful(None)
       }
     }
 
-    Future.sequence(eventualProcessed)
+    Future.sequence(eventualProcessed).map(_.flatten)
   }
 
 }
