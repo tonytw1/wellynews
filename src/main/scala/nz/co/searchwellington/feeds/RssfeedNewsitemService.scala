@@ -38,14 +38,19 @@ import scala.concurrent.{Await, Future}
   }
 
   def getLatestPublicationDate(feed: Feed): Future[Option[Date]] = {
+    
+    def latestPublicationDateOf(feedItems: Seq[FeedItem]) = {
+      val publicationDates = feedItems.flatMap(fi => Option(fi.getDate))
+      if (publicationDates.nonEmpty) {
+        Some(publicationDates.max)
+      } else {
+        None
+      }
+    }
+
     getFeedItemsAndDetailsFor(feed).map { r =>
       r.toOption.flatMap { right =>
-        val publicationDates = right._1.flatMap(fi => Option(fi.getDate))
-        if (publicationDates.nonEmpty) {
-          Some(publicationDates.max)
-        } else {
-          None
-        }
+        latestPublicationDateOf(right._1)
       }
     }
   }
