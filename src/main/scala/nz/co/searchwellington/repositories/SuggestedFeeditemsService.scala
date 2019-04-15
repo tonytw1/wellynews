@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SuggestedFeeditemsService @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                                         feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
@@ -18,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   ReasonableWaits {
 
   def getSuggestionFeednewsitems(maxItems: Int): Seq[FrontendResource] = {
-    val channelFeedItems = Await.result(rssfeedNewsitemService.getChannelFeedItems(), TenSeconds)
+    val channelFeedItems = Await.result(rssfeedNewsitemService.getChannelFeedItems, TenSeconds)
     val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
 
     val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
