@@ -1,7 +1,5 @@
 package nz.co.searchwellington.feeds
 
-import java.util.Calendar
-
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
@@ -25,8 +23,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
-  private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO inject
-
   def processFeed(feedId: BSONObjectID, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
     val feed = mongoRepository.getResourceByObjectId(feedId).asInstanceOf[Feed]
     processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy)
@@ -46,7 +42,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
 
     try {
-      log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read.map(dateFormatter.timeSince))
+      log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read)
       val feedNewsitems = rssfeedNewsitemService.getFeedItemsFor(feed)
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
