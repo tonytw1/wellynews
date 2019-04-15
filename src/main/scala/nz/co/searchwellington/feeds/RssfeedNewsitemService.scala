@@ -19,13 +19,16 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
-  def getChannelFeedItems(): Future[Seq[(FeedItem, Feed)]] = {
-    whakaokoFeedReader.fetchChannelFeedItems().map { channelFeedItems =>
-      channelFeedItems.map { i =>
-        Await.result(mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId), TenSeconds).map { feed =>
-          (i, feed)
-        } // TODO log missing feeds
-      }.flatten
+  def getChannelFeedItems: Future[Seq[(FeedItem, Feed)]] = {
+    whakaokoFeedReader.fetchChannelFeedItems().flatMap { channelFeedItems =>
+      val eventualMappedFeeds = channelFeedItems.map { i =>
+        mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId).map { maybeFeed =>
+          maybeFeed.map { feed =>
+            (i, feed)
+          } // TODO log missing feeds
+        }
+      }
+      Future.sequence(eventualMappedFeeds).map(_.flatten)
     }
   }
 
