@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
@@ -50,10 +51,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem]) = {
+  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem]): Future[Seq[Unit]] = {
     log.info("Accepting feed items")
 
-    feedNewsitems.map { feednewsitem => // TODO new up a new copy before modifying
+    val eventualProcessed = feedNewsitems.map { feednewsitem => // TODO new up a new copy before modifying
 
       val cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl)
       feednewsitem.setUrl(cleanSubmittedItemUrl)    // TODO do not mutate inputs
@@ -64,10 +65,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
         feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed).map { acceptedNewsitem =>
           linkCheckerQueue.add(acceptedNewsitem._id.stringify)
         }
+
       } else {
         log.debug("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
+        Future.unit
       }
     }
+
+    Future.sequence(eventualProcessed)
   }
 
 }
