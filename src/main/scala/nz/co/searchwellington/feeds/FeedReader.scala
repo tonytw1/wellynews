@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
@@ -12,12 +13,13 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
-                                         linkCheckerQueue: LinkCheckerQueue, feedReaderUpdateService: FeedReaderUpdateService) {
+                                         linkCheckerQueue: LinkCheckerQueue, feedReaderUpdateService: FeedReaderUpdateService)
+extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
@@ -37,7 +39,8 @@ import scala.concurrent.Future
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read)
 
-      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).fold({ l =>
+      val feedItems = Await.result(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed), TenSeconds)
+      feedItems.fold({ l =>
         log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
 
       }, { r =>

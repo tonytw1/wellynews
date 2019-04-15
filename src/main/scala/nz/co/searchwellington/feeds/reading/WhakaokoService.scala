@@ -1,10 +1,14 @@
 package nz.co.searchwellington.feeds.reading
 
+import java.util
+
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.WhakaoroClient
 import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
+
+import scala.concurrent.Future
 
 @Component class WhakaokoService @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUrl: String,
                                               @Value("#{config['whakaoko.username']}") whakaokoUsername: String,
@@ -12,7 +16,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
   private val log = Logger.getLogger(classOf[WhakaokoService])
 
-  private val client: WhakaoroClient = new WhakaoroClient(whakaokoUrl)
+  private val client = new WhakaoroClient(whakaokoUrl)
 
   def createFeedSubscription(feedUrl: String): Option[String] = {
     log.info("Requesting Whakaoko subscription for feed: " + feedUrl)
@@ -34,17 +38,17 @@ import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
     subscriptions.find(s => s.getUrl == url)
   }
 
-  def getSubscriptionFeedItems(subscriptionId: String): Either[String, Seq[FeedItem]] = {
+  def getSubscriptionFeedItems(subscriptionId: String): Future[Either[String, Seq[FeedItem]]] = {
     try {
       import scala.collection.JavaConversions._
-      Right(client.getSubscriptionFeedItems(whakaokoUsername, subscriptionId))
+      Future.successful(Right(client.getSubscriptionFeedItems(whakaokoUsername, subscriptionId)))
     } catch {
       case e: Exception =>
-        Left(e.getMessage)
+        Future.successful(Left(e.getMessage))
     }
   }
 
-  def getChannelFeedItems(): Seq[FeedItem] = {
+  def getChannelFeedItems(): Future[Seq[FeedItem]] = {
     try {
       /*
       val channelFeedItems: java.util.List[FeedItem] = Lists.newArrayList()
@@ -60,12 +64,12 @@ import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
       */
 
       import scala.collection.JavaConversions._
-      client.getChannelFeedItems(whakaokoUsername, whakaokoChannel, 0) // TODO restore pagination
+      Future.successful(client.getChannelFeedItems(whakaokoUsername, whakaokoChannel, 0)) // TODO restore pagination
 
     } catch {
       case e: Exception => {
         log.error(e)
-        Seq()
+        Future.successful(Seq())
       }
     }
   }

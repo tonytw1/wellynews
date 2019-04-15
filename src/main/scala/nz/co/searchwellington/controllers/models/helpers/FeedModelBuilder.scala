@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -12,11 +13,14 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
+import scala.concurrent.Await
+
 @Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, contentRetrievalService: ContentRetrievalService,
                                                geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedNewsItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                                frontendResourceMapper: FrontendResourceMapper,
                                                commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                               feeditemToNewsitemService: FeeditemToNewsitemService) extends ModelBuilder {
+                                               feeditemToNewsitemService: FeeditemToNewsitemService) extends ModelBuilder
+  with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedModelBuilder])
   private val FEED_ATTRIBUTE = "feedAttribute"
@@ -28,17 +32,18 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
-      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).fold({ l =>
+      val feedItemsForFeed = Await.result(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed), TenSeconds)
+      feedItemsForFeed.fold({ l =>
         mv.addObject("feed_error", l)
 
       }, { result =>
-          val feedItems = result._1
-          val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
-          val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
-          import scala.collection.JavaConverters._
-          mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
-          populateGeotaggedFeedItems(mv, feedItems)
-          mv.addObject("whakaoko_subscription", result._2)
+        val feedItems = result._1
+        val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
+        val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
+        populateGeotaggedFeedItems(mv, feedItems)
+        mv.addObject("whakaoko_subscription", result._2)
       })
     }
 

@@ -11,22 +11,25 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
-import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class RssfeedNewsitemService @Autowired()(whakaokoFeedReader: WhakaokoFeedReader, mongoRepository: MongoRepository)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
-  def getChannelFeedItems(): Seq[(FeedItem, Feed)] = {
-    whakaokoFeedReader.fetchChannelFeedItems().flatMap { i =>
-      Await.result(mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId), TenSeconds).map { feed =>
-        (i, feed)
-      } // TODO log about missing feeds
+  def getChannelFeedItems(): Future[Seq[(FeedItem, Feed)]] = {
+    whakaokoFeedReader.fetchChannelFeedItems().map { channelFeedItems =>
+      channelFeedItems.map { i =>
+        Await.result(mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId), TenSeconds).map { feed =>
+          (i, feed)
+        } // TODO log missing feeds
+      }.flatten
     }
   }
 
-  def getFeedItemsAndDetailsFor(feed: Feed): Either[String, (Seq[FeedItem], Subscription)] = {
+  def getFeedItemsAndDetailsFor(feed: Feed): Future[Either[String, (Seq[FeedItem], Subscription)]] = {
     log.info("Getting feed items for: " + feed.title + " / " + feed.page)
     whakaokoFeedReader.fetchFeedItems(feed)
   }
@@ -60,7 +63,8 @@ import scala.concurrent.Await
   @Deprecated() // Should really use the Either return
   private def getFeedItemsFor(feed: Feed): Option[Seq[FeedItem]] = {
     log.info("Getting feed items for: " + feed.title + " / " + feed.page)
-    whakaokoFeedReader.fetchFeedItems(feed).fold(
+    val feedItems = Await.result(whakaokoFeedReader.fetchFeedItems(feed), TenSeconds)
+    feedItems.fold(
       { l =>
         log.warn("Fetch feed items failed for " + feed.title + ": " + l)
         None
