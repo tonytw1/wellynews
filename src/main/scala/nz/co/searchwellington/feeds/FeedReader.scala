@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
@@ -29,15 +29,6 @@ extends ReasonableWaits {
 
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy): Unit = {
 
-    def markFeedAsRead(feed: Feed): Future[Unit] = {
-      rssfeedNewsitemService.getLatestPublicationDate(feed).map { latestItemDate => // TODO duplicate feed items read
-        contentUpdateService.update(feed.copy(
-          last_read = Some(DateTime.now.toDate),
-          latestItemDate = latestItemDate
-        ))
-      }
-    }
-
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read)
 
@@ -52,7 +43,11 @@ extends ReasonableWaits {
           if (acceptancePolicy.shouldReadFeed) {
             processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
           }
-          markFeedAsRead(feed)
+
+          contentUpdateService.update(feed.copy(
+            last_read = Some(DateTime.now.toDate),
+            latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(r._1)
+          ))
           log.info("Done processing feed.")
         })
       }
