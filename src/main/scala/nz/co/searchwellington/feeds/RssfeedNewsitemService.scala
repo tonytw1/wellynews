@@ -37,13 +37,15 @@ import scala.concurrent.{Await, Future}
     whakaokoFeedReader.fetchFeedItems(feed)
   }
 
-  def getLatestPublicationDate(feed: Feed): Option[Date] = {
-    getFeedItemsFor(feed).flatMap { fis =>
-      val publicationDates = fis.flatMap(fi => Option(fi.getDate))
-      if (publicationDates.nonEmpty) {
-        Some(publicationDates.max)
-      } else {
-        None
+  def getLatestPublicationDate(feed: Feed): Future[Option[Date]] = {
+    getFeedItemsAndDetailsFor(feed).map { r =>
+      r.toOption.flatMap { right =>
+        val publicationDates = right._1.flatMap(fi => Option(fi.getDate))
+        if (publicationDates.nonEmpty) {
+          Some(publicationDates.max)
+        } else {
+          None
+        }
       }
     }
   }

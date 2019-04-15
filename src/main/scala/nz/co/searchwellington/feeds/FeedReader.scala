@@ -29,11 +29,13 @@ extends ReasonableWaits {
 
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy): Unit = {
 
-    def markFeedAsRead(feed: Feed): Unit = {
-      contentUpdateService.update(feed.copy(
-        last_read = Some(DateTime.now.toDate),
-        latestItemDate = rssfeedNewsitemService.getLatestPublicationDate(feed)
-      ))
+    def markFeedAsRead(feed: Feed): Future[Unit] = {
+      rssfeedNewsitemService.getLatestPublicationDate(feed).map { latestItemDate =>
+        contentUpdateService.update(feed.copy(
+          last_read = Some(DateTime.now.toDate),
+          latestItemDate = latestItemDate
+        ))
+      }
     }
 
     try {
