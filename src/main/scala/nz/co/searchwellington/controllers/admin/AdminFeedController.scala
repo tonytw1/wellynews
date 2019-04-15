@@ -23,9 +23,6 @@ import org.springframework.web.servlet.view.RedirectView
   private val log = Logger.getLogger(classOf[AdminFeedController])
 
   @RequestMapping(Array("/admin/feed/acceptall"))
-  @throws[IllegalArgumentException]
-  @throws[FeedException]
-  @throws[IOException]
   def acceptAllFrom(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     requestFilter.loadAttributesOntoRequest(request)
     if (request.getAttribute("feedAttribute") == null) throw new RuntimeException("Not found") // TODO
@@ -34,7 +31,7 @@ import org.springframework.web.servlet.view.RedirectView
       log.warn("Not allowed to read this feed") // TODO return http auth error
       throw new RuntimeException("Not allowed")
     }
-    feedReader.processFeed(feed._id, loggedInUserFilter.getLoggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
+    feedReader.processFeed(feed, loggedInUserFilter.getLoggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
     new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
   }
 

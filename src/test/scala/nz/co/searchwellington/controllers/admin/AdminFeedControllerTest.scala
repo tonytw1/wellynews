@@ -45,7 +45,7 @@ class AdminFeedControllerTest {
 
     controller.acceptAllFrom(request, response)
 
-    Mockito.verify(feedReader).processFeed(FEED_OBJECT_ID, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
+    Mockito.verify(feedReader).processFeed(feed, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
   }
 
 }

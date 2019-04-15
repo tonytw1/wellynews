@@ -3,36 +3,28 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
-import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.bson.BSONObjectID
-import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class FeedReader @Autowired()(mongoRepository: MongoRepository, rssfeedNewsitemService: RssfeedNewsitemService,
+@Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          linkCheckerQueue: LinkCheckerQueue, feedReaderUpdateService: FeedReaderUpdateService) {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
-  def processFeed(feedId: BSONObjectID, loggedInUser: User, manuallySpecifiedAcceptancePolicy: FeedAcceptancePolicy): Unit = { // TODO interface should be feeds not feed ids?
-    val feed = mongoRepository.getResourceByObjectId(feedId).asInstanceOf[Feed]
-    processFeed(feed, loggedInUser, manuallySpecifiedAcceptancePolicy)
-  }
-
   def processFeed(feed: Feed, loggedInUser: User): Unit = {
     processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
 
-  private def processFeed(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy): Unit = {
+  def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy): Unit = {
 
     def markFeedAsRead(feed: Feed): Unit = {
       contentUpdateService.update(feed.copy(
@@ -47,7 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.info("Feed contains " + feedNewsitems.size + " items")
       feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
       if (acceptancePolicy.shouldReadFeed) {
-        processFeedItems(feed, feedReaderUser, acceptancePolicy, feedNewsitems.getOrElse(Seq.empty))
+        processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems.getOrElse(Seq.empty))
       }
       markFeedAsRead(feed)
       log.info("Done processing feed.")
