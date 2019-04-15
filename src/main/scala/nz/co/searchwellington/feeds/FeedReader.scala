@@ -30,7 +30,7 @@ extends ReasonableWaits {
   def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy): Unit = {
 
     def markFeedAsRead(feed: Feed): Future[Unit] = {
-      rssfeedNewsitemService.getLatestPublicationDate(feed).map { latestItemDate =>
+      rssfeedNewsitemService.getLatestPublicationDate(feed).map { latestItemDate => // TODO duplicate feed items read
         contentUpdateService.update(feed.copy(
           last_read = Some(DateTime.now.toDate),
           latestItemDate = latestItemDate
@@ -41,20 +41,21 @@ extends ReasonableWaits {
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read)
 
-      val feedItems = Await.result(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed), TenSeconds)
-      feedItems.fold({ l =>
-        log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
+      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { feedItems =>
+        feedItems.fold({ l =>
+          log.warn("Could new get feed items for feed + '" + feed.title + "':" + l)
 
-      }, { r =>
-        val feedNewsitems = r._1
-        log.info("Feed contains " + feedNewsitems.size + " items")
-        feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
-        if (acceptancePolicy.shouldReadFeed) {
-          processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
-        }
-        markFeedAsRead(feed)
-        log.info("Done processing feed.")
-      })
+        }, { r =>
+          val feedNewsitems = r._1
+          log.info("Feed contains " + feedNewsitems.size + " items")
+          feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
+          if (acceptancePolicy.shouldReadFeed) {
+            processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
+          }
+          markFeedAsRead(feed)
+          log.info("Done processing feed.")
+        })
+      }
 
     } catch {
       case e: Exception =>
