@@ -12,7 +12,6 @@ import scala.concurrent.Await
 
 @Component class SuggestedFeeditemsService @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                                         feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
-                                                        resourceDAO: HibernateResourceDAO,
                                                         feeditemToNewsitemService: FeeditemToNewsitemService) extends
   ReasonableWaits {
 
