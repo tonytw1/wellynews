@@ -5,18 +5,21 @@ import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.task.TaskExecutor
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 import scala.concurrent.duration.{Duration, SECONDS}
-import scala.concurrent.{Await, Future}
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, ExecutionContext, Future}
 
-@Component class FeedReaderRunner @Autowired()(feedReader: FeedReader, mongoRepository: MongoRepository)
+@Component class FeedReaderRunner @Autowired()(feedReader: FeedReader, mongoRepository: MongoRepository,
+                                               feedReaderTaskExecutor: TaskExecutor)  // TODO named bean
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
   private val FEED_READER_PROFILE_NAME = "feedreader"
+
+  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
 
   @Scheduled(cron = "0 */10 * * * *")
   def readFeeds {

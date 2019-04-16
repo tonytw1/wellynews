@@ -1,9 +1,6 @@
 package nz.co.searchwellington.controllers.admin
 
-import java.io.IOException
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-
-import com.sun.syndication.io.FeedException
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.feeds.FeedReader
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -16,6 +13,8 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class AdminFeedController @Autowired()(requestFilter: AdminRequestFilter, feedReader: FeedReader, urlBuilder: UrlBuilder,
                                                    permissionService: EditPermissionService, loggedInUserFilter: LoggedInUserFilter) {

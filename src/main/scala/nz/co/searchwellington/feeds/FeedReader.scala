@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
@@ -23,11 +22,11 @@ extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
-  def processFeed(feed: Feed, loggedInUser: User): Future[Unit] = {
+  def processFeed(feed: Feed, loggedInUser: User)(implicit ec: ExecutionContext): Future[Unit] = {
     processFeed(feed, loggedInUser, feed.getAcceptancePolicy)
   }
 
-  def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy): Future[Unit] = {
+  def processFeed(feed: Feed, readingUser: User, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Unit] = {
     try {
       log.info("Processing feed: " + feed.title + " using acceptance policy '" + acceptancePolicy + "'. Last read: " + feed.last_read)
       rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsFetch =>
@@ -63,7 +62,7 @@ extends ReasonableWaits {
     }
   }
 
-  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem]): Future[Seq[Newsitem]] = {
+  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Newsitem]] = {
     log.info("Accepting feed items")
 
     val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>

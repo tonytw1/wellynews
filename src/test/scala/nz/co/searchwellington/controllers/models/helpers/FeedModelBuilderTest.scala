@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class FeedModelBuilderTest {
   val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])

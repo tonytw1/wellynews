@@ -11,15 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class RssfeedNewsitemService @Autowired()(whakaokoFeedReader: WhakaokoFeedReader, mongoRepository: MongoRepository)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
-  def getChannelFeedItems: Future[Seq[(FeedItem, Feed)]] = {
+  def getChannelFeedItems()(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
     whakaokoFeedReader.fetchChannelFeedItems().flatMap { channelFeedItems =>
       val eventualMappedFeeds = channelFeedItems.map { i =>
         mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId).map { maybeFeed =>
@@ -32,12 +31,12 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def getFeedItemsAndDetailsFor(feed: Feed): Future[Either[String, (Seq[FeedItem], Subscription)]] = {
+  def getFeedItemsAndDetailsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Subscription)]] = {
     log.info("Getting feed items for: " + feed.title + " / " + feed.page)
     whakaokoFeedReader.fetchFeedItems(feed)
   }
 
-  def getLatestPublicationDate(feed: Feed): Future[Option[Date]] = {
+  def getLatestPublicationDate(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Date]] = {
     getFeedItemsAndDetailsFor(feed).map { r =>
       r.toOption.flatMap { right =>
         latestPublicationDateOf(right._1)

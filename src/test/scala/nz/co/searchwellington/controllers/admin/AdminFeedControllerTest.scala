@@ -13,6 +13,8 @@ import org.mockito.{Mock, Mockito, MockitoAnnotations}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 import reactivemongo.bson.BSONObjectID
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class AdminFeedControllerTest {
 
   private val FEED_ID = UUID.randomUUID().toString
