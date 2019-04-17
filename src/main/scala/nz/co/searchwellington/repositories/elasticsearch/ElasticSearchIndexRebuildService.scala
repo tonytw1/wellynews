@@ -25,7 +25,7 @@ import scala.concurrent.{Await, Future}
   @throws[JsonProcessingException]
   def buildIndex(deleteAll: Boolean): Unit = {
     elasticSearchIndexer.ensureIndexes
-    val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), Duration(1, MINUTES))
+    val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), OneMinute)
     reindexResources(resourcesToIndex)
   }
 
