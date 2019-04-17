@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
-                                         linkCheckerQueue: LinkCheckerQueue, feedReaderUpdateService: FeedReaderUpdateService)
+                                         feedReaderUpdateService: FeedReaderUpdateService)
 extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
@@ -74,7 +74,6 @@ extends ReasonableWaits {
       if (acceptanceErrors.isEmpty) {
         log.info("Accepting newsitem: " + feednewsitem.getUrl)
         feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed).map { acceptedNewsitem =>
-          linkCheckerQueue.add(acceptedNewsitem._id.stringify)
           Some(acceptedNewsitem)
         }
 
