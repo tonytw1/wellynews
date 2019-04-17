@@ -1,6 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import com.fasterxml.jackson.core.JsonProcessingException
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -15,7 +16,7 @@ import scala.concurrent.duration.{Duration, MINUTES}
 import scala.concurrent.{Await, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer,
-                                                               taggingReturnsOfficerService: TaggingReturnsOfficerService) {
+                                                               taggingReturnsOfficerService: TaggingReturnsOfficerService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ElasticSearchIndexRebuildService])
 
@@ -51,12 +52,14 @@ import scala.concurrent.{Await, Future}
         })
       }
 
-      val eventualIndexing = eventualWithIndexTags.map { rs =>
+      val eventualIndexed = eventualWithIndexTags.flatMap { rs =>
         log.debug("Submitting batch for indexing")
-        elasticSearchIndexer.updateMultipleContentItems(rs)
-        i = i + rs.size
+        elasticSearchIndexer.updateMultipleContentItems(rs).map { r =>
+          r.result.successes.size
+        }
       }
-      Await.result(eventualIndexing, Duration(1, MINUTES))
+
+      i = i + Await.result(eventualIndexed, TenSeconds)
     }
 
     log.info("Index rebuild complete")

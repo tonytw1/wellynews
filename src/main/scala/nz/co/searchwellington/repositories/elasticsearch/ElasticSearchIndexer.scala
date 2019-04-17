@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 import com.sksamuel.elastic4s.DistanceUnit
 import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
+import com.sksamuel.elastic4s.http.bulk.BulkResponse
 import com.sksamuel.elastic4s.http.delete.DeleteResponse
 import com.sksamuel.elastic4s.http.index.admin.IndexExistsResponse
 import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
@@ -78,7 +79,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     }
   }
 
-  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Unit = {
+  def updateMultipleContentItems(resources: Seq[(Resource, Seq[String])]): Future[Response[BulkResponse]] = {
     log.debug("Index batch of size: " + resources.size)
 
     val indexDefinitions = resources.map { r =>
@@ -113,7 +114,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
     }
 
-    Await.result(client.execute (bulk(indexDefinitions)), TenSeconds)
+    client.execute (bulk(indexDefinitions)
   }
 
   def deleteResource(id: BSONObjectID): Future[Response[DeleteResponse]] = {
