@@ -7,6 +7,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.api.commands.UpdateWriteResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -39,8 +40,9 @@ import scala.concurrent.Future
       }
       */
 
-      mongoRepository.saveResource(resource)
-      frontendContentUpdater.update(resource)
+      mongoRepository.saveResource(resource).map { _ =>
+        frontendContentUpdater.update(resource)
+      }
     }
     catch {
       case e: Exception =>
