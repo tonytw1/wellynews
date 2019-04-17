@@ -114,7 +114,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
     }
 
-    client.execute (bulk(indexDefinitions)
+    client.execute (bulk(indexDefinitions))
   }
 
   def deleteResource(id: BSONObjectID): Future[Response[DeleteResponse]] = {
