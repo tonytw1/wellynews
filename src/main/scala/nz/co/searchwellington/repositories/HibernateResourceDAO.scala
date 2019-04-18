@@ -96,21 +96,6 @@ import scala.concurrent.duration._
     null
   }
 
-  def saveResource(resource: Resource) {
-    /*
-    if (resource.getType == "N") {
-      if ((resource.asInstanceOf[Newsitem]).getImage != null) {
-        sessionFactory.getCurrentSession.saveOrUpdate((resource.asInstanceOf[Newsitem]).getImage)
-      }
-    }
-    sessionFactory.getCurrentSession.saveOrUpdate(resource)
-    if (resource.getType == "F") {
-      sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds")
-    }
-    */
-    null
-  }
-
   def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed) {
     // sessionFactory.getCurrentSession.saveOrUpdate(discoveredFeed)
     null // TODO
@@ -120,22 +105,5 @@ import scala.concurrent.duration._
       // return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).createCriteria("tags").add(Restrictions.eq("id", tag.getId)).list.asInstanceOf[List[Resource]]
     Seq()
   }
-
-  def deleteResource(resource: Resource) {
-//    sessionFactory.getCurrentSession.delete(resource)
- //   sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.feeds")
-  //  sessionFactory.evictCollection("nz.co.searchwellington.model.WebsiteImpl.watchlist")
-   // sessionFactory.evictCollection("nz.co.searchwellington.model.DiscoveredFeed.references")
-  }
-
-  def getTagsMatchingKeywords(keywords: String): Seq[Tag] = {
-    throw (new UnsupportedOperationException)
-  }
-
-  @SuppressWarnings(Array("unchecked")) def getResourcesWithTag(tag: Tag): Seq[Resource] = {
-   // val taggedResources = sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).addOrder(Order.desc("date")).addOrder(Order.desc("id")).createAlias("tags", "rt").add(Restrictions.eq("rt.id", tag.getId))
-   // taggedResources.list.asInstanceOf[List[Resource]]
-      Seq()
-   }
 
 }
