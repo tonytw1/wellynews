@@ -242,7 +242,7 @@ import scala.concurrent.{Await, Future}
   }
 
   def getPublisherTagCombinerNewsitems(publisherUrlWords: String, tagName: String, maxNewsitems: Int): Seq[FrontendResource] = {
-    resourceDAO.getPublisherByUrlWords(publisherUrlWords).flatMap { p =>
+    Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).flatMap { p =>
       tagDAO.loadTagByName(tagName).map { t =>
         getPublisherTagCombinerNewsitems(p, t, maxNewsitems)
       }

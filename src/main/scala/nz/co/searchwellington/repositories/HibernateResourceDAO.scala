@@ -19,9 +19,6 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getWebsiteByName(name), Duration(1, MINUTES))
 
   }
-  def getPublisherByUrlWords(urlWords: String): Option[Website] = {
-    Await.result(mongoRepository.getWebsiteByUrlwords(urlWords), Duration(1, MINUTES))
-  }
 
   def loadFeedByUrlWords(urlWords: String): Option[Feed] = {
     Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))

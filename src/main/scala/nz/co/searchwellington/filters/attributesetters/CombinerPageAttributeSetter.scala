@@ -1,14 +1,19 @@
 package nz.co.searchwellington.filters.attributesetters
 
 import java.util.regex.Pattern
-import javax.servlet.http.HttpServletRequest
 
-import nz.co.searchwellington.repositories.{HibernateResourceDAO, TagDAO}
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class CombinerPageAttributeSetter @Autowired()(var tagDAO: TagDAO, var resourceDAO: HibernateResourceDAO) extends AttributeSetter {
+import scala.concurrent.Await
+
+@Component class CombinerPageAttributeSetter @Autowired()(var tagDAO: TagDAO, var mongoRepository: MongoRepository)
+  extends AttributeSetter with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[CombinerPageAttributeSetter])
   private val combinerPattern = Pattern.compile("^/(.*)\\+(.*?)(/rss|/json)?$")
@@ -22,7 +27,7 @@ import org.springframework.stereotype.Component
 
       tagDAO.loadTagByName(right).map { rightHandTag =>
 
-        resourceDAO.getPublisherByUrlWords(left).map { publisher =>
+        Await.result(mongoRepository.getWebsiteByUrlwords(left), TenSeconds).map { publisher =>
           log.debug("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.title)
           request.setAttribute("publisher", publisher)
           request.setAttribute("tag", rightHandTag)
