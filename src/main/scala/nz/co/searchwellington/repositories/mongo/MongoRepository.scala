@@ -66,7 +66,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def userReader = Macros.reader[User]
   implicit def watchlistReader = Macros.reader[Watchlist]
   implicit def websiteReader = Macros.reader[Website]
-  implicit def discoveredFeedReader = Macros.reader[Website]
+  implicit def discoveredFeedReader = Macros.reader[DiscoveredFeed]
 
   def getResourceById(id: String): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("id" -> id))
