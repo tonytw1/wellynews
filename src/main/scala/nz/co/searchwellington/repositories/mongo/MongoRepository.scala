@@ -220,7 +220,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getAllDiscoveredFeeds(): Future[Seq[DiscoveredFeed]] = {
-    discoveredFeedCollection.find().cursor[DiscoveredFeed]().collect[List](maxDocs = AllDocuments)  // TODO ordering
+    discoveredFeedCollection.find(BSONDocument.empty).cursor[DiscoveredFeed]().collect[List](maxDocs = AllDocuments)  // TODO ordering
   }
 
   def getDiscoveredFeedByUrl(url: String): Future[Option[DiscoveredFeed]] = {

@@ -4,4 +4,4 @@ import reactivemongo.bson.BSONObjectID
 
 import scala.collection.mutable
 
-case class DiscoveredFeed(_id: BSONObjectID = BSONObjectID.generate, url: String, references: mutable.Set[Resource] = mutable.Set.empty)
+case class DiscoveredFeed(_id: BSONObjectID = BSONObjectID.generate, url: String, references: mutable.Set[String] = mutable.Set.empty)

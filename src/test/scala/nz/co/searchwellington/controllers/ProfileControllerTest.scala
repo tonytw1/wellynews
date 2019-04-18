@@ -45,7 +45,7 @@ class ProfileControllerTest {
 
   @Test
   def allActiveProfilesShouldBeShownOnProfilesIndex {
-    when(mongoRepository.getAllUsers()).thenReturn(Future.successful(allActiveUsers))
+    when(mongoRepository.getAllUsers).thenReturn(Future.successful(allActiveUsers))
     val mv = controller.profiles(request, response)
     assertEquals(allActiveUsers, mv.getModel.get("profiles"))
   }

@@ -66,7 +66,7 @@ import scala.concurrent.Await
   private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String): Unit = {
     val maybeExisting = Await.result(mongoRepository.getDiscoveredFeedByUrl(discoveredFeedUrl), TenSeconds)
     val discoveredFeed = maybeExisting.getOrElse(resourceFactory.createNewDiscoveredFeed(discoveredFeedUrl))
-    discoveredFeed.references.add(checkResource) // This isn't great; suggests discovered feeds should be url -> page seen pairs
+    discoveredFeed.references.add(checkResource.page.get) // This isn't great; suggests discovered feeds should be url -> page seen pairs
     mongoRepository.saveDiscoveredFeed(discoveredFeed)
   }
 
