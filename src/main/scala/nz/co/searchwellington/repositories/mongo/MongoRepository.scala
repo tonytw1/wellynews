@@ -48,6 +48,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   def tagCollection: BSONCollection = db.collection("tag")
   def taggingCollection: BSONCollection = db.collection("resource_tags")
   def userCollection: BSONCollection = db.collection("user")
+  def discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
 
   implicit object feedAcceptanceReader extends BSONReader[BSONValue, FeedAcceptancePolicy] {
     override def read(bson: BSONValue): FeedAcceptancePolicy = bson match {
@@ -142,6 +143,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("type" -> "F", "whakaoko_id" -> subscription)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
+  def getFeedByUrl(url: String): Future[Option[Feed]] = {
+    getResourceBy(BSONDocument("type" -> "F", "page" -> url)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
+  }
+
   def getFeedByUrlwords(urlWords: String): Future[Option[Feed]] = {
     getResourceBy(BSONDocument("type" -> "F", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
   }
@@ -213,11 +218,21 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
       collect[List](maxDocs = AllDocuments)
   }
 
-  def getAllWatchlists(): Future[Seq[Watchlist]] = {
+  def getDiscoveredFeedByUrl(url: String): Future[Option[DiscoveredFeed]] = {
+    val discoveredFeedsByUrl = BSONDocument("type" -> "F", "url" -> url)
+    discoveredFeedCollection.find(discoveredFeedsByUrl).one[DiscoveredFeed]
+  }
+
+  def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed): Future[UpdateWriteResult] = {
+    val id = BSONDocument("_id" -> discoveredFeed._id)
+    discoveredFeedCollection.update(id, discoveredFeed, upsert = true)
+  }
+
+  def getAllWatchlists: Future[Seq[Watchlist]] = {
     resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List](AllDocuments)
   }
 
-  def getAllUsers(): Future[Seq[User]] = {
+  def getAllUsers: Future[Seq[User]] = {
     userCollection.find(BSONDocument.empty).cursor[User]().collect[List](AllDocuments)
   }
 

@@ -91,11 +91,6 @@ import scala.concurrent.duration._
     null
   }
 
-  def loadDiscoveredFeedByUrl(url: String): DiscoveredFeed = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[DiscoveredFeed]).add(Restrictions.eq("url", url)).setMaxResults(1).setCacheable(true).uniqueResult.asInstanceOf[DiscoveredFeed]
-    null
-  }
-
   def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed) {
     // sessionFactory.getCurrentSession.saveOrUpdate(discoveredFeed)
     null // TODO

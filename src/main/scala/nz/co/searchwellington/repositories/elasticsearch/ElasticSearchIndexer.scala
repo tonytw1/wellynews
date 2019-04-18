@@ -153,7 +153,6 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
     }
   }
 
-
   def getArchiveCounts: Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
