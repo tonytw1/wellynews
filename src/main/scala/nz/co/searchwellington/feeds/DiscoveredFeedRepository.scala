@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 
   def getAllNonCommentDiscoveredFeeds: Seq[DiscoveredFeed] = {
     resourceDAO.getAllDiscoveredFeeds.filter{ f =>
-      !commentFeedDetectorService.isCommentFeedUrl(f.getUrl)
+      !commentFeedDetectorService.isCommentFeedUrl(f.url)
     }
   }
 

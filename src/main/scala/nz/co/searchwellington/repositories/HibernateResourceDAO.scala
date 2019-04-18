@@ -86,16 +86,6 @@ import scala.concurrent.duration._
     None // TODO
   }
 
-  def loadFeedByUrl(url: String): Feed = {
-   // return sessionFactory.getCurrentSession.createCriteria(classOf[Feed]).add(Restrictions.eq("url", url)).uniqueResult.asInstanceOf[Feed]
-    null
-  }
-
-  def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed) {
-    // sessionFactory.getCurrentSession.saveOrUpdate(discoveredFeed)
-    null // TODO
-  }
-
   @SuppressWarnings(Array("unchecked")) def getTaggedResources(tag: Tag, max_newsitems: Int): Seq[Resource] = {
       // return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).createCriteria("tags").add(Restrictions.eq("id", tag.getId)).list.asInstanceOf[List[Resource]]
     Seq()
