@@ -13,5 +13,6 @@ trait ElasticFields {
   val Held = "held"
   val Owner = "owner"
   val LatLong = "lat_long"
+  val FeedAcceptancePolicy = "feed_acceptance_policy"
 
 }
