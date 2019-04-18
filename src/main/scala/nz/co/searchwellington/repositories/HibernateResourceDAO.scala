@@ -24,21 +24,6 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))
   }
 
-  @SuppressWarnings(Array("unchecked")) def getNewsitemsForFeed(feed: Feed): Seq[Newsitem] = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("feed", feed)).addOrder(Order.desc("date")).list.asInstanceOf[List[Newsitem]]
-    Seq() // TODO
-  }
-
-  @SuppressWarnings(Array("unchecked")) def getNewsitemsForPublishers(publisher: Website): Seq[PublishedResource] = {
-    // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("publisher", publisher)).list.asInstanceOf[List[PublishedResource]]
-    Seq() // TODO
-  }
-  
-  @SuppressWarnings(Array("unchecked")) def getRecentUntaggedNewsitems: Seq[Newsitem] = {
-    //return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.isEmpty("tags")).add(Restrictions.eq("httpStatus", 200)).addOrder(Order.desc("date")).setMaxResults(12).setCacheable(true).list.asInstanceOf[List[Newsitem]]
-    Seq() // TODO
-  }
-
   @SuppressWarnings(Array("unchecked")) def getAllPublishersMatchingStem(stem: String, showBroken: Boolean): Seq[Resource] = {
     /*
     if (showBroken) {
@@ -66,11 +51,6 @@ import scala.concurrent.duration._
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
     null
-  }
-
-  @SuppressWarnings(Array("unchecked")) def getTaggedResources(tag: Tag, max_newsitems: Int): Seq[Resource] = {
-      // return sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).createCriteria("tags").add(Restrictions.eq("id", tag.getId)).list.asInstanceOf[List[Resource]]
-    Seq()
   }
 
 }
