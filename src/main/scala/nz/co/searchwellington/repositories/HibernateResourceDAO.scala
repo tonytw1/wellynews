@@ -27,11 +27,6 @@ import scala.concurrent.duration._
     Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))
   }
 
-  @SuppressWarnings(Array("unchecked")) def getAllDiscoveredFeeds: Seq[DiscoveredFeed] = {
-    //return sessionFactory.getCurrentSession.createCriteria(classOf[DiscoveredFeed]).setCacheable(true).addOrder(Order.desc("id")).list.asInstanceOf[List[DiscoveredFeed]]
-    Seq() // TODO
-  }
-
   @SuppressWarnings(Array("unchecked")) def getNewsitemsForFeed(feed: Feed): Seq[Newsitem] = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("feed", feed)).addOrder(Order.desc("date")).list.asInstanceOf[List[Newsitem]]
     Seq() // TODO
@@ -74,16 +69,6 @@ import scala.concurrent.duration._
   def loadNewsitemByHeadlineAndPublisherWithinLastMonth(name: String, publisher: Website): Resource = {
     // return sessionFactory.getCurrentSession.createCriteria(classOf[Newsitem]).add(Restrictions.eq("name", name)).add(Restrictions.eq("publisher", publisher)).setMaxResults(1).uniqueResult.asInstanceOf[Resource]
     null
-  }
-
-  def loadByUrlWords(urlWords: String): Option[Resource] = {
-    // Option(sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("urlWords", urlWords)).setMaxResults(1).uniqueResult.asInstanceOf[Resource])
-    None  // TODO
-  }
-
-  def loadResourceByUniqueUrl(url: String): Option[Resource] = {
-    // Option(sessionFactory.getCurrentSession.createCriteria(classOf[Resource]).add(Restrictions.eq("url", url)).uniqueResult.asInstanceOf[Resource])
-    None // TODO
   }
 
   @SuppressWarnings(Array("unchecked")) def getTaggedResources(tag: Tag, max_newsitems: Int): Seq[Resource] = {

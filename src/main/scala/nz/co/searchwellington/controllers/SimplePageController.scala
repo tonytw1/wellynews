@@ -3,8 +3,8 @@ package nz.co.searchwellington.controllers
 import java.io.IOException
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.annotations.Timed
-import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
@@ -14,14 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, SECONDS}
 
-@Controller class SimplePageController @Autowired() (discoveredFeedRepository: DiscoveredFeedRepository, tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
+@Controller class SimplePageController @Autowired() (tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
                                                      commonModelObjectsService: CommonModelObjectsService, urlStack: UrlStack,
                                                      contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper,
-                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter) {
-
-  private val tenSeconds = Duration(10, SECONDS)
+                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
 
   @RequestMapping(Array("/about"))
   @Timed(timingNotes = "")
@@ -89,8 +86,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     commonModelObjectsService.populateCommonLocal(mv)
     urlStack.setUrlStack(request)
     mv.addObject("heading", "Discovered Feeds")
-    val nonCommentFeeds = discoveredFeedRepository.getAllNonCommentDiscoveredFeeds
-    mv.addObject("discovered_feeds", nonCommentFeeds)
+    mv.addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds))
     mv.setViewName("discoveredFeeds")
     mv
   }
@@ -102,7 +98,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     mv.addObject("heading", "All Publishers")
     import scala.collection.JavaConverters._
 
-    val publishers = Await.result(contentRetrievalService.getAllPublishers, tenSeconds).sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
+    val publishers = Await.result(contentRetrievalService.getAllPublishers, TenSeconds).sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
     mv.addObject("publishers", publishers.asJava)
 
     mv.setViewName("publishers")

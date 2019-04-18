@@ -2,7 +2,6 @@ package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
-import nz.co.searchwellington.feeds.DiscoveredFeedRepository
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendTag}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -16,14 +15,12 @@ import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{Duration, MINUTES}
 import scala.concurrent.{Await, Future}
 
 @Component class ContentRetrievalService @Autowired()( resourceDAO: HibernateResourceDAO,
                                                        keywordSearchService: KeywordSearchService,
                                                        showBrokenDecisionService: ShowBrokenDecisionService,
                                                        tagDAO: TagDAO,  relatedTagsService: RelatedTagsService,
-                                                       discoveredFeedsDAO: DiscoveredFeedRepository,
                                                        elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
                                                        frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
                                                        mongoRepository: MongoRepository) extends ReasonableWaits {
@@ -262,7 +259,7 @@ import scala.concurrent.{Await, Future}
   }
 
   def getDiscoveredFeeds: Seq[DiscoveredFeed] = {
-    discoveredFeedsDAO.getAllNonCommentDiscoveredFeeds
+    Await.result(mongoRepository.getAllDiscoveredFeeds(), TenSeconds)
   }
 
   def getTagNamesStartingWith(q: String): Seq[String] = {
