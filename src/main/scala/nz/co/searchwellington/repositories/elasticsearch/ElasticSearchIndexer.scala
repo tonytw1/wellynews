@@ -11,7 +11,7 @@ import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
-import nz.co.searchwellington.model.{ArchiveLink, PublishedResource, Resource}
+import nz.co.searchwellington.model.{ArchiveLink, Feed, PublishedResource, Resource}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -55,20 +55,19 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
   def createIndexes() = {
     try {
       val eventualCreateIndexResult = client.execute {
-        createIndex(Index) mappings (
-          mapping(Resources).fields(
-            field(Title) typed TextType analyzer StandardAnalyzer,
-            field(Type) typed KeywordType,
-            field(Date) typed DateType,
-            field(Description) typed TextType analyzer StandardAnalyzer,
-            field(Tags) typed KeywordType,
-            field(TaggingUsers) typed KeywordType,
-            field(Publisher) typed KeywordType,
-            field(Held) typed BooleanType,
-            field(Owner) typed KeywordType,
-            field(LatLong) typed GeoPointType
-          )
-          )
+        createIndex(Index) mappings mapping(Resources).fields(
+          field(Title) typed TextType analyzer StandardAnalyzer,
+          field(Type) typed KeywordType,
+          field(Date) typed DateType,
+          field(Description) typed TextType analyzer StandardAnalyzer,
+          field(Tags) typed KeywordType,
+          field(TaggingUsers) typed KeywordType,
+          field(Publisher) typed KeywordType,
+          field(Held) typed BooleanType,
+          field(Owner) typed KeywordType,
+          field(LatLong) typed GeoPointType,
+          field(FeedAcceptancePolicy) typed KeywordType
+        )
       }
 
       val result = Await.result(eventualCreateIndexResult, Duration(10, SECONDS))
@@ -96,6 +95,11 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         }
       }
 
+      val feedAcceptancePolicy = r._1 match {
+        case f: Feed => Some(f.acceptance.toString)
+        case _ => None
+      }
+
       // TODO This is silly; just pass in the whole domain object as JSON
       val fields = Seq(
         Some(Type -> r._1.`type`),
@@ -108,7 +112,8 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         Some(Held -> r._1.held),
         r._1.owner.map(o => Owner -> o.stringify),
         latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
-        Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify))
+        Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
+        Some(FeedAcceptancePolicy, feedAcceptancePolicy)
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
