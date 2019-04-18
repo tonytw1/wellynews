@@ -1,14 +1,17 @@
 package nz.co.searchwellington.filters.attributesetters
 
 import java.util.regex.Pattern
-import javax.servlet.http.HttpServletRequest
 
-import nz.co.searchwellington.repositories.HibernateResourceDAO
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class FeedAttributeSetter @Autowired()(resourceDAO: HibernateResourceDAO) extends AttributeSetter {
+import scala.concurrent.Await
+
+@Component class FeedAttributeSetter @Autowired()(mongoRepository: MongoRepository) extends AttributeSetter with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedAttributeSetter])
 
@@ -19,8 +22,7 @@ import org.springframework.stereotype.Component
     val contentMatcher = feedPattern.matcher(request.getPathInfo)
     if (contentMatcher.matches) {
       val urlWords = contentMatcher.group(1)
-      resourceDAO.loadFeedByUrlWords(urlWords).map { feed =>
-        log.debug("Setting feed: " + feed.title)
+      Await.result(mongoRepository.getFeedByUrlwords(urlWords), TenSeconds).map { feed =>
         request.setAttribute(FEED_ATTRIBUTE, feed)
         request.setAttribute("resource", feed)
         true

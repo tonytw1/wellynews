@@ -4,14 +4,17 @@ import java.util.UUID
 
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.HibernateResourceDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import scala.concurrent.Future
+
 class PublisherPageAttributeSetterTest {
-  @Mock val resourceDAO: HibernateResourceDAO = null
+  @Mock val mongoRepository: MongoRepository = null
   private val publisher = Website(id = UUID.randomUUID().toString, title = Some("Wellington City Council"))
   private var request: MockHttpServletRequest = null
   private var pageAttributeSetter: PublisherPageAttributeSetter = null
@@ -19,8 +22,8 @@ class PublisherPageAttributeSetterTest {
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
-    when(resourceDAO.getPublisherByUrlWords("wellington-city-council")).thenReturn(Some(publisher))
-    pageAttributeSetter = new PublisherPageAttributeSetter(resourceDAO)
+    when(mongoRepository.getWebsiteByUrlwords("wellington-city-council")).thenReturn(Future.successful(Some(publisher)))
+    pageAttributeSetter = new PublisherPageAttributeSetter(mongoRepository)
   }
 
   @Test def shouldSetPublisherAttributeForPublisherPath(): Unit = {

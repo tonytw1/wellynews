@@ -26,7 +26,7 @@ class FeedAutodiscoveryProcesserTest {
   val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
   private val resourceFactory = mock(classOf[ResourceFactory])
 
-  val resource = Newsitem(id = UUID.randomUUID().toString)
+  val resource = Newsitem(id = UUID.randomUUID().toString, page = Some("http://localhost/test"))
   val existingFeed: Feed = mock(classOf[Feed])
   private val pageContent = "Meh"
   private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, linkExtractor, commentFeedDetector, commentFeedGuesser, resourceFactory)
@@ -47,7 +47,7 @@ class FeedAutodiscoveryProcesserTest {
 
     feedAutodiscoveryProcesser.process(resource, pageContent)
 
-    assertTrue(newlyDiscoveredFeed.references.contains(resource))
+    assertTrue(newlyDiscoveredFeed.references.contains(resource.page.get))
     verify(mongoRepository).saveDiscoveredFeed(newlyDiscoveredFeed)
   }
 
