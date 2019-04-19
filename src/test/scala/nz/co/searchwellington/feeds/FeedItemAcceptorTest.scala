@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.model.{Feed, Newsitem, User}
 import nz.co.searchwellington.utils.TextTrimmer
 import org.joda.time.DateTime
-import org.junit.Assert.{assertEquals, assertTrue}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.bson.BSONObjectID
@@ -29,7 +29,7 @@ class FeedItemAcceptorTest {
     val acceptedNewsitem = service.acceptFeedItem(feedReadingUser, (feedItem, feed))
 
     assertTrue(acceptedNewsitem.accepted.nonEmpty)
-    assertTrue(acceptedNewsitem.accepted.get.after(before.toDate))
+    assertFalse(acceptedNewsitem.accepted.get.before(before.toDate))
   }
 
   @Test
