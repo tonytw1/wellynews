@@ -31,7 +31,7 @@ import scala.concurrent.Await
           var discoveredUrl = iter.next.asInstanceOf[String]
           log.info("Processing discovered url: " + discoveredUrl)
 
-          if (!(isFullQualified(discoveredUrl))) {
+          if (!isFullQualified(discoveredUrl)) {
             log.info("url is not fully qualified; will try to expand: " + discoveredUrl)  // TODO Really what's an example?
             try {
               val sitePrefix: String = new URL(checkResource.page.get).getHost  // TODO naked get
@@ -46,12 +46,14 @@ import scala.concurrent.Await
 
           val isCommentFeedUrl = commentFeedDetector.isCommentFeedUrl(discoveredUrl)
           if (isCommentFeedUrl) {
-            log.debug("Discovered url is a comment feed; ignoring: " + discoveredUrl)
+            log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
 
           } else {
             val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), TenSeconds).nonEmpty
             if (!isUrlOfExistingFeed) {
               recordDiscoveredFeedUrl(checkResource, discoveredUrl)
+            } else {
+              log.info("Ignoring discovered url of existing feed")
             }
           }
         }
