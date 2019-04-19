@@ -51,7 +51,7 @@ class AdminUrlBuilderTest {
   }
 
   @Test
-  def canConstructEditUrlForFrontendFeed(): Unit = assertEquals("http://somesite.local/edit?resource=124", adminUrlBuilder.getResourceEditUrl(frontendFeed))
+  def canConstructEditUrlForFrontendFeed(): Unit = assertEquals("/edit-feed/124", adminUrlBuilder.getResourceEditUrl(frontendFeed))
 
   @Test
   def canConstructDeleteUrlForFrontendResource(): Unit = assertEquals("http://somesite.local/delete?resource=123", adminUrlBuilder.getResourceDeleteUrl(frontendWebsite))
