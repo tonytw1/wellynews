@@ -104,21 +104,6 @@ import org.springframework.web.servlet.ModelAndView
       }
     }
 
-    def populateRelatedFeed(mv: ModelAndView, tag: Tag) {
-      val relatedFeed = tag.getRelatedFeed
-
-     /* if (relatedFeed != null) {
-        log.debug("Related feed is: " + relatedFeed.getName)
-        mv.addObject("related_feed", relatedFeed)
-        val relatedFeedItems = rssfeedNewsitemService.getFeedNewsitems(relatedFeed)
-        import scala.collection.JavaConversions._
-        mv.addObject("related_feed_items", feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(relatedFeedItems))
-      } else {
-        log.debug("No related feed.")
-      }
-      */
-    }
-
     def populateCommentedTaggedNewsitems(mv: ModelAndView, tag: Tag) {
       val recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1)
 
@@ -148,7 +133,6 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("related_publishers", relatedPublisherLinks)
     }
     populateCommentedTaggedNewsitems(mv, tag)
-    populateRelatedFeed(mv, tag)
     populateGeocoded(mv, tag)
     import scala.collection.JavaConverters._
     mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag).asJava)

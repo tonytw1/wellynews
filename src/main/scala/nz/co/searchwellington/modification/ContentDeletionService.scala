@@ -9,8 +9,9 @@ import nz.co.searchwellington.repositories.{HandTaggingDAO, SupressionService, T
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
+import reactivemongo.api.commands.UpdateWriteResult
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class ContentDeletionService @Autowired()(supressionService: SupressionService,
@@ -27,8 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       removePublisherFromPublishersContent(resource)
     }
     if (resource.`type` == "F") {
-      removeFeedFromFeedNewsitems(resource.asInstanceOf[Feed])
-      removeRelatedFeedFromTags(resource.asInstanceOf[Feed])
+      Await.result(removeFeedFromFeedNewsitems(resource.asInstanceOf[Feed]), OneMinute)
     }
     if (resource.`type` == "N") {
       log.info("Deleted item is a newsitem; checking if it's in an accepted feed.")
@@ -48,14 +48,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.info("Elastic delete result: " + dr)
       mongoRepository.removeResource(resource)
     }, TenSeconds)
-  }
-
-  private def removeRelatedFeedFromTags(editResource: Feed) {
-    tagDAO.getAllTags.map { tag =>
-      // TODO if (tag.getRelatedFeed != null && tag.getRelatedFeed == editResource) {
-      //  tag.setRelatedFeed(null)
-      //}
-    }
   }
 
   private def suppressUrl(p: String) {
@@ -82,14 +74,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
     */
   }
 
-  private def removeFeedFromFeedNewsitems(feed: Feed) {
-    throw new UnsupportedOperationException
-    /*
-    resourceDAO.getNewsitemsForFeed(feed).map { newsitem =>
-      // newsitem.setFeed(null)
-      resourceDAO.saveResource(newsitem)
+  private def removeFeedFromFeedNewsitems(feed: Feed): Future[Seq[UpdateWriteResult]] = {
+    mongoRepository.getAllNewsitemsForFeed(feed).flatMap { ns =>
+      Future.sequence {
+        ns.map { n =>
+          log.info("Removing feed from newsitem: " + n.title)
+          mongoRepository.saveResource(n.copy(feed = None))
+        }
+      }
     }
-    */
   }
 
 }

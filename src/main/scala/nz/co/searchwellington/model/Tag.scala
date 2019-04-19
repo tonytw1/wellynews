@@ -16,7 +16,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
                var description: Option[String] = None,
                var main_image: Option[String] = None,
                var secondary_image: Option[String] = None,
-               var related_feed: Option[Long] = None,
                var related_twitter: Option[String] = None,
                var autotag_hints: Option[String] = None) {
 
@@ -36,9 +35,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
 
   def getSecondaryImage: Option[String] = secondary_image
   def setSecondaryImage(secondaryImage: String): Unit = this.secondary_image = Some(secondaryImage)
-
-  def getRelatedFeed: Option[Long] = this.related_feed
-  def setRelatedFeed(relatedFeed: Int): Unit = this.related_feed = Some(relatedFeed)
 
   def getRelatedTwitter: Option[String] = related_twitter
   def setRelatedTwitter(relatedTwitter: String): Unit = this.related_twitter = Some(relatedTwitter)
