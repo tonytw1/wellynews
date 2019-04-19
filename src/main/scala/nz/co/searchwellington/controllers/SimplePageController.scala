@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers
 import java.io.IOException
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -14,11 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
+import scala.concurrent.duration.{Duration, SECONDS}
 
 @Controller class SimplePageController @Autowired() (tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
                                                      commonModelObjectsService: CommonModelObjectsService, urlStack: UrlStack,
                                                      contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper,
-                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
+                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter) {
+
+  val TenSeconds = Duration(10, SECONDS)
 
   @RequestMapping(Array("/about"))
   @Timed(timingNotes = "")
