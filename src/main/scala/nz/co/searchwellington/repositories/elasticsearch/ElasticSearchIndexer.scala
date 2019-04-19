@@ -96,7 +96,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       }
 
       val feedAcceptancePolicy = r._1 match {
-        case f: Feed => Some(f.acceptance.toString)
+        case f: Feed => Some(f.acceptance)
         case _ => None
       }
 
@@ -113,7 +113,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         r._1.owner.map(o => Owner -> o.stringify),
         latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
         Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
-        Some(FeedAcceptancePolicy, feedAcceptancePolicy)
+        feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString)
       )
 
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
@@ -204,7 +204,7 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
         matchQuery(TaggingUsers, tu.stringify)
       },
       query.feedAcceptancePolicy.map { ap =>
-        matchQuery(FeedAcceptancePolicy, ap.getLabel)
+        matchQuery(FeedAcceptancePolicy, ap.toString)
       }
     ).flatten
 
