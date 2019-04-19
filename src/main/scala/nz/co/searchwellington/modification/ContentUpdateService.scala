@@ -17,7 +17,7 @@ import scala.concurrent.Future
 
   private val log = Logger.getLogger(classOf[ContentUpdateService])
 
-  def update(resource: Resource) {
+  def update(resource: Resource): Future[Unit] = {
     log.info("Updating content for: " + resource.title + " - " + resource.http_status + " " + resource.page)
     try {
       /*
@@ -47,6 +47,7 @@ import scala.concurrent.Future
     catch {
       case e: Exception =>
         log.error("Error: ", e)
+        Future.failed(e)
     }
   }
 
