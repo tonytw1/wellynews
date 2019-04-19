@@ -9,7 +9,7 @@ import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem}
 import nz.co.searchwellington.repositories.ResourceFactory
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.assertTrue
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{mock, never, verify, when}
 
@@ -20,19 +20,15 @@ class FeedAutodiscoveryProcesserTest {
   private val UNSEEN_FEED_URL = "http://something/new"
   private val EXISTING_FEED_URL = "http://something/old"
 
-  val mongoRepository = mock(classOf[MongoRepository])
-  val linkExtractor = mock(classOf[CompositeLinkExtractor])
-  val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
-  val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
+  private val mongoRepository = mock(classOf[MongoRepository])
+  private val linkExtractor = mock(classOf[CompositeLinkExtractor])
+  private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
+  private val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
   private val resourceFactory = mock(classOf[ResourceFactory])
 
-  val resource = Newsitem(id = UUID.randomUUID().toString, page = Some("http://localhost/test"))
-  val existingFeed: Feed = mock(classOf[Feed])
+  private val resource = Newsitem(id = UUID.randomUUID().toString, page = Some("http://localhost/test"))
   private val pageContent = "Meh"
   private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, linkExtractor, commentFeedDetector, commentFeedGuesser, resourceFactory)
-
-  @Before def setup(): Unit = {
-  }
 
   @Test def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
     val autoDiscoveredLinks = new util.HashSet[String]  // TODO Scala collection
@@ -41,6 +37,7 @@ class FeedAutodiscoveryProcesserTest {
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
 
     val newlyDiscoveredFeed = DiscoveredFeed(url = UNSEEN_FEED_URL)
     when(resourceFactory.createNewDiscoveredFeed(UNSEEN_FEED_URL)).thenReturn(newlyDiscoveredFeed)
@@ -51,14 +48,17 @@ class FeedAutodiscoveryProcesserTest {
     verify(mongoRepository).saveDiscoveredFeed(newlyDiscoveredFeed)
   }
 
-  @Test def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
+  @Test
+  def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
     val autoDiscoveredLinks = new util.HashSet[String]
     autoDiscoveredLinks.add(EXISTING_FEED_URL)
     when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
+
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
+
     val newlyDiscoveredFeed = new DiscoveredFeed(url = EXISTING_FEED_URL)
-    when(mongoRepository.getDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(newlyDiscoveredFeed)))
-    when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(existingFeed)))
+    when(mongoRepository.getDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
 
     feedAutodiscoveryProcesser.process(resource, pageContent)
 
