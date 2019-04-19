@@ -15,7 +15,7 @@ import reactivemongo.bson.BSONObjectID
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                           httpFetcher: HttpFetcher) {
+                                           httpFetcher: HttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser) {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
@@ -24,7 +24,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def scanResource(checkResourceId: String) {
     log.info("Scanning resource: " + checkResourceId)
-    val processers: Seq[LinkCheckerProcessor] = Seq() // TODO inject
+
+    val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
+
     mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId)).map { maybeResource =>
 
       maybeResource.map { resource =>
