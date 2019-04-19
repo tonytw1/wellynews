@@ -2,7 +2,6 @@ package nz.co.searchwellington.model.mappers
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -22,7 +21,7 @@ class FrontendResourceMapperTest {
 
   @Test
   def canMapTagToFrontendTag(): Unit = {
-    val tag = new Tag(id = UUID.randomUUID().toString)
+    val tag = Tag(id = UUID.randomUUID().toString)
 
     val frontedTag = mapper.mapTagToFrontendTag(tag)
 
@@ -31,11 +30,10 @@ class FrontendResourceMapperTest {
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
-    val newsitem = new Newsitem(id = "123", http_status = 200)
+    val newsitem = Newsitem(id = "123", http_status = 200)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
-    val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
-    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Seq(tag))
-    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Seq[Tag]())
+    when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Seq.empty)
+    when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(None)
 
     val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
 
@@ -46,15 +44,13 @@ class FrontendResourceMapperTest {
 
   @Test
   def handTaggingsShouldBeAppliedToFrontendNewsitems(): Unit = {
-    val newsitem = new Newsitem(id = "123")
+    val newsitem = Newsitem(id = "123")
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
-    val tagging = new HandTagging(user = null, tag = tag)
-    val taggingVotes: Set[HandTagging] = Set(tagging)
 
-    when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Seq[Tag]())
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Seq(tag))
+    when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(None)
 
     val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
 
@@ -64,12 +60,13 @@ class FrontendResourceMapperTest {
 
   @Test
   def indexTagsShouldNotBeAppliedToFrontendNewsitems(): Unit = {
-    val newsitem = new Newsitem(id = "123")
+    val newsitem = Newsitem(id = "123")
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))
 
     val tag = Tag(id = UUID.randomUUID().toString, name = "123", display_name = "123")
     when(taggingReturnsOfficerService.getIndexTagsForResource(newsitem)).thenReturn(Seq(tag))
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Seq[Tag]())
+    when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(None)
 
     val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
 
