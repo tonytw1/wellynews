@@ -3,38 +3,30 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.model.{Feed, Newsitem, User}
 import nz.co.searchwellington.utils.TextTrimmer
 import org.joda.time.DateTime
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
-import org.junit.{Before, Test}
-import org.mockito.Mockito.mock
-import org.mockito.{Mock, MockitoAnnotations}
+import org.junit.Assert.{assertEquals, assertTrue}
+import org.junit.Test
+import org.mockito.Mockito.{mock, when}
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
-import org.mockito.Mockito.when
 
 class FeedItemAcceptorTest {
-  @Mock private[feeds] val textTrimmer: TextTrimmer = null
-  @Mock private[feeds] val place: Place = null
-  private val feed: Feed = Feed(publisher = Some(BSONObjectID.generate))
-  private var service: FeedItemAcceptor = null
-  private val feedReadingUser = User(name = Some("Feed reading feedReadingUser"))
+  private val textTrimmer = mock(classOf[TextTrimmer])
+  private val place = mock(classOf[Place])
 
+  private val feed = Feed(publisher = Some(BSONObjectID.generate))
+  private val feedReadingUser = User(name = Some("Feed reading feedReadingUser"))
   private val feeditemToNewsItemSerice = mock(classOf[FeeditemToNewsitemService])
 
-  @Before def setup {
-    MockitoAnnotations.initMocks(this)
-    service = new FeedItemAcceptor(feeditemToNewsItemSerice)
-  }
+  private val service = new FeedItemAcceptor(feeditemToNewsItemSerice)
 
   @Test
-  def shouldSetNewsitemAcceptedTimeWhenAccepting(): Unit = {
-    val feedNewsitem = new FeedItem()
-    val newsitem = Newsitem()
-    when(feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feedNewsitem, feed)).thenReturn(newsitem)
+  def shouldSetAcceptedTimeWhenAccepting(): Unit = {
+    val feedItem = mock(classOf[FeedItem])
+    when(feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(Newsitem())
     val before = DateTime.now
 
-    val acceptedNewsitem = service.acceptFeedItem(feedReadingUser, (feedNewsitem, feed))
+    val acceptedNewsitem = service.acceptFeedItem(feedReadingUser, (feedItem, feed))
 
     assertTrue(acceptedNewsitem.accepted.nonEmpty)
     assertTrue(acceptedNewsitem.accepted.get.after(before.toDate))
@@ -42,26 +34,16 @@ class FeedItemAcceptorTest {
 
   @Test
   def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
-    val feedNewsitem = new FeedItem()
-    val newsitem = Newsitem()
-    when(feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feedNewsitem, feed)).thenReturn(newsitem)
+    val feedItem = mock(classOf[FeedItem])
+    when(feeditemToNewsItemSerice.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(Newsitem())
 
+    val acceptedNewsitem = service.acceptFeedItem(feedReadingUser, (feedItem, feed))
 
-    val acceptedNewsitem = service.acceptFeedItem(feedReadingUser, (feedNewsitem, feed))
-
-    assertTrue(acceptedNewsitem.accepted.nonEmpty)
     assertEquals(Some(feedReadingUser._id), acceptedNewsitem.acceptedBy)
+    assertEquals(Some(feedReadingUser._id), acceptedNewsitem.owner)
   }
 
   /*
-  @Test
-  def shouldSetAcceptedByUserAndOwnerWhenAccepting(): Unit = {
-    val accepted = feedItemAcceptor.acceptFeedItem(feedReadingUser, feednewsitem, null)
-
-    assertEquals(Some(feedReadingUser.id), accepted.acceptedBy)
-    assertEquals(Some(feedReadingUser.id), accepted.owner)
-  }
-
   @Test
   @throws[Exception]
   def shouldFlattenLoudHeadlinesWhenAccepting(): Unit = {
