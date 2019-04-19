@@ -202,6 +202,9 @@ class ElasticSearchIndexer  @Autowired()(val showBrokenDecisionService: ShowBrok
       },
       query.taggingUser.map { tu =>
         matchQuery(TaggingUsers, tu.stringify)
+      },
+      query.feedAcceptancePolicy.map { ap =>
+        matchQuery(FeedAcceptancePolicy, ap.getLabel)
       }
     ).flatten
 

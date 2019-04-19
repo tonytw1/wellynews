@@ -182,9 +182,14 @@ import scala.concurrent.{Await, Future}
     getTaggedNewsitems(tags = Set(tag), startIndex = startIndex, maxItems = maxItems)
   }
 
-  def getAllFeeds: Seq[FrontendResource] = {
+  def getFeeds(acceptancePolicy: Option[FeedAcceptancePolicy] = None): Seq[FrontendResource] = {
     val allFeeds = ResourceQuery(`type` = Some("F"), maxItems = ALL_ITEMS)
-    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), TenSeconds).sortBy(_.getName)
+
+    val withAcceptancePolicy = acceptancePolicy.map { a =>
+      allFeeds.copy(feedAcceptancePolicy = Some(a))
+    }.getOrElse(allFeeds)
+
+    Await.result(elasticSearchIndexer.getResources(withAcceptancePolicy).flatMap(i => fetchByIds(i._1)), TenSeconds).sortBy(_.getName)
   }
 
   def getAllFeedsOrderByLatestItemDate(): Seq[FrontendResource] = {

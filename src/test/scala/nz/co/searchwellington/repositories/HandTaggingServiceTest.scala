@@ -32,15 +32,15 @@ class HandTaggingServiceTest {
   }
 
   @Test
-  @throws[Exception]
   def clearingTagVotesClearAllVotesForThatTagFromTheDatabase {
     when(handTaggingDAO.getVotesForTag(tag)).thenReturn(tagVotes)
+
     handTaggingService.clearTaggingsForTag(tag)
+
     verify(handTaggingDAO).delete(handTagging)
   }
 
   @Test
-  @throws[Exception]
   def clearingTagVotesShouldtriggerFrontendContentUpdateForTheEffectedResources {
     when(handTaggingDAO.getVotesForTag(tag)).thenReturn(tagVotes)
     handTaggingService.clearTaggingsForTag(tag)
@@ -48,7 +48,6 @@ class HandTaggingServiceTest {
   }
 
   @Test
-  @throws[Exception]
   def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferingVotes {
     Mockito.when(handTaggingDAO.getUsersVotes(previousUser)).thenReturn(tagVotes)
     handTaggingService.transferVotes(previousUser, newUser)

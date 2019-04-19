@@ -56,7 +56,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     urlStack.setUrlStack(request)
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "The Wellynews API")
-    mv.addObject("feeds", contentRetrievalService.getAllFeeds)
+    mv.addObject("feeds", contentRetrievalService.getFeeds())
     mv.addObject("publishers", contentRetrievalService.getAllPublishers)
     mv.addObject("api_tags", contentRetrievalService.getTopLevelTags)
     mv.setViewName("api")
