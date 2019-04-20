@@ -15,6 +15,7 @@ import org.springframework.validation.{BindingResult, ObjectError}
 import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
+import org.joda.time.DateTime
 
 import scala.concurrent.Await
 
@@ -62,7 +63,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           url_words = Some(urlWordsFromTitle),
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
-          owner = owner.map(_._id)
+          owner = owner.map(_._id),
+          date = Some(DateTime.now.toDate)
         )
 
         contentUpdateService.create(feed)
