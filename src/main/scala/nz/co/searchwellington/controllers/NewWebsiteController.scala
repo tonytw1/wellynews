@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
+import org.joda.time.DateTime
 
 @Controller
 class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
@@ -47,7 +48,8 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       val website = Website(title = Some(newWebsite.getTitle),
         page = Some(newWebsite.getUrl),
         url_words = Some(urlWordsGenerator.makeUrlWordsFromName(newWebsite.getTitle)),
-        owner = owner.map(_._id)
+        owner = owner.map(_._id),
+        date = Some(DateTime.now.toDate)
       )
 
       contentUpdateService.create(website)
