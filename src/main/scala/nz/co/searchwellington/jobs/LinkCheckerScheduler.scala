@@ -26,7 +26,7 @@ import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
     }
   }
 
-  //@Scheduled(cron = "*/10 * * * * *")
+  @Scheduled(cron = "*/10 * * * * *")
   def queueExpiredItems {
     val numberOfItemsToQueue = 1000
     /*
