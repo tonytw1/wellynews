@@ -4,17 +4,18 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
 import org.apache.log4j.Logger
+import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import play.api.libs.ws.ahc._
 
-import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits._
+import scala.concurrent.{Await, ExecutionContext}
 
 @Component
-class WSHttpFetcher extends HttpFetcher with ReasonableWaits{
+class WSHttpFetcher(feedReaderTaskExecutor: TaskExecutor) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
 
   private val log = Logger.getLogger(classOf[WSHttpFetcher])
 
+  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
