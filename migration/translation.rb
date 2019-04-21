@@ -58,7 +58,7 @@ table "resource" do
 	column "owner", :integer, :references => "user"
 	column "twitter_id", :integer, :references => "twitters"
 	column "submitting_twit", :integer
-	column "feed", :integer
+	column "feed", :integer, :references => "resource"
 	column "embargoed_until", :datetime
 	column "held", :integer
 	column "image_id", :integer, :references => "images"
