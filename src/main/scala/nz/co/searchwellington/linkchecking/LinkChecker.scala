@@ -9,16 +9,19 @@ import org.apache.commons.httpclient.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.ExecutionContext
 
 @Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                           httpFetcher: HttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser) {
+                                           httpFetcher: HttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser, feedReaderTaskExecutor: TaskExecutor) {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
+
+  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
 
   //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
