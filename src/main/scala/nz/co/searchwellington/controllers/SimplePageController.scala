@@ -88,7 +88,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
     commonModelObjectsService.populateCommonLocal(mv)
     urlStack.setUrlStack(request)
     mv.addObject("heading", "Discovered Feeds")
-    mv.addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds))
+    import scala.collection.JavaConverters._
+    mv.addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava)
     mv.setViewName("discoveredFeeds")
     mv
   }
@@ -98,8 +99,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
     urlStack.setUrlStack(request)
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "All Publishers")
-    import scala.collection.JavaConverters._
 
+    import scala.collection.JavaConverters._
     val publishers = Await.result(contentRetrievalService.getAllPublishers, TenSeconds).sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
     mv.addObject("publishers", publishers.asJava)
 
