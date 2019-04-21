@@ -5,4 +5,6 @@ public interface HttpFetcher {
 
 	public abstract HttpFetchResult httpFetch(String url);
 
+	public abstract String getUserAgent();
+
 }

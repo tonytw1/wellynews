@@ -9,15 +9,15 @@ public class RobotExclusionService {
 
 	private static Logger log = Logger.getLogger(RobotExclusionService.class);
 
-	private StandardHttpFetcher httpFetcher;
+	private HttpFetcher httpFetcher;
 	
 	@Autowired
-	public RobotExclusionService(StandardHttpFetcher httpFetcher) {
+	public RobotExclusionService(HttpFetcher httpFetcher) {
 		this.httpFetcher = httpFetcher;
 	}
 	
 	public boolean isUrlCrawlable(String url, String userAgent) {
-		return true;
+		return true;    // TODO not implemented
 	}
 
 }

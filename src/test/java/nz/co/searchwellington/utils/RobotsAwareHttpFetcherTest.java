@@ -14,7 +14,7 @@ public class RobotsAwareHttpFetcherTest extends TestCase {
 	private static final String TEST_USER_AGENT = "test user agent";
 	
 	@Mock private RobotExclusionService robotExclusionService;
-	@Mock private StandardHttpFetcher httpFetcher;
+	@Mock private HttpFetcher httpFetcher;
 	@Mock private HttpFetcher robotsAwareFetcher;
 	
 	@Override
