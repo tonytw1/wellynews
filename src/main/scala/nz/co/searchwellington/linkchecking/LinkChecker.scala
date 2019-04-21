@@ -34,23 +34,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
           if (!Strings.isNullOrEmpty(p)) {
             log.info("Checking: " + resource.title + " (" + p + ")")
             val pageContent = httpCheck(resource, p)
-
-            for (processor <- processers) {
-              log.debug("Running processor: " + processor.getClass.toString)
-              try {
-                processor.process(resource, pageContent)
-              }
-              catch {
-                case e: Exception =>
-                  log.error("An exception occured while running a link checker processor", e)
+            pageContent.map { pageBody =>
+              for (processor <- processers) {
+                log.debug("Running processor: " + processor.getClass.toString)
+                try {
+                  processor.process(resource, pageBody)
+                }
+                catch {
+                  case e: Exception =>
+                    log.error("An exception occured while running a link checker processor", e)
+                }
+                //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
               }
             }
 
             log.debug("Saving resource and updating snapshot")
             resource.setLastScanned(DateTime.now.toDate)
-            if (pageContent != null) {
-              //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
-            }
 
             contentUpdateService.update(resource) // TODO should be a specific field set
             log.info("Finished linkchecking")
@@ -60,23 +59,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  private def httpCheck(checkResource: Resource, url: String): String = {
+  private def httpCheck(checkResource: Resource, url: String): Option[String] = {
     try {
       val httpResult = httpFetcher.httpFetch(url)
       checkResource.setHttpStatus(httpResult.getStatus)
       log.info("Http status for " + checkResource.page + " set to: " + checkResource.http_status)
+
       if (httpResult.getStatus == HttpStatus.SC_OK) {
-        httpResult.readEncodedResponse("UTF-8")
+        Some(httpResult.getBody)
       } else {
         checkResource.setHttpStatus(httpResult.getStatus)
-        null
+        None
+
       }
     }
     catch {
       case e: Exception =>
         log.error("Error while checking url: ", e)
         checkResource.setHttpStatus(CANT_CONNECT)
-        null
+        None
     }
   }
 

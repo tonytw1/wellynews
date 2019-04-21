@@ -1,7 +1,5 @@
 package nz.co.searchwellington.utils
 
-import java.io.ByteArrayInputStream
-
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
@@ -24,8 +22,7 @@ class WSHttpFetcher extends HttpFetcher with ReasonableWaits{
 
   override def httpFetch(url: String): HttpFetchResult = {
     val eventualResult = wsClient.url(url).get.map { r =>
-      val is = new ByteArrayInputStream(r.body.getBytes)  // TODO just return string
-      val result = new HttpFetchResult(r.status, is)
+      val result = new HttpFetchResult(r.status, r.body)
       log.info("Got HTTP fetch result from WS: " + result.getStatus)
       result
     }
