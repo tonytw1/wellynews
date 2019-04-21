@@ -8,6 +8,7 @@ import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem}
 import nz.co.searchwellington.repositories.ResourceFactory
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import org.joda.time.DateTime
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Matchers.any
@@ -39,7 +40,7 @@ class FeedAutodiscoveryProcesserTest {
     when(mongoRepository.getDiscoveredFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
 
-    val newlyDiscoveredFeed = DiscoveredFeed(url = UNSEEN_FEED_URL)
+    val newlyDiscoveredFeed = DiscoveredFeed(url = UNSEEN_FEED_URL, firstSeen = DateTime.now.toDate)
     when(resourceFactory.createNewDiscoveredFeed(UNSEEN_FEED_URL)).thenReturn(newlyDiscoveredFeed)
 
     feedAutodiscoveryProcesser.process(resource, pageContent)
@@ -56,7 +57,7 @@ class FeedAutodiscoveryProcesserTest {
 
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
 
-    val newlyDiscoveredFeed = new DiscoveredFeed(url = EXISTING_FEED_URL)
+    val newlyDiscoveredFeed = new DiscoveredFeed(url = EXISTING_FEED_URL, firstSeen = DateTime.now.toDate)
     when(mongoRepository.getDiscoveredFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
 
