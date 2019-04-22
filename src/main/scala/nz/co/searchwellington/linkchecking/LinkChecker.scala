@@ -1,6 +1,7 @@
 package nz.co.searchwellington.linkchecking
 
 import com.google.common.base.Strings
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -13,10 +14,11 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                           httpFetcher: HttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser, feedReaderTaskExecutor: TaskExecutor) {
+                                           httpFetcher: HttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser, feedReaderTaskExecutor: TaskExecutor)
+extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
@@ -30,8 +32,7 @@ import scala.concurrent.ExecutionContext
 
     val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
 
-    mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId)).map { maybeResource =>
-
+    Await.result(mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId)).map { maybeResource =>
       maybeResource.map { resource =>
         resource.page.map { p =>
           if (!Strings.isNullOrEmpty(p)) {
@@ -42,8 +43,7 @@ import scala.concurrent.ExecutionContext
                 log.debug("Running processor: " + processor.getClass.toString)
                 try {
                   processor.process(resource, pageBody)
-                }
-                catch {
+                } catch {
                   case e: Exception =>
                     log.error("An exception occured while running a link checker processor", e)
                 }
@@ -56,10 +56,16 @@ import scala.concurrent.ExecutionContext
 
             contentUpdateService.update(resource) // TODO should be a specific field set
             log.info("Finished linkchecking")
+            true
+          } else {
+            false
           }
+        }.getOrElse {
+          true
         }
       }
-    }
+
+    }, OneMinute)
   }
 
   private def httpCheck(checkResource: Resource, url: String): Option[String] = {
