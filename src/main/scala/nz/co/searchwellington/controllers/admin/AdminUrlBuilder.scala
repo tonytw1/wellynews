@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.admin
 
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
-import nz.co.searchwellington.model.{Feed, Resource, SiteInformation}
+import nz.co.searchwellington.model.{Feed, Resource, SiteInformation, Website}
 import nz.co.searchwellington.urls.{UrlBuilder, UrlParameterEncoder}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -29,6 +29,8 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
     resource match {
       case f: Feed =>
         "/edit-feed/" + f.id
+      case w: Website =>
+        "/edit-websitw/" + w.id
       case _ =>
         siteInformation.getUrl + "/edit?resource=" + resource.id
     }
