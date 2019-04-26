@@ -17,6 +17,8 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
     resource match {
       case f: FrontendFeed =>
         "/edit-feed/" + f.id
+      case w: FrontendWebsite =>
+        "/edit-website/" + w.id
       case _ =>
         siteInformation.getUrl + "/edit?resource=" + resource.id
     }
