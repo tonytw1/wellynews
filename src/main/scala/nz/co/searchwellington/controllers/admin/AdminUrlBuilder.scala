@@ -30,7 +30,7 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
       case f: Feed =>
         "/edit-feed/" + f.id
       case w: Website =>
-        "/edit-websitw/" + w.id
+        "/edit-website/" + w.id
       case _ =>
         siteInformation.getUrl + "/edit?resource=" + resource.id
     }
