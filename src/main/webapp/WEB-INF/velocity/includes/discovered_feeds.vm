@@ -13,14 +13,8 @@
 	<li>
 		<ul>
 			<li>$discovered_feed.url</li>
-			<li>Found in $discovered_feed.references.size() places.</li>		
-			<ul class="quotes">
-			#foreach($reference in $discovered_feed.references)
-				#if($velocityCount <= 3)
-					<li>$reference.name</li>
-				#end
-			#end
-			</ul>		
+			<li>Found on $discovered_feed.referencedFrom</li>
+			<li>Seen $discovered_feed.seen</li>
 		</ul>
 	</li>	
 	#end
