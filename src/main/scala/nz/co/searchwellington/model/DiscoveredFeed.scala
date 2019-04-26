@@ -4,14 +4,10 @@ import java.util.Date
 
 import reactivemongo.bson.BSONObjectID
 
-import scala.collection.JavaConverters._
-import scala.collection.mutable
-
-case class DiscoveredFeed(_id: BSONObjectID = BSONObjectID.generate, url: String, references: mutable.Set[String] = mutable.Set.empty, firstSeen: Date) {
+case class DiscoveredFeed(_id: BSONObjectID = BSONObjectID.generate, url: String, referencedFrom: String, seen: Date) {
 
   def getUrl: String = url
+  def getReferencedFrom = referencedFrom
+  def getSeen: Date = seen
 
-  def getReferences: java.util.Set[String] = references.asJava
-
-  def getFirstSeen: Date = firstSeen
 }

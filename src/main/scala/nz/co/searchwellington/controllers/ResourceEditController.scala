@@ -1,10 +1,10 @@
 package nz.co.searchwellington.controllers
 
-import java.io.{IOException, UnsupportedEncodingException}
+import java.io.UnsupportedEncodingException
 import java.util.UUID
 
-import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import com.google.common.base.Strings
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemAcceptor, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.filters.AdminRequestFilter
@@ -14,7 +14,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.modification.{ContentDeletionService, ContentUpdateService}
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.queues.LinkCheckerQueue
-import nz.co.searchwellington.repositories.{HandTaggingDAO, ResourceFactory}
+import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.spam.SpamFilter
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.widgets.{AcceptanceWidgetFactory, TagsWidgetFactory}
@@ -24,9 +24,16 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-@Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory, loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack, submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService, contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService, tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, resourceFactory: ResourceFactory, commonModelObjectsService: CommonModelObjectsService, feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator, whakaoroService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper, spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
+@Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
+                                                       tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory,
+                                                       loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
+                                                       submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
+                                                       contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
+                                                       tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, commonModelObjectsService: CommonModelObjectsService,
+                                                       feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
+                                                       whakaoroService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
+                                                       spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
   private val ACCEPTANCE = "acceptance"
@@ -58,7 +65,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     if (resource.`type` == "F") {
       // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
     }
-    return mv
+    mv
   }
 
   @RequestMapping(Array("/edit/viewsnapshot")) def viewSnapshot(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -84,7 +91,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
       mv.addObject("show_additional_tags", 1)
       return mv
     }
-    return new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
+    new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
   }
 
   /*  TODO reimplement
@@ -138,7 +145,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
     modelAndView.addObject("publisher_select", null)
-    return modelAndView
+    modelAndView
   }
 
   @RequestMapping(Array("/edit/submit/newsitem")) def submitNewsitem(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -147,7 +154,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     val editResource = Newsitem(id = UUID.randomUUID().toString)
     modelAndView.addObject("resource", editResource)
     populateSubmitCommonElements(request, modelAndView)
-    return modelAndView
+    modelAndView
   }
 
   @RequestMapping(Array("/edit/submit/feed")) def submitFeed(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -157,7 +164,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     modelAndView.addObject("resource", editResource)
     modelAndView.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect(null))
     populateSubmitCommonElements(request, modelAndView)
-    return modelAndView
+    modelAndView
   }
 
   @RequestMapping(Array("/edit/submit/watchlist")) def submitWatchlist(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -284,7 +291,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     else {
       log.warn("No edit resource could be setup.")
     }
-    return modelAndView
+    modelAndView
   }
 
   private def createAndSetAnonUser(request: HttpServletRequest): User = {
@@ -292,7 +299,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
     val loggedInUser: User = anonUserService.createAnonUser
     loggedInUserFilter.setLoggedInUser(request, loggedInUser)
     loggedInUserFilter.loadLoggedInUser(request)
-    return loggedInUser
+    loggedInUser
   }
 
   private def processFeedAcceptancePolicy(request: HttpServletRequest, editResource: Resource) {
@@ -312,7 +319,7 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   }
 
   private def userIsAllowedToEdit(editResource: Resource, request: HttpServletRequest, loggedInUser: User): Boolean = {
-    return editPermissionService.canEdit(editResource)
+    editPermissionService.canEdit(editResource)
   }
 
   private def populateSubmitCommonElements(request: HttpServletRequest, modelAndView: ModelAndView) {

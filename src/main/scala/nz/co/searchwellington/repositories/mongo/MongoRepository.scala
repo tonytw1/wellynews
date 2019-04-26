@@ -233,9 +233,9 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
       collect[List](maxDocs = AllDocuments)
   }
 
-  def getDiscoveredFeedByUrl(url: String): Future[Option[DiscoveredFeed]] = {
-    val discoveredFeedsByUrl = BSONDocument("type" -> "F", "url" -> url)
-    discoveredFeedCollection.find(discoveredFeedsByUrl).one[DiscoveredFeed]
+  def getDiscoveredFeedByUrlAndReference(url: String, referencedFrom: String): Future[Option[DiscoveredFeed]] = {
+    val selector = BSONDocument("url" -> url, "referencedFrom" -> referencedFrom)
+    discoveredFeedCollection.find(selector).one[DiscoveredFeed]
   }
 
   def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed): Future[UpdateWriteResult] = {
