@@ -25,9 +25,11 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
 
   private val log = Logger.getLogger(classOf[EditFeedController])
 
+  private val NotFound = new ModelAndView("404")  // TODO
+
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-    Await.result(mongoRepository.getResourceById(id), TenSeconds).map { r =>
+    Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
         case f: Feed =>
           val publisher = f.publisher.flatMap(pid => Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds))
@@ -38,23 +40,22 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           editFeed.setPublisher(publisher.flatMap(_.title).getOrElse(""))
           editFeed.setAcceptancePolicy(f.acceptance)
 
-          return renderEditForm(f, editFeed)
+          Some(renderEditForm(f, editFeed))
 
         case _ =>
-          null   // TODO 404
+          None
       }
 
-    }.getOrElse {
-      null  // TODO 404
+    }.getOrElse{
+      NotFound
     }
   }
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("newFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
-    Await.result(mongoRepository.getResourceById(id), TenSeconds).map { r =>
+    Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
         case f: Feed =>
-
           if (result.hasErrors) {
             log.warn("Edit feed submission has errors: " + result)
             return renderEditForm(f, editFeed)
@@ -88,15 +89,13 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             contentUpdateService.update(updatedFeed)
             log.info("Updated feed: " + updatedFeed)
 
-            new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed)))
+            Some(new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(updatedFeed))))
           }
         case _ =>
-          null
+          None
       }
 
-    }.getOrElse {
-      null
-    }
+    }.getOrElse(NotFound)
   }
 
   private def renderEditForm(f: Feed, editFeed: EditFeed): ModelAndView = {
