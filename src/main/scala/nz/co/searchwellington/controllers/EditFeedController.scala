@@ -52,7 +52,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   }
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("newFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("editFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
     Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
         case f: Feed =>
@@ -75,15 +75,12 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
             }
             log.info("Resolved publisher: " + publisher)
 
-            val owner = Option(loggedInUserFilter.getLoggedInUser)
-
             val updatedFeed = f.copy(
               title = Some(editFeed.getTitle),
               page = Some(editFeed.getUrl),
               url_words = Some(urlWordsGenerator.makeUrlWordsFromName(editFeed.getTitle)),
               publisher = publisher.map(_._id),
               acceptance = editFeed.getAcceptancePolicy,
-              owner = owner.map(_._id)
             )
 
             contentUpdateService.update(updatedFeed)
