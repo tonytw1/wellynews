@@ -29,6 +29,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
+    log.info("Edit website")
     Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
         case w: Website =>
