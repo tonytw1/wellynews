@@ -24,7 +24,7 @@
 
                 #springBind("editWebsite.geocode")
                 <label for="${status.expression}">Geocode:</label>
-                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
+                <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
                 #springBind("editWebsite.selectedGeocode")
