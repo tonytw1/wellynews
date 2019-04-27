@@ -36,6 +36,11 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           editWebsite.setTitle(w.title.getOrElse(""))
           editWebsite.setUrl(w.page.getOrElse(""))
 
+          w.geocode.map { g =>
+            editWebsite.setGeocode(g.getAddress)
+            editWebsite.getSelectedGeocde
+          }
+
           Some(renderEditForm(w, editWebsite))
 
         case _ =>

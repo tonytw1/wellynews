@@ -22,6 +22,16 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("editFeed.geocode")
+                <label for="${status.expression}">Geocode:</label>
+                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("editFeed.selectedGeocode")
+                <label for="${status.expression}">Selected geocode:</label>
+                <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
 				<input type="submit" value="Submit" />
 			</fieldset>
 		</form>

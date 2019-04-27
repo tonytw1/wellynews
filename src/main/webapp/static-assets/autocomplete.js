@@ -32,10 +32,10 @@ $(function() {
 
 	if ($('#geocode').length) {
 
-	       itemTypes={
-        	        'N': 'NODE',
-                	'W': 'WAY',
-                	'R': 'RELATIONSHIP'};
+       itemTypes={
+                'N': 'NODE',
+                'W': 'WAY',
+                'R': 'RELATIONSHIP'};
 
 		$("#geocode").autocomplete({
 
