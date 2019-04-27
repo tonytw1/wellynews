@@ -22,6 +22,8 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                <p>$website.geocode</p>
+
                 #springBind("editWebsite.geocode")
                 <label for="${status.expression}">Geocode:</label>
                 <input id="geocode" name="${status.expression}" class="title" value="$!{status.value}" />
