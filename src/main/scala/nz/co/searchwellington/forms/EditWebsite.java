@@ -7,7 +7,7 @@ public class EditWebsite {
     @NotBlank
     private String title, url;
 
-    private String geocode, selectedGeocde;
+    private String geocode, selectedGeocode;
 
     public String getTitle() {
         return title;
@@ -33,12 +33,12 @@ public class EditWebsite {
         this.geocode = geocode;
     }
 
-    public String getSelectedGeocde() {
-        return selectedGeocde;
+    public String getSelectedGeocode() {
+        return selectedGeocode;
     }
 
-    public void setSelectedGeocde(String selectedGeocde) {
-        this.selectedGeocde = selectedGeocde;
+    public void setSelectedGeocode(String selectedGeocode) {
+        this.selectedGeocode = selectedGeocode;
     }
 
     @Override
@@ -47,7 +47,7 @@ public class EditWebsite {
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", geocode='" + geocode + '\'' +
-                ", selectedGeocde='" + selectedGeocde + '\'' +
+                ", selectedGeocode='" + selectedGeocode + '\'' +
                 '}';
     }
 }

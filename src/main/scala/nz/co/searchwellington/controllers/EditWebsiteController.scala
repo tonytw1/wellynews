@@ -39,7 +39,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
           w.geocode.map { g =>
             editWebsite.setGeocode(g.getAddress)
-            editWebsite.getSelectedGeocde
+            editWebsite.setSelectedGeocode(g.getOsmId + g.getType)
           }
 
           Some(renderEditForm(w, editWebsite))

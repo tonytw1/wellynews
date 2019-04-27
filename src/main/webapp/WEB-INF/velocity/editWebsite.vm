@@ -22,12 +22,12 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editFeed.geocode")
+                #springBind("editWebsite.geocode")
                 <label for="${status.expression}">Geocode:</label>
                 <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                #springBind("editFeed.selectedGeocode")
+                #springBind("editWebsite.selectedGeocode")
                 <label for="${status.expression}">Selected geocode:</label>
                 <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
