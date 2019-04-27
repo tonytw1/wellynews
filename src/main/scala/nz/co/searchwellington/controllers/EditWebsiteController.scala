@@ -44,6 +44,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           Some(renderEditForm(w, editWebsite))
 
         case _ =>
+          log.info("Not a website")
           None
       }
 
