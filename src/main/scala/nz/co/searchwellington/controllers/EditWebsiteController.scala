@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditWebsite
-import nz.co.searchwellington.model.{UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{Geocode, UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -70,10 +70,19 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
           } else {
             log.info("Got valid edit website submission: " + editWebsite)
+            
+            val geocode = Option(editWebsite.getGeocode).flatMap { address =>
+              Option(editWebsite.getSelectedGeocode).map { osmId =>
+                val id = osmId.split("/")(0).toLong
+                val `type` = osmId.split("/")(1)
+                Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`))
+              }
+            }
 
             val updatedWebsite = w.copy(
               title = Some(editWebsite.getTitle),
-              page = Some(editWebsite.getUrl)
+              page = Some(editWebsite.getUrl),
+              geocode = geocode
             )
 
             contentUpdateService.update(updatedWebsite)
