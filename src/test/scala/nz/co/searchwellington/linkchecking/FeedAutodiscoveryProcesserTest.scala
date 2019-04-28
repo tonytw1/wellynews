@@ -29,6 +29,8 @@ class FeedAutodiscoveryProcesserTest {
   private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, linkExtractor, commentFeedDetector, commentFeedGuesser)
 
   @Test def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
+    val now = DateTime.now
+
     val autoDiscoveredLinks = new util.HashSet[String]  // TODO Scala collection
     autoDiscoveredLinks.add(UNSEEN_FEED_URL)
     when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
@@ -37,15 +39,17 @@ class FeedAutodiscoveryProcesserTest {
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page.get)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
 
-    val newlyDiscoveredFeed = DiscoveredFeed(url = UNSEEN_FEED_URL, referencedFrom = resource.page.get, seen = DateTime.now.toDate)
+    val newlyDiscoveredFeed = DiscoveredFeed(url = UNSEEN_FEED_URL, referencedFrom = resource.page.get, seen = now.toDate)
 
-    feedAutodiscoveryProcesser.process(resource, pageContent)
+    feedAutodiscoveryProcesser.process(resource, pageContent, now)
 
     verify(mongoRepository).saveDiscoveredFeed(newlyDiscoveredFeed)
   }
 
   @Test
   def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
+    val now = DateTime.now
+
     val autoDiscoveredLinks = new util.HashSet[String]
     autoDiscoveredLinks.add(EXISTING_FEED_URL)
     when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
@@ -53,7 +57,7 @@ class FeedAutodiscoveryProcesserTest {
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(EXISTING_FEED_URL, resource.page.get)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
 
-    feedAutodiscoveryProcesser.process(resource, pageContent)
+    feedAutodiscoveryProcesser.process(resource, pageContent, now)
 
     verify(mongoRepository, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))
   }

@@ -42,7 +42,7 @@ extends ReasonableWaits {
               for (processor <- processers) {
                 log.debug("Running processor: " + processor.getClass.toString)
                 try {
-                  processor.process(resource, pageBody)
+                  processor.process(resource, pageBody, DateTime.now)
                 } catch {
                   case e: Exception =>
                     log.error("An exception occured while running a link checker processor", e)

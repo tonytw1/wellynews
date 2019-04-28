@@ -21,7 +21,7 @@ import scala.concurrent.Await
 
   private val log = Logger.getLogger(classOf[FeedAutodiscoveryProcesser])
 
-  override def process(checkResource: Resource, pageContent: String): Unit = {
+  override def process(checkResource: Resource, pageContent: String, seen: DateTime): Unit = {
     if (!checkResource.`type`.equals("F")) {
 
       if (pageContent != null) {
@@ -51,7 +51,7 @@ import scala.concurrent.Await
           } else {
             val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), TenSeconds).nonEmpty
             if (!isUrlOfExistingFeed) {
-              recordDiscoveredFeedUrl(checkResource, discoveredUrl)
+              recordDiscoveredFeedUrl(checkResource, discoveredUrl, seen)
             } else {
               log.info("Ignoring discovered url of existing feed")
             }
@@ -65,9 +65,9 @@ import scala.concurrent.Await
     discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
   }
 
-  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String): Unit = {
-    if (Await.result(mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page.get), TenSeconds).nonEmpty) {
-      mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page.get, seen = DateTime.now.toDate))
+  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime): Unit = {
+    if (Await.result(mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page.get), TenSeconds).isEmpty) {
+      mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page.get, seen = seen.toDate))
     }
   }
 

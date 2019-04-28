@@ -13,7 +13,7 @@ import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
 
   private val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
-  override def process(checkResource: Resource, pageContent: String): Unit = checkForChangeUsingSnapshots(checkResource, pageContent)
+  override def process(checkResource: Resource, pageContent: String, seen: DateTime): Unit = checkForChangeUsingSnapshots(checkResource, pageContent)
 
   // TODO cleaning and filtering?
   private def checkForChangeUsingSnapshots(checkResource: Resource, after: String) = {
