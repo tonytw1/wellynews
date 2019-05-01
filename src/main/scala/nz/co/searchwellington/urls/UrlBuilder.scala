@@ -3,7 +3,7 @@ package nz.co.searchwellington.urls
 import java.util.Date
 
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendTag}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendTag, FrontendWebsite}
 import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
 import uk.co.eelpieconsulting.common.dates.DateFormatter
@@ -53,6 +53,14 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
 
   def getFeedsUrl: String = {
     return siteInformation.getUrl + "/feeds"
+  }
+
+  def getNewFeedUrl: String = {
+    return "/new-feed"
+  }
+
+  def getNewFeedForPublisherUrl(publisher: FrontendWebsite): String = {
+    return "/new-feed?publisher=" + publisher.urlWords
   }
 
   def getTagUrl(tag: Tag): String = {

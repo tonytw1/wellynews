@@ -29,8 +29,17 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
   private val log = Logger.getLogger(classOf[NewFeedController])
 
   @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.GET))
-  def prompt(): ModelAndView = {
-    renderForm(new NewFeed());
+  def prompt(publisher: String): ModelAndView = {
+
+    val newFeedForm = Await.result(mongoRepository.getWebsiteByUrlwords(publisher), TenSeconds).fold {
+      new NewFeed()
+    } { p =>
+      val withPublisherPrepopulated = new NewFeed()
+      withPublisherPrepopulated.setPublisher(p.title.getOrElse(""))
+      withPublisherPrepopulated
+    }
+
+    renderForm(newFeedForm)
   }
 
   @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.POST))

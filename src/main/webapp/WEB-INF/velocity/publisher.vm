@@ -18,7 +18,6 @@
 #parse("includes/rss_widget_for_publisher.vm")
 </div>
 
-
 #if ($publisher) 
 	<h2><a href="$publisher.url">$heading</a></h2>
 
