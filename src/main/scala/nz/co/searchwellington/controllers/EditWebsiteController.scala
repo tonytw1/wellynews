@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.{Geocode, UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -21,11 +22,9 @@ import scala.concurrent.Await
 class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository,
                                          urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                         loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions {
+                                         loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
-
-  private val NotFound = new ModelAndView("404")  // TODO
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
@@ -70,7 +69,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
           } else {
             log.info("Got valid edit website submission: " + editWebsite)
-            
+
             val geocode = Option(editWebsite.getGeocode).flatMap { address =>
               Option(editWebsite.getSelectedGeocode).map { osmId =>
                 val id = osmId.split("/")(0).toLong
