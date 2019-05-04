@@ -71,10 +71,14 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             log.info("Got valid edit website submission: " + editWebsite)
 
             val geocode = Option(editWebsite.getGeocode).flatMap { address =>
-              Option(editWebsite.getSelectedGeocode).map { osmId => // TODO non empty
-                val id = osmId.split("/")(0).toLong
-                val `type` = osmId.split("/")(1)
-                Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`))
+              Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
+                if (osmId.nonEmpty) {
+                  val id = osmId.split("/")(0).toLong
+                  val `type` = osmId.split("/")(1)
+                  Some(Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`)))
+                } else {
+                  None
+                }
               }
             }
 
