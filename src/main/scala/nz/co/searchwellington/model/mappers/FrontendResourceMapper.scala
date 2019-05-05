@@ -145,6 +145,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
       name = website.title.orNull,
       url = website.page.orNull,
       urlWords = website.url_words.orNull,
+      description = website.description.getOrElse(""),
       place = website.geocode.map { g =>
         geocodeToPlaceMapper.mapGeocodeToPlace(g)
       },

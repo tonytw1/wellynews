@@ -21,14 +21,12 @@
 #if ($publisher) 
 	<h2><a href="$publisher.url">$heading</a></h2>
 
-	#set($page_content = $publisher) 
+	#set($page_content = $publisher)
+    #if ($publisher.description)
+        <p>$publisher.description</p>
+    #end
 	#parse("includes/page_content_tags.vm")
 
-	<p>$publisher</p>
-
-	#if ($publisher.description)
-		<p>$publisher.description</p>
-	#end
 	#parse("includes/publisher_admin_links.vm")
 #else
 	<h2>$heading</h2>

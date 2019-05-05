@@ -35,6 +35,4 @@ case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
   // TODO
   def setWatchlist(watchlist: Set[Watchlist]): Unit = {} // TODO
 
-  def getDescription: String = description.getOrElse("")
-
 }
