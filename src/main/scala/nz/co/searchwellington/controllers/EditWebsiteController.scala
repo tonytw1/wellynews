@@ -35,7 +35,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           val editWebsite = new EditWebsite()
           editWebsite.setTitle(w.title.getOrElse(""))
           editWebsite.setUrl(w.page.getOrElse(""))
-
+          editWebsite.setDescription(w.description.getOrElse(""))
           w.geocode.map { g =>
             editWebsite.setGeocode(g.getAddress)
             val osmId = g.osmId.flatMap { i =>
