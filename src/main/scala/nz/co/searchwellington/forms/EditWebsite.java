@@ -7,6 +7,8 @@ public class EditWebsite {
     @NotBlank
     private String title, url;
 
+    private String description;
+
     private String geocode, selectedGeocode;
 
     public String getTitle() {
@@ -23,6 +25,14 @@ public class EditWebsite {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getGeocode() {
@@ -46,6 +56,7 @@ public class EditWebsite {
         return "EditWebsite{" +
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
+                ", description='" + description + '\'' +
                 ", geocode='" + geocode + '\'' +
                 ", selectedGeocode='" + selectedGeocode + '\'' +
                 '}';

@@ -85,6 +85,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             val updatedWebsite = w.copy(
               title = Some(editWebsite.getTitle),
               page = Some(editWebsite.getUrl),
+              description = Some(editWebsite.getDescription),
               geocode = geocode
             )
 
