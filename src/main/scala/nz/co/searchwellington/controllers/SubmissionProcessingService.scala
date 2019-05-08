@@ -4,10 +4,12 @@ import java.util.{Calendar, Date, UUID}
 
 import com.google.common.base.Strings
 import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.submission.UrlProcessor
 import nz.co.searchwellington.feeds.PlaceToGeocodeMapper
 import nz.co.searchwellington.geocoding.osm.{CachingNominatimGeocodingService, OsmIdParser}
 import nz.co.searchwellington.model._
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO, TagDAO}
 import nz.co.searchwellington.utils.UrlFilters
 import org.apache.commons.lang.{StringEscapeUtils, StringUtils}
@@ -16,9 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
+import scala.concurrent.Await
+
 @Component class SubmissionProcessingService @Autowired()(nominatimGeocodeService: CachingNominatimGeocodingService, tagDAO: TagDAO,
                                                           tagVoteDAO: HandTaggingDAO, resourceDAO: HibernateResourceDAO, urlProcessor: UrlProcessor,
-                                                          osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper) {
+                                                          osmIdParser: OsmIdParser, placeToGeocodeMapper: PlaceToGeocodeMapper,
+                                                          mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SubmissionProcessingService])
 
@@ -183,7 +188,7 @@ import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
               val newTag = Tag(id = UUID.randomUUID().toString)
               newTag.setName(field)
               newTag.setDisplayName(displayName)
-              tagDAO.saveTag(newTag)
+              Await.result(mongoRepository.saveTag(newTag), TenSeconds)
               tagVoteDAO.addTag(user, newTag, editResource)
             }
           }
