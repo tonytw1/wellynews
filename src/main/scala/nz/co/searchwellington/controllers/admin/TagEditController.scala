@@ -4,12 +4,14 @@ import java.util.UUID
 import java.util.regex.Pattern
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter, SubmissionProcessingService, UrlStack}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Feed, Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.TagModificationService
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +20,14 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-@Controller class TagEditController @Autowired() (requestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory, urlStack: UrlStack, tagDAO: TagDAO, tagModifcationService: TagModificationService, loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, submissionProcessingService: SubmissionProcessingService, commonModelObjectsService: CommonModelObjectsService, urlWordsGenerator: UrlWordsGenerator) {
+import scala.concurrent.Await
+
+@Controller class TagEditController @Autowired() (requestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory,
+                                                  urlStack: UrlStack, tagDAO: TagDAO, tagModifcationService: TagModificationService,
+                                                  loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService,
+                                                  submissionProcessingService: SubmissionProcessingService,
+                                                  commonModelObjectsService: CommonModelObjectsService,
+                                                  urlWordsGenerator: UrlWordsGenerator, mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagEditController])
   private val pattern = Pattern.compile("^/edit/tag/(.*)$")
@@ -75,7 +84,7 @@ import org.springframework.web.servlet.view.RedirectView
       if (tagDAO.loadTagByName(tagUrlWords) == null) {
         val newTag = tagDAO.createNewTag(tagUrlWords, displayName)
         log.info("Adding new tag: " + tagUrlWords)
-        tagDAO.saveTag(newTag)
+        Await.result(mongoRepository.saveTag(newTag), TenSeconds)
         modelAndView.addObject("tag", newTag)
         modelAndView
       } else {
@@ -133,7 +142,9 @@ import org.springframework.web.servlet.view.RedirectView
       log.info("Making top level tag; setting parent to null.")
       // editTag.setParent(null)
     }
-    tagDAO.saveTag(editTag)
+
+    Await.result(mongoRepository.saveTag(editTag), TenSeconds)
+
     mv.addObject("tag", editTag)
     commonModelObjectsService.populateCommonLocal(mv)
     return mv

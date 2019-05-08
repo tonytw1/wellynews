@@ -183,6 +183,11 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag]().collect[List]()
   }
 
+  def saveTag(tag: Tag): Future[UpdateWriteResult] = {
+    val id = BSONDocument("_id" -> tag._id)
+    tagCollection.update(id, tag, upsert = true)
+  }
+
   def getAllTags(): Future[Seq[Tag]] = {
     tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List](AllDocuments)
   }

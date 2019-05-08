@@ -51,11 +51,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
     getAllTags().filter(t => t.parent.isEmpty)
   }
 
-  def saveTag(editTag: Tag) {
-    //sessionFactory.getCurrentSession.saveOrUpdate(editTag)
-    //sessionFactory.evictCollection("nz.co.searchwellington.model.Tag.children")
-  }
-
   def deleteTag(tag: Tag) {
     // sessionFactory.getCurrentSession.delete(tag)
   }
