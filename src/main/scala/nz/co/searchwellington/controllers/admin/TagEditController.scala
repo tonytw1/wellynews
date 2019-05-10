@@ -78,21 +78,25 @@ import scala.concurrent.Await
   @RequestMapping(Array("/edit/tag/add")) def add(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView = new ModelAndView("savedTag")
     modelAndView.addObject("heading", "Tag Added")
-    val displayName: String = request.getParameter("displayName")
-    if (displayName != null) {
-      val tagUrlWords: String = urlWordsGenerator.makeUrlWordsFromName(displayName)
+    val displayName = request.getParameter("displayName")
+
+    Option(displayName).fold {
+      new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request))) // TODO migrate to form backing object
+
+    } { dn =>
+      val tagUrlWords = urlWordsGenerator.makeUrlWordsFromName(dn)
       if (tagDAO.loadTagByName(tagUrlWords) == null) {
-        val newTag = tagDAO.createNewTag(tagUrlWords, displayName)
+        val newTag = tagDAO.createNewTag(tagUrlWords, dn)
+
         log.info("Adding new tag: " + tagUrlWords)
         Await.result(mongoRepository.saveTag(newTag), TenSeconds)
         modelAndView.addObject("tag", newTag)
         modelAndView
+
       } else {
         log.info("A tag already exists with url words: " + tagUrlWords + ". Not adding.")
         new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
       }
-    } else {
-      new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
     }
   }
 
