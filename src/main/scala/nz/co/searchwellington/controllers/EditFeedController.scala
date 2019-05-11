@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditFeed
@@ -23,13 +22,12 @@ import scala.concurrent.Await
 class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService,
                                       mongoRepository: MongoRepository,
                                       urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                      loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
-  with AcceptancePolicyOptions with Errors {
+                                      loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
   private val log = Logger.getLogger(classOf[EditFeedController])
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.GET))
-  def prompt(@PathVariable id: String, response: HttpServletResponse): ModelAndView = {
+  def prompt(@PathVariable id: String): ModelAndView = {
     Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
         case f: Feed =>
@@ -48,13 +46,12 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
       }
 
     }.getOrElse{
-      NotFound(response)
+      NotFound
     }
   }
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("editFeed") editFeed: EditFeed, result: BindingResult,
-             response: HttpServletResponse): ModelAndView = {
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("editFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
     Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
         case f: Feed =>
@@ -82,7 +79,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
               page = Some(editFeed.getUrl),
               url_words = Some(urlWordsGenerator.makeUrlWordsFromName(editFeed.getTitle)),
               publisher = publisher.map(_._id),
-              acceptance = editFeed.getAcceptancePolicy
+              acceptance = editFeed.getAcceptancePolicy,
             )
 
             contentUpdateService.update(updatedFeed)
@@ -94,7 +91,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
           None
       }
 
-    }.getOrElse(NotFound(response))
+    }.getOrElse(NotFound)
   }
 
   private def renderEditForm(f: Feed, editFeed: EditFeed): ModelAndView = {

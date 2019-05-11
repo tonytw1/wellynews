@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import javax.servlet.http.HttpServletResponse
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditWebsite
@@ -28,7 +27,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   private val log = Logger.getLogger(classOf[EditWebsiteController])
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
-  def prompt(@PathVariable id: String, response: HttpServletResponse): ModelAndView = {
+  def prompt(@PathVariable id: String): ModelAndView = {
     log.info("Edit website")
     Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
@@ -55,13 +54,12 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
       }
 
     }.getOrElse{
-      NotFound(response)
+      NotFound
     }
   }
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
-  def submit(@PathVariable id: String, @Valid @ModelAttribute("editWebsite") editWebsite: EditWebsite,
-             result: BindingResult, response: HttpServletResponse): ModelAndView = {
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("editWebsite") editWebsite: EditWebsite, result: BindingResult): ModelAndView = {
     Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
       r match {
         case w: Website =>
@@ -100,7 +98,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           None
       }
 
-    }.getOrElse(NotFound(response))
+    }.getOrElse(NotFound)
   }
 
   private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {

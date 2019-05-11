@@ -8,7 +8,6 @@ import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
 import nz.co.searchwellington.modification.TagModificationService
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.repositories.TagDAO
-import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.junit.Assert.{assertEquals, assertNull}
 import org.junit.Test
@@ -20,7 +19,6 @@ class TagEditControllerTest {
    val tagWidgetFactory = mock(classOf[TagsWidgetFactory])
    val urlStack = mock(classOf[UrlStack])
    val tagDAO = mock(classOf[TagDAO])
-   val mongoRepository = mock(classOf[MongoRepository])
    val tagModifcationService = mock(classOf[TagModificationService])
    val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
    val editPermissionService = mock(classOf[EditPermissionService])
@@ -34,8 +32,7 @@ class TagEditControllerTest {
   private val request = new MockHttpServletRequest
   private val response = null
 
-  private val controller = new TagEditController(requestFilter, tagWidgetFactory, urlStack, tagDAO, tagModifcationService, loggedInUserFilter,
-    editPermissionService, submissionProcessingService, commonModelObjectsService, urlWordsGenerator, mongoRepository)
+  private val controller = new TagEditController(requestFilter, tagWidgetFactory, urlStack, tagDAO, tagModifcationService, loggedInUserFilter, editPermissionService, submissionProcessingService, commonModelObjectsService, urlWordsGenerator)
 
   private val NEW_TAG_DISPLAY_NAME = "A new tag"
 
@@ -50,7 +47,7 @@ class TagEditControllerTest {
 
     val addedTag = mv.getModel.get("tag").asInstanceOf[Tag]
     assertEquals(newTag, addedTag)
-    verify(mongoRepository).saveTag(newTag)
+    verify(tagDAO).saveTag(newTag)
   }
 
   @Test
