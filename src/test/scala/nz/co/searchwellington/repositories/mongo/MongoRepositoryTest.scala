@@ -41,7 +41,7 @@ class MongoRepositoryTest {
     val title = "Test " + UUID.randomUUID.toString
     val newsitem = Newsitem(title = Some(title))
 
-    mongoRepository.saveResource(newsitem)
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds)
     assertTrue(reloaded.nonEmpty)
