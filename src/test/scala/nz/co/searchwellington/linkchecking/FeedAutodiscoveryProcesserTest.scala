@@ -8,7 +8,9 @@ import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.DateTime
+import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.ArgumentCaptor
 import org.mockito.Matchers.any
 import org.mockito.Mockito.{mock, never, verify, when}
 
@@ -39,11 +41,13 @@ class FeedAutodiscoveryProcesserTest {
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page.get)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(UNSEEN_FEED_URL)).thenReturn(Future.successful(None))
 
-    val newlyDiscoveredFeed = DiscoveredFeed(url = UNSEEN_FEED_URL, referencedFrom = resource.page.get, seen = now.toDate)
+    val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
     feedAutodiscoveryProcesser.process(resource, pageContent, now)
 
-    verify(mongoRepository).saveDiscoveredFeed(newlyDiscoveredFeed)
+    verify(mongoRepository).saveDiscoveredFeed(saved.capture())
+    assertEquals(UNSEEN_FEED_URL, saved.getValue.url)
+    assertEquals(resource.page.get, saved.getValue.referencedFrom)
   }
 
   @Test
