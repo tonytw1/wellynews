@@ -14,6 +14,9 @@ import org.junit.Assert.{assertEquals, assertNull}
 import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import reactivemongo.api.commands.UpdateWriteResult
+
+import scala.concurrent.Future
 
 class TagEditControllerTest {
    val requestFilter = mock(classOf[AdminRequestFilter])
@@ -46,6 +49,8 @@ class TagEditControllerTest {
     when(urlWordsGenerator.makeUrlWordsFromName(NEW_TAG_DISPLAY_NAME)).thenReturn("a-new-tag")
     when(tagDAO.createNewTag("a-new-tag", NEW_TAG_DISPLAY_NAME)).thenReturn(newTag)
     request.setParameter("displayName", NEW_TAG_DISPLAY_NAME)
+    val saveResult = mock(classOf[UpdateWriteResult])
+    when(mongoRepository.saveTag(newTag)).thenReturn(Future.successful(saveResult))
 
     val mv = controller.add(request, response)
 
@@ -58,7 +63,7 @@ class TagEditControllerTest {
   @throws[Exception]
   def shouldRejectNewTagIfUrlWordsClauseWithAnExistingTag(): Unit = {
     when(tagDAO.createNewTag("an-existing-tag", "An existing tag")).thenReturn(newTag)
-    when(tagDAO.loadTagByName("an-existing-tag")).thenReturn(Some(existingTag))
+    when(mongoRepository.getTagByUrlWords("an-existing-tag")).thenReturn(Future.successful(Some(existingTag)))
     request.setParameter("displayName", "An existing tag")
 
     val mv = controller.add(request, response)

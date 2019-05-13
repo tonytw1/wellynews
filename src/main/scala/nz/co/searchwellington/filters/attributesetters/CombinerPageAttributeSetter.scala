@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.Await
 
-@Component class CombinerPageAttributeSetter @Autowired()(var tagDAO: TagDAO, var mongoRepository: MongoRepository)
+@Component class CombinerPageAttributeSetter @Autowired()(tagDAO: TagDAO, mongoRepository: MongoRepository)
   extends AttributeSetter with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[CombinerPageAttributeSetter])
@@ -25,7 +25,7 @@ import scala.concurrent.Await
       val right = matcher.group(2)
       log.debug("Path matches combiner pattern for '" + left + "', '" + right + "'")
 
-      tagDAO.loadTagByName(right).map { rightHandTag =>
+      Await.result(mongoRepository.getTagByUrlWords(right), TenSeconds).map { rightHandTag =>
 
         Await.result(mongoRepository.getWebsiteByUrlwords(left), TenSeconds).map { publisher =>
           log.debug("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.title)
@@ -34,7 +34,7 @@ import scala.concurrent.Await
           true
 
         }.getOrElse {
-          tagDAO.loadTagByName(left).map { leftHandTag =>
+          Await.result(mongoRepository.getTagByUrlWords(left), TenSeconds).map { leftHandTag =>
             log.debug("Setting tags '" + leftHandTag.getName + "', '" + rightHandTag.getName + "'")
             val tags = Seq(leftHandTag, rightHandTag)
             request.setAttribute("tags", tags)

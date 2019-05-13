@@ -31,7 +31,7 @@ class AdminRequestFilter @Autowired() (mongoRepository: MongoRepository, tagDAO:
     log.debug("Looking for tag parameter")
     if (request.getParameter("tag") != null) {
       val tagName = request.getParameter("tag")
-      tagDAO.loadTagByName(tagName).map { tag =>
+      Await.result(mongoRepository.getTagByUrlWords(tagName), TenSeconds).map { tag =>
         request.setAttribute("tag", tag)
       }
     }
@@ -89,8 +89,7 @@ class AdminRequestFilter @Autowired() (mongoRepository: MongoRepository, tagDAO:
 
     if (request.getParameter("parent") != null) {
       val tagName = request.getParameter("parent")
-      tagDAO.loadTagByName(tagName).map { tag =>
-        log.debug("Found parent tag: " + tag.getName)
+      Await.result(mongoRepository.getTagByUrlWords(tagName), TenSeconds).map { tag =>
         request.setAttribute("parent_tag", tag)
       }
     }

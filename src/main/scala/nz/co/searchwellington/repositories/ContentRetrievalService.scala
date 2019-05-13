@@ -154,14 +154,6 @@ import scala.concurrent.{Await, Future}
     keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken, null)
   }
 
-  def getFeaturedSites: Seq[FrontendResource] = {
-    tagDAO.loadTagByName("featured").map { featuredTag =>
-      getTaggedWebsites(featuredTag, 10)
-    }.getOrElse{
-      Seq()
-    }
-  }
-
   def getArchiveMonths: Seq[ArchiveLink] = {
     Await.result(elasticSearchIndexer.getArchiveMonths, TenSeconds)
   }
@@ -248,7 +240,7 @@ import scala.concurrent.{Await, Future}
 
   def getPublisherTagCombinerNewsitems(publisherUrlWords: String, tagName: String, maxNewsitems: Int): Seq[FrontendResource] = {
     Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).flatMap { p =>
-      tagDAO.loadTagByName(tagName).map { t =>
+      Await.result(mongoRepository.getTagByUrlWords(tagName), TenSeconds).map { t =>
         getPublisherTagCombinerNewsitems(p, t, maxNewsitems)
       }
     }.getOrElse(Seq())

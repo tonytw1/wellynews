@@ -25,10 +25,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
     Await.result(mongoRepository.getTagByObjectId(objectId), Duration(10, SECONDS))
   }
 
-  def loadTagByName(name: String): Option[Tag] = {
-    Await.result(mongoRepository.getTagByName(name), Duration(10, SECONDS))
-  }
-
   def getAllTags(): Seq[Tag] = {
     Await.result(mongoRepository.getAllTags(), Duration(10, SECONDS))
   }

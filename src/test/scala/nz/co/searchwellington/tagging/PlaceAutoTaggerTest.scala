@@ -4,12 +4,14 @@ import java.util.UUID
 
 import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
 import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import reactivemongo.bson.BSONObjectID
-import reactivemongo.bson.DefaultBSONHandlers.BSONDocumentIdentity
+
+import scala.concurrent.Future
 
 class PlaceAutoTaggerTest {
 
@@ -19,6 +21,7 @@ class PlaceAutoTaggerTest {
   private var aroValleyNewsitem: Newsitem = null
 
   @Mock private var tagDAO: TagDAO  = null
+  @Mock private var mongoRepository: MongoRepository  = null
 
   private var placeAutoTagger: PlaceAutoTagger = null
 
@@ -29,10 +32,10 @@ class PlaceAutoTaggerTest {
     aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = None) // TODO places as parent
     islandBayTag = Tag(id = UUID.randomUUID().toString, name = "islandbay", display_name = "Island Bay", parent = None)
 
-    when(tagDAO.loadTagByName("places")).thenReturn(Some(placesTag))
+    when(mongoRepository.getTagByUrlWords("places")).thenReturn(Future.successful(Some(placesTag)))
     when(tagDAO.loadTagsByParent(placeTagObjectId)).thenReturn(Seq(aroValleyTag, islandBayTag))
 
-    placeAutoTagger = new PlaceAutoTagger(tagDAO)
+    placeAutoTagger = new PlaceAutoTagger(mongoRepository, tagDAO)
   }
 
   @Test def testShouldTagNewsitemWithPlaceTags {

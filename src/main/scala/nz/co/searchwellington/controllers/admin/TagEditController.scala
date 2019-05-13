@@ -85,7 +85,10 @@ import scala.concurrent.Await
 
     } { dn =>
       val tagUrlWords = urlWordsGenerator.makeUrlWordsFromName(dn)
-      if (tagDAO.loadTagByName(tagUrlWords) == null) {
+
+      val existingTag = Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds)
+
+      existingTag.fold {
         val newTag = tagDAO.createNewTag(tagUrlWords, dn)
 
         log.info("Adding new tag: " + tagUrlWords)
@@ -93,8 +96,8 @@ import scala.concurrent.Await
         modelAndView.addObject("tag", newTag)
         modelAndView
 
-      } else {
-        log.info("A tag already exists with url words: " + tagUrlWords + ". Not adding.")
+      }{ et =>
+        log.info("A tag already exists with url words: " + tagUrlWords + ". Not adding: " + et)
         new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
       }
     }
@@ -190,8 +193,8 @@ import scala.concurrent.Await
   private def tagFromPage(request: HttpServletRequest): Option[Tag] = {
     val matcher = pattern.matcher(request.getPathInfo)
     if (matcher.matches) {
-      val tagname = matcher.group(1)
-      tagDAO.loadTagByName(tagname)
+      val urlWords = matcher.group(1)
+      Await.result(mongoRepository.getTagByUrlWords(urlWords), TenSeconds)
     } else {
       None
     }

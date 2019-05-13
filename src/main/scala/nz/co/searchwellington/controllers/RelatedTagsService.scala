@@ -1,17 +1,22 @@
 package nz.co.searchwellington.controllers
 
 // TODO move out of controllers package
-import nz.co.searchwellington.model.frontend.FrontendTag
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchBackedResourceDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.Place
 
+import scala.concurrent.Await
+
 @Component class RelatedTagsService @Autowired()(elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
-                                                 tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService, frontendResourceMapper: FrontendResourceMapper) {
+                                                 tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
+                                                 frontendResourceMapper: FrontendResourceMapper,
+                                                 mongoRepository: MongoRepository) extends ReasonableWaits {
 
   def getRelatedLinksForTag(tag: Tag, maxItems: Int): Seq[TagContentCount] = {
 
@@ -23,7 +28,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place
       }
 
       tagFacetsForTag.keys.flatMap { tagId =>
-        tagDAO.loadTagByName(tagId).flatMap { facetTag =>
+        Await.result(mongoRepository.getTagById(tagId), TenSeconds).flatMap { facetTag =>
           if (isTagSuitableRelatedTag(tag, facetTag)) {
             tagFacetsForTag.get(tagId).flatMap { count =>
               Some(new TagContentCount(frontendResourceMapper.mapTagToFrontendTag(facetTag), count))

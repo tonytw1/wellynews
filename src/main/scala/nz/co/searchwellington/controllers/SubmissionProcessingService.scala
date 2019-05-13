@@ -179,7 +179,7 @@ import scala.concurrent.Await
           log.debug("Wants additional tag: " + field)
           if (isValidTagName(field)) {
 
-            tagDAO.loadTagByName(field).map { existingTag =>
+            Await.result(mongoRepository.getTagByUrlWords(field), TenSeconds).map { existingTag =>
               log.debug("Found an existing tag in the additional list: " + existingTag.getName + "; adding.")
               tagVoteDAO.addTag(user, existingTag, editResource)
 

@@ -23,7 +23,7 @@ class MongoRepositoryTest {
 
   @Test
   def canReadTagParent = {
-    val tagWithParent = Await.result(mongoRepository.getTagByName("vuw"), TenSeconds).get
+    val tagWithParent = Await.result(mongoRepository.getTagByUrlWords("vuw"), TenSeconds).get
     val parentId = tagWithParent.parent.get
     val parentTag = Await.result(mongoRepository.getTagByObjectId(parentId), TenSeconds).get
     assertEquals("education", parentTag.name)
@@ -31,7 +31,7 @@ class MongoRepositoryTest {
 
   @Test
   def canReadTagGeocode = {
-    val tagWithGeocode = Await.result(mongoRepository.getTagByName("arovalley"), TenSeconds).get
+    val tagWithGeocode = Await.result(mongoRepository.getTagByUrlWords("arovalley"), TenSeconds).get
     assertTrue(tagWithGeocode.geocode_id.nonEmpty)
     assertTrue(tagWithGeocode.geocode.nonEmpty)
   }

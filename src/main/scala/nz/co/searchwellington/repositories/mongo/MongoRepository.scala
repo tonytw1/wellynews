@@ -175,8 +175,8 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     tagCollection.find(BSONDocument("_id" -> objectId)).one[Tag]
   }
 
-  def getTagByName(name: String): Future[Option[Tag]] = {
-    tagCollection.find(BSONDocument("name" -> name)).one[Tag]
+  def getTagByUrlWords(urlWords: String): Future[Option[Tag]] = {
+    tagCollection.find(BSONDocument("url_words" -> urlWords)).one[Tag]
   }
 
   def getTagsByParent(parent: BSONObjectID): Future[List[Tag]] = {

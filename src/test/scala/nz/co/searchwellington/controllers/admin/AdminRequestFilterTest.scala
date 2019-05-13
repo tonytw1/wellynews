@@ -22,11 +22,12 @@ class AdminRequestFilterTest {
   val tagDAO = mock(classOf[TagDAO])
   val request = new MockHttpServletRequest
 
-  val filter = new AdminRequestFilter(mongoRepository, tagDAO, new ResourceParameterFilter(mongoRepository), new TagsParameterFilter(tagDAO))
+  val filter = new AdminRequestFilter(mongoRepository, tagDAO, new ResourceParameterFilter(mongoRepository),
+    new TagsParameterFilter(tagDAO, mongoRepository))
 
   @Before
   def setUp {
-    when(tagDAO.loadTagByName("transport")).thenReturn(Some(transportTag))
+    when(mongoRepository.getTagByUrlWords("transport")).thenReturn(Future.successful(Some(transportTag)))
     when(mongoRepository.getResourceById("567")).thenReturn(Future.successful(Some(resource)))
   }
 
@@ -95,7 +96,7 @@ class AdminRequestFilterTest {
 
     filter.loadAttributesOntoRequest(request)
 
-    verify(tagDAO).loadTagByName("transport")
+    verify(mongoRepository).getTagByUrlWords("transport")
     val requestTag = request.getAttribute("tag").asInstanceOf[Tag]
     assertNotNull(requestTag)
     assertEquals(transportTag, requestTag)

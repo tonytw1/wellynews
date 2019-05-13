@@ -60,7 +60,7 @@ class ElasticSearchIT {
 
   @Test
   def canFilterByTag {
-    val tag = Await.result(mongoRepository.getTagByName("arovalley"), TenSeconds).get
+    val tag = Await.result(mongoRepository.getTagByUrlWords("arovalley"), TenSeconds).get
     val withTag = ResourceQuery(tags = Some(Set(tag)))
 
     val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))

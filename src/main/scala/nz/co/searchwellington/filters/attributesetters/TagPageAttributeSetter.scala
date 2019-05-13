@@ -1,14 +1,19 @@
 package nz.co.searchwellington.filters.attributesetters
 
 import java.util.regex.Pattern
-import javax.servlet.http.HttpServletRequest
 
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO) extends AttributeSetter {
+import scala.concurrent.Await
+
+@Component class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO, mongoRepository: MongoRepository) extends AttributeSetter
+with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagPageAttributeSetter])
   private val tagPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|autotag))?(/(rss|json))?$")
@@ -22,7 +27,7 @@ import org.springframework.stereotype.Component
         log.debug("'" + `match` + "' matches content")
         log.debug("Looking for tag '" + `match` + "'")
 
-        tagDAO.loadTagByName(`match`).map { tag =>
+        Await.result(mongoRepository.getTagByUrlWords(`match`), TenSeconds).map { tag =>
           log.debug("Setting tag: " + tag.getName)
           request.setAttribute("tag", tag) // TODO deprecate
           val tags = Seq(tag)
