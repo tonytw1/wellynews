@@ -44,13 +44,13 @@ class TagEditControllerTest {
   private val NEW_TAG_DISPLAY_NAME = "A new tag"
 
   @Test
-  @throws[Exception]
   def shouldCreateAndSaveNewTagBasedOnDisplayName(): Unit = {
     when(urlWordsGenerator.makeUrlWordsFromName(NEW_TAG_DISPLAY_NAME)).thenReturn("a-new-tag")
     when(tagDAO.createNewTag("a-new-tag", NEW_TAG_DISPLAY_NAME)).thenReturn(newTag)
-    request.setParameter("displayName", NEW_TAG_DISPLAY_NAME)
+    when(mongoRepository.getTagByUrlWords("a-new-tag")).thenReturn(Future.successful(None))
     val saveResult = mock(classOf[UpdateWriteResult])
     when(mongoRepository.saveTag(newTag)).thenReturn(Future.successful(saveResult))
+    request.setParameter("displayName", NEW_TAG_DISPLAY_NAME)
 
     val mv = controller.add(request, response)
 
@@ -60,9 +60,9 @@ class TagEditControllerTest {
   }
 
   @Test
-  @throws[Exception]
   def shouldRejectNewTagIfUrlWordsClauseWithAnExistingTag(): Unit = {
     when(tagDAO.createNewTag("an-existing-tag", "An existing tag")).thenReturn(newTag)
+    when(urlWordsGenerator.makeUrlWordsFromName("An existing tag")).thenReturn("an-existing-tag")
     when(mongoRepository.getTagByUrlWords("an-existing-tag")).thenReturn(Future.successful(Some(existingTag)))
     request.setParameter("displayName", "An existing tag")
 
