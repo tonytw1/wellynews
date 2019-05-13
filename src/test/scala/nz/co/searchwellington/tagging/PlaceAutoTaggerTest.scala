@@ -7,48 +7,39 @@ import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert._
 import org.junit.{Before, Test}
-import org.mockito.Mockito.when
-import org.mockito.{Mock, MockitoAnnotations}
+import org.mockito.Mockito.{mock, when}
 import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.Future
 
 class PlaceAutoTaggerTest {
 
-  private var placesTag: Tag = null
-  private var aroValleyTag: Tag = null
-  private var islandBayTag: Tag = null
-  private var aroValleyNewsitem: Newsitem = null
+  private val placesTag = Tag(_id = BSONObjectID.generate, id = UUID.randomUUID().toString, name = "places", display_name = "Places")
+  private val aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
+  private val islandBayTag = Tag(id = UUID.randomUUID().toString, name = "islandbay", display_name = "Island Bay", parent = Some(placesTag._id))
 
-  @Mock private var tagDAO: TagDAO  = null
-  @Mock private var mongoRepository: MongoRepository  = null
+  private val aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
 
-  private var placeAutoTagger: PlaceAutoTagger = null
+  private val tagDAO = mock(classOf[TagDAO])
+  private val mongoRepository = mock(classOf[MongoRepository])
 
-  @Before def setUp {
-    MockitoAnnotations.initMocks(this)
-    val placeTagObjectId = BSONObjectID.generate
-    placesTag = Tag(_id = placeTagObjectId, id = UUID.randomUUID().toString, name = "places", display_name = "Places")
-    aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = None) // TODO places as parent
-    islandBayTag = Tag(id = UUID.randomUUID().toString, name = "islandbay", display_name = "Island Bay", parent = None)
+  private val placeAutoTagger: PlaceAutoTagger = new PlaceAutoTagger(mongoRepository, tagDAO)
 
+  @Before
+  def setUp {
     when(mongoRepository.getTagByUrlWords("places")).thenReturn(Future.successful(Some(placesTag)))
-    when(tagDAO.loadTagsByParent(placeTagObjectId)).thenReturn(Seq(aroValleyTag, islandBayTag))
-
-    placeAutoTagger = new PlaceAutoTagger(mongoRepository, tagDAO)
+    when(tagDAO.loadTagsByParent(placesTag._id)).thenReturn(Seq(aroValleyTag, islandBayTag))
   }
 
-  @Test def testShouldTagNewsitemWithPlaceTags {
-    aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the Aro Valley... Test"))
-
+  @Test
+  def testShouldTagNewsitemWithPlaceTags {
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
 
     assertTrue(suggestedTags.contains(aroValleyTag))
   }
 
-  @Test def testPlaceAutoTaggingShouldBeCaseInsensitive {
-    aroValleyNewsitem = Newsitem(title = Some("Test newsitem"), description = Some(".. Student flats in the aro valley... Test"))
-
+  @Test
+  def testPlaceAutoTaggingShouldBeCaseInsensitive {
     val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
 
     assertTrue(suggestedTags.contains(aroValleyTag))
