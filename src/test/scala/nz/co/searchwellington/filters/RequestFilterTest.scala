@@ -19,7 +19,7 @@ class RequestFilterTest {
   @Mock private val soccerTag: Tag = null
   @Mock private val capitalTimesPublisher: Website = null
   @Mock private val feed: Feed = null
-  private val filters = Array[RequestAttributeFilter]()
+  private val filters = Array[RequestAttributeFilter](new PageParameterFilter)
   private var filter: RequestFilter = null
 
   @Before
@@ -47,7 +47,9 @@ class RequestFilterTest {
     val request = new MockHttpServletRequest
     request.setPathInfo("/transport")
     request.setParameter("page", "3")
+
     filter.loadAttributesOntoRequest(request)
+
     val page = request.getAttribute("page").asInstanceOf[Integer]
     assertEquals(3, page.intValue)
   }
