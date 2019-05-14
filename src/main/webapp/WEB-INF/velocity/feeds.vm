@@ -10,6 +10,12 @@
 <div class="main">
 <h2>$heading</h2>
 
+#if($editPermissionService.admin)
+    <ul>
+        <li class="admin"><a href="$urlBuilder.newFeedUrl">Add new feed</a></li>
+    </ul>
+#end
+
 <p>$site_information.sitename aggregates links from these $site_information.areaname related feeds.</p>
 
 <p><a href="rssfeeds">RSS feeds</a> produced by $site_information.sitename are summarised <a href="rssfeeds">here</a>.</p>

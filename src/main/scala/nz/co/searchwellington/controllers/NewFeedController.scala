@@ -4,18 +4,18 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Feed, UrlWordsGenerator}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
+import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.{BindingResult, ObjectError}
 import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
-import org.joda.time.DateTime
 
 import scala.concurrent.Await
 
@@ -30,8 +30,17 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
 
   @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.GET))
   def prompt(publisher: String): ModelAndView = {
+    val prepopulatedPublisher = {
+      Option(publisher).flatMap { p =>
+        if (p.trim.nonEmpty) {
+          Await.result(mongoRepository.getWebsiteByUrlwords(p), TenSeconds)
+        } else {
+          None
+        }
+      }
+    }
 
-    val newFeedForm = Await.result(mongoRepository.getWebsiteByUrlwords(publisher), TenSeconds).fold {
+    val newFeedForm = prepopulatedPublisher.fold {
       new NewFeed()
     } { p =>
       val withPublisherPrepopulated = new NewFeed()

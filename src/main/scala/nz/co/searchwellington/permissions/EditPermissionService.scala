@@ -66,6 +66,14 @@ class EditPermissionService @Autowired() (loggedInUserFilter: LoggedInUserFilter
     return isAdmin(loggedInUser)
   }
 
+  def isAdmin(): Boolean = {
+    isAdmin(loggedInUserFilter.getLoggedInUser)
+  }
+
+  private def isAdmin(loggedInUser: User): Boolean = {
+    loggedInUser != null && loggedInUser.isAdmin
+  }
+
   private def isAdminOrOwner(resource: FrontendResource, loggedInUser: User): Boolean = {
     if (isAdmin(loggedInUser)) {
       return true
@@ -73,10 +81,6 @@ class EditPermissionService @Autowired() (loggedInUserFilter: LoggedInUserFilter
 
     val matchesOwnersName = loggedInUser != null && !Strings.isNullOrEmpty(resource.getOwner) && loggedInUser.getProfilename == resource.getOwner
     matchesOwnersName
-  }
-
-  private def isAdmin(loggedInUser: User): Boolean = {
-    loggedInUser != null && loggedInUser.isAdmin
   }
 
   private def isAdminOrOwner(resource: Resource, loggedInUser: User): Boolean = {
