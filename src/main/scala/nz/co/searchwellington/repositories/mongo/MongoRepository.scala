@@ -176,7 +176,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getTagByUrlWords(urlWords: String): Future[Option[Tag]] = {
-    tagCollection.find(BSONDocument("url_words" -> urlWords)).one[Tag]
+    tagCollection.find(BSONDocument("name" -> urlWords)).one[Tag] // TODO rename field
   }
 
   def getTagsByParent(parent: BSONObjectID): Future[List[Tag]] = {
