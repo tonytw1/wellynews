@@ -1,11 +1,8 @@
 package nz.co.searchwellington.repositories
 
-import nz.co.searchwellington.model.taggingvotes.HandTagging
-import nz.co.searchwellington.model.{Resource, Tag, Tagging, User, Website}
+import nz.co.searchwellington.model.{Tag, Tagging, User, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.junit.Assert.assertTrue
 import org.junit.{Before, Test}
-import org.mockito.Mockito
 import org.mockito.Mockito.{mock, verify, when}
 
 import scala.concurrent.Future
