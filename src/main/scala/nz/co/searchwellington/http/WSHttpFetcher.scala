@@ -1,8 +1,9 @@
-package nz.co.searchwellington.utils
+package nz.co.searchwellington.http
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.utils.{HttpFetchResult, HttpFetcher}
 import org.apache.log4j.Logger
 import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
