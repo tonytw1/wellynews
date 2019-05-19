@@ -2,10 +2,10 @@ package nz.co.searchwellington.linkchecking
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.http.HttpFetcher
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.utils.HttpFetcher
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.DateTime

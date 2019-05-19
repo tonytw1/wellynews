@@ -1,5 +1,6 @@
 package nz.co.searchwellington.utils;
 
+import nz.co.searchwellington.http.HttpFetcher;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.log4j.Logger;
 

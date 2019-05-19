@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
 
+import nz.co.searchwellington.http.HttpFetcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
