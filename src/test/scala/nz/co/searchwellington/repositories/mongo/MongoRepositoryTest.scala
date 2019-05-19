@@ -102,6 +102,21 @@ class MongoRepositoryTest {
   }
 
   @Test
+  def canFindResourcesByTag = {
+    val tag = Await.result(mongoRepository.getTagByUrlWords("arovalley"), TenSeconds).get
+
+    val taggedResourceIds = Await.result(mongoRepository.getResourceIdsByTag(tag), TenSeconds)
+
+    assertTrue(taggedResourceIds.nonEmpty)
+    val taggedResources = taggedResourceIds.flatMap { oid =>
+      Await.result(mongoRepository.getResourceByObjectId(oid), TenSeconds)
+    }
+    assertTrue(taggedResources.forall{ r =>
+      r.resource_tags.exists(t => t.tag_id == tag._id)
+    })
+  }
+
+  @Test
   def canReadListOfResourceIds = {
     val resourceIds = Await.result(mongoRepository.getAllResourceIds(), TenSeconds)
     assertEquals(88657, resourceIds.size)
