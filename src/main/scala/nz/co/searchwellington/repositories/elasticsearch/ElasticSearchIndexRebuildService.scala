@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 
 import com.fasterxml.jackson.core.JsonProcessingException
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Resource, Tag}
+import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.apache.log4j.Logger
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.duration.{Duration, MINUTES}
 import scala.concurrent.{Await, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer,

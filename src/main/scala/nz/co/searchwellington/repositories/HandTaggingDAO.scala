@@ -35,8 +35,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getHandTaggingsForResource(resource)
   }
 
-  def delete(handTagging: HandTagging) {
-    //sessionFactory.getCurrentSession.delete(handTagging)
+  def deleteTagFromResource(tag: Tag, resource: Resource): Resource = {
+    resource match {  // TODO how to remove this?
+      case w: Website =>
+        w.copy(resource_tags = w.resource_tags.filterNot(t => t.tag_id == tag._id))
+      case n: Newsitem =>
+        n.copy(resource_tags = n.resource_tags.filterNot(t => t.tag_id == tag._id))
+      case f: Feed =>
+         f.copy(resource_tags = f.resource_tags.filterNot(t => t.tag_id == tag._id))
+      case _ =>
+        resource
+    }
   }
 
   def getHandpickedTagsForThisResourceByUser(user: User, resource: Resource): Set[Tag] = {
