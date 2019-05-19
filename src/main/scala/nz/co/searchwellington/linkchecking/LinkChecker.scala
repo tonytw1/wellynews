@@ -71,13 +71,13 @@ extends ReasonableWaits {
   private def httpCheck(checkResource: Resource, url: String): Option[String] = {
     try {
       val httpResult = httpFetcher.httpFetch(url)
-      checkResource.setHttpStatus(httpResult.getStatus)
+      checkResource.setHttpStatus(httpResult.status)
       log.info("Http status for " + checkResource.page + " set to: " + checkResource.http_status)
 
-      if (httpResult.getStatus == HttpStatus.SC_OK) {
-        Some(httpResult.getBody)
+      if (httpResult.status == HttpStatus.SC_OK) {
+        Some(httpResult.body)
       } else {
-        checkResource.setHttpStatus(httpResult.getStatus)
+        checkResource.setHttpStatus(httpResult.status)
         None
 
       }

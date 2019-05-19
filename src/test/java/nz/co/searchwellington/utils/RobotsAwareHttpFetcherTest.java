@@ -6,6 +6,8 @@ import static org.mockito.Mockito.when;
 import junit.framework.TestCase;
 
 import nz.co.searchwellington.http.HttpFetcher;
+import nz.co.searchwellington.http.RobotExclusionService;
+import nz.co.searchwellington.http.RobotsAwareHttpFetcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -22,7 +24,7 @@ public class RobotsAwareHttpFetcherTest extends TestCase {
 	protected void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		when(httpFetcher.getUserAgent()).thenReturn(TEST_USER_AGENT);
-		robotsAwareFetcher = new RobotsAwareHttpFetcher(robotExclusionService, httpFetcher);	
+		robotsAwareFetcher = new RobotsAwareHttpFetcher(robotExclusionService, httpFetcher);
 	} 
 	
 	public void testMustCheckWithTheRobotsExclutionServiceBeforeCrawlingUrl() throws Exception {		
