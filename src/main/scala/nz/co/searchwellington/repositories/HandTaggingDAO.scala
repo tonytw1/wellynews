@@ -43,12 +43,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getHandTaggingsForResourceByUser(resource, user).map(tagging => tagging.tag).toSet
   }
 
-  @SuppressWarnings(Array("unchecked")) def getVotesForTag(tag: Tag): Seq[HandTagging] = {
-    //sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("tag", tag)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
-    Seq() // TODO
-
-  }
-
   def setUsersTagVotesForResource(resource: Resource, user: User, tags: Set[Tag]) {
     val withoutUsersTaggings = resource.resource_tags.filterNot(_.user_id == user._id).toSet
     val newTaggings = tags.map(t => Tagging(tag_id = t._id, user_id = user._id))
