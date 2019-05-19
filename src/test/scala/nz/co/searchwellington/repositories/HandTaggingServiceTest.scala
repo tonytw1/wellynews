@@ -1,34 +1,27 @@
 package nz.co.searchwellington.repositories
 
-import org.mockito.Mockito.verify
-import org.mockito.Mockito.when
-import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.taggingvotes.HandTagging
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
+import nz.co.searchwellington.model.{Resource, Tag, User}
+import org.junit.{Before, Test}
 import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
+import org.mockito.Mockito.{mock, verify, when}
 
 class HandTaggingServiceTest {
-  @Mock private[repositories] val handTaggingDAO: HandTaggingDAO = null
-  @Mock private[repositories] val frontendContentUpdater: FrontendContentUpdater = null
-  @Mock private[repositories] val tag: Tag = null
-  @Mock private[repositories] val taggedResource: Resource = null
-  @Mock private[repositories] val previousUser: User = null
-  @Mock private[repositories] val newUser: User = null
-  @Mock private[repositories] val handTagging: HandTagging = null
-  private var tagVotes: Seq[HandTagging] = null
-  private var handTaggingService: HandTaggingService = null
+  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
+  private val frontendContentUpdater = mock(classOf[FrontendContentUpdater])
+
+  private val handTaggingService = new HandTaggingService(handTaggingDAO, frontendContentUpdater)
+
+  private val tag = mock(classOf[Tag])
+  private val taggedResource = mock(classOf[Resource])
+  private val previousUser =  mock(classOf[User])
+  private val newUser =  mock(classOf[User])
+  private val handTagging =  mock(classOf[HandTagging])
+  private val tagVotes = Seq(handTagging)
 
   @Before def setup {
-    MockitoAnnotations.initMocks(this)
-    tagVotes = Seq(handTagging)
     when(previousUser.getName).thenReturn("Previous User")
     when(newUser.getName).thenReturn("New User")
-    handTaggingService = new HandTaggingService(handTaggingDAO, frontendContentUpdater)
   }
 
   @Test

@@ -4,7 +4,6 @@ import nz.co.searchwellington.model.{Tag, User}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import org.springframework.transaction.annotation.Transactional
 
 @Component class HandTaggingService @Autowired() (handTaggingDao: HandTaggingDAO, frontendContentUpdater: FrontendContentUpdater) {
 
@@ -14,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
     log.debug("Clearing tagging votes for tag: " + tag.getName)
     val votesForTag = handTaggingDao.getVotesForTag(tag)
     log.debug(votesForTag.size + " votes will needs to be cleared and the frontend resources updated.")
-    votesForTag.map { handTagging =>
+    votesForTag.foreach { handTagging =>
       handTaggingDao.delete(handTagging)
       // TODO frontendContentUpdater.update(handTagging.getResource)
     }
