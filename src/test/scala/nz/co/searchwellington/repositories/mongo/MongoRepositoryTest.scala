@@ -56,7 +56,7 @@ class MongoRepositoryTest {
     val updatedTitle = title + " updated"
     val updated = newsitem.copy(title = Some(updatedTitle), http_status = 200)
 
-    mongoRepository.saveResource(updated)
+    Await.result(mongoRepository.saveResource(updated), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds).get
     assertEquals(updatedTitle, reloaded.title.get)
