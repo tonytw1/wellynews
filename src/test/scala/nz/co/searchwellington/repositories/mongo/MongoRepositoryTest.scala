@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Geocode, Newsitem, Tag, User, Website}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Geocode, Newsitem, Tag, Tagging, User, Website}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -86,6 +86,21 @@ class MongoRepositoryTest {
   }
 
   @Test
+  def canPersistTaggingsForResource = {
+    val tag = Tag()
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
+    val taggingUser = User()
+    Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
+    val taggedResource = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
+    Await.result(mongoRepository.saveResource(taggedResource), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getResourceByObjectId(taggedResource._id), TenSeconds).get
+    assertEquals(1, reloaded.resource_tags.size)
+    assertEquals(tag._id, reloaded.resource_tags.head.tag_id)
+    assertEquals(taggingUser._id, reloaded.resource_tags.head.user_id)
+  }
+
+  @Test
   def canUpdateResources = {
     val title = "Test " + UUID.randomUUID.toString
     val newsitem = Newsitem(title = Some(title))
@@ -127,17 +142,6 @@ class MongoRepositoryTest {
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(feed._id), TenSeconds).get.asInstanceOf[Feed]
 
     assertEquals(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES, reloaded.acceptance)
-  }
-
-  @Test
-  def canReadTaggingsForResource = {
-    val taggedResource = Await.result(mongoRepository.getResourceByUrl("http://www.kitesurfers.co.nz/"), TenSeconds).get
-
-    val taggings = taggedResource.resource_tags
-
-    assertEquals(1, taggings.size)
-    val tag = Await.result(mongoRepository.getTagByObjectId(taggings.head.tag_id), TenSeconds).get
-    assertEquals("sport", tag.name)
   }
 
   @Test
