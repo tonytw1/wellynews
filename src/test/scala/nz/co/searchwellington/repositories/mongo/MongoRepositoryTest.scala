@@ -22,14 +22,6 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def canReadTagParent = {
-    val tagWithParent = Await.result(mongoRepository.getTagByUrlWords("vuw"), TenSeconds).get
-    val parentId = tagWithParent.parent.get
-    val parentTag = Await.result(mongoRepository.getTagByObjectId(parentId), TenSeconds).get
-    assertEquals("education", parentTag.name)
-  }
-
-  @Test
   def canReadTagGeocode = {
     val tagWithGeocode = Await.result(mongoRepository.getTagByUrlWords("arovalley"), TenSeconds).get
     assertTrue(tagWithGeocode.geocode_id.nonEmpty)
@@ -56,6 +48,19 @@ class MongoRepositoryTest {
     val reloaded = Await.result(mongoRepository.getTagById(tag.id), TenSeconds)
     assertTrue(reloaded.nonEmpty)
     assertEquals(tag.name, reloaded.get.name)
+  }
+
+  @Test
+  def canPersistTagParent = {
+    val parentTag = Tag(name = "Test parent " + UUID.randomUUID().toString)
+    Await.result(mongoRepository.saveTag(parentTag), TenSeconds)
+    val tagWithParent = Tag(name = "Test " + UUID.randomUUID().toString, parent = Some(parentTag._id))
+    Await.result(mongoRepository.saveTag(tagWithParent), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getTagByObjectId(tagWithParent._id), TenSeconds).get
+
+    assertTrue(reloaded.parent.nonEmpty)
+    assertEquals(parentTag._id, reloaded.parent.get)
   }
 
   @Test
