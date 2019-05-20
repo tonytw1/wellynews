@@ -39,6 +39,19 @@ class MongoRepositoryTest {
   }
 
   @Test
+  def canListAllFeeds {
+    val feed = Feed()
+    Await.result(mongoRepository.saveResource(feed), TenSeconds)
+    val anotherFeed = Feed()
+    Await.result(mongoRepository.saveResource(anotherFeed), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
+    assertTrue(reloaded.nonEmpty)
+    assertTrue(reloaded.contains(feed))
+    assertTrue(reloaded.contains(anotherFeed))
+  }
+
+  @Test
   def canListAllTags {
     val tag = Tag(name = "Test " + UUID.randomUUID().toString)
     Await.result(mongoRepository.saveTag(tag), TenSeconds)
@@ -126,12 +139,6 @@ class MongoRepositoryTest {
 
     assertTrue(reloaded.get.asInstanceOf[Newsitem].publisher.nonEmpty)
     assertEquals(publisher._id, reloaded.get.asInstanceOf[Newsitem].publisher.get)
-  }
-
-  @Test
-  def canConnectToMongoAndReadFeeds {
-    val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
-    assertEquals(414, feeds.size)
   }
 
   @Test
