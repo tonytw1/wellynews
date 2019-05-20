@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem, Tag}
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, Geocode, Newsitem, Tag}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -19,13 +19,6 @@ class MongoRepositoryTest {
   def canConnectToMongoAndReadTags {
     val tags = Await.result(mongoRepository.getAllTags(), TenSeconds)
     assertEquals(306, tags.size)
-  }
-
-  @Test
-  def canReadTagGeocode = {
-    val tagWithGeocode = Await.result(mongoRepository.getTagByUrlWords("arovalley"), TenSeconds).get
-    assertTrue(tagWithGeocode.geocode_id.nonEmpty)
-    assertTrue(tagWithGeocode.geocode.nonEmpty)
   }
 
   @Test
@@ -61,6 +54,17 @@ class MongoRepositoryTest {
 
     assertTrue(reloaded.parent.nonEmpty)
     assertEquals(parentTag._id, reloaded.parent.get)
+  }
+
+  @Test
+  def canReadTagGeocode = {
+    val geocode = Geocode(osmId = Some(123), osmType = Some("N"))
+    val tagWithGeocode = Tag(name = "Test " + UUID.randomUUID().toString, geocode = Some(geocode))
+    Await.result(mongoRepository.saveTag(tagWithGeocode), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getTagByObjectId(tagWithGeocode._id), TenSeconds).get
+    assertTrue(reloaded.geocode.nonEmpty)
+    assertEquals(tagWithGeocode.geocode, reloaded.geocode)
   }
 
   @Test
