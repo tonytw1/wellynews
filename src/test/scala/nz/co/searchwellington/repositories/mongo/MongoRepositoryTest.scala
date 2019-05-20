@@ -16,12 +16,6 @@ class MongoRepositoryTest {
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/wellynews")
 
   @Test
-  def canConnectToMongoAndReadTags {
-    val tags = Await.result(mongoRepository.getAllTags(), TenSeconds)
-    assertEquals(306, tags.size)
-  }
-
-  @Test
   def canPersistResources = {
     val newsitem = Newsitem(title = Some("Test " + UUID.randomUUID.toString))
 
@@ -41,6 +35,19 @@ class MongoRepositoryTest {
     val reloaded = Await.result(mongoRepository.getTagById(tag.id), TenSeconds)
     assertTrue(reloaded.nonEmpty)
     assertEquals(tag.name, reloaded.get.name)
+  }
+
+  @Test
+  def canListAllTags {
+    val tag = Tag(name = "Test " + UUID.randomUUID().toString)
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
+    val anotherTag = Tag(name = "Test " + UUID.randomUUID().toString)
+    Await.result(mongoRepository.saveTag(anotherTag), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getAllTags(), TenSeconds)
+    assertTrue(reloaded.nonEmpty)
+    assertTrue(reloaded.contains(tag))
+    assertTrue(reloaded.contains(anotherTag))
   }
 
   @Test
