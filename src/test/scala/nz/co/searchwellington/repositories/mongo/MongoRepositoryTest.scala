@@ -71,10 +71,10 @@ class MongoRepositoryTest {
   def canUpdateResources = {
     val title = "Test " + UUID.randomUUID.toString
     val newsitem = Newsitem(title = Some(title))
-    mongoRepository.saveResource(newsitem)
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+
     val updatedTitle = title + " updated"
     val updated = newsitem.copy(title = Some(updatedTitle), http_status = 200)
-
     Await.result(mongoRepository.saveResource(updated), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds).get
