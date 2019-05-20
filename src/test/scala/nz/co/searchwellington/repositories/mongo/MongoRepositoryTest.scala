@@ -2,8 +2,8 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Geocode, Newsitem, Tag, Tagging, User, Website}
-import org.junit.Assert.{assertEquals, assertTrue}
+import nz.co.searchwellington.model._
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 
 import scala.concurrent.Await
@@ -112,6 +112,35 @@ class MongoRepositoryTest {
     assertEquals(tag._id, reloaded.resource_tags.head.tag_id)
     assertEquals(taggingUser._id, reloaded.resource_tags.head.user_id)
   }
+  
+  @Test
+  def canFindResourcesByTag = {
+    val taggingUser = User()
+    Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
+
+    val tag = Tag()
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
+    val anotherTag = Tag()
+    Await.result(mongoRepository.saveTag(anotherTag), TenSeconds)
+
+    val taggedResource = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
+    Await.result(mongoRepository.saveResource(taggedResource), TenSeconds)
+    val anotherTaggedResource = Website(resource_tags = Seq(Tagging(tag_id = anotherTag._id, user_id = taggingUser._id)))
+    Await.result(mongoRepository.saveResource(anotherTaggedResource), TenSeconds)
+
+    val taggedResourceIds = Await.result(mongoRepository.getResourceIdsByTag(tag), TenSeconds)
+
+    assertTrue(taggedResourceIds.nonEmpty)
+    assertTrue(taggedResourceIds.contains(taggedResource._id))
+    assertFalse(taggedResourceIds.contains(anotherTaggedResource._id))
+
+    val taggedResources = taggedResourceIds.flatMap { oid =>
+      Await.result(mongoRepository.getResourceByObjectId(oid), TenSeconds)
+    }
+    assertTrue(taggedResources.forall { r =>
+      r.resource_tags.exists(t => t.tag_id == tag._id)
+    })
+  }
 
   @Test
   def canUpdateResources = {
@@ -149,21 +178,6 @@ class MongoRepositoryTest {
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(feed._id), TenSeconds).get.asInstanceOf[Feed]
 
     assertEquals(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES, reloaded.acceptance)
-  }
-
-  @Test
-  def canFindResourcesByTag = {
-    val tag = Await.result(mongoRepository.getTagByUrlWords("arovalley"), TenSeconds).get
-
-    val taggedResourceIds = Await.result(mongoRepository.getResourceIdsByTag(tag), TenSeconds)
-
-    assertTrue(taggedResourceIds.nonEmpty)
-    val taggedResources = taggedResourceIds.flatMap { oid =>
-      Await.result(mongoRepository.getResourceByObjectId(oid), TenSeconds)
-    }
-    assertTrue(taggedResources.forall{ r =>
-      r.resource_tags.exists(t => t.tag_id == tag._id)
-    })
   }
 
   @Test
