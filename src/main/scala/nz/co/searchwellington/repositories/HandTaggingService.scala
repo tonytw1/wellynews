@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Tag, User}
+import nz.co.searchwellington.model.{Feed, Newsitem, Resource, Tag, User, Website}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,6 +16,21 @@ import scala.concurrent.{Await, Future}
   private val log = Logger.getLogger(classOf[HandTaggingService])
 
   def clearTaggingsForTag(tag: Tag) {
+
+    def deleteTagFromResource(tag: Tag, resource: Resource): Resource = {
+      resource match {  // TODO how to remove this?
+        case w: Website =>
+          println("W")
+          w.copy(resource_tags = w.resource_tags.filterNot(t => t.tag_id == tag._id))
+        case n: Newsitem =>
+          n.copy(resource_tags = n.resource_tags.filterNot(t => t.tag_id == tag._id))
+        case f: Feed =>
+          f.copy(resource_tags = f.resource_tags.filterNot(t => t.tag_id == tag._id))
+        case _ =>
+          resource
+      }
+    }
+
     log.info("Clearing tagging votes for tag: " + tag.getName)
     val resourceIdsTaggedWithTag = Await.result(mongoRepository.getResourceIdsByTag(tag), TenSeconds)
     log.info(resourceIdsTaggedWithTag.size + " votes will needs to be cleared and the frontend resources updated.")
@@ -25,8 +40,10 @@ import scala.concurrent.{Await, Future}
     }).map( _.flatten)
 
     Await.result(eventualMaybeResources, TenSeconds).map { taggedResource =>
-      val updatedResource = handTaggingDao.deleteTagFromResource(tag, taggedResource)
+      val updatedResource = deleteTagFromResource(tag, taggedResource)
       mongoRepository.saveResource(updatedResource)
+
+      println(updatedResource)
       frontendContentUpdater.update(updatedResource)
     }
   }
