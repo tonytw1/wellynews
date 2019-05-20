@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Geocode, Newsitem, Tag}
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, Geocode, Newsitem, Tag, User}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -142,9 +142,14 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def canReadUsers = {
-    val users = Await.result(mongoRepository.getAllUsers, TenSeconds)
-    assertTrue(users.nonEmpty)
+  def canPersistUsers = {
+    val user = User(name = Some("Test " + UUID.randomUUID().toString))
+
+    Await.result(mongoRepository.saveUser(user), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getUserByObjectId(user._id), TenSeconds)
+    assertTrue(reloaded.nonEmpty)
+    assertEquals(user.name, reloaded.get.name)
   }
 
   @Test
