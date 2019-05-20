@@ -18,7 +18,7 @@ class MongoRepositoryTest {
 
   @Test
   def canPersistResources = {
-    val newsitem = Newsitem(title = Some("Test " + UUID.randomUUID.toString))
+    val newsitem = Newsitem(title = Some(testName))
 
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
@@ -102,7 +102,7 @@ class MongoRepositoryTest {
 
   @Test
   def canUpdateResources = {
-    val title = "Test " + UUID.randomUUID.toString
+    val title = testName
     val newsitem = Newsitem(title = Some(title))
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
@@ -117,15 +117,15 @@ class MongoRepositoryTest {
 
   @Test
   def canPersistNewsitemPublisher = {
-    val publisher = Website(title = Some("Test " + UUID.randomUUID.toString))
+    val publisher = Website(title = Some(testName))
     Await.result(mongoRepository.saveResource(publisher), TenSeconds)
     val newsitemWithPublisher = Newsitem(publisher = Some(publisher._id))
-    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+    Await.result(mongoRepository.saveResource(newsitemWithPublisher), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitemWithPublisher._id), TenSeconds)
 
-    assertTrue(newsitemWithPublisher.asInstanceOf[Newsitem].publisher.nonEmpty)
-    assertEquals(publisher._id, newsitemWithPublisher.asInstanceOf[Newsitem].publisher.get)
+    assertTrue(reloaded.get.asInstanceOf[Newsitem].publisher.nonEmpty)
+    assertEquals(publisher._id, reloaded.get.asInstanceOf[Newsitem].publisher.get)
   }
 
   @Test
@@ -161,8 +161,19 @@ class MongoRepositoryTest {
 
   @Test
   def canReadListOfResourceIds = {
+    val publisher = Website(title = Some(testName))
+    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+    val newsitem = Newsitem(title = Some(testName))
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    val feed = Newsitem(title = Some(testName))
+    Await.result(mongoRepository.saveResource(feed), TenSeconds)
+
     val resourceIds = Await.result(mongoRepository.getAllResourceIds(), TenSeconds)
-    assertEquals(88657, resourceIds.size)
+
+    assertTrue(resourceIds.nonEmpty)
+    assertTrue(resourceIds.contains(publisher._id))
+    assertTrue(resourceIds.contains(newsitem._id))
+    assertTrue(resourceIds.contains(feed._id))
   }
 
   @Test
@@ -186,5 +197,7 @@ class MongoRepositoryTest {
     assertTrue(reloaded.nonEmpty)
     assertEquals(user, reloaded.get)
   }
+
+  private def testName = "Test " + UUID.randomUUID.toString
 
 }
