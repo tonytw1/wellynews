@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Geocode, Newsitem, Tag, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Geocode, Newsitem, Tag, User}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -109,11 +109,13 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def feedAcceptancePolicyCanBeMappedToAnEnum: Unit = {
-    val feeds = Await.result(mongoRepository.getAllFeeds(), TenSeconds)
-    val feed = feeds.head
+  def feedAcceptancePolicyCanBePersistedAsAEnum = {
+    val feed = Feed(acceptance = FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
+    Await.result(mongoRepository.saveResource(feed), TenSeconds)
 
-    assertEquals(FeedAcceptancePolicy.ACCEPT, feed.acceptance)
+    val reloaded = Await.result(mongoRepository.getResourceByObjectId(feed._id), TenSeconds).get.asInstanceOf[Feed]
+
+    assertEquals(FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES, reloaded.acceptance)
   }
 
   @Test
