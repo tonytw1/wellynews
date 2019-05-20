@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
-import reactivemongo.api.{DefaultDB, MongoConnection, MongoDriver}
+import reactivemongo.api.{DB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -21,7 +21,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   private val log = Logger.getLogger(classOf[MongoRepository])
   private val AllDocuments: Int = Integer.MAX_VALUE
 
-  def connect(): DefaultDB = {
+  def connect(): DB = {
     log.info("Connecting to Mongo: " + mongoUri)
 
     val driver = MongoDriver()
@@ -38,17 +38,19 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
       }
     }.flatten
 
-    Await.result(eventualDatabase, OneMinute)
+    val db: DB = Await.result(eventualDatabase, OneMinute)
+    log.info("Got database connection: " + db)
+    db
   }
 
-  val db: DefaultDB = connect()
+  val db = connect()
 
-  def resourceCollection: BSONCollection = db.collection("resource")
-  def supressionCollection: BSONCollection = db.collection("supression")
-  def tagCollection: BSONCollection = db.collection("tag")
-  def taggingCollection: BSONCollection = db.collection("resource_tags")
-  def userCollection: BSONCollection = db.collection("user")
-  def discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
+  val resourceCollection: BSONCollection = db.collection("resource")
+  val supressionCollection: BSONCollection = db.collection("supression")
+  val tagCollection: BSONCollection = db.collection("tag")
+  val taggingCollection: BSONCollection = db.collection("resource_tags")
+  val userCollection: BSONCollection = db.collection("user")
+  val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
 
   implicit object feedAcceptanceReader extends BSONReader[BSONValue, FeedAcceptancePolicy] {
     override def read(bson: BSONValue): FeedAcceptancePolicy = bson match {
@@ -302,6 +304,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])
 
   {
+    resourceCollection.create()
     log.info("Ensuring indexes")
     log.info("resource type/url_words index result: " +
       Await.result(resourceCollection.indexesManager.ensure(

@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem, Tag}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -13,7 +13,7 @@ class MongoRepositoryTest {
 
   val TenSeconds = Duration(10, SECONDS)
 
-  val mongoRepository = new MongoRepository("mongodb://localhost:27017/searchwellington")
+  val mongoRepository = new MongoRepository("mongodb://localhost:27017/wellynews")
 
   @Test
   def canConnectToMongoAndReadTags {
@@ -38,14 +38,24 @@ class MongoRepositoryTest {
 
   @Test
   def canPersistResources = {
-    val title = "Test " + UUID.randomUUID.toString
-    val newsitem = Newsitem(title = Some(title))
+    val newsitem = Newsitem(title = Some("Test " + UUID.randomUUID.toString))
 
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
     val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitem._id), TenSeconds)
     assertTrue(reloaded.nonEmpty)
-    assertEquals(title, reloaded.get.title.get)
+    assertEquals(newsitem.title.get, reloaded.get.title.get)
+  }
+
+  @Test
+  def canPersistTags = {
+    val tag = Tag(name = "Test " + UUID.randomUUID().toString)
+
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getTagById(tag.id), TenSeconds)
+    assertTrue(reloaded.nonEmpty)
+    assertEquals(tag.name, reloaded.get.name)
   }
 
   @Test

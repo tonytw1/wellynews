@@ -6,3 +6,8 @@ services:
     - "./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     ports:
     - "9200:9200"
+  mongo:
+    image: mongo:3.2
+    ports:
+    - "27017:27017"
+    -
