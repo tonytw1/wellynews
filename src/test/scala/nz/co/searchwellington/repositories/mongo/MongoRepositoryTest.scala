@@ -64,7 +64,7 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def canReadTagGeocode = {
+  def canPersistTagGeocode = {
     val geocode = Geocode(osmId = Some(123), osmType = Some("N"))
     val tagWithGeocode = Tag(name = "Test " + UUID.randomUUID().toString, geocode = Some(geocode))
     Await.result(mongoRepository.saveTag(tagWithGeocode), TenSeconds)
@@ -72,6 +72,16 @@ class MongoRepositoryTest {
     val reloaded = Await.result(mongoRepository.getTagByObjectId(tagWithGeocode._id), TenSeconds).get
     assertTrue(reloaded.geocode.nonEmpty)
     assertEquals(tagWithGeocode.geocode, reloaded.geocode)
+  }
+
+  @Test
+  def canPersistResourceGeocode = {
+    val resourceWithGeocode = Website(geocode = Some(Geocode(osmId = Some(123L), osmType = Some("N"))))
+    Await.result(mongoRepository.saveResource(resourceWithGeocode), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getResourceByObjectId(resourceWithGeocode._id), TenSeconds).get
+    assertTrue(reloaded.geocode.nonEmpty)
+    assertEquals(resourceWithGeocode.geocode, reloaded.geocode)
   }
 
   @Test
@@ -100,13 +110,6 @@ class MongoRepositoryTest {
 
     assertTrue(newsitemWithPublisher.asInstanceOf[Newsitem].publisher.nonEmpty)
     assertEquals(publisher._id, newsitemWithPublisher.asInstanceOf[Newsitem].publisher.get)
-  }
-
-  @Test
-  def canReadResourceGeocode = {
-    val resourceWithGeocode = Await.result(mongoRepository.getWebsiteByName("Aro Valley Community Centre"), TenSeconds).get
-    assertTrue(resourceWithGeocode.geocode.nonEmpty)
-    assertEquals("Aro Valley Community Centre, 48, Aro Street, Aro Valley, Wellington, 6021, New Zealand/Aotearoa", resourceWithGeocode.geocode.get.address.get)
   }
 
   @Test
