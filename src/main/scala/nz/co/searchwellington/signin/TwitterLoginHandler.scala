@@ -100,10 +100,10 @@ import scala.concurrent.Await
   }
 
   override def decorateUserWithExternalSigninIdentifier(user: User, externalIdentifier: Any): User = {
-    if (user.twitterId.isEmpty) {
+    if (user.twitterid.isEmpty) {
       externalIdentifier match {
         case twitterUser: twitter4j.User =>
-          user.copy(twitterId = Some(twitterUser.getId))
+          user.copy(twitterid = Some(twitterUser.getId))
         // val twitterScreenName: String = twitterUser.getScreenName()
         //if (userDAO.getUserByProfileName(twitterScreenName) == null) {
         // user.setProfilename(twitterScreenName) TODO

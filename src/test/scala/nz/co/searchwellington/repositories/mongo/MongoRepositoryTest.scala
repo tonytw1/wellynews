@@ -8,6 +8,7 @@ import org.junit.Test
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.util.Random
 
 class MongoRepositoryTest {
 
@@ -173,8 +174,13 @@ class MongoRepositoryTest {
 
   @Test
   def canFindUsersByLinkedTwitterId = {
-    val user = Await.result(mongoRepository.getUserByTwitterId(14497864), TenSeconds)
-    assertTrue(user.nonEmpty)
+    val twitterId = Random.nextInt(Int.MaxValue)
+    val user = User(twitterid = Some(twitterId))
+    Await.result(mongoRepository.saveUser(user), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getUserByTwitterId(twitterId), TenSeconds)
+    assertTrue(reloaded.nonEmpty)
+    assertEquals(user, reloaded.get)
   }
 
 }
