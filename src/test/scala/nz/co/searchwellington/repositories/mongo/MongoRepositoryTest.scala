@@ -2,7 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Geocode, Newsitem, Tag, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Geocode, Newsitem, Tag, User, Website}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 
@@ -90,9 +90,16 @@ class MongoRepositoryTest {
   }
 
   @Test
-  def canReadNewsitemPublisher = {
-    val newsitemWithPublisher = Await.result(mongoRepository.getResourceByUrl("http://wellington.govt.nz/your-council/news/2016/11/wellington-quakes-21"), TenSeconds).get
+  def canPersistNewsitemPublisher = {
+    val publisher = Website(title = Some("Test " + UUID.randomUUID.toString))
+    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+    val newsitemWithPublisher = Newsitem(publisher = Some(publisher._id))
+    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+
+    val reloaded = Await.result(mongoRepository.getResourceByObjectId(newsitemWithPublisher._id), TenSeconds)
+
     assertTrue(newsitemWithPublisher.asInstanceOf[Newsitem].publisher.nonEmpty)
+    assertEquals(publisher._id, newsitemWithPublisher.asInstanceOf[Newsitem].publisher.get)
   }
 
   @Test
