@@ -21,7 +21,6 @@ class HandTaggingServiceTest {
   private val handTagging = Tagging(tag_id = tag._id, user_id = taggingUser._id)
 
   private val taggedResource = Website(resource_tags = Seq(handTagging))
-  private val previousUser = User(name = Some("Old user"))
   private val newUser = User(name = Some("New user"))
 
   @Test
@@ -54,12 +53,12 @@ class HandTaggingServiceTest {
 
   @Test
   def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferingVotes {
-    when(mongoRepository.getResourceIdsByTaggingUser(previousUser)).thenReturn(Future.successful(Seq(taggedResource._id)))
+    when(mongoRepository.getResourceIdsByTaggingUser(taggingUser)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
 
     val updated = ArgumentCaptor.forClass(classOf[Resource])
 
-    handTaggingService.transferVotes(previousUser, newUser)
+    handTaggingService.transferVotes(taggingUser, newUser)
 
     verify(mongoRepository).saveResource(updated.capture())
     assertEquals(taggedResource._id, updated.getValue._id)

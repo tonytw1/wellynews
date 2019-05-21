@@ -20,7 +20,6 @@ import scala.concurrent.{Await, Future}
     def deleteTagFromResource(tag: Tag, resource: Resource): Resource = {
       resource match {  // TODO how to remove this?
         case w: Website =>
-          println("W")
           w.copy(resource_tags = w.resource_tags.filterNot(t => t.tag_id == tag._id))
         case n: Newsitem =>
           n.copy(resource_tags = n.resource_tags.filterNot(t => t.tag_id == tag._id))
@@ -49,14 +48,21 @@ import scala.concurrent.{Await, Future}
   def transferVotes(previousOwner: User, newOwner: User) {
 
     def transferTaggings(resource: Resource): Resource = {
-      // TODO implement
+      val updatedTaggings = resource.resource_tags.map { t =>
+        if (t.user_id == previousOwner._id) {
+          t.copy(user_id = newOwner._id)
+        } else {
+          t
+        }
+      }
+
       resource match {  // TODO how to remove this?
         case w: Website =>
-          w
+          w.copy(resource_tags = updatedTaggings)
         case n: Newsitem =>
-          n
+          n.copy(resource_tags = updatedTaggings)
         case f: Feed =>
-          f
+          f.copy(resource_tags = updatedTaggings)
         case _ =>
           resource
       }
@@ -65,8 +71,6 @@ import scala.concurrent.{Await, Future}
     val resourcesTaggedByPreviousUser = Await.result(mongoRepository.getResourceIdsByTaggingUser(previousOwner), TenSeconds)
 
     log.info("Transferring taggings on " + resourcesTaggedByPreviousUser.size + " resources from user " + previousOwner.getName + " to " + newOwner.getName)
-
-
     val eventualResources  = Future.sequence(resourcesTaggedByPreviousUser.map { rid =>
       mongoRepository.getResourceByObjectId(rid)
     }).map( _.flatten)
