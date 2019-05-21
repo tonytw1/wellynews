@@ -10,7 +10,7 @@ class RobotsAwareHttpFetcherTest {
   private val TEST_USER_AGENT = "test user agent"
 
   private val robotExclusionService = mock(classOf[RobotExclusionService])
-  private val httpFetcher = mock(classOf[HttpFetcher])
+  private val httpFetcher = mock(classOf[WSHttpFetcher])
 
   private val robotsAwareFetcher = new RobotsAwareHttpFetcher(robotExclusionService, httpFetcher)
 
