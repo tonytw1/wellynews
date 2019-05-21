@@ -112,7 +112,7 @@ class MongoRepositoryTest {
     assertEquals(tag._id, reloaded.resource_tags.head.tag_id)
     assertEquals(taggingUser._id, reloaded.resource_tags.head.user_id)
   }
-  
+
   @Test
   def canFindResourcesByTag = {
     val taggingUser = User()
@@ -142,6 +142,7 @@ class MongoRepositoryTest {
     })
   }
 
+  @Test
   def canFindResourcesByTaggingUser = {
     val taggingUser = User()
     Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
@@ -153,7 +154,7 @@ class MongoRepositoryTest {
 
     val resourceTaggedByUser = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
     Await.result(mongoRepository.saveResource(resourceTaggedByUser), TenSeconds)
-     val resourceTaggedByAnotherUser = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = anotherTaggingUser._id)))
+    val resourceTaggedByAnotherUser = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = anotherTaggingUser._id)))
     Await.result(mongoRepository.saveResource(resourceTaggedByAnotherUser), TenSeconds)
 
     val taggedResourceIds = Await.result(mongoRepository.getResourceIdsByTaggingUser(anotherTaggingUser), TenSeconds)
