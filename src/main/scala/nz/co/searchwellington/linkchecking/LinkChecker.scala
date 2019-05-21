@@ -2,7 +2,7 @@ package nz.co.searchwellington.linkchecking
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.http.HttpFetcher
+import nz.co.searchwellington.http.{HttpFetcher, RobotsAwareHttpFetcher}
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -17,7 +17,7 @@ import reactivemongo.bson.BSONObjectID
 import scala.concurrent.{Await, ExecutionContext}
 
 @Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                           httpFetcher: HttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser, feedReaderTaskExecutor: TaskExecutor)
+                                           httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser, feedReaderTaskExecutor: TaskExecutor)
 extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkChecker])

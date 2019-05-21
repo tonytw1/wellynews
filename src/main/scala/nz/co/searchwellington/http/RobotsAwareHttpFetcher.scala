@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class RobotsAwareHttpFetcher @Autowired()(robotExclusionService: RobotExclusionService, httpFetcher: HttpFetcher) extends HttpFetcher {
+class RobotsAwareHttpFetcher @Autowired()(robotExclusionService: RobotExclusionService, httpFetcher: WSHttpFetcher) extends HttpFetcher {
+
   private val log = Logger.getLogger(classOf[RobotsAwareHttpFetcher])
 
   private val excludedUrlPrefixes = Seq.empty
