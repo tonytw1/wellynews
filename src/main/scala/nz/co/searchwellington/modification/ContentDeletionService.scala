@@ -23,7 +23,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[ContentDeletionService])
 
   def performDelete(resource: Resource): Unit = {
-    handTaggingDAO.clearTags(resource)
+    handTaggingDAO.clearTags(resource)  // TODO does nothing
     if (resource.`type` == "W") {
       removePublisherFromPublishersContent(resource)
     }

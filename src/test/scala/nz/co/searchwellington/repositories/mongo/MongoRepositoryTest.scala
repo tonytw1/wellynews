@@ -142,6 +142,27 @@ class MongoRepositoryTest {
     })
   }
 
+  def canFindResourcesByTaggingUser = {
+    val taggingUser = User()
+    Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
+    val anotherTaggingUser = User()
+    Await.result(mongoRepository.saveUser(anotherTaggingUser), TenSeconds)
+
+    val tag = Tag()
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
+
+    val resourceTaggedByUser = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
+    Await.result(mongoRepository.saveResource(resourceTaggedByUser), TenSeconds)
+     val resourceTaggedByAnotherUser = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = anotherTaggingUser._id)))
+    Await.result(mongoRepository.saveResource(resourceTaggedByAnotherUser), TenSeconds)
+
+    val taggedResourceIds = Await.result(mongoRepository.getResourceIdsByTaggingUser(anotherTaggingUser), TenSeconds)
+
+    assertTrue(taggedResourceIds.nonEmpty)
+    assertEquals(1, taggedResourceIds.size)
+    assertEquals(resourceTaggedByAnotherUser._id, taggedResourceIds.head)
+  }
+
   @Test
   def canUpdateResources = {
     val title = testName

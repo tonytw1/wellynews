@@ -35,26 +35,46 @@ import scala.concurrent.{Await, Future}
     val resourceIdsTaggedWithTag = Await.result(mongoRepository.getResourceIdsByTag(tag), TenSeconds)
     log.info(resourceIdsTaggedWithTag.size + " votes will needs to be cleared and the frontend resources updated.")
 
-    val eventualMaybeResources  = Future.sequence(resourceIdsTaggedWithTag.map { rid =>
+    val eventualResources  = Future.sequence(resourceIdsTaggedWithTag.map { rid =>
       mongoRepository.getResourceByObjectId(rid)
     }).map( _.flatten)
 
-    Await.result(eventualMaybeResources, TenSeconds).map { taggedResource =>
+    Await.result(eventualResources, TenSeconds).foreach { taggedResource =>
       val updatedResource = deleteTagFromResource(tag, taggedResource)
-      mongoRepository.saveResource(updatedResource)
-
-      println(updatedResource)
+      mongoRepository.saveResource(updatedResource) // TODO Map
       frontendContentUpdater.update(updatedResource)
     }
   }
 
   def transferVotes(previousOwner: User, newOwner: User) {
 
-  val previousUsersVotes = handTaggingDao.getUsersVotes(previousOwner)
-    log.info("Transfering " + previousUsersVotes.size + " vote from user " + previousOwner.getName + " to " + newOwner.getName)
-    previousUsersVotes.map { handTagging =>
-      // TODO handTagging.setUser(newOwner)
-      // frontendContentUpdater.update(handTagging.getResource)
+    def transferTaggings(resource: Resource): Resource = {
+      // TODO implement
+      resource match {  // TODO how to remove this?
+        case w: Website =>
+          w
+        case n: Newsitem =>
+          n
+        case f: Feed =>
+          f
+        case _ =>
+          resource
+      }
+    }
+
+    val resourcesTaggedByPreviousUser = Await.result(mongoRepository.getResourceIdsByTaggingUser(previousOwner), TenSeconds)
+
+    log.info("Transferring taggings on " + resourcesTaggedByPreviousUser.size + " resources from user " + previousOwner.getName + " to " + newOwner.getName)
+
+
+    val eventualResources  = Future.sequence(resourcesTaggedByPreviousUser.map { rid =>
+      mongoRepository.getResourceByObjectId(rid)
+    }).map( _.flatten)
+
+    Await.result(eventualResources, TenSeconds).foreach { resource =>
+      val updatedResource = transferTaggings(resource)
+      mongoRepository.saveResource(updatedResource) // TODO map
+      frontendContentUpdater.update(updatedResource)
     }
   }
 

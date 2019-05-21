@@ -246,6 +246,19 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
+  def getResourceIdsByTaggingUser(user: User): Future[Seq[BSONObjectID]] = {
+    val selector = BSONDocument(
+      "resource_tags.user_id" -> user._id
+    )
+    resourceCollection.find(selector).
+      cursor[BSONDocument]().
+      collect[List](maxDocs = AllDocuments).map { d =>
+      d.flatMap { i =>
+        i.getAs[BSONObjectID]("_id")
+      }
+    }
+  }
+
   def getAllDiscoveredFeeds(): Future[Seq[DiscoveredFeed]] = {
     discoveredFeedCollection.find(BSONDocument.empty).
       sort(BSONDocument("seen" -> -1)).
