@@ -12,7 +12,7 @@ class RobotsAwareHttpFetcherTest {
   private val robotExclusionService = mock(classOf[RobotExclusionService])
   private val httpFetcher = mock(classOf[HttpFetcher])
 
-  private val robotsAwareFetcher = new RobotsAwareHttpFetcher(robotExclusionService, httpFetcher, Seq.empty.toArray)
+  private val robotsAwareFetcher = new RobotsAwareHttpFetcher(robotExclusionService, httpFetcher)
 
   @Before
   def setup(): Unit = {
