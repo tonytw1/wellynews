@@ -12,7 +12,7 @@
 
 #if($editPermissionService.admin)
     <ul>
-        <li class="admin"><a href="$urlBuilder.addTagUrl">Add new tag</a></li>
+        <li class="admin"><a href="$adminUrlBuilder.addTagUrl">Add new tag</a></li>
     </ul>
 #end
 
@@ -27,7 +27,7 @@
 			<h4>$current.toUpperCase()</h4>
 			<ul>
 		#end
-		<li><a href="$adminUrlBuilder.getTagUrl($tag)">$tag.displayName</a></li>
+		<li><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></li>
 	#end
 #end
 </ul>
