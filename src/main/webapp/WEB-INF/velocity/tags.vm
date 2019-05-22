@@ -10,6 +10,12 @@
 <div class="main">
 <h2>$heading</h2>
 
+#if($editPermissionService.admin)
+    <ul>
+        <li class="admin"><a href="$urlBuilder.addTagUrl">Add new tag</a></li>
+    </ul>
+#end
+
 <ul>
 #set($letter = "")
 #foreach ($tag in $main_content)
