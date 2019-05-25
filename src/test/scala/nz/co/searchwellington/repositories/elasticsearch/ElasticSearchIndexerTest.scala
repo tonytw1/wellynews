@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class ElasticSearchIT {
+class ElasticSearchIndexerTest {
 
   private val showBrokenDecisionService = mock(classOf[ShowBrokenDecisionService])
 
