@@ -46,6 +46,8 @@ class ElasticSearchIndexerTest {
       (feed, Seq.empty)
     )), TenSeconds)
 
+    Thread.sleep(1000)
+
     val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), TenSeconds)
     assertTrue(newsitems._1.nonEmpty)
     assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "N"))
