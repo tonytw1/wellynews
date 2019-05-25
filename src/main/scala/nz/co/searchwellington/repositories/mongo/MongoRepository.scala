@@ -318,7 +318,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   {
     resourceCollection.create()
-    log.info("Ensuring indexes")
+    log.info("Ensuring mongo indexes")
     log.info("resource type/url_words index result: " +
       Await.result(resourceCollection.indexesManager.ensure(
         Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"),

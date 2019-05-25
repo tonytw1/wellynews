@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, Resource}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, Resource, Website}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -27,17 +27,20 @@ class ElasticSearchIT {
   private val TenSeconds = Duration(10, SECONDS)
 
   @Test
-  def canCreateIndexes: Unit = {
-    elasticSearchIndexer.createIndexes()
-  }
-
-  @Test
-  def canIndexResources {
-    rebuild.buildIndex(false)
-  }
-
-  @Test
   def canFilterByType {
+    val newsitem = Newsitem()
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    val website = Website()
+    Await.result(mongoRepository.saveResource(website), TenSeconds)
+    val feed = Feed()
+    Await.result(mongoRepository.saveResource(feed), TenSeconds)
+
+    val result = Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (newsitem, Seq.empty),
+      (website, Seq.empty),
+      (feed, Seq.empty)
+    )), TenSeconds)
+
     val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), TenSeconds)
     assertTrue(newsitems._1.nonEmpty)
     assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "N"))

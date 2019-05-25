@@ -22,8 +22,7 @@ import scala.concurrent.{Await, Future}
   private val BATCH_COMMIT_SIZE = 1000
 
   @throws[JsonProcessingException]
-  def buildIndex(deleteAll: Boolean): Unit = {
-    elasticSearchIndexer.ensureIndexes
+  def buildIndex(): Unit = {
     val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), OneMinute)
     reindexResources(resourcesToIndex)
   }

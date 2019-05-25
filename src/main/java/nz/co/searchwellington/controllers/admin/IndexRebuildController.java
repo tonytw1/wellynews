@@ -1,20 +1,16 @@
 package nz.co.searchwellington.controllers.admin;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
-import nz.co.searchwellington.model.User;
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
 import uk.co.eelpieconsulting.common.views.ViewFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 @Controller
 public class IndexRebuildController {
@@ -47,7 +43,7 @@ public class IndexRebuildController {
 			deleteAll = true;
 		}
 		
-		elasticSearchIndexUpdateService.buildIndex(deleteAll);
+		elasticSearchIndexUpdateService.buildIndex();
 		
 		return new ModelAndView(viewFactory.getJsonView()).addObject("data", "ok");
     }
