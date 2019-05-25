@@ -9,6 +9,7 @@ import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.mock
+import org.mockito.Mockito.when
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -25,6 +26,10 @@ class ElasticSearchIT {
   val rebuild = new ElasticSearchIndexRebuildService(mongoRepository, elasticSearchIndexer, taggingReturnsOfficerService)
 
   private val TenSeconds = Duration(10, SECONDS)
+
+  {
+    when(showBrokenDecisionService.shouldShowBroken()).thenReturn(true) // TODO This is in an awkward position
+  }
 
   @Test
   def canFilterByType {
@@ -48,6 +53,10 @@ class ElasticSearchIT {
     val websites = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"))), TenSeconds)
     assertTrue(websites._1.nonEmpty)
     assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "W"))
+
+    val feeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F"))), TenSeconds)
+    assertTrue(feeds._1.nonEmpty)
+    assertTrue(feeds._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "F"))
   }
 
   @Test
