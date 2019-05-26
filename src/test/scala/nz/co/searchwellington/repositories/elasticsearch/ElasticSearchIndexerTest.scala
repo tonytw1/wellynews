@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, Resource, Website}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, Resource, Watchlist, Website}
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -158,6 +158,23 @@ class ElasticSearchIndexerTest {
 
   @Test
   def canCountArchiveTypes: Unit = {
+    val newsitem = Newsitem()
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    val website = Website()
+    Await.result(mongoRepository.saveResource(website), TenSeconds)
+    val watchlist = Watchlist()
+    Await.result(mongoRepository.saveResource(watchlist), TenSeconds)
+    val feed = Feed()
+    Await.result(mongoRepository.saveResource(feed), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (website, Seq.empty),
+      (newsitem, Seq.empty),
+      (watchlist, Seq.empty),
+      (feed, Seq.empty)
+    )), TenSeconds)
+    Thread.sleep(1000)
+
     val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts, TenSeconds)
 
     val typesFound = typeCounts.keys.toSet
