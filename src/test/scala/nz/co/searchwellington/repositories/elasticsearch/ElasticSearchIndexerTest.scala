@@ -146,9 +146,28 @@ class ElasticSearchIndexerTest {
   }
 
   @Test
-  def canCreateNewsitemDateRanges {
+  def canObtainsNewsitemArchiveMonths {
+    val newsitem = Newsitem(date = Some(new DateTime(2019, 1, 1, 0, 0, 0).toDate))
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    val anotherNewsitem = Newsitem(date = Some(new DateTime(2018, 3, 7, 0, 0, 0).toDate))
+    Await.result(mongoRepository.saveResource(anotherNewsitem), TenSeconds)
+    val yetAnotherNewsitem = Newsitem(date = Some(new DateTime(2017, 7, 8, 0, 0, 0).toDate))
+    Await.result(mongoRepository.saveResource(yetAnotherNewsitem), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (newsitem, Seq.empty),
+      (anotherNewsitem, Seq.empty),
+      (yetAnotherNewsitem, Seq.empty)
+    )), TenSeconds)
+    Thread.sleep(1000)
+
     val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths, TenSeconds)
+
     assertTrue(archiveLinks.nonEmpty)
+    val monthStrings = archiveLinks.map(_.getMonth.toString)
+    assertTrue(monthStrings.contains("Tue Jan 01 00:00:00 GMT 2019"))
+    assertTrue(monthStrings.contains("Thu Mar 01 00:00:00 GMT 2018"))
+    assertTrue(monthStrings.contains("Sat Jul 01 01:00:00 BST 2017"))
   }
 
   @Test
