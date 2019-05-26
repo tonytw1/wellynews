@@ -40,12 +40,11 @@ class ElasticSearchIndexerTest {
     val feed = Feed()
     Await.result(mongoRepository.saveResource(feed), TenSeconds)
 
-    val result = Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
       (newsitem, Seq.empty),
       (website, Seq.empty),
       (feed, Seq.empty)
     )), TenSeconds)
-
     Thread.sleep(1000)
 
     val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), TenSeconds)
@@ -92,13 +91,28 @@ class ElasticSearchIndexerTest {
 
   @Test
   def canFilterByPublisher {
-    val publisher = Await.result(mongoRepository.getWebsiteByUrlwords("wellington-city-council"), TenSeconds).get
+    val publisher = Website()
+    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+    val anotherPublisher = Website()
+    Await.result(mongoRepository.saveResource(anotherPublisher), TenSeconds)
+
+    val publishersNewsitem = Newsitem(publisher = Some(publisher._id))
+    Await.result(mongoRepository.saveResource(publishersNewsitem), TenSeconds)
+    val anotherPublishersNewsitem = Newsitem(publisher = Some(anotherPublisher._id))
+    Await.result(mongoRepository.saveResource(anotherPublishersNewsitem), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (publishersNewsitem, Seq.empty),
+      (anotherPublishersNewsitem, Seq.empty)
+    )), TenSeconds)
+    Thread.sleep(1000)
 
     val publisherNewsitemsQuery = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
     val publisherNewsitems = queryForResources(publisherNewsitemsQuery)
 
     assertTrue(publisherNewsitems.nonEmpty)
     assertTrue(publisherNewsitems.forall(i => i.asInstanceOf[Newsitem].publisher.contains(publisher._id)))
+    assertTrue(publisherNewsitems.map(_._id).contains(publishersNewsitem._id))
   }
 
   @Test
