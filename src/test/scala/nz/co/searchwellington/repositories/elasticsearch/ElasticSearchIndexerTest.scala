@@ -172,17 +172,29 @@ class ElasticSearchIndexerTest {
 
   @Test
   def canFilterNewsitemsByDateRange {
+    val newsitem = Newsitem(date = Some(new DateTime(2016, 2, 10, 0, 0, 0).toDate))
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    val anotherNewsitem = Newsitem(date = Some(new DateTime(2016, 3, 1, 0, 0, 0).toDate))
+    Await.result(mongoRepository.saveResource(anotherNewsitem), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (newsitem, Seq.empty),
+      (anotherNewsitem, Seq.empty)
+    )), TenSeconds)
+    Thread.sleep(1000)
+
     val startOfMonth = new DateTime(2016, 2, 1, 0, 0)
     val interval = new Interval(startOfMonth, startOfMonth.plusMonths(1))
-
     val monthNewsitems = ResourceQuery(`type` = Some("N"), interval = Some(interval))
+
     val results = Await.result(elasticSearchIndexer.getResources(monthNewsitems), TenSeconds)
 
     import scala.concurrent.ExecutionContext.Implicits.global
-    val newsitems = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceByObjectId(i))), TenSeconds).flatten
+    val newsitemsInInterval = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceByObjectId(i))), TenSeconds).flatten
 
-    assertTrue(newsitems.nonEmpty)
-    assertTrue(newsitems.forall{n =>
+    assertTrue(newsitemsInInterval.nonEmpty)
+    assertTrue(newsitemsInInterval.contains(newsitem))
+    assertTrue(newsitemsInInterval.forall{n =>
       interval.contains(n.date.get.getTime)
     })
   }
