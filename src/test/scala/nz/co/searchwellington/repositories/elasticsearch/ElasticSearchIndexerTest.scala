@@ -128,9 +128,21 @@ class ElasticSearchIndexerTest {
   }
 
   @Test
-  def canGetAllPublisherIds: Unit = {
+  def canGetIdsOfAllPublishersWithAtLeastOneNewsitem: Unit = {  // TODO a feed some count as well
+    val publisher = Website()
+    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+    val newsitem = Newsitem(publisher = Some(publisher._id))
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (newsitem, Seq.empty)
+    )), TenSeconds)
+    Thread.sleep(1000)
+
     val publisherIds = Await.result(elasticSearchIndexer.getAllPublishers, TenSeconds)
+
     assertTrue(publisherIds.nonEmpty)
+    assertTrue(publisherIds.contains(publisher._id.stringify))
   }
 
   @Test
