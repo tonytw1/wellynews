@@ -118,7 +118,19 @@ class ElasticSearchIndexerTest {
 
   @Test
   def canGetFeedsForPublisher {
-    val publisher = Await.result(mongoRepository.getWebsiteByUrlwords("wellington-city-council"), TenSeconds).get
+    val publisher = Website()
+    Await.result(mongoRepository.saveResource(publisher), TenSeconds)
+    val feed = Feed()
+    Await.result(mongoRepository.saveResource(feed), TenSeconds)
+    val publishersFeed = Feed(publisher = Some(publisher._id))
+    Await.result(mongoRepository.saveResource(publishersFeed), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (publisher, Seq.empty),
+      (feed, Seq.empty),
+      (publishersFeed, Seq.empty)
+    )), TenSeconds)
+    Thread.sleep(1000)
 
     val publisherFeedsQuery = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
     val publisherFeeds = queryForResources(publisherFeedsQuery)
