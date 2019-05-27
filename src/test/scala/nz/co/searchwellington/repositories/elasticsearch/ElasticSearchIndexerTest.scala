@@ -75,6 +75,26 @@ class ElasticSearchIndexerTest {
   def canFilterByTag {
     val tag = Tag()
     Await.result(mongoRepository.saveTag(tag), TenSeconds)
+    val taggingUser = User()
+    Await.result(mongoRepository.saveUser(taggingUser), TenSeconds)
+
+    val newsitem = Newsitem()
+    Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
+    val taggedNewsitem = Newsitem(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
+    Await.result(mongoRepository.saveResource(taggedNewsitem), TenSeconds)
+
+    val website = Website()
+    Await.result(mongoRepository.saveResource(website), TenSeconds)
+    val taggedWebsite = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
+    Await.result(mongoRepository.saveResource(taggedWebsite), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (newsitem, newsitem.resource_tags.map(_.tag_id.stringify)),
+      (website, website.resource_tags.map(_.tag_id.stringify)),
+      (taggedNewsitem, taggedNewsitem.resource_tags.map(_.tag_id.stringify)),
+      (taggedWebsite, taggedWebsite.resource_tags.map(_.tag_id.stringify))
+    )), TenSeconds)
+    Thread.sleep(1000)
 
     val withTag = ResourceQuery(tags = Some(Set(tag)))
     val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
