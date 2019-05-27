@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, Resource, Watchlist, Website}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -73,9 +73,10 @@ class ElasticSearchIndexerTest {
 
   @Test
   def canFilterByTag {
-    val tag = Await.result(mongoRepository.getTagByUrlWords("arovalley"), TenSeconds).get
-    val withTag = ResourceQuery(tags = Some(Set(tag)))
+    val tag = Tag()
+    Await.result(mongoRepository.saveTag(tag), TenSeconds)
 
+    val withTag = ResourceQuery(tags = Some(Set(tag)))
     val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
     val taggedNewsitems = queryForResources(taggedNewsitemsQuery)
     assertTrue(taggedNewsitems.nonEmpty)
@@ -85,7 +86,7 @@ class ElasticSearchIndexerTest {
     val taggedWebsitesQuery = withTag.copy(`type` = Some("W"))
     val taggedWebsites = queryForResources(taggedWebsitesQuery)
     assertTrue(taggedWebsites.nonEmpty)
-    assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
+    assertTrue(taggedWebsites.forall(i => i.`type` == "W"))
     assertTrue(taggedWebsites.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
   }
 
