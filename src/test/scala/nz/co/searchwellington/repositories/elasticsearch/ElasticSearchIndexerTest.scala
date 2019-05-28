@@ -62,12 +62,23 @@ class ElasticSearchIndexerTest {
 
   @Test
   def canFilterByFeedAcceptancePolicy {
-    val autoAcceptFeeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F"),
+    val acceptedFeed = Feed(acceptance = FeedAcceptancePolicy.ACCEPT)
+    Await.result(mongoRepository.saveResource(acceptedFeed), TenSeconds)
+    val ignoredFeed = Feed(acceptance = FeedAcceptancePolicy.IGNORE)
+    Await.result(mongoRepository.saveResource(ignoredFeed), TenSeconds)
+
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
+      (acceptedFeed, Seq.empty),
+      (ignoredFeed, Seq.empty)
+    )), TenSeconds)
+    Thread.sleep(1000)
+
+    val acceptedFeeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F"),
       feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT))), TenSeconds)
-
-    assertTrue(autoAcceptFeeds._1.nonEmpty)
-
-    assertTrue(autoAcceptFeeds._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.
+    assertTrue(acceptedFeeds._1.nonEmpty)
+    assertTrue(acceptedFeeds._1.contains(acceptedFeed._id))
+    assertTrue(acceptedFeeds._1.contains(ignoredFeed._id))
+    assertTrue(acceptedFeeds._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.
       asInstanceOf[Feed].acceptance == FeedAcceptancePolicy.ACCEPT))
   }
 
