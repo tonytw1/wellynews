@@ -99,13 +99,13 @@ class ElasticSearchIndexerTest {
     val taggedWebsite = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
     Await.result(mongoRepository.saveResource(taggedWebsite), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (newsitem, newsitem.resource_tags.map(_.tag_id.stringify)),
-      (website, website.resource_tags.map(_.tag_id.stringify)),
-      (taggedNewsitem, taggedNewsitem.resource_tags.map(_.tag_id.stringify)),
-      (taggedWebsite, taggedWebsite.resource_tags.map(_.tag_id.stringify))
-    )), TenSeconds)
-    Thread.sleep(1000)
+    def indexResources(resources: Seq[Resource]) = {
+      def indexWithHandTaggings(resource: Resource) = (resource, resource.resource_tags.map(_.tag_id.stringify))
+      Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
+      Thread.sleep(1000)
+    }
+
+    indexResources(Seq(newsitem, website, taggedNewsitem, taggedWebsite))
 
     val withTag = ResourceQuery(tags = Some(Set(tag)))
     val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
