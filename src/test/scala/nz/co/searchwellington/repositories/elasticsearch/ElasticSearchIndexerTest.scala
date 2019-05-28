@@ -6,7 +6,7 @@ import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.joda.time.{DateTime, Interval}
-import org.junit.Assert.{assertEquals, assertTrue}
+import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.when
@@ -77,7 +77,7 @@ class ElasticSearchIndexerTest {
       feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT))), TenSeconds)
     assertTrue(acceptedFeeds._1.nonEmpty)
     assertTrue(acceptedFeeds._1.contains(acceptedFeed._id))
-    assertTrue(acceptedFeeds._1.contains(ignoredFeed._id))
+    assertFalse(acceptedFeeds._1.contains(ignoredFeed._id))
     assertTrue(acceptedFeeds._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.
       asInstanceOf[Feed].acceptance == FeedAcceptancePolicy.ACCEPT))
   }
