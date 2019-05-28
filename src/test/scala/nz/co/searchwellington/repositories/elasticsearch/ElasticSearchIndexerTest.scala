@@ -40,12 +40,7 @@ class ElasticSearchIndexerTest {
     val feed = Feed()
     Await.result(mongoRepository.saveResource(feed), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (newsitem, Seq.empty),
-      (website, Seq.empty),
-      (feed, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(newsitem, website, feed))
 
     val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), TenSeconds)
     assertTrue(newsitems._1.nonEmpty)
@@ -67,11 +62,7 @@ class ElasticSearchIndexerTest {
     val ignoredFeed = Feed(acceptance = FeedAcceptancePolicy.IGNORE)
     Await.result(mongoRepository.saveResource(ignoredFeed), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (acceptedFeed, Seq.empty),
-      (ignoredFeed, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(acceptedFeed, ignoredFeed))
 
     val acceptedFeeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F"),
       feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT))), TenSeconds)
@@ -98,12 +89,6 @@ class ElasticSearchIndexerTest {
     Await.result(mongoRepository.saveResource(website), TenSeconds)
     val taggedWebsite = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = taggingUser._id)))
     Await.result(mongoRepository.saveResource(taggedWebsite), TenSeconds)
-
-    def indexResources(resources: Seq[Resource]) = {
-      def indexWithHandTaggings(resource: Resource) = (resource, resource.resource_tags.map(_.tag_id.stringify))
-      Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
-      Thread.sleep(1000)
-    }
 
     indexResources(Seq(newsitem, website, taggedNewsitem, taggedWebsite))
 
@@ -133,11 +118,7 @@ class ElasticSearchIndexerTest {
     val anotherPublishersNewsitem = Newsitem(publisher = Some(anotherPublisher._id))
     Await.result(mongoRepository.saveResource(anotherPublishersNewsitem), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (publishersNewsitem, Seq.empty),
-      (anotherPublishersNewsitem, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(publishersNewsitem, anotherPublishersNewsitem))
 
     val publisherNewsitemsQuery = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
     val publisherNewsitems = queryForResources(publisherNewsitemsQuery)
@@ -156,12 +137,7 @@ class ElasticSearchIndexerTest {
     val publishersFeed = Feed(publisher = Some(publisher._id))
     Await.result(mongoRepository.saveResource(publishersFeed), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (publisher, Seq.empty),
-      (feed, Seq.empty),
-      (publishersFeed, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(publisher, publishersFeed))
 
     val publisherFeedsQuery = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
     val publisherFeeds = queryForResources(publisherFeedsQuery)
@@ -178,10 +154,7 @@ class ElasticSearchIndexerTest {
     val newsitem = Newsitem(publisher = Some(publisher._id))
     Await.result(mongoRepository.saveResource(newsitem), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (newsitem, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(publisher, newsitem))
 
     val publisherIds = Await.result(elasticSearchIndexer.getAllPublishers, TenSeconds)
 
@@ -198,12 +171,7 @@ class ElasticSearchIndexerTest {
     val yetAnotherNewsitem = Newsitem(date = Some(new DateTime(2017, 7, 8, 0, 0, 0).toDate))
     Await.result(mongoRepository.saveResource(yetAnotherNewsitem), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (newsitem, Seq.empty),
-      (anotherNewsitem, Seq.empty),
-      (yetAnotherNewsitem, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
     val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths, TenSeconds)
 
@@ -221,11 +189,7 @@ class ElasticSearchIndexerTest {
     val anotherNewsitem = Newsitem(date = Some(new DateTime(2016, 3, 1, 0, 0, 0).toDate))
     Await.result(mongoRepository.saveResource(anotherNewsitem), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (newsitem, Seq.empty),
-      (anotherNewsitem, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(newsitem, anotherNewsitem))
 
     val startOfMonth = new DateTime(2016, 2, 1, 0, 0)
     val interval = new Interval(startOfMonth, startOfMonth.plusMonths(1))
@@ -254,18 +218,18 @@ class ElasticSearchIndexerTest {
     val feed = Feed()
     Await.result(mongoRepository.saveResource(feed), TenSeconds)
 
-    Await.result(elasticSearchIndexer.updateMultipleContentItems(Seq(
-      (website, Seq.empty),
-      (newsitem, Seq.empty),
-      (watchlist, Seq.empty),
-      (feed, Seq.empty)
-    )), TenSeconds)
-    Thread.sleep(1000)
+    indexResources(Seq(website, newsitem, watchlist, feed))
 
     val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts, TenSeconds)
 
     val typesFound = typeCounts.keys.toSet
     assertEquals(Set("W", "N", "F", "L"), typesFound)
+  }
+
+  private def indexResources(resources: Seq[Resource]) = {
+    def indexWithHandTaggings(resource: Resource) = (resource, resource.resource_tags.map(_.tag_id.stringify))
+    Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
+    Thread.sleep(1000)
   }
 
   private def queryForResources(query: ResourceQuery): Seq[Resource] = {
