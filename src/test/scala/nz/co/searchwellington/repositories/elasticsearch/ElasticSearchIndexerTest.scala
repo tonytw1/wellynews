@@ -229,7 +229,7 @@ class ElasticSearchIndexerTest {
   private def indexResources(resources: Seq[Resource]) = {
     def indexWithHandTaggings(resource: Resource) = (resource, resource.resource_tags.map(_.tag_id.stringify))
     Await.result(elasticSearchIndexer.updateMultipleContentItems(resources.map(indexWithHandTaggings)), TenSeconds)
-    Thread.sleep(5000)
+    Thread.sleep(1000)
   }
 
   private def queryForResources(query: ResourceQuery): Seq[Resource] = {
