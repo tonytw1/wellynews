@@ -61,6 +61,17 @@ class ElasticSearchIndexerTest {
   }
 
   @Test
+  def canFilterByFeedAcceptancePolicy {
+    val autoAcceptFeeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F"),
+      feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT))), TenSeconds)
+
+    assertTrue(autoAcceptFeeds._1.nonEmpty)
+
+    assertTrue(autoAcceptFeeds._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.
+      asInstanceOf[Feed].acceptance == FeedAcceptancePolicy.ACCEPT))
+  }
+
+  @Test
   def canFilterByTag {
     val tag = Tag()
     Await.result(mongoRepository.saveTag(tag), TenSeconds)
