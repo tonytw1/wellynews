@@ -12,7 +12,7 @@ import com.sksamuel.elastic4s.searches.DateHistogramInterval
 import com.sksamuel.elastic4s.searches.queries.Query
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
-import nz.co.searchwellington.model.{ArchiveLink, Feed, PublishedResource, Resource, Tag}
+import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -204,7 +204,18 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   private def executeResourceQuery(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = {
-    var conditions = Seq(
+    val request = search(Index / Resources) query composeQueryFor(query) sortByFieldDesc Date start query.startIndex limit query.maxItems
+
+    client.execute(request).map { r =>
+      val hits = r.result.hits.hits
+      val ids = hits.map(h => BSONObjectID(h.id))
+      val total = r.result.totalHits
+      (ids, total)
+    }
+  }
+
+  private def composeQueryFor(query: ResourceQuery): Query = {
+    val conditions = Seq(
       query.`type`.map(t => matchQuery(Type, t)),
       query.tags.map { tags =>
         should { // TODO AND or OR
@@ -245,16 +256,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       }
     ).flatten
 
-    val q = must(conditions)
-
-    val request = search(Index / Resources) query withModeration(q) sortByFieldDesc Date start query.startIndex limit query.maxItems
-
-    client.execute(request).map { r =>
-      val hits = r.result.hits.hits
-      val ids = hits.map(h => BSONObjectID(h.id))
-      val total = r.result.totalHits
-      (ids, total)
-    }
+    withModeration(must(conditions))
   }
 
 }
