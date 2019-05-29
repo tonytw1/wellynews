@@ -3,9 +3,9 @@ package nz.co.searchwellington.model;
 public class PublisherContentCount implements Comparable<PublisherContentCount> {
 
 	private String publisherName;
-	private int count;
+	private long count;
 	
-	public PublisherContentCount(String publisherName, int count) {		
+	public PublisherContentCount(String publisherName, long count) {
 		this.publisherName = publisherName;
 		this.count = count;
 	}
@@ -18,11 +18,11 @@ public class PublisherContentCount implements Comparable<PublisherContentCount> 
 		this.publisherName = publisherName;
 	}
 
-	public int getCount() {
+	public long getCount() {
 		return count;
 	}
 
-	public void setCount(int count) {
+	public void setCount(long count) {
 		this.count = count;
 	}
 	

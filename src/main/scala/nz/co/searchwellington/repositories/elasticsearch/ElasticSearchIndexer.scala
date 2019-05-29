@@ -10,16 +10,16 @@ import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
 import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
 import com.sksamuel.elastic4s.searches.queries.Query
-import com.sksamuel.elastic4s.searches.queries.matches.MatchQuery
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
-import nz.co.searchwellington.model.{ArchiveLink, Feed, PublishedResource, Resource}
+import nz.co.searchwellington.model.{ArchiveLink, Feed, PublishedResource, Resource, Tag}
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
+import uk.co.eelpieconsulting.common.geo.model.LatLong
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration._
@@ -139,16 +139,40 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query)
 
-  def getAllPublishers(): Future[Seq[String]] = {
-    val allNewsitems: MatchQuery = matchQuery(Type, "N")
+  def getAllPublishers(): Future[Seq[(String, Long)]] = {
+    val allNewsitems = matchQuery(Type, "N")
     getPublisherAggregationFor(allNewsitems)
   }
 
-  def getPublisherAggregationFor(query: Query): Future[Seq[String]] = {
-    val aggs = Seq(termsAgg("publisher", "publisher") size Integer.MAX_VALUE)
+  def getPublishersForTag(tag: Tag): Future[Seq[(String, Long)]] = {
+    val allNewsitems = matchQuery(Type, "N")  // TODO implemnt
+    getPublisherAggregationFor(allNewsitems)
+  }
+
+  def getPublishersNear(latLong: LatLong): Future[Seq[(String, Long)]] = {
+    val radius = 5 // TODO push radius up
+
+    val nearbyNewsitemsQuery = bool(must(Seq(
+      geoDistanceQuery(LatLong).point(latLong.getLatitude, latLong.getLongitude).distance(5, DistanceUnit.KILOMETERS),
+      matchQuery(Type, "N")))) // TODO reuse existing query building code.
+
+    getPublisherAggregationFor(nearbyNewsitemsQuery)
+  }
+
+  def getTagAggregation(tag: Tag): Future[Seq[(String, Long)]] = {
+    val allNewsitems = matchQuery(Type, "N")  // TODO implemnt
+    getAggregationFor(allNewsitems, Tags)
+  }
+
+  private def getPublisherAggregationFor(query: Query): Future[Seq[(String, Long)]] = {
+    getAggregationFor(query, Publisher)
+  }
+
+  private def getAggregationFor(query: Query, aggName: String): Future[Seq[(String, Long)]] = {
+    val aggs = Seq(termsAgg(aggName, aggName) size Integer.MAX_VALUE)
     val request = (search(Index / Resources) query query) limit 0 aggregations (aggs)
     client.execute(request).map { r =>
-      r.result.aggregations.terms("publisher").buckets.map(b => b.key)
+      r.result.aggregations.terms(aggName).buckets.map(b => (b.key, b.docCount))
     }
   }
 

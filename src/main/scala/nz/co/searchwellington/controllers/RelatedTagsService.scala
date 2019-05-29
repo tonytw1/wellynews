@@ -5,7 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.TagDAO
-import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchBackedResourceDAO
+import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, ElasticSearchIndexer}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -16,11 +16,12 @@ import scala.concurrent.Await
 @Component class RelatedTagsService @Autowired()(elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
                                                  tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
                                                  frontendResourceMapper: FrontendResourceMapper,
-                                                 mongoRepository: MongoRepository) extends ReasonableWaits {
+                                                 mongoRepository: MongoRepository,
+                                                 elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits {
 
-  def getRelatedLinksForTag(tag: Tag, maxItems: Int): Seq[TagContentCount] = {
+  def getRelatedTagsForTag(tag: Tag, maxItems: Int): Seq[TagContentCount] = {
 
-    def removeUnsuitableTags(tag: Tag, tagFacetsForTag: Map[String, Int]): Seq[TagContentCount] = {
+    def removeUnsuitableTags(tag: Tag, tagFacetsForTag: Map[String, Long]): Seq[TagContentCount] = {
 
       def isTagSuitableRelatedTag(tag: Tag, relatedTag: Tag): Boolean = {
         //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
@@ -40,8 +41,8 @@ import scala.concurrent.Await
       }.toSeq
     }
 
-    val tagFacetsForTag = elasticSearchBackedResourceDAO.getTagFacetsForTag(tag)
-    val filtered = removeUnsuitableTags(tag, tagFacetsForTag)
+    val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagAggregation(tag), TenSeconds)
+    val filtered = removeUnsuitableTags(tag, tagFacetsForTag.toMap)
     filtered.take(5)
   }
 
@@ -50,17 +51,17 @@ import scala.concurrent.Await
   }
 
   def getRelatedTagsForLocation(place: Place, radius: Double, maxItems: Int): Seq[TagContentCount] = {
-    Seq()
+    Seq() // TODO implement
   }
 
   def getRelatedPublishersForTag(tag: Tag, maxItems: Int): Seq[PublisherContentCount] = {
-    val publisherFacetsForTag = elasticSearchBackedResourceDAO.getPublisherFacetsForTag(tag)
-    populatePublisherFacets(publisherFacetsForTag)
+    val publisherFacetsForTag = Await.result(elasticSearchIndexer.getPublishersForTag(tag), TenSeconds)
+    populatePublisherFacets(publisherFacetsForTag.toMap)
   }
 
   def getRelatedPublishersForLocation(place: Place, radius: Double): Seq[PublisherContentCount] = {
-    val publisherFacetsNear = elasticSearchBackedResourceDAO.getPublisherFacetsNear(place.getLatLong, radius, showBrokenDecisionService.shouldShowBroken)
-    populatePublisherFacets(publisherFacetsNear)
+    val publisherFacetsNear = Await.result(elasticSearchIndexer.getPublishersNear(place.getLatLong), TenSeconds)
+    populatePublisherFacets(publisherFacetsNear.toMap)
   }
 
   def getRelatedLinksForPublisher(publisher: Website): Seq[TagContentCount] = {
@@ -71,7 +72,7 @@ import scala.concurrent.Await
     Seq()
   }
 
-  private def populatePublisherFacets(publisherFacetsForTag: Map[String, Int]): Seq[PublisherContentCount] = {
+  private def populatePublisherFacets(publisherFacetsForTag: Map[String, Long]): Seq[PublisherContentCount] = {
     publisherFacetsForTag.keys.flatMap { publisher =>
       publisherFacetsForTag.get(publisher).map { count =>
         new PublisherContentCount(publisher, count)

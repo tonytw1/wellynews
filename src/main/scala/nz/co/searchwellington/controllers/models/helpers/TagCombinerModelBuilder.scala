@@ -72,7 +72,7 @@ import org.springframework.web.servlet.ModelAndView
     val tags: util.List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
     if (!tags.isEmpty) {
       val tag = tags.get(0)
-      mv.addObject("related_tags", relatedTagsService.getRelatedLinksForTag(tag, 8))
+      mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8))
       import scala.collection.JavaConverters._
       mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5).asJava)
       val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)

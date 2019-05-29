@@ -124,7 +124,7 @@ import org.springframework.web.servlet.ModelAndView
     import scala.collection.JavaConverters._
     mv.addObject(WEBSITES, taggedWebsites.asJava)
 
-    val relatedTagLinks = relatedTagsService.getRelatedLinksForTag(tag, 8)
+    val relatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8)
     if (relatedTagLinks.nonEmpty) {
       mv.addObject("related_tags", relatedTagLinks)
     }

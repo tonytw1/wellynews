@@ -39,17 +39,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     om
   }
 
-  def getPublisherFacetsNear(latLong: LatLong, radius: Double, shouldShowBroken: Boolean): Map[String, Int] = {
-    /*
-    val builder = searchRequestBuilder(geotaggedNearQuery(latLong, radius, shouldShowBroken)).addFacet(FacetBuilders.termsFacet(PUBLISHER_NAME).field(PUBLISHER_NAME).order(ComparatorType.COUNT).size(10)).execute.actionGet
-    val facet = builder.getFacets.getFacets.get(PUBLISHER_NAME).asInstanceOf[TermsFacet]
-    facet.getEntries.asInstanceOf[Seq[_ <: Entry]].map { entry =>
-      ((entry.getTerm.string, entry.getCount))
-    }.toMap
-    */
-    Map()  // TODO
-  }
-
   def getNewsitemsNearDistanceFacet(latLong: LatLong, shouldShowBroken: Boolean): Map[Double, Long] = {
     /*
     val geoDistanceFacet = FacetBuilders.geoDistanceFacet("distance").field("location").lat(latLong.getLatitude).lon(latLong.getLongitude)
@@ -71,14 +60,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     }.toMap
     */
     Map()
-  }
-
-  def getTagFacetsForTag(tag: Tag): Map[String, Int] = {
-    tagNewsitemsFacet(tag, INDEX_TAGS)
-  }
-
-  def getPublisherFacetsForTag(tag: Tag): Map[String, Int] = {
-    tagNewsitemsFacet(tag, PUBLISHER_NAME)
   }
 
   def getCommentedNewsitemsForTagCount(tag: Tag, shouldShowBroken: Boolean): Int = {
@@ -153,24 +134,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
       distance(radius.toString + "km").
       point(latLong.getLatitude, latLong.getLongitude)
     QueryBuilders.filtered(geotaggedNear, nearFilter)
-  }
-  */
-
-
-  private def tagNewsitemsFacet(tag: Tag, facetField: String): Map[String, Int] = {
-    /*
-    val searchResponse = searchRequestBuilder(tagNewsitemsQuery(tag)).addFacet(FacetBuilders.termsFacet(facetField).field(facetField).order(ComparatorType.COUNT).size(10)).execute.actionGet
-    val facet = searchResponse.getFacets.getFacets.get(facetField).asInstanceOf[TermsFacet]
-    facet.getEntries.asInstanceOf[Seq[_ <: Entry]].map { entry =>
-      (entry.getTerm.string, entry.getCount)
-    }.toMap
-    */
-    Map()
-  }
-
-  /*
-  private def tagNewsitemsQuery(tag: Tag): BoolQueryBuilder = {
-    QueryBuilders.boolQuery.must(hasTag(tag)).must(isNewsitem)
   }
   */
 
