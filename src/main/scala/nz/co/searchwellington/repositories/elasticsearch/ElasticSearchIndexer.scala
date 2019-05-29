@@ -9,6 +9,8 @@ import com.sksamuel.elastic4s.http.index.admin.IndexExistsResponse
 import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
 import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.searches.DateHistogramInterval
+import com.sksamuel.elastic4s.searches.queries.Query
+import com.sksamuel.elastic4s.searches.queries.matches.MatchQuery
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model.{ArchiveLink, Feed, PublishedResource, Resource}
@@ -138,9 +140,13 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query)
 
   def getAllPublishers(): Future[Seq[String]] = {
-    val allNewsitems = matchQuery(Type, "N")
+    val allNewsitems: MatchQuery = matchQuery(Type, "N")
+    getPublisherAggregationFor(allNewsitems)
+  }
+
+  def getPublisherAggregationFor(query: Query): Future[Seq[String]] = {
     val aggs = Seq(termsAgg("publisher", "publisher") size Integer.MAX_VALUE)
-    val request = (search(Index / Resources) query allNewsitems) limit 0 aggregations (aggs)
+    val request = (search(Index / Resources) query query) limit 0 aggregations (aggs)
     client.execute(request).map { r =>
       r.result.aggregations.terms("publisher").buckets.map(b => b.key)
     }
