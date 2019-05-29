@@ -30,10 +30,6 @@ import scala.concurrent.{Await, Future}
   val MAX_NEWSITEMS_TO_SHOW = 30
   val ALL_ITEMS = 1000
 
-  def getGeotaggedCount: Long = {
-    elasticSearchBackedResourceDAO.getGeotaggedCount(showBrokenDecisionService.shouldShowBroken)
-  }
-
   def getAllPublishers: Future[Seq[Website]] = {
     elasticSearchIndexer.getAllPublishers().flatMap { ids =>
       log.info("Got " + ids.size + " publisher ids")
@@ -75,9 +71,12 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getGeocoded(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    val geotaggedNewsitems = ResourceQuery(`type` = Some("N"), geocoded = Some(true))
-    Await.result(elasticSearchIndexer.getResources(geotaggedNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  def getGeocodedNewsitems(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
+    Await.result(elasticSearchIndexer.getResources(geocodedNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  }
+
+  def getGeocodedNewitemsCount: Long = {
+    Await.result(elasticSearchIndexer.getResources(geocodedNewsitems).map(_._2), TenSeconds)
   }
 
   def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
@@ -291,5 +290,7 @@ import scala.concurrent.{Await, Future}
 
     eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
   }
+
+  private val geocodedNewsitems = ResourceQuery(`type` = Some("N"), geocoded = Some(true))
 
 }

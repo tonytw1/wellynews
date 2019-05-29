@@ -78,7 +78,7 @@ import scala.collection.JavaConverters._
   }
 
   private def populateGeocoded(mv: ModelAndView) {
-    val geocoded = contentRetrievalService.getGeocoded(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
+    val geocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
     if (!geocoded.isEmpty) {
       mv.addObject("geocoded", geocoded.asJava)
     }

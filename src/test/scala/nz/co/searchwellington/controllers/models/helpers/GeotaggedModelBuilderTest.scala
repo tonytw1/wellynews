@@ -51,7 +51,7 @@ class GeotaggedModelBuilderTest {
   @Test
   def geotaggedNewsitemsPageShouldHavePaginationInformation {
     request.setPathInfo("/geotagged")
-    when(contentRetrievalService.getGeotaggedCount).thenReturn(TOTAL_GEOTAGGED_COUNT)
+    when(contentRetrievalService.getGeocodedNewitemsCount).thenReturn(TOTAL_GEOTAGGED_COUNT)
 
     val modelAndView = modelBuilder.populateContentModel(request).get
 
