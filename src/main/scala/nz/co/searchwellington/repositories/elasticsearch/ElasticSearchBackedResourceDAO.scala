@@ -105,10 +105,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Seq.empty //TODO
   }
 
-  def getTaggedGeotaggedNewsitems(tag: Tag, maxItems: Int, shouldShowBroken: Boolean): Seq[FrontendResource] = {
-    Seq.empty //TODO
-  }
-
   def getGeotaggedTags(shouldShowBroken: Boolean): Seq[Tag] = {
     Seq.empty //TODO
   }

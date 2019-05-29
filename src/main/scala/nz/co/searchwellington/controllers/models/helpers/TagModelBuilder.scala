@@ -97,7 +97,7 @@ import org.springframework.web.servlet.ModelAndView
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
 
     def populateGeocoded(mv: ModelAndView, tag: Tag) {
-      val geocoded = contentRetrievalService.getTaggedGeotaggedNewsitems(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+      val geocoded = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
       log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
       if (geocoded.nonEmpty) {
         mv.addObject("geocoded", geocoded)

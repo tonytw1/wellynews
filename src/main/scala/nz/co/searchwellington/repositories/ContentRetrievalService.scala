@@ -87,8 +87,9 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(nearbyNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getTaggedGeotaggedNewsitems(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getTaggedGeotaggedNewsitems(tag, maxItems, showBrokenDecisionService.shouldShowBroken)
+  def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
+    val geotaggedNewsitemsForTag = ResourceQuery(`type` = Some("N"), geocoded = Some(true), tags = Some(Set(tag)), maxItems = ALL_ITEMS)
+    Await.result(elasticSearchIndexer.getResources(geotaggedNewsitemsForTag).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getNewsitemsNearDistanceFacet(latLong: LatLong): Map[Double, Long] = {
