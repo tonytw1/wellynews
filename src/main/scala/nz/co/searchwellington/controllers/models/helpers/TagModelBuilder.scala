@@ -126,11 +126,11 @@ import org.springframework.web.servlet.ModelAndView
 
     val relatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8)
     if (relatedTagLinks.nonEmpty) {
-      mv.addObject("related_tags", relatedTagLinks)
+      mv.addObject("related_tags", relatedTagLinks.asJava)
     }
     val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, 8)
     if (relatedPublisherLinks.nonEmpty) {
-      mv.addObject("related_publishers", relatedPublisherLinks)
+      mv.addObject("related_publishers", relatedPublisherLinks.asJava)
     }
     populateCommentedTaggedNewsitems(mv, tag)
     populateGeocoded(mv, tag)
