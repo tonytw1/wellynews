@@ -159,7 +159,7 @@ class ElasticSearchIndexerTest {
     val publisherIds = Await.result(elasticSearchIndexer.getAllPublishers, TenSeconds)
 
     assertTrue(publisherIds.nonEmpty)
-    assertTrue(publisherIds.contains(publisher._id.stringify))
+    assertTrue(publisherIds.map(_._1).contains(publisher._id.stringify))
   }
 
   @Test
