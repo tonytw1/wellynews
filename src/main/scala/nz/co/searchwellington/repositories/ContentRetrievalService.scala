@@ -80,10 +80,12 @@ import scala.concurrent.{Await, Future}
   }
 
   def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
-    val nearbyNewsitems = ResourceQuery(`type` = Some("N"),
-      startIndex = startIndex, maxItems = maxNewsitems,
-      circle = Some(Circle(latLong, radius)))
-    Await.result(elasticSearchIndexer.getResources(nearbyNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    val withPagination = nearbyNewsitems(latLong, radius).copy(startIndex = startIndex, maxItems = maxNewsitems)
+    Await.result(elasticSearchIndexer.getResources(withPagination).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  }
+
+  def getNewsitemsNearCount(latLong: LatLong, radius: Double): Long = {
+    Await.result(elasticSearchIndexer.getResources(nearbyNewsitems(latLong, radius)).map(i => i._2), TenSeconds)
   }
 
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
@@ -93,10 +95,6 @@ import scala.concurrent.{Await, Future}
 
   def getNewsitemsNearDistanceFacet(latLong: LatLong): Map[Double, Long] = {
     elasticSearchBackedResourceDAO.getNewsitemsNearDistanceFacet(latLong, showBrokenDecisionService.shouldShowBroken)
-  }
-
-  def getNewsitemsNearCount(latLong: LatLong, radius: Double): Long = {
-    elasticSearchBackedResourceDAO.getGeotaggedNewsitemsNearCount(latLong, radius, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getGeotaggedTags: Seq[Tag] = {
@@ -292,5 +290,7 @@ import scala.concurrent.{Await, Future}
   }
 
   private val geocodedNewsitems = ResourceQuery(`type` = Some("N"), geocoded = Some(true))
+
+  private def nearbyNewsitems(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
 
 }

@@ -73,13 +73,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Map()
   }
 
-  def getGeotaggedNewsitemsNearCount(latLong: LatLong, radius: Double, shouldShowBroken: Boolean): Long = {
-   // val builder = searchRequestBuilder(geotaggedNearQuery(latLong, radius, shouldShowBroken)).setSize(0)
-   // val response = builder.execute.actionGet
-    //return response.getHits.getTotalHits
-    0 // TODO
-  }
-
   def getTagFacetsForTag(tag: Tag): Map[String, Int] = {
     tagNewsitemsFacet(tag, INDEX_TAGS)
   }
