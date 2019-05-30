@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -17,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                                frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with CommonSizes {
 
-  private val logger: Logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
+  private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
@@ -30,7 +29,7 @@ import org.springframework.web.servlet.ModelAndView
     def populatePublisherTagCombinerNewsitems(mv: ModelAndView, publisher: Website, tag: Tag) {
       val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS)
       mv.addObject(MAIN_CONTENT, publisherNewsitems)
-      if (publisherNewsitems.size > 0) {
+      if (publisherNewsitems.nonEmpty) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
       }
     }
@@ -64,8 +63,6 @@ import org.springframework.web.servlet.ModelAndView
     }
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "publisherCombiner"
-  }
+  def getViewName(mv: ModelAndView): String = "publisherCombiner"
 
 }
