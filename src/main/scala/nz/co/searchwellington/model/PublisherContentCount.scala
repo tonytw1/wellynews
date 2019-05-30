@@ -2,7 +2,7 @@ package nz.co.searchwellington.model
 
 case class PublisherContentCount(publisher: Website, count: Long) {
 
-  def getPublisherName: String = publisher.title.getOrElse(publisher.id)
+  def getPublisher: Website = publisher
   def getCount: Long = count
 
 }
