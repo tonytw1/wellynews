@@ -2,7 +2,7 @@ package nz.co.searchwellington.model.frontend
 
 import java.util.{Date, List, UUID}
 
-import nz.co.searchwellington.model.{User, Website}
+import nz.co.searchwellington.model.{Tag, User, Website}
 import uk.co.eelpieconsulting.common.geo.model.Place
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
@@ -15,8 +15,8 @@ case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
                             date: Date = null,
                             description: String = null,
                             liveTime: Date = null,
-                            tags: List[FrontendTag] = null,
-                            handTags: List[FrontendTag] = null,
+                            tags: List[Tag] = null,
+                            handTags: List[Tag] = null,
                             owner: String = null,
                             place: Option[Place] = None,
                             held: Boolean = false,

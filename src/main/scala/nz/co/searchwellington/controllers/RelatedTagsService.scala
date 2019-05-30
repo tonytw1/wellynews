@@ -33,7 +33,7 @@ import scala.concurrent.Await
         Await.result(mongoRepository.getTagById(tagId), TenSeconds).flatMap { facetTag =>
           if (isTagSuitableRelatedTag(tag, facetTag)) {
             tagFacetsForTag.get(tagId).flatMap { count =>
-              Some(new TagContentCount(frontendResourceMapper.mapTagToFrontendTag(facetTag), count))
+              Some(new TagContentCount(facetTag, count))
             }
           } else {
             None

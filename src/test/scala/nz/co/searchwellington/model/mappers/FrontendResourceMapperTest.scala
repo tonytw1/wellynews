@@ -20,15 +20,6 @@ class FrontendResourceMapperTest {
   val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, urlWordsGenerator, geocodeToPlaceMapper, mongoRepository)
 
   @Test
-  def canMapTagToFrontendTag(): Unit = {
-    val tag = Tag(id = UUID.randomUUID().toString)
-
-    val frontedTag = mapper.mapTagToFrontendTag(tag)
-
-    assertEquals(tag.id, frontedTag.id)
-  }
-
-  @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {
     val newsitem = Newsitem(id = "123", http_status = 200)
     when(urlWordsGenerator.makeUrlForNewsitem(newsitem)).thenReturn(Some("some-url-words"))

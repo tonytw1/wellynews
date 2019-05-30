@@ -2,7 +2,7 @@ package nz.co.searchwellington.model.frontend
 
 import java.util.{Date, List}
 
-import nz.co.searchwellington.model.FeedAcceptancePolicy
+import nz.co.searchwellington.model.Tag
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 case class FrontendWatchlist(id: String,
@@ -14,8 +14,8 @@ case class FrontendWatchlist(id: String,
                         date: Date = null,
                         description: String = null,
                         liveTime: Date = null,
-                        tags: List[FrontendTag] = null,
-                        handTags: List[FrontendTag] = null,
+                        tags: List[Tag] = null,
+                        handTags: List[Tag] = null,
                         owner: String = null,
                         place: Option[Place] = None,
                         held: Boolean = false) extends FrontendResource

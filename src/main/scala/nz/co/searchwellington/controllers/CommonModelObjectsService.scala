@@ -11,10 +11,10 @@ import org.springframework.web.servlet.ModelAndView
   def populateCommonLocal(mv: ModelAndView) {
     import scala.collection.JavaConverters._
 
-    val topLevelTags = contentRetrievalService.getTopLevelTags.map(frontendResourceMapper.mapTagToFrontendTag)
+    val topLevelTags = contentRetrievalService.getTopLevelTags
     mv.addObject("top_level_tags", topLevelTags.asJava)
 
-    val featuredTags = contentRetrievalService.getFeaturedTags.map(frontendResourceMapper.mapTagToFrontendTag)
+    val featuredTags = contentRetrievalService.getFeaturedTags
     mv.addObject("featuredTags", featuredTags.asJava)
   }
 

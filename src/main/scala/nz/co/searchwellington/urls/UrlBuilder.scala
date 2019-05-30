@@ -3,7 +3,7 @@ package nz.co.searchwellington.urls
 import java.util.Date
 
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendTag, FrontendWebsite}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendWebsite}
 import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
 import uk.co.eelpieconsulting.common.dates.DateFormatter
@@ -64,19 +64,11 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
   }
 
   def getTagUrl(tag: Tag): String = {
-    siteInformation.getUrl + "/" + tag.getName
-  }
-
-  def getTagUrl(tag: FrontendTag): String = {
     siteInformation.getUrl + "/" + tag.name
   }
 
   def getAutoTagUrl(tag: Tag): String = {
     siteInformation.getUrl + "/" + tag.getName + "/autotag"
-  }
-
-  def getTagCombinerUrl(firstTag: Tag, secondTag: FrontendTag): String = {
-    siteInformation.getUrl + "/" + firstTag.getName + "+" + secondTag.id
   }
 
   def getTagCombinerUrl(firstTag: Tag, secondTag: Tag): String = {

@@ -3,6 +3,7 @@ package nz.co.searchwellington.model.frontend
 import java.io.Serializable
 import java.util.{Date, List}
 
+import nz.co.searchwellington.model.Tag
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
@@ -16,8 +17,8 @@ trait FrontendResource extends RssFeedable with Serializable {
   val date: Date
   val description: String
   val liveTime: Date
-  val tags: List[FrontendTag]
-  val handTags: List[FrontendTag]
+  val tags: List[Tag]
+  val handTags: List[Tag]
   val owner: String
   val place: Option[Place]
   val held: Boolean
@@ -56,11 +57,11 @@ trait FrontendResource extends RssFeedable with Serializable {
     liveTime
   }
 
-  final def getTags: List[FrontendTag] = {
+  final def getTags: List[Tag] = {
     tags
   }
 
-  final def getHandTags: List[FrontendTag] = {
+  final def getHandTags: List[Tag] = {
     handTags
   }
 

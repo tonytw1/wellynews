@@ -21,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
       val mv = new ModelAndView
-      val allFrontendTags = tagDAO.getAllTags.map(frontendResourceMapper.mapTagToFrontendTag(_))
+      val allFrontendTags = tagDAO.getAllTags
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, allFrontendTags.asJava)
       mv.addObject("heading", "All tags")

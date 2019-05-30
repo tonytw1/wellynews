@@ -1,13 +1,11 @@
 package nz.co.searchwellington.model;
 
-import nz.co.searchwellington.model.frontend.FrontendTag;
-
 public class TagContentCount {
     
-    private FrontendTag tag;
+    private Tag tag;
     private long count;
     
-    public TagContentCount(FrontendTag tag, long count) {
+    public TagContentCount(Tag tag, long count) {
         this.tag = tag;
         this.count = count;
     }
@@ -18,10 +16,10 @@ public class TagContentCount {
     public void setCount(long count) {
         this.count = count;
     }
-    public FrontendTag getTag() {
+    public Tag getTag() {
         return tag;
     }
-    public void setTag(FrontendTag tag) {
+    public void setTag(Tag tag) {
         this.tag = tag;
     }
 

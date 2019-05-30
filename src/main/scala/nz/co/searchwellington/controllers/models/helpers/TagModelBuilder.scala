@@ -50,7 +50,7 @@ import org.springframework.web.servlet.ModelAndView
         None
 
       } else {
-        mv.addObject(TAG, frontendResourceMapper.mapTagToFrontendTag(tag))
+        mv.addObject(TAG, tag)
 
         tag.geocode.map { g =>
           mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(g))
@@ -62,11 +62,11 @@ import org.springframework.web.servlet.ModelAndView
 
         tag.parent.map { pid =>
           tagDAO.loadTagByObjectId(pid).map { p =>
-            mv.addObject("parent", frontendResourceMapper.mapTagToFrontendTag(p))
+            mv.addObject("parent", p)
           }
         }
 
-        val children = tagDAO.loadTagsByParent(tag._id).map(t => frontendResourceMapper.mapTagToFrontendTag(t))
+        val children = tagDAO.loadTagsByParent(tag._id)
         if (children.nonEmpty) {
           import scala.collection.JavaConverters._
           mv.addObject("children", children.asJava)

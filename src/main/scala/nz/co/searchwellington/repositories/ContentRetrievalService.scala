@@ -3,7 +3,7 @@ package nz.co.searchwellington.repositories
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{RelatedTagsService, ShowBrokenDecisionService}
 import nz.co.searchwellington.model._
-import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendTag}
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.elasticsearch._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -244,8 +244,8 @@ import scala.concurrent.{Await, Future}
     }.getOrElse(Seq())
   }
 
-  def getFeedworthyTags: Seq[FrontendTag] = {
-    var feedworthTags: Seq[FrontendTag]= Seq()
+  def getFeedworthyTags: Seq[Tag] = {
+    var feedworthTags: Seq[Tag]= Seq()
     import scala.collection.JavaConversions._
     for (tagContentCount <- relatedTagsService.getFeedworthyTags(showBrokenDecisionService.shouldShowBroken)) {
       feedworthTags.add(tagContentCount.getTag)

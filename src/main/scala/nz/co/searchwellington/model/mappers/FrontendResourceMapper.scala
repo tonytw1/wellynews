@@ -34,9 +34,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           }
         }
 
-        val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem).
-        map(mapTagToFrontendTag).toSeq
-
+        val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem)
         val acceptedByUser = n.acceptedBy.flatMap { uid =>
           Await.result(mongoRepository.getUserByObjectId(uid), tenSeconds)
         }
@@ -155,14 +153,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
     )
   }
 
-  def mapTagToFrontendTag(tag: Tag): FrontendTag = {
-    FrontendTag(id = tag.id, name = tag.getName, displayName = tag.getDisplayName, description = tag.description.getOrElse(null))
-  }
-
-  private def frontendTagsFor(resource: Resource): Seq[FrontendTag] = {
-    taggingReturnsOfficerService.getHandTagsForResource(resource).map { tag =>
-      FrontendTag(id = tag._id.stringify, name = tag.name, displayName = tag.display_name, description = tag.description.orNull)
-    }.toSeq
+  private def frontendTagsFor(resource: Resource): Seq[Tag] = {
+    taggingReturnsOfficerService.getHandTagsForResource(resource)
   }
 
 }
