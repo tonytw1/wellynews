@@ -19,10 +19,11 @@ import uk.co.eelpieconsulting.common.geo.model.OsmType
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 object UrlBuilderTest {
-  private val SITE_URL = "http://siteurl.test"
 }
 
 class UrlBuilderTest {
+
+  private val SITE_URL = "http://siteurl.test"
 
   @Mock private[urls] val siteInformation: SiteInformation = null
   private var urlBuilder: UrlBuilder = null
@@ -31,18 +32,17 @@ class UrlBuilderTest {
 
   @Before def setup(): Unit = {
     MockitoAnnotations.initMocks(this)
-    Mockito.when(siteInformation.getUrl).thenReturn(UrlBuilderTest.SITE_URL)
+    Mockito.when(siteInformation.getUrl).thenReturn(SITE_URL)
     urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
     frontendNewsitem = FrontendNewsitem(name = "Quick brown fox jumps over the lazy dog",
       date = new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate,
       urlWords = "2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
 
-    tag = new Tag(id = UUID.randomUUID().toString)
-    tag.setName("atag")
+    tag = Tag(name = "atag")
   }
 
   @Test
-  def testTagSearchRefinementsShouldBeOnTheTagPages(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/atag?keywords=something", urlBuilder.getTagSearchUrl(tag, "something"))
+  def testTagSearchRefinementsShouldBeOnTheTagPages(): Unit = assertEquals(SITE_URL + "/atag?keywords=something", urlBuilder.getTagSearchUrl(tag, "something"))
 
   @Test
   def canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = {
@@ -50,36 +50,36 @@ class UrlBuilderTest {
 
     val result = urlBuilder.getPublisherCombinerUrl(publisher, tag)
 
-    assertEquals(UrlBuilderTest.SITE_URL + "/wellington-city-council+atag", result)
+    assertEquals(SITE_URL + "/wellington-city-council+atag", result)
   }
 
   @Test
   def useLatLongWhenBuildingUrlsToPlacesWithNoOsmId(): Unit = {
     val somewhere = new Place("Somewhere,Far away", new LatLong(3.1, 4.2), null)
-    assertEquals(UrlBuilderTest.SITE_URL + "/geotagged?latitude=3.1&longitude=4.2", urlBuilder.getLocationUrlFor(somewhere))
+    assertEquals(SITE_URL + "/geotagged?latitude=3.1&longitude=4.2", urlBuilder.getLocationUrlFor(somewhere))
   }
 
   @Test
   def locationsShouldBeLinkedByOSMIdIfAvailable(): Unit = {
     val somewhereWithOSMid = new Place("Somewhere,Far away", new LatLong(3.1, 4.2), new OsmId(12345, OsmType.NODE))
-    assertEquals(UrlBuilderTest.SITE_URL + "/geotagged?osm=12345%2FNODE", urlBuilder.getLocationUrlFor(somewhereWithOSMid))
+    assertEquals(SITE_URL + "/geotagged?osm=12345%2FNODE", urlBuilder.getLocationUrlFor(somewhereWithOSMid))
   }
 
   @Test
   def shouldConstructPageUrlForFrontendResourceFromResourcesUrlWords(): Unit = {
     assertNull(frontendNewsitem.getPublisherName)
-    assertEquals(UrlBuilderTest.SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem))
+    assertEquals(SITE_URL + "/2010/oct/12/quick-brown-fox-jumps-over-lazy-dog", urlBuilder.getLocalPageUrl(frontendNewsitem))
   }
 
   @Test
-  def canGenerateFrontendPublisherPageUrl(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl("Wellington City Council"))
+  def canGenerateFrontendPublisherPageUrl(): Unit = assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl("Wellington City Council"))
 
 
   @Test
   def urlForFeedsShouldPointToOurFeedPage(): Unit = {
     val frontendFeed = new FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
 
-    assertEquals(UrlBuilderTest.SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed))
+    assertEquals(SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed))
   }
 
   @Test

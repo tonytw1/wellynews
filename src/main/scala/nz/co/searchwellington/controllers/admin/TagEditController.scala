@@ -117,11 +117,11 @@ import scala.concurrent.Await
       log.info("No tag seen on request; creating a new instance.")
       editTag = Tag(id = UUID.randomUUID().toString)
     }
-    editTag.setName(request.getParameter("name"))
-    editTag.setDisplayName(request.getParameter("displayName"))
-    editTag.setDescription(request.getParameter("description"))
+    //editTag.setName(request.getParameter("name"))
+    //editTag.setDisplayName(request.getParameter("displayName"))
+    //editTag.setDescription(request.getParameter("description"))
     val isFeatured: Boolean = request.getParameter("featured") != null
-    editTag.setFeatured(isFeatured)
+    //editTag.setFeatured(isFeatured)
     //editTag.setGeocode(submissionProcessingService.processGeocode(request))
     populateRelatedTwitter(request, editTag)
     populateAutotagHints(request, editTag)
@@ -160,20 +160,20 @@ import scala.concurrent.Await
   private def populateAutotagHints(request: HttpServletRequest, editTag: Tag) {
     val autotagHints: String = request.getParameter("autotag_hints")
     if (autotagHints != null && !(autotagHints.trim == "")) {
-      editTag.setAutotagHints(autotagHints)
+      //editTag.setAutotagHints(autotagHints)
     }
     else {
-      editTag.setAutotagHints(null)
+      //editTag.setAutotagHints(null)
     }
   }
 
   private def populateRelatedTwitter(request: HttpServletRequest, editTag: Tag) {
     val requestTwitter: String = request.getParameter("twitter")
     if (requestTwitter != null && !(requestTwitter.trim == "")) {
-      editTag.setRelatedTwitter(requestTwitter)
+      //editTag.setRelatedTwitter(requestTwitter)
     }
     else {
-      editTag.setRelatedTwitter(null)
+      //editTag.setRelatedTwitter(null)
     }
   }
 
@@ -186,8 +186,8 @@ import scala.concurrent.Await
     if (secondaryImage != null && secondaryImage.trim == "") {
       secondaryImage = null
     }
-    editTag.setMainImage(mainImage)
-    editTag.setSecondaryImage(secondaryImage)
+    //editTag.setMainImage(mainImage)
+    //editTag.setSecondaryImage(secondaryImage)
   }
 
   private def tagFromPage(request: HttpServletRequest): Option[Tag] = {

@@ -185,9 +185,7 @@ import scala.concurrent.Await
 
             }.getOrElse {
               log.debug("Tag '" + field + "' is a new tag. Needs to be created.")
-              val newTag = Tag(id = UUID.randomUUID().toString)
-              newTag.setName(field)
-              newTag.setDisplayName(displayName)
+              val newTag = Tag(name = field, display_name = displayName)
               Await.result(mongoRepository.saveTag(newTag), TenSeconds)
               tagVoteDAO.addTag(user, newTag, editResource)
             }

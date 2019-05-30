@@ -4,11 +4,17 @@ import java.util.UUID
 
 class TagBuilder() {
 
-  var name, autotagHints, displayName: String = null
-  var parent: Tag = null
+  var name = "Test " + UUID.randomUUID().toString
+  var displayName: String = name
+  var autotagHints: Option[String] = None
+
+  def name(name: String): TagBuilder = {
+    this.name = name
+    this
+  }
 
   def autotagHints(autotagHints: String): TagBuilder = {
-    this.autotagHints = autotagHints
+    this.autotagHints = Some(autotagHints)
     this
   }
 
@@ -17,23 +23,8 @@ class TagBuilder() {
     this
   }
 
-  def name(name: String): TagBuilder = {
-    this.name = name
-    this
-  }
-
-  def parent(parent: Tag): TagBuilder = {
-    this.parent = parent
-    this
-  }
-
   def build(): Tag = {
-    val tag: Tag = new Tag(id = UUID.randomUUID().toString)
-    tag.setAutotagHints(autotagHints)
-    tag.setDisplayName(displayName)
-    tag.setName(name)
-    //tag.setParent(parent)
-    tag
+    Tag(name = name, autotag_hints = autotagHints, display_name = displayName)
   }
 
 }
