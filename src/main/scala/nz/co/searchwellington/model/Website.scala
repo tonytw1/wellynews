@@ -25,6 +25,8 @@ case class Website(override val _id: BSONObjectID = BSONObjectID.generate,
                    // var watchlist: Set[Watchlist] = Set()
                   ) extends Resource {
 
+  def getTitle: String = title.getOrElse(id)
+
   def getFeeds: Set[Feed] = Set()
 
   // TODO
