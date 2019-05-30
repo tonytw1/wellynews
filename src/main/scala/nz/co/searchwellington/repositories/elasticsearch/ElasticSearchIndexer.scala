@@ -140,46 +140,41 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query)
 
   def getAllPublishers(): Future[Seq[(String, Long)]] = {
-    val allNewsitems = matchQuery(Type, "N")
+    val allNewsitems = ResourceQuery(`type` = Some("N"))
     getPublisherAggregationFor(allNewsitems)
   }
 
   def getPublishersForTag(tag: Tag): Future[Seq[(String, Long)]] = {
-    val allNewsitems = matchQuery(Type, "N")  // TODO implemnt
-    getPublisherAggregationFor(allNewsitems)
+    val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+    getPublisherAggregationFor(newsitemsForTag)
   }
 
   def getPublishersNear(latLong: LatLong): Future[Seq[(String, Long)]] = {
     val radius = 5 // TODO push radius up
-
-    val nearbyNewsitemsQuery = bool(must(Seq(
-      geoDistanceQuery(LatLong).point(latLong.getLatitude, latLong.getLongitude).distance(5, DistanceUnit.KILOMETERS),
-      matchQuery(Type, "N")))) // TODO reuse existing query building code.
-
+    val nearbyNewsitemsQuery = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
     getPublisherAggregationFor(nearbyNewsitemsQuery)
   }
 
   def getTagAggregation(tag: Tag): Future[Seq[(String, Long)]] = {
-    val allNewsitems = matchQuery(Type, "N")  // TODO implemnt
-    getAggregationFor(allNewsitems, Tags)
+    val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
+    getAggregationFor(newsitemsForTag, Tags)
   }
 
-  private def getPublisherAggregationFor(query: Query): Future[Seq[(String, Long)]] = {
+  private def getPublisherAggregationFor(query: ResourceQuery): Future[Seq[(String, Long)]] = {
     getAggregationFor(query, Publisher)
   }
 
-  private def getAggregationFor(query: Query, aggName: String): Future[Seq[(String, Long)]] = {
+  private def getAggregationFor(query: ResourceQuery, aggName: String): Future[Seq[(String, Long)]] = {
     val aggs = Seq(termsAgg(aggName, aggName) size Integer.MAX_VALUE)
-    val request = (search(Index / Resources) query query) limit 0 aggregations (aggs)
+    val request = (search(Index / Resources) query composeQueryFor(query)) limit 0 aggregations (aggs)
     client.execute(request).map { r =>
       r.result.aggregations.terms(aggName).buckets.map(b => (b.key, b.docCount))
     }
   }
 
   def getArchiveMonths: Future[Seq[ArchiveLink]] = {
-    val allNewsitems = matchQuery(Type, "N")
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-    val request = search(Index / Resources) query withModeration(allNewsitems) limit 0 aggregations (aggs)
+    val request = search(Index / Resources) query composeQueryFor(allNewsitems) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggregations.dateHistogram("date")
@@ -258,5 +253,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
     withModeration(must(conditions))
   }
+
+  private val allNewsitems = ResourceQuery(`type` = Some("N"))
 
 }
