@@ -73,11 +73,14 @@ import scala.concurrent.Await
   }
 
   private def populatePublisherFacets(publisherFacetsForTag: Map[String, Long]): Seq[PublisherContentCount] = {
-    publisherFacetsForTag.keys.flatMap { publisher =>
-      publisherFacetsForTag.get(publisher).map { count =>
-        new PublisherContentCount(publisher, count)
+    publisherFacetsForTag.keys.flatMap { publisherId =>
+        publisherFacetsForTag.get(publisherId).flatMap { count =>
+          Await.result(mongoRepository.getResourceById(publisherId), TenSeconds).map { publisher =>
+            new PublisherContentCount(publisher.title.getOrElse(publisherId), count)
+          }
+        }
       }
-    }.toSeq
+    }
   }
 
 }
