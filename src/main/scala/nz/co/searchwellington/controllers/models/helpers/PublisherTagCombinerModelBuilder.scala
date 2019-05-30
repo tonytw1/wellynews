@@ -47,7 +47,7 @@ import org.springframework.web.servlet.ModelAndView
 
       mv.addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName)
       mv.addObject("description", "")
-      mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher.title.getOrElse(""), tag))
+      mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag))
       populatePublisherTagCombinerNewsitems(mv, publisher, tag)
       Some(mv)
 

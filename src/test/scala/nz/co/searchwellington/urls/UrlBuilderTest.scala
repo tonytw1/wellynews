@@ -4,7 +4,7 @@ import java.util.UUID
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import nz.co.searchwellington.model.{SiteInformation, Tag, UrlWordsGenerator}
+import nz.co.searchwellington.model.{SiteInformation, Tag, UrlWordsGenerator, Website}
 import nz.co.searchwellington.model.frontend.FrontendFeed
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import org.joda.time.DateTime
@@ -45,7 +45,13 @@ class UrlBuilderTest {
   def testTagSearchRefinementsShouldBeOnTheTagPages(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/atag?keywords=something", urlBuilder.getTagSearchUrl(tag, "something"))
 
   @Test
-  def canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = assertEquals(UrlBuilderTest.SITE_URL + "/wellington-city-council+atag", urlBuilder.getPublisherCombinerUrl("Wellington City Council", tag))
+  def canCreatePublisherAndTagCombinerLinkBasedOnPublisherUrlWordsAndTagName(): Unit = {
+    val publisher = Website(title = Some("Wellington City Council"), url_words = Some("wellington-city-council"))
+
+    val result = urlBuilder.getPublisherCombinerUrl(publisher, tag)
+
+    assertEquals(UrlBuilderTest.SITE_URL + "/wellington-city-council+atag", result)
+  }
 
   @Test
   def useLatLongWhenBuildingUrlsToPlacesWithNoOsmId(): Unit = {

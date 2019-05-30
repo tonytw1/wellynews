@@ -77,8 +77,13 @@ import scala.concurrent.Await
     publisherFacetsForTag.flatMap { a =>
       val publisherId = a._1
       val count = a._2
-      Await.result(mongoRepository.getResourceByObjectId(BSONObjectID(publisherId)), TenSeconds).map { publisher =>
-        new PublisherContentCount(publisher.title.getOrElse(publisherId), count)
+      Await.result(mongoRepository.getResourceByObjectId(BSONObjectID(publisherId)), TenSeconds).flatMap { resource =>
+        resource match {
+          case publisher: Website =>
+            Some(PublisherContentCount(publisher, count))
+          case _ =>
+            None
+        }
       }
     }
   }
