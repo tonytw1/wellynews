@@ -59,7 +59,7 @@ import org.springframework.web.servlet.ModelAndView
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
-    if (relatedTagLinks.size > 0) {
+    if (relatedTagLinks.nonEmpty) {
       mv.addObject("related_tags", relatedTagLinks)
     }
   }
