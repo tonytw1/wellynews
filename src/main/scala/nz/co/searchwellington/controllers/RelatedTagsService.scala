@@ -56,12 +56,12 @@ import scala.concurrent.Await
 
   def getRelatedPublishersForTag(tag: Tag, maxItems: Int): Seq[PublisherContentCount] = {
     val publisherFacetsForTag = Await.result(elasticSearchIndexer.getPublishersForTag(tag), TenSeconds)
-    populatePublisherFacets(publisherFacetsForTag.toMap)
+    populatePublisherFacets(publisherFacetsForTag)
   }
 
   def getRelatedPublishersForLocation(place: Place, radius: Double): Seq[PublisherContentCount] = {
     val publisherFacetsNear = Await.result(elasticSearchIndexer.getPublishersNear(place.getLatLong), TenSeconds)
-    populatePublisherFacets(publisherFacetsNear.toMap)
+    populatePublisherFacets(publisherFacetsNear)
   }
 
   def getRelatedLinksForPublisher(publisher: Website): Seq[TagContentCount] = {
@@ -72,13 +72,12 @@ import scala.concurrent.Await
     Seq()
   }
 
-  private def populatePublisherFacets(publisherFacetsForTag: Map[String, Long]): Seq[PublisherContentCount] = {
-    publisherFacetsForTag.keys.flatMap { publisherId =>
-        publisherFacetsForTag.get(publisherId).flatMap { count =>
-          Await.result(mongoRepository.getResourceById(publisherId), TenSeconds).map { publisher =>
-            new PublisherContentCount(publisher.title.getOrElse(publisherId), count)
-          }
-        }
+  private def populatePublisherFacets(publisherFacetsForTag: Seq[(String, Long)]): Seq[PublisherContentCount] = {
+    publisherFacetsForTag.flatMap { a =>
+      val publisherId = a._1
+      val count = a._2
+      Await.result(mongoRepository.getResourceById(publisherId), TenSeconds).map { publisher =>
+        new PublisherContentCount(publisher.title.getOrElse(publisherId), count)
       }
     }
   }
