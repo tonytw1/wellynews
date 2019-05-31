@@ -22,28 +22,18 @@ import scala.concurrent.Await
 
   def getRelatedTagsForTag(tag: Tag, maxItems: Int): Seq[TagContentCount] = {
 
-    def removeUnsuitableTags(tag: Tag, tagFacetsForTag: Seq[(String, Long)]): Seq[TagContentCount] = {
+    def suitableRelatedTagContentCountsFor(tag: Tag, tagFacetsForTag: Seq[(String, Long)]): Seq[TagContentCount] = {
 
       def isTagSuitableRelatedTag(tag: Tag, relatedTag: Tag): Boolean = {
         //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
         false // TODO reimplement
       }
 
-      tagFacetsForTag.flatMap { a =>
-        val tagId = a._1
-        val count = a._2
-        Await.result(mongoRepository.getTagById(tagId), TenSeconds).flatMap { facetTag =>
-          if (isTagSuitableRelatedTag(tag, facetTag)) {
-            Some(new TagContentCount(facetTag, count))
-          } else {
-            None
-          }
-        }
-      }
+      tagFacetsForTag.flatMap(toTagContentCount).filter(cc => isTagSuitableRelatedTag(tag, cc.tag))
     }
 
     val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagAggregation(tag), TenSeconds)
-    val filtered = removeUnsuitableTags(tag, tagFacetsForTag)
+    val filtered = suitableRelatedTagContentCountsFor(tag, tagFacetsForTag)
     filtered.take(5)
   }
 
@@ -85,6 +75,12 @@ import scala.concurrent.Await
             None
         }
       }
+    }
+  }
+
+  private def toTagContentCount(tagFacet: (String, Long)): Option[TagContentCount] = {
+    Await.result(mongoRepository.getTagById(tagFacet._1), TenSeconds).map { tag =>
+      TagContentCount(tag, tagFacet._2)
     }
   }
 
