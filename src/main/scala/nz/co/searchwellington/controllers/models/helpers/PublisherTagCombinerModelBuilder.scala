@@ -21,7 +21,9 @@ import org.springframework.web.servlet.ModelAndView
   def isValid(request: HttpServletRequest): Boolean = {
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    publisher != null && tag != null
+    val x = publisher != null && tag != null
+    logger.info("Is valid: " + x)
+    x
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
