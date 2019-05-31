@@ -12,6 +12,8 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
+import scala.concurrent.Future
+
 class GeotaggedModelBuilderTest {
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
   val urlBuilder = mock(classOf[UrlBuilder])
@@ -62,7 +64,7 @@ class GeotaggedModelBuilderTest {
   @Test
   def locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent {
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage)
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
     request.setPathInfo("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
@@ -75,7 +77,7 @@ class GeotaggedModelBuilderTest {
   @Test
   def locationSearchRadiusShouldBeTweakableFromTheRequestParameters {
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 0, 30)).thenReturn(newsitemsNearPetoneStationFirstPage)
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
     request.setPathInfo("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
@@ -90,7 +92,7 @@ class GeotaggedModelBuilderTest {
   def locationSearchesShouldHavePagination {
     request.setPathInfo("/geotagged")
     when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0)).thenReturn(LOCATION_RESULTS_COUNT)
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
 
@@ -107,7 +109,7 @@ class GeotaggedModelBuilderTest {
     when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30)).thenReturn(newsitemsNearPetoneStationSecondPage)
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute("page", 2)
-    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Seq())
+    when(relatedTagsService.getRelatedTagsForLocation(any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any())).thenReturn(Seq())
 
     val modelAndView = modelBuilder.populateContentModel(request).get

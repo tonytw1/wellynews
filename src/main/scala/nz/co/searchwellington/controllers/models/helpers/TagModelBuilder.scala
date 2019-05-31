@@ -1,8 +1,9 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.List
-import javax.servlet.http.HttpServletRequest
 
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
@@ -16,13 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               geocodeToPlaceMapper: GeocodeToPlaceMapper,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
                                               frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
-  with CommonSizes with Pagination {
+  with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])
 
@@ -110,7 +113,7 @@ import org.springframework.web.servlet.ModelAndView
     import scala.collection.JavaConverters._
     mv.addObject(WEBSITES, taggedWebsites.asJava)
 
-    val relatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8)
+    val relatedTagLinks = Await.result(relatedTagsService.getRelatedTagsForTag(tag, 8), TenSeconds)
     if (relatedTagLinks.nonEmpty) {
       mv.addObject("related_tags", relatedTagLinks.asJava)
     }

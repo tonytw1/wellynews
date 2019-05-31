@@ -12,26 +12,31 @@ import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.Place
 
-import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class RelatedTagsService @Autowired()(tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
                                                  frontendResourceMapper: FrontendResourceMapper,
                                                  mongoRepository: MongoRepository,
                                                  elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits {
 
-  def getRelatedTagsForTag(tag: Tag, maxItems: Int): Seq[TagContentCount] = {
+  def getRelatedTagsForTag(tag: Tag, maxItems: Int): Future[Seq[TagContentCount]] = {
 
-    def suitableRelatedTagContentCountsFor(tag: Tag, tagFacetsForTag: Seq[(String, Long)]): Seq[TagContentCount] = {
-      def isTagSuitableRelatedTag(tag: Tag, relatedTag: Tag): Boolean = {
+    def suitableRelatedTag(tagFacetsForTag: TagContentCount): Boolean = {
+      def isTagSuitableRelatedTag(relatedTag: Tag): Boolean = {
         //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
-        false // TODO reimplement
+        true // TODO reimplement
       }
-      tagFacetsForTag.flatMap(toTagContentCount).filter(cc => isTagSuitableRelatedTag(tag, cc.tag))
+      isTagSuitableRelatedTag(tagFacetsForTag.tag)
     }
 
-    val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagAggregation(tag), TenSeconds)
-    val filtered = suitableRelatedTagContentCountsFor(tag, tagFacetsForTag)
-    filtered.take(5)
+    val eventualTagContentCounts: Future[Seq[TagContentCount]] = elasticSearchIndexer.getTagAggregation(tag).flatMap { ts =>
+      Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
+    }
+
+    eventualTagContentCounts.map { tcs =>
+      tcs.filter(suitableRelatedTag).take(maxItems)
+    }
   }
 
   def getKeywordSearchFacets(keywords: String, tag: Tag): Seq[TagContentCount] = {
@@ -48,9 +53,10 @@ import scala.concurrent.Await
     publisherFacetsNear.flatMap(toPublisherContentCount)
   }
 
-  def getRelatedTagsForLocation(place: Place, radius: Double): Seq[TagContentCount] = {
-    val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagsNear(place.getLatLong, radius), TenSeconds)
-    tagFacetsForTag.flatMap(toTagContentCount)
+  def getRelatedTagsForLocation(place: Place, radius: Double): Future[Seq[TagContentCount]] = {
+    elasticSearchIndexer.getTagsNear(place.getLatLong, radius).flatMap { ts =>
+      Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
+    }
   }
 
   def getRelatedLinksForPublisher(publisher: Website): Seq[TagContentCount] = {
@@ -72,9 +78,11 @@ import scala.concurrent.Await
     }
   }
 
-  private def toTagContentCount(facet: (String, Long)): Option[TagContentCount] = {
-    Await.result(mongoRepository.getTagByObjectId(BSONObjectID(facet._1)), TenSeconds).map { tag =>
-      TagContentCount(tag, facet._2)
+  private def toTagContentCount(facet: (String, Long)): Future[Option[TagContentCount]] = {
+    mongoRepository.getTagByObjectId(BSONObjectID(facet._1)).map { to =>
+      to.map { tag =>
+        TagContentCount(tag, facet._2)
+      }
     }
   }
 

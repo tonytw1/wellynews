@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
@@ -13,13 +14,14 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.collection.JavaConverters._
+import scala.concurrent.Await
 
 @Component class GeotaggedModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService,
                                                      urlBuilder: UrlBuilder,
                                                      rssUrlBuilder: RssUrlBuilder,
                                                      relatedTagsService: RelatedTagsService,
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ModelBuilder with CommonSizes with Pagination {
+  extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[GeotaggedModelBuilder])
 
@@ -56,7 +58,7 @@ import scala.collection.JavaConverters._
         mv.addObject("radius", radius)
         mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS).asJava)
 
-        val relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius)
+        val relatedTagLinks = Await.result(relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius), TenSeconds)
         if (relatedTagLinks.nonEmpty) {
           log.info("Found geo related tags: " + relatedTagLinks)
           mv.addObject("related_tags", relatedTagLinks.asJava)
