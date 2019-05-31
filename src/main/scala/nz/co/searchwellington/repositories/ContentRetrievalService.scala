@@ -236,14 +236,6 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(publisherTagCombiner).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getPublisherTagCombinerNewsitems(publisherUrlWords: String, tagName: String, maxNewsitems: Int): Seq[FrontendResource] = {
-    Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).flatMap { p =>
-      Await.result(mongoRepository.getTagByUrlWords(tagName), TenSeconds).map { t =>
-        getPublisherTagCombinerNewsitems(p, t, maxNewsitems)
-      }
-    }.getOrElse(Seq())
-  }
-
   def getFeedworthyTags: Seq[Tag] = {
     var feedworthTags: Seq[Tag]= Seq()
     import scala.collection.JavaConversions._
