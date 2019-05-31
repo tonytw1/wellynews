@@ -104,20 +104,6 @@ import org.springframework.web.servlet.ModelAndView
       }
     }
 
-    def populateCommentedTaggedNewsitems(mv: ModelAndView, tag: Tag) {
-      val recentCommentedNewsitems = contentRetrievalService.getRecentCommentedNewsitemsForTag(tag, MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS + 1)
-
-      val commentedToShow = recentCommentedNewsitems.take(MAX_NUMBER_OF_COMMENTED_TO_SHOW_IN_RHS)
-
-      val commentsCount = contentRetrievalService.getCommentedNewsitemsForTagCount(tag)
-      val moreCommentCount: Int = commentsCount - commentedToShow.size
-      if (moreCommentCount > 0) {
-        mv.addObject("commented_newsitems_morecount", moreCommentCount)
-        mv.addObject("commented_newsitems_moreurl", urlBuilder.getTagCommentUrl(tag))
-      }
-      mv.addObject("commented_newsitems", commentedToShow)
-    }
-
     val tag = tagFromRequest(request)
     val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
     log.info("Tag websites: " + taggedWebsites.size)
@@ -132,7 +118,6 @@ import org.springframework.web.servlet.ModelAndView
     if (relatedPublisherLinks.nonEmpty) {
       mv.addObject("related_publishers", relatedPublisherLinks.asJava)
     }
-    populateCommentedTaggedNewsitems(mv, tag)
     populateGeocoded(mv, tag)
     import scala.collection.JavaConverters._
     mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag).asJava)

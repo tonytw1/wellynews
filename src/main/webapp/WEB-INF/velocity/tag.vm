@@ -63,10 +63,7 @@
 			#end
 	
 			#set($main_heading = "$tag.getDisplayName() related newsitems")
-			#if ($commented_newsitems)
-				#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
-			#end
-	
+
 			#parse("includes/main_content.vm")
 						
 			#parse("includes/tag_page_links.vm")
@@ -77,11 +74,6 @@
 			#if ($tag.getSecondaryImage())
 				<img src="$urlBuilder.getImageUrl($tag.getSecondaryImage())" width="190" class="mainimage">
 			#end
-
-			#if ($commented_newsitems)
-				#parse("includes/commented_tagged_newsitems.vm")
-			#end
-
 			#set($secondary_heading = "Related sites")
 			#set($secondary_content = $websites)
 			#parse("includes/secondary_content.vm")

@@ -43,14 +43,6 @@ import scala.concurrent.{Await, Future}
     tagDAO.getTopLevelTags
   }
 
-  def getCommentedNewsitemsForTagCount(tag: Tag): Int = {
-    elasticSearchBackedResourceDAO.getCommentedNewsitemsForTagCount(tag, showBrokenDecisionService.shouldShowBroken)
-  }
-
-  def getRecentCommentedNewsitemsForTag(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getRecentCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken, maxItems)
-  }
-
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int): Seq[FrontendResource] = {
     val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
     Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), TenSeconds)

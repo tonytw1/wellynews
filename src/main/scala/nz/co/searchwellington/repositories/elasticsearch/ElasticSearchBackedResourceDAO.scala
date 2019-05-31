@@ -65,11 +65,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   def getCommentedNewsitemsForTagCount(tag: Tag, shouldShowBroken: Boolean): Int = {
     return 0
   }
-
-  def getRecentCommentedNewsitemsForTag(tag: Tag, shouldShowBroken: Boolean, maxItems: Int): Seq[FrontendResource] = {
-    Seq.empty //TODO
-  }
-
+  
   def getGeotaggedTags(shouldShowBroken: Boolean): Seq[Tag] = {
     Seq.empty //TODO
   }

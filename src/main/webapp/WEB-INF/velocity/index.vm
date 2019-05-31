@@ -28,18 +28,11 @@
 				The Newslog is also available as an <a href="rssfeeds">RSS feed</a>
 				#if ($site_information.isTwitterEnabled()) or via <a href="https://twitter.com/wellynews">Twitter</a>#end.
 			</p>
-			
-			#if ($commented_newsitems)	
-				#set($main_content = $contentDeduper.dedupeNewsitems($main_content, $commented_newsitems))
-			#end
-			
+
 			#parse("includes/main_content.vm")
 		</div>
 
 		<div class="tag_secondary_content">
-			#if ($commented_newsitems)
-				#parse("includes/commented_newsitems.vm")
-			#end
 			#parse("includes/secondary_content.vm")
 		</div>
 	</div>
