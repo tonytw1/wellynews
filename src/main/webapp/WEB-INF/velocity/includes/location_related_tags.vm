@@ -8,7 +8,7 @@
         <li><a href="$urlBuilder.getTagUrl($related_tag.tag)">$related_tag.tag.displayName.toLowerCase()</a>
         #if ($first == 1)
           	($related_tag.count #showPluralWord($related_tag.count "item"))
-           	#set ($first =0)
+           	#set ($first = 0)
         #else
            	($related_tag.count)
         #end

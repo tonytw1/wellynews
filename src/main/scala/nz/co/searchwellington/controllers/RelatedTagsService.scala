@@ -38,10 +38,6 @@ import scala.concurrent.Await
     Seq() // TODO implement
   }
 
-  def getRelatedTagsForLocation(place: Place, radius: Double, maxItems: Int): Seq[TagContentCount] = {
-    Seq() // TODO implement
-  }
-
   def getRelatedPublishersForTag(tag: Tag, maxItems: Int): Seq[PublisherContentCount] = {
     val publisherFacetsForTag = Await.result(elasticSearchIndexer.getPublishersForTag(tag), TenSeconds)
     populatePublisherFacets(publisherFacetsForTag)
