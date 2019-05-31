@@ -22,17 +22,6 @@
 
 #parse("includes/nearme.vm")
 
-#if ($geotagged_tags.size() > 0)
-<ul class="childtags">
-#foreach ($geotagged_tag in $geotagged_tags)
-	#if (!$geotagged_tag.hidden2)
-		<li><a href="$site_information.url/geotagged/$geotagged_tag.name">$geotagged_tag.displayName</a>
-	#end
-#end
-</ul>
-#end
-
-
 <div id="map" style="width: 520px; height: 520px"></div>
 #set($geocoded = $main_content)
 #parse("includes/geocodedjs.vm")

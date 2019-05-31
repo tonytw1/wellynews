@@ -84,10 +84,6 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(geotaggedNewsitemsForTag).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getGeotaggedTags: Seq[TagContentCount] = {
-    relatedTagsService.getGeocodedTagsAggregation
-  }
-
   def getLatestNewsitems: Seq[FrontendResource] = {
     getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW, 1)
   }

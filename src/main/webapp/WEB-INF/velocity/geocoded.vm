@@ -29,15 +29,6 @@
 		<input type="submit" value="Search by location" />
 	</fieldset>
 </form>
-			
-#if ($geotagged_tags && $geotagged_tags.size() > 0)
-	<ul class="childtags">
-	#foreach ($geotagged_tag in $geotagged_tags)
-	    $geocoded_tag
-		<li><a href="$urlBuilder.getTagGeocodedUrl($geotagged_tag)">$geotagged_tag.displayName</a>
-	#end
-	</ul>
-#end
 
 <div id="map" style="width: 520px; height: 520px"></div>
 #parse("includes/geocodedjs.vm")

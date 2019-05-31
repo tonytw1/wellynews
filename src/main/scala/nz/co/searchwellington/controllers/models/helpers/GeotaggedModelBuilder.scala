@@ -45,10 +45,6 @@ import scala.collection.JavaConverters._
       mv.addObject("page", page)
       val startIndex = getStartIndex(page)
 
-      val geocodedTags = contentRetrievalService.getGeotaggedTags
-      log.info("Found gecoded tags: " + geocodedTags)
-      mv.addObject("geotagged_tags", geocodedTags.asJava)
-
       if (hasUserSuppliedALocation) {
         val radius = getLocationSearchRadius(request)
         val latLong = userSuppliedPlace.getLatLong

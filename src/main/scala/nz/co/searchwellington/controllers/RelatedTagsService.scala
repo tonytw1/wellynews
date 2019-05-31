@@ -34,11 +34,6 @@ import scala.concurrent.Await
     filtered.take(5)
   }
 
-  def getGeocodedTagsAggregation: Seq[TagContentCount] = {
-    val tagFacetsForTag = Await.result(elasticSearchIndexer.getGeocodedTagsAggregation, TenSeconds)
-    tagFacetsForTag.flatMap(toTagContentCount)
-  }
-
   def getKeywordSearchFacets(keywords: String, tag: Tag): Seq[TagContentCount] = {
     Seq() // TODO implement
   }
@@ -55,6 +50,11 @@ import scala.concurrent.Await
   def getRelatedPublishersForLocation(place: Place, radius: Double): Seq[PublisherContentCount] = {
     val publisherFacetsNear = Await.result(elasticSearchIndexer.getPublishersNear(place.getLatLong), TenSeconds)
     populatePublisherFacets(publisherFacetsNear)
+  }
+
+  def getRelatedTagsForLocation(place: Place, radius: Double): Seq[TagContentCount] = {
+    val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagsNear(place.getLatLong), TenSeconds)
+    tagFacetsForTag.flatMap(toTagContentCount)
   }
 
   def getRelatedLinksForPublisher(publisher: Website): Seq[TagContentCount] = {
