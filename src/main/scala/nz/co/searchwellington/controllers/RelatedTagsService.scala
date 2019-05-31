@@ -40,12 +40,12 @@ import scala.concurrent.Await
 
   def getRelatedPublishersForTag(tag: Tag, maxItems: Int): Seq[PublisherContentCount] = {
     val publisherFacetsForTag = Await.result(elasticSearchIndexer.getPublishersForTag(tag), TenSeconds)
-    populatePublisherFacets(publisherFacetsForTag)
+    publisherFacetsForTag.flatMap(toPublisherContentCount)
   }
 
   def getRelatedPublishersForLocation(place: Place, radius: Double): Seq[PublisherContentCount] = {
     val publisherFacetsNear = Await.result(elasticSearchIndexer.getPublishersNear(place.getLatLong, radius), TenSeconds)
-    populatePublisherFacets(publisherFacetsNear)
+    publisherFacetsNear.flatMap(toPublisherContentCount)
   }
 
   def getRelatedTagsForLocation(place: Place, radius: Double): Seq[TagContentCount] = {
@@ -61,24 +61,20 @@ import scala.concurrent.Await
     Seq()
   }
 
-  private def populatePublisherFacets(publisherFacetsForTag: Seq[(String, Long)]): Seq[PublisherContentCount] = {
-    publisherFacetsForTag.flatMap { a =>
-      val publisherId = a._1
-      val count = a._2
-      Await.result(mongoRepository.getResourceByObjectId(BSONObjectID(publisherId)), TenSeconds).flatMap { resource =>
-        resource match {
-          case publisher: Website =>
-            Some(PublisherContentCount(publisher, count))
-          case _ =>
-            None
-        }
+  private def toPublisherContentCount(facet: (String, Long)): Option[PublisherContentCount] = {
+    Await.result(mongoRepository.getResourceByObjectId(BSONObjectID(facet._1)), TenSeconds).flatMap { resource =>
+      resource match {
+        case publisher: Website =>
+          Some(PublisherContentCount(publisher, facet._2))
+        case _ =>
+          None
       }
     }
   }
 
-  private def toTagContentCount(tagFacet: (String, Long)): Option[TagContentCount] = {
-    Await.result(mongoRepository.getTagByObjectId(BSONObjectID(tagFacet._1)), TenSeconds).map { tag =>
-      TagContentCount(tag, tagFacet._2)
+  private def toTagContentCount(facet: (String, Long)): Option[TagContentCount] = {
+    Await.result(mongoRepository.getTagByObjectId(BSONObjectID(facet._1)), TenSeconds).map { tag =>
+      TagContentCount(tag, facet._2)
     }
   }
 
