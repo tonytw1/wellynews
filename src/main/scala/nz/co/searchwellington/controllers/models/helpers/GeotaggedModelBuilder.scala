@@ -1,11 +1,9 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
-import nz.co.searchwellington.model.PublisherContentCount
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -103,11 +101,11 @@ import scala.collection.JavaConverters._
   }
 
   private def getLocationSearchRadius(request: HttpServletRequest): Double = {
-    var radius = HOW_FAR_IS_CLOSE_IN_KILOMETERS
     if (request.getAttribute(LocationParameterFilter.RADIUS) != null) {
-      radius = request.getAttribute(LocationParameterFilter.RADIUS).asInstanceOf[Double]
+      request.getAttribute(LocationParameterFilter.RADIUS).asInstanceOf[Double]
+    } else {
+      HOW_FAR_IS_CLOSE_IN_KILOMETERS
     }
-    radius
   }
 
 }

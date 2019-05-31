@@ -149,12 +149,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getPublisherAggregationFor(newsitemsForTag)
   }
 
-  def getPublishersNear(latLong: LatLong): Future[Seq[(String, Long)]] = {
-    getPublisherAggregationFor(nearbyNewsitemsQuery(latLong))
+  def getPublishersNear(latLong: LatLong, radius: Double): Future[Seq[(String, Long)]] = {
+    getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius))
   }
 
-  def getTagsNear(latLong: LatLong): Future[Seq[(String, Long)]] = {
-    getAggregationFor(nearbyNewsitemsQuery(latLong), Tags)
+  def getTagsNear(latLong: LatLong, radius: Double): Future[Seq[(String, Long)]] = {
+    getAggregationFor(nearbyNewsitemsQuery(latLong, radius), Tags)
   }
 
   def getTagAggregation(tag: Tag): Future[Seq[(String, Long)]] = {
@@ -258,9 +258,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   private val allNewsitems = ResourceQuery(`type` = Some("N"))
 
-  private def nearbyNewsitemsQuery(latLong: LatLong) = {
-    val nearRadius = 5.0  // TODO push up
-    ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, nearRadius)))
-  }
+  private def nearbyNewsitemsQuery(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
 
 }

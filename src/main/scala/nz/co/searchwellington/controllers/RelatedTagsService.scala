@@ -44,12 +44,12 @@ import scala.concurrent.Await
   }
 
   def getRelatedPublishersForLocation(place: Place, radius: Double): Seq[PublisherContentCount] = {
-    val publisherFacetsNear = Await.result(elasticSearchIndexer.getPublishersNear(place.getLatLong), TenSeconds)
+    val publisherFacetsNear = Await.result(elasticSearchIndexer.getPublishersNear(place.getLatLong, radius), TenSeconds)
     populatePublisherFacets(publisherFacetsNear)
   }
 
   def getRelatedTagsForLocation(place: Place, radius: Double): Seq[TagContentCount] = {
-    val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagsNear(place.getLatLong), TenSeconds)
+    val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagsNear(place.getLatLong, radius), TenSeconds)
     tagFacetsForTag.flatMap(toTagContentCount)
   }
 
