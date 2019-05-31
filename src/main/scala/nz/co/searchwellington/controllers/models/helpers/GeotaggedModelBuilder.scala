@@ -45,6 +45,10 @@ import scala.collection.JavaConverters._
       mv.addObject("page", page)
       val startIndex = getStartIndex(page)
 
+      val geocodedTags = contentRetrievalService.getGeotaggedTags
+      log.info("Found gecoded tags: " + geocodedTags)
+      mv.addObject("geotagged_tags", geocodedTags.asJava)
+
       if (hasUserSuppliedALocation) {
         val radius = getLocationSearchRadius(request)
         val latLong = userSuppliedPlace.getLatLong
@@ -59,20 +63,13 @@ import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS).asJava)
         mv.addObject("related_distances", contentRetrievalService.getNewsitemsNearDistanceFacet(latLong).asJava)
 
-        if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
-          val geocodedTags = contentRetrievalService.getGeotaggedTags
-          log.info("Found gecoded tags: " + geocodedTags)
-          mv.addObject("geotagged_tags", geocodedTags.asJava)
+        val relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW).toList
+        if (relatedTagLinks.nonEmpty) {
+          mv.addObject("related_tags", relatedTagLinks.asJava)
         }
-        else {
-          val relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW).toList
-          if (relatedTagLinks.nonEmpty) {
-            mv.addObject("related_tags", relatedTagLinks.asJava)
-          }
-          val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius).toList
-          if (relatedPublisherLinks.nonEmpty) {
-            mv.addObject("related_publishers", relatedPublisherLinks.asJava)
-          }
+        val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius).toList
+        if (relatedPublisherLinks.nonEmpty) {
+          mv.addObject("related_publishers", relatedPublisherLinks.asJava)
         }
 
         mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
