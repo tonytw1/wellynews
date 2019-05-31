@@ -232,8 +232,8 @@ import scala.concurrent.{Await, Future}
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int): Seq[FrontendResource] = {
-    Seq.empty // TODO
-    //elasticSearchBackedResourceDAO.getPublisherTagCombinerNewsitems(publisher, tag, showBrokenDecisionService.shouldShowBroken, maxNewsitems)
+    val publisherTagCombiner = ResourceQuery(`type` = Some("N"), publisher = Some(publisher), tags = Some(Set(tag)))
+    Await.result(elasticSearchIndexer.getResources(publisherTagCombiner).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getPublisherTagCombinerNewsitems(publisherUrlWords: String, tagName: String, maxNewsitems: Int): Seq[FrontendResource] = {
