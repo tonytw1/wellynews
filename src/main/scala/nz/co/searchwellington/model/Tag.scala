@@ -15,7 +15,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
                description: Option[String] = None,
                main_image: Option[String] = None,
                secondary_image: Option[String] = None,
-               related_twitter: Option[String] = None,
                autotag_hints: Option[String] = None) {
 
   def getId: String = id
@@ -29,8 +28,6 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
   def getMainImage: Option[String] = main_image
 
   def getSecondaryImage: Option[String] = secondary_image
-
-  def getRelatedTwitter: Option[String] = related_twitter
 
   def getAutotagHints: Option[String] = autotag_hints
 

@@ -40,11 +40,7 @@
 					<label for="feed">Related Feed: </label>
 					$related_feed_select
 					<br />
-			
-					<label for="twitter">Related Twitter: </label>
-					<input name="twitter" value="$!tag.relatedTwitter" />
-					<br />
-				
+
 					<label for="autotag_hints">Autotag hints: </label>
 					<input name="autotag_hints" value="$!tag.autotagHints" />
 					<br />
