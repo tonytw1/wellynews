@@ -60,7 +60,9 @@ import scala.collection.JavaConverters._
         mv.addObject("related_distances", contentRetrievalService.getNewsitemsNearDistanceFacet(latLong).asJava)
 
         if (request.getAttribute(LocationParameterFilter.LOCATION) == null) {
-          mv.addObject("geotagged_tags", contentRetrievalService.getGeotaggedTags.asJava)
+          val geocodedTags = contentRetrievalService.getGeotaggedTags
+          log.info("Found gecoded tags: " + geocodedTags)
+          mv.addObject("geotagged_tags", geocodedTags.asJava)
         }
         else {
           val relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW).toList
