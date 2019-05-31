@@ -23,18 +23,21 @@ import scala.concurrent.Await
   def getRelatedTagsForTag(tag: Tag, maxItems: Int): Seq[TagContentCount] = {
 
     def suitableRelatedTagContentCountsFor(tag: Tag, tagFacetsForTag: Seq[(String, Long)]): Seq[TagContentCount] = {
-
       def isTagSuitableRelatedTag(tag: Tag, relatedTag: Tag): Boolean = {
         //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
         false // TODO reimplement
       }
-
       tagFacetsForTag.flatMap(toTagContentCount).filter(cc => isTagSuitableRelatedTag(tag, cc.tag))
     }
 
     val tagFacetsForTag = Await.result(elasticSearchIndexer.getTagAggregation(tag), TenSeconds)
     val filtered = suitableRelatedTagContentCountsFor(tag, tagFacetsForTag)
     filtered.take(5)
+  }
+
+  def getGeocodedTagsAggregation: Seq[TagContentCount] = {
+    val tagFacetsForTag = Await.result(elasticSearchIndexer.getGeocodedTagsAggregation, TenSeconds)
+    tagFacetsForTag.flatMap(toTagContentCount)
   }
 
   def getKeywordSearchFacets(keywords: String, tag: Tag): Seq[TagContentCount] = {

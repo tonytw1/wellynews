@@ -61,15 +61,7 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     */
     Map()
   }
-
-  def getCommentedNewsitemsForTagCount(tag: Tag, shouldShowBroken: Boolean): Int = {
-    return 0
-  }
   
-  def getGeotaggedTags(shouldShowBroken: Boolean): Seq[Tag] = {
-    Seq.empty //TODO
-  }
-
   /*
   def getNewsitemsForMonth(month: Date, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val monthDateTime = new DateTime(month)
@@ -219,6 +211,4 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
   }
   */
 
-
-    
 }

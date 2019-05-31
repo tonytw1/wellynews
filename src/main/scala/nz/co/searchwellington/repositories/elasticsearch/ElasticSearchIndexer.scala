@@ -139,7 +139,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query)
 
-  def getAllPublishers(): Future[Seq[(String, Long)]] = {
+  def getAllPublishers: Future[Seq[(String, Long)]] = {
     val allNewsitems = ResourceQuery(`type` = Some("N"))
     getPublisherAggregationFor(allNewsitems)
   }
@@ -158,6 +158,10 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def getTagAggregation(tag: Tag): Future[Seq[(String, Long)]] = {
     val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
     getAggregationFor(newsitemsForTag, Tags)
+  }
+
+  def getGeocodedTagsAggregation: Future[Seq[(String, Long)]] = {
+    getAggregationFor(ResourceQuery(`type` = Some("N"), geocoded = Some(true)), Tags)
   }
 
   private def getPublisherAggregationFor(query: ResourceQuery): Future[Seq[(String, Long)]] = {

@@ -31,7 +31,7 @@ import scala.concurrent.{Await, Future}
   val ALL_ITEMS = 1000
 
   def getAllPublishers: Future[Seq[Website]] = {
-    elasticSearchIndexer.getAllPublishers().flatMap { ids =>
+    elasticSearchIndexer.getAllPublishers.flatMap { ids =>
       log.info("Got " + ids.size + " publisher ids")
       Future.sequence(ids.map { id =>
         mongoRepository.getResourceByObjectId(BSONObjectID(id._1)).map(ro => ro.map(_.asInstanceOf[Website]))
@@ -89,8 +89,8 @@ import scala.concurrent.{Await, Future}
     elasticSearchBackedResourceDAO.getNewsitemsNearDistanceFacet(latLong, showBrokenDecisionService.shouldShowBroken)
   }
 
-  def getGeotaggedTags: Seq[Tag] = {
-    elasticSearchBackedResourceDAO.getGeotaggedTags(showBrokenDecisionService.shouldShowBroken)
+  def getGeotaggedTags: Seq[TagContentCount] = {
+    relatedTagsService.getGeocodedTagsAggregation
   }
 
   def getLatestNewsitems: Seq[FrontendResource] = {
