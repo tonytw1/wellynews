@@ -28,7 +28,7 @@ import scala.concurrent.Await
       Await.result(mongoRepository.getTagByUrlWords(right), TenSeconds).map { rightHandTag =>
 
         Await.result(mongoRepository.getWebsiteByUrlwords(left), TenSeconds).map { publisher =>
-          log.info("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.title.getOrElse(publisher.id))
+          log.info("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.getTitle)
           request.setAttribute("publisher", publisher)
           request.setAttribute("tag", rightHandTag)
           true
