@@ -61,7 +61,6 @@ import scala.collection.JavaConverters._
         mv.addObject("location", userSuppliedPlace)
         mv.addObject("radius", radius)
         mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS).asJava)
-        mv.addObject("related_distances", contentRetrievalService.getNewsitemsNearDistanceFacet(latLong).asJava)
 
         val relatedTagLinks = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, REFINEMENTS_TO_SHOW).toList
         if (relatedTagLinks.nonEmpty) {

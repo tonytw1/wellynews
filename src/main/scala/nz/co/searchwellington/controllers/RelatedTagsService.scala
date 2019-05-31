@@ -5,7 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
 import nz.co.searchwellington.repositories.TagDAO
-import nz.co.searchwellington.repositories.elasticsearch.{ElasticSearchBackedResourceDAO, ElasticSearchIndexer}
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -14,8 +14,7 @@ import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.concurrent.Await
 
-@Component class RelatedTagsService @Autowired()(elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
-                                                 tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
+@Component class RelatedTagsService @Autowired()(tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
                                                  frontendResourceMapper: FrontendResourceMapper,
                                                  mongoRepository: MongoRepository,
                                                  elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits {

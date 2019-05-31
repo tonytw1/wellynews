@@ -21,7 +21,6 @@ import scala.concurrent.{Await, Future}
                                                        keywordSearchService: KeywordSearchService,
                                                        showBrokenDecisionService: ShowBrokenDecisionService,
                                                        tagDAO: TagDAO,  relatedTagsService: RelatedTagsService,
-                                                       elasticSearchBackedResourceDAO: ElasticSearchBackedResourceDAO,
                                                        frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
                                                        mongoRepository: MongoRepository) extends ReasonableWaits {
 
@@ -83,10 +82,6 @@ import scala.concurrent.{Await, Future}
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
     val geotaggedNewsitemsForTag = ResourceQuery(`type` = Some("N"), geocoded = Some(true), tags = Some(Set(tag)), maxItems = ALL_ITEMS)
     Await.result(elasticSearchIndexer.getResources(geotaggedNewsitemsForTag).flatMap(i => fetchByIds(i._1)), TenSeconds)
-  }
-
-  def getNewsitemsNearDistanceFacet(latLong: LatLong): Map[Double, Long] = {
-    elasticSearchBackedResourceDAO.getNewsitemsNearDistanceFacet(latLong, showBrokenDecisionService.shouldShowBroken)
   }
 
   def getGeotaggedTags: Seq[TagContentCount] = {
