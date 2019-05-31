@@ -74,10 +74,6 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
     Seq.empty //TODO
   }
 
-  def getCommentedNewsitemsForTag(tag: Tag, shouldShowBroken: Boolean, maxNewsitems: Int, startIndex: Int): Seq[FrontendResource] = {
-    Seq.empty // TODO
-  }
-
   /*
   def getNewsitemsForMonth(month: Date, shouldShowBroken: Boolean): Seq[FrontendResource] = {
     val monthDateTime = new DateTime(month)

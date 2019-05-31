@@ -160,10 +160,6 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getArchiveCounts, TenSeconds)
   }
 
-  def getCommentedNewsitemsForTag(tag: Tag, maxNewsitems: Int, startIndex: Int): Seq[FrontendResource] = {
-    elasticSearchBackedResourceDAO.getCommentedNewsitemsForTag(tag, showBrokenDecisionService.shouldShowBroken, maxNewsitems, startIndex)
-  }
-
   def getTaggedNewitemsCount(tag: Tag): Long = {
    getTaggedNewsitemsCount(tags = Set(tag))
   }
