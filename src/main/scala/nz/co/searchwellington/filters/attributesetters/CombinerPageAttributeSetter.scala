@@ -20,7 +20,7 @@ import scala.concurrent.Await
 
   override def setAttributes(request: HttpServletRequest): Boolean = {
     val matcher = combinerPattern.matcher(request.getPathInfo)
-    if (matcher.matches) {
+    val x = if (matcher.matches) {
       val left = matcher.group(1)
       val right = matcher.group(2)
       log.info("Path matches combiner pattern for '" + left + "', '" + right + "'")
@@ -28,7 +28,7 @@ import scala.concurrent.Await
       Await.result(mongoRepository.getTagByUrlWords(right), TenSeconds).map { rightHandTag =>
 
         Await.result(mongoRepository.getWebsiteByUrlwords(left), TenSeconds).map { publisher =>
-          log.info("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.title)
+          log.info("Right matches tag: " + rightHandTag.getName + " and left matches publisher: " + publisher.title.getOrElse(publisher.id))
           request.setAttribute("publisher", publisher)
           request.setAttribute("tag", rightHandTag)
           true
@@ -44,6 +44,7 @@ import scala.concurrent.Await
             false
           }
         }
+
       }.getOrElse {
         false
       }
@@ -51,6 +52,9 @@ import scala.concurrent.Await
     } else {
       false
     }
+
+    log.info("Returning: " + x)
+    x
   }
 
 }
