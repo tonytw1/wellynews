@@ -81,7 +81,7 @@ import scala.concurrent.Await
   }
 
   private def toTagContentCount(tagFacet: (String, Long)): Option[TagContentCount] = {
-    Await.result(mongoRepository.getTagById(tagFacet._1), TenSeconds).map { tag =>
+    Await.result(mongoRepository.getTagByObjectId(BSONObjectID(tagFacet._1)), TenSeconds).map { tag =>
       TagContentCount(tag, tagFacet._2)
     }
   }
