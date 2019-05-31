@@ -17,6 +17,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
                                                          tagModelBuilder: TagModelBuilder,
                                                          feedsModelBuilder: FeedsModelBuilder,
                                                          publisherModelBuilder: PublisherModelBuilder,
+                                                         publisherTagCombinerModelBuilder: PublisherTagCombinerModelBuilder,
                                                          watchlistModelBuilder: WatchlistModelBuilder,
                                                          feedModelBuilder: FeedModelBuilder,
                                                          justinModelBuilder: JustinModelBuilder,
@@ -30,7 +31,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder, feedsModelBuilder,
-      publisherModelBuilder, watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder,
+      publisherModelBuilder, publisherTagCombinerModelBuilder, watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder,
       searchModelBuilder, suggestionsModelBuilder, geotaggedModelBuilder)
 
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
