@@ -43,10 +43,7 @@ import org.springframework.web.servlet.ModelAndView
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
 
       val mv = new ModelAndView
-
-      val frontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
-      mv.addObject("publisher", frontendPublisher)
-
+      mv.addObject("publisher", frontendResourceMapper.mapFrontendWebsite(publisher))
       mv.addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName)
       mv.addObject("description", "")
       mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag))
