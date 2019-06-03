@@ -97,8 +97,9 @@ class FeedModelBuilderTest {
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(geotaggedFeedNewsitems)
     when(contentRetrievalService.getAllFeedsOrderByLatestItemDate()).thenReturn(Future.successful(Seq()))
-
     val mv = modelBuilder.populateContentModel(request).get
+    when(commonAttributesModelBuilder.populateSecondaryFeeds(mv)).thenReturn(Future.successful(mv))
+
     modelBuilder.populateExtraModelContent(request, mv)
 
     import scala.collection.JavaConverters._
