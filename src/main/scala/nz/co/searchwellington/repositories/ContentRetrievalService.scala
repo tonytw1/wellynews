@@ -151,19 +151,19 @@ import scala.concurrent.{Await, Future}
     getTaggedNewsitems(tags = Set(tag), startIndex = startIndex, maxItems = maxItems)
   }
 
-  def getFeeds(acceptancePolicy: Option[FeedAcceptancePolicy] = None): Seq[FrontendResource] = {
+  def getFeeds(acceptancePolicy: Option[FeedAcceptancePolicy] = None): Future[Seq[FrontendResource]] = {
     val allFeeds = ResourceQuery(`type` = Some("F"), maxItems = ALL_ITEMS)
 
     val withAcceptancePolicy = acceptancePolicy.map { a =>
       allFeeds.copy(feedAcceptancePolicy = Some(a))
     }.getOrElse(allFeeds)
 
-    Await.result(elasticSearchIndexer.getResources(withAcceptancePolicy, elasticSearchIndexer.byNameAscending).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(withAcceptancePolicy, elasticSearchIndexer.byNameAscending).flatMap(i => fetchByIds(i._1))
   }
 
-  def getAllFeedsOrderByLatestItemDate(): Seq[FrontendResource] = {
+  def getAllFeedsOrderByLatestItemDate(): Future[Seq[FrontendResource]] = {
     val allFeeds = ResourceQuery(`type` = Some("F"))
-    Await.result(elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)), TenSeconds) // TODO order
+    elasticSearchIndexer.getResources(allFeeds).flatMap(i => fetchByIds(i._1)) // TODO order
   }
 
   def getTaggedNewsitemsCount(tags: Set[Tag]): Long = {
@@ -224,8 +224,8 @@ import scala.concurrent.{Await, Future}
     feedworthTags
   }
 
-  def getDiscoveredFeeds: Seq[DiscoveredFeed] = {
-    Await.result(mongoRepository.getAllDiscoveredFeeds(), TenSeconds)
+  def getDiscoveredFeeds: Future[Seq[DiscoveredFeed]] = {
+    mongoRepository.getAllDiscoveredFeeds()
   }
 
   def getTagNamesStartingWith(q: String): Seq[String] = {

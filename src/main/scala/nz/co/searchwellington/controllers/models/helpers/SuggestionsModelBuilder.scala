@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
@@ -11,40 +11,44 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
                                                       rssUrlBuilder: RssUrlBuilder,
                                                       urlBuilder: UrlBuilder,
                                                       contentRetrievalService: ContentRetrievalService,
-                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+  with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SuggestionsModelBuilder])
   private val MAX_SUGGESTIONS = 50
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getPathInfo.matches("^/feeds/inbox(/(rss|json))?$")
+    request.getPathInfo.matches("^/feeds/inbox(/(rss|json))?$")
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
       val mv = new ModelAndView
       import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS).asJava)
+      mv.addObject(MAIN_CONTENT, Await.result(suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS), TenSeconds).asJava)
       mv.addObject("heading", "Inbox")
       mv.addObject("link", urlBuilder.getFeedsInboxUrl)
       mv.addObject("description", "Suggested newsitems from local feeds.")
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
       Some(mv)
+
     } else {
       None
     }
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    commonAttributesModelBuilder.populateSecondaryFeeds(mv)
+    Await.result(commonAttributesModelBuilder.populateSecondaryFeeds(mv), TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "suggestions"
+    "suggestions"
   }
 
 }

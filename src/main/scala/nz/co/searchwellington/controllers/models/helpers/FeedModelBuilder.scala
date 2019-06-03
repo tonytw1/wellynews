@@ -66,11 +66,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    commonAttributesModelBuilder.populateSecondaryFeeds(mv)
+    Await.result(commonAttributesModelBuilder.populateSecondaryFeeds(mv), TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "viewfeed"
+    "viewfeed"
   }
 
   private def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FeedItem]) {
