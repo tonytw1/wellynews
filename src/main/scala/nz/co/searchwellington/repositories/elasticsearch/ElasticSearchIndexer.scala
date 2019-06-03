@@ -58,7 +58,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       try {
         val eventualCreateIndexResult = client.execute {
           createIndex(Index) mappings mapping(Resources).fields(
-            field(Title) typed TextType analyzer StandardAnalyzer,
+            field(Title) typed TextType analyzer StandardAnalyzer fielddata true,
             field(Type) typed KeywordType,
             field(Date) typed DateType,
             field(Description) typed TextType analyzer StandardAnalyzer,
@@ -202,7 +202,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def byDateDescending(request: SearchRequest): SearchRequest = request sortByFieldDesc Date
 
-  def byNameAscending(request: SearchRequest): SearchRequest = request sortByFieldAsc Title
+  def byTitleAscending(request: SearchRequest): SearchRequest = request sortByFieldAsc Title
 
   private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest): Future[(Seq[BSONObjectID], Long)] = {
     val request = order(search(Index / Resources) query composeQueryFor(query)) start query.startIndex limit query.maxItems
