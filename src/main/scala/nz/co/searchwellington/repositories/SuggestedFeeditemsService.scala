@@ -2,14 +2,14 @@ package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class SuggestedFeeditemsService @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                                         feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
@@ -22,7 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
-      val suggestions = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems)
+      val suggestions = Await.result(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems), TenSeconds)
 
       val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
       withLocalCopiesFilteredOut.map(_.newsitem)

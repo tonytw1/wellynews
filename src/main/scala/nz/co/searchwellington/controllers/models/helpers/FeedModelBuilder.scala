@@ -40,7 +40,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }, { result =>
         val feedItems = result._1
         val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
-        val feedItemsWithAcceptanceInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
+        val feedItemsWithAcceptanceInformation = Await.result(feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems), TenSeconds)
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
         populateGeotaggedFeedItems(mv, feedItems)

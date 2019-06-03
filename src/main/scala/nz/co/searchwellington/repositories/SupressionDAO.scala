@@ -7,7 +7,8 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SupressionDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
 
@@ -18,8 +19,8 @@ import scala.concurrent.Await
     Await.result(mongoRepository.saveSupression(Supression(url = urlToSupress)), TenSeconds)
   }
 
-  def isSupressed(url: String): Boolean = {
-    Await.result(mongoRepository.getSupressionByUrl(url), TenSeconds).nonEmpty
+  def isSupressed(url: String): Future[Boolean] = {
+    mongoRepository.getSupressionByUrl(url).map(_.nonEmpty)
   }
 
   def removeSupressionForUrl(url: String) = {

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.SupressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -15,17 +16,17 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class FeedAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
                                                     supressionDAO: SupressionDAO,
-                                                    urlCleaner: UrlCleaner) {
+                                                    urlCleaner: UrlCleaner) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedAcceptanceDecider])
   private val tenSeconds = Duration(10, SECONDS)
 
   def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Seq[String] = {
     val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)  // TODO duplication
-    val isSuppressed = supressionDAO.isSupressed(cleanedUrl)
+    val isSuppressed = Await.result(supressionDAO.isSupressed(cleanedUrl), TenSeconds)
 
     def cannotBeSupressed(): Option[String] = {
-      log.debug("Is feed item url '" + cleanedUrl + "' supressed: " + isSuppressed)
+      log.debug("Is feed item url '" + cleanedUrl + "' suppressed: " + isSuppressed)
       if (isSuppressed) Some("This item is supressed") else None
     }
 
