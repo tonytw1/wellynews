@@ -158,7 +158,7 @@ import scala.concurrent.{Await, Future}
       allFeeds.copy(feedAcceptancePolicy = Some(a))
     }.getOrElse(allFeeds)
 
-    Await.result(elasticSearchIndexer.getResources(withAcceptancePolicy).flatMap(i => fetchByIds(i._1)), TenSeconds).sortBy(_.getName)
+    Await.result(elasticSearchIndexer.getResources(withAcceptancePolicy, elasticSearchIndexer.byNameAscending).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
   def getAllFeedsOrderByLatestItemDate(): Seq[FrontendResource] = {

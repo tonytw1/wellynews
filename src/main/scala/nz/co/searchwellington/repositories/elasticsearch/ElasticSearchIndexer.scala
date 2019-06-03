@@ -8,8 +8,8 @@ import com.sksamuel.elastic4s.http.delete.DeleteResponse
 import com.sksamuel.elastic4s.http.index.admin.IndexExistsResponse
 import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
 import com.sksamuel.elastic4s.mappings.FieldType._
-import com.sksamuel.elastic4s.searches.DateHistogramInterval
 import com.sksamuel.elastic4s.searches.queries.Query
+import com.sksamuel.elastic4s.searches.{DateHistogramInterval, SearchRequest}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
@@ -137,7 +137,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       )
   }
 
-  def getResources(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query)
+  def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query, order)
 
   def getAllPublishers: Future[Seq[(String, Long)]] = {
     val allNewsitems = ResourceQuery(`type` = Some("N"))
@@ -200,8 +200,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  private def executeResourceQuery(query: ResourceQuery): Future[(Seq[BSONObjectID], Long)] = {
-    val request = search(Index / Resources) query composeQueryFor(query) sortByFieldDesc Date start query.startIndex limit query.maxItems
+  def byDateDescending(request: SearchRequest): SearchRequest = request sortByFieldDesc Date
+
+  def byNameAscending(request: SearchRequest): SearchRequest = request sortByFieldAsc Title
+
+  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest): Future[(Seq[BSONObjectID], Long)] = {
+    val request = order(search(Index / Resources) query composeQueryFor(query)) start query.startIndex limit query.maxItems
 
     client.execute(request).map { r =>
       val hits = r.result.hits.hits
