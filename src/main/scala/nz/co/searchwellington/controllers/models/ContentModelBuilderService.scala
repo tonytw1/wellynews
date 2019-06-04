@@ -52,7 +52,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
           mv.setView(jsonView)
 
         } else {
-          mb.populateExtraModelContent(request, mv)
+          //mb.populateExtraModelContent(request, mv)
           mv.setViewName(mb.getViewName(mv))
           commonModelObjectsService.populateCommonLocal(mv)
         }
