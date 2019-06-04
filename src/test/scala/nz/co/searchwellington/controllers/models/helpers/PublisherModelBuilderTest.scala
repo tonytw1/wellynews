@@ -19,6 +19,8 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
+import scala.concurrent.Future
+
 class PublisherModelBuilderTest {
 
   @Mock private[models] var rssUrlBuilder: RssUrlBuilder = null
@@ -52,6 +54,8 @@ class PublisherModelBuilderTest {
     publisherNewsitems.add(geotaggedNewsitem)
     val geotaggedNewsitems: List[FrontendNewsitem] = new util.ArrayList();
     geotaggedNewsitems.add(geotaggedNewsitem)
+
+    when(contentRetrievalService.getLatestNewsitems(5)).thenReturn(Future.successful(Seq.empty))
 
     import scala.collection.JavaConversions._
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
