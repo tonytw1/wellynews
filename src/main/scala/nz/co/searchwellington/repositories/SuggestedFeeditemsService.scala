@@ -33,7 +33,7 @@ import scala.concurrent.Future
 
       feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems).map { suggestions =>
         val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
-        withLocalCopiesFilteredOut.map(_.newsitem)
+        withLocalCopiesFilteredOut.map(_.newsitem).take(maxItems)
       }
     }
   }
