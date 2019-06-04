@@ -1,8 +1,9 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.Date
-import javax.servlet.http.HttpServletRequest
 
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.model.User
@@ -15,10 +16,12 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.collection.JavaConverters._
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                 loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
-                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination {
+                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
   private val NUMBER_OF_COMMENTED_TO_SHOW = 2
@@ -35,19 +38,24 @@ import scala.collection.JavaConverters._
 
     def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
 
-    if (isValid(request)) {  val mv = new ModelAndView
-      val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request))
-      mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
-      monthOfLastItem(latestNewsitems).map { d =>
-        mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
+    val eventualMaybeView = if (isValid(request)) {
+      contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request)).map { latestNewsitems =>
+
+        val mv = new ModelAndView
+        mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
+        monthOfLastItem(latestNewsitems).map { d =>
+          mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
+        }
+
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
+        Some(mv)
       }
 
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-      Some(mv)
-
     } else {
-      None
+      Future.successful(None)
     }
+
+    Await.result(eventualMaybeView, TenSeconds)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
@@ -66,18 +74,13 @@ import scala.collection.JavaConverters._
 
     populateSecondaryJustin(mv)
     populateGeocoded(mv)
-    populateFeatured(mv)
     populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
     archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths)
   }
 
-  private def populateFeatured(mv: ModelAndView) {
-    //mv.addObject("featured", contentRetrievalService.getFeaturedSites)
-  }
-
   private def populateGeocoded(mv: ModelAndView) {
     val geocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
-    if (!geocoded.isEmpty) {
+    if (geocoded.nonEmpty) {
       mv.addObject("geocoded", geocoded.asJava)
     }
   }

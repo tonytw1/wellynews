@@ -10,6 +10,8 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import scala.concurrent.Future
+
 class IndexModelBuilderTest {
 
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -54,7 +56,7 @@ class IndexModelBuilderTest {
   @Test
   @throws[Exception]
   def indexPageMainContentIsTheLatestNewsitems {
-    when(contentRetrievalService.getLatestNewsitems(30, 1)).thenReturn(latestNewsitems)
+    when(contentRetrievalService.getLatestNewsitems(30, 1)).thenReturn(Future.successful(latestNewsitems))
 
     val mv = modelBuilder.populateContentModel(request).get
 

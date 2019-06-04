@@ -46,11 +46,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventualSuggestedFeednewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
 
-    Await.result(commonAttributesModelBuilder.populateSecondaryFeeds(mv).map { mv =>
-      import scala.collection.JavaConverters._
-      mv.addObject("suggestions", Await.result(eventualSuggestedFeednewsitems, TenSeconds).asJava)
-      mv.addObject("discovered_feeds", Await.result(eventualDiscoveredFeeds, TenSeconds).asJava)
-    }, TenSeconds)
+    val eventuallyPopulated = for {
+      suggestedFeednewsitems <- eventualSuggestedFeednewsitems
+      discoveredFeeds <- eventualDiscoveredFeeds
+      mv <- commonAttributesModelBuilder.populateSecondaryFeeds(mv)
+    } yield {
+      mv.addObject("suggestions", suggestedFeednewsitems)
+      mv.addObject("discovered_feeds", eventualDiscoveredFeeds)
+    }
+
+    Await.result(eventuallyPopulated, TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = {

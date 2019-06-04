@@ -84,12 +84,8 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(geotaggedNewsitemsForTag).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getLatestNewsitems: Seq[FrontendResource] = {
-    getLatestNewsitems(MAX_NEWSITEMS_TO_SHOW, 1)
-  }
-
-  def getLatestNewsitems(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  def getLatestNewsitems(maxItems: Int = MAX_NEWSITEMS_TO_SHOW, page: Int = 1): Future[Seq[FrontendResource]] = {
+    elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1))
   }
 
   def getNewsitemsForInterval(interval: Interval): Seq[FrontendResource] = {

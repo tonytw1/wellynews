@@ -32,7 +32,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     mv.addObject("heading", "About")
     mv.setViewName("about")
     import scala.collection.JavaConverters._
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
     mv
   }
 
@@ -105,7 +105,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     mv.addObject("publishers", publishers.asJava)
 
     mv.setViewName("publishers")
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
     mv
   }
 

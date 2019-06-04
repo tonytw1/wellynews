@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
-
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+
 @Component class SearchModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder)
-  extends ModelBuilder with CommonSizes with Pagination {
+  extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val KEYWORDS_PARAMETER = "keywords"
 
@@ -69,7 +71,7 @@ import org.springframework.web.servlet.ModelAndView
 
   @Override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     import scala.collection.JavaConverters._
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
   }
 
   @Override def getViewName(mv: ModelAndView): String = {

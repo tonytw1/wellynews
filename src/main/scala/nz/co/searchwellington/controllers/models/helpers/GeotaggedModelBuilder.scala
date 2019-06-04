@@ -91,7 +91,7 @@ import scala.concurrent.Await
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
   }
 
   def getViewName(mv: ModelAndView): String = {

@@ -125,7 +125,7 @@ import scala.concurrent.Await
     import scala.collection.JavaConverters._
     mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag).asJava)
     mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag).asJava)
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
   }
 
   def getViewName(mv: ModelAndView): String = {

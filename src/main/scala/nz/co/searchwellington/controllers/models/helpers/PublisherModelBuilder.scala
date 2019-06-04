@@ -1,8 +1,9 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.List
-import javax.servlet.http.HttpServletRequest
 
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+
 @Component class PublisherModelBuilder @Autowired() (rssUrlBuilder: RssUrlBuilder,
                                                      relatedTagsService: RelatedTagsService,
                                                      contentRetrievalService: ContentRetrievalService,
@@ -23,7 +26,7 @@ import org.springframework.web.servlet.ModelAndView
                                                      geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper,
                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with CommonSizes with Pagination {
+                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
@@ -84,7 +87,7 @@ import org.springframework.web.servlet.ModelAndView
     if (relatedTagLinks.size > 0) {
       mv.addObject("related_tags", relatedTagLinks.asJava)
     }
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
   }
 
   def getViewName(mv: ModelAndView):String = {
@@ -96,7 +99,7 @@ import org.springframework.web.servlet.ModelAndView
     if (mainContent != null) {
       import scala.collection.JavaConversions._
       val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
-      if (!geotaggedNewsitems.isEmpty) {
+      if (geotaggedNewsitems.nonEmpty) {
         import scala.collection.JavaConverters._
         mv.addObject("geocoded", geotaggedNewsitems.asJava)
       }
