@@ -33,9 +33,7 @@ import scala.collection.JavaConverters._
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    def monthOfLastItem(newitems: Seq[FrontendResource]): Option[Date] = {
-      newitems.headOption.map(i => i.getDate)
-    }
+    def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
 
     if (isValid(request)) {  val mv = new ModelAndView
       val latestNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request))
