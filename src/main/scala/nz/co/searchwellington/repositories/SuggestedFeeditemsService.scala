@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class SuggestedFeeditemsService @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
                                                         feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
@@ -17,15 +17,16 @@ import scala.concurrent.{Await, Future}
   ReasonableWaits {
 
   def getSuggestionFeednewsitems(maxItems: Int): Future[Seq[FrontendNewsitem]] = {
-    rssfeedNewsitemService.getChannelFeedItems.map { channelFeedItems =>
+    rssfeedNewsitemService.getChannelFeedItems.flatMap { channelFeedItems =>
       val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
 
       val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
-      val suggestions = Await.result(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems), TenSeconds)
-
-      val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
-      withLocalCopiesFilteredOut.map(_.newsitem)
+      val eventualSuggestions = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems)
+      eventualSuggestions.map { suggestions =>
+        val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
+        withLocalCopiesFilteredOut.map(_.newsitem)
+      }
     }
   }
 
