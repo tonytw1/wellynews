@@ -17,25 +17,25 @@ import scala.concurrent.Future
   ReasonableWaits {
 
   def getSuggestionFeednewsitems(maxItems: Int): Future[Seq[FrontendNewsitem]] = {
+
+    def isNotIgnored(feedItem: FeedItem, feed: Feed): Boolean = {
+      feed.acceptance != FeedAcceptancePolicy.IGNORE
+    }
+
+    def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = {
+      feedItem.localCopy.isEmpty
+    }
+
     rssfeedNewsitemService.getChannelFeedItems.flatMap { channelFeedItems =>
       val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
 
       val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
-      val eventualSuggestions = feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems)
-      eventualSuggestions.map { suggestions =>
+      feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems).map { suggestions =>
         val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
         withLocalCopiesFilteredOut.map(_.newsitem)
       }
     }
-  }
-
-  private def isNotIgnored(feedItem: FeedItem, feed: Feed): Boolean = {
-    feed.acceptance != FeedAcceptancePolicy.IGNORE
-  }
-
-  private def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = {
-    feedItem.localCopy.isEmpty
   }
 
 }
