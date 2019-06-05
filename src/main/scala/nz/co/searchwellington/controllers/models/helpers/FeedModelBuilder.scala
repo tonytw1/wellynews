@@ -66,7 +66,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(commonAttributesModelBuilder.populateSecondaryFeeds(mv), TenSeconds)
+    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate().map { feeds =>
+      commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
+    }, TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = {

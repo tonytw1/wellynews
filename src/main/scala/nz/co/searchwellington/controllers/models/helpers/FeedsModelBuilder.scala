@@ -45,16 +45,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     val eventualSuggestedFeednewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
+    val eventualFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate()
 
     val eventuallyPopulated = for {
       suggestedFeednewsitems <- eventualSuggestedFeednewsitems
       discoveredFeeds <- eventualDiscoveredFeeds
-      // mv <- commonAttributesModelBuilder.populateSecondaryFeeds(mv)
+      feeds <- eventualFeeds
 
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeeds.asJava)
+      commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
     }
 
     Await.result(eventuallyPopulated, TenSeconds)

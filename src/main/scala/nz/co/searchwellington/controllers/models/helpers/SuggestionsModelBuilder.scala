@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
                                                       rssUrlBuilder: RssUrlBuilder,
@@ -44,7 +45,9 @@ import scala.concurrent.Await
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(commonAttributesModelBuilder.populateSecondaryFeeds(mv), TenSeconds)
+    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate().map { feeds =>
+      commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
+    }, TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = {

@@ -47,7 +47,7 @@ class FeedsModelBuilderTest {
   }
 
   @Test
-  def shouldPopulateSecondaryContent: Unit = {
+  def shouldPopulateSecondaryContent = {
     val suggestedFeeditems = Seq(FrontendNewsitem(id = UUID.randomUUID().toString))
     when(suggestedFeeditemsService.getSuggestionFeednewsitems(6)).thenReturn(Future.successful(suggestedFeeditems))
     val discoveredFeeditems = Seq(DiscoveredFeed(url = "http://something", referencedFrom = "http://somewhere", seen = DateTime.now.toDate))
