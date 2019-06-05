@@ -206,7 +206,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest): Future[(Seq[BSONObjectID], Long)] = {
     val request = order(search(Index / Resources) query composeQueryFor(query)) start query.startIndex limit query.maxItems
-
+    log.info("Request: " + request)
     client.execute(request).map { r =>
       val hits = r.result.hits.hits
       val ids = hits.map(h => BSONObjectID(h.id))
