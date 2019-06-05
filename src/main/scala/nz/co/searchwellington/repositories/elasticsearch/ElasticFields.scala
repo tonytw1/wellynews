@@ -3,6 +3,7 @@ package nz.co.searchwellington.repositories.elasticsearch
 trait ElasticFields {
 
   val Title = "title"
+  val TitleSort = "titleSort"
   val Type = "type"
   val HttpStatus = "http_status"
   val Description = "description"
