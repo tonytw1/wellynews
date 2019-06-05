@@ -2,13 +2,16 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.frontend.FrontendFeed
+import nz.co.searchwellington.model.DiscoveredFeed
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
 import nz.co.searchwellington.urls.UrlBuilder
+import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Future
 
@@ -41,6 +44,21 @@ class FeedsModelBuilderTest {
 
     import scala.collection.JavaConverters._
     assertEquals(feeds.asJava, mv.getModel.get("main_content"))
+  }
+
+  @Test
+  def shouldPopulateSecondaryContent: Unit = {
+    val suggestedFeeditems = Seq(FrontendNewsitem(id = UUID.randomUUID().toString))
+    when(suggestedFeeditemsService.getSuggestionFeednewsitems(6)).thenReturn(Future.successful(suggestedFeeditems))
+    val discoveredFeeditems = Seq(DiscoveredFeed(url = "http://something", referencedFrom = "http://somewhere", seen = DateTime.now.toDate))
+    when(contentRetrievalService.getDiscoveredFeeds).thenReturn(Future.successful(discoveredFeeditems))
+    val mv = new ModelAndView()
+
+    modelBuilder.populateExtraModelContent(request, mv)
+
+    import scala.collection.JavaConverters._
+    assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))
+    assertEquals(discoveredFeeditems.asJava, mv.getModel.get("discovered_feeds"))
   }
 
 }

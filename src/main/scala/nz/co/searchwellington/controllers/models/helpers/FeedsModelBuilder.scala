@@ -49,10 +49,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventuallyPopulated = for {
       suggestedFeednewsitems <- eventualSuggestedFeednewsitems
       discoveredFeeds <- eventualDiscoveredFeeds
-      mv <- commonAttributesModelBuilder.populateSecondaryFeeds(mv)
+      // mv <- commonAttributesModelBuilder.populateSecondaryFeeds(mv)
+
     } yield {
-      mv.addObject("suggestions", suggestedFeednewsitems)
-      mv.addObject("discovered_feeds", eventualDiscoveredFeeds)
+      import scala.collection.JavaConverters._
+      mv.addObject("suggestions", suggestedFeednewsitems.asJava)
+      mv.addObject("discovered_feeds", discoveredFeeds.asJava)
     }
 
     Await.result(eventuallyPopulated, TenSeconds)
