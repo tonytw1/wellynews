@@ -7,6 +7,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
@@ -17,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
@@ -105,12 +106,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
     val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8)
     val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8)
+    val eventualTagWatchlist: Future[Seq[FrontendResource]] = contentRetrievalService.getTagWatchlist(tag)
+    val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag)
 
     val eventuallyPopulated = for {
       geotaggedNewsitems <- eventualGeotaggedNewsitems
       taggedWebsites <- eventualTaggedWebsites
       relatedTagLinks <- eventualRelatedTagLinks
       relatedPublishersForTag <- eventualRelatedPublishersForTag
+      tagWatchList <- eventualTagWatchlist
+      tagFeeds <- eventualTagFeeds
 
     } yield {
       def populateGeocoded(mv: ModelAndView, tag: Tag) {
@@ -130,10 +135,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
         mv.addObject("related_publishers", relatedPublishersForTag.asJava)
       }
       populateGeocoded(mv, tag)
-      import scala.collection.JavaConverters._
-      mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag).asJava)
-      mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag).asJava)
-      mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+      mv.addObject(TAG_WATCHLIST, tagWatchList.asJava)
+      mv.addObject(TAG_FEEDS, tagFeeds.asJava)
+      // mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
     }
 
     Await.result(eventuallyPopulated, TenSeconds)
