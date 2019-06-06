@@ -43,9 +43,10 @@ import scala.concurrent.{Await, Future}
     Seq() // TODO implement
   }
 
-  def getRelatedPublishersForTag(tag: Tag, maxItems: Int): Seq[PublisherContentCount] = {
-    val publisherFacetsForTag = Await.result(elasticSearchIndexer.getPublishersForTag(tag), TenSeconds)
-    publisherFacetsForTag.flatMap(toPublisherContentCount)
+  def getRelatedPublishersForTag(tag: Tag, maxItems: Int): Future[Seq[PublisherContentCount]] = {
+    elasticSearchIndexer.getPublishersForTag(tag).map { publisherFacetsForTag =>
+      publisherFacetsForTag.flatMap(toPublisherContentCount)
+    }
   }
 
   def getRelatedPublishersForLocation(place: Place, radius: Double): Future[Seq[PublisherContentCount]] = {

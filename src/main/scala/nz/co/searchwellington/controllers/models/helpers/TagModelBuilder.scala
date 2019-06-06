@@ -104,19 +104,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
     val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
     val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8)
+    val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8)
 
     val eventuallyPopulated = for {
       geotaggedNewsitems <- eventualGeotaggedNewsitems
       taggedWebsites <- eventualTaggedWebsites
       relatedTagLinks <- eventualRelatedTagLinks
+      relatedPublishersForTag <- eventualRelatedPublishersForTag
 
     } yield {
-
       def populateGeocoded(mv: ModelAndView, tag: Tag) {
-        val geocoded = geotaggedNewsitems
-        log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
-        if (geocoded.nonEmpty) {
-          mv.addObject("geocoded", geocoded)
+        if (geotaggedNewsitems.nonEmpty) {
+          mv.addObject("geocoded", geotaggedNewsitems)
         }
       }
 
@@ -127,9 +126,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
       if (relatedTagLinks.nonEmpty) {
         mv.addObject("related_tags", relatedTagLinks.asJava)
       }
-      val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, 8)
-      if (relatedPublisherLinks.nonEmpty) {
-        mv.addObject("related_publishers", relatedPublisherLinks.asJava)
+      if (relatedPublishersForTag.nonEmpty) {
+        mv.addObject("related_publishers", relatedPublishersForTag.asJava)
       }
       populateGeocoded(mv, tag)
       import scala.collection.JavaConverters._
