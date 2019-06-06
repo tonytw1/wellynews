@@ -79,9 +79,9 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(nearbyNewsitems(latLong, radius)).map(i => i._2), TenSeconds)
   }
 
-  def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
+  def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int): Future[Seq[FrontendResource]] = {
     val geotaggedNewsitemsForTag = ResourceQuery(`type` = Some("N"), geocoded = Some(true), tags = Some(Set(tag)), maxItems = ALL_ITEMS)
-    Await.result(elasticSearchIndexer.getResources(geotaggedNewsitemsForTag).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(geotaggedNewsitemsForTag).flatMap(i => fetchByIds(i._1))
   }
 
   def getLatestNewsitems(maxItems: Int = MAX_NEWSITEMS_TO_SHOW, page: Int = 1): Future[Seq[FrontendResource]] = {
@@ -177,9 +177,9 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(query).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getTaggedWebsites(tag: Tag, maxItems: Int): Seq[FrontendResource] = {
+  def getTaggedWebsites(tag: Tag, maxItems: Int): Future[Seq[FrontendResource]] = {
     val taggedWebsites = ResourceQuery(`type` = Some("W"), tags = Some(Set(tag)), maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1))
   }
 
   def getPublisherNewsitemsCount(publisher: Website): Long = {

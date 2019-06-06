@@ -63,7 +63,7 @@ import scala.concurrent.Await
           log.info("Found geo related tags: " + relatedTagLinks)
           mv.addObject("related_tags", relatedTagLinks.asJava)
         }
-        val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius).toList
+        val relatedPublisherLinks = Await.result(relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius), TenSeconds).toList
         if (relatedPublisherLinks.nonEmpty) {
           mv.addObject("related_publishers", relatedPublisherLinks.asJava)
         }

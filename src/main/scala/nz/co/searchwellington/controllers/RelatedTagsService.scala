@@ -48,9 +48,10 @@ import scala.concurrent.{Await, Future}
     publisherFacetsForTag.flatMap(toPublisherContentCount)
   }
 
-  def getRelatedPublishersForLocation(place: Place, radius: Double): Seq[PublisherContentCount] = {
-    val publisherFacetsNear = Await.result(elasticSearchIndexer.getPublishersNear(place.getLatLong, radius), TenSeconds)
-    publisherFacetsNear.flatMap(toPublisherContentCount)
+  def getRelatedPublishersForLocation(place: Place, radius: Double): Future[Seq[PublisherContentCount]] = {
+    elasticSearchIndexer.getPublishersNear(place.getLatLong, radius).map { publisherFacetsNear =>
+      publisherFacetsNear.flatMap(toPublisherContentCount)
+    }
   }
 
   def getRelatedTagsForLocation(place: Place, radius: Double): Future[Seq[TagContentCount]] = {

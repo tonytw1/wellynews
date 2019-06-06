@@ -1,21 +1,24 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.List
-import javax.servlet.http.HttpServletRequest
 
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
-import nz.co.searchwellington.controllers.models.ModelBuilder
+
+import scala.concurrent.Await
 
 @Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
-                                                       urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+                                                       urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder,
+                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
@@ -34,7 +37,7 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
       mv.addObject("heading", tag.getDisplayName + " geotagged")
       mv.addObject("description", "Geotagged " + tag.getDisplayName + " newsitems")
       mv.addObject("link", urlBuilder.getTagCommentUrl(tag))
-      val allGeotaggedForTag = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+      val allGeotaggedForTag = Await.result(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW), TenSeconds)
       mv.addObject(MAIN_CONTENT, allGeotaggedForTag)
       if (allGeotaggedForTag.size > 0) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))
@@ -56,7 +59,7 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
   }
 
   def getViewName(mv: ModelAndView): String = {
-    return "tagGeotagged"
+    "tagGeotagged"
   }
 
 }

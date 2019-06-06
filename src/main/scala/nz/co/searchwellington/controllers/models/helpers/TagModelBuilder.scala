@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
@@ -98,34 +99,46 @@ import scala.concurrent.Await
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-
-    def populateGeocoded(mv: ModelAndView, tag: Tag) {
-      val geocoded = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
-      log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
-      if (geocoded.nonEmpty) {
-        mv.addObject("geocoded", geocoded)
-      }
-    }
-
     val tag = tagFromRequest(request)
-    val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
-    log.info("Tag websites: " + taggedWebsites.size)
-    import scala.collection.JavaConverters._
-    mv.addObject(WEBSITES, taggedWebsites.asJava)
 
-    val relatedTagLinks = Await.result(relatedTagsService.getRelatedTagsForTag(tag, 8), TenSeconds)
-    if (relatedTagLinks.nonEmpty) {
-      mv.addObject("related_tags", relatedTagLinks.asJava)
+    val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+    val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
+    val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8)
+
+    val eventuallyPopulated = for {
+      geotaggedNewsitems <- eventualGeotaggedNewsitems
+      taggedWebsites <- eventualTaggedWebsites
+      relatedTagLinks <- eventualRelatedTagLinks
+
+    } yield {
+
+      def populateGeocoded(mv: ModelAndView, tag: Tag) {
+        val geocoded = geotaggedNewsitems
+        log.debug("Found " + geocoded.size + " valid geocoded resources for tag: " + tag.getName)
+        if (geocoded.nonEmpty) {
+          mv.addObject("geocoded", geocoded)
+        }
+      }
+
+      log.info("Tag websites: " + taggedWebsites.size)
+      import scala.collection.JavaConverters._
+      mv.addObject(WEBSITES, taggedWebsites.asJava)
+
+      if (relatedTagLinks.nonEmpty) {
+        mv.addObject("related_tags", relatedTagLinks.asJava)
+      }
+      val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, 8)
+      if (relatedPublisherLinks.nonEmpty) {
+        mv.addObject("related_publishers", relatedPublisherLinks.asJava)
+      }
+      populateGeocoded(mv, tag)
+      import scala.collection.JavaConverters._
+      mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag).asJava)
+      mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag).asJava)
+      mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
     }
-    val relatedPublisherLinks = relatedTagsService.getRelatedPublishersForTag(tag, 8)
-    if (relatedPublisherLinks.nonEmpty) {
-      mv.addObject("related_publishers", relatedPublisherLinks.asJava)
-    }
-    populateGeocoded(mv, tag)
-    import scala.collection.JavaConverters._
-    mv.addObject(TAG_WATCHLIST, contentRetrievalService.getTagWatchlist(tag).asJava)
-    mv.addObject(TAG_FEEDS, contentRetrievalService.getTaggedFeeds(tag).asJava)
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+
+    Await.result(eventuallyPopulated, TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = {
@@ -150,7 +163,7 @@ import scala.concurrent.Await
 
   private def tagFromRequest(request: HttpServletRequest): Tag = {
     val tags = request.getAttribute(TAGS).asInstanceOf[Seq[Tag]]
-    tags(0)
+    tags.head
   }
 
 }
