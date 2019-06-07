@@ -76,14 +76,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
 
     val eventualWebsites = contentRetrievalService.getLatestWebsites(4)
+    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts
+
     val eventualPopulated: Future[Unit] = for {
-      websites: Seq[FrontendResource] <- eventualWebsites
+      websites <- eventualWebsites
+      archiveMonths <- contentRetrievalService.getArchiveMonths
+      archiveStatistics <- eventualArchiveStatistics
+
 
     } yield {
       populateSecondaryJustin(mv, websites)
       // populateGeocoded(mv)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
-      // archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths)
+      archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
     }
 
     Await.result(eventualPopulated, TenSeconds)

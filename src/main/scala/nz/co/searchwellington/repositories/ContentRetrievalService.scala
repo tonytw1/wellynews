@@ -131,13 +131,9 @@ import scala.concurrent.{Await, Future}
     keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken, null)
   }
 
-  def getArchiveMonths: Seq[ArchiveLink] = {
-    Await.result(elasticSearchIndexer.getArchiveMonths, TenSeconds)
-  }
+  def getArchiveMonths: Future[Seq[ArchiveLink]] = elasticSearchIndexer.getArchiveMonths
 
-  def getArchiveCounts: Map[String, Long] = {
-    Await.result(elasticSearchIndexer.getArchiveCounts, TenSeconds)
-  }
+  def getArchiveCounts: Future[Map[String, Long]] = elasticSearchIndexer.getArchiveCounts
 
   def getTaggedNewitemsCount(tag: Tag): Long = {
    getTaggedNewsitemsCount(tags = Set(tag))

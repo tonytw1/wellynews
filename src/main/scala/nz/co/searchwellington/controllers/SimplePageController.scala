@@ -44,7 +44,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "Archive")
     import scala.collection.JavaConverters._
-    mv.addObject("archiveLinks", contentRetrievalService.getArchiveMonths.asJava)
+    mv.addObject("archiveLinks", Await.result(contentRetrievalService.getArchiveMonths, TenSeconds).asJava)
     mv.setViewName("archiveIndex")
     mv
   }

@@ -1,6 +1,5 @@
 package nz.co.searchwellington.model.helpers
 
-import java.util
 import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -12,10 +11,9 @@ class ArchiveLinksService @Autowired()(contentRetrievalService: ContentRetrieval
 
   private val MaxBackIssues = 6
 
-  def populateArchiveLinks(mv: ModelAndView, archiveMonths: Seq[ArchiveLink]): Unit = {
+  def populateArchiveLinks(mv: ModelAndView, archiveMonths: Seq[ArchiveLink], archiveStatistics: Map[String, Long]): Unit = {
 
     def populateArchiveStatistics(mv: ModelAndView): Unit = {
-      val archiveStatistics = contentRetrievalService.getArchiveCounts
       mv.addObject("site_count", archiveStatistics.get("W").orNull)
       mv.addObject("newsitem_count", archiveStatistics.get("N").orNull)
       mv.addObject("feed_count", archiveStatistics.get("F").orNull)

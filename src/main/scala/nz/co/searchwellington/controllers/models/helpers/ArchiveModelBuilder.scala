@@ -2,8 +2,9 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.{Date, List}
-import javax.servlet.http.HttpServletRequest
 
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
@@ -15,7 +16,10 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-@Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends ModelBuilder {
+import scala.concurrent.Await
+
+@Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
+  ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
 
@@ -46,9 +50,11 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     getArchiveDateFromPath(request.getPathInfo).map { month =>
-      val archiveLinks = contentRetrievalService.getArchiveMonths
+      val archiveLinks = Await.result(contentRetrievalService.getArchiveMonths, TenSeconds)
       populateNextAndPreviousLinks(mv, month, archiveLinks)
-      archiveLinksService.populateArchiveLinks(mv, archiveLinks)
+      val archiveStatistics = Await.result(contentRetrievalService.getArchiveCounts, TenSeconds)
+
+      archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
     }
   }
 
