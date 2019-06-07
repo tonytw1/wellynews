@@ -38,9 +38,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
 
-    val eventualMaybeView = if (isValid(request)) {
-      contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request)).map { latestNewsitems =>
+    if (isValid(request)) {
+      val eventualNewsitems = contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request))
 
+      val eventualModelAndView = for {
+        latestNewsitems <- eventualNewsitems
+      } yield {
         val mv = new ModelAndView
         mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
         monthOfLastItem(latestNewsitems).map { d =>
@@ -48,14 +51,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
         }
 
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-        Some(mv)
+        mv
       }
+      Some(Await.result(eventualModelAndView, TenSeconds))
 
     } else {
-      Future.successful(None)
+      None
     }
 
-    Await.result(eventualMaybeView, TenSeconds)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
