@@ -78,7 +78,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventualWebsites = contentRetrievalService.getLatestWebsites(4)
     val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts
 
-    val eventualPopulated: Future[Unit] = for {
+    val eventualPopulated = for {
       websites <- eventualWebsites
       archiveMonths <- contentRetrievalService.getArchiveMonths
       archiveStatistics <- eventualArchiveStatistics
@@ -88,7 +88,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       populateSecondaryJustin(mv, websites)
       // populateGeocoded(mv)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
-      archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
+      //archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
     }
 
     Await.result(eventualPopulated, TenSeconds)
