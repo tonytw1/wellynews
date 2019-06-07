@@ -108,6 +108,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8)
     val eventualTagWatchlist: Future[Seq[FrontendResource]] = contentRetrievalService.getTagWatchlist(tag)
     val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag)
+    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5)
 
     val eventuallyPopulated = for {
       geotaggedNewsitems <- eventualGeotaggedNewsitems
@@ -116,6 +117,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       relatedPublishersForTag <- eventualRelatedPublishersForTag
       tagWatchList <- eventualTagWatchlist
       tagFeeds <- eventualTagFeeds
+      latestNewsitems <- eventualLatestNewsitems
 
     } yield {
       def populateGeocoded(mv: ModelAndView, tag: Tag) {
@@ -137,7 +139,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       populateGeocoded(mv, tag)
       mv.addObject(TAG_WATCHLIST, tagWatchList.asJava)
       mv.addObject(TAG_FEEDS, tagFeeds.asJava)
-      // mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)
     }
 
     Await.result(eventuallyPopulated, TenSeconds)
