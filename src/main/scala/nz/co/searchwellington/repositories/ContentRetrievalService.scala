@@ -93,8 +93,8 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(newsitemsForMonth).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getLatestWebsites(maxItems: Int, page: Int = 1): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  def getLatestWebsites(maxItems: Int, page: Int = 1): Future[Seq[FrontendResource]] = {
+    elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = (maxItems * (page - 1)))).flatMap(i => fetchByIds(i._1))
   }
 
   def getOwnedBy(user: User): Seq[FrontendResource] = {

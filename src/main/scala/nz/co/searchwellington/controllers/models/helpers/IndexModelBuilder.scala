@@ -75,10 +75,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
 
-    populateSecondaryJustin(mv)
-    populateGeocoded(mv)
-    populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
-    archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths)
+    val eventualWebsites = contentRetrievalService.getLatestWebsites(4)
+    val eventualPopulated: Future[Unit] = for {
+      websites: Seq[FrontendResource] <- eventualWebsites
+
+    } yield {
+      populateSecondaryJustin(mv, websites)
+      // populateGeocoded(mv)
+      // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
+      // archiveLinksService.populateArchiveLinks(mv, contentRetrievalService.getArchiveMonths)
+    }
+
+    Await.result(eventualPopulated, TenSeconds)
   }
 
   private def populateGeocoded(mv: ModelAndView) {
@@ -88,11 +96,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  private def populateSecondaryJustin(mv: ModelAndView) {
+  private def populateSecondaryJustin(mv: ModelAndView, websites: Seq[FrontendResource]) {
     mv.addObject("secondary_heading", "Just In")
     mv.addObject("secondary_description", "New additions.")
     import scala.collection.JavaConverters._
-    mv.addObject("secondary_content", contentRetrievalService.getLatestWebsites(4).asJava)
+    mv.addObject("secondary_content", websites.asJava)
     mv.addObject("secondary_content_moreurl", "justin")
   }
 

@@ -2,8 +2,9 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util
 import java.util.List
-import javax.servlet.http.HttpServletRequest
 
+import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.{Resource, Tag}
@@ -13,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+
 @Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                       relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ModelBuilder with CommonSizes with Pagination {
+  extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
     val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
@@ -74,7 +77,7 @@ import org.springframework.web.servlet.ModelAndView
       val tag = tags.get(0)
       mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8))
       import scala.collection.JavaConverters._
-      mv.addObject("latest_news", contentRetrievalService.getLatestWebsites(5).asJava)
+      mv.addObject("latest_news", Await.result(contentRetrievalService.getLatestWebsites(5), TenSeconds).asJava)
       val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
       mv.addObject("websites", taggedWebsites)
     }

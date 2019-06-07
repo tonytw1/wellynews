@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -10,7 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class JustinModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes {
+import scala.concurrent.Await
+
+@Component class JustinModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService,
+                                                  rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder, commonAttributesModelBuilder: CommonAttributesModelBuilder)
+  extends ModelBuilder with CommonSizes with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/justin(/(rss|json))?$")
@@ -23,7 +27,7 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("description", "The most recently submitted website listings.")
       mv.addObject("link", urlBuilder.getJustinUrl)
       import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS).asJava)
+      mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS), TenSeconds).asJava)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
       Some(mv)
 
