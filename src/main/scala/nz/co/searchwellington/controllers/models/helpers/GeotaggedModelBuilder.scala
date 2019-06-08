@@ -80,7 +80,7 @@ import scala.concurrent.Await
         populatePagination(mv, startIndex, totalGeotaggedCount)
 
         mv.addObject("heading", "Geotagged newsitems")
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS).asJava)
+        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS), TenSeconds).asJava)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
         Some(mv)
       }

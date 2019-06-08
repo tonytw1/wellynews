@@ -62,8 +62,8 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(taggedWebsites).flatMap(i => fetchByIds(i._1))
   }
 
-  def getGeocodedNewsitems(startIndex: Int, maxItems: Int): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(geocodedNewsitems).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  def getGeocodedNewsitems(startIndex: Int, maxItems: Int): Future[Seq[FrontendResource]] = {
+    elasticSearchIndexer.getResources(geocodedNewsitems).flatMap(i => fetchByIds(i._1))
   }
 
   def getGeocodedNewitemsCount: Long = {

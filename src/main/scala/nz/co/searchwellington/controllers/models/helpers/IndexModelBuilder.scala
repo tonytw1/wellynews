@@ -61,7 +61,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView): Unit = {
 
     def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
       if (loggedInUser != null) {
@@ -77,25 +77,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     val eventualWebsites = contentRetrievalService.getLatestWebsites(4)
     val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts
+    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
 
     val eventualPopulated = for {
       websites <- eventualWebsites
       archiveMonths <- contentRetrievalService.getArchiveMonths
       archiveStatistics <- eventualArchiveStatistics
-
+      geocoded <- eventualGeocoded
 
     } yield {
       populateSecondaryJustin(mv, websites)
-      // populateGeocoded(mv)
+      populateGeocoded(mv, geocoded)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
-      //archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
+      archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
     }
 
     Await.result(eventualPopulated, TenSeconds)
   }
 
-  private def populateGeocoded(mv: ModelAndView) {
-    val geocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW).toList
+  private def populateGeocoded(mv: ModelAndView, geocoded: Seq[FrontendResource]) {
     if (geocoded.nonEmpty) {
       mv.addObject("geocoded", geocoded.asJava)
     }
