@@ -62,6 +62,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView): Unit = {
 
+    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+
     def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
       if (loggedInUser != null) {
         val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
@@ -74,26 +76,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
 
-    val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
-    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser))
-    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, Option(loggedInUserFilter.getLoggedInUser))
+    val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = loggedInUser)
+    val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(loggedInUser)
+    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(loggedInUser)
+    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
 
     val eventualPopulated = for {
       websites <- eventualWebsites
-      //archiveMonths <- contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
-      //archiveStatistics <- eventualArchiveStatistics
+      archiveMonths <- eventualArchiveMonths
+      archiveStatistics <- eventualArchiveStatistics
       geocoded <- eventualGeocoded
 
     } yield {
       log.info("Secondary justin: " + websites.size)
       log.info("Secondary geocoded: " + geocoded.size)
-    //  log.info("Secondary archive months: " + archiveMonths)
-     // log.info("Secondary archive statistics: " + archiveStatistics)
+      log.info("Secondary archive months: " + archiveMonths)
+      log.info("Secondary archive statistics: " + archiveStatistics)
 
       populateSecondaryJustin(mv, websites)
       populateGeocoded(mv, geocoded)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
-   //   archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
+      archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
     }
 
     Await.result(eventualPopulated, TenSeconds)
