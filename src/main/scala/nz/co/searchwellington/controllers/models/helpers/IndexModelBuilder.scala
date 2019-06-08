@@ -11,6 +11,7 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -23,8 +24,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                 loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
+  private val log = Logger.getLogger(classOf[IndexModelBuilder])
+
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
-  private val NUMBER_OF_COMMENTED_TO_SHOW = 2
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
@@ -43,6 +45,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request))
       } yield {
         val mv = new ModelAndView
+        log.info("Main content newitems: " + latestNewsitems.size)
         mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
         monthOfLastItem(latestNewsitems).map { d =>
           mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
@@ -82,6 +85,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
       geocoded <- eventualGeocoded
 
     } yield {
+      log.info("Secondary justin: " + websites.size)
+      log.info("Secondary geocoded: " + geocoded.size)
+      log.info("Secondary archive months: " + archiveMonths)
+      log.info("Secondary archive statistics: " + archiveStatistics)
+
       populateSecondaryJustin(mv, websites)
       populateGeocoded(mv, geocoded)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
