@@ -54,6 +54,7 @@ class GeotaggedModelBuilderTest {
   def geotaggedNewsitemsPageShouldHavePaginationInformation {
     request.setPathInfo("/geotagged")
     when(contentRetrievalService.getGeocodedNewitemsCount).thenReturn(TOTAL_GEOTAGGED_COUNT)
+    when(contentRetrievalService.getGeocodedNewsitems(0, 30)).thenReturn(Future.successful(Seq.empty))
 
     val modelAndView = modelBuilder.populateContentModel(request).get
 
@@ -122,6 +123,7 @@ class GeotaggedModelBuilderTest {
   def locationSearchShouldNotSetLocationWasInvalid {
     request.setPathInfo("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation)
+    when(contentRetrievalService.getGeocodedNewsitems(0, 30)).thenReturn(Future.successful(Seq.empty))
 
     val modelAndView = modelBuilder.populateContentModel(request).get
 
