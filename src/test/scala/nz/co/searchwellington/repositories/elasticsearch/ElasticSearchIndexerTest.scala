@@ -28,7 +28,7 @@ class ElasticSearchIndexerTest {
   private val TenSeconds = Duration(10, SECONDS)
 
   {
-    when(showBrokenDecisionService.shouldShowBroken()).thenReturn(true) // TODO This is in an awkward position
+    when(showBrokenDecisionService.shouldShowBroken).thenReturn(true) // TODO This is in an awkward position
   }
 
   @Test
