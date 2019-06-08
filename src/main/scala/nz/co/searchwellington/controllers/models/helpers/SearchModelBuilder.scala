@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -12,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
 
-@Component class SearchModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder)
+@Component class SearchModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, loggedInUserFilter: LoggedInUserFilter)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val KEYWORDS_PARAMETER = "keywords"
@@ -34,15 +35,15 @@ import scala.concurrent.Await
     val contentWithCount = maybeTag.fold { // The problem here is that you should be able to content and count in one go
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
 
-      val content = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS)
-      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords)
+      val content = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, Option(loggedInUserFilter.getLoggedInUser))
       (content, contentCount)
 
     }{ tag =>
       mv.addObject("tag", tag)
       
-      val content = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS)
-      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag)
+      val content = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag, Option(loggedInUserFilter.getLoggedInUser))
       (content, contentCount)
     }
 
@@ -71,11 +72,9 @@ import scala.concurrent.Await
 
   @Override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     import scala.collection.JavaConverters._
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
   }
 
-  @Override def getViewName(mv: ModelAndView): String = {
-    return "search"
-  }
+  @Override def getViewName(mv: ModelAndView): String = "search"
 
 }

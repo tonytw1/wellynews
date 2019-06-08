@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 
 @Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                               frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with CommonSizes {
+                                                               frontendResourceMapper: FrontendResourceMapper, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with CommonSizes {
 
   private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
 
@@ -27,7 +27,7 @@ import org.springframework.web.servlet.ModelAndView
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populatePublisherTagCombinerNewsitems(mv: ModelAndView, publisher: Website, tag: Tag) {
-      val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS)
+      val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
 
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, publisherNewsitems.asJava)

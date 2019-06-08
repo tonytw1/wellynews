@@ -55,8 +55,8 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       mv.addObject("profileuser", user)
 
       import scala.collection.JavaConverters._
-      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user).asJava)
-      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user).asJava)
+      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava)
+      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava)
       mv
 
     }.getOrElse {

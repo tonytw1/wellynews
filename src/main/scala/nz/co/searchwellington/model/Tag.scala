@@ -33,7 +33,7 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
 
   def isHidden: Boolean = hidden
 
-  def getDescription: String = description.getOrElse(null)
+  def getDescription: String = description.orNull
 
   def isFeatured: Boolean = featured
 

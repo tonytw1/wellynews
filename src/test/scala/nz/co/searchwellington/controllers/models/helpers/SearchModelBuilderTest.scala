@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -15,6 +16,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 class SearchModelBuilderTest {
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
   val urlBuilder = mock(classOf[UrlBuilder])
+  val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
   val tag = Tag(id = UUID.randomUUID().toString, name = "A tag")
   val tags = Seq(tag)
@@ -26,13 +28,14 @@ class SearchModelBuilderTest {
   val anotherTagNewsitem = mock(classOf[FrontendResource])
   val tagKeywordNewsitemResults: Seq[FrontendResource] = Seq(tagNewsitem, anotherTagNewsitem)
 
+  private val loggedInUser = None
+
   @Before def setup {
     request = new MockHttpServletRequest
-    modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder)
+    modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, loggedInUserFilter)
   }
 
   @Test
-  @throws[Exception]
   def keywordShouldBeSetToIndicateASearch {
     request.setPathInfo("")
     assertFalse(modelBuilder.isValid(request))
@@ -42,7 +45,6 @@ class SearchModelBuilderTest {
   }
 
   @Test
-  @throws[Exception]
   def pageHeadingShouldBeSearchKeyword {
     request.setParameter("keywords", "widgets")
 
@@ -51,7 +53,6 @@ class SearchModelBuilderTest {
 
 
   @Test
-  @throws[Exception]
   def shouldShowTagIfTagFilterIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
@@ -62,11 +63,10 @@ class SearchModelBuilderTest {
   }
 
   @Test
-  @throws[Exception]
   def shouldShowTagResultsIfTagFilterIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30)).thenReturn(tagKeywordNewsitemResults)
+    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
 
     val mv = modelBuilder.populateContentModel(request).get
 

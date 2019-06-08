@@ -24,15 +24,6 @@
 	#else
 		<a href="${site_information.url}/$tagToRender.name">$tagToRender.displayName</a>
 	#end
-
-
-	#if ($tagToRender.getChildren().size() > 0) 		
-		<ul class="$class">
-		#foreach ($childtag in $tagToRender.getChildren())
-			#showNode($childtag)
-		#end
-		</ul>
-	#end
 	</li>
 #end
 

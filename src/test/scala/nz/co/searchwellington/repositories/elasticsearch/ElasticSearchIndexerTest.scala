@@ -27,8 +27,10 @@ class ElasticSearchIndexerTest {
 
   private val TenSeconds = Duration(10, SECONDS)
 
+  val loggedInUser = User()
+
   {
-    when(showBrokenDecisionService.shouldShowBroken).thenReturn(true) // TODO This is in an awkward position
+    when(showBrokenDecisionService.shouldShowBroken(Some(loggedInUser))).thenReturn(true) // TODO This is in an awkward position
   }
 
   @Test
@@ -42,15 +44,15 @@ class ElasticSearchIndexerTest {
 
     indexResources(Seq(newsitem, website, feed))
 
-    val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"))), TenSeconds)
+    val newsitems = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N")), loggedInUser = Some(loggedInUser)), TenSeconds)
     assertTrue(newsitems._1.nonEmpty)
     assertTrue(newsitems._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "N"))
 
-    val websites = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"))), TenSeconds)
+    val websites = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W")), loggedInUser = Some(loggedInUser)), TenSeconds)
     assertTrue(websites._1.nonEmpty)
     assertTrue(websites._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "W"))
 
-    val feeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F"))), TenSeconds)
+    val feeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F")), loggedInUser = Some(loggedInUser)), TenSeconds)
     assertTrue(feeds._1.nonEmpty)
     assertTrue(feeds._1.forall(i => Await.result(mongoRepository.getResourceByObjectId(i), TenSeconds).get.`type` == "F"))
   }
@@ -65,7 +67,7 @@ class ElasticSearchIndexerTest {
     indexResources(Seq(acceptedFeed, ignoredFeed))
 
     val acceptedFeeds = Await.result(elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("F"),
-      feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT))), TenSeconds)
+      feedAcceptancePolicy = Some(FeedAcceptancePolicy.ACCEPT)), loggedInUser = Some(loggedInUser)), TenSeconds)
     assertTrue(acceptedFeeds._1.nonEmpty)
     assertTrue(acceptedFeeds._1.contains(acceptedFeed._id))
     assertFalse(acceptedFeeds._1.contains(ignoredFeed._id))
@@ -156,7 +158,7 @@ class ElasticSearchIndexerTest {
 
     indexResources(Seq(publisher, newsitem))
 
-    val publisherIds = Await.result(elasticSearchIndexer.getAllPublishers, TenSeconds)
+    val publisherIds = Await.result(elasticSearchIndexer.getAllPublishers(loggedInUser = Some(loggedInUser)), TenSeconds)
 
     assertTrue(publisherIds.nonEmpty)
     assertTrue(publisherIds.map(_._1).contains(publisher._id.stringify))
@@ -173,7 +175,7 @@ class ElasticSearchIndexerTest {
 
     indexResources(Seq(newsitem, anotherNewsitem, yetAnotherNewsitem))
 
-    val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths, TenSeconds)
+    val archiveLinks = Await.result(elasticSearchIndexer.getArchiveMonths(loggedInUser = Some(loggedInUser)), TenSeconds)
 
     assertTrue(archiveLinks.nonEmpty)
     val monthStrings = archiveLinks.map(_.getMonth.toString)
@@ -195,7 +197,7 @@ class ElasticSearchIndexerTest {
     val interval = new Interval(startOfMonth, startOfMonth.plusMonths(1))
     val monthNewsitems = ResourceQuery(`type` = Some("N"), interval = Some(interval))
 
-    val results = Await.result(elasticSearchIndexer.getResources(monthNewsitems), TenSeconds)
+    val results = Await.result(elasticSearchIndexer.getResources(monthNewsitems, loggedInUser = Some(loggedInUser)), TenSeconds)
 
     import scala.concurrent.ExecutionContext.Implicits.global
     val newsitemsInInterval = Await.result(Future.sequence(results._1.map(i => mongoRepository.getResourceByObjectId(i))), TenSeconds).flatten
@@ -220,7 +222,7 @@ class ElasticSearchIndexerTest {
 
     indexResources(Seq(website, newsitem, watchlist, feed))
 
-    val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts, TenSeconds)
+    val typeCounts = Await.result(elasticSearchIndexer.getArchiveCounts(Some(loggedInUser)), TenSeconds)
 
     val typesFound = typeCounts.keys.toSet
     assertEquals(Set("W", "N", "F", "L"), typesFound)
@@ -233,7 +235,7 @@ class ElasticSearchIndexerTest {
   }
 
   private def queryForResources(query: ResourceQuery): Seq[Resource] = {
-    Await.result(elasticSearchIndexer.getResources(query).flatMap { rs =>
+    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = Some(loggedInUser)).flatMap { rs =>
       Future.sequence(rs._1.map(mongoRepository.getResourceByObjectId)).map(_.flatten)
     }, TenSeconds)
   }

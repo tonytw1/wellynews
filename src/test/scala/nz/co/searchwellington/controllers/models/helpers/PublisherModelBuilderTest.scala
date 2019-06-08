@@ -4,7 +4,7 @@ import java.util
 import java.util.List
 
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -35,6 +35,7 @@ class PublisherModelBuilderTest {
   @Mock private[models] var geotaggedNewsitem: FrontendNewsitem = null
   @Mock private[models] var geotag: Place = null
   @Mock private[models] var frontendResourceMapper: FrontendResourceMapper = null
+  @Mock private[models] var loggedInUserFilter: LoggedInUserFilter = null
 
   private[models] var request: MockHttpServletRequest = null
 
@@ -55,13 +56,15 @@ class PublisherModelBuilderTest {
     val geotaggedNewsitems: List[FrontendNewsitem] = new util.ArrayList();
     geotaggedNewsitems.add(geotaggedNewsitem)
 
-    when(contentRetrievalService.getLatestNewsitems(5)).thenReturn(Future.successful(Seq.empty))
+    val loggedInUser = None
+
+    when(contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
     import scala.collection.JavaConversions._
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
     when(relatedTagsService.getRelatedLinksForPublisher(publisher)).thenReturn(Seq())
     val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor,
-      geocodeToPlaceMapper, commonAttributesModelBuilder, frontendResourceMapper)
+      geocodeToPlaceMapper, commonAttributesModelBuilder, frontendResourceMapper, loggedInUserFilter)
     val mv = new ModelAndView
     mv.addObject("main_content", publisherNewsitems)
 

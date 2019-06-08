@@ -5,7 +5,7 @@ import java.util.List
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -26,7 +26,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               geocodeToPlaceMapper: GeocodeToPlaceMapper,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
-                                              frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
+                                              frontendResourceMapper: FrontendResourceMapper,
+                                              loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])
@@ -49,7 +50,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val mv = new ModelAndView
       mv.addObject(PAGE, page)
       val startIndex = getStartIndex(page)
-      val totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag)
+      val totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag, Option(loggedInUserFilter.getLoggedInUser))
 
       if (startIndex > totalNewsitemCount) {
         None
@@ -77,7 +78,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           mv.addObject("children", children.asJava)
         }
 
-        val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS)
+        val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
         log.info("Got tagged newsitems: " + taggedNewsitems.size)
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
@@ -102,13 +103,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     val tag = tagFromRequest(request)
 
-    val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
-    val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
-    val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8)
-    val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8)
-    val eventualTagWatchlist: Future[Seq[FrontendResource]] = contentRetrievalService.getTagWatchlist(tag)
-    val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag)
-    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5)
+    val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+    val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, Option(loggedInUserFilter.getLoggedInUser))
+    val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUserFilter.getLoggedInUser))
+    val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8, Option(loggedInUserFilter.getLoggedInUser))
+    val eventualTagWatchlist: Future[Seq[FrontendResource]] = contentRetrievalService.getTagWatchlist(tag, Option(loggedInUserFilter.getLoggedInUser))
+    val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag, Option(loggedInUserFilter.getLoggedInUser))
+    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
 
     val eventuallyPopulated = for {
       geotaggedNewsitems <- eventualGeotaggedNewsitems

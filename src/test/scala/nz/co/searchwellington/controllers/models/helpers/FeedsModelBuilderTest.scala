@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.DiscoveredFeed
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
@@ -19,11 +20,14 @@ class FeedsModelBuilderTest {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val suggestedFeeditemsService = mock(classOf[SuggestedFeeditemsService])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val urlBuilder = mock(classOf[UrlBuilder])
 
-  var request: MockHttpServletRequest = new MockHttpServletRequest
+  private val loggedInUser = None
 
-  val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
+  var request = new MockHttpServletRequest
+
+  val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder, loggedInUserFilter)
 
   @Before
   def setUp {
@@ -38,7 +42,7 @@ class FeedsModelBuilderTest {
   @Test
   def shouldPopulateMainContentWithFeeds {
     val feeds = Seq(FrontendFeed(id = UUID.randomUUID().toString), FrontendFeed(id = UUID.randomUUID().toString))
-    when(contentRetrievalService.getFeeds(None)).thenReturn(Future.successful(feeds))
+    when(contentRetrievalService.getFeeds(None, loggedInUser)).thenReturn(Future.successful(feeds))
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -52,7 +56,7 @@ class FeedsModelBuilderTest {
     when(suggestedFeeditemsService.getSuggestionFeednewsitems(6)).thenReturn(Future.successful(suggestedFeeditems))
     val discoveredFeeditems = Seq(DiscoveredFeed(url = "http://something", referencedFrom = "http://somewhere", seen = DateTime.now.toDate))
     when(contentRetrievalService.getDiscoveredFeeds).thenReturn(Future.successful(discoveredFeeditems))
-    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate()).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq.empty))
     val mv = new ModelAndView()
 
     modelBuilder.populateExtraModelContent(request, mv)

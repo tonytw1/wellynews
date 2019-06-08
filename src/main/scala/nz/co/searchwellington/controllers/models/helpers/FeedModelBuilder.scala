@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -20,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedNewsItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                                frontendResourceMapper: FrontendResourceMapper,
                                                commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                               feeditemToNewsitemService: FeeditemToNewsitemService) extends ModelBuilder
+                                               feeditemToNewsitemService: FeeditemToNewsitemService, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
   with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedModelBuilder])
@@ -66,7 +67,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate().map { feeds =>
+    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map { feeds =>
       commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
     }, TenSeconds)
   }

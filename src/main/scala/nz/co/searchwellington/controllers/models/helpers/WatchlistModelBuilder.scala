@@ -1,8 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-
-import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -11,7 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class WatchlistModelBuilder @Autowired()(var contentRetrievalService: ContentRetrievalService, var rssUrlBuilder: RssUrlBuilder, var urlBuilder: UrlBuilder, var commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
+@Component class WatchlistModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
+                                                    rssUrlBuilder: RssUrlBuilder,
+                                                    urlBuilder: UrlBuilder,
+                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                    loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder {
 
   private val log = Logger.getLogger(classOf[WatchlistModelBuilder])
 
@@ -28,7 +31,7 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("link", urlBuilder.getWatchlistUrl)
 
       import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, contentRetrievalService.getAllWatchlists.asJava)
+      mv.addObject(MAIN_CONTENT, contentRetrievalService.getAllWatchlists(Option(loggedInUserFilter.getLoggedInUser)).asJava)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
       Some(mv)

@@ -139,46 +139,48 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       )
   }
 
-  def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending): Future[(Seq[BSONObjectID], Long)] = executeResourceQuery(query, order)
+  def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
+    executeResourceQuery(query, order, loggedInUser)
+  }
 
-  def getAllPublishers: Future[Seq[(String, Long)]] = {
+  def getAllPublishers(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     val allNewsitems = ResourceQuery(`type` = Some("N"))
-    getPublisherAggregationFor(allNewsitems)
+    getPublisherAggregationFor(allNewsitems,   loggedInUser)
   }
 
-  def getPublishersForTag(tag: Tag): Future[Seq[(String, Long)]] = {
+  def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
-    getPublisherAggregationFor(newsitemsForTag)
+    getPublisherAggregationFor(newsitemsForTag, loggedInUser)
   }
 
-  def getPublishersNear(latLong: LatLong, radius: Double): Future[Seq[(String, Long)]] = {
-    getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius))
+  def getPublishersNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+    getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius), loggedInUser)
   }
 
-  def getTagsNear(latLong: LatLong, radius: Double): Future[Seq[(String, Long)]] = {
-    getAggregationFor(nearbyNewsitemsQuery(latLong, radius), Tags)
+  def getTagsNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+    getAggregationFor(nearbyNewsitemsQuery(latLong, radius), Tags, loggedInUser)
   }
 
-  def getTagAggregation(tag: Tag): Future[Seq[(String, Long)]] = {
+  def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
-    getAggregationFor(newsitemsForTag, Tags)
+    getAggregationFor(newsitemsForTag, Tags, loggedInUser)
   }
 
-  private def getPublisherAggregationFor(query: ResourceQuery): Future[Seq[(String, Long)]] = {
-    getAggregationFor(query, Publisher)
+  private def getPublisherAggregationFor(query: ResourceQuery, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+    getAggregationFor(query, Publisher, loggedInUser)
   }
 
-  private def getAggregationFor(query: ResourceQuery, aggName: String): Future[Seq[(String, Long)]] = {
+  private def getAggregationFor(query: ResourceQuery, aggName: String,loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     val aggs = Seq(termsAgg(aggName, aggName) size Integer.MAX_VALUE)
-    val request = (search(Index / Resources) query composeQueryFor(query)) limit 0 aggregations (aggs)
+    val request = (search(Index / Resources) query composeQueryFor(query, loggedInUser)) limit 0 aggregations (aggs)
     client.execute(request).map { r =>
       r.result.aggregations.terms(aggName).buckets.map(b => (b.key, b.docCount))
     }
   }
 
-  def getArchiveMonths: Future[Seq[ArchiveLink]] = {
+  def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-    val request = search(Index / Resources) query composeQueryFor(allNewsitems) limit 0 aggregations (aggs)
+    val request = search(Index / Resources) query composeQueryFor(allNewsitems, loggedInUser) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggregations.dateHistogram("date")
@@ -189,10 +191,10 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  def getArchiveCounts: Future[Map[String, Long]] = {
+  def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
-    val request = search(Index / Resources) query withModeration(everyThing) limit 0 aggregations (aggs)
+    val request = search(Index / Resources) query withModeration(everyThing, loggedInUser) limit 0 aggregations (aggs)
 
     client.execute(request).map { r =>
       val typeAgg = r.result.aggregations.terms("type")
@@ -206,8 +208,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def byTitleAscending(request: SearchRequest): SearchRequest = request sortByFieldAsc TitleSort
 
-  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest): Future[(Seq[BSONObjectID], Long)] = {
-    val request = order(search(Index / Resources) query composeQueryFor(query)) start query.startIndex limit query.maxItems
+  private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
+    val request = order(search(Index / Resources) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
     log.info("Request: " + request)
     client.execute(request).map { r =>
       val hits = r.result.hits.hits
@@ -217,7 +219,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     }
   }
 
-  private def composeQueryFor(query: ResourceQuery): Query = {
+  private def composeQueryFor(query: ResourceQuery, loggedInUser: Option[User]): Query = {
     val conditions = Seq(
       query.`type`.map(t => matchQuery(Type, t)),
       query.tags.map { tags =>
@@ -259,7 +261,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       }
     ).flatten
 
-    withModeration(must(conditions))
+    withModeration(must(conditions), loggedInUser)
   }
 
   private val allNewsitems = ResourceQuery(`type` = Some("N"))

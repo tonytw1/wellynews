@@ -38,6 +38,8 @@ class ProfileControllerTest {
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
 
+  private val loggedInUser = None
+
   @Before def setup {
     request = new MockHttpServletRequest
     response = new MockHttpServletResponse
@@ -54,8 +56,8 @@ class ProfileControllerTest {
   def usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService {
     request.setPathInfo("/profiles/" + VALID_PROFILE_NAME)
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
-    when(contentRetrievalService.getOwnedBy(existingUser)).thenReturn(existingUsersSubmittedItems)
-    when(contentRetrievalService.getTaggedBy(existingUser)).thenReturn(existingUsersTaggedItems)
+    when(contentRetrievalService.getOwnedBy(existingUser, loggedInUser)).thenReturn(existingUsersSubmittedItems)
+    when(contentRetrievalService.getTaggedBy(existingUser, loggedInUser)).thenReturn(existingUsersTaggedItems)
 
     val mv = controller.profile(request, response)
 

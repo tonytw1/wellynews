@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed}
@@ -48,10 +49,13 @@ class FeedModelBuilderTest {
 
   val frontendFeed = mock(classOf[FrontendFeed])
 
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+  private val loggedInUser = None
+
   var request: MockHttpServletRequest = null
 
   val modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
-      feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService)
+      feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, loggedInUserFilter)
 
   @Before
   def setUp {
@@ -96,7 +100,7 @@ class FeedModelBuilderTest {
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(geotaggedFeedNewsitems)
-    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate()).thenReturn(Future.successful(Seq()))
+    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     val mv = modelBuilder.populateContentModel(request).get
 
     modelBuilder.populateExtraModelContent(request, mv)

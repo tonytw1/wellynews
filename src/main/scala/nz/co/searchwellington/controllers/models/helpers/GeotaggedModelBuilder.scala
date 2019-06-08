@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -20,7 +20,8 @@ import scala.concurrent.Await
                                                      urlBuilder: UrlBuilder,
                                                      rssUrlBuilder: RssUrlBuilder,
                                                      relatedTagsService: RelatedTagsService,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder)
+                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                     loggedInUserFilter: LoggedInUserFilter)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[GeotaggedModelBuilder])
@@ -48,7 +49,7 @@ import scala.concurrent.Await
       if (hasUserSuppliedALocation) {
         val radius = getLocationSearchRadius(request)
         val latLong = userSuppliedPlace.getLatLong
-        val totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius)
+        val totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
         if (startIndex > totalNearbyCount) {
           None
         }
@@ -56,14 +57,14 @@ import scala.concurrent.Await
         populatePagination(mv, startIndex, totalNearbyCount)
         mv.addObject("location", userSuppliedPlace)
         mv.addObject("radius", radius)
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS).asJava)
+        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)).asJava)
 
-        val relatedTagLinks = Await.result(relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius), TenSeconds)
+        val relatedTagLinks = Await.result(relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
         if (relatedTagLinks.nonEmpty) {
           log.info("Found geo related tags: " + relatedTagLinks)
           mv.addObject("related_tags", relatedTagLinks.asJava)
         }
-        val relatedPublisherLinks = Await.result(relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius), TenSeconds).toList
+        val relatedPublisherLinks = Await.result(relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).toList
         if (relatedPublisherLinks.nonEmpty) {
           mv.addObject("related_publishers", relatedPublisherLinks.asJava)
         }
@@ -73,14 +74,14 @@ import scala.concurrent.Await
         Some(mv)
 
       } else {
-        val totalGeotaggedCount = contentRetrievalService.getGeocodedNewitemsCount
+        val totalGeotaggedCount = contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUserFilter.getLoggedInUser))
         if (startIndex > totalGeotaggedCount) {
           None
         }
         populatePagination(mv, startIndex, totalGeotaggedCount)
 
         mv.addObject("heading", "Geotagged newsitems")
-        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS), TenSeconds).asJava)
+        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
         Some(mv)
       }
@@ -91,7 +92,7 @@ import scala.concurrent.Await
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
   }
 
   def getViewName(mv: ModelAndView): String = {

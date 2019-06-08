@@ -16,7 +16,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 import scala.concurrent.Await
 
 @Controller class RssController @Autowired()(siteInformation: SiteInformation, contentRetrievalService: ContentRetrievalService,
-                                             rssUrlBuilder: RssUrlBuilder, viewFactory: ViewFactory) extends ReasonableWaits {
+                                             rssUrlBuilder: RssUrlBuilder, viewFactory: ViewFactory, loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
 
   @RequestMapping(Array("/rss")) // TODO Should be a special case of the index model builder.
   @throws(classOf[Exception])
@@ -27,7 +27,7 @@ import scala.concurrent.Await
 
     val model: util.HashMap[String, Any] = Maps.newHashMap()
     import scala.collection.JavaConverters._
-    model.put("data", Await.result(contentRetrievalService.getLatestNewsitems(), TenSeconds).asJava)
+    model.put("data", Await.result(contentRetrievalService.getLatestNewsitems(loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
     new ModelAndView(viewFactory.getRssView(title, link, description), model)
   }
 

@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 // TODO move out of controllers package
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, Website}
+import nz.co.searchwellington.model.{PublisherContentCount, Tag, TagContentCount, User, Website}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -20,7 +20,7 @@ import scala.concurrent.{Await, Future}
                                                  mongoRepository: MongoRepository,
                                                  elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits {
 
-  def getRelatedTagsForTag(tag: Tag, maxItems: Int): Future[Seq[TagContentCount]] = {
+  def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
 
     def suitableRelatedTag(tagFacetsForTag: TagContentCount): Boolean = {
       def isTagSuitableRelatedTag(relatedTag: Tag): Boolean = {
@@ -30,7 +30,7 @@ import scala.concurrent.{Await, Future}
       isTagSuitableRelatedTag(tagFacetsForTag.tag)
     }
 
-    val eventualTagContentCounts: Future[Seq[TagContentCount]] = elasticSearchIndexer.getTagAggregation(tag).flatMap { ts =>
+    val eventualTagContentCounts: Future[Seq[TagContentCount]] = elasticSearchIndexer.getTagAggregation(tag, loggedInUser).flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
 
@@ -43,20 +43,20 @@ import scala.concurrent.{Await, Future}
     Seq() // TODO implement
   }
 
-  def getRelatedPublishersForTag(tag: Tag, maxItems: Int): Future[Seq[PublisherContentCount]] = {
-    elasticSearchIndexer.getPublishersForTag(tag).map { publisherFacetsForTag =>
+  def getRelatedPublishersForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
+    elasticSearchIndexer.getPublishersForTag(tag, loggedInUser).map { publisherFacetsForTag =>
       publisherFacetsForTag.flatMap(toPublisherContentCount)
     }
   }
 
-  def getRelatedPublishersForLocation(place: Place, radius: Double): Future[Seq[PublisherContentCount]] = {
-    elasticSearchIndexer.getPublishersNear(place.getLatLong, radius).map { publisherFacetsNear =>
+  def getRelatedPublishersForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[PublisherContentCount]] = {
+    elasticSearchIndexer.getPublishersNear(place.getLatLong, radius, loggedInUser).map { publisherFacetsNear =>
       publisherFacetsNear.flatMap(toPublisherContentCount)
     }
   }
 
-  def getRelatedTagsForLocation(place: Place, radius: Double): Future[Seq[TagContentCount]] = {
-    elasticSearchIndexer.getTagsNear(place.getLatLong, radius).flatMap { ts =>
+  def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
+    elasticSearchIndexer.getTagsNear(place.getLatLong, radius, loggedInUser).flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
   }

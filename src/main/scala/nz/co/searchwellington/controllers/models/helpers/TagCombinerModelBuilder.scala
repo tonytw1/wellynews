@@ -6,7 +6,7 @@ import java.util.List
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -17,7 +17,8 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.Await
 
 @Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
-                                                      relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder)
+                                                      relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                      loggedInUserFilter: LoggedInUserFilter)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
@@ -32,7 +33,7 @@ import scala.concurrent.Await
       import scala.collection.JavaConversions._
 
       val startIndex = getStartIndex(page)
-      val totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags.toSet)
+      val totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags.toSet, Option(loggedInUserFilter.getLoggedInUser))
 
       if (startIndex > totalNewsitemCount) {
         None
@@ -50,7 +51,7 @@ import scala.concurrent.Await
           mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag))
           populatePagination(mv, startIndex, totalNewsitemCount)
 
-          val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS)
+          val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
           mv.addObject(MAIN_CONTENT, taggedNewsitems)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(tags.get(0), tags.get(1)), rssUrlBuilder.getRssUrlForTagCombiner(tags.get(0), tags.get(1)))
           Some(mv)
@@ -75,10 +76,10 @@ import scala.concurrent.Await
     val tags: util.List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
     if (!tags.isEmpty) {
       val tag = tags.get(0)
-      mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8))
+      mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUserFilter.getLoggedInUser)))
       import scala.collection.JavaConverters._
-      mv.addObject("latest_news", Await.result(contentRetrievalService.getLatestWebsites(5), TenSeconds).asJava)
-      val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES)
+      mv.addObject("latest_news", Await.result(contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
+      val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
       mv.addObject("websites", taggedWebsites)
     }
   }

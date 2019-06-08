@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
 import nz.co.searchwellington.urls.UrlBuilder
@@ -18,7 +18,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                       rssUrlBuilder: RssUrlBuilder,
                                                       urlBuilder: UrlBuilder,
                                                       contentRetrievalService: ContentRetrievalService,
-                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
   with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SuggestionsModelBuilder])
@@ -45,7 +45,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate().map { feeds =>
+    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map { feeds =>
       commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
     }, TenSeconds)
   }

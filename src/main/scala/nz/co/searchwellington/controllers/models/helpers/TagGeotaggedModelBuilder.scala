@@ -4,7 +4,7 @@ import java.util.List
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.RssUrlBuilder
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -18,7 +18,8 @@ import scala.concurrent.Await
 
 @Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                        urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder,
-                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with ReasonableWaits {
+                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                       loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with CommonSizes with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
@@ -37,7 +38,7 @@ import scala.concurrent.Await
       mv.addObject("heading", tag.getDisplayName + " geotagged")
       mv.addObject("description", "Geotagged " + tag.getDisplayName + " newsitems")
       mv.addObject("link", urlBuilder.getTagCommentUrl(tag))
-      val allGeotaggedForTag = Await.result(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW), TenSeconds)
+      val allGeotaggedForTag = Await.result(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
       mv.addObject(MAIN_CONTENT, allGeotaggedForTag)
       if (allGeotaggedForTag.size > 0) {
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagGeotagged(tag), rssUrlBuilder.getRssUrlForTagGeotagged(tag))

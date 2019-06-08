@@ -6,8 +6,9 @@ import org.springframework.stereotype.Component
 
 @Component class ShowBrokenDecisionService @Autowired()(loggedInUserFilter: LoggedInUserFilter) {
 
-  def shouldShowBroken: Boolean = {
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
-    loggedInUser != null && loggedInUser.isAdmin
+  def shouldShowBroken(loggedInUser: Option[User]): Boolean = {
+    loggedInUser.exists { user =>
+      user.isAdmin
+    }
   }
 }

@@ -42,7 +42,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     Await.result(if (isValid(request)) {
       for {
-        latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request))
+        latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
       } yield {
         val mv = new ModelAndView
         log.info("Main content newitems: " + latestNewsitems.size)
@@ -66,7 +66,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       if (loggedInUser != null) {
         val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
         if (ownedCount > 0) {
-          mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser))
+          mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser)))
           if (ownedCount > MAX_OWNED_TO_SHOW_IN_RHS) {
             mv.addObject("owned_moreurl", urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename))
           }
@@ -74,13 +74,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
 
-    val eventualWebsites = contentRetrievalService.getLatestWebsites(4)
-    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts
-    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW)
+    val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser))
+    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, Option(loggedInUserFilter.getLoggedInUser))
 
     val eventualPopulated = for {
       websites <- eventualWebsites
-      archiveMonths <- contentRetrievalService.getArchiveMonths
+      archiveMonths <- contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
       archiveStatistics <- eventualArchiveStatistics
       geocoded <- eventualGeocoded
 

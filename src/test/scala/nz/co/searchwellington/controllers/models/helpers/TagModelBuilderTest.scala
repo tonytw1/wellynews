@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -28,6 +28,7 @@ class TagModelBuilderTest {
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val tagDAO = mock(classOf[TagDAO])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
   private val newsitem1 = mock(classOf[FrontendResource])
   private val newsitem2 = mock(classOf[FrontendResource])
@@ -37,10 +38,12 @@ class TagModelBuilderTest {
   private val parentId = BSONObjectID.generate
   private val tag = Tag(_id = parentId, id = UUID.randomUUID().toString, display_name = TAG_DISPLAY_NAME)
 
+  private val loggedInUser = None
+
   val request = new MockHttpServletRequest()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
-    contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
+    contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper, loggedInUserFilter)
 
   @Before
   def setup {
@@ -69,7 +72,7 @@ class TagModelBuilderTest {
   def tagPageHeadingShouldBeTheTagDisplayName {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems)
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(tagNewsitems)
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -80,7 +83,7 @@ class TagModelBuilderTest {
   def mainContentShouldBeTagNewsitems {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30)).thenReturn(tagNewsitems)
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(tagNewsitems)
 
     val mv = modelBuilder.populateContentModel(request).get
 

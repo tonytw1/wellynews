@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.FeedAcceptancePolicy
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
@@ -16,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class FeedsModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, suggestedFeeditemsService: SuggestedFeeditemsService,
                                                 urlBuilder: UrlBuilder,
-                                                commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with ReasonableWaits {
+                                                commonAttributesModelBuilder: CommonAttributesModelBuilder, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedsModelBuilder])
 
@@ -34,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       import scala.collection.JavaConverters._
       val withAcceptancePolicy = Option(request.getParameter("acceptance")).map(FeedAcceptancePolicy.valueOf)
-      mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getFeeds(withAcceptancePolicy), TenSeconds).asJava)
+      mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
       Some(mv)
 
     } else {
@@ -45,7 +46,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     val eventualSuggestedFeednewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
-    val eventualFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate()
+    val eventualFeeds = contentRetrievalService.getAllFeedsOrderByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser))
 
     val eventuallyPopulated = for {
       suggestedFeednewsitems <- eventualSuggestedFeednewsitems

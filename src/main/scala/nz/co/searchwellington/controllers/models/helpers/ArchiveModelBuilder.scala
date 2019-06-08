@@ -5,6 +5,7 @@ import java.util.{Date, List}
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
@@ -18,7 +19,8 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 
 import scala.concurrent.Await
 
-@Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
+@Component class ArchiveModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService,
+                                                   loggedInUserFilter: LoggedInUserFilter) extends
   ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
@@ -39,7 +41,7 @@ import scala.concurrent.Await
         mv.addObject("description", "Archived newsitems for the month of " + dateFormatter.fullMonthYear(month))
         val interval = new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
         import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsForInterval(interval).asJava)
+        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsForInterval(interval, Option(loggedInUserFilter.getLoggedInUser)).asJava)
         mv
       }
 
@@ -50,9 +52,9 @@ import scala.concurrent.Await
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     getArchiveDateFromPath(request.getPathInfo).map { month =>
-      val archiveLinks = Await.result(contentRetrievalService.getArchiveMonths, TenSeconds)
+      val archiveLinks = Await.result(contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
       populateNextAndPreviousLinks(mv, month, archiveLinks)
-      val archiveStatistics = Await.result(contentRetrievalService.getArchiveCounts, TenSeconds)
+      val archiveStatistics = Await.result(contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
 
       archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
     }

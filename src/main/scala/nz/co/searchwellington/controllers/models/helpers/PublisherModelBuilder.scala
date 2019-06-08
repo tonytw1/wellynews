@@ -5,7 +5,7 @@ import java.util.List
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
-import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, Website}
@@ -19,14 +19,15 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
 
-@Component class PublisherModelBuilder @Autowired() (rssUrlBuilder: RssUrlBuilder,
-                                                     relatedTagsService: RelatedTagsService,
-                                                     contentRetrievalService: ContentRetrievalService,
-                                                     urlBuilder: UrlBuilder,
-                                                     geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
-                                                     geocodeToPlaceMapper: GeocodeToPlaceMapper,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
+@Component class PublisherModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder,
+                                                    relatedTagsService: RelatedTagsService,
+                                                    contentRetrievalService: ContentRetrievalService,
+                                                    urlBuilder: UrlBuilder,
+                                                    geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
+                                                    geocodeToPlaceMapper: GeocodeToPlaceMapper,
+                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                    frontendResourceMapper: FrontendResourceMapper,
+                                                    loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
@@ -50,13 +51,13 @@ import scala.concurrent.Await
       mv.addObject("location", frontendPublisher.getPlace)
 
       val startIndex = getStartIndex(page)
-      val mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher)
+      val mainContentTotal = contentRetrievalService.getPublisherNewsitemsCount(publisher, Option(loggedInUserFilter.getLoggedInUser))
       if (mainContentTotal > 0) {
-        val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex)
+        val publisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, Option(loggedInUserFilter.getLoggedInUser))
         import scala.collection.JavaConverters._
         mv.addObject(MAIN_CONTENT, publisherNewsitems.asJava)
 
-        mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher).asJava)
+        mv.addObject("feeds", contentRetrievalService.getPublisherFeeds(publisher, Option(loggedInUserFilter.getLoggedInUser)).asJava)
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
         populatePagination(mv, startIndex, mainContentTotal)
       }
@@ -78,19 +79,19 @@ import scala.concurrent.Await
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     import scala.collection.JavaConverters._
 
-    val publisherFeeds = contentRetrievalService.getPublisherFeeds(publisher)
+    val publisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, Option(loggedInUserFilter.getLoggedInUser))
     mv.addObject("feeds", publisherFeeds.asJava)
 
-    mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher).asJava)
+    mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher, Option(loggedInUserFilter.getLoggedInUser)).asJava)
     populateGeotaggedItems(mv)
     val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
-    if (relatedTagLinks.size > 0) {
+    if (relatedTagLinks.nonEmpty) {
       mv.addObject("related_tags", relatedTagLinks.asJava)
     }
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
   }
 
-  def getViewName(mv: ModelAndView):String = {
+  def getViewName(mv: ModelAndView): String = {
     "publisher"
   }
 

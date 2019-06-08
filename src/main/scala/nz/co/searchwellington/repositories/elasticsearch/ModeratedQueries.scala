@@ -3,14 +3,15 @@ package nz.co.searchwellington.repositories.elasticsearch
 import com.sksamuel.elastic4s.http.ElasticDsl.{bool, must, termQuery}
 import com.sksamuel.elastic4s.searches.queries.Query
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
+import nz.co.searchwellington.model.User
 
 trait ModeratedQueries extends ElasticFields {
 
   def showBrokenDecisionService: ShowBrokenDecisionService
 
-  def withModeration(query: Query): Query = {
+  def withModeration(query: Query, loggedInUser: Option[User]): Query = {
 
-    if (!showBrokenDecisionService.shouldShowBroken) {
+    if (!showBrokenDecisionService.shouldShowBroken(loggedInUser)) {
       /*
         if (!shouldShowBroken) {
           val contentIsOk: TermQueryBuilder = QueryBuilders.termQuery(HTTP_STATUS, "200")

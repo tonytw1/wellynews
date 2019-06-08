@@ -27,6 +27,8 @@ class IndexModelBuilderTest {
   val anotherNewsitem = mock(classOf[FrontendResource])
   val latestNewsitems = Seq(newsitem, anotherNewsitem)
 
+  private val loggedInUser = None
+
   val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
 
   @Before
@@ -53,7 +55,7 @@ class IndexModelBuilderTest {
 
   @Test
   def indexPageMainContentIsTheLatestNewsitems {
-    when(contentRetrievalService.getLatestNewsitems(30, 1)).thenReturn(Future.successful(latestNewsitems))
+    when(contentRetrievalService.getLatestNewsitems(30, 1, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
 
     val mv = modelBuilder.populateContentModel(request).get
 

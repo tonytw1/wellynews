@@ -32,7 +32,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     mv.addObject("heading", "About")
     mv.setViewName("about")
     import scala.collection.JavaConverters._
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
     mv
   }
 
@@ -44,7 +44,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "Archive")
     import scala.collection.JavaConverters._
-    mv.addObject("archiveLinks", Await.result(contentRetrievalService.getArchiveMonths, TenSeconds).asJava)
+    mv.addObject("archiveLinks", Await.result(contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
     mv.setViewName("archiveIndex")
     mv
   }
@@ -56,8 +56,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
     urlStack.setUrlStack(request)
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "The Wellynews API")
-    mv.addObject("feeds", contentRetrievalService.getFeeds())
-    mv.addObject("publishers", contentRetrievalService.getAllPublishers)
+    mv.addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = Option(loggedInUserFilter.getLoggedInUser)))
+    mv.addObject("publishers", contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser)))
     mv.addObject("api_tags", contentRetrievalService.getTopLevelTags)
     mv.setViewName("api")
     mv
@@ -71,7 +71,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     commonModelObjectsService.populateCommonLocal(mv)
     mv.addObject("heading", "RSS feeds")
     setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-    mv.addObject("feedable_tags", contentRetrievalService.getFeedworthyTags)
+    mv.addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(Option(loggedInUserFilter.getLoggedInUser)))
     mv.setViewName("rssfeeds")
     mv
   }
@@ -101,11 +101,11 @@ import scala.concurrent.duration.{Duration, SECONDS}
     mv.addObject("heading", "All Publishers")
 
     import scala.collection.JavaConverters._
-    val publishers = Await.result(contentRetrievalService.getAllPublishers, TenSeconds).sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
+    val publishers = Await.result(contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
     mv.addObject("publishers", publishers.asJava)
 
     mv.setViewName("publishers")
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5), TenSeconds).asJava)
+    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
     mv
   }
 
