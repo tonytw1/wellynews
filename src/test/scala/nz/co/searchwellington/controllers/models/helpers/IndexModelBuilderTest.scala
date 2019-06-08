@@ -23,38 +23,35 @@ class IndexModelBuilderTest {
 
   val request = new MockHttpServletRequest
 
-  val newsitem = org.mockito.Mockito.mock(classOf[FrontendResource])
-  val anotherNewsitem = org.mockito.Mockito.mock(classOf[FrontendResource])
+  val newsitem = mock(classOf[FrontendResource])
+  val anotherNewsitem = mock(classOf[FrontendResource])
   val latestNewsitems = Seq(newsitem, anotherNewsitem)
 
   val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
 
-  @Before def setup {
+  @Before
+  def setup {
     request.setPathInfo("/")
   }
 
   @Test
-  @throws[Exception]
   def isValidForHomePageUrl {
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  @throws[Exception]
   def isNotValidForMainRssUrlAsThatsTakenCareOfByFeedBurner {
     request.setPathInfo("/rss")
     assertFalse(modelBuilder.isValid(request))
   }
 
   @Test
-  @throws[Exception]
   def isValidForMainJsonUrl {
     request.setPathInfo("/json")
     assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
-  @throws[Exception]
   def indexPageMainContentIsTheLatestNewsitems {
     when(contentRetrievalService.getLatestNewsitems(30, 1)).thenReturn(Future.successful(latestNewsitems))
 
