@@ -17,6 +17,7 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
       page = Some(feedItem.url),
       description = Some(composeDescription(feedItem)),
       date = feedItem.date.map(_.toDate),
+      feed = Some(feed._id),
       publisher = feed.publisher,
       // TODO geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode)
     )
