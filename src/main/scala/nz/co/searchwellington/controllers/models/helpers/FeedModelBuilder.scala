@@ -4,15 +4,15 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
+import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global

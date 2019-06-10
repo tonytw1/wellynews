@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.SupressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -9,7 +10,6 @@ import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
@@ -22,7 +22,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private val tenSeconds = Duration(10, SECONDS)
 
   def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Seq[String] = {
-    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)  // TODO duplication
+    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url)  // TODO duplication
     val isSuppressed = Await.result(supressionDAO.isSupressed(cleanedUrl), TenSeconds)
 
     def cannotBeSupressed(): Option[String] = {
@@ -31,7 +31,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
     }
 
     def titleCannotBeBlank(): Option[String] = {
-      if (feedNewsitem.getTitle != null && feedNewsitem.getTitle.trim.isEmpty) {
+      if (feedNewsitem.title.getOrElse("").trim.isEmpty) {
         Some("Item has no title")
       } else {
         None
@@ -41,17 +41,22 @@ import scala.concurrent.duration.{Duration, SECONDS}
     def cannotBeMoreThanOneWeekOld(): Option[String] = {
       if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) {
         None
+
       } else {
-        if (feedNewsitem.getDate == null) {
+
+        if (feed.date.isEmpty) {
           Some("Item has no date and feed acceptance policy is not accept even without dates")
 
         } else {
-          val oneWeekAgo = DateTime.now.minusWeeks(1)
-          val isMoreThanOneWeekOld = new DateTime(feedNewsitem.getDate).isBefore(oneWeekAgo)
-          if (isMoreThanOneWeekOld) {
-            Some("Item is more than one week old")
-          } else {
-            None
+
+          feedNewsitem.date.flatMap { date =>
+            val oneWeekAgo = DateTime.now.minusWeeks(1)
+            val isMoreThanOneWeekOld = new DateTime(feedNewsitem.date).isBefore(oneWeekAgo)
+            if (isMoreThanOneWeekOld) {
+              Some("Item is more than one week old")
+            } else {
+              None
+            }
           }
         }
       }
@@ -63,7 +68,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
     def cannotAlreadyHaveThisFeedItem(): Option[String] = {
       if (alreadyHaveThisFeedItem(feedNewsitem)) {
-        log.debug("A resource with url '" + feedNewsitem.getUrl + "' already exists; not accepting.")
+        log.debug("A resource with url '" + feedNewsitem.url + "' already exists; not accepting.")
         Some("Item already exists")
       } else {
         None
@@ -72,7 +77,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
     def cannotImportIfAlreadyExists(): Option[String] = {
       if (alreadyHaveThisFeedItem(feedNewsitem)) {
-        log.debug("A resource with url '" + feedNewsitem.getUrl + "' already exists; not accepting.")
+        log.debug("A resource with url '" + feedNewsitem.url + "' already exists; not accepting.")
         Some("Item already exists")
       } else {
         None
@@ -98,7 +103,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem): Boolean = {
-    val url = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.getUrl)
+    val url = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url)
     Await.result(mongoRepository.getResourceByUrl(url), tenSeconds).nonEmpty
   }
 

@@ -1,12 +1,12 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future

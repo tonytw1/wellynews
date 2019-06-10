@@ -4,12 +4,12 @@ import java.util.Date
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader
+import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -21,7 +21,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   def getChannelFeedItems()(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
     whakaokoFeedReader.fetchChannelFeedItems().flatMap { channelFeedItems =>
       val eventualMappedFeeds = channelFeedItems.map { i =>
-        mongoRepository.getFeedByWhakaokoSubscription(i.getSubscriptionId).map { maybeFeed =>
+        mongoRepository.getFeedByWhakaokoSubscription(i.subscriptionId).map { maybeFeed =>
           maybeFeed.map { feed =>
             (i, feed)
           } // TODO log missing feeds
@@ -44,8 +44,8 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
   }
 
-  def latestPublicationDateOf(feedItems: Seq[FeedItem]) = {
-    val publicationDates = feedItems.flatMap(fi => Option(fi.getDate))
+  def latestPublicationDateOf(feedItems: Seq[FeedItem]): Option[Date] = {
+    val publicationDates = feedItems.flatMap(fi => fi.date.map(_.toDate))
     if (publicationDates.nonEmpty) {
       Some(publicationDates.max)
     } else {
@@ -55,7 +55,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   def getFeedNewsitemByUrl(feed: Feed, url: String): Option[(FeedItem)] = {
     getFeedItemsFor(feed).flatMap { fis =>
-      fis.find(ni => ni.getUrl == url)
+      fis.find(ni => ni.url == url)
     }
   }
 
@@ -64,7 +64,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       f.acceptance == FeedAcceptancePolicy.ACCEPT || f.getAcceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES
     }
     autoAcceptFeeds.exists { feed =>
-      getFeedItemsFor(feed).getOrElse(Seq.empty).exists(ni => ni.getUrl == url)
+      getFeedItemsFor(feed).getOrElse(Seq.empty).exists(ni => ni.url == url)
     }
   }
 

@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, Newsitem, User}
 import nz.co.searchwellington.utils.TextTrimmer
 import org.joda.time.DateTime
@@ -8,7 +9,6 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.Place
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 class FeedItemAcceptorTest {
   private val textTrimmer = mock(classOf[TextTrimmer])

@@ -264,9 +264,9 @@ import org.springframework.web.servlet.view.RedirectView
       if (editResource.`type` == "F") {
         editResource.page.map { p =>
           if (!Strings.isNullOrEmpty(p)) {
-            whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
-              log.info("Created whakaoko subscription: " + createdFeedSubscription)
-            }
+            //whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
+            //  log.info("Created whakaoko subscription: " + createdFeedSubscription)
+            //}
           }
         }
       }

@@ -4,6 +4,7 @@ import java.util.UUID
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
+import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -13,7 +14,6 @@ import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import uk.co.eelpieconsulting.whakaoro.client.model.{FeedItem, Subscription}
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -1,11 +1,10 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.model.{Feed, Newsitem, User}
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
+import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.utils.{TextTrimmer, UrlFilters}
-import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component
 class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGeocodeMapper: PlaceToGeocodeMapper) {
@@ -14,25 +13,25 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
 
   def makeNewsitemFromFeedItem(feedItem: FeedItem, feed: Feed): Newsitem = {
     val newsitem = Newsitem(
-      title = Some(feedItem.getTitle),
-      page = Some(feedItem.getUrl),
+      title = feedItem.title,
+      page = Some(feedItem.url),
       description = Some(composeDescription(feedItem)),
-      date = Some(feedItem.getDate),
+      date = feedItem.date.map(_.toDate),
       publisher = feed.publisher,
-      feed = Some(feed._id),
-      geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode)
+      // TODO geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode)
     )
     // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
 
-    if (feedItem.getImageUrl != null) {
+    if (feedItem.imageUrl != null) {  // TODO option
       // newsitem.setImage(new Image(feedNewsitem.getFrontendImage.getUrl, ""))
     }
     newsitem
   }
 
   private def composeDescription(feedNewsitem: FeedItem): String = {
-    var description = if (feedNewsitem.getBody != null) feedNewsitem.getBody else ""
-    textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH)
+    feedNewsitem.body.map { description =>
+      textTrimmer.trimToCharacterCount(description, MAXIMUM_BODY_LENGTH)
+    }.getOrElse("")
   }
 
   private def flattenLoudCapsInTitle(title: String) = { // TODO unused

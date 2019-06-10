@@ -1,5 +1,6 @@
 package nz.co.searchwellington.feeds
 
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.utils.TextTrimmer
 import org.junit.Assert.{assertEquals, assertNotNull, assertTrue}
@@ -8,7 +9,6 @@ import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.Place
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 class FeeditemToNewsitemServiceTest {
   @Mock private[feeds] val textTrimmer: TextTrimmer = null
@@ -25,8 +25,7 @@ class FeeditemToNewsitemServiceTest {
   @Test
   def shouldSetGeocodeWhenAcceptingFeedNewsitem {
     when(place.getAddress).thenReturn("A place")
-    val feedNewsitem = new FeedItem()
-    feedNewsitem.setPlace(place)
+    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "", geoTagged = false)
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
@@ -35,7 +34,7 @@ class FeeditemToNewsitemServiceTest {
 
   @Test
   def shouldPropogateFeedPublisherWhenAcceptingNewsitem: Unit = {
-    val feedNewsitem = new FeedItem()
+    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "", geoTagged = false)
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
@@ -45,7 +44,7 @@ class FeeditemToNewsitemServiceTest {
 
   @Test
   def shouldRecordSourceFeedWithAcceptingNewsitem: Unit = {
-    val feedNewsitem = new FeedItem()
+    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "", geoTagged = false)
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 
@@ -56,7 +55,7 @@ class FeeditemToNewsitemServiceTest {
 
   @Test
   def shouldNotSetAcceptanceDetails(): Unit = {
-    val feedNewsitem = new FeedItem()
+    val feedNewsitem = FeedItem(id = "", url = "", subscriptionId = "", geoTagged = false)
 
     val newsitem = service.makeNewsitemFromFeedItem(feedNewsitem, feed)
 

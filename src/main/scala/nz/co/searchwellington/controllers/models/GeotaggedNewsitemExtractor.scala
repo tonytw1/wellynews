@@ -1,8 +1,8 @@
 package nz.co.searchwellington.controllers.models
 
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 @Component class GeotaggedNewsitemExtractor {
 
@@ -11,7 +11,8 @@ import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
   }
 
   def extractGeotaggedItemsFromFeedNewsitems(feedNewsitems: Seq[FeedItem]): Seq[FeedItem] = { // TODO duplication
-    feedNewsitems.filter(i => i.getPlace != null)
+    //feedNewsitems.filter(i => i.getPlace != null)
+    Seq.empty // TODO instate
   }
 
 }

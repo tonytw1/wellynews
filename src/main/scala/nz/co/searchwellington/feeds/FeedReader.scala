@@ -1,16 +1,15 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uk.co.eelpieconsulting.whakaoro.client.model.FeedItem
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -66,19 +65,17 @@ extends ReasonableWaits {
     log.info("Accepting feed items")
 
     val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>
+      val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))
 
-      val cleanSubmittedItemUrl = urlCleaner.cleanSubmittedItemUrl(feednewsitem.getUrl)
-      feednewsitem.setUrl(cleanSubmittedItemUrl)    // TODO do not mutate inputs
-
-      val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, feednewsitem, acceptancePolicy)
+      val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, withCleanedUrl, acceptancePolicy)
       if (acceptanceErrors.isEmpty) {
-        log.info("Accepting newsitem: " + feednewsitem.getUrl)
-        feedReaderUpdateService.acceptNewsitem(feedReaderUser, feednewsitem, feed).map { acceptedNewsitem =>
+        log.info("Accepting newsitem: " + withCleanedUrl.url)
+        feedReaderUpdateService.acceptNewsitem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
           Some(acceptedNewsitem)
         }
 
       } else {
-        log.debug("Not accepting " + feednewsitem.getUrl + " due to acceptance errors: " + acceptanceErrors)
+        log.debug("Not accepting " + feednewsitem.url + " due to acceptance errors: " + acceptanceErrors)
         Future.successful(None)
       }
     }

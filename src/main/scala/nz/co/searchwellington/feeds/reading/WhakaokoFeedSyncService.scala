@@ -25,7 +25,7 @@ import scala.concurrent.Await
       feed.page.map { p =>
         if (!Strings.isNullOrEmpty(p)) {
           log.info("Registering feed with whakaoko: " + feed.title)
-          whakaokoService.createFeedSubscription(p).map { createdSubscriptionId =>
+          Await.result(whakaokoService.createFeedSubscription(p), TenSeconds).map { createdSubscriptionId =>
             log.info("Created whakaoko feed: " + createdSubscriptionId)
           }
         }
