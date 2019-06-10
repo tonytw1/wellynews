@@ -60,7 +60,7 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[Subscription]]
       } else {
-        log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " r.body)
+        log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " + r.body)
         Seq.empty
       }
     }
