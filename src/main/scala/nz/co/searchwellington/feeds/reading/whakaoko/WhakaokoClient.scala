@@ -2,7 +2,9 @@ package nz.co.searchwellington.feeds.reading.whakaoko
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
+import nz.co.searchwellington.feeds.FeedReaderRunner
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
+import org.apache.log4j.Logger
 import org.springframework.core.task.TaskExecutor
 import play.api.libs.json.{JodaReads, Json}
 import play.api.libs.ws.DefaultBodyWritables._
@@ -11,6 +13,8 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) extends JodaReads {
+
+  private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
   implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
   implicit val system = ActorSystem()
@@ -56,6 +60,7 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[Subscription]]
       } else {
+        log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " r.body)
         Seq.empty
       }
     }
