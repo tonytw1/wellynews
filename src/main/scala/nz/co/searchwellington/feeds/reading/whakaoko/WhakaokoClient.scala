@@ -55,7 +55,8 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
   }
 
   def getChannelSubscriptions(whakaokoUsername: String, whakaokoChannelId: String): Future[Seq[Subscription]] = {
-    val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannelId + "/subscriptions"
+    val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels" + whakaokoChannelId + "/subscriptions"
+    log.info("Fetching from: " + channelSubscriptionsUrl)
     wsClient.url(channelSubscriptionsUrl).get.map { r =>
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[Subscription]]
