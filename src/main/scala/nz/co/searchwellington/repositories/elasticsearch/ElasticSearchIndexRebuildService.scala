@@ -1,6 +1,5 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import com.fasterxml.jackson.core.JsonProcessingException
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -21,7 +20,6 @@ import scala.concurrent.{Await, Future}
 
   private val BATCH_COMMIT_SIZE = 1000
 
-  @throws[JsonProcessingException]
   def buildIndex(): Unit = {
     val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), OneMinute)
     reindexResources(resourcesToIndex)
@@ -31,7 +29,6 @@ import scala.concurrent.{Await, Future}
     reindexResources(Seq(resource._id))
   }
 
-  @throws[JsonProcessingException]
   private def reindexResources(resourcesToIndex: Seq[BSONObjectID]): Unit = {
     log.debug("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
