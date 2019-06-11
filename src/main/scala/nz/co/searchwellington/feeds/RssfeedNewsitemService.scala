@@ -3,7 +3,8 @@ package nz.co.searchwellington.feeds
 import java.util.Date
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.reading.WhakaokoFeedReader
+import nz.co.searchwellington.feeds.reading.{WhakaokoFeedReader, WhakaokoService}
+import nz.co.searchwellington.feeds.reading.whakaoko.WhakaokoClient
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -13,23 +14,51 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
-@Component class RssfeedNewsitemService @Autowired()(whakaokoFeedReader: WhakaokoFeedReader, mongoRepository: MongoRepository)
+@Component class RssfeedNewsitemService @Autowired()(whakaokoFeedReader: WhakaokoFeedReader,
+                                                     mongoRepository: MongoRepository, whakaokoService: WhakaokoService)
   extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
   def getChannelFeedItems()(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
-    whakaokoFeedReader.fetchChannelFeedItems.flatMap { channelFeedItems =>
-      log.info("Got " + channelFeedItems + " channel feed items")
-      val eventualMappedFeeds = channelFeedItems.map { i =>
-        mongoRepository.getFeedByWhakaokoSubscription(i.subscriptionId).map { maybeFeed =>
-          maybeFeed.map { feed =>
-            (i, feed)
-          } // TODO log missing feeds
+    val eventualChannelFeedItmes: Future[Seq[FeedItem]] = whakaokoFeedReader.fetchChannelFeedItems
+    val eventualSubscriptions: Future[Seq[Subscription]] = whakaokoService.getSubscriptions()
+
+    val z: Future[Seq[(FeedItem, Feed)]] = eventualChannelFeedItmes.flatMap { channelFeedItems =>
+      eventualSubscriptions.flatMap { subscriptions =>
+
+        val eventualMaybeFeeds: Seq[Future[(String, Option[Feed])]] = subscriptions.map { s =>
+          mongoRepository.getFeedByUrl(s.url).map { fo =>
+            (s.id, fo)
+          }
+        }
+
+        val eventualFeeds: Future[Seq[(String, Option[Feed])]] = Future.sequence(eventualMaybeFeeds)
+        val z: Future[Map[String, Feed]] = eventualFeeds.map { f =>
+          val x: Seq[Option[(String, Feed)]] = f.map { i =>
+            i._2.map { f =>
+              (i._1, f)
+            }
+          }
+          val z: Map[String, Feed] = x.flatten.toMap
+          z
+        }
+
+        z.map { feeds =>
+
+          val k: Seq[(FeedItem, Feed)] = channelFeedItems.map { fi =>
+            val maybeTuple: Option[(FeedItem, Feed)] = feeds.get(fi.subscriptionId).map { feed =>
+              (fi, feed)
+            }
+            maybeTuple
+          }.flatten
+
+          k
         }
       }
-      Future.sequence(eventualMappedFeeds).map(_.flatten)
     }
+
+    z
   }
 
   def getFeedItemsAndDetailsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[FeedItem], Subscription)]] = {

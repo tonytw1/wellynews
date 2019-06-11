@@ -141,11 +141,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("page" -> url))
   }
 
-  def getFeedByWhakaokoSubscription(subscription: String): Future[Option[Feed]] = {
-    // TODO needs to be done by the feed service
-    getResourceBy(BSONDocument("type" -> "F", "whakaoko_id" -> subscription)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
-  }
-
   def getFeedByUrl(url: String): Future[Option[Feed]] = {
     getResourceBy(BSONDocument("type" -> "F", "page" -> url)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
   }

@@ -26,6 +26,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
+  def getSubscriptions(): Future[Seq[Subscription]] = {
+    client.getChannelSubscriptions(whakaokoUsername, whakaokoChannel)
+  }
+
   def getWhakaokoSubscriptionByUrl(url: String): Future[Option[Subscription]] = {
     client.getChannelSubscriptions(whakaokoUsername, whakaokoChannel).map { channelSubscriptions =>
       // TODO API should allow us to pass the url rather than scanning the entire collection
