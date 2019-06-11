@@ -19,7 +19,8 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
   def getChannelFeedItems()(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
-    whakaokoFeedReader.fetchChannelFeedItems().flatMap { channelFeedItems =>
+    whakaokoFeedReader.fetchChannelFeedItems.flatMap { channelFeedItems =>
+      log.info("Got " + channelFeedItems + " channel feed items")
       val eventualMappedFeeds = channelFeedItems.map { i =>
         mongoRepository.getFeedByWhakaokoSubscription(i.subscriptionId).map { maybeFeed =>
           maybeFeed.map { feed =>

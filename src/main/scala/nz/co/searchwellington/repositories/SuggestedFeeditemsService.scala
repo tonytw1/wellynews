@@ -1,10 +1,12 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.models.helpers.FeedsModelBuilder
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
+import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
@@ -15,6 +17,8 @@ import scala.concurrent.Future
                                                         feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                                         feeditemToNewsitemService: FeeditemToNewsitemService) extends
   ReasonableWaits {
+
+  private val log = Logger.getLogger(classOf[FeedsModelBuilder])
 
   def getSuggestionFeednewsitems(maxItems: Int): Future[Seq[FrontendNewsitem]] = {
 
@@ -27,6 +31,8 @@ import scala.concurrent.Future
     }
 
     rssfeedNewsitemService.getChannelFeedItems.flatMap { channelFeedItems =>
+      log.info("Found " + channelFeedItems.size + " channel newsitems")
+
       val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
 
       val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
