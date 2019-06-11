@@ -9,4 +9,4 @@ case class FeedItem(id: String,
                     url: String,
                     imageUrl: Option[String] = None,
                     date: Option[DateTime] = None,
-                    geoTagged: Boolean) // TODO Place
+                    place: Option[Place] = None)

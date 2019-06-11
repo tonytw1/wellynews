@@ -19,7 +19,7 @@ class FeeditemToNewsitemService @Autowired()(textTrimmer: TextTrimmer, placeToGe
       date = feedItem.date.map(_.toDate),
       feed = Some(feed._id),
       publisher = feed.publisher,
-      // TODO geocode = Option(feedItem.getPlace).map(placeToGeocodeMapper.mapPlaceToGeocode)
+      geocode = feedItem.place.map(placeToGeocodeMapper.mapPlaceToGeocode)
     )
     // newsitem.setImage(if (feedNewsitem.getFrontendImage != null) new Image(feedNewsitem.getFrontendImage.getUrl, null) else null)
 

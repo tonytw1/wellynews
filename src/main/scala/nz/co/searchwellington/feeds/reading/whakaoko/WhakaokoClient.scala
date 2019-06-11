@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds.reading.whakaoko
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.feeds.FeedReaderRunner
-import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import org.apache.log4j.Logger
 import org.springframework.core.task.TaskExecutor
 import play.api.libs.json.{JodaReads, Json}
@@ -22,7 +22,8 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
 
   private val wsClient = StandaloneAhcWSClient()
 
-
+  private implicit val llr = Json.reads[LatLong]
+  private implicit val pr = Json.reads[Place]
   private implicit val fir = Json.reads[FeedItem]
   private implicit val sr = Json.reads[Subscription]
 

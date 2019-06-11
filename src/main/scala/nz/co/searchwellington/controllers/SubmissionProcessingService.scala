@@ -63,8 +63,9 @@ import scala.concurrent.Await
       val osmId: OsmId = osmIdParser.parseOsmId(osmIdString)
       val resolvedPlace: Place = nominatimGeocodeService.resolveOsmId(osmId)
 
-      log.info("Selected geocode " + osmIdString + " resolved to: " + resolvedPlace)
+     // log.info("Selected geocode " + osmIdString + " resolved to: " + resolvedPlace)
 
+      /*
       Option(resolvedPlace).map { p =>
         placeToGeocodeMapper.mapPlaceToGeocode(p)
 
@@ -72,6 +73,8 @@ import scala.concurrent.Await
         log.warn("Could not resolve OSM id: " + osmId)
         null
       }
+       */
+      null
 
     } else {
       null
