@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds.reading
 
-import nz.co.searchwellington.feeds.reading.whakaoko.model.Subscription
-import nz.co.searchwellington.feeds.reading.whakaoko.{WhakaokoClient, model}
+import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
+import nz.co.searchwellington.feeds.reading.whakaoko.WhakaokoClient
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.core.task.TaskExecutor
@@ -37,35 +37,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def getSubscriptionFeedItems(subscriptionId: String): Future[Either[String, Seq[model.FeedItem]]] = {
+  def getSubscriptionFeedItems(subscriptionId: String): Future[Either[String, Seq[FeedItem]]] = {
       client.getSubscriptionFeedItems(whakaokoUsername, subscriptionId).map { r =>
         Right(r)
       }
   }
 
-  def getChannelFeedItems(): Future[Seq[model.FeedItem]] = {
-    try {
-      /*
-      val channelFeedItems: java.util.List[FeedItem] = Lists.newArrayList()
-      var page: Int = 0
-      while (page <= 5) {
-        {
+  def getChannelFeedItems(): Future[Seq[FeedItem]] = {
+    val pages = 5
+
+    def fetch(into: Seq[FeedItem], page: Int = 1): Future[Seq[FeedItem]] = {
+      client.getChannelFeedItems(whakaokoUsername, whakaokoChannel, page).flatMap { items =>
+        val withItems = into ++ items
+        if (page < pages) {
+          fetch(withItems, page + 1)
+        } else {
+          Future.successful(withItems)
         }
-        ({
-          page += 1;
-          page - 1
-        })
-      }
-      */
-
-      client.getChannelFeedItems(whakaokoUsername, whakaokoChannel, 0) // TODO restore pagination
-
-    } catch {
-      case e: Exception => {
-        log.error(e)
-        Future.successful(Seq())
       }
     }
+
+    fetch(Seq.empty)
   }
 
 }
