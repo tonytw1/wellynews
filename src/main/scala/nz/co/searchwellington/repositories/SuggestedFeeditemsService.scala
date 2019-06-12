@@ -22,23 +22,22 @@ import scala.concurrent.Future
 
   def getSuggestionFeednewsitems(maxItems: Int): Future[Seq[FrontendNewsitem]] = {
 
-    def isNotIgnored(feedItem: FeedItem, feed: Feed): Boolean = {
-      feed.acceptance != FeedAcceptancePolicy.IGNORE
-    }
+    def isNotIgnored(feedItem: FeedItem, feed: Feed): Boolean = feed.acceptance != FeedAcceptancePolicy.IGNORE
 
-    def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = {
-      feedItem.localCopy.isEmpty
-    }
+
+    def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = feedItem.localCopy.isEmpty
 
     rssfeedNewsitemService.getChannelFeedItems.flatMap { channelFeedItems =>
       log.info("Found " + channelFeedItems.size + " channel newsitems")
 
       val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
+      log.info("After filtering out those from ignored feeds: " + notIgnoredFeedItems.size)
 
       val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
       feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems).map { suggestions =>
         val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
+        log.info("After filtering out those with local copies: " + withLocalCopiesFilteredOut.size)
         withLocalCopiesFilteredOut.map(_.newsitem).take(maxItems)
       }
     }
