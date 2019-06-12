@@ -5,14 +5,20 @@ import akka.stream.ActorMaterializer
 import nz.co.searchwellington.feeds.FeedReaderRunner
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import org.apache.log4j.Logger
+import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.core.task.TaskExecutor
+import org.springframework.stereotype.Component
 import play.api.libs.json.{JodaReads, Json}
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) extends JodaReads {
+@Component
+class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUrl: String,
+                                  @Value("#{config['whakaoko.username']}") whakaokoUsername: String,
+                                  @Value("#{config['whakaoko.channel']}") whakaokoChannel: String,
+                                  feedReaderTaskExecutor: TaskExecutor) extends JodaReads {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
@@ -27,10 +33,10 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
   private implicit val fir = Json.reads[FeedItem]
   private implicit val sr = Json.reads[Subscription]
 
-  def createFeedSubscription(whakaokoUsername: String, whakaokoChannel: String, feedUrl: String): Future[Option[Subscription]] = {
+  def createFeedSubscription(feedUrl: String): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl = whakaokoUsername + "/" + whakaokoUsername + "/subscriptions/feeds"
 
-    val params: Map[String, Seq[String]] = Map{
+    val params: Map[String, Seq[String]] = Map {
       "channel" -> Seq(whakaokoChannel)
       "url" -> Seq(feedUrl)
     }
@@ -44,8 +50,8 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
     }
   }
 
-  def getChannelFeedItems(whakaokoUsername: String, whakaokoChannel: String, i: Int): Future[Seq[FeedItem]] = {
-    val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items"
+  def getChannelFeedItems(page: Int = 1): Future[Seq[FeedItem]] = {
+    val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items?page=" + page
     wsClient.url(channelItemsUrl).get.map { r =>
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[FeedItem]]
@@ -55,8 +61,8 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
     }
   }
 
-  def getChannelSubscriptions(whakaokoUsername: String, whakaokoChannelId: String): Future[Seq[Subscription]] = {
-    val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannelId + "/subscriptions"
+  def getChannelSubscriptions(): Future[Seq[Subscription]] = {
+    val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
     log.info("Fetching from: " + channelSubscriptionsUrl)
     wsClient.url(channelSubscriptionsUrl).get.map { r =>
       if (r.status == 200) {
@@ -68,7 +74,7 @@ class WhakaokoClient(whakaokoUrl: String, feedReaderTaskExecutor: TaskExecutor) 
     }
   }
 
-  def getSubscriptionFeedItems(whakaokoUsername: String, subscriptionId: String): Future[Seq[FeedItem]] = {
+  def getSubscriptionFeedItems(subscriptionId: String): Future[Seq[FeedItem]] = {
     val subscriptionItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/" + subscriptionId + "/items"
     wsClient.url(subscriptionItemsUrl).get.map { r =>
       if (r.status == 200) {
