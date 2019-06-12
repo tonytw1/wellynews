@@ -45,9 +45,8 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
     }
 
-    val eventualChannelFeedItmes: Future[Seq[FeedItem]] = whakaokoFeedReader.fetchChannelFeedItems
-    val eventualSubscriptions: Future[Seq[Subscription]] = whakaokoService.getSubscriptions()
-
+    val eventualChannelFeedItmes = whakaokoFeedReader.fetchChannelFeedItems
+    val eventualSubscriptions = whakaokoService.getSubscriptions()
     for {
       channelFeedItems <- eventualChannelFeedItmes
       subscriptions <- eventualSubscriptions
