@@ -15,9 +15,7 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[WhakaokoFeedReader])
 
-  def fetchChannelFeedItems(): Future[Seq[model.FeedItem]] = {
-    whakaokoService.getChannelFeedItems()
-  }
+  def fetchChannelFeedItems: Future[Seq[model.FeedItem]] = whakaokoService.getChannelFeedItems
 
   def fetchFeedItems(feed: Feed): Future[Either[String, (Seq[model.FeedItem], Subscription)]] = {
     log.debug("Fetching feed items for feed with url: " + feed.page)
