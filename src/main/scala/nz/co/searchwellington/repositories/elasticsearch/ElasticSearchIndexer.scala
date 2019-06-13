@@ -40,8 +40,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
     def ensureIndexes(client: ElasticClient): Unit = {
       val exists = Await.result((client execute indexExists(Index)).map { r =>
-        val a: Response[IndexExistsResponse] = r
-        if (a.isSuccess) {
+        if (r.isSuccess) {
           r.result.exists
         } else {
           throw new RuntimeException("Could not determine if index exists")
@@ -69,7 +68,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             field(Held) typed BooleanType,
             field(Owner) typed KeywordType,
             field(LatLong) typed GeoPointType,
-            field(FeedAcceptancePolicy) typed KeywordType
+            field(FeedAcceptancePolicy) typed DateType
           )
         }
 
@@ -107,6 +106,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         case f: Feed => Some(f.acceptance)
         case _ => None
       }
+      val feedLatestItemDate = r._1 match {
+        case f: Feed => f.latestItemDate
+        case _ => None
+      }
+
 
       // TODO This is silly; just pass in the whole domain object as JSON
       val fields = Seq(
@@ -122,7 +126,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         r._1.owner.map(o => Owner -> o.stringify),
         latLong.map(ll => LatLong -> Map("lat" -> ll.getLatitude, "lon" -> ll.getLongitude)),
         Some(TaggingUsers, r._1.resource_tags.map(_.user_id.stringify)),
-        feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString)
+        feedAcceptancePolicy.map(ap => FeedAcceptancePolicy -> ap.toString),
+        feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid))
       )
 
       log.info(fields.flatten)
