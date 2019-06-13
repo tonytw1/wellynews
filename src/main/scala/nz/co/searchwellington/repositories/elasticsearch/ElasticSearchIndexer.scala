@@ -68,7 +68,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
             field(Held) typed BooleanType,
             field(Owner) typed KeywordType,
             field(LatLong) typed GeoPointType,
-            field(FeedAcceptancePolicy) typed DateType
+            field(FeedAcceptancePolicy) typed KeywordType,
+            field(FeedLatestItemDate) typed DateType
           )
         }
 
