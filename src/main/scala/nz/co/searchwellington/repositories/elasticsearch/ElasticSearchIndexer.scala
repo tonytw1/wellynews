@@ -213,7 +213,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def byTitleAscending(request: SearchRequest): SearchRequest = request sortByFieldAsc TitleSort
 
-  def byFeedLatestFeedItemDate(request: SearchRequest): SearchRequest = request sortByFieldAsc FeedLatestItemDate
+  def byFeedLatestFeedItemDate(request: SearchRequest): SearchRequest = request sortByFieldDesc FeedLatestItemDate
 
   private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
     val request = order(search(Index / Resources) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems

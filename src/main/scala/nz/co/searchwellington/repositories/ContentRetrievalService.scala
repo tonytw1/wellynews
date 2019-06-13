@@ -152,12 +152,12 @@ import scala.concurrent.{Await, Future}
       allFeeds.copy(feedAcceptancePolicy = Some(a))
     }.getOrElse(allFeeds)
 
-    elasticSearchIndexer.getResources(withAcceptancePolicy, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser).flatMap(i => fetchByIds(i._1))
+    elasticSearchIndexer.getResources(withAcceptancePolicy, elasticSearchIndexer.byTitleAscending, loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getAllFeedsOrderByLatestItemDate(loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  def getAllFeedsOrderedByLatestItemDate(loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val allFeeds = ResourceQuery(`type` = Some("F"))
-    elasticSearchIndexer.getResources(allFeeds, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)) // TODO order
+    elasticSearchIndexer.getResources(allFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)) // TODO order
   }
 
   def getTaggedNewsitemsCount(tags: Set[Tag], loggedInUser: Option[User]): Long = {

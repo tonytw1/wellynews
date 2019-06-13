@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val FEED_ATTRIBUTE = "feedAttribute"
 
   def isValid(request: HttpServletRequest): Boolean = {
-    return request.getAttribute(FEED_ATTRIBUTE) != null
+    request.getAttribute(FEED_ATTRIBUTE) != null
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
@@ -67,14 +67,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map { feeds =>
+    Await.result(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map { feeds =>
       commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
     }, TenSeconds)
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "viewfeed"
-  }
+  def getViewName(mv: ModelAndView): String = "viewfeed"
 
   private def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FeedItem]) {
     val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)

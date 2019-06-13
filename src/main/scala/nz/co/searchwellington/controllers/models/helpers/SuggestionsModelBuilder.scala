@@ -45,7 +45,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(contentRetrievalService.getAllFeedsOrderByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map { feeds =>
+    Await.result(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map { feeds =>
       commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
     }, TenSeconds)
   }

@@ -100,7 +100,7 @@ class FeedModelBuilderTest {
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(geotaggedFeedNewsitems)
-    when(contentRetrievalService.getAllFeedsOrderByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
+    when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     val mv = modelBuilder.populateContentModel(request).get
 
     modelBuilder.populateExtraModelContent(request, mv)
