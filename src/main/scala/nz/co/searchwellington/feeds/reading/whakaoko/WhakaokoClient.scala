@@ -34,7 +34,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
   private implicit val sr = Json.reads[Subscription]
 
   def createFeedSubscription(feedUrl: String): Future[Option[Subscription]] = {
-    val createFeedSubscriptionUrl =  whakaokoUrl + "/" + whakaokoUsername + "/" + "/subscriptions/feeds"
+    val createFeedSubscriptionUrl =  whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/feeds"
     log.info("Posting new feed to: " + createFeedSubscriptionUrl)
     val params: Map[String, Seq[String]] = Map {
       "channel" -> Seq(whakaokoChannel)
