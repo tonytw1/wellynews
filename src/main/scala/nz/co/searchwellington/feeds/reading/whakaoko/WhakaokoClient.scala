@@ -35,13 +35,14 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
 
   def createFeedSubscription(feedUrl: String): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl =  whakaokoUrl + "/" + whakaokoUsername + "/" + "/subscriptions/feeds"
-
+    log.info("Posting new feed to: " + createFeedSubscriptionUrl)
     val params: Map[String, Seq[String]] = Map {
       "channel" -> Seq(whakaokoChannel)
       "url" -> Seq(feedUrl)
     }
 
     wsClient.url(createFeedSubscriptionUrl).post(params).map { r =>
+      log.info("New feed result: " + r.status + " / " + r.body)
       if (r.status == 200) {
         Some(Json.parse(r.body).as[Subscription])
       } else {
