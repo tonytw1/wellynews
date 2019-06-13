@@ -32,9 +32,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "index"
-  }
+  def getViewName(mv: ModelAndView): String = "index"
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
@@ -88,11 +86,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
       geocoded <- eventualGeocoded
 
     } yield {
-      log.info("Secondary justin: " + websites.size)
-      log.info("Secondary geocoded: " + geocoded.size)
-      log.info("Secondary archive months: " + archiveMonths)
-      log.info("Secondary archive statistics: " + archiveStatistics)
-
       populateSecondaryJustin(mv, websites)
       populateGeocoded(mv, geocoded)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
