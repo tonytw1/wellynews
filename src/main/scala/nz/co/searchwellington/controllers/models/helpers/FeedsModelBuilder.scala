@@ -63,8 +63,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(eventuallyPopulated, TenSeconds)
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "feeds"
-  }
+  def getViewName(mv: ModelAndView): String = "feeds"
 
 }
