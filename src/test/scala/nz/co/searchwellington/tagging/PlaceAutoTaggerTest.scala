@@ -28,7 +28,7 @@ class PlaceAutoTaggerTest {
   @Before
   def setUp {
     when(mongoRepository.getTagByUrlWords("places")).thenReturn(Future.successful(Some(placesTag)))
-    when(tagDAO.loadTagsByParent(placesTag._id)).thenReturn(Seq(aroValleyTag, islandBayTag))
+    when(tagDAO.loadTagsByParent(placesTag._id)).thenReturn(Future.successful(List(aroValleyTag, islandBayTag)))
   }
 
   @Test

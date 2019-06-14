@@ -47,9 +47,10 @@ class TagModelBuilderTest {
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
     contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper, loggedInUserFilter)
 
+
   @Before
   def setup {
-    when(tagDAO.loadTagsByParent(parentId)).thenReturn(Seq())
+    when(tagDAO.loadTagsByParent(parentId)).thenReturn(Future.successful(List.empty))
   }
 
   @Test
