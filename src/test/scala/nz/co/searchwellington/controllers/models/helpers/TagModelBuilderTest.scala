@@ -75,6 +75,7 @@ class TagModelBuilderTest {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(tagNewsitems))
+    when(contentRetrievalService.getTaggedNewitemsCount(tag, loggedInUser)).thenReturn(Future.successful(tagNewsitems.size.toLong))
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -86,6 +87,7 @@ class TagModelBuilderTest {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(tagNewsitems))
+    when(contentRetrievalService.getTaggedNewitemsCount(tag, loggedInUser)).thenReturn(Future.successful(tagNewsitems.size.toLong))
 
     val mv = modelBuilder.populateContentModel(request).get
 
