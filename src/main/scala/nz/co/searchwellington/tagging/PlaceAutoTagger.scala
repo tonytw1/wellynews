@@ -17,7 +17,7 @@ import scala.concurrent.Await
 
     def getPlaces: Set[Tag] = {
       placesTag.map { placesTag =>
-        tagDAO.loadTagsByParent(placesTag._id)
+        Await.result(tagDAO.loadTagsByParent(placesTag._id), TenSeconds)
       }.getOrElse {
         Seq()
       }.toSet
