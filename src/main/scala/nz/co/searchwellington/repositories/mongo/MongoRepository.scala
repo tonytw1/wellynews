@@ -177,7 +177,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getTagsByParent(parent: BSONObjectID): Future[List[Tag]] = {
-    tagCollection.find(BSONDocument("parent" -> parent)).cursor[Tag]().collect[List]()
+    tagCollection.find(BSONDocument("parent" -> parent)).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
   }
 
   def saveTag(tag: Tag): Future[UpdateWriteResult] = {
