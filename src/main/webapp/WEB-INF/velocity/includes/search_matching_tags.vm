@@ -1,9 +1,5 @@
-
-
-#if ($matching_tags && $matching_tags.size() > 0) 
+#if ($matching_tags && $matching_tags.size() > 0)
 	Found $matching_tags.size() matching #showPluralWord($matching_tags.size() "tag").
-	
-	
 	<ul>
 	#foreach($tag in $matching_tags)
 		<li><a href="$urlBuilder.getTagUrl($tag)">$tag.displayName</a></li>
