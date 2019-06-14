@@ -44,14 +44,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
     tags != null && tags.size == 1
   }
 
+
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+
+    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
 
     def populateTagPageModelAndView(tag: Tag, page: Int): Option[ModelAndView] = {
 
       val mv = new ModelAndView
       mv.addObject(PAGE, page)
       val startIndex = getStartIndex(page)
-      val eventualTotalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag, Option(loggedInUserFilter.getLoggedInUser))
+      val eventualTotalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag, loggedInUser)
 
       val x = eventualTotalNewsitemCount.flatMap { totalNewsitemCount =>
         if (startIndex > totalNewsitemCount) {
@@ -80,7 +83,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
             mv.addObject("children", children.asJava)
           }
 
-          val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+          val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser)
 
           for {
             taggedNewsitems <- eventualTaggedNewsitems
@@ -112,15 +115,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+
     val tag = tagFromRequest(request)
 
-    val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
-    val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, Option(loggedInUserFilter.getLoggedInUser))
-    val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUserFilter.getLoggedInUser))
-    val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8, Option(loggedInUserFilter.getLoggedInUser))
-    val eventualTagWatchlist: Future[Seq[FrontendResource]] = contentRetrievalService.getTagWatchlist(tag, Option(loggedInUserFilter.getLoggedInUser))
-    val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag, Option(loggedInUserFilter.getLoggedInUser))
-    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+    val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)
+    val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser)
+    val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8, loggedInUser)
+    val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8, loggedInUser)
+    val eventualTagWatchlist: Future[Seq[FrontendResource]] = contentRetrievalService.getTagWatchlist(tag, loggedInUser)
+    val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag, loggedInUser)
+    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
 
     val eventuallyPopulated = for {
       geotaggedNewsitems <- eventualGeotaggedNewsitems
