@@ -137,11 +137,9 @@ import scala.concurrent.{Await, Future}
 
   def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = elasticSearchIndexer.getArchiveCounts(loggedInUser)
 
-  def getTaggedNewitemsCount(tag: Tag, loggedInUser: Option[User]): Long = {
-   getTaggedNewsitemsCount(tags = Set(tag), loggedInUser)
-  }
+  def getTaggedNewitemsCount(tag: Tag, loggedInUser: Option[User]): Future[Long] = getTaggedNewsitemsCount(tags = Set(tag), loggedInUser)
 
-  def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS_TO_SHOW, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getTaggedNewsitems(tag: Tag, startIndex: Int = 0, maxItems: Int = MAX_NEWSITEMS_TO_SHOW, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     getTaggedNewsitems(tags = Set(tag), startIndex = startIndex, maxItems = maxItems, loggedInUser)
   }
 
@@ -160,14 +158,14 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(allFeeds, elasticSearchIndexer.byFeedLatestFeedItemDate, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)) // TODO order
   }
 
-  def getTaggedNewsitemsCount(tags: Set[Tag], loggedInUser: Option[User]): Long = {
+  def getTaggedNewsitemsCount(tags: Set[Tag], loggedInUser: Option[User]): Future[Long] = {
     val query = ResourceQuery(`type` = Some("N"), tags = Some(tags))
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser), TenSeconds)._2      // TODO show broken
+    elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).map(_._2)
   }
 
-  def getTaggedNewsitems(tags: Set[Tag], startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getTaggedNewsitems(tags: Set[Tag], startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val query = ResourceQuery(`type` = Some("N"), tags = Some(tags), startIndex = startIndex, maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
   def getTaggedWebsites(tags: Set[Tag], maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = { // TODO no usages

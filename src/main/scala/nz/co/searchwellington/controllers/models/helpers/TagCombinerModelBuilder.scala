@@ -33,7 +33,7 @@ import scala.concurrent.Await
       import scala.collection.JavaConversions._
 
       val startIndex = getStartIndex(page)
-      val totalNewsitemCount = contentRetrievalService.getTaggedNewsitemsCount(tags.toSet, Option(loggedInUserFilter.getLoggedInUser))
+      val totalNewsitemCount = Await.result(contentRetrievalService.getTaggedNewsitemsCount(tags.toSet, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
 
       if (startIndex > totalNewsitemCount) {
         None

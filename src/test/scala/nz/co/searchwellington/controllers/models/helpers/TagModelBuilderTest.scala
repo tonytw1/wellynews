@@ -16,6 +16,8 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.bson.BSONObjectID
 
+import scala.concurrent.Future
+
 class TagModelBuilderTest {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -72,7 +74,7 @@ class TagModelBuilderTest {
   def tagPageHeadingShouldBeTheTagDisplayName {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(tagNewsitems)
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(tagNewsitems))
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -83,7 +85,7 @@ class TagModelBuilderTest {
   def mainContentShouldBeTagNewsitems {
     request.setAttribute("tags", Seq(tag))
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(tagNewsitems)
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(tagNewsitems))
 
     val mv = modelBuilder.populateContentModel(request).get
 

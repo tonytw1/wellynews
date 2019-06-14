@@ -47,48 +47,59 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populateTagPageModelAndView(tag: Tag, page: Int): Option[ModelAndView] = {
+
       val mv = new ModelAndView
       mv.addObject(PAGE, page)
       val startIndex = getStartIndex(page)
-      val totalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag, Option(loggedInUserFilter.getLoggedInUser))
+      val eventualTotalNewsitemCount = contentRetrievalService.getTaggedNewitemsCount(tag, Option(loggedInUserFilter.getLoggedInUser))
 
-      if (startIndex > totalNewsitemCount) {
-        None
+      val x = eventualTotalNewsitemCount.flatMap { totalNewsitemCount =>
+        if (startIndex > totalNewsitemCount) {
+          Future.successful(None)
 
-      } else {
-        mv.addObject(TAG, tag)
+        } else {
+          mv.addObject(TAG, tag)
 
-        tag.geocode.map { g =>
-          mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(g))
-        }
+          tag.geocode.map { g =>
+            mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(g))
+          }
 
-        mv.addObject("heading", tag.display_name)
-        mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
-        mv.addObject("link", urlBuilder.getTagUrl(tag))
+          mv.addObject("heading", tag.display_name)
+          mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
+          mv.addObject("link", urlBuilder.getTagUrl(tag))
 
-        tag.parent.map { pid =>
-          tagDAO.loadTagByObjectId(pid).map { p =>
-            mv.addObject("parent", p)
+          tag.parent.map { pid =>
+            tagDAO.loadTagByObjectId(pid).map { p =>
+              mv.addObject("parent", p)
+            }
+          }
+
+          val children = tagDAO.loadTagsByParent(tag._id)
+          if (children.nonEmpty) {
+            import scala.collection.JavaConverters._
+            mv.addObject("children", children.asJava)
+          }
+
+          val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+
+          for {
+            taggedNewsitems <- eventualTaggedNewsitems
+
+          } yield {
+            log.info("Got tagged newsitems: " + taggedNewsitems.size)
+            import scala.collection.JavaConverters._
+            mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
+
+            populatePagination(mv, startIndex, totalNewsitemCount)
+            if (taggedNewsitems.nonEmpty) {
+              commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
+            }
+            Some(mv)
           }
         }
-
-        val children = tagDAO.loadTagsByParent(tag._id)
-        if (children.nonEmpty) {
-          import scala.collection.JavaConverters._
-          mv.addObject("children", children.asJava)
-        }
-
-        val taggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
-        log.info("Got tagged newsitems: " + taggedNewsitems.size)
-        import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
-
-        populatePagination(mv, startIndex, totalNewsitemCount)
-        if (taggedNewsitems.nonEmpty) {
-          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
-        }
-        Some(mv)
       }
+
+      Await.result(x, TenSeconds)
     }
 
     if (isValid(request)) {
