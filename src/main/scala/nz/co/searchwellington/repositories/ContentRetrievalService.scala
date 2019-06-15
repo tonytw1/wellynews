@@ -168,29 +168,25 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getTaggedWebsites(tags: Set[Tag], maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = { // TODO no usages
-    val query = ResourceQuery(`type` = Some("W"), tags = Some(tags), maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
-  }
-
   def getTaggedWebsites(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val taggedWebsites = ResourceQuery(`type` = Some("W"), tags = Some(Set(tag)), maxItems = maxItems)
     elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getPublisherNewsitemsCount(publisher: Website, loggedInUser: Option[User]): Long = {
+  def getPublisherNewsitemsCount(publisher: Website, loggedInUser: Option[User]): Future[Long] = {
     val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
-    Await.result(elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser), TenSeconds)._2      // TODO show broken
+    elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).map(_._2)
   }
 
-  def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher), startIndex = startIndex, maxItems = maxItems)
-    Await.result(elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getPublisherFeeds(publisher: Website, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getPublisherFeeds(publisher: Website, loggedInUser: Option[User]) = {
     val publisherFeeds = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
-    Await.result(elasticSearchIndexer.getResources(publisherFeeds, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)  }
+    elasticSearchIndexer.getResources(publisherFeeds, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
+  }
 
   def getAllWatchlists(loggedInUser: Option[User]): Seq[FrontendResource] = {
     val allWatchlists = ResourceQuery(`type` = Some("L"))

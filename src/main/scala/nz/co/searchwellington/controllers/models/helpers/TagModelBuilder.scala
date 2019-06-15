@@ -121,7 +121,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser)
     val eventualRelatedTagLinks = relatedTagsService.getRelatedTagsForTag(tag, 8, loggedInUser)
     val eventualRelatedPublishersForTag = relatedTagsService.getRelatedPublishersForTag(tag, 8, loggedInUser)
-    val eventualTagWatchlist: Future[Seq[FrontendResource]] = contentRetrievalService.getTagWatchlist(tag, loggedInUser)
+    val eventualTagWatchlist = contentRetrievalService.getTagWatchlist(tag, loggedInUser)
     val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag, loggedInUser)
     val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
 
