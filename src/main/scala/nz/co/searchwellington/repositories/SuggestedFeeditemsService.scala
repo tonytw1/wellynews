@@ -24,7 +24,6 @@ import scala.concurrent.Future
 
     def isNotIgnored(feedItem: FeedItem, feed: Feed): Boolean = feed.acceptance != FeedAcceptancePolicy.IGNORE
 
-
     def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = feedItem.localCopy.isEmpty
 
     rssfeedNewsitemService.getChannelFeedItems.flatMap { channelFeedItems =>
@@ -38,7 +37,7 @@ import scala.concurrent.Future
       feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems).map { suggestions =>
         val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
         log.info("After filtering out those with local copies: " + withLocalCopiesFilteredOut.size)
-        withLocalCopiesFilteredOut.map(_.newsitem).take(maxItems)
+        withLocalCopiesFilteredOut.map(_.newsitem).take(maxItems) // TODO can probably exit pagination earlier
       }
     }
   }
