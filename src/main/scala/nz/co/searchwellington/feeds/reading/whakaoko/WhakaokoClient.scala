@@ -6,23 +6,21 @@ import nz.co.searchwellington.feeds.FeedReaderRunner
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.{Autowired, Value}
-import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import play.api.libs.json.{JodaReads, Json}
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext.Implicits.global // TODO pass in
+import scala.concurrent.Future
 
 @Component
 class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUrl: String,
                                   @Value("#{config['whakaoko.username']}") whakaokoUsername: String,
-                                  @Value("#{config['whakaoko.channel']}") whakaokoChannel: String,
-                                  feedReaderTaskExecutor: TaskExecutor) extends JodaReads {
+                                  @Value("#{config['whakaoko.channel']}") whakaokoChannel: String) extends JodaReads {
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
-  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
@@ -36,10 +34,11 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
   def createFeedSubscription(feedUrl: String): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl =  whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/feeds"
     log.info("Posting new feed to: " + createFeedSubscriptionUrl)
-    val params: Map[String, Seq[String]] = Map {
-      "channel" -> Seq(whakaokoChannel)
+
+    val params: Map[String, Seq[String]] = Map (
+      "channel" -> Seq(whakaokoChannel),
       "url" -> Seq(feedUrl)
-    }
+    )
 
     wsClient.url(createFeedSubscriptionUrl).post(params).map { r =>
       log.info("New feed result: " + r.status + " / " + r.body)
