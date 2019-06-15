@@ -47,12 +47,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       val startIndex = getStartIndex(page)
 
-      val eventualPublisherNewsitemsCount = contentRetrievalService.getPublisherNewsitemsCount(publisher, loggedInUser)
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
 
       val eventualModelAndView = for {
-        mainContentTotal <- eventualPublisherNewsitemsCount
         publisherNewsitems <- eventualPublisherNewsitems
         publisherFeeds <- eventualPublisherFeeds
 
@@ -64,13 +62,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
         mv.addObject("publisher", frontendPublisher)
         mv.addObject("location", frontendPublisher.getPlace)
 
-        if (mainContentTotal > 0) {
+        val totalPublisherNewsitems = publisherNewsitems._2
+        if (totalPublisherNewsitems > 0) {
           import scala.collection.JavaConverters._
-          mv.addObject(MAIN_CONTENT, publisherNewsitems.asJava)
+          mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
 
           mv.addObject("feeds", publisherFeeds.asJava)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-          populatePagination(mv, startIndex, mainContentTotal)
+          populatePagination(mv, startIndex, totalPublisherNewsitems)
         }
         mv
       }

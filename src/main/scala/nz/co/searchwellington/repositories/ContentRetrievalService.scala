@@ -173,14 +173,13 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(taggedWebsites, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getPublisherNewsitemsCount(publisher: Website, loggedInUser: Option[User]): Future[Long] = {
-    val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
-    elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).map(_._2)
-  }
-
-  def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+  def getPublisherNewsitems(publisher: Website, maxItems: Int, startIndex: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher), startIndex = startIndex, maxItems = maxItems)
-    elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
+    elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).flatMap { i =>
+      fetchByIds(i._1).map { rs =>
+        (rs, i._2)
+      }
+    }
   }
 
   def getPublisherFeeds(publisher: Website, loggedInUser: Option[User]) = {
