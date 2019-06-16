@@ -1,12 +1,10 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.List
-
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.FrontendNewsitem
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -40,6 +38,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+    println("!!!!!!!")
     val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
 
     def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
@@ -62,10 +61,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
         mv.addObject("publisher", frontendPublisher)
         mv.addObject("location", frontendPublisher.getPlace)
 
+        println(publisherNewsitems)
         val totalPublisherNewsitems = publisherNewsitems._2
-        if (totalPublisherNewsitems > 0) {
+        if (publisherNewsitems._1.nonEmpty) {
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
+
+          populateGeotaggedItems(mv, publisherNewsitems._1)
 
           mv.addObject("feeds", publisherFeeds.asJava)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
@@ -95,7 +97,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     import scala.collection.JavaConverters._
 
     mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser).asJava)
-    populateGeotaggedItems(mv)
     val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
     if (relatedTagLinks.nonEmpty) {
       mv.addObject("related_tags", relatedTagLinks.asJava)
@@ -103,19 +104,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser), TenSeconds).asJava)
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "publisher"
-  }
+  def getViewName(mv: ModelAndView): String = "publisher"
 
-  private def populateGeotaggedItems(mv: ModelAndView) {
-    val mainContent = mv.getModel.get("main_content").asInstanceOf[List[FrontendNewsitem]]
-    if (mainContent != null) {
-      import scala.collection.JavaConversions._
-      val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
-      if (geotaggedNewsitems.nonEmpty) {
-        import scala.collection.JavaConverters._
-        mv.addObject("geocoded", geotaggedNewsitems.asJava)
-      }
+  private def populateGeotaggedItems(mv: ModelAndView, mainContent: Seq[FrontendResource]) {
+    val geotaggedNewsitems = geotaggedNewsitemExtractor.extractGeotaggedItems(mainContent)
+    if (geotaggedNewsitems.nonEmpty) {
+      import scala.collection.JavaConverters._
+      mv.addObject("geocoded", geotaggedNewsitems.asJava)
     }
   }
 
