@@ -55,8 +55,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
       mv.addObject(PAGE, page)
       val startIndex = getStartIndex(page)
 
-      val x = contentRetrievalService.getTaggedNewitemsCount(tag, loggedInUser).flatMap { totalNewsitemCount =>
-        if (startIndex > totalNewsitemCount) {
+      val x = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser).flatMap { taggedNewsitemsAndTotalCount =>
+        val totalNewsitems = taggedNewsitemsAndTotalCount._2
+        if (startIndex > totalNewsitems) {
           Future.successful(None)
 
         } else {
@@ -78,14 +79,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
           for {
             children <- tagDAO.loadTagsByParent(tag._id)
-            taggedNewsitems <- contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser)
 
           } yield {
+            val taggedNewsitems = taggedNewsitemsAndTotalCount._1
             log.info("Got tagged newsitems: " + taggedNewsitems.size)
             import scala.collection.JavaConverters._
             mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
 
-            populatePagination(mv, startIndex, totalNewsitemCount)
+            populatePagination(mv, startIndex,  totalNewsitems)
             if (taggedNewsitems.nonEmpty) {
               commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
             }
