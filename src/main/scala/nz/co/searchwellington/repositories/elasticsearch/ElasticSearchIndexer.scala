@@ -150,8 +150,8 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-    val allNewsitems = ResourceQuery(`type` = Some("N"))
-    getPublisherAggregationFor(allNewsitems,   loggedInUser)
+    val allNewsitems = ResourceQuery(`type` = Some("N"))    // TODO or F or L
+    getPublisherAggregationFor(allNewsitems, loggedInUser)
   }
 
   def getPublishersForTag(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
