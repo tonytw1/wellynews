@@ -96,12 +96,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     import scala.collection.JavaConverters._
 
-    mv.addObject("watchlist", contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser).asJava)
-    val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
-    if (relatedTagLinks.nonEmpty) {
-      mv.addObject("related_tags", relatedTagLinks.asJava)
+    val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
+    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+
+    val eventuallyPopulated = for {
+      publisherWatchlist <- eventualPublisherWatchlist
+      latestNewsitems <- eventualLatestNewsitems
+
+    } yield {
+      mv.addObject("watchlist", publisherWatchlist.asJava)
+      val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
+      if (relatedTagLinks.nonEmpty) {
+        mv.addObject("related_tags", relatedTagLinks.asJava)
+      }
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+      mv
     }
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser), TenSeconds).asJava)
+
+    Await.result(eventuallyPopulated, TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = "publisher"

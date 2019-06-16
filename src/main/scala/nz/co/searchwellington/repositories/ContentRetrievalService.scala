@@ -171,7 +171,7 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(publisherNewsitems, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
   }
 
-  def getPublisherFeeds(publisher: Website, loggedInUser: Option[User]) = {
+  def getPublisherFeeds(publisher: Website, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val publisherFeeds = ResourceQuery(`type` = Some("F"), publisher = Some(publisher))
     elasticSearchIndexer.getResources(publisherFeeds, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
@@ -181,9 +181,9 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResources(allWatchlists, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getPublisherWatchlist(publisher: Website, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getPublisherWatchlist(publisher: Website, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val publisherWatchlist = ResourceQuery(`type` = Some("L"), publisher = Some(publisher))
-    Await.result(elasticSearchIndexer.getResources(publisherWatchlist, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(publisherWatchlist, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
   def getPublisherTagCombinerNewsitems(publisher: Website, tag: Tag, maxNewsitems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
