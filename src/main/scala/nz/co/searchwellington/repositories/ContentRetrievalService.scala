@@ -38,9 +38,7 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def getTopLevelTags: Seq[Tag] = {
-    tagDAO.getTopLevelTags
-  }
+  def getTopLevelTags: Future[Seq[Tag]] = tagDAO.getTopLevelTags
 
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
     val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
@@ -204,9 +202,7 @@ import scala.concurrent.{Await, Future}
     mongoRepository.getAllDiscoveredFeeds()
   }
 
-  def getTagNamesStartingWith(q: String): Seq[String] = {
-    tagDAO.getTagNamesStartingWith(q)
-  }
+  def getTagNamesStartingWith(q: String): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
 
   def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
     log.info("Get publishers starting with '" + q + "'")
@@ -224,9 +220,7 @@ import scala.concurrent.{Await, Future}
     None
   }
 
-  def getFeaturedTags: Seq[Tag] = {
-    tagDAO.getFeaturedTags
-  }
+  def getFeaturedTags: Future[Seq[Tag]] = tagDAO.getFeaturedTags
 
   private def buildFrontendResourcesFor(i: (Seq[BSONObjectID], Long)): Future[(Seq[FrontendResource], Long)] = {
     fetchByIds(i._1).map { rs =>

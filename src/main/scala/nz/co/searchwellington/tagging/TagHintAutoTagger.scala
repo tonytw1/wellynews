@@ -1,15 +1,17 @@
 package nz.co.searchwellington.tagging
 
 import com.google.common.base.{Splitter, Strings}
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.TagDAO
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.collection.JavaConversions._
+import scala.concurrent.Await
 
 @Component
-class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
+class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) extends ReasonableWaits {
 
   private val commaSplitter: Splitter = Splitter.on(",")
 
@@ -30,7 +32,7 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
       }
     }
 
-    val autoTags = tagDAO.getAllTags().filter(t => t.autotag_hints.exists(!Strings.isNullOrEmpty(_)))
+    val autoTags = Await.result(tagDAO.getAllTags, TenSeconds).filter(t => t.autotag_hints.exists(!Strings.isNullOrEmpty(_)))
 
     autoTags.filter(tag => matches(resource, tag)).toSet
   }

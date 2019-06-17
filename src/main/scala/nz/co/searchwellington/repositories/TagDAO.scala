@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TagDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
 
@@ -26,13 +26,9 @@ import scala.concurrent.duration.{Duration, SECONDS}
     Await.result(mongoRepository.getTagByObjectId(objectId), TenSeconds)
   }
 
-  def getAllTags(): Seq[Tag] = {
-    Await.result(mongoRepository.getAllTags(), TenSeconds)
-  }
+  def getAllTags: Future[Seq[Tag]] = mongoRepository.getAllTags()
 
-  def getFeaturedTags: Seq[Tag] = {
-    getAllTags().filter(t => t.isFeatured)
-  }
+  def getFeaturedTags: Future[Seq[Tag]] = getAllTags.map(ts => ts.filter(t => t.isFeatured))
 
   def loadTagsById(tagIds: Seq[String]): Seq[Tag] = {
     tagIds.flatMap { id =>
@@ -44,16 +40,14 @@ import scala.concurrent.duration.{Duration, SECONDS}
     mongoRepository.getTagsByParent(parentId)
   }
 
-  def getTopLevelTags: Seq[Tag] = {
-    getAllTags().filter(t => t.parent.isEmpty)
+  def getTopLevelTags: Future[Seq[Tag]] = {
+    getAllTags.map(ts => ts.filter(t => t.parent.isEmpty))
   }
 
   def deleteTag(tag: Tag) {
     // sessionFactory.getCurrentSession.delete(tag)
   }
 
-  def getTagNamesStartingWith(q: String): Seq[String] = {
-    getAllTags().filter(t => t.name.startsWith(q)).map(t => t.name)
-  }
+  def getTagNamesStartingWith(q: String): Future[Seq[String]] = getAllTags.map(ts => ts.filter(t => t.name.startsWith(q)).map(t => t.name))
 
 }

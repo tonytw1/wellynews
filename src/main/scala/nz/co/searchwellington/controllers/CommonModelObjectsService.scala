@@ -1,21 +1,24 @@
 package nz.co.searchwellington.controllers
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+
 @Component class CommonModelObjectsService @Autowired()(contentRetrievalService: ContentRetrievalService,
-                                                        frontendResourceMapper: FrontendResourceMapper) {
+                                                        frontendResourceMapper: FrontendResourceMapper) extends ReasonableWaits {
   def populateCommonLocal(mv: ModelAndView) {
     import scala.collection.JavaConverters._
 
     val topLevelTags = contentRetrievalService.getTopLevelTags
-    mv.addObject("top_level_tags", topLevelTags.asJava)
+    mv.addObject("top_level_tags", Await.result(topLevelTags, TenSeconds).asJava)
 
     val featuredTags = contentRetrievalService.getFeaturedTags
-    mv.addObject("featuredTags", featuredTags.asJava)
+    mv.addObject("featuredTags", Await.result(featuredTags, TenSeconds).asJava)
   }
 
 }

@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.TagDAO
@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder {
+import scala.concurrent.Await
+
+@Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagsModelBuilder])
 
@@ -23,7 +25,7 @@ import org.springframework.web.servlet.ModelAndView
       val mv = new ModelAndView
       val allFrontendTags = tagDAO.getAllTags
       import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, allFrontendTags.asJava)
+      mv.addObject(MAIN_CONTENT, Await.result(allFrontendTags, TenSeconds).asJava)
       mv.addObject("heading", "All tags")
       Some(mv)
 
@@ -35,8 +37,6 @@ import org.springframework.web.servlet.ModelAndView
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "tags"
-  }
+  def getViewName(mv: ModelAndView): String = "tags"
 
 }

@@ -63,7 +63,7 @@ import scala.concurrent.Await
     }
     tagSelect.addElement(noParentOption)
 
-    tagDAO.getAllTags().map { tag =>
+    Await.result(tagDAO.getAllTags, TenSeconds).map { tag =>
       val tagIsNotExcluded = !tagsToExclude.contains(tag)
       if (tagIsNotExcluded) {
         val option = new Option(tag.getName)
