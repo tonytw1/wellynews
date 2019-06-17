@@ -7,7 +7,7 @@ import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, Mo
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed
-import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
@@ -62,7 +62,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           val a = result
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, result.asJava)
-          //populateGeotaggedFeedItems(mv, result)
+          // populateGeotaggedFeedItems(mv, result.map(_.newsitem))
           //mv.addObject("whakaoko_subscription", result._2)
           mv
         })
@@ -96,8 +96,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getViewName(mv: ModelAndView): String = "viewfeed"
 
-  private def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FeedItem]) {
-    val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feedNewsitems)
+  private def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendNewsitem]) {
+    val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
     if (geotaggedItems.nonEmpty) {
       log.info("Adding " + geotaggedItems.size + " geotagged feed items")
       import scala.collection.JavaConverters._

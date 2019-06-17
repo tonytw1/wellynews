@@ -78,7 +78,6 @@ class FeedModelBuilderTest {
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -89,7 +88,6 @@ class FeedModelBuilderTest {
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right((feeditems, subscription))))
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(Future.successful(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation))
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(Seq())
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -97,6 +95,7 @@ class FeedModelBuilderTest {
     assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation.asJava, mv.getModel.get("main_content"))
   }
 
+  /*
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
     when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(geotaggedFeedNewsitems)
@@ -108,5 +107,6 @@ class FeedModelBuilderTest {
     import scala.collection.JavaConverters._
     assertEquals(geotaggedFeedNewsitems.asJava, mv.getModel.get("geocoded"))
   }
+   */
 
 }
