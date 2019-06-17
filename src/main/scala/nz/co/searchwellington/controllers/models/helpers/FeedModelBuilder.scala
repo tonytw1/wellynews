@@ -4,9 +4,10 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
-import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
+import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed
+import nz.co.searchwellington.model.frontend.FeedNewsitemForAcceptance
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
@@ -14,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, contentRetrievalService: ContentRetrievalService,
@@ -34,19 +35,40 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
-      val feedItemsForFeed = Await.result(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed), TenSeconds)
-      feedItemsForFeed.fold({ l =>
-        mv.addObject("feed_error", l)
 
-      }, { result =>
-        val feedItems = result._1
-        val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
-        val feedItemsWithAcceptanceInformation = Await.result(feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems), TenSeconds)
-        import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, feedItemsWithAcceptanceInformation.asJava)
-        populateGeotaggedFeedItems(mv, feedItems)
-        mv.addObject("whakaoko_subscription", result._2)
-      })
+      val z: Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
+        val x = feedItemsForFeed.fold({ l =>
+          Future.successful(Left(l))
+
+        }, { result =>
+          val a: (Seq[FeedItem], Subscription) = result
+          val feedItems = result._1
+          val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
+          val eventualWithSuppressionAndLocalCopyInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
+
+          eventualWithSuppressionAndLocalCopyInformation.map { i =>
+            Right(i)
+          }
+        })
+        x
+      }
+
+      val x = z.map { y =>
+        y.fold({ l =>
+          mv.addObject("feed_error", l)
+          mv
+
+        }, { result =>
+          val a = result
+          import scala.collection.JavaConverters._
+          mv.addObject(MAIN_CONTENT, result.asJava)
+          //populateGeotaggedFeedItems(mv, result)
+          //mv.addObject("whakaoko_subscription", result._2)
+          mv
+        })
+      }
+
+      Await.result(x, TenSeconds)
     }
 
     if (isValid(request)) {
