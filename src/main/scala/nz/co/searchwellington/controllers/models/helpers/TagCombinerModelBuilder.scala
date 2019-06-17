@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util
 import java.util.List
 
 import javax.servlet.http.HttpServletRequest
@@ -40,7 +39,7 @@ import scala.concurrent.Await
         None
 
       } else {
-        val firstTag = tags(0)
+        val firstTag = tags.head
         val secondTag = tags(1)
 
         if (totalNewsitemCount > 0) {
@@ -74,9 +73,9 @@ import scala.concurrent.Await
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val tags: util.List[Tag] = request.getAttribute("tags").asInstanceOf[List[Tag]]
-    if (!tags.isEmpty) {
-      val tag = tags.get(0)
+    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    if (tags.nonEmpty) {
+      val tag = tags.head
       mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUserFilter.getLoggedInUser)))
       import scala.collection.JavaConverters._
       mv.addObject("latest_news", Await.result(contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
