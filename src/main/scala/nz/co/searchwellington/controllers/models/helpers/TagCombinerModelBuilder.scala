@@ -22,7 +22,7 @@ import scala.concurrent.Await
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
-    val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
+    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     val isTagCombinerPage = tags != null && tags.size == 2
     isTagCombinerPage
   }
