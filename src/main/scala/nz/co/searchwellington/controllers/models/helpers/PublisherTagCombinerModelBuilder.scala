@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -12,9 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
+
 @Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                               frontendResourceMapper: FrontendResourceMapper, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with CommonSizes {
+                                                               frontendResourceMapper: FrontendResourceMapper, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
+  with CommonSizes with ReasonableWaits {
 
   private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
 
@@ -26,18 +31,7 @@ import org.springframework.web.servlet.ModelAndView
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
-    def populatePublisherTagCombinerNewsitems(mv: ModelAndView, publisher: Website, tag: Tag) {
-      val publisherNewsitems = contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
-
-      import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, publisherNewsitems.asJava)
-
-      if (publisherNewsitems.nonEmpty) {
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
-      }
-    }
-
-    if (isValid(request)) {
+    val eventualModelAndView = if (isValid(request)) {
       logger.info("Building publisher tag combiner page model")
       val tag = request.getAttribute("tag").asInstanceOf[Tag]
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
@@ -47,12 +41,27 @@ import org.springframework.web.servlet.ModelAndView
       mv.addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName)
       mv.addObject("description", "")
       mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag))
-      populatePublisherTagCombinerNewsitems(mv, publisher, tag)
-      Some(mv)
+
+      for {
+        publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+
+      } yield {
+
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, publisherTagNewsitems.asJava)
+
+        if (publisherTagNewsitems.nonEmpty) {
+          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
+        }
+
+        Some(mv)
+      }
 
     } else {
-      None
+      Future.successful(None)
     }
+
+    Await.result(eventualModelAndView, TenSeconds)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
