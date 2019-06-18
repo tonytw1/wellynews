@@ -38,7 +38,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-    println("!!!!!!!")
     val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
 
     def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
@@ -61,7 +60,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
         mv.addObject("publisher", frontendPublisher)
         mv.addObject("location", frontendPublisher.getPlace)
 
-        println(publisherNewsitems)
         val totalPublisherNewsitems = publisherNewsitems._2
         if (publisherNewsitems._1.nonEmpty) {
           import scala.collection.JavaConverters._

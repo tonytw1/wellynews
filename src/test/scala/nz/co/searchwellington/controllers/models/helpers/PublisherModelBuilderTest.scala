@@ -1,81 +1,76 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util
-import java.util.List
+import java.util.UUID
 
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.Website
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
-import org.mockito.{Mock, Mockito, MockitoAnnotations}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.concurrent.Future
 
 class PublisherModelBuilderTest {
 
-  @Mock private[models] var rssUrlBuilder: RssUrlBuilder = null
-  @Mock private[models] var urlBuilder: UrlBuilder = null
-  @Mock private[models] var relatedTagsService: RelatedTagsService = null
-  @Mock private[models] var contentRetrievalService: ContentRetrievalService = null
-  @Mock private[models] var geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor = null
-  @Mock private[models] var geocodeToPlaceMapper: GeocodeToPlaceMapper = null
-  @Mock private[models] var commonAttributesModelBuilder: CommonAttributesModelBuilder = null
-  @Mock private[models] var publisher: Website = null
-  @Mock private[models] var newsitem: FrontendNewsitem = null
-  @Mock private[models] var geotaggedNewsitem: FrontendNewsitem = null
-  @Mock private[models] var geotag: Place = null
-  @Mock private[models] var frontendResourceMapper: FrontendResourceMapper = null
-  @Mock private[models] var loggedInUserFilter: LoggedInUserFilter = null
+  private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
+  private val urlBuilder = mock(classOf[UrlBuilder])
+  private val relatedTagsService: RelatedTagsService = mock(classOf[RelatedTagsService])
+  private val contentRetrievalService: ContentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
+  private val geocodeToPlaceMapper: GeocodeToPlaceMapper = mock(classOf[GeocodeToPlaceMapper])
+  private val commonAttributesModelBuilder: CommonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val frontendResourceMapper: FrontendResourceMapper = mock(classOf[FrontendResourceMapper])
+  private val loggedInUserFilter: LoggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
-  private[models] var request: MockHttpServletRequest = null
+
+  private val publisher: Website = Website()
+  private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
+  private val newsitem: FrontendNewsitem = FrontendNewsitem()
+  private val geotag: Place = new Place() // TODO
+  private val geotaggedNewsitem: FrontendNewsitem = FrontendNewsitem(place = Some(geotag))
+
+  private var request: MockHttpServletRequest = null
+
+  private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor,
+    geocodeToPlaceMapper, commonAttributesModelBuilder, frontendResourceMapper, loggedInUserFilter)
+
 
   @Before def setup {
-    MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)
-    Mockito.when(geotaggedNewsitem.place).thenReturn(Some(geotag))
+    //    when(geotaggedNewsitem.place).thenReturn(Some(geotag))
   }
 
-  /*
   @SuppressWarnings(Array("unchecked"))
   @Test
   @throws(classOf[Exception])
   def shouldHightlightPublishersGeotaggedContent {
-    val publisherNewsitems: List[FrontendNewsitem] = new util.ArrayList();
-    publisherNewsitems.add(newsitem)
-    publisherNewsitems.add(geotaggedNewsitem)
+    val publisherNewsitems: Seq[FrontendNewsitem] = Seq(newsitem, geotaggedNewsitem)
     val geotaggedNewsitems: Seq[FrontendResource] = Seq(geotaggedNewsitem)
 
     val loggedInUser = None
 
-    when(contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)).thenReturn(Future.successful(geotaggedNewsitems))
+    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, loggedInUser)).thenReturn(Future.successful((publisherNewsitems, publisherNewsitems.size.toLong)))
+    when(contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
-    import scala.collection.JavaConversions._
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
     when(relatedTagsService.getRelatedLinksForPublisher(publisher)).thenReturn(Seq())
-    val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor,
-      geocodeToPlaceMapper, commonAttributesModelBuilder, frontendResourceMapper, loggedInUserFilter)
-    val mv = new ModelAndView
-    mv.addObject("main_content", publisherNewsitems)
+    when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(frontendPublisher)
 
-    println("!!!")
-    modelBuilder.populateContentModel(request)
-    println("!!!")
+    val mv = modelBuilder.populateContentModel(request).get
 
-    val geotaggedPublisherNewsitems: List[FrontendResource] = mv.getModel.get("geocoded").asInstanceOf[List[FrontendResource]]
-    assertEquals(geotaggedNewsitems, geotaggedPublisherNewsitems)
+    val value = mv.getModel.get("geocoded")
+    println(value)
+    val geotaggedPublisherNewsitems: java.util.List[FrontendResource] = value.asInstanceOf[java.util.List[FrontendResource]]
     assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitems.get(0))
   }
-  */
 
 }

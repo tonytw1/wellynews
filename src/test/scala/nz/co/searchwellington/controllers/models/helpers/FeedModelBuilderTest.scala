@@ -15,8 +15,8 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class FeedModelBuilderTest {
   private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
