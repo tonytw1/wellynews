@@ -6,7 +6,7 @@ import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed}
+import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Feed, Newsitem}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -19,35 +19,35 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class FeedModelBuilderTest {
-  val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
-  val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  val geotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
-  val feedItemLocalCopyDecorator = mock(classOf[FeedItemLocalCopyDecorator])
-  val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
-  val feeditemToNewsitemService =  mock(classOf[FeeditemToNewsitemService])
-  val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val geotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
+  private val feedItemLocalCopyDecorator = mock(classOf[FeedItemLocalCopyDecorator])
+  private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
+  private val feeditemToNewsitemService = mock(classOf[FeeditemToNewsitemService])
+  private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
   var feed = Feed(id = UUID.randomUUID().toString, page = Some("http://localhost/a-feed"))
 
-  val feedItem = mock(classOf[FeedItem])
-  val anotherFeedItem = mock(classOf[FeedItem])
-  var feeditems = Seq(feedItem, anotherFeedItem)
+  private val feedItem = mock(classOf[FeedItem])
+  private val anotherFeedItem = mock(classOf[FeedItem])
+  private var feeditems = Seq(feedItem, anotherFeedItem)
 
-  val newsItem = mock(classOf[Newsitem])
-  val anotherNewsitem = mock(classOf[Newsitem])
-  var feedNewsitems = Seq(newsItem, anotherNewsitem)
+  private val newsItem = Newsitem()
+  private val anotherNewsitem = Newsitem()
 
-  val decoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
-  val anotherDecoratedFeedItem = mock(classOf[FeedNewsitemForAcceptance])
-  val feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation: Seq[FeedNewsitemForAcceptance] = Seq(decoratedFeedItem, anotherDecoratedFeedItem)
+  private val feedNewsitems = Seq(newsItem, anotherNewsitem)
 
-  val geotaggedFeeditem = mock(classOf[FeedItem])
-  val anotherGeotaggedFeeditem = mock(classOf[FeedItem])
-  val geotaggedFeedNewsitems = Seq(geotaggedFeeditem, anotherGeotaggedFeeditem)
+  private val frontendNewsitem = FrontendNewsitem()
+  private val anotherFrontendNewsitem = FrontendNewsitem()
 
-  val subscription = mock(classOf[Subscription])
+  private val decoratedFeedItem = FeedNewsitemForAcceptance(newsitem = frontendNewsitem, localCopy = None, suppressed = false)
+  private val anotherDecoratedFeedItem = FeedNewsitemForAcceptance(newsitem = anotherFrontendNewsitem, localCopy = None, suppressed = false)
+  private val feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation = Seq(decoratedFeedItem, anotherDecoratedFeedItem)
 
-  val frontendFeed = mock(classOf[FrontendFeed])
+  private val subscription = mock(classOf[Subscription])
+
+  private val frontendFeed = mock(classOf[FrontendFeed])
 
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val loggedInUser = None
@@ -55,7 +55,7 @@ class FeedModelBuilderTest {
   var request: MockHttpServletRequest = null
 
   val modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
-      feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, loggedInUserFilter)
+    feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, loggedInUserFilter)
 
   @Before
   def setUp {
@@ -63,8 +63,8 @@ class FeedModelBuilderTest {
 
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(feedItem, feed)).thenReturn(newsItem)
     when(feeditemToNewsitemService.makeNewsitemFromFeedItem(anotherFeedItem, feed)).thenReturn(anotherNewsitem)
-
     when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(Future.successful(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation))
+
     request = new MockHttpServletRequest
     request.setAttribute("feedAttribute", feed)
     request.setPathInfo("/feed/someonesfeed")
@@ -78,6 +78,7 @@ class FeedModelBuilderTest {
   @Test
   def shouldPopulateFrontendFeedFromRequestAttribute {
     when(frontendResourceMapper.createFrontendResourceFrom(feed)).thenReturn(frontendFeed)
+    when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq.empty)
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -87,7 +88,7 @@ class FeedModelBuilderTest {
   @Test
   def shouldPopulateMainContentWithFeedItemsDecoratedWithLocalCopySuppressionInformation {
     when(rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed)).thenReturn(Future.successful(Right((feeditems, subscription))))
-    when(feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)).thenReturn(Future.successful(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation))
+    when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq.empty)
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -95,18 +96,16 @@ class FeedModelBuilderTest {
     assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation.asJava, mv.getModel.get("main_content"))
   }
 
-  /*
   @Test
-  def shouldPushGeotaggedFeeditemsOntoTheModelSeperately {
-    when(geotaggedNewsitemExtractor.extractGeotaggedItemsFromFeedNewsitems(feeditems)).thenReturn(geotaggedFeedNewsitems)
+  def shouldPushGeotaggedFeeditemsOntoTheModeAsFrontendNewsitemsSeperately {
+    when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq(anotherFrontendNewsitem))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     val mv = modelBuilder.populateContentModel(request).get
 
     modelBuilder.populateExtraModelContent(request, mv)
 
     import scala.collection.JavaConverters._
-    assertEquals(geotaggedFeedNewsitems.asJava, mv.getModel.get("geocoded"))
+    assertEquals(Seq(anotherFrontendNewsitem).asJava, mv.getModel.get("geocoded"))
   }
-   */
 
 }

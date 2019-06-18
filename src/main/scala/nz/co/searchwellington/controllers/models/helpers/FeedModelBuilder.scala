@@ -34,6 +34,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
+    def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendNewsitem]) {
+      val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
+      if (geotaggedItems.nonEmpty) {
+        log.info("Adding " + geotaggedItems.size + " geotagged feed items")
+        import scala.collection.JavaConverters._
+        mv.addObject("geocoded", geotaggedItems.asJava) // TODO deduplicate overlapping
+      }
+    }
+
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
 
       val z: Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
@@ -62,7 +71,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
           val a = result
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, result.asJava)
-          // populateGeotaggedFeedItems(mv, result.map(_.newsitem))
+          populateGeotaggedFeedItems(mv, result.map(_.newsitem))
+
           //mv.addObject("whakaoko_subscription", result._2)
           mv
         })
@@ -94,15 +104,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }, TenSeconds)
   }
 
-  def getViewName(mv: ModelAndView): String = "viewfeed"
-
-  private def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendNewsitem]) {
-    val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
-    if (geotaggedItems.nonEmpty) {
-      log.info("Adding " + geotaggedItems.size + " geotagged feed items")
-      import scala.collection.JavaConverters._
-      mv.addObject("geocoded", geotaggedItems.asJava) // TODO deduplicate overlapping
-    }
-  }
+  def getViewName(mv: ModelAndView) = "viewfeed"
 
 }
