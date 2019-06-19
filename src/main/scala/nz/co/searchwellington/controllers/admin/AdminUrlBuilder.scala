@@ -86,7 +86,11 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
   }
 
   def getWhakaokoPreviewUrl(subscription: Subscription): String = {
-    whakaokoUrl + "/ui/" + whakaokoUsername + "/subscriptions/" + subscription.id
+    if (subscription != null) {
+      whakaokoUrl + "/ui/" + whakaokoUsername + "/subscriptions/" + subscription.id
+    } else {
+      ""
+    }
   }
 
 }
