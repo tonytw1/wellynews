@@ -35,7 +35,7 @@ extends ReasonableWaits {
 
         }, { r =>
           val feedNewsitems = r._1
-          log.info("Feed contains " + feedNewsitems.size + " items")
+          log.debug("Feed contains " + feedNewsitems.size + " items")
           feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
 
           val eventualAccepted: Future[Seq[Newsitem]] = if (acceptancePolicy.shouldReadFeed) {
@@ -62,7 +62,6 @@ extends ReasonableWaits {
   }
 
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Newsitem]] = {
-    log.info("Accepting feed items")
 
     val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>
       val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))

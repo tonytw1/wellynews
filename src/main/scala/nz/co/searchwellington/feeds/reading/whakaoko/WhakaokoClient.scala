@@ -19,7 +19,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
                                   @Value("#{config['whakaoko.username']}") whakaokoUsername: String,
                                   @Value("#{config['whakaoko.channel']}") whakaokoChannel: String) extends JodaReads {
 
-  private val log = Logger.getLogger(classOf[FeedReaderRunner])
+  private val log = Logger.getLogger(classOf[WhakaokoClient])
 
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -33,7 +33,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
 
   def createFeedSubscription(feedUrl: String): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl =  whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/feeds"
-    log.info("Posting new feed to: " + createFeedSubscriptionUrl)
+    log.debug("Posting new feed to: " + createFeedSubscriptionUrl)
 
     val params: Map[String, Seq[String]] = Map (
       "channel" -> Seq(whakaokoChannel),
@@ -41,7 +41,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
     )
 
     wsClient.url(createFeedSubscriptionUrl).post(params).map { r =>
-      log.info("New feed result: " + r.status + " / " + r.body)
+      log.debug("New feed result: " + r.status + " / " + r.body)
       if (r.status == 200) {
         Some(Json.parse(r.body).as[Subscription])
       } else {
@@ -63,7 +63,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
 
   def getChannelSubscriptions(): Future[Seq[Subscription]] = {
     val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
-    log.info("Fetching from: " + channelSubscriptionsUrl)
+    log.debug("Fetching from: " + channelSubscriptionsUrl)
     wsClient.url(channelSubscriptionsUrl).get.map { r =>
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[Subscription]]
