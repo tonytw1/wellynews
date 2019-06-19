@@ -57,7 +57,7 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
   }
 
   def getFeednewsItemAcceptUrl(feed: FrontendFeed, newsitem: FrontendNewsitem): String = {
-    siteInformation.getUrl + "/edit/accept?feed=" + feed.urlWords + "&url=" + UrlParameterEncoder.encode(newsitem.getUrl)
+    siteInformation.getUrl + "//accept-feed-item?feed=" + feed.urlWords + "&url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
   def getAcceptAllFromFeed(feed: FrontendFeed): String = {
