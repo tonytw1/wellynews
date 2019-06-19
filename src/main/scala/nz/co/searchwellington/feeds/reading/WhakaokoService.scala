@@ -37,8 +37,7 @@ import scala.concurrent.Future
       }
   }
 
-  def getChannelFeedItems(): Future[Seq[FeedItem]] = {
-    val pages = 5
+  def getChannelFeedItems(pages: Int): Future[Seq[FeedItem]] = {
 
     def fetch(into: Seq[FeedItem], page: Int = 1): Future[Seq[FeedItem]] = {
       client.getChannelFeedItems(page).flatMap { items =>
