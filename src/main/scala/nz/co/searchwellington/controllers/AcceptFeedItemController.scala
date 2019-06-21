@@ -32,31 +32,28 @@ class AcceptFeedItemController @Autowired()(contentUpdateService: ContentUpdateS
 
     val loggedInUser = loggedInUserFilter.getLoggedInUser // TODO map
 
-    val x: Future[ModelAndView] = mongoRepository.getFeedByUrlwords(feed).map { fo =>
+    val eventualModelAndView = mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
       fo.map { feed =>
-
         rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { fis =>
           fis.fold({ l =>
             log.warn("Could not read feed items: " + l)
-          },
-            { r =>
-              val feedItems = r._1
+            new ModelAndView()
 
-              feedItems.find(fi => fi.url == url).map { feedItemToAccept =>
-                feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed)
-              }
-            })
+          }, { r =>
+            r._1.find(fi => fi.url == url).map { feedItemToAccept =>
+              feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed)
+            }
+            new ModelAndView()  // TODO map
+          })
         }
 
-        new ModelAndView()
-
       }.getOrElse {
-        new ModelAndView() // TODO file not found
+        Future.successful(new ModelAndView()) // TODO file not found
       }
 
     }
 
-    Await.result(x, TenSeconds)
+    Await.result(eventualModelAndView, TenSeconds)
   }
 
 }
