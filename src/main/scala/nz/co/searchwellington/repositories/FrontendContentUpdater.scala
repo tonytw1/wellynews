@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
   private val log = Logger.getLogger(classOf[FrontendContentUpdater])
 
   def update(updatedResource: Resource): Unit = {
-    log.info("Updating elastic search record for resource: " + updatedResource.title)
+    log.debug("Updating elastic search record for resource: " + updatedResource.title)
     elasticSearchIndexRebuildService.index(updatedResource)
   }
 
