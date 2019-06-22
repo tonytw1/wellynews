@@ -23,23 +23,32 @@ import scala.concurrent.Future
   def getSuggestionFeednewsitems(maxItems: Int): Future[Seq[FrontendNewsitem]] = {
 
     def isNotIgnored(feedItem: FeedItem, feed: Feed): Boolean = feed.acceptance != FeedAcceptancePolicy.IGNORE
-
     def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = feedItem.localCopy.isEmpty
 
-    rssfeedNewsitemService.getChannelFeedItems(page = 1).flatMap { channelFeedItems =>
-      log.info("Found " + channelFeedItems.size + " channel newsitems")
+    def filteredPage(page: Int, output: Seq[FrontendNewsitem]): Future[Seq[FrontendNewsitem]] = {
+      rssfeedNewsitemService.getChannelFeedItems(page = 1).flatMap { channelFeedItems =>
+        log.info("Found " + channelFeedItems.size + " channel newsitems")
 
-      val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
-      log.info("After filtering out those from ignored feeds: " + notIgnoredFeedItems.size)
+        val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
+        log.info("After filtering out those from ignored feeds: " + notIgnoredFeedItems.size)
 
-      val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
+        val channelNewsitems = notIgnoredFeedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i._1, i._2))
 
-      feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems).map { suggestions =>
-        val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
-        log.info("After filtering out those with local copies: " + withLocalCopiesFilteredOut.size)
-        withLocalCopiesFilteredOut.map(_.newsitem).take(maxItems) // TODO can probably exit pagination earlier
+        feedItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(channelNewsitems).flatMap { suggestions =>
+          val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
+          log.info("After filtering out those with local copies: " + withLocalCopiesFilteredOut.size)
+
+          val result = output ++ withLocalCopiesFilteredOut.map(_.newsitem).take(maxItems)
+          if (result.size >= maxItems || (page == 5)) {
+            return Future.successful(result)
+          } else {
+            filteredPage(page + 1, result)
+          }
+        }
       }
     }
+
+    filteredPage(1, Seq.empty)
   }
 
 }
