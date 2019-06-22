@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoService
+import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.{FeedReaderUpdateService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.UrlWordsGenerator
 import nz.co.searchwellington.modification.ContentUpdateService
@@ -34,23 +35,31 @@ class AcceptFeedItemController @Autowired()(contentUpdateService: ContentUpdateS
 
     val eventualModelAndView = mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
       fo.map { feed =>
-        rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { fis =>
+        val eventualFeedItem = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { fis =>
           fis.fold({ l =>
             log.warn("Could not read feed items: " + l)
-            new ModelAndView()
-
+            None
           }, { r =>
-            r._1.find(fi => fi.url == url).map { feedItemToAccept =>
-              feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed)
-            }
-            new ModelAndView()  // TODO map
+            r._1.find(fi => fi.url == url)
           })
+
+        }
+
+        eventualFeedItem.flatMap { maybeFeedItem =>
+          maybeFeedItem.map { feedItemToAccept =>
+            feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed).map { accepted =>
+              log.info("Accepted newsitem: " + accepted.title)
+              new ModelAndView()
+            }
+
+          }.getOrElse {
+            Future.successful(new ModelAndView())
+          }
         }
 
       }.getOrElse {
         Future.successful(new ModelAndView()) // TODO file not found
       }
-
     }
 
     Await.result(eventualModelAndView, TenSeconds)
