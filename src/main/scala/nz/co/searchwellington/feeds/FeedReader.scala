@@ -38,14 +38,16 @@ extends ReasonableWaits {
           log.debug("Feed contains " + feedNewsitems.size + " items")
           feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
 
-          val eventualAccepted: Future[Seq[Newsitem]] = if (acceptancePolicy.shouldReadFeed) {
+          val eventuallyAcceptedNewsitems = if (acceptancePolicy.shouldReadFeed) {
             processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
           } else {
             Future.successful(Seq.empty)
           }
 
-          eventualAccepted.map { accepted =>
-            log.info("Accepted " + accepted.size + " newsitems from " + feed.title)
+          eventuallyAcceptedNewsitems.map { accepted =>
+            if (accepted.nonEmpty) {
+              log.info("Accepted " + accepted.size + " newsitems from " + feed.title)
+            }
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
               latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems)
