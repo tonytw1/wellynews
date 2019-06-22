@@ -26,7 +26,7 @@ import scala.concurrent.Future
 
     def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = feedItem.localCopy.isEmpty
 
-    rssfeedNewsitemService.getChannelFeedItems.flatMap { channelFeedItems =>
+    rssfeedNewsitemService.getChannelFeedItems(page = 1).flatMap { channelFeedItems =>
       log.info("Found " + channelFeedItems.size + " channel newsitems")
 
       val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))

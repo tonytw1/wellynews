@@ -20,9 +20,8 @@ import scala.concurrent.Future
     }
   }
 
-  def getSubscriptions(): Future[Seq[Subscription]] = {
-    client.getChannelSubscriptions()
-  }
+  def getSubscriptions(): Future[Seq[Subscription]] = client.getChannelSubscriptions()
+
 
   def getWhakaokoSubscriptionByUrl(url: String): Future[Option[Subscription]] = {
     client.getChannelSubscriptions.map { channelSubscriptions =>
@@ -37,20 +36,6 @@ import scala.concurrent.Future
       }
   }
 
-  def getChannelFeedItems(pages: Int): Future[Seq[FeedItem]] = {
-
-    def fetch(into: Seq[FeedItem], page: Int = 1): Future[Seq[FeedItem]] = {
-      client.getChannelFeedItems(page).flatMap { items =>
-        val withItems = into ++ items
-        if (page < pages) {
-          fetch(withItems, page + 1)
-        } else {
-          Future.successful(withItems)
-        }
-      }
-    }
-
-    fetch(Seq.empty)
-  }
+  def getChannelFeedItems(page: Int): Future[Seq[FeedItem]] = client.getChannelFeedItems(page)
 
 }

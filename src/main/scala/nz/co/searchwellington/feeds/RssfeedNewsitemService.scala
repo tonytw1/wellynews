@@ -19,7 +19,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FeedReaderRunner])
 
-  def getChannelFeedItems()(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
+  def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[(FeedItem, Feed)]] = {
 
     def decorateFeedItemsWithFeeds(feedItmes: Seq[FeedItem], subscriptions: Seq[Subscription]): Future[Seq[(FeedItem, Feed)]] = {
       val eventualMaybeFeedsBySubscriptionId = Future.sequence(subscriptions.map { s =>
@@ -45,8 +45,8 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
     }
 
-    val eventualChannelFeedItems = whakaokoFeedReader.fetchChannelFeedItems(5)
     val eventualSubscriptions = whakaokoService.getSubscriptions()
+    val eventualChannelFeedItems = whakaokoFeedReader.fetchChannelFeedItems(page)
 
     for {
       channelFeedItems <- eventualChannelFeedItems
@@ -81,7 +81,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
   }
 
-  def getFeedNewsitemByUrl(feed: Feed, url: String): Option[(FeedItem)] = {
+  def getFeedNewsitemByUrl(feed: Feed, url: String): Option[FeedItem] = {
     getFeedItemsFor(feed).flatMap { fis =>
       fis.find(ni => ni.url == url)
     }
