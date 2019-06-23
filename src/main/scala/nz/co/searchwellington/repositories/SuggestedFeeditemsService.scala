@@ -26,6 +26,7 @@ import scala.concurrent.Future
     def havingNoLocalCopy(feedItem: FeedNewsitemForAcceptance): Boolean = feedItem.localCopy.isEmpty
 
     def filteredPage(page: Int, output: Seq[FrontendNewsitem]): Future[Seq[FrontendNewsitem]] = {
+      log.info("Fetching filter page: " + page + "/" = output.size)
       rssfeedNewsitemService.getChannelFeedItems(page = 1).flatMap { channelFeedItems =>
         log.info("Found " + channelFeedItems.size + " channel newsitems")
 
