@@ -42,7 +42,7 @@ import scala.concurrent.Future
           val filteredNewsitems = withLocalCopiesFilteredOut.map(_.newsitem)
           val result = output ++ filteredNewsitems
           if (result.size >= maxItems || channelFeedItems.isEmpty || page == 5) {
-            Future.successful(result)
+            Future.successful(result.take(maxItems))
           } else {
             filteredPage(page + 1, result)
           }
