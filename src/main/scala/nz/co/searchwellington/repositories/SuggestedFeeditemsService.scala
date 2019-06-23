@@ -39,8 +39,9 @@ import scala.concurrent.Future
           val withLocalCopiesFilteredOut = suggestions.filter(havingNoLocalCopy)
           log.info("After filtering out those with local copies: " + withLocalCopiesFilteredOut.size)
 
-          val result = output ++ withLocalCopiesFilteredOut.map(_.newsitem).take(maxItems)
-          if (result.size >= maxItems || (page == 5)) {
+          val filteredNewsitems = withLocalCopiesFilteredOut.map(_.newsitem)
+          val result = output ++ filteredNewsitems
+          if (result.size >= maxItems || channelFeedItems.isEmpty || page == 5) {
             Future.successful(result)
           } else {
             filteredPage(page + 1, result)
