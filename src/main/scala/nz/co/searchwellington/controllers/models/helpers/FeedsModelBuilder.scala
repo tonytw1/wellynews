@@ -60,7 +60,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       commonAttributesModelBuilder.populateSecondaryFeeds(mv, currentFeeds)
     }
 
-    Await.result(eventuallyPopulated, TenSeconds)
+    Await.result(eventuallyPopulated, ThirtySeconds)
   }
 
   def getViewName(mv: ModelAndView): String = "feeds"
