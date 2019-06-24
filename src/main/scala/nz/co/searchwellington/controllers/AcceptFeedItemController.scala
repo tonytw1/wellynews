@@ -1,10 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedReaderUpdateService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.UrlWordsGenerator
-import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -18,10 +15,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 @Controller
-class AcceptFeedItemController @Autowired()(contentUpdateService: ContentUpdateService,
-                                            mongoRepository: MongoRepository,
-                                            urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                            whakaokoService: WhakaokoService,
+class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
+                                            urlBuilder: UrlBuilder,
                                             rssfeedNewsitemService: RssfeedNewsitemService,
                                             feedReaderUpdateService: FeedReaderUpdateService,
                                             loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions {
