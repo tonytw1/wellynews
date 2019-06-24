@@ -4,6 +4,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.{FeedReaderUpdateService, RssfeedNewsitemService}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
+import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -19,7 +20,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
                                             urlBuilder: UrlBuilder,
                                             rssfeedNewsitemService: RssfeedNewsitemService,
                                             feedReaderUpdateService: FeedReaderUpdateService,
-                                            loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions {
+                                            loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
   private val log = Logger.getLogger(classOf[AcceptFeedItemController])
 
@@ -46,17 +47,17 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
               }
 
             }.getOrElse {
-              Future.successful(new ModelAndView())
+              Future.successful(NotFound)
             }
           }
 
         }.getOrElse {
-          Future.successful(new ModelAndView()) // TODO file not found
+          Future.successful(NotFound)
         }
       }
 
     }.getOrElse{
-      Future.successful(new ModelAndView())
+      Future.successful(new ModelAndView()) // TODO not logged in
     }
 
     Await.result(eventualModelAndView, TenSeconds)
