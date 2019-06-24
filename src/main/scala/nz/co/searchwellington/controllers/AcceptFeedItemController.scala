@@ -26,35 +26,37 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
   @RequestMapping(value = Array("/accept-feed-item"), method = Array(RequestMethod.GET))
   def accept(feed: String, url: String): ModelAndView = {
 
-    val loggedInUser = loggedInUserFilter.getLoggedInUser // TODO map
-
-    val eventualModelAndView = mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
-      fo.map { feed =>
-        val eventualFeedItem = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { fis =>
-          fis.fold({ l =>
-            log.warn("Could not read feed items: " + l)
-            None
-          }, { r =>
-            r._1.find(fi => fi.url == url)
-          })
-
-        }
-
-        eventualFeedItem.flatMap { maybeFeedItem =>
-          maybeFeedItem.map { feedItemToAccept =>
-            feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed).map { accepted =>
-              log.info("Accepted newsitem: " + accepted.title)
-              Future.successful(new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed))))
-            }
-
-          }.getOrElse {
-            Future.successful(new ModelAndView())
+    val eventualModelAndView = Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
+      mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
+        fo.map { feed =>
+          val eventualFeedItem = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { fis =>
+            fis.fold({ l =>
+              log.warn("Could not read feed items: " + l)
+              None
+            }, { r =>
+              r._1.find(fi => fi.url == url)
+            })
           }
-        }
 
-      }.getOrElse {
-        Future.successful(new ModelAndView()) // TODO file not found
+          eventualFeedItem.flatMap { maybeFeedItem =>
+            maybeFeedItem.map { feedItemToAccept =>
+              feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed).map { accepted =>
+                log.info("Accepted newsitem: " + accepted.title)
+                Future.successful(new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed))))
+              }
+
+            }.getOrElse {
+              Future.successful(new ModelAndView())
+            }
+          }
+
+        }.getOrElse {
+          Future.successful(new ModelAndView()) // TODO file not found
+        }
       }
+
+    }.getOrElse{
+      Future.successful(new ModelAndView())
     }
 
     Await.result(eventualModelAndView, TenSeconds)
