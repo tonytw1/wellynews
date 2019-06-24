@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoService
-import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.feeds.{FeedReaderUpdateService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.UrlWordsGenerator
 import nz.co.searchwellington.modification.ContentUpdateService
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.servlet.view.RedirectView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -49,7 +49,7 @@ class AcceptFeedItemController @Autowired()(contentUpdateService: ContentUpdateS
           maybeFeedItem.map { feedItemToAccept =>
             feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed).map { accepted =>
               log.info("Accepted newsitem: " + accepted.title)
-              new ModelAndView()
+              Future.successful(new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed))))
             }
 
           }.getOrElse {
