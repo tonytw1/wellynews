@@ -43,18 +43,18 @@ import scala.concurrent.duration.{Duration, SECONDS}
           id = n.id,
           `type` = n.`type`,
           name = n.title.getOrElse(""),
-          url = n.page.getOrElse(null),
-          date = n.date.getOrElse(null),
-          description = n.description.getOrElse(null),
+          url = n.page.orNull,  // TODO push to the getters
+          date = n.date.orNull,
+          description = n.description.orNull,
           place = place,
           acceptedFrom = feed,
           acceptedBy = acceptedByUser,
-          accepted = n.accepted.getOrElse(null),
+          accepted = n.accepted.orNull,
           image = null,  // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
           publisher = publisher.map(_.asInstanceOf[Website]),
-          tags = frontendTagsFor(n).asJava,
-          handTags = handTags.asJava,
+          tags = frontendTagsFor(n),
+          handTags = handTags,
           httpStatus = n.http_status
         )
 
@@ -75,7 +75,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           description = f.description.getOrElse(null),
           place = place,
           latestItemDate = f.getLatestItemDate,
-          tags = frontendTagsFor(f).asJava,
+          tags = frontendTagsFor(f),
           lastRead = f.last_read,
           acceptancePolicy = f.acceptance,
           publisher = frontendPublisher,
@@ -91,7 +91,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           date = l.date.getOrElse(null),
           description = l.description.getOrElse(null),
           place = place,
-          tags = frontendTagsFor(l).asJava,
+          tags = frontendTagsFor(l),
           httpStatus = l.http_status
         )
 
@@ -147,7 +147,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
       place = website.geocode.map { g =>
         geocodeToPlaceMapper.mapGeocodeToPlace(g)
       },
-      tags = frontendTagsFor(website).asJava,
+      tags = frontendTagsFor(website),
       httpStatus = website.http_status,
       date = website.date.orNull
     )

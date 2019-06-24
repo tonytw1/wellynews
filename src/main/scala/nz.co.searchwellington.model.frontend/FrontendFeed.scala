@@ -3,7 +3,6 @@ package nz.co.searchwellington.model.frontend
 import java.util.{Date, List}
 
 import nz.co.searchwellington.model.{FeedAcceptancePolicy, Tag}
-import uk.co.eelpieconsulting.common.geo.model.Place
 
 case class FrontendFeed(id: String,
                         urlWords: String = null,
@@ -14,8 +13,8 @@ case class FrontendFeed(id: String,
                         date: Date = null,
                         description: String = null,
                         liveTime: Date = null,
-                        tags: List[Tag] = null,
-                        handTags: List[Tag] = null,
+                        tags: Seq[Tag] = Seq.empty,
+                        handTags: Seq[Tag] = Seq.empty,
                         owner: String = null,
                         place: Option[Place] = None,
                         held: Boolean = false,

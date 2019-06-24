@@ -22,7 +22,6 @@ public class CachingUrlResolverService {
 	private ShortUrlResolverService urlResolverService;
 	private MemcachedCache cache;
 	
-	
 	@Autowired
 	public CachingUrlResolverService(MemcachedCache cache) {
 		urlResolverService = new ShortUrlResolverService(new BitlyUrlResolver(), new FeedBurnerRedirectResolver(), new TinyUrlResolver(), new TwitterShortenerUrlResolver());
