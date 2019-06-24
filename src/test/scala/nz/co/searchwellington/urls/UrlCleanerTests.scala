@@ -14,8 +14,7 @@ class UrlCleanerTests {
   private val EXPECTED_CLEAN_URL = "http://www.capitalshakers.co.nz/news/genesis-energy-shakers-vs-otago-rebels-easter-sunday/"
   private val SHORT_URL = "http://short.url/12234"
   private val UNCLEANED_SHORT_URL = " http://short.url/12234  "
-
-
+  
   private val urlResolverService = mock(classOf[CachingUrlResolverService])
   private val cleaner = new UrlCleaner(urlResolverService)
 
