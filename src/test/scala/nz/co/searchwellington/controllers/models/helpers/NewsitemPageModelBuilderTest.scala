@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter
-import nz.co.searchwellington.model.frontend.FrontendNewsitem
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, Place}
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote
 import nz.co.searchwellington.model.{Newsitem, Resource}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO, HibernateResourceDAO}
@@ -12,7 +12,6 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
-import uk.co.eelpieconsulting.common.geo.model.Place
 
 class NewsitemPageModelBuilderTest {
 
@@ -26,7 +25,7 @@ class NewsitemPageModelBuilderTest {
   @Mock var loggedInUserFilter: LoggedInUserFilter = null
   @Mock var geotaggedNewsitem: FrontendNewsitem = null
   @Mock var frontendNewsitem: FrontendNewsitem = null
-  @Mock var place: Place = null
+  @Mock var place = Place(displayName = "Somewhere")
   @Mock var resourceDAO: HibernateResourceDAO = null
   @Mock var newsitem: Newsitem = null
   @Mock var geotaggingVote: GeotaggingVote = null

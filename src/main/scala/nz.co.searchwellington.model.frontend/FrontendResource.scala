@@ -68,7 +68,11 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   def getImageUrl: String = null
 
-  def getLatLong: LatLong = place.flatMap(_.latLong).orNull
+  def getLatLong: uk.co.eelpieconsulting.common.geo.model.LatLong = place.flatMap { p =>
+    p.latLong.map { ll =>
+      new uk.co.eelpieconsulting.common.geo.model.LatLong(ll.latitude, ll.longitude)
+    }
+  }.orNull
 
   def getWebUrl: String = url
 
