@@ -2,11 +2,11 @@ package nz.co.searchwellington.linkchecking
 
 import com.google.common.base.Strings
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.http.{HttpFetcher, RobotsAwareHttpFetcher}
+import nz.co.searchwellington.http.RobotsAwareHttpFetcher
 import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import org.apache.commons.httpclient.HttpStatus
+import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
