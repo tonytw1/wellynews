@@ -93,11 +93,12 @@ class ElasticSearchIndexerTest {
     Await.result(mongoRepository.saveResource(taggedWebsite), TenSeconds)
 
     indexResources(Seq(newsitem, website, taggedNewsitem, taggedWebsite))
+    Thread.sleep(1000);
 
     val withTag = ResourceQuery(tags = Some(Set(tag)))
     val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
     val taggedNewsitems = queryForResources(taggedNewsitemsQuery)
-    assertTrue(taggedNewsitems.nonEmpty)
+    assertTrue("Expected non empty newsitems", taggedNewsitems.nonEmpty)
     assertTrue(taggedNewsitems.forall(i => i.`type` == "N"))
     assertTrue(taggedNewsitems.forall(i => i.resource_tags.exists(t => t.tag_id == tag._id)))
 
