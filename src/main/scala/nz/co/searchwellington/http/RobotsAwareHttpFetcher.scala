@@ -1,6 +1,6 @@
 package nz.co.searchwellington.http
 
-import org.apache.commons.httpclient.HttpStatus
+import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
