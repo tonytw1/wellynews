@@ -51,8 +51,11 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
   }
 
   def getChannelFeedItems(page: Int): Future[Seq[FeedItem]] = {
+    log.info("Channel items page: " + page)
     val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items"
-    wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString).get.map { r =>
+    val self = wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString)
+    log.info(self.toString)
+    self.get.map { r =>
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[FeedItem]]
       } else {
