@@ -28,7 +28,7 @@ import scala.concurrent.Future
     def filteredPage(page: Int, output: Seq[FrontendNewsitem]): Future[Seq[FrontendNewsitem]] = {
       log.info("Fetching filter page: " + page + "/" + output.size)
       rssfeedNewsitemService.getChannelFeedItems(page = 1).flatMap { channelFeedItems =>
-        log.info("Found " + channelFeedItems.size + " channel newsitems")
+        log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
         val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
         log.info("After filtering out those from ignored feeds: " + notIgnoredFeedItems.size)
@@ -40,6 +40,7 @@ import scala.concurrent.Future
           log.info("After filtering out those with local copies: " + withLocalCopiesFilteredOut.size)
 
           val filteredNewsitems = withLocalCopiesFilteredOut.map(_.newsitem)
+          log.info("Adding " + filteredNewsitems.size + " to " + output.size)
           val result = output ++ filteredNewsitems
           if (result.size >= maxItems || channelFeedItems.isEmpty || page == 5) {
             Future.successful(result.take(maxItems))
