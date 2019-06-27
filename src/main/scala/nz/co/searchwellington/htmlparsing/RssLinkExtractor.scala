@@ -7,11 +7,11 @@ import org.htmlparser.util.ParserException
 import org.htmlparser.{Node, Parser, Tag}
 import org.springframework.stereotype.Component
 
-@Component class RssLinkExtractor extends LinkExtractor {
+@Component class RssLinkExtractor {
 
   private val log = Logger.getLogger(classOf[RssLinkExtractor])
 
-  override def extractLinks(inputHTML: String): Seq[String] = {
+  def extractLinks(inputHTML: String): Seq[String] = {
 
     def getLinksFrom(html: String): Seq[Node] = {
       val parser = new Parser

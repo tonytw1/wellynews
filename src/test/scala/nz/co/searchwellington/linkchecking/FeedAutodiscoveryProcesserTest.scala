@@ -1,10 +1,9 @@
 package nz.co.searchwellington.linkchecking
 
-import java.util
 import java.util.UUID
 
 import nz.co.searchwellington.commentfeeds.{CommentFeedDetectorService, CommentFeedGuesserService}
-import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor
+import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Feed, Newsitem}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.DateTime
@@ -22,7 +21,7 @@ class FeedAutodiscoveryProcesserTest {
   private val EXISTING_FEED_URL = "http://something/old"
 
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val linkExtractor = mock(classOf[CompositeLinkExtractor])
+  private val linkExtractor = mock(classOf[RssLinkExtractor])
   private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
   private val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
 

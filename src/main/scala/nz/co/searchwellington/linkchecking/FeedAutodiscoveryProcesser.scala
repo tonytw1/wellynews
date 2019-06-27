@@ -4,7 +4,7 @@ import java.net.{MalformedURLException, URL}
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.commentfeeds.{CommentFeedDetectorService, CommentFeedGuesserService}
-import nz.co.searchwellington.htmlparsing.CompositeLinkExtractor
+import nz.co.searchwellington.htmlparsing.RssLinkExtractor
 import nz.co.searchwellington.model.{DiscoveredFeed, Resource}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 import scala.concurrent.Await
 
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
-                                                         linkExtractor: CompositeLinkExtractor,
+                                                         linkExtractor: RssLinkExtractor,
                                                          commentFeedDetector: CommentFeedDetectorService,
                                                          commentFeedGuesser: CommentFeedGuesserService) extends LinkCheckerProcessor with ReasonableWaits {
 
