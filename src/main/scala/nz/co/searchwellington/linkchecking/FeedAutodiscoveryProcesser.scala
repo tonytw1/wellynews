@@ -23,26 +23,33 @@ import scala.concurrent.Await
 
   override def process(checkResource: Resource, pageContent: String, seen: DateTime): Unit = {
     if (!checkResource.`type`.equals("F")) {
-
       if (pageContent != null) {
 
-        val iter = linkExtractor.extractLinks(pageContent).iterator
-        while (iter.hasNext) {
-          var discoveredUrl = iter.next.asInstanceOf[String]
-          log.info("Processing discovered url: " + discoveredUrl)
-
-          if (!isFullQualified(discoveredUrl)) {
-            log.info("url is not fully qualified; will try to expand: " + discoveredUrl) // TODO Really what's an example?
+        def expandUrl(url: String): String = {
+          if (!isFullQualified(url)) {
+            log.info("url is not fully qualified; will try to expand: " + url) // TODO Really what's an example?
             try {
-              val sitePrefix: String = new URL(checkResource.page.get).getHost // TODO naked get
-              discoveredUrl = "http://" + sitePrefix + discoveredUrl
-              log.info("url expanded to: " + discoveredUrl)
+              val sitePrefix = new URL(checkResource.page.get).getHost // TODO naked get
+              val fullyQualifiedUrl = "http://" + sitePrefix + url // TODO protocol!
+              log.info("url expanded to: " + fullyQualifiedUrl)
+              fullyQualifiedUrl
 
             } catch {
               case e: MalformedURLException =>
                 log.error("Invalid url", e)
+                url
+              case e: Throwable =>
+                log.error("Invalid url", e)
+                url
             }
+
+          } else {
+            url
           }
+        }
+
+        linkExtractor.extractLinks(pageContent).map(expandUrl).foreach { discoveredUrl =>
+          log.info("Processing discovered url: " + discoveredUrl)
 
           val isCommentFeedUrl = commentFeedDetector.isCommentFeedUrl(discoveredUrl)
           if (isCommentFeedUrl) {
@@ -52,6 +59,7 @@ import scala.concurrent.Await
             val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), TenSeconds).nonEmpty
             if (!isUrlOfExistingFeed) {
               recordDiscoveredFeedUrl(checkResource, discoveredUrl, seen)
+
             } else {
               log.info("Ignoring discovered url of existing feed")
             }
@@ -61,9 +69,7 @@ import scala.concurrent.Await
     }
   }
 
-  private def isFullQualified(discoveredUrl: String) = {
-    discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
-  }
+  private def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
 
   private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime): Unit = {
     if (Await.result(mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page.get), TenSeconds).isEmpty) {
