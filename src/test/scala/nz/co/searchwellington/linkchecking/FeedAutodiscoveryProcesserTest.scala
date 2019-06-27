@@ -33,8 +33,7 @@ class FeedAutodiscoveryProcesserTest {
   @Test def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
     val now = DateTime.now
 
-    val autoDiscoveredLinks = new util.HashSet[String]  // TODO Scala collection
-    autoDiscoveredLinks.add(UNSEEN_FEED_URL)
+    val autoDiscoveredLinks = Seq(UNSEEN_FEED_URL)
     when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
@@ -54,8 +53,7 @@ class FeedAutodiscoveryProcesserTest {
   def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
     val now = DateTime.now
 
-    val autoDiscoveredLinks = new util.HashSet[String]
-    autoDiscoveredLinks.add(EXISTING_FEED_URL)
+    val autoDiscoveredLinks = Seq(EXISTING_FEED_URL)
     when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(EXISTING_FEED_URL, resource.page.get)).thenReturn(Future.successful(None))
