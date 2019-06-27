@@ -18,7 +18,7 @@ import scala.concurrent.Future
                                                         feeditemToNewsitemService: FeeditemToNewsitemService) extends
   ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[FeedsModelBuilder])
+  private val log = Logger.getLogger(classOf[SuggestedFeeditemsService])
 
   def getSuggestionFeednewsitems(maxItems: Int): Future[Seq[FrontendNewsitem]] = {
 
@@ -27,7 +27,7 @@ import scala.concurrent.Future
 
     def filteredPage(page: Int, output: Seq[FrontendNewsitem]): Future[Seq[FrontendNewsitem]] = {
       log.info("Fetching filter page: " + page + "/" + output.size)
-      rssfeedNewsitemService.getChannelFeedItems(page = 1).flatMap { channelFeedItems =>
+      rssfeedNewsitemService.getChannelFeedItems(page).flatMap { channelFeedItems =>
         log.info("Found " + channelFeedItems.size + " channel newsitems on page " + page)
 
         val notIgnoredFeedItems = channelFeedItems.filter(i => isNotIgnored(i._1, i._2))
