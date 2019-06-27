@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class SupressionDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
+@Component class SuppressionDAO @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[SupressionDAO])
+  private val log = Logger.getLogger(classOf[SuppressionDAO])
 
   def addSuppression(urlToSupress: String) {
     log.info("Supression url: " + urlToSupress)

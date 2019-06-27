@@ -3,7 +3,7 @@ package nz.co.searchwellington.feeds
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
-import nz.co.searchwellington.repositories.SupressionDAO
+import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.utils.UrlCleaner
 import org.apache.log4j.Logger
@@ -15,7 +15,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class FeedAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
-                                                    supressionDAO: SupressionDAO,
+                                                    supressionDAO: SuppressionDAO,
                                                     urlCleaner: UrlCleaner) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedAcceptanceDecider])

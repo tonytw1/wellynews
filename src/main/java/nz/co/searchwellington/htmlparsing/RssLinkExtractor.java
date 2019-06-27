@@ -1,8 +1,5 @@
 package nz.co.searchwellington.htmlparsing;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import com.google.common.collect.Sets;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
@@ -16,6 +13,8 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 @Component
 public class RssLinkExtractor implements LinkExtractor {

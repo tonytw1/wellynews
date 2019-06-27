@@ -5,7 +5,7 @@ import nz.co.searchwellington.feeds.RssfeedNewsitemService
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingDAO, SupressionService, TagDAO}
+import nz.co.searchwellington.repositories.{HandTaggingDAO, SuppressionDAO, TagDAO}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -14,7 +14,7 @@ import reactivemongo.api.commands.UpdateWriteResult
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class ContentDeletionService @Autowired()(supressionService: SupressionService,
+@Component class ContentDeletionService @Autowired()(suppressionService: SuppressionDAO,
                                                      rssfeedNewsitemService: RssfeedNewsitemService,
                                                      mongoRepository: MongoRepository, handTaggingDAO: HandTaggingDAO,
                                                      tagDAO: TagDAO, elasticSearchIndexer: ElasticSearchIndexer)
@@ -52,7 +52,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private def suppressUrl(p: String) {
     log.info("Deleting a newsitem whose url still appears in a feed; suppressing the url: " + p)
-    supressionService.suppressUrl(p)
+    suppressionService.addSuppression(p)
   }
 
   private def removePublisherFromPublishersContent(editResource: Resource) {
