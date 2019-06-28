@@ -33,6 +33,7 @@
 #end
 
 <p>$publisher</p>
+<p>$publisher.place</p>
 <p>$publisher.geocode</p>
 <p>$publisher.location</p>
 
