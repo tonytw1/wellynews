@@ -1,4 +1,5 @@
-#if ($location)	
+#if ($location)
+    $location
 	<p>
 	#if($urlBuilder.getLocationUrlFor($location)) 
 		<a href="$urlBuilder.getLocationUrlFor($location)">#parse("includes/geotag_icon.vm")$location.address</a>

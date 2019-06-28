@@ -32,11 +32,7 @@
 	<h2>$heading</h2>
 #end
 
-<p>$publisher</p>
 <p>$publisher.place</p>
-<p>$publisher.geocode</p>
-<p>$publisher.location</p>
-
 #set($location = $publisher.place)
 #parse("includes/place.vm")
 
