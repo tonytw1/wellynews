@@ -93,7 +93,6 @@ class ElasticSearchIndexerTest {
     Await.result(mongoRepository.saveResource(taggedWebsite), TenSeconds)
 
     indexResources(Seq(newsitem, website, taggedNewsitem, taggedWebsite))
-    Thread.sleep(1000);
 
     val withTag = ResourceQuery(tags = Some(Set(tag)))
     val taggedNewsitemsQuery = withTag.copy(`type` = Some("N"))
