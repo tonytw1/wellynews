@@ -8,9 +8,7 @@ case class Geocode(address: Option[String] = None,
                    osmType: Option[String] = None,
                    resolver: Option[String] = None) {
 
-  def getAddress: String = {
-    address.getOrElse("")
-  }
+  def getAddress: String = address.orNull
 
   def getLatitude: Double = {
     latitude.getOrElse(0)

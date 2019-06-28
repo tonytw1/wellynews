@@ -45,6 +45,7 @@
 			#parse("includes/tag_heading.vm")
 
             #set($location = $tag.place)
+            $location
 			#parse("includes/place.vm")
 				
 			#parse("includes/tag_admin_links.vm")	
