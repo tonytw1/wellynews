@@ -32,7 +32,6 @@
 	<h2>$heading</h2>
 #end
 
-<p>$publisher.place</p>
 #set($location = $publisher.place)
 #parse("includes/place.vm")
 
