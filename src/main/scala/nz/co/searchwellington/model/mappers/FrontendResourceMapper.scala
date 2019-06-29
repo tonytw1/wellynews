@@ -20,7 +20,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private val tenSeconds = Duration(10, SECONDS)
 
   def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
-    val place = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem).map(geocodeToPlaceMapper.mapGeocodeToPlace)
+    val place: Option[Geocode] = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
     contentItem match {
       case n: Newsitem =>
@@ -144,9 +144,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
       url = website.page.orNull,
       urlWords = website.url_words.orNull,
       description = website.description.getOrElse(""),
-      place = website.geocode.map { g =>
-        geocodeToPlaceMapper.mapGeocodeToPlace(g)
-      },
+      place = website.geocode,
       tags = frontendTagsFor(website),
       httpStatus = website.http_status,
       date = website.date.orNull

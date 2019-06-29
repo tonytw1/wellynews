@@ -3,7 +3,7 @@ package nz.co.searchwellington.model.frontend
 import java.io.Serializable
 import java.util.{Date, List}
 
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{Geocode, Tag}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 trait FrontendResource extends RssFeedable with Serializable {
@@ -19,7 +19,7 @@ trait FrontendResource extends RssFeedable with Serializable {
   val tags: Seq[Tag]
   val handTags: Seq[Tag]
   val owner: String
-  val place: Option[Place]
+  val place: Option[Geocode]
   val held: Boolean
 
   def getId: String = id
@@ -54,28 +54,23 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   def getUrlWords: String = urlWords
 
-  def getPlace: Place = place.orNull
-
-  def getLocation: String = {
-    place.flatMap { p =>
-      p.latLong.map{ ll =>
-        ll.latitude + "." + ll.longitude    // TODO display name
-      }
-    }.orNull
-  }
+  def getPlace: Geocode = place.orNull
 
   def isHeld: Boolean = held
 
   def getImageUrl: String = null
 
-  def getLatLong: uk.co.eelpieconsulting.common.geo.model.LatLong = place.flatMap { p =>
-    p.latLong.map { ll =>
-      new uk.co.eelpieconsulting.common.geo.model.LatLong(ll.latitude, ll.longitude)
-    }
-  }.orNull
-
   def getWebUrl: String = url
 
   def getAuthor: String = null
+
+  def getLatLong: uk.co.eelpieconsulting.common.geo.model.LatLong = place.flatMap { p =>
+    p.latitude.flatMap { latitude =>
+      p.longitude.map { longitude =>
+        new uk.co.eelpieconsulting.common.geo.model.LatLong(latitude, longitude)
+      }
+    }
+
+  }.orNull
 
 }

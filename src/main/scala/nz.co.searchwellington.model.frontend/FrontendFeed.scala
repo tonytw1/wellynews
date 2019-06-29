@@ -1,8 +1,8 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.{Date, List}
+import java.util.Date
 
-import nz.co.searchwellington.model.{FeedAcceptancePolicy, Tag}
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, Geocode, Tag}
 
 case class FrontendFeed(id: String,
                         urlWords: String = null,
@@ -16,7 +16,7 @@ case class FrontendFeed(id: String,
                         tags: Seq[Tag] = Seq.empty,
                         handTags: Seq[Tag] = Seq.empty,
                         owner: String = null,
-                        place: Option[Place] = None,
+                        place: Option[Geocode] = None,
                         held: Boolean = false,
                         latestItemDate: Date = null,
                         acceptancePolicy: FeedAcceptancePolicy = null,

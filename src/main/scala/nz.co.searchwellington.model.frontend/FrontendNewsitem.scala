@@ -2,7 +2,7 @@ package nz.co.searchwellington.model.frontend
 
 import java.util.{Date, UUID}
 
-import nz.co.searchwellington.model.{Tag, User, Website}
+import nz.co.searchwellington.model.{Geocode, Tag, User, Website}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
 case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
@@ -17,11 +17,11 @@ case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
                             tags: Seq[Tag] = Seq.empty,
                             handTags: Seq[Tag] = Seq.empty,
                             owner: String = null,
-                            place: Option[Place] = None,
+                            place: Option[Geocode] = None,
                             held: Boolean = false,
                             publisher: Option[Website] = None,
                             acceptedFrom: Option[FrontendFeed] = None,
-                            acceptedBy: Option[User] = None,  // TODO Frontend user
+                            acceptedBy: Option[User] = None, // TODO Frontend user
                             accepted: Date = null,
                             image: FrontendImage = null) extends FrontendResource with RssFeedable {
 

@@ -2,7 +2,7 @@ package nz.co.searchwellington.model.frontend
 
 import java.util.{Date, List}
 
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{Geocode, Tag}
 
 @SerialVersionUID(1L)
 case class FrontendWebsite(id: String,
@@ -17,5 +17,5 @@ case class FrontendWebsite(id: String,
                            tags: Seq[Tag] = Seq.empty,
                            handTags: Seq[Tag] = Seq.empty,
                            owner: String = null,
-                           place: Option[Place] = None,
+                           place: Option[Geocode] = None,
                            held: Boolean = false) extends FrontendResource

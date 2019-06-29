@@ -4,7 +4,7 @@ import java.util.UUID
 
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.Website
+import nz.co.searchwellington.model.{Geocode, Website}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite, Place}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -33,7 +33,7 @@ class PublisherModelBuilderTest {
   private val publisher: Website = Website()
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
   private val newsitem: FrontendNewsitem = FrontendNewsitem()
-  private val geotag = Place(displayName = "Somewhere")
+  private val geotag = Geocode(address = Some("Somewhere"))
   private val geotaggedNewsitem: FrontendNewsitem = FrontendNewsitem(place = Some(geotag))
 
   private var request: MockHttpServletRequest = null
