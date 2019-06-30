@@ -26,15 +26,11 @@ case class Geocode(address: Option[String] = None,
     `type`.getOrElse(null)
   }
 
-
-  def getOsmId: Long = {
-    osmId.getOrElse(0)
-  }
-
-
-  def getOsmType: String = {
-    osmType.getOrElse("")
-  }
+  def getOsmId: OsmId = osmId.flatMap { id =>
+    osmType.map { `type` =>
+      OsmId(id, `type`)
+    }
+  }.orNull
 
   @deprecated def getOsmPlaceId: String = {
     if (osmId != null && osmType != null) {
