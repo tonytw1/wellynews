@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, Place}
+import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote
 import nz.co.searchwellington.model.{Geocode, Newsitem, Resource}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO, HibernateResourceDAO}

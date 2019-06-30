@@ -5,7 +5,6 @@ import java.util.UUID
 import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
-import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
@@ -14,10 +13,9 @@ class FrontendResourceMapperTest {
 
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val urlWordsGenerator = mock(classOf[UrlWordsGenerator])
-  private val geocodeToPlaceMapper = mock(classOf[GeocodeToPlaceMapper])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, urlWordsGenerator, geocodeToPlaceMapper, mongoRepository)
+  val mapper = new FrontendResourceMapper(taggingReturnsOfficerService, urlWordsGenerator, mongoRepository)
 
   @Test
   def canMapNewsitemsToFrontendNewsitems(): Unit = {

@@ -11,7 +11,6 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
-import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -23,7 +22,6 @@ import scala.concurrent.{Await, Future}
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
-                                              geocodeToPlaceMapper: GeocodeToPlaceMapper,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
                                               frontendResourceMapper: FrontendResourceMapper,
                                               loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
@@ -61,11 +59,6 @@ import scala.concurrent.{Await, Future}
 
         } else {
           mv.addObject(TAG, tag)
-
-          tag.geocode.map { g =>
-            mv.addObject("location", geocodeToPlaceMapper.mapGeocodeToPlace(g))
-          }
-
           mv.addObject("heading", tag.display_name)
           mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
           mv.addObject("link", urlBuilder.getTagUrl(tag))

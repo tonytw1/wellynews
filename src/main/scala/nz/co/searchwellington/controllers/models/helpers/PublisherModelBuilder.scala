@@ -9,7 +9,6 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -23,7 +22,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                     contentRetrievalService: ContentRetrievalService,
                                                     urlBuilder: UrlBuilder,
                                                     geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
-                                                    geocodeToPlaceMapper: GeocodeToPlaceMapper,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                     frontendResourceMapper: FrontendResourceMapper,
                                                     loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {

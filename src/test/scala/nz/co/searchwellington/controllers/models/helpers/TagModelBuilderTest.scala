@@ -9,7 +9,6 @@ import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
-import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
@@ -26,7 +25,6 @@ class TagModelBuilderTest {
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
   private val feedItemLocalCopyDecorator = mock(classOf[FeedItemLocalCopyDecorator])
-  private val geocodeToPlaceMapper = mock(classOf[GeocodeToPlaceMapper])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val tagDAO = mock(classOf[TagDAO])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
@@ -45,7 +43,7 @@ class TagModelBuilderTest {
   val request = new MockHttpServletRequest()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
-    contentRetrievalService, feedItemLocalCopyDecorator, geocodeToPlaceMapper, commonAttributesModelBuilder, tagDAO, frontendResourceMapper, loggedInUserFilter)
+    contentRetrievalService, feedItemLocalCopyDecorator, commonAttributesModelBuilder, tagDAO, frontendResourceMapper, loggedInUserFilter)
 
 
   @Before

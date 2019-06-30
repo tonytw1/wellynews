@@ -4,17 +4,15 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
-import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.collection.JavaConverters._
 import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 
-@Component class FrontendResourceMapper @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
-                                                      geocodeToPlaceMapper: GeocodeToPlaceMapper, mongoRepository: MongoRepository) {
+@Component class FrontendResourceMapper @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
+                                                     mongoRepository: MongoRepository) {
 
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
   private val tenSeconds = Duration(10, SECONDS)
@@ -43,14 +41,14 @@ import scala.concurrent.duration.{Duration, SECONDS}
           id = n.id,
           `type` = n.`type`,
           name = n.title.getOrElse(""),
-          url = n.page.orNull,  // TODO push to the getters
+          url = n.page.orNull, // TODO push to the getters
           date = n.date.orNull,
           description = n.description.orNull,
           place = place,
           acceptedFrom = feed,
           acceptedBy = acceptedByUser,
           accepted = n.accepted.orNull,
-          image = null,  // TODO
+          image = null, // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
           publisher = publisher.map(_.asInstanceOf[Website]),
           tags = frontendTagsFor(n),
@@ -102,6 +100,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
         throw new RuntimeException("Unknown type")
     }
   }
+
   /*
 
 
@@ -135,7 +134,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
     frontendContentItem
     */
- // }
+  // }
 
   def mapFrontendWebsite(website: Website): FrontendWebsite = {
     FrontendWebsite(

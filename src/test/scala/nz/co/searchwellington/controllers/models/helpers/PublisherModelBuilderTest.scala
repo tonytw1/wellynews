@@ -4,12 +4,11 @@ import java.util.UUID
 
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.{Geocode, Website}
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite, Place}
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.model.{Geocode, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
-import nz.co.searchwellington.views.GeocodeToPlaceMapper
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
@@ -24,7 +23,6 @@ class PublisherModelBuilderTest {
   private val relatedTagsService: RelatedTagsService = mock(classOf[RelatedTagsService])
   private val contentRetrievalService: ContentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
-  private val geocodeToPlaceMapper: GeocodeToPlaceMapper = mock(classOf[GeocodeToPlaceMapper])
   private val commonAttributesModelBuilder: CommonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val frontendResourceMapper: FrontendResourceMapper = mock(classOf[FrontendResourceMapper])
   private val loggedInUserFilter: LoggedInUserFilter = mock(classOf[LoggedInUserFilter])
@@ -39,7 +37,7 @@ class PublisherModelBuilderTest {
   private var request: MockHttpServletRequest = null
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor,
-    geocodeToPlaceMapper, commonAttributesModelBuilder, frontendResourceMapper, loggedInUserFilter)
+    commonAttributesModelBuilder, frontendResourceMapper, loggedInUserFilter)
 
 
   @Before def setup {
