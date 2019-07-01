@@ -19,21 +19,19 @@ class FeedAutodiscoveryProcesserTest {
 
   private val UNSEEN_FEED_URL = "http://something/new"
   private val EXISTING_FEED_URL = "http://something/old"
+  private val RELATIVE_FEED_URL = "/feed.xml"
 
   private val mongoRepository = mock(classOf[MongoRepository])
   private val linkExtractor = mock(classOf[RssLinkExtractor])
   private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
   private val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
 
-  private val resource = Newsitem(id = UUID.randomUUID().toString, page = Some("http://localhost/test"))
+  private val resource = Newsitem(id = UUID.randomUUID().toString, page = Some("https://localhost/test"))
   private val pageContent = "Meh"
   private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, linkExtractor, commentFeedDetector, commentFeedGuesser)
 
   @Test def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
-    val now = DateTime.now
-
-    val autoDiscoveredLinks = Seq(UNSEEN_FEED_URL)
-    when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
+    when(linkExtractor.extractLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page.get)).thenReturn(Future.successful(None))
@@ -41,11 +39,26 @@ class FeedAutodiscoveryProcesserTest {
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
-    feedAutodiscoveryProcesser.process(resource, pageContent, now)
+    feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now)
 
     verify(mongoRepository).saveDiscoveredFeed(saved.capture())
     assertEquals(UNSEEN_FEED_URL, saved.getValue.url)
     assertEquals(resource.page.get, saved.getValue.referencedFrom)
+  }
+
+  @Test def relativeFeedUrlsShouldBeExpandedIntoFullyQualifiedUrls(): Unit = {
+    when(linkExtractor.extractLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
+
+    when(commentFeedDetector.isCommentFeedUrl("http://localhost/feed.xml")).thenReturn(false)
+    when(mongoRepository.getDiscoveredFeedByUrlAndReference("http://localhost/feed.xml", resource.page.get)).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl("http://localhost/feed.xml")).thenReturn(Future.successful(None))
+
+    val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
+
+    feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now)
+
+    verify(mongoRepository).saveDiscoveredFeed(saved.capture())
+    assertEquals("https://localhost/feed.xml", saved.getValue.url)
   }
 
   @Test
