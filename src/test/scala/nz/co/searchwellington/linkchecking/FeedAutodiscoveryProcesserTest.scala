@@ -22,16 +22,16 @@ class FeedAutodiscoveryProcesserTest {
   private val RELATIVE_FEED_URL = "/feed.xml"
 
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val linkExtractor = mock(classOf[RssLinkExtractor])
+  private val rssLinkExtractor = mock(classOf[RssLinkExtractor])
   private val commentFeedDetector = mock(classOf[CommentFeedDetectorService])
   private val commentFeedGuesser = mock(classOf[CommentFeedGuesserService])
 
   private val resource = Newsitem(id = UUID.randomUUID().toString, page = Some("https://localhost/test"))
   private val pageContent = "Meh"
-  private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, linkExtractor, commentFeedDetector, commentFeedGuesser)
+  private var feedAutodiscoveryProcesser = new FeedAutodiscoveryProcesser(mongoRepository, rssLinkExtractor, commentFeedDetector, commentFeedGuesser)
 
   @Test def newlyDiscoveredFeedsUrlsShouldBeRecordedAsDiscoveredFeeds(): Unit = {
-    when(linkExtractor.extractLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
+    when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(Seq(UNSEEN_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl(UNSEEN_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(UNSEEN_FEED_URL, resource.page.get)).thenReturn(Future.successful(None))
@@ -47,7 +47,7 @@ class FeedAutodiscoveryProcesserTest {
   }
 
   @Test def relativeFeedUrlsShouldBeExpandedIntoFullyQualifiedUrls(): Unit = {
-    when(linkExtractor.extractLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
+    when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
 
     when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference("https://localhost/feed.xml", resource.page.get)).thenReturn(Future.successful(None))
@@ -63,15 +63,13 @@ class FeedAutodiscoveryProcesserTest {
 
   @Test
   def doNotRecordDiscoveredFeedsIfWeAlreadyHaveThisFeed(): Unit = {
-    val now = DateTime.now
-
     val autoDiscoveredLinks = Seq(EXISTING_FEED_URL)
-    when(linkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
+    when(rssLinkExtractor.extractLinks(pageContent)).thenReturn(autoDiscoveredLinks)
     when(commentFeedDetector.isCommentFeedUrl(EXISTING_FEED_URL)).thenReturn(false)
     when(mongoRepository.getDiscoveredFeedByUrlAndReference(EXISTING_FEED_URL, resource.page.get)).thenReturn(Future.successful(None))
     when(mongoRepository.getFeedByUrl(EXISTING_FEED_URL)).thenReturn(Future.successful(Some(mock(classOf[Feed]))))
 
-    feedAutodiscoveryProcesser.process(resource, pageContent, now)
+    feedAutodiscoveryProcesser.process(resource, pageContent, DateTime.now)
 
     verify(mongoRepository, never).saveDiscoveredFeed(any(classOf[DiscoveredFeed]))
   }

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 import scala.concurrent.Await
 
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
-                                                         linkExtractor: RssLinkExtractor,
+                                                         rssLinkExtractor: RssLinkExtractor,
                                                          commentFeedDetector: CommentFeedDetectorService,
                                                          commentFeedGuesser: CommentFeedGuesserService) extends LinkCheckerProcessor with ReasonableWaits {
 
@@ -49,7 +49,7 @@ import scala.concurrent.Await
           }
         }
 
-        linkExtractor.extractLinks(pageContent).map(expandUrl).foreach { discoveredUrl =>
+        rssLinkExtractor.extractLinks(pageContent).map(expandUrl).foreach { discoveredUrl =>
           log.info("Processing discovered url: " + discoveredUrl)
 
           val isCommentFeedUrl = commentFeedDetector.isCommentFeedUrl(discoveredUrl)
