@@ -49,9 +49,9 @@ class FeedAutodiscoveryProcesserTest {
   @Test def relativeFeedUrlsShouldBeExpandedIntoFullyQualifiedUrls(): Unit = {
     when(linkExtractor.extractLinks(pageContent)).thenReturn(Seq(RELATIVE_FEED_URL))
 
-    when(commentFeedDetector.isCommentFeedUrl("http://localhost/feed.xml")).thenReturn(false)
-    when(mongoRepository.getDiscoveredFeedByUrlAndReference("http://localhost/feed.xml", resource.page.get)).thenReturn(Future.successful(None))
-    when(mongoRepository.getFeedByUrl("http://localhost/feed.xml")).thenReturn(Future.successful(None))
+    when(commentFeedDetector.isCommentFeedUrl("https://localhost/feed.xml")).thenReturn(false)
+    when(mongoRepository.getDiscoveredFeedByUrlAndReference("https://localhost/feed.xml", resource.page.get)).thenReturn(Future.successful(None))
+    when(mongoRepository.getFeedByUrl("https://localhost/feed.xml")).thenReturn(Future.successful(None))
 
     val saved = ArgumentCaptor.forClass(classOf[DiscoveredFeed])
 
