@@ -3,7 +3,6 @@ package nz.co.searchwellington.filters
 import java.text.{ParseException, SimpleDateFormat}
 import java.util.Date
 
-import com.clutch.dates.StringToTime
 import com.google.common.base.Strings
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
@@ -67,7 +66,7 @@ class AdminRequestFilter @Autowired() (mongoRepository: MongoRepository, tagDAO:
 
     log.debug("Looking for embargoed field")
     if (request.getParameter(EMBARGO_DATE_FIELD) != null && !request.getParameter(EMBARGO_DATE_FIELD).isEmpty) {
-      request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate(request.getParameter(EMBARGO_DATE_FIELD).asInstanceOf[String]).getOrElse(null))
+      // request.setAttribute(EMBARGO_DATE_FIELD, parseEmbargoDate(request.getParameter(EMBARGO_DATE_FIELD).asInstanceOf[String]).getOrElse(null))
     }
     if (request.getParameter("publisher") != null && !(request.getParameter("publisher") == "")) {
       val publisherUrlWords: String = request.getParameter("publisher")
@@ -93,34 +92,6 @@ class AdminRequestFilter @Autowired() (mongoRepository: MongoRepository, tagDAO:
         request.setAttribute("parent_tag", tag)
       }
     }
-  }
-
-  private def parseEmbargoDate(dateString: String): Option[Date] = {
-    val supportedEmbargoDateFormats = Seq(new SimpleDateFormat("dd MMM yyyy HH:mm"), new SimpleDateFormat("HH:mm"))
-
-    val parsed = supportedEmbargoDateFormats.flatMap { dateFormat =>
-      try {
-        Option(dateFormat.parse(dateString))
-      } catch {
-        case e: ParseException => {
-          log.warn("Supplied embargo date '" + dateString + "' did not match date format: " + dateFormat.toPattern)
-          None
-        }
-      }
-    }
-
-    val withTextDates = parsed.headOption.fold {
-      val time: Date = new StringToTime(dateString)
-      Option(time)
-    } { p =>
-      Some(p)
-    }
-
-    withTextDates.getOrElse {
-      log.warn("User supplied embargo date '" + dateString + "' could not be parsed")
-    }
-
-    withTextDates
   }
 
   private def parseTwitterIdfromRequest(request: HttpServletRequest): Option[Long] = {

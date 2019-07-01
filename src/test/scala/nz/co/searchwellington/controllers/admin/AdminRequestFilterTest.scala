@@ -66,30 +66,6 @@ class AdminRequestFilterTest {
   }
 
   @Test
-  def embargoDatesInFullDateTimeFormatAreAccepted {
-    request.setPathInfo("/edit/save")
-    request.setParameter("embargo_date", "17 dec 2011 21:12")
-
-    filter.loadAttributesOntoRequest(request)
-
-    val embargoDate: Date = request.getAttribute("embargo_date").asInstanceOf[Date]
-    assertNotNull(embargoDate)
-    assertEquals(new DateTime(2011, 12, 17, 21, 12, 0, 0).toDate, embargoDate)
-  }
-
-  @Test
-  def embargoDatesWrittenInPlainTextShouldBeAccepted {
-    request.setPathInfo("/edit/save")
-    request.setParameter("embargo_date", "today")
-
-    filter.loadAttributesOntoRequest(request)
-
-    val embargoDate = request.getAttribute("embargo_date").asInstanceOf[Date]
-    assertNotNull(embargoDate)
-    assertEquals(DateTime.now.toDateMidnight, new DateTime(embargoDate))
-  }
-
-  @Test
   def shouldPopulateTagFromParameterAsWell {
     request.setPathInfo("/edit/tag/save")
     request.setParameter("tag", "transport")
