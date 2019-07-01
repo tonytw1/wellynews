@@ -28,7 +28,7 @@ import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
     }
   }
 
-  private def contentHasChanged(before: String, after: String): Boolean = {
+  private def contentHasChanged(before: String, after: String): Boolean = { // TODO use options
     if (before != null && after != null) {
       !(UrlFilters.stripHtml(after) == UrlFilters.stripHtml(before))
     } else {

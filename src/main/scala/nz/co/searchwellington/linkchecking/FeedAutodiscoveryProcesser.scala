@@ -23,46 +23,44 @@ import scala.concurrent.Await
 
   override def process(checkResource: Resource, pageContent: String, seen: DateTime): Unit = {
     if (!checkResource.`type`.equals("F")) {
-      if (pageContent != null) {
 
-        def expandUrl(url: String): String = {
-          if (!isFullQualified(url)) {
-            log.info("url is not fully qualified; will try to expand: " + url) // TODO Really what's an example?
-            try {
-              val sitePrefix = new URL(checkResource.page.get).getHost // TODO naked get
-              val fullyQualifiedUrl = "http://" + sitePrefix + url // TODO protocol!
-              log.info("url expanded to: " + fullyQualifiedUrl)
-              fullyQualifiedUrl
+      def expandUrl(url: String): String = {
+        if (!isFullQualified(url)) {
+          log.info("url is not fully qualified; will try to expand: " + url) // TODO Really what's an example?
+          try {
+            val sitePrefix = new URL(checkResource.page.get).getHost // TODO naked get
+            val fullyQualifiedUrl = "http://" + sitePrefix + url // TODO protocol!
+            log.info("url expanded to: " + fullyQualifiedUrl)
+            fullyQualifiedUrl
 
-            } catch {
-              case e: MalformedURLException =>
-                log.error("Invalid url", e)
-                url
-              case e: Throwable =>
-                log.error("Invalid url", e)
-                url
-            }
-
-          } else {
-            url
+          } catch {
+            case e: MalformedURLException =>
+              log.error("Invalid url", e)
+              url
+            case e: Throwable =>
+              log.error("Invalid url", e)
+              url
           }
+
+        } else {
+          url
         }
+      }
 
-        linkExtractor.extractLinks(pageContent).map(expandUrl).foreach { discoveredUrl =>
-          log.info("Processing discovered url: " + discoveredUrl)
+      linkExtractor.extractLinks(pageContent).map(expandUrl).foreach { discoveredUrl =>
+        log.info("Processing discovered url: " + discoveredUrl)
 
-          val isCommentFeedUrl = commentFeedDetector.isCommentFeedUrl(discoveredUrl)
-          if (isCommentFeedUrl) {
-            log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
+        val isCommentFeedUrl = commentFeedDetector.isCommentFeedUrl(discoveredUrl)
+        if (isCommentFeedUrl) {
+          log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
+
+        } else {
+          val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), TenSeconds).nonEmpty
+          if (!isUrlOfExistingFeed) {
+            recordDiscoveredFeedUrl(checkResource, discoveredUrl, seen)
 
           } else {
-            val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), TenSeconds).nonEmpty
-            if (!isUrlOfExistingFeed) {
-              recordDiscoveredFeedUrl(checkResource, discoveredUrl, seen)
-
-            } else {
-              log.info("Ignoring discovered url of existing feed")
-            }
+            log.info("Ignoring discovered url of existing feed")
           }
         }
       }

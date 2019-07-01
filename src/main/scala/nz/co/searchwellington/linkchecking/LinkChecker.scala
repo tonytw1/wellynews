@@ -36,9 +36,9 @@ extends ReasonableWaits {
       maybeResource.map { resource =>
         resource.page.map { p =>
           if (!Strings.isNullOrEmpty(p)) {
+
             log.info("Checking: " + resource.title + " (" + p + ")")
-            val pageContent = httpCheck(resource, p)
-            pageContent.map { pageBody =>
+            httpCheck(resource, p).map { pageBody =>
               for (processor <- processers) {
                 log.debug("Running processor: " + processor.getClass.toString)
                 try {
@@ -57,7 +57,9 @@ extends ReasonableWaits {
             contentUpdateService.update(resource) // TODO should be a specific field set
             log.info("Finished linkchecking")
             true
+
           } else {
+            log.warn("Empty url for: " + resource.id)
             false
           }
         }.getOrElse {
