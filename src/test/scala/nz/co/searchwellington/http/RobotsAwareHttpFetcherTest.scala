@@ -24,7 +24,7 @@ class RobotsAwareHttpFetcherTest extends ReasonableWaits {
   }
 
   @Test
-  def testMustCheckWithTheRobotsExclutionServiceBeforeCrawlingUrl(): Unit = {
+  def testMustCheckWithTheRobotsExclusionServiceBeforeCrawlingUrl(): Unit = {
     robotsAwareFetcher.httpFetch(TEST_URL)
     verify(robotExclusionService).isUrlCrawlable(TEST_URL, TEST_USER_AGENT)
   }
