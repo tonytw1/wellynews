@@ -20,18 +20,8 @@ public class TwitterApiFactory {
   @Value("#{config['consumer.secret']}")
   private String consumerSecret;
 
-  @Value("#{config['access.token']}")
-  private String accessToken;
-
-  @Value("#{config['access.secret']}")
-  private String accessSecret;
-
   public Twitter getOauthedTwitterApiForAccessToken(String token, String secret) {
     return new TwitterFactory(buildConfig()).getInstance(new AccessToken(token, secret));
-  }
-
-  public Twitter getOauthedTwitterApi() {
-    return new TwitterFactory(buildConfig()).getInstance(new AccessToken(accessToken, accessSecret));
   }
 
   public Twitter getTwitterApi() {
