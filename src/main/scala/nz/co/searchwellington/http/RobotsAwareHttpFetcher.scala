@@ -5,6 +5,8 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.concurrent.{ExecutionContext, Future}
+
 @Component
 class RobotsAwareHttpFetcher @Autowired()(robotExclusionService: RobotExclusionService, httpFetcher: WSHttpFetcher) extends HttpFetcher {
 
@@ -12,14 +14,14 @@ class RobotsAwareHttpFetcher @Autowired()(robotExclusionService: RobotExclusionS
 
   private val excludedUrlPrefixes = Seq.empty
 
-  override def httpFetch(url: String): HttpFetchResult = {
+  override def httpFetch(url: String)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
     val ignoreRobotDotTxt = excludedUrlPrefixes.exists(e => url.startsWith(e))
-
     if (ignoreRobotDotTxt || robotExclusionService.isUrlCrawlable(url, getUserAgent)) {
       httpFetcher.httpFetch(url)
+
     } else {
       log.info("Url is not allowed to be crawled: " + url)
-      new HttpFetchResult(HttpStatus.SC_UNAUTHORIZED, null)
+      Future.successful(HttpFetchResult(HttpStatus.SC_UNAUTHORIZED, null))
     }
   }
 

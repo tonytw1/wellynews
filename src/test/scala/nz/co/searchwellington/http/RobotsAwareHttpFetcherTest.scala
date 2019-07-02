@@ -1,10 +1,14 @@
 package nz.co.searchwellington.http
 
+import nz.co.searchwellington.ReasonableWaits
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
 
-class RobotsAwareHttpFetcherTest {
+import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+
+class RobotsAwareHttpFetcherTest extends ReasonableWaits {
 
   private val TEST_URL = "http://test.wellington.gen.nz/blah"
   private val TEST_USER_AGENT = "test user agent"
@@ -43,7 +47,9 @@ class RobotsAwareHttpFetcherTest {
   @Test
   def testShouldGiveCorrectStatusCodeIfCrawlsAreNotAllowed(): Unit = {
     when(robotExclusionService.isUrlCrawlable(TEST_URL, TEST_USER_AGENT)).thenReturn(false)
-    val result = robotsAwareFetcher.httpFetch(TEST_URL)
+
+    val result = Await.result(robotsAwareFetcher.httpFetch(TEST_URL), TenSeconds)
+
     assertEquals(401, result.status)
   }
 

@@ -1,6 +1,5 @@
 package nz.co.searchwellington.linkchecking
 
-import com.google.common.base.Strings
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.http.RobotsAwareHttpFetcher
 import nz.co.searchwellington.model.Resource
@@ -14,81 +13,85 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
-@Component class LinkChecker @Autowired() (mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                           httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser, feedReaderTaskExecutor: TaskExecutor)
-extends ReasonableWaits {
+@Component class LinkChecker @Autowired()(mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
+                                          httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser,
+                                          feedReaderTaskExecutor: TaskExecutor) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
 
   implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
+  private val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
 
   //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
   def scanResource(checkResourceId: String) {
     log.info("Scanning resource: " + checkResourceId)
 
-    val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
-
-    Await.result(mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId)).map { maybeResource =>
-      maybeResource.map { resource =>
-        resource.page.map { p =>
-          if (!Strings.isNullOrEmpty(p)) {
-
-            log.info("Checking: " + resource.title + " (" + p + ")")
-            httpCheck(resource, p).map { pageBody =>
-              for (processor <- processers) {
-                log.debug("Running processor: " + processor.getClass.toString)
-                try {
-                  processor.process(resource, pageBody, DateTime.now)
-                } catch {
-                  case e: Exception =>
-                    log.error("An exception occured while running a link checker processor", e)
-                }
-                //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
-              }
-            }
-
-            log.debug("Saving resource and updating snapshot")
-            resource.setLastScanned(DateTime.now.toDate)
-
-            contentUpdateService.update(resource) // TODO should be a specific field set
-            log.info("Finished linkchecking")
-            true
-
+    mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId)).flatMap { maybeResource =>
+      val mayToCheck = maybeResource.flatMap { resource =>
+        resource.page.flatMap { page =>
+          if (page.nonEmpty) {
+            Some(resource, page)
           } else {
-            log.warn("Empty url for: " + resource.id)
-            false
+            None
           }
-        }.getOrElse {
-          true
         }
       }
 
-    }, OneMinute)
-  }
+      mayToCheck.map { toCheck =>
+        log.info("Checking: " + toCheck._1.title + " (" + toCheck + ")")
+        httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
+          maybePageBody.map { pageBody =>
+            processers.foreach { processor =>
+              log.debug("Running processor: " + processor.getClass.toString)
+              try {
+                processor.process(toCheck._1, pageBody, DateTime.now)
+              } catch {
+                case e: Exception =>
+                  log.error("An exception occured while running a link checker processor", e)
+              }
+              //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
+            }
+            true
+          }
 
-  private def httpCheck(checkResource: Resource, url: String): Option[String] = {
-    try {
-      val httpResult = httpFetcher.httpFetch(url)
-      checkResource.setHttpStatus(httpResult.status)
-      log.info("Http status for " + checkResource.page + " set to: " + checkResource.http_status)
+          log.debug("Saving resource and updating snapshot")
+          toCheck._1.setLastScanned(DateTime.now.toDate)
 
-      if (httpResult.status == HttpStatus.SC_OK) {
-        Some(httpResult.body)
-      } else {
-        checkResource.setHttpStatus(httpResult.status)
-        None
+          contentUpdateService.update(toCheck._1) // TODO should be a specific field set
+          log.info("Finished linkchecking")
+          true
+        }
 
+      }.getOrElse {
+        Future.successful(false)
       }
     }
-    catch {
-      case e: Exception =>
-        log.error("Error while checking url: ", e)
-        checkResource.setHttpStatus(CANT_CONNECT)
-        None
+  }
+
+  private def httpCheck(checkResource: Resource, url: String): Future[Option[String]] = {
+    httpFetcher.httpFetch(url).map { httpResult =>
+      try {
+        checkResource.setHttpStatus(httpResult.status)
+        log.info("Http status for " + checkResource.page + " set to: " + checkResource.http_status)
+
+        if (httpResult.status == HttpStatus.SC_OK) {
+          Some(httpResult.body)
+        } else {
+          checkResource.setHttpStatus(httpResult.status)
+          None
+
+        }
+      }
+      catch {
+        case e: Exception =>
+          log.error("Error while checking url: ", e)
+          checkResource.setHttpStatus(CANT_CONNECT)
+          None
+      }
     }
   }
 

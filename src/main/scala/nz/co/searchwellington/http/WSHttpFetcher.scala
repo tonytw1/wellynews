@@ -8,26 +8,25 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import play.api.libs.ws.ahc._
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component
 class WSHttpFetcher(feedReaderTaskExecutor: TaskExecutor) extends HttpFetcher with ReasonableWaits { // TODO seperate executor
 
   private val log = Logger.getLogger(classOf[WSHttpFetcher])
 
-  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
   private val wsClient = StandaloneAhcWSClient()
 
-  override def httpFetch(url: String): HttpFetchResult = {
+  override def httpFetch(url: String)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
     val eventualResult = wsClient.url(url).get.map { r =>
       val result = new HttpFetchResult(r.status, r.body)
       log.info("Got HTTP fetch result from WS: " + result.status)
       result
     }
-    Await.result(eventualResult, OneMinute)
+    eventualResult
   }
 
   override def getUserAgent(): String = "TODO"
