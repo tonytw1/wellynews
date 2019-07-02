@@ -60,8 +60,7 @@
 				<entry key="contentDeduper" value-ref="contentDedupingService" />
 				<entry key="editPermissionService" value-ref="editPermissionService" />
 				<entry key="loggedInUserFilter" value-ref="loggedInUserFilter" />
-				<entry key="publisherNewsitemCountService" value-ref="publisherNewsitemCountService" />
-				<entry key="googleMapCleaner" value-ref="googleMapsDisplayCleaner" />				
+				<entry key="googleMapCleaner" value-ref="googleMapsDisplayCleaner" />
 			</map>
 		</property>
 	</bean>
