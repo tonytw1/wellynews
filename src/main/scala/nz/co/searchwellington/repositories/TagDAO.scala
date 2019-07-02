@@ -9,31 +9,26 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TagDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
 
   def createNewTag(tagUrlWords: String, displayName: String): Tag = {
-    new Tag(id = UUID.randomUUID().toString, name = tagUrlWords, display_name = displayName)
+    Tag(id = UUID.randomUUID().toString, name = tagUrlWords, display_name = displayName)
   }
 
-  def loadTagById(tagId: String): Option[Tag] = {
-    Await.result(mongoRepository.getTagById(tagId), TenSeconds)
-  }
 
-  def loadTagByObjectId(objectId: BSONObjectID): Option[Tag] = {
-    Await.result(mongoRepository.getTagByObjectId(objectId), TenSeconds)
+  def loadTagByObjectId(objectId: BSONObjectID): Future[Option[Tag]] = {
+    mongoRepository.getTagByObjectId(objectId)
   }
 
   def getAllTags: Future[Seq[Tag]] = mongoRepository.getAllTags()
 
   def getFeaturedTags: Future[Seq[Tag]] = getAllTags.map(ts => ts.filter(t => t.isFeatured))
 
-  def loadTagsById(tagIds: Seq[String]): Seq[Tag] = {
-    tagIds.flatMap { id =>
-      Option(loadTagById(id))
-    }.flatten
+  def loadTagsById(tagIds: Seq[String]): Future[Seq[Tag]] = {
+    Future.sequence(tagIds.map(mongoRepository.getTagById)).map(_.flatten)
   }
 
   def loadTagsByParent(parentId: BSONObjectID): Future[List[Tag]] = {
