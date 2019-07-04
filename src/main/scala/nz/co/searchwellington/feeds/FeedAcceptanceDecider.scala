@@ -75,15 +75,6 @@ import scala.concurrent.duration.{Duration, SECONDS}
       }
     }
 
-    def cannotImportIfAlreadyExists(): Option[String] = {
-      if (alreadyHaveThisFeedItem(feedNewsitem)) {
-        log.debug("A resource with url '" + feedNewsitem.url + "' already exists; not accepting.")
-        Some("Item already exists")
-      } else {
-        None
-      }
-    }
-
     def alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(): Option[String] = {
       None // TODO implement me
     }
