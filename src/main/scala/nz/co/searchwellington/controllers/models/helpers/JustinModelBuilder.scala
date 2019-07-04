@@ -40,8 +40,5 @@ import scala.concurrent.Await
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "justin"
-  }
-
+  def getViewName(mv: ModelAndView) = "justin"
 }
