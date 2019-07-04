@@ -18,7 +18,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Tag(id = UUID.randomUUID().toString, name = tagUrlWords, display_name = displayName)
   }
 
-
   def loadTagByObjectId(objectId: BSONObjectID): Future[Option[Tag]] = {
     mongoRepository.getTagByObjectId(objectId)
   }

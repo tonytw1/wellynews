@@ -66,18 +66,19 @@ extends ReasonableWaits {
   private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Newsitem]] = {
 
     val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>
+
       val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))
+      feedAcceptanceDecider.getAcceptanceErrors(feed, withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
+        if (acceptanceErrors.isEmpty) {
+          log.info("Accepting newsitem: " + withCleanedUrl.url)
+          feedReaderUpdateService.acceptNewsitem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
+            Some(acceptedNewsitem)
+          }
 
-      val acceptanceErrors = feedAcceptanceDecider.getAcceptanceErrors(feed, withCleanedUrl, acceptancePolicy)
-      if (acceptanceErrors.isEmpty) {
-        log.info("Accepting newsitem: " + withCleanedUrl.url)
-        feedReaderUpdateService.acceptNewsitem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
-          Some(acceptedNewsitem)
+        } else {
+          log.debug("Not accepting " + feednewsitem.url + " due to acceptance errors: " + acceptanceErrors)
+          Future.successful(None)
         }
-
-      } else {
-        log.debug("Not accepting " + feednewsitem.url + " due to acceptance errors: " + acceptanceErrors)
-        Future.successful(None)
       }
     }
 
