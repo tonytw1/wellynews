@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.UUID
-
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Tag
@@ -13,7 +11,6 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
-import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.Future
 
@@ -35,8 +32,8 @@ class TagModelBuilderTest {
 
   private val TAG_DISPLAY_NAME = "Penguins"
 
-  private val parentId = BSONObjectID.generate
-  private val tag = Tag(_id = parentId, id = UUID.randomUUID().toString, display_name = TAG_DISPLAY_NAME)
+  private val parentTag = Tag(display_name = "Parent")
+  private val tag = Tag(parent = Some(parentTag._id), display_name = TAG_DISPLAY_NAME)
 
   private val loggedInUser = None
 
@@ -48,11 +45,11 @@ class TagModelBuilderTest {
 
   @Before
   def setup {
-    when(tagDAO.loadTagsByParent(parentId)).thenReturn(Future.successful(List.empty))
+    when(tagDAO.loadTagsByParent(tag._id)).thenReturn(Future.successful(List.empty))
+    when(tagDAO.loadTagByObjectId(parentTag._id)).thenReturn(Future.successful(Some(parentTag)))
   }
 
   @Test
-  @throws(classOf[Exception])
   def isNotValidIfNotTagsAreOnTheRequest {
     assertFalse(modelBuilder.isValid(request))
   }
@@ -90,6 +87,17 @@ class TagModelBuilderTest {
 
     import scala.collection.JavaConverters._
     assertEquals(tagNewsitems.asJava, mv.getModel.get("main_content"))
+  }
+
+  @Test
+  def shouldIncludeTagParent = {
+    request.setAttribute("tags", Seq(tag))
+    val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
+
+    val mv = modelBuilder.populateContentModel(request).get
+
+    assertEquals(parentTag, mv.getModel.get("parent"))
   }
 
 }

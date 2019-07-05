@@ -65,7 +65,7 @@ import scala.concurrent.{Await, Future}
 
           tag.parent.map { pid =>
             tagDAO.loadTagByObjectId(pid).map { p =>
-              mv.addObject("parent", p)
+              mv.addObject("parent", p.orNull)
             }
           }
 
