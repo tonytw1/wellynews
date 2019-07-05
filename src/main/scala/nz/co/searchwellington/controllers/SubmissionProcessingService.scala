@@ -43,7 +43,7 @@ import scala.concurrent.Await
         title = flattenedTitle
         log.info("Flatten capitalised sentence to '" + title + "'")
       }
-      editResource.setName(title)
+      //editResource.setName(title)
     }
   }
 

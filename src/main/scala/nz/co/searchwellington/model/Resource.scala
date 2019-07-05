@@ -26,8 +26,6 @@ trait Resource {
   def setDate(date: Date): Unit = {}  // TODO
 
   def setDescription(description: String): Unit = {}  // TODO this.description = description
-  
-  def setName(name: String): Unit = {} // this.title = name
 
   def setUrl(url: String) = this.page = Some(url)
 
