@@ -17,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
                                          feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
                                          contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          feedReaderUpdateService: FeedReaderUpdateService)
-extends ReasonableWaits {
+  extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedReader])
 
@@ -36,7 +36,7 @@ extends ReasonableWaits {
         }, { r =>
           val feedNewsitems = r._1
           log.debug("Feed contains " + feedNewsitems.size + " items")
-          feed.setHttpStatus(if (feedNewsitems.nonEmpty) 200 else -3)
+          val inferredHttpStatus = if (feedNewsitems.nonEmpty) 200 else -3
 
           val eventuallyAcceptedNewsitems = if (acceptancePolicy.shouldReadFeed) {
             processFeedItems(feed, readingUser, acceptancePolicy, feedNewsitems)
@@ -50,7 +50,8 @@ extends ReasonableWaits {
             }
             contentUpdateService.update(feed.copy(
               last_read = Some(DateTime.now.toDate),
-              latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems)
+              latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems),
+              http_status = inferredHttpStatus
             ))
           }
         })
