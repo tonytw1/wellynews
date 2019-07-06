@@ -10,7 +10,7 @@ trait Resource {
   val `type`: String
   var title: Option[String]
   var description: Option[String]
-  var page: Option[String]
+  val page: Option[String]
   var http_status: Int
   var date: Option[Date]
   var last_scanned: Option[Date]
@@ -26,8 +26,6 @@ trait Resource {
   def setDate(date: Date): Unit = {}  // TODO
 
   def setDescription(description: String): Unit = {}  // TODO this.description = description
-
-  def setUrl(url: String) = this.page = Some(url)
 
   def setHttpStatus(httpStatus: Int): Unit = this.http_status = httpStatus
 

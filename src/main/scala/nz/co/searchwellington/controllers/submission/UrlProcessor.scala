@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component
     val requestedUrl = request.getParameter(URL)
     if (requestedUrl != null) {
       val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(requestedUrl)
-      editResource.setUrl(cleanedUrl)
+      //editResource.setUrl(cleanedUrl)
       log.debug("Resource url set to: " + cleanedUrl)
     }
   }
