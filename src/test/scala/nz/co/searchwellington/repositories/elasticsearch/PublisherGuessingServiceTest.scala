@@ -1,77 +1,56 @@
 package nz.co.searchwellington.repositories.elasticsearch
 
-import java.util.UUID
-
-import junit.framework.TestCase
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.repositories.HibernateResourceDAO
 import nz.co.searchwellington.urls.UrlParser
-import org.junit.Before
-import org.mockito.Mockito.when
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.junit.Assert._
+import org.junit.Test
+import org.mockito.Mockito.{mock, when}
 
-class PublisherGuessingServiceTest extends TestCase {
-  @Mock val resourceDAO: HibernateResourceDAO = null
-  private var service: PublisherGuessingService = null
+class PublisherGuessingServiceTest {
 
-  @Before
-  @throws[Exception]
-  override def setUp {
-    MockitoAnnotations.initMocks(this)
-    service = new PublisherGuessingService(resourceDAO, new UrlParser)
-  }
+  private val resourceDAO = mock(classOf[HibernateResourceDAO])
+  private val publisherGuessingService = new PublisherGuessingService(resourceDAO, new UrlParser)
 
-  @throws[Exception]
-  def testShouldNotMatchIfNoMatchingPublishers {
+  @Test
+  def shouldNotMatchIfNoMatchingPublishers {
     val possiblePublishers = Seq()
 
     when(resourceDAO.getAllPublishersMatchingStem("www.spammer.com", true)).thenReturn(possiblePublishers)
 
-    assertEquals(None, service.guessPublisherBasedOnUrl("http://www.spammer.com"))
+    assertEquals(None, publisherGuessingService.guessPublisherBasedOnUrl("http://www.spammer.com"))
   }
 
-  @throws[Exception]
-  def testShouldMatchIfMultipleAvailable {
-    val golfCourseSite = Website(id = UUID.randomUUID().toString)
-    golfCourseSite.setUrl("http://www.wellington.govt.nz/services/berhgolf/index.html")
-
-    val heritageInventory = Website(id = UUID.randomUUID().toString)
-    heritageInventory.setUrl("http://www.wellington.govt.nz/services/heritage/inventory/index.html")
-
-    val wccMainSite = Website(id = UUID.randomUUID().toString)
-    wccMainSite.setUrl("http://www.wellington.govt.nz")
+  @Test
+  def shouldMatchIfMultipleAvailable {
+    val golfCourseSite = Website(page = Some("http://www.wellington.govt.nz/services/berhgolf/index.html"))
+    val heritageInventory = Website(page = Some("http://www.wellington.govt.nz/services/heritage/inventory/index.html"))
+    val wccMainSite = Website(page = Some("http://www.wellington.govt.nz"))
 
     val possiblePublishers = Seq(golfCourseSite, heritageInventory, wccMainSite)
-    when(resourceDAO.getAllPublishersMatchingStem("www.wellington.govt.nz", true)).thenReturn(possiblePublishers)
+    when(resourceDAO.getAllPublishersMatchingStem("www.wellington.govt.nz", showBroken = true)).thenReturn(possiblePublishers)
 
-    assertEquals(Some(wccMainSite), service.guessPublisherBasedOnUrl("http://www.wellington.govt.nz/news/display-item.php?id=3542"))
+    assertEquals(Some(wccMainSite), publisherGuessingService.guessPublisherBasedOnUrl("http://www.wellington.govt.nz/news/display-item.php?id=3542"))
   }
 
-  @throws[Exception]
-  def testShouldMatchIfOnlyOnePossiblePublisher {
-    val wellingtonista: Website = Website()
-    wellingtonista.setName("The Wellingtonista")
-    wellingtonista.setUrl("http://www.wellingtonista.com")
-
+  @Test
+  def shouldMatchIfOnlyOnePossiblePublisher {
+    val wellingtonista = Website(title = Some("The Wellingtonista"), page =Some("http://www.wellingtonista.com"))
     val possiblePublishers = Seq(wellingtonista)
-    when(resourceDAO.getAllPublishersMatchingStem("www.wellingtonista.com", true)).thenReturn(possiblePublishers)
+    when(resourceDAO.getAllPublishersMatchingStem("www.wellingtonista.com", showBroken = true)).thenReturn(possiblePublishers)
 
-    assertEquals(Some(wellingtonista), service.guessPublisherBasedOnUrl("http://www.wellingtonista.com/a-week-of-it"))
+    assertEquals(Some(wellingtonista), publisherGuessingService.guessPublisherBasedOnUrl("http://www.wellingtonista.com/a-week-of-it"))
   }
 
-  @throws[Exception]
-  def testShouldNotMatchJustBecauseTheHostNameMatches {
-    val hostedOne = Website()
-    hostedOne.setUrl("http://homepages.paradise.net.nz/~titahi/")
-    val hostedTwo = Website()
-    hostedTwo.setUrl("http://homepages.ihug.co.nz/~waicoll/")
+  @Test
+  def shouldNotMatchJustBecauseTheHostNameMatches {
+    val hostedOne = Website(page = Some("http://homepages.paradise.net.nz/~titahi/"))
+    val hostedTwo = Website(page = Some("http://homepages.ihug.co.nz/~waicoll/"))
 
     val possiblePublishers = Seq(hostedOne, hostedTwo)
-    when(resourceDAO.getAllPublishersMatchingStem("homepages.ihug.co.nz", true)).thenReturn(possiblePublishers)
+    when(resourceDAO.getAllPublishersMatchingStem("homepages.ihug.co.nz", showBroken = true)).thenReturn(possiblePublishers)
 
-    assertEquals(None, service.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/"))
+    assertEquals(None, publisherGuessingService.guessPublisherBasedOnUrl("http://homepages.ihug.co.nz/~spammer/"))
   }
 
 }
