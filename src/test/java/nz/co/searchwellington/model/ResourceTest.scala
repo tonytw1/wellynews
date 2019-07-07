@@ -23,4 +23,16 @@ class ResourceTest {
     assertEquals(tag._id, website.resource_tags.head.tag_id)
   }
 
+  @Test
+  def canEditResourceTags = {
+    val tag = Tag()
+    val user = User()
+    val website = Website(resource_tags = Seq(Tagging(tag_id = tag._id, user_id = user._id)))
+
+    val anotherTag = Tag()
+    val edited = website.copy(resource_tags = Seq(Tagging(tag_id = anotherTag._id, user_id = user._id)))
+
+    assertEquals(anotherTag._id, edited.resource_tags.head.tag_id)
+  }
+
 }
