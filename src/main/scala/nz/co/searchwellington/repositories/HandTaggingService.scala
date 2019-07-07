@@ -18,16 +18,8 @@ import scala.concurrent.{Await, Future}
   def clearTaggingsForTag(tag: Tag) {
 
     def deleteTagFromResource(tag: Tag, resource: Resource): Resource = {
-      resource match {  // TODO how to remove this?
-        case w: Website =>
-          w.copy(resource_tags = w.resource_tags.filterNot(t => t.tag_id == tag._id))
-        case n: Newsitem =>
-          n.copy(resource_tags = n.resource_tags.filterNot(t => t.tag_id == tag._id))
-        case f: Feed =>
-          f.copy(resource_tags = f.resource_tags.filterNot(t => t.tag_id == tag._id))
-        case _ =>
-          resource
-      }
+      val filtered = resource.resource_tags.filterNot(t => t.tag_id == tag._id)
+      resource.withTags(filtered)
     }
 
     log.info("Clearing tagging votes for tag: " + tag.getName)
@@ -55,17 +47,7 @@ import scala.concurrent.{Await, Future}
           t
         }
       }
-
-      resource match {  // TODO how to remove this?
-        case w: Website =>
-          w.copy(resource_tags = updatedTaggings)
-        case n: Newsitem =>
-          n.copy(resource_tags = updatedTaggings)
-        case f: Feed =>
-          f.copy(resource_tags = updatedTaggings)
-        case _ =>
-          resource
-      }
+      resource.withTags(updatedTaggings)
     }
 
     val resourcesTaggedByPreviousUser = Await.result(mongoRepository.getResourceIdsByTaggingUser(previousOwner), TenSeconds)

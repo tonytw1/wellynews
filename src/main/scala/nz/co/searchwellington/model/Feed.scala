@@ -37,5 +37,8 @@ case class Feed(override val _id: BSONObjectID = BSONObjectID.generate,
   def getLastRead: Date = last_read.getOrElse(null)
 
   def isScreenScraped: Boolean = page.map(p => p.startsWith("http://brownbag.wellington.gen.nz/")).getOrElse(false)
+
+  override def withTags(taggings: Seq[Tagging]): Feed = this.copy(resource_tags = taggings)
+
 }
 

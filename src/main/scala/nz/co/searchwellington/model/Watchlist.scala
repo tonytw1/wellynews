@@ -22,4 +22,8 @@ case class Watchlist(override val _id: BSONObjectID = BSONObjectID.generate,
                      override var owner: Option[BSONObjectID] = None,
                      override var publisher: Option[BSONObjectID] = None,
                      override val resource_tags: Seq[Tagging] = Seq()
-                    ) extends PublishedResource
+                    ) extends PublishedResource {
+
+  override def withTags(taggings: Seq[Tagging]): Watchlist = this.copy(resource_tags = taggings)
+
+}

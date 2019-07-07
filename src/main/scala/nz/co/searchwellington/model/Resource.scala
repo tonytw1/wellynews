@@ -4,7 +4,7 @@ import java.util.Date
 
 import reactivemongo.bson.BSONObjectID
 
-trait Resource {
+trait Resource extends Tagged {
   val _id: BSONObjectID
   val id: String
   val `type`: String
