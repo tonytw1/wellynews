@@ -5,6 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditWebsite
 import nz.co.searchwellington.model.{Geocode, UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -22,39 +23,50 @@ import scala.concurrent.Await
 class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                          mongoRepository: MongoRepository,
                                          urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
-                                         loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
+                                         loggedInUserFilter: LoggedInUserFilter, tagDAO: TagDAO) extends ReasonableWaits with AcceptancePolicyOptions with Errors {
 
   private val log = Logger.getLogger(classOf[EditWebsiteController])
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-    log.info("Edit website")
-    Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
-      r match {
-        case w: Website =>
-          val editWebsite = new EditWebsite()
-          editWebsite.setTitle(w.title.getOrElse(""))
-          editWebsite.setUrl(w.page.getOrElse(""))
-          editWebsite.setDescription(w.description.getOrElse(""))
-          w.geocode.map { g =>
-            editWebsite.setGeocode(g.getAddress)
-            val osmId = g.osmId.flatMap { i =>
-              g.osmType.map { t =>
-                i + t
+
+    Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
+
+      Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
+        r match {
+          case w: Website =>
+            val editWebsite = new EditWebsite()
+            editWebsite.setTitle(w.title.getOrElse(""))
+            editWebsite.setUrl(w.page.getOrElse(""))
+            editWebsite.setDescription(w.description.getOrElse(""))
+            w.geocode.map { g =>
+              editWebsite.setGeocode(g.getAddress)
+              val osmId = g.osmId.flatMap { i =>
+                g.osmType.map { t =>
+                  i + t
+                }
               }
+              editWebsite.setSelectedGeocode(osmId.getOrElse(""))
             }
-            editWebsite.setSelectedGeocode(osmId.getOrElse(""))
-          }
 
-          Some(renderEditForm(w, editWebsite))
+            val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
 
-        case _ =>
-          log.info("Not a website")
-          None
+            import scala.collection.JavaConverters._
+            editWebsite.setTags(usersTags.map(_.tag_id.stringify).asJava)
+
+            Some(renderEditForm(w, editWebsite))
+
+          case _ =>
+            log.info("Not a website")
+            None
+        }
+
+      }.getOrElse {
+        NotFound
       }
 
-    }.getOrElse{
-      NotFound
+    }.getOrElse {
+      NotFound  // TODO logged in user
     }
   }
 
@@ -105,7 +117,9 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
     val mv = new ModelAndView("editWebsite")
     mv.addObject("website", w)
     mv.addObject("editWebsite", editWebsite)
-    return mv
+    import scala.collection.JavaConverters._
+    mv.addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
+    mv
   }
 
 }

@@ -2,6 +2,8 @@ package nz.co.searchwellington.forms;
 
 import org.hibernate.validator.constraints.NotBlank;
 
+import java.util.List;
+
 public class EditWebsite {
 
     @NotBlank
@@ -10,6 +12,8 @@ public class EditWebsite {
     private String description;
 
     private String geocode, selectedGeocode;
+
+    private List<String> tags;
 
     public String getTitle() {
         return title;
@@ -51,6 +55,14 @@ public class EditWebsite {
         this.selectedGeocode = selectedGeocode;
     }
 
+    public List<String> getTags() {
+        return tags;
+    }
+
+    public void setTags(List<String> tags) {
+        this.tags = tags;
+    }
+
     @Override
     public String toString() {
         return "EditWebsite{" +
@@ -59,6 +71,8 @@ public class EditWebsite {
                 ", description='" + description + '\'' +
                 ", geocode='" + geocode + '\'' +
                 ", selectedGeocode='" + selectedGeocode + '\'' +
+                ", tags=" + tags +
                 '}';
     }
+
 }
