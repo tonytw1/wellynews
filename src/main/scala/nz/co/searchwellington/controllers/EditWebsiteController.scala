@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditWebsite
-import nz.co.searchwellington.model.{Geocode, UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{Geocode, Tagging, UrlWordsGenerator, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -66,51 +66,64 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
       }
 
     }.getOrElse {
-      NotFound  // TODO logged in user
+      NotFound // TODO logged in user
     }
   }
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editWebsite") editWebsite: EditWebsite, result: BindingResult): ModelAndView = {
-    Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
-      r match {
-        case w: Website =>
-          if (result.hasErrors) {
-            log.warn("Edit website submission has errors: " + result)
-            return renderEditForm(w, editWebsite)
 
-          } else {
-            log.info("Got valid edit website submission: " + editWebsite)
+    Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
 
-            val geocode = Option(editWebsite.getGeocode).flatMap { address =>
-              Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
-                if (osmId.nonEmpty) {
-                  val id = osmId.split("/")(0).toLong
-                  val `type` = osmId.split("/")(1)
-                  Some(Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`)))
-                } else {
-                  None
+      Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
+        r match {
+          case w: Website =>
+            if (result.hasErrors) {
+              log.warn("Edit website submission has errors: " + result)
+              return renderEditForm(w, editWebsite)
+
+            } else {
+              log.info("Got valid edit website submission: " + editWebsite)
+
+              val geocode = Option(editWebsite.getGeocode).flatMap { address =>
+                Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
+                  if (osmId.nonEmpty) {
+                    val id = osmId.split("/")(0).toLong
+                    val `type` = osmId.split("/")(1)
+                    Some(Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`)))
+                  } else {
+                    None
+                  }
                 }
               }
+
+              import scala.collection.JavaConverters._
+              val taggings = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds).map { tag =>
+                Tagging(tag_id = tag._id, user_id = loggedInUser._id)
+              }
+
+              val updatedWebsite = w.copy(
+                title = Some(editWebsite.getTitle),
+                page = Some(editWebsite.getUrl),
+                description = Some(editWebsite.getDescription),
+                geocode = geocode
+              ).withTags(taggings)
+
+
+              contentUpdateService.update(updatedWebsite)
+              log.info("Updated website: " + updatedWebsite)
+
+              Some(new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updatedWebsite.url_words.get))))
             }
+          case _ =>
+            None
+        }
 
-            val updatedWebsite = w.copy(
-              title = Some(editWebsite.getTitle),
-              page = Some(editWebsite.getUrl),
-              description = Some(editWebsite.getDescription),
-              geocode = geocode
-            )
+      }.getOrElse(NotFound)
 
-            contentUpdateService.update(updatedWebsite)
-            log.info("Updated website: " + updatedWebsite)
-
-            Some(new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updatedWebsite.url_words.get))))
-          }
-        case _ =>
-          None
-      }
-
-    }.getOrElse(NotFound)
+    }.getOrElse {
+      NotFound // TODO logged in user
+    }
   }
 
   private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {
