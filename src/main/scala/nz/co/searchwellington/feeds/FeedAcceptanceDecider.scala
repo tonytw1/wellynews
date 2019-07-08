@@ -83,9 +83,8 @@ import scala.concurrent.Future
     } // TODO implement me
 
 
-    val eventualObjections: Future[Seq[Option[String]]] = Future.sequence {
-      Seq(
-        cannotBeSupressed(),
+    val eventualObjections = Future.sequence {
+      Seq(cannotBeSupressed(),
         titleCannotBeBlank(),
         // cannotBeMoreThanOneWeekOld(),  TODO reinstate
         cannotHaveDateInTheFuture(),
