@@ -184,13 +184,13 @@ import scala.concurrent.Await
 
             Await.result(mongoRepository.getTagByUrlWords(field), TenSeconds).map { existingTag =>
               log.debug("Found an existing tag in the additional list: " + existingTag.getName + "; adding.")
-              tagVoteDAO.addTag(user, existingTag, editResource)
+              //tagVoteDAO.addTag(user, existingTag, editResource)
 
             }.getOrElse {
               log.debug("Tag '" + field + "' is a new tag. Needs to be created.")
               val newTag = Tag(name = field, display_name = displayName)
               Await.result(mongoRepository.saveTag(newTag), TenSeconds)
-              tagVoteDAO.addTag(user, newTag, editResource)
+              //tagVoteDAO.addTag(user, newTag, editResource)
             }
           }
           else {

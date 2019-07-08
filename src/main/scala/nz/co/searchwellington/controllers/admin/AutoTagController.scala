@@ -1,14 +1,13 @@
 package nz.co.searchwellington.controllers.admin
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.elasticsearch.KeywordSearchService
-import nz.co.searchwellington.repositories.{HandTaggingDAO, HibernateResourceDAO}
+import nz.co.searchwellington.repositories.{HandTaggingService, HibernateResourceDAO}
 import nz.co.searchwellington.tagging.ImpliedTagService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -16,7 +15,14 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-@Controller class AutoTagController @Autowired()(var resourceDAO: HibernateResourceDAO, var requestFilter: AdminRequestFilter, var autoTagService: ImpliedTagService, var keywordSearchService: KeywordSearchService, var contentUpateService: ContentUpdateService, var tagVoteDAO: HandTaggingDAO, var loggedInUserFilter: LoggedInUserFilter, var commonModelObjectsService: CommonModelObjectsService) {
+@Controller class AutoTagController @Autowired()(resourceDAO: HibernateResourceDAO,
+                                                 requestFilter: AdminRequestFilter,
+                                                 autoTagService: ImpliedTagService,
+                                                 keywordSearchService: KeywordSearchService,
+                                                 contentUpdateService: ContentUpdateService,
+                                                 loggedInUserFilter: LoggedInUserFilter,
+                                                 commonModelObjectsService: CommonModelObjectsService,
+                                                 handTaggingService: HandTaggingService) {
 
   private val log = Logger.getLogger(classOf[AutoTagController])
 
@@ -71,9 +77,9 @@ import org.springframework.web.servlet.ModelAndView
           resourceDAO.loadResourceById(resourceId).map { resource =>
             log.info("Applying tag " + tag.getName + " to:" + resource.title)
             if (!autoTagService.alreadyHasTag(resource, tag)) {
-              tagVoteDAO.addTag(loggedInUser, tag, resource)
+              handTaggingService.addTag(loggedInUser, tag, resource)
             }
-            contentUpateService.update(resource)
+            contentUpdateService.update(resource)
             resource
           }
         }
@@ -84,9 +90,7 @@ import org.springframework.web.servlet.ModelAndView
     }
   }
 
-  private def getPossibleAutotagResources(user: User, tag: Tag): Seq[FrontendResource] = {
-    import scala.collection.JavaConversions._
-    return keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName, true, user, tag)
-  }
+  private def getPossibleAutotagResources(user: User, tag: Tag): Seq[FrontendResource] =
+    keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName, showBroken = true, user, tag)
 
 }

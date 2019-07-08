@@ -51,15 +51,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def addTag(user: User, tag: Tag, resource: Resource) {
-    val existingVotes = getHandpickedTagsForThisResourceByUser(user, resource)
-    if (!existingVotes.contains(tag)) {
-      val newTagging = new HandTagging(user = user, tag = tag)
-      log.info("Adding new hand tagging: " + newTagging)
-      // sessionFactory.getCurrentSession.save(newTagging)
-    }
-  }
-
   def clearTags(resource: Resource) {
     for (handTagging <- this.getHandTaggingsForResource(resource)) {
       // sessionFactory.getCurrentSession.delete(handTagging)

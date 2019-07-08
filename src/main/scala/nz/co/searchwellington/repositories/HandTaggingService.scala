@@ -1,7 +1,7 @@
 package nz.co.searchwellington.repositories
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.{Feed, Newsitem, Resource, Tag, User, Website}
+import nz.co.searchwellington.model.{Resource, Tag, Tagging, User}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +14,16 @@ import scala.concurrent.{Await, Future}
                                                  mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[HandTaggingService])
+
+  def addTag(user: User, tag: Tag, resource: Resource): Unit = {
+    val newTagging = Tagging(user_id = user._id, tag_id= tag._id)
+
+    if (!resource.resource_tags.contains(newTagging)) {
+      log.info("Adding new tagging: " + newTagging)
+      val updatedTaggings = resource.resource_tags :+ newTagging
+      mongoRepository.saveResource(resource.withTags(updatedTaggings))
+    }
+  }
 
   def clearTaggingsForTag(tag: Tag) {
 

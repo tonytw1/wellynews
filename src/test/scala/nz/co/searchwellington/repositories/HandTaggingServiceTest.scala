@@ -5,7 +5,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 import org.mockito.ArgumentCaptor
-import org.mockito.Mockito.{mock, verify, when}
+import org.mockito.Mockito.{mock, verify, when, verifyZeroInteractions}
 
 import scala.concurrent.Future
 
@@ -29,12 +29,38 @@ class HandTaggingServiceTest {
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
 
     val updated = ArgumentCaptor.forClass(classOf[Resource])
-
     handTaggingService.clearTaggingsForTag(tag)
 
     verify(mongoRepository).saveResource(updated.capture())
     assertEquals(taggedResource._id, updated.getValue._id)
     assertTrue(updated.getValue.resource_tags.isEmpty)
+  }
+
+  @Test
+  def userCanAddTagToTaggableResource: Unit = {
+    val user = User()
+    val tag = Tag()
+    val resource = Newsitem()
+
+    val updated = ArgumentCaptor.forClass(classOf[Resource])
+    handTaggingService.addTag(user, tag, resource)
+
+    verify(mongoRepository).saveResource(updated.capture())
+    assertTrue(updated.getValue.resource_tags.nonEmpty)
+    assertEquals(Tagging(user_id = user._id, tag_id = tag._id), updated.getValue.resource_tags.head)
+  }
+
+  @Test
+  def usersCannotApplyTheSameTagMultipleTimes: Unit = {
+    val user = User()
+    val tag = Tag()
+    val existingTagging = Tagging(user_id = user._id, tag_id = tag._id)
+    val resource = Newsitem(resource_tags = Seq(existingTagging))
+
+    val updated = ArgumentCaptor.forClass(classOf[Resource])
+    handTaggingService.addTag(user, tag, resource)
+
+    verifyZeroInteractions(mongoRepository)
   }
 
   @Test
@@ -52,12 +78,11 @@ class HandTaggingServiceTest {
   }
 
   @Test
-  def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferingVotes {
+  def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferringVotes {
     when(mongoRepository.getResourceIdsByTaggingUser(taggingUser)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
 
     val updated = ArgumentCaptor.forClass(classOf[Resource])
-
     handTaggingService.transferVotes(taggingUser, newUser)
 
     verify(mongoRepository).saveResource(updated.capture())
