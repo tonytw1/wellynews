@@ -39,6 +39,15 @@
                 <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("editWebsite.tags")
+                <label for="${status.expression}">Tags:</label>
+                <select name="${status.expression}">
+                    #foreach($option in $tags)
+                        <option value="$tag.id" #if(${status.value}.contains($tag.id) SELECTED #end>tag.name
+                    #end
+                </select>
+                <br />
+
 				<input type="submit" value="Submit" />
 			</fieldset>
 		</form>
