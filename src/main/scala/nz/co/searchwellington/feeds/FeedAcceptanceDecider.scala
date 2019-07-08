@@ -1,6 +1,5 @@
 package nz.co.searchwellington.feeds
 
-import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
 import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
 import nz.co.searchwellington.repositories.SuppressionDAO
@@ -11,37 +10,37 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, Future}
-import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component class FeedAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
-                                                    supressionDAO: SuppressionDAO,
-                                                    urlCleaner: UrlCleaner) extends ReasonableWaits {
+                                                    suppressionDAO: SuppressionDAO,
+                                                    urlCleaner: UrlCleaner) {
 
   private val log = Logger.getLogger(classOf[FeedAcceptanceDecider])
-  private val tenSeconds = Duration(10, SECONDS)
 
   def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Future[Seq[String]] = {
     val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url) // TODO duplication
 
-    supressionDAO.isSupressed(cleanedUrl).map { isSuppressed =>
-
-
-      def cannotBeSupressed(): Option[String] = {
+    def cannotBeSupressed(): Future[Option[String]] = {
+      suppressionDAO.isSupressed(cleanedUrl).map { isSuppressed =>
         log.debug("Is feed item url '" + cleanedUrl + "' suppressed: " + isSuppressed)
-        if (isSuppressed) Some("This item is supressed") else None
+        if (isSuppressed) Some("This item is suppressed") else None
       }
+    }
 
-      def titleCannotBeBlank(): Option[String] = {
+    def titleCannotBeBlank(): Future[Option[String]] = {
+      Future.successful {
         if (feedNewsitem.title.getOrElse("").trim.isEmpty) {
           Some("Item has no title")
         } else {
           None
         }
       }
+    }
 
-      def cannotBeMoreThanOneWeekOld(): Option[String] = {
+    def cannotBeMoreThanOneWeekOld(): Future[Option[String]] = {
+      Future.successful {
         if (acceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES) {
           None
 
@@ -64,24 +63,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
           }
         }
       }
+    }
 
-      def cannotHaveDateInTheFuture(): Option[String] = {
-        None // TODO
-      }
+    def cannotHaveDateInTheFuture(): Future[Option[String]] = Future.successful(None) // TODO
 
-      def cannotAlreadyHaveThisFeedItem(): Option[String] = {
-        if (alreadyHaveThisFeedItem(feedNewsitem)) {
+    def cannotAlreadyHaveThisFeedItem(): Future[Option[String]] = {
+      alreadyHaveThisFeedItem(feedNewsitem).map { alreadyHaveThisFeedItem =>
+        if (alreadyHaveThisFeedItem) {
           log.debug("A resource with url '" + feedNewsitem.url + "' already exists; not accepting.")
           Some("Item already exists")
         } else {
           None
         }
       }
+    }
 
-      def alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(): Option[String] = {
-        None // TODO implement me
-      }
+    def alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth(): Future[Option[String]] = {
+      Future.successful(None)
+    } // TODO implement me
 
+
+    val eventualObjections: Future[Seq[Option[String]]] = Future.sequence {
       Seq(
         cannotBeSupressed(),
         titleCannotBeBlank(),
@@ -89,17 +91,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
         cannotHaveDateInTheFuture(),
         cannotAlreadyHaveThisFeedItem(),
         alreadyHaveAnItemWithTheSameHeadlineFromTheSamePublisherWithinTheLastMonth()
-      ).flatten
+      )
+    }
+
+    eventualObjections.map { objections =>
+      objections.flatten
     }
   }
 
-  def shouldSuggest(feednewsitem: FeedItem): Boolean = {
-    !alreadyHaveThisFeedItem(feednewsitem)
-  }
-
-  private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem): Boolean = {
+  private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem): Future[Boolean] = {
     val url = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url)
-    Await.result(mongoRepository.getResourceByUrl(url), tenSeconds).nonEmpty
+    mongoRepository.getResourceByUrl(url).map(_.nonEmpty)
   }
 
 }
