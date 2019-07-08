@@ -15,13 +15,15 @@ import scala.concurrent.{Await, Future}
 
   private val log = Logger.getLogger(classOf[HandTaggingService])
 
-  def addTag(user: User, tag: Tag, resource: Resource): Unit = {
+  def addTag(user: User, tag: Tag, resource: Resource): Resource = {
     val newTagging = Tagging(user_id = user._id, tag_id= tag._id)
 
     if (!resource.resource_tags.contains(newTagging)) {
       log.info("Adding new tagging: " + newTagging)
       val updatedTaggings = resource.resource_tags :+ newTagging
-      mongoRepository.saveResource(resource.withTags(updatedTaggings))
+      resource.withTags(updatedTaggings)
+    } else {
+      resource
     }
   }
 

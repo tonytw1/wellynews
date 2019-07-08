@@ -42,12 +42,11 @@ class HandTaggingServiceTest {
     val tag = Tag()
     val resource = Newsitem()
 
-    val updated = ArgumentCaptor.forClass(classOf[Resource])
-    handTaggingService.addTag(user, tag, resource)
+    val updated = handTaggingService.addTag(user, tag, resource)
 
-    verify(mongoRepository).saveResource(updated.capture())
-    assertTrue(updated.getValue.resource_tags.nonEmpty)
-    assertEquals(Tagging(user_id = user._id, tag_id = tag._id), updated.getValue.resource_tags.head)
+    assertTrue(updated.resource_tags.nonEmpty)
+    assertEquals(Tagging(user_id = user._id, tag_id = tag._id), updated.resource_tags.head)
+    verifyZeroInteractions(mongoRepository)
   }
 
   @Test
@@ -57,9 +56,9 @@ class HandTaggingServiceTest {
     val existingTagging = Tagging(user_id = user._id, tag_id = tag._id)
     val resource = Newsitem(resource_tags = Seq(existingTagging))
 
-    val updated = ArgumentCaptor.forClass(classOf[Resource])
-    handTaggingService.addTag(user, tag, resource)
+    val updated = handTaggingService.addTag(user, tag, resource)
 
+    assertEquals(resource.resource_tags, updated.resource_tags)
     verifyZeroInteractions(mongoRepository)
   }
 
