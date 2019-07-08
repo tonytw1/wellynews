@@ -65,7 +65,6 @@ class PublisherModelBuilderTest {
     val mv = modelBuilder.populateContentModel(request).get
 
     val value = mv.getModel.get("geocoded")
-    println(value)
     val geotaggedPublisherNewsitems: java.util.List[FrontendResource] = value.asInstanceOf[java.util.List[FrontendResource]]
     assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitems.get(0))
   }
