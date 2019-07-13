@@ -13,11 +13,11 @@ import org.springframework.stereotype.Component
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class FeedAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
-                                                    suppressionDAO: SuppressionDAO,
-                                                    urlCleaner: UrlCleaner) {
+@Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
+                                                        suppressionDAO: SuppressionDAO,
+                                                        urlCleaner: UrlCleaner) {
 
-  private val log = Logger.getLogger(classOf[FeedAcceptanceDecider])
+  private val log = Logger.getLogger(classOf[FeedItemAcceptanceDecider])
 
   def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Future[Seq[String]] = {
     val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url) // TODO duplication

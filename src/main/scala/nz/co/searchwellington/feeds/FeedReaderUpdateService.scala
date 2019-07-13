@@ -16,6 +16,7 @@ import scala.concurrent.Future
   private val log = Logger.getLogger(classOf[AutoTaggingService])
 
   def acceptNewsitem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Future[Newsitem] = {
+    log.info("Accepting newsitem: " + feednewsitem.url)
     val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
     val notHeld = newsitem.copy(held = false)
     val autoTaggings = autoTagger.autotag(notHeld)

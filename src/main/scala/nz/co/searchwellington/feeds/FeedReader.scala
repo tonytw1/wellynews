@@ -14,8 +14,10 @@ import org.springframework.stereotype.Component
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedReader @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
-                                         feedAcceptanceDecider: FeedAcceptanceDecider, urlCleaner: UrlCleaner,
-                                         contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
+                                         feedItemAcceptanceDecider: FeedItemAcceptanceDecider,
+                                         urlCleaner: UrlCleaner,
+                                         contentUpdateService: ContentUpdateService,
+                                         autoTagger: AutoTaggingService,
                                          feedReaderUpdateService: FeedReaderUpdateService)
   extends ReasonableWaits {
 
@@ -69,7 +71,7 @@ import scala.concurrent.{ExecutionContext, Future}
     val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>
 
       val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))
-      feedAcceptanceDecider.getAcceptanceErrors(feed, withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
+      feedItemAcceptanceDecider.getAcceptanceErrors(feed, withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
         if (acceptanceErrors.isEmpty) {
           feedReaderUpdateService.acceptNewsitem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
             Some(acceptedNewsitem)
