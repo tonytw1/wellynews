@@ -71,19 +71,22 @@ import scala.concurrent.{ExecutionContext, Future}
       val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))
       feedAcceptanceDecider.getAcceptanceErrors(feed, withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
         if (acceptanceErrors.isEmpty) {
-          log.info("Accepting newsitem: " + withCleanedUrl.url)
           feedReaderUpdateService.acceptNewsitem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
             Some(acceptedNewsitem)
           }
 
         } else {
-          log.debug("Not accepting " + feednewsitem.url + " due to acceptance errors: " + acceptanceErrors)
+          log.info("Not accepting " + feednewsitem.url + " due to acceptance errors: " + acceptanceErrors)
           Future.successful(None)
         }
       }
     }
 
-    Future.sequence(eventualProcessed).map(_.flatten)
+    Future.sequence(eventualProcessed).map { processed =>
+      val accepted = processed.flatten
+      log.info("Processed " + processed.size + " and accepted " + accepted.size)
+      accepted
+    }
   }
 
 }
