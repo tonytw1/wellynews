@@ -8,7 +8,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class AutoTaggingService @Autowired()(placeAutoTagger: PlaceAutoTagger,
                                                  tagHintAutoTagger: TagHintAutoTagger,
@@ -18,15 +18,16 @@ import scala.concurrent.Await
   private val log = Logger.getLogger(classOf[AutoTaggingService])
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
-  def autotag(resource: Newsitem): Set[HandTagging] = { // TODO should return TaggingVotes
-    Await.result(mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME), TenSeconds).map { autotagUser =>
-      val suggestedTags = placeAutoTagger.suggestTags(resource) ++ tagHintAutoTagger.suggestTags(resource)
-      log.debug("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
-      suggestedTags.map(t => HandTagging(tag = t, user = autotagUser))
-
-    }.getOrElse {
-      log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
-      Set.empty
+  def autotag(resource: Newsitem)(implicit ec: ExecutionContext): Future[Set[HandTagging]] = { // TODO should return TaggingVotes
+    mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).map { maybyAutotagUser =>
+      maybyAutotagUser.map { autotagUser =>
+        val suggestedTags = placeAutoTagger.suggestTags(resource) ++ tagHintAutoTagger.suggestTags(resource)
+        log.debug("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
+        suggestedTags.map(t => HandTagging(tag = t, user = autotagUser))
+      }.getOrElse {
+        log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
+        Set.empty
+      }
     }
   }
 

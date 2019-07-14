@@ -41,7 +41,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
 
           eventualFeedItem.flatMap { maybeFeedItem =>
             maybeFeedItem.map { feedItemToAccept =>
-              feedReaderUpdateService.acceptNewsitem(loggedInUser, feedItemToAccept, feed).map { accepted =>
+              feedReaderUpdateService.acceptFeeditem(loggedInUser, feedItemToAccept, feed).map { accepted =>
                 log.info("Accepted newsitem: " + accepted.title)
                 new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
               }
