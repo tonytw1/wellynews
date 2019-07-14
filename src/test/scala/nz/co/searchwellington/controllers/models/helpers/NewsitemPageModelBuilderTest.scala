@@ -56,7 +56,7 @@ class NewsitemPageModelBuilderTest {
 
     val mv = builder.populateContentModel(request).get
 
-    val geotagged: java.util.List[Resource] = mv.getModel.get("geocoded").asInstanceOf[java.util.List[Resource]]
+    val geotagged = mv.getModel.get("geocoded").asInstanceOf[java.util.List[Resource]]
     assertEquals(1, geotagged.size)
     assertEquals(geotaggedNewsitem, geotagged.get(0))
   }
@@ -81,7 +81,7 @@ class NewsitemPageModelBuilderTest {
 
     val mv = builder.populateContentModel(request).get
 
-    val geotaggedVotesOnModel: java.util.List[GeotaggingVote] = mv.getModel.get("geotag_votes").asInstanceOf[java.util.List[GeotaggingVote]]
+    val geotaggedVotesOnModel = mv.getModel.get("geotag_votes").asInstanceOf[java.util.List[GeotaggingVote]]
     assertEquals(1, geotaggedVotesOnModel.size)
     assertEquals(geotaggingVote, geotaggedVotesOnModel.get(0))
   }
