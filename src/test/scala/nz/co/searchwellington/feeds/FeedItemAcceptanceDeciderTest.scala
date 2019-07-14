@@ -4,10 +4,11 @@ import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.utils.UrlCleaner
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
@@ -25,16 +26,30 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
   @Test
   def feeditemsWithNoProblemsShouldGenerateNoObjections() = {
     val feed = Feed(acceptance = FeedAcceptancePolicy.ACCEPT)
-    val feedItem = FeedItem(id = UUID.randomUUID().toString, subscriptionId = "TODO", url = "http://localhost/foo")
+    val feedItem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), subscriptionId = UUID.randomUUID().toString, url = "http://localhost/foo")
 
     when(urlCleaner.cleanSubmittedItemUrl(feedItem.url)).thenReturn(feedItem.url)
     when(suppressionDAO.isSupressed(feedItem.url)).thenReturn(Future.successful(false))
     when(mongoRepository.getResourceByUrl(feedItem.url)).thenReturn(Future.successful(None))
 
-    val eventualStrings = feedItemAcceptanceDecider.getAcceptanceErrors(feed, feedItem, feed.acceptance)
+    val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(feed, feedItem, feed.acceptance), TenSeconds)
 
-    val strings = Await.result(eventualStrings, TenSeconds)
-    assertTrue(strings.nonEmpty)
+    assertTrue(objections.isEmpty)
+  }
+
+  @Test
+  def shouldRejectFeeditemsWhichHaveAlreadyBeenAccepted() = {
+    val feed = Feed(acceptance = FeedAcceptancePolicy.ACCEPT)
+    val feedItem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), subscriptionId = UUID.randomUUID().toString, url = "http://localhost/foo")
+
+    when(urlCleaner.cleanSubmittedItemUrl(feedItem.url)).thenReturn(feedItem.url)
+    when(suppressionDAO.isSupressed(feedItem.url)).thenReturn(Future.successful(false))
+    when(mongoRepository.getResourceByUrl(feedItem.url)).thenReturn(Future.successful(Some(Newsitem())))
+
+    val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(feed, feedItem, feed.acceptance), TenSeconds)
+
+    assertTrue(objections.nonEmpty)
+    assertEquals("Item already exists", objections.head)
   }
 
 }
