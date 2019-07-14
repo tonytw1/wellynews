@@ -13,17 +13,19 @@ import scala.concurrent.Future
 @Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          feedItemAcceptor: FeedItemAcceptor) {
 
-  private val log = Logger.getLogger(classOf[AutoTaggingService])
+  private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
 
   def acceptNewsitem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Future[Newsitem] = {
     log.info("Accepting newsitem: " + feednewsitem.url)
     val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
+    log.info("Got newsitem to accept: " + newsitem)
     val notHeld = newsitem.copy(held = false)
     val autoTaggings = autoTagger.autotag(notHeld)
-    val autoTagged = notHeld.copy(resource_tags = autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
-    contentUpdateService.create(autoTagged).map { _ =>
+    val withAutoTaggings = notHeld.withTags(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
+    log.info("With autotaggings: " + withAutoTaggings)
+    contentUpdateService.create(withAutoTaggings).map { _ =>
       log.info("Created accepted newsitem: " + notHeld)
-      autoTagged
+      withAutoTaggings
     }
   }
 
