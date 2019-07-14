@@ -47,7 +47,6 @@ class NewsitemPageModelBuilderTest {
   }
 
   @Test
-  @SuppressWarnings(Array("unchecked"))
   def shouldShowNewsitemOnMapIfItIsGeotagged {
     when(geotaggedNewsitem.getId).thenReturn("123")
     when(geotaggedNewsitem.getPlace).thenReturn(place)
