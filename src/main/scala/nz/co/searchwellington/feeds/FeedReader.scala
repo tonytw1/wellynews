@@ -71,7 +71,7 @@ import scala.concurrent.{ExecutionContext, Future}
     val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>
 
       val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))
-      feedItemAcceptanceDecider.getAcceptanceErrors(feed, withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
+      feedItemAcceptanceDecider.getAcceptanceErrors(withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
         if (acceptanceErrors.isEmpty) {
           feedReaderUpdateService.acceptNewsitem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
             Some(acceptedNewsitem)

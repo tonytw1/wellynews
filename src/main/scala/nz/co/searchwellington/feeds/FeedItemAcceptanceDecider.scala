@@ -19,8 +19,8 @@ import scala.concurrent.Future
 
   private val log = Logger.getLogger(classOf[FeedItemAcceptanceDecider])
 
-  def getAcceptanceErrors(feed: Feed, feedNewsitem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Future[Seq[String]] = {
-    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url) // TODO duplication
+  def getAcceptanceErrors(feeditem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Future[Seq[String]] = {
+    val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feeditem.url) // TODO duplication
 
     def cannotBeSupressed(): Future[Option[String]] = {
       suppressionDAO.isSupressed(cleanedUrl).map { isSuppressed =>
@@ -31,7 +31,7 @@ import scala.concurrent.Future
 
     def titleCannotBeBlank(): Future[Option[String]] = {
       Future.successful {
-        if (feedNewsitem.title.getOrElse("").trim.isEmpty) {
+        if (feeditem.title.getOrElse("").trim.isEmpty) {
           Some("Item has no title")
         } else {
           None
@@ -46,14 +46,14 @@ import scala.concurrent.Future
 
         } else {
 
-          if (feed.date.isEmpty) {
+          if (feeditem.date.isEmpty) {
             Some("Item has no date and feed acceptance policy is not accept even without dates")
 
           } else {
 
-            feedNewsitem.date.flatMap { date =>
+            feeditem.date.flatMap { date =>
               val oneWeekAgo = DateTime.now.minusWeeks(1)
-              val isMoreThanOneWeekOld = new DateTime(feedNewsitem.date).isBefore(oneWeekAgo)
+              val isMoreThanOneWeekOld = new DateTime(feeditem.date).isBefore(oneWeekAgo)
               if (isMoreThanOneWeekOld) {
                 Some("Item is more than one week old")
               } else {
@@ -68,9 +68,9 @@ import scala.concurrent.Future
     def cannotHaveDateInTheFuture(): Future[Option[String]] = Future.successful(None) // TODO
 
     def cannotAlreadyHaveThisFeedItem(): Future[Option[String]] = {
-      alreadyHaveThisFeedItem(feedNewsitem).map { alreadyHaveThisFeedItem =>
+      alreadyHaveThisFeedItem(feeditem).map { alreadyHaveThisFeedItem =>
         if (alreadyHaveThisFeedItem) {
-          log.debug("A resource with url '" + feedNewsitem.url + "' already exists; not accepting.")
+          log.debug("A resource with url '" + feeditem.url + "' already exists; not accepting.")
           Some("Item already exists")
         } else {
           None
