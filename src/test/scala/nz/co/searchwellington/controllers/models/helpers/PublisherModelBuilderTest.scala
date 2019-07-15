@@ -10,7 +10,7 @@ import nz.co.searchwellington.model.{Geocode, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.assertEquals
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
@@ -29,30 +29,19 @@ class PublisherModelBuilderTest {
 
   private val publisher = Website()
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
-  private val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
-  private val geotag = Geocode(address = Some("Somewhere"))
-  private val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = Some(geotag))
-
-  private var request: MockHttpServletRequest = null
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor,
     commonAttributesModelBuilder, frontendResourceMapper, loggedInUserFilter)
 
-
-  @Before def setup {
-    request = new MockHttpServletRequest
-    request.setAttribute("publisher", publisher)
-    //    when(geotaggedNewsitem.place).thenReturn(Some(geotag))
-  }
-
-  @SuppressWarnings(Array("unchecked"))
   @Test
-  @throws(classOf[Exception])
   def shouldHightlightPublishersGeotaggedContent {
-    val publisherNewsitems: Seq[FrontendNewsitem] = Seq(newsitem, geotaggedNewsitem)
-    val geotaggedNewsitems: Seq[FrontendResource] = Seq(geotaggedNewsitem)
-
     val loggedInUser = None
+
+     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
+     val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = Some(Geocode(address = Some("Somewhere"))))
+
+    val publisherNewsitems = Seq(newsitem, geotaggedNewsitem)
+    val geotaggedNewsitems = Seq(geotaggedNewsitem)
 
     when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, loggedInUser)).thenReturn(Future.successful((publisherNewsitems, publisherNewsitems.size.toLong)))
     when(contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)).thenReturn(Future.successful(Seq.empty))
@@ -61,11 +50,12 @@ class PublisherModelBuilderTest {
     when(relatedTagsService.getRelatedLinksForPublisher(publisher)).thenReturn(Seq())
     when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(frontendPublisher)
 
+    val request = new MockHttpServletRequest
+    request.setAttribute("publisher", publisher)
     val mv = modelBuilder.populateContentModel(request).get
 
-    val value = mv.getModel.get("geocoded")
-    val geotaggedPublisherNewsitems: java.util.List[FrontendResource] = value.asInstanceOf[java.util.List[FrontendResource]]
-    assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitems.get(0))
+    val geotaggedPublisherNewsitemsOnModel = mv.getModel.get("geocoded").asInstanceOf[java.util.List[FrontendResource]]
+    assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitemsOnModel.get(0))
   }
 
 }
