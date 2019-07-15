@@ -9,25 +9,23 @@ import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.junit.Assert.{assertEquals, assertNull, assertTrue}
 import org.junit.{Before, Test}
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{mock, when}
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
 class NewsitemPageModelBuilderTest {
 
-  private val NEWSITEM_ID = "123"
   private val VALID_NEWSITEM_PAGE_PATH = "/wellington-city-council/2010/feb/01/something-about-rates"
 
-  @Mock var contentRetrievalService: ContentRetrievalService = null
-  @Mock var taggingReturnsOfficerService: TaggingReturnsOfficerService = null
-  @Mock var tagWidgetFactory: TagsWidgetFactory = null
-  @Mock var handTaggingDAO: HandTaggingDAO = null
-  @Mock var loggedInUserFilter: LoggedInUserFilter = null
-  @Mock var geotaggedNewsitem: FrontendNewsitem = null
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
+  private val tagWidgetFactory = mock(classOf[TagsWidgetFactory])
+  private val handTaggingDAO = mock(classOf[HandTaggingDAO])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+
+  @Mock var resourceDAO: HibernateResourceDAO = mock(classOf[HibernateResourceDAO])
+
   @Mock var frontendNewsitem: FrontendNewsitem = null
-  @Mock var place = Geocode(address = Some("Somewhere"))
-  @Mock var resourceDAO: HibernateResourceDAO = null
-  @Mock var newsitem: Newsitem = null
   @Mock var geotaggingVote: GeotaggingVote = null
 
   private var request: MockHttpServletRequest = null
@@ -48,8 +46,8 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldShowNewsitemOnMapIfItIsGeotagged {
-    when(geotaggedNewsitem.getId).thenReturn("123")
-    when(geotaggedNewsitem.getPlace).thenReturn(place)
+    val place = Geocode(address = Some("Somewhere"))
+    val geotaggedNewsitem = FrontendNewsitem(id = "123", place = Some(place))
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(geotaggedNewsitem))
     when(resourceDAO.loadResourceById("123")).thenReturn(None)  // TODO properly exercise mapped option branch
 
@@ -73,9 +71,10 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldDisplayGeotaggingVotes {
-    when(frontendNewsitem.getId).thenReturn("123")
+    val newsitem = Newsitem()
+    when(frontendNewsitem.getId).thenReturn(newsitem.id)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
-    when(resourceDAO.loadResourceById(NEWSITEM_ID)).thenReturn(Some(newsitem))
+    when(resourceDAO.loadResourceById(newsitem.id)).thenReturn(Some(newsitem))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(List(geotaggingVote))
 
     val mv = builder.populateContentModel(request).get
