@@ -20,19 +20,18 @@ class PublisherModelBuilderTest {
 
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
   private val urlBuilder = mock(classOf[UrlBuilder])
-  private val relatedTagsService: RelatedTagsService = mock(classOf[RelatedTagsService])
-  private val contentRetrievalService: ContentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
-  private val commonAttributesModelBuilder: CommonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
-  private val frontendResourceMapper: FrontendResourceMapper = mock(classOf[FrontendResourceMapper])
-  private val loggedInUserFilter: LoggedInUserFilter = mock(classOf[LoggedInUserFilter])
+  private val relatedTagsService = mock(classOf[RelatedTagsService])
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val geotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
+  private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
-
-  private val publisher: Website = Website()
+  private val publisher = Website()
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
-  private val newsitem: FrontendNewsitem = FrontendNewsitem()
+  private val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
   private val geotag = Geocode(address = Some("Somewhere"))
-  private val geotaggedNewsitem: FrontendNewsitem = FrontendNewsitem(place = Some(geotag))
+  private val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = Some(geotag))
 
   private var request: MockHttpServletRequest = null
 

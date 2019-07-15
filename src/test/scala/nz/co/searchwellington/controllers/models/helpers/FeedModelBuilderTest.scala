@@ -38,8 +38,8 @@ class FeedModelBuilderTest {
 
   private val feedNewsitems = Seq(newsItem, anotherNewsitem)
 
-  private val frontendNewsitem = FrontendNewsitem()
-  private val anotherFrontendNewsitem = FrontendNewsitem()
+  private val frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
+  private val anotherFrontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
 
   private val decoratedFeedItem = FeedNewsitemForAcceptance(newsitem = frontendNewsitem, localCopy = None, suppressed = false)
   private val anotherDecoratedFeedItem = FeedNewsitemForAcceptance(newsitem = anotherFrontendNewsitem, localCopy = None, suppressed = false)

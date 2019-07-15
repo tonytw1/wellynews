@@ -34,7 +34,8 @@ class UrlBuilderTest {
     MockitoAnnotations.initMocks(this)
     Mockito.when(siteInformation.getUrl).thenReturn(SITE_URL)
     urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
-    frontendNewsitem = FrontendNewsitem(name = "Quick brown fox jumps over the lazy dog",
+    frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
+      name = "Quick brown fox jumps over the lazy dog",
       date = new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate,
       urlWords = "2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
 

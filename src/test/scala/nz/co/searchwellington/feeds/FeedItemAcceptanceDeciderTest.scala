@@ -4,12 +4,11 @@ import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem}
+import nz.co.searchwellington.model.{FeedAcceptancePolicy, Newsitem}
 import nz.co.searchwellington.repositories.SuppressionDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.utils.UrlCleaner
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.junit.Assert.{assertEquals, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
@@ -48,6 +47,20 @@ class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
     assertTrue(objections.nonEmpty)
     assertEquals("Item already exists", objections.head)
+  }
+
+  @Test
+  def shouldRejectFeeditemsWithSuppressedUrls() = {
+    val feedItem = FeedItem(id = UUID.randomUUID().toString, title = Some("A feeditem"), subscriptionId = UUID.randomUUID().toString, url = "http://localhost/foo")
+
+    when(urlCleaner.cleanSubmittedItemUrl(feedItem.url)).thenReturn(feedItem.url)
+    when(suppressionDAO.isSupressed(feedItem.url)).thenReturn(Future.successful(true))
+    when(mongoRepository.getResourceByUrl(feedItem.url)).thenReturn(Future.successful(None))
+
+    val objections = Await.result(feedItemAcceptanceDecider.getAcceptanceErrors(feedItem, FeedAcceptancePolicy.ACCEPT), TenSeconds)
+
+    assertTrue(objections.nonEmpty)
+    assertEquals("This item is suppressed", objections.head)
   }
 
 }

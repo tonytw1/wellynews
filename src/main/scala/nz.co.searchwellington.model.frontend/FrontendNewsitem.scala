@@ -5,7 +5,7 @@ import java.util.{Date, UUID}
 import nz.co.searchwellington.model.{Geocode, Tag, User, Website}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
 
-case class FrontendNewsitem(id: String = UUID.randomUUID().toString,
+case class FrontendNewsitem(id: String,
                             urlWords: String = null,
                             `type`: String = null,
                             name: String = null,
