@@ -13,7 +13,6 @@ import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.junit.Assert.{assertEquals, assertNull, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
-import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.Future
@@ -27,18 +26,16 @@ class NewsitemPageModelBuilderTest {
   private val tagWidgetFactory = mock(classOf[TagsWidgetFactory])
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
-
-  @Mock var mongoRepository = mock(classOf[MongoRepository])
-
-  @Mock var geotaggingVote: GeotaggingVote = null
+  private val mongoRepository = mock(classOf[MongoRepository])
 
   private var request: MockHttpServletRequest = null
-  private var builder: NewsitemPageModelBuilder = null
+
+  private val builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
+    tagWidgetFactory, handTaggingDAO, loggedInUserFilter, mongoRepository)
+
 
   @Before
   def setUp {
-    MockitoAnnotations.initMocks(this)
-    builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter, mongoRepository)
     request = new MockHttpServletRequest
     request.setPathInfo(VALID_NEWSITEM_PAGE_PATH)
   }
@@ -75,6 +72,8 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldDisplayGeotaggingVotes {
+    val geotaggingVote = mock(classOf[GeotaggingVote])
+
     val newsitem = Newsitem()
     val frontendNewsitem = FrontendNewsitem(id = newsitem.id)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
