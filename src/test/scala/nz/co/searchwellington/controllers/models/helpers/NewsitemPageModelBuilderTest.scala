@@ -1,10 +1,13 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.UUID
+
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote
 import nz.co.searchwellington.model.{Geocode, Newsitem, Resource}
-import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO, HibernateResourceDAO}
+import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.junit.Assert.{assertEquals, assertNull, assertTrue}
@@ -12,6 +15,8 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
+
+import scala.concurrent.Future
 
 class NewsitemPageModelBuilderTest {
 
@@ -23,9 +28,8 @@ class NewsitemPageModelBuilderTest {
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
-  @Mock var resourceDAO: HibernateResourceDAO = mock(classOf[HibernateResourceDAO])
+  @Mock var mongoRepository = mock(classOf[MongoRepository])
 
-  @Mock var frontendNewsitem: FrontendNewsitem = null
   @Mock var geotaggingVote: GeotaggingVote = null
 
   private var request: MockHttpServletRequest = null
@@ -34,7 +38,7 @@ class NewsitemPageModelBuilderTest {
   @Before
   def setUp {
     MockitoAnnotations.initMocks(this)
-    builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter, resourceDAO)
+    builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService, tagWidgetFactory, handTaggingDAO, loggedInUserFilter, mongoRepository)
     request = new MockHttpServletRequest
     request.setPathInfo(VALID_NEWSITEM_PAGE_PATH)
   }
@@ -49,7 +53,7 @@ class NewsitemPageModelBuilderTest {
     val place = Geocode(address = Some("Somewhere"))
     val geotaggedNewsitem = FrontendNewsitem(id = "123", place = Some(place))
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(geotaggedNewsitem))
-    when(resourceDAO.loadResourceById("123")).thenReturn(None)  // TODO properly exercise mapped option branch
+    when(mongoRepository.getResourceById("123")).thenReturn(Future.successful(None)) // TODO properly exercise mapped option branch
 
     val mv = builder.populateContentModel(request).get
 
@@ -60,9 +64,9 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
-    when(frontendNewsitem.getId).thenReturn("123")
+    val frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
-    when(resourceDAO.loadResourceById("123")).thenReturn(None)  // TODO properly exercise mapped option branch
+    when(mongoRepository.getResourceById(frontendNewsitem.id)).thenReturn(Future.successful(None)) // TODO properly exercise mapped option branch
 
     val mv = builder.populateContentModel(request).get
 
@@ -72,9 +76,9 @@ class NewsitemPageModelBuilderTest {
   @Test
   def shouldDisplayGeotaggingVotes {
     val newsitem = Newsitem()
-    when(frontendNewsitem.getId).thenReturn(newsitem.id)
+    val frontendNewsitem = FrontendNewsitem(id = newsitem.id)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
-    when(resourceDAO.loadResourceById(newsitem.id)).thenReturn(Some(newsitem))
+    when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(List(geotaggingVote))
 
     val mv = builder.populateContentModel(request).get
