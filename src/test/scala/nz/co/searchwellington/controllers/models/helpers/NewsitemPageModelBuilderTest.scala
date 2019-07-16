@@ -11,7 +11,7 @@ import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTagging
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.junit.Assert.{assertEquals, assertNull, assertTrue}
-import org.junit.{Before, Test}
+import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
@@ -28,17 +28,14 @@ class NewsitemPageModelBuilderTest {
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private var request: MockHttpServletRequest = null
+  private val request = {
+    val request = new MockHttpServletRequest
+    request.setPathInfo(VALID_NEWSITEM_PAGE_PATH)
+    request
+  }
 
   private val builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
     tagWidgetFactory, handTaggingDAO, loggedInUserFilter, mongoRepository)
-
-
-  @Before
-  def setUp {
-    request = new MockHttpServletRequest
-    request.setPathInfo(VALID_NEWSITEM_PAGE_PATH)
-  }
 
   @Test
   def shouldAcceptValidFormatPath {
