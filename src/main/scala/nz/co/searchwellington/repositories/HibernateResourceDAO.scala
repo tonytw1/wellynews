@@ -10,12 +10,6 @@ import scala.concurrent.duration._
 
 @Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) {
 
-  @Deprecated // UI should be passing id
-  def getPublisherByName(name: String): Option[Website] = {
-    Await.result(mongoRepository.getWebsiteByName(name), Duration(1, MINUTES))
-
-  }
-
   def loadFeedByUrlWords(urlWords: String): Option[Feed] = {
     Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))
   }

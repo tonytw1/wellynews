@@ -144,11 +144,11 @@ import scala.concurrent.Await
     if (isPublishedResource) {
       if (request.getParameter("publisherName") != null && !(request.getParameter("publisherName") == "")) {
         val publisherName: String = request.getParameter("publisherName")
-        val publisher: Website = resourceDAO.getPublisherByName(publisherName).asInstanceOf[Website]
-        if (publisher != null) {
-          log.info("Found publisher: " + publisher.title)
+        // val publisher: Website = resourceDAO.getPublisherByName(publisherName).asInstanceOf[Website]
+        //if (publisher != null) {
+         // log.info("Found publisher: " + publisher.title)
           // (editResource.asInstanceOf[PublishedResource]).setPublisher(publisher)
-        }
+       // }
       }
     }
   }
