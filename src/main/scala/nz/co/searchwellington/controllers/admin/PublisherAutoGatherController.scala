@@ -1,12 +1,13 @@
 package nz.co.searchwellington.controllers.admin
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Newsitem, Resource, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.HibernateResourceDAO
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlParser
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,7 +15,11 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-@Controller class PublisherAutoGatherController @Autowired() (requestFilter: AdminRequestFilter, resourceDAO: HibernateResourceDAO, contentUpdateService: ContentUpdateService, commonModelObjectsService: CommonModelObjectsService, urlParser: UrlParser) {
+import scala.concurrent.Await
+
+@Controller class PublisherAutoGatherController @Autowired()(requestFilter: AdminRequestFilter, mongoRepository: MongoRepository, resourceDAO: HibernateResourceDAO,
+                                                             contentUpdateService: ContentUpdateService,
+                                                             commonModelObjectsService: CommonModelObjectsService, urlParser: UrlParser) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[PublisherAutoGatherController])
 
@@ -45,7 +50,7 @@ import org.springframework.web.servlet.ModelAndView
     mv.addObject("publisher", publisher)
     if (publisher != null) {
       val autotaggedResourceIds = request.getParameterValues("autotag")
-      val resources = autotaggedResourceIds.flatMap(resourceDAO.loadResourceById)
+      val resources = autotaggedResourceIds.flatMap(id => Await.result(mongoRepository.getResourceById(id), TenSeconds))
       val autotaggedNewsitems = resources.filter(resource => resource.`type` == "N").map { newsitem =>
         log.info("Applying publisher " + publisher.title + " to:" + newsitem.title)
         // TODO (newsitem.asInstanceOf[Newsitem]).setPublisher(publisher)

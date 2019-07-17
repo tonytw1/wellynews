@@ -1,12 +1,14 @@
 package nz.co.searchwellington.controllers.admin
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.elasticsearch.KeywordSearchService
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{HandTaggingService, HibernateResourceDAO}
 import nz.co.searchwellington.tagging.ImpliedTagService
 import org.apache.log4j.Logger
@@ -15,14 +17,16 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-@Controller class AutoTagController @Autowired()(resourceDAO: HibernateResourceDAO,
+import scala.concurrent.Await
+
+@Controller class AutoTagController @Autowired()(mongoRepository: MongoRepository,
                                                  requestFilter: AdminRequestFilter,
                                                  autoTagService: ImpliedTagService,
                                                  keywordSearchService: KeywordSearchService,
                                                  contentUpdateService: ContentUpdateService,
                                                  loggedInUserFilter: LoggedInUserFilter,
                                                  commonModelObjectsService: CommonModelObjectsService,
-                                                 handTaggingService: HandTaggingService) {
+                                                 handTaggingService: HandTaggingService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[AutoTagController])
 
@@ -74,7 +78,7 @@ import org.springframework.web.servlet.ModelAndView
         val autotaggedResourceIds = request.getParameterValues("autotag")
 
         val resourcesAutoTagged = autotaggedResourceIds.flatMap { resourceId =>
-          resourceDAO.loadResourceById(resourceId).map { resource =>
+          Await.result(mongoRepository.getResourceById(resourceId), TenSeconds).map { resource =>
             log.info("Applying tag " + tag.getName + " to:" + resource.title)
             if (!autoTagService.alreadyHasTag(resource, tag)) {
               handTaggingService.addTag(loggedInUser, tag, resource)
