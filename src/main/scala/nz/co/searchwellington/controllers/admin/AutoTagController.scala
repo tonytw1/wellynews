@@ -7,9 +7,9 @@ import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.HandTaggingService
 import nz.co.searchwellington.repositories.elasticsearch.KeywordSearchService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{HandTaggingService, HibernateResourceDAO}
 import nz.co.searchwellington.tagging.ImpliedTagService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
