@@ -1,16 +1,30 @@
 package nz.co.searchwellington.tagging
 
-import nz.co.searchwellington.model.{Newsitem, Resource, Tag}
+import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.{Newsitem, Tag, Tagged}
+import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-@Component
-class ImpliedTagService @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService) {
+import scala.concurrent.Await
 
-  def alreadyHasTag(resource: Resource, tag: Tag): Boolean = {
-    //val isNewsitemWhosPublisherAlreadyHasThisTag = resource.getType == "N" && resource.asInstanceOf[Newsitem].getPublisher != null && taggingReturnsOfficerService.getHandTagsForResource(resource.asInstanceOf[Newsitem].getPublisher).contains(tag)
-    //isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
-    false
+@Component
+class ImpliedTagService @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService,
+                                      mongoRepository: MongoRepository) extends ReasonableWaits {
+
+  def alreadyHasTag(resource: Tagged, tag: Tag): Boolean = {
+    val isNewsitemWhosPublisherAlreadyHasThisTag = resource match {
+      case n: Newsitem =>
+        resource.asInstanceOf[Newsitem].publisher.exists { publisherId =>
+          Await.result(mongoRepository.getResourceByObjectId(publisherId), TenSeconds).exists { publisher =>
+            taggingReturnsOfficerService.getHandTagsForResource(publisher).contains(tag)
+          }
+        }
+      case _ =>
+        false
+    }
+
+    isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
   }
   
 }

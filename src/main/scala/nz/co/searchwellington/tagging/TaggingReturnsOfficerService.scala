@@ -20,7 +20,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
   // TODO These are a different responsibility to tagging votes
-  def getHandTagsForResource(resource: Resource): Seq[Tag] = {
+  def getHandTagsForResource(resource: Tagged): Seq[Tag] = {
     Await.result(handTaggingDAO.getHandTaggingsForResource(resource), TenSeconds).map(_.tag)
   }
 

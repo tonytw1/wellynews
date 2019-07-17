@@ -18,12 +18,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
   private val TenSeconds = Duration(10, SECONDS)
 
-  def getHandTaggingsForResource(resource: Resource): Future[Seq[HandTagging]] = {
+  def getHandTaggingsForResource(resource: Tagged): Future[Seq[HandTagging]] = {
     Future.sequence {
       resource.resource_tags.map { tagging =>
         mongoRepository.getTagByObjectId(tagging.tag_id).flatMap { tag =>
           mongoRepository.getUserByObjectId(tagging.user_id).map { user =>
-            new HandTagging(user = user.get, tag = tag.get) // TODO Naked gets
+            HandTagging(user = user.get, tag = tag.get) // TODO Naked gets
           }
         }
       }
