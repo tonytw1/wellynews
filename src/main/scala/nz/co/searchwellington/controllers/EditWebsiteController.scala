@@ -80,7 +80,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
           case w: Website =>
             if (result.hasErrors) {
               log.warn("Edit website submission has errors: " + result)
-              return renderEditForm(w, editWebsite)
+              Some(renderEditForm(w, editWebsite))
 
             } else {
               log.info("Got valid edit website submission: " + editWebsite)
