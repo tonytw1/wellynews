@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component
 import scala.concurrent.Await
 
 @Component
-class ImpliedTagService @Autowired() (taggingReturnsOfficerService: TaggingReturnsOfficerService,
-                                      mongoRepository: MongoRepository) extends ReasonableWaits {
+class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService,
+                                     mongoRepository: MongoRepository) extends ReasonableWaits {
 
   def alreadyHasTag(resource: Tagged, tag: Tag): Boolean = {
     val isNewsitemWhosPublisherAlreadyHasThisTag = resource match {
       case n: Newsitem =>
-        resource.asInstanceOf[Newsitem].publisher.exists { publisherId =>
+        n.publisher.exists { publisherId =>
           Await.result(mongoRepository.getResourceByObjectId(publisherId), TenSeconds).exists { publisher =>
             taggingReturnsOfficerService.getHandTagsForResource(publisher).contains(tag)
           }
@@ -26,5 +26,5 @@ class ImpliedTagService @Autowired() (taggingReturnsOfficerService: TaggingRetur
 
     isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
   }
-  
+
 }
