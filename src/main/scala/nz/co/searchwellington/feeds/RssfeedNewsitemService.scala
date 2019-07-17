@@ -81,12 +81,6 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
   }
 
-  def getFeedNewsitemByUrl(feed: Feed, url: String): Option[FeedItem] = {
-    getFeedItemsFor(feed).flatMap { fis =>
-      fis.find(ni => ni.url == url)
-    }
-  }
-
   def isUrlInAcceptedFeeds(url: String): Boolean = { // TODO should be option
     val autoAcceptFeeds = Await.result(mongoRepository.getAllFeeds, TenSeconds).filter { f =>
       f.acceptance == FeedAcceptancePolicy.ACCEPT || f.getAcceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES
