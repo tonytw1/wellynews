@@ -2,7 +2,6 @@ package nz.co.searchwellington.feeds.reading.whakaoko
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import nz.co.searchwellington.feeds.FeedReaderRunner
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.{Autowired, Value}
@@ -11,8 +10,7 @@ import play.api.libs.json.{JodaReads, Json}
 import play.api.libs.ws.DefaultBodyWritables._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
-import scala.concurrent.ExecutionContext.Implicits.global // TODO pass in
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component
 class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUrl: String,
@@ -31,7 +29,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
   private implicit val fir = Json.reads[FeedItem]
   private implicit val sr = Json.reads[Subscription]
 
-  def createFeedSubscription(feedUrl: String): Future[Option[Subscription]] = {
+  def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
     val createFeedSubscriptionUrl =  whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/feeds"
     log.debug("Posting new feed to: " + createFeedSubscriptionUrl)
 
@@ -50,7 +48,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
     }
   }
 
-  def getChannelFeedItems(page: Int): Future[Seq[FeedItem]] = {
+  def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
     log.info("Channel items page: " + page)
     val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items"
     val self = wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString)
@@ -64,7 +62,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
     }
   }
 
-  def getChannelSubscriptions(): Future[Seq[Subscription]] = {
+  def getChannelSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
     val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
     log.debug("Fetching from: " + channelSubscriptionsUrl)
     wsClient.url(channelSubscriptionsUrl).get.map { r =>
@@ -77,7 +75,7 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
     }
   }
 
-  def getSubscriptionFeedItems(subscriptionId: String): Future[Seq[FeedItem]] = {
+  def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
     val subscriptionItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/" + subscriptionId + "/items"
     wsClient.url(subscriptionItemsUrl).get.map { r =>
       if (r.status == 200) {
