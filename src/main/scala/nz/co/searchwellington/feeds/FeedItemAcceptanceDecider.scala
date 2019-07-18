@@ -10,8 +10,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedItemAcceptanceDecider @Autowired()(mongoRepository: MongoRepository,
                                                         suppressionDAO: SuppressionDAO,
@@ -19,7 +18,7 @@ import scala.concurrent.Future
 
   private val log = Logger.getLogger(classOf[FeedItemAcceptanceDecider])
 
-  def getAcceptanceErrors(feeditem: FeedItem, acceptancePolicy: FeedAcceptancePolicy): Future[Seq[String]] = {
+  def getAcceptanceErrors(feeditem: FeedItem, acceptancePolicy: FeedAcceptancePolicy)(implicit ec: ExecutionContext): Future[Seq[String]] = {
     val cleanedUrl = urlCleaner.cleanSubmittedItemUrl(feeditem.url) // TODO duplication
 
     def cannotBeSupressed(): Future[Option[String]] = {
@@ -98,7 +97,7 @@ import scala.concurrent.Future
     }
   }
 
-  private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem): Future[Boolean] = {
+  private def alreadyHaveThisFeedItem(feedNewsitem: FeedItem)(implicit ec: ExecutionContext): Future[Boolean] = {
     val url = urlCleaner.cleanSubmittedItemUrl(feedNewsitem.url)
     mongoRepository.getResourceByUrl(url).map(_.nonEmpty)
   }

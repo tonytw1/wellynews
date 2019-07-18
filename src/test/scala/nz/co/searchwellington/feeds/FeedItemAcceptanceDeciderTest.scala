@@ -13,6 +13,7 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class FeedItemAcceptanceDeciderTest extends ReasonableWaits {
 
