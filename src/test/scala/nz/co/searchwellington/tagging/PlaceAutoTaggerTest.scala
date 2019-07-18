@@ -2,6 +2,7 @@ package nz.co.searchwellington.tagging
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Newsitem, Tag}
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -10,9 +11,10 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class PlaceAutoTaggerTest {
+class PlaceAutoTaggerTest extends ReasonableWaits {
 
   private val placesTag = Tag(_id = BSONObjectID.generate, id = UUID.randomUUID().toString, name = "places", display_name = "Places")
   private val aroValleyTag = Tag(id = UUID.randomUUID().toString, name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
@@ -33,14 +35,14 @@ class PlaceAutoTaggerTest {
 
   @Test
   def testShouldTagNewsitemWithPlaceTags {
-    val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
+    val suggestedTags = Await.result(placeAutoTagger.suggestTags(aroValleyNewsitem), TenSeconds)
 
     assertTrue(suggestedTags.contains(aroValleyTag))
   }
 
   @Test
   def testPlaceAutoTaggingShouldBeCaseInsensitive {
-    val suggestedTags = placeAutoTagger.suggestTags(aroValleyNewsitem)
+    val suggestedTags =  Await.result(placeAutoTagger.suggestTags(aroValleyNewsitem), TenSeconds)
 
     assertTrue(suggestedTags.contains(aroValleyTag))
   }

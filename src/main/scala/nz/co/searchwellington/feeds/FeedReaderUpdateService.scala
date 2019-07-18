@@ -31,8 +31,8 @@ import scala.concurrent.Future
           withAutoTaggings
         }
       }
-    }
-    catch {
+
+    } catch {
       case e: Exception =>
         log.error("Error while accepting feeditem", e)
         throw(e)

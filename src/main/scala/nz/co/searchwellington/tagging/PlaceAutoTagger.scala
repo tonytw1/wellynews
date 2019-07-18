@@ -7,20 +7,22 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class PlaceAutoTagger @Autowired() (mongoRepository: MongoRepository, tagDAO: TagDAO) extends ReasonableWaits {
 
   private final val PLACES_TAG_NAME = "places"
 
-  def suggestTags(resource: Resource): Set[Tag] = {
+  def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
 
-    def getPlaces: Set[Tag] = {
-      placesTag.map { placesTag =>
-        Await.result(tagDAO.loadTagsByParent(placesTag._id), TenSeconds)
-      }.getOrElse {
-        Seq()
-      }.toSet
+    def getAllPlaces: Future[Seq[Tag]] = {
+      mongoRepository.getTagByUrlWords(PLACES_TAG_NAME).flatMap { maybePlacesTag =>
+        maybePlacesTag.map { placesTag =>
+          tagDAO.loadTagsByParent(placesTag._id)
+        }.getOrElse {
+          Future.successful(Seq.empty)
+        }
+      }
     }
 
     def checkForMatchingTag(resource: Resource, tag: Tag): Boolean = {
@@ -29,9 +31,9 @@ import scala.concurrent.Await
       headlineMatchesTag || bodyMatchesTag
     }
 
-    getPlaces.filter(p => checkForMatchingTag(resource, p))
+    getAllPlaces.map { places =>
+      places.filter(p => checkForMatchingTag(resource, p))
+    }
   }
-
-  private def placesTag = Await.result(mongoRepository.getTagByUrlWords(PLACES_TAG_NAME), TenSeconds)
 
 }
