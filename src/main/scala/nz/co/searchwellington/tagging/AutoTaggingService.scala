@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
   def autotag(resource: Newsitem)(implicit ec: ExecutionContext): Future[Set[HandTagging]] = { // TODO should return TaggingVotes
-    mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).map { maybyAutotagUser =>
+    val eventualTaggings: Future[Set[HandTagging]] = mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).map { maybyAutotagUser =>
       maybyAutotagUser.map { autotagUser =>
         val suggestedTags = placeAutoTagger.suggestTags(resource) ++ tagHintAutoTagger.suggestTags(resource)
         log.debug("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
@@ -28,10 +28,12 @@ import scala.concurrent.{ExecutionContext, Future}
         log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
         Set.empty
       }
-    }.recover {
+    }
+
+    eventualTaggings.recover {
       case e: Exception =>
         log.error("Error while autotagging " + resource.title, e)
-        throw(e)
+        throw (e)
     }
   }
 
