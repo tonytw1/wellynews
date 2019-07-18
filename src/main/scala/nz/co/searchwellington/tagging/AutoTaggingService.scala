@@ -28,6 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
         log.warn("Could not find auto tagger user: " + AUTOTAGGER_PROFILE_NAME + "; not autotagging.")
         Set.empty
       }
+    }.recover {
+      case e: Exception =>
+        log.error("Error while autotagging " + resource.title, e)
+        throw(e)
     }
   }
 
