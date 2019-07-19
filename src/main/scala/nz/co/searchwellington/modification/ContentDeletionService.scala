@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val deletedNewsitem = resource.asInstanceOf[Newsitem]
 
       deletedNewsitem.page.map { p =>
-        if (rssfeedNewsitemService.isUrlInAcceptedFeeds(p)) {
+        if (Await.result(rssfeedNewsitemService.isUrlInAcceptedFeeds(p), TenSeconds)) {
           log.info("Supressing deleted newsitem url as it still visible in an automatically accepted feed: " + p)
           suppressUrl(p)
         } else {

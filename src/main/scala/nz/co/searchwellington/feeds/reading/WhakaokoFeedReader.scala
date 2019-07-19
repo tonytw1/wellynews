@@ -8,8 +8,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class WhakaokoFeedReader @Autowired()(whakaokoService: WhakaokoService) extends ReasonableWaits {
 
@@ -17,29 +16,33 @@ import scala.concurrent.{Await, Future}
 
   def fetchChannelFeedItems(page: Int): Future[Seq[model.FeedItem]] = whakaokoService.getChannelFeedItems(page)
 
-  def fetchFeedItems(feed: Feed): Future[Either[String, (Seq[model.FeedItem], Subscription)]] = {
+  def fetchFeedItems(feed: Feed)(implicit ec: ExecutionContext): Future[Either[String, (Seq[model.FeedItem], Subscription)]] = {
     log.debug("Fetching feed items for feed with url: " + feed.page)
 
-    val mayBeSubscription = feed.page.flatMap { page =>
-      Await.result(whakaokoService.getWhakaokoSubscriptionByUrl(page), TenSeconds)
+    val eventualMayBeSubscription = feed.page.map { page =>
+      whakaokoService.getWhakaokoSubscriptionByUrl(page)
+    }.getOrElse {
+      Future.successful(None)
     }
 
-    mayBeSubscription.map { subscription =>
-      log.debug("Feed url mapped to whakaoko subscription: " + subscription.id)
+    eventualMayBeSubscription.flatMap { mayBeSubscription =>
+      mayBeSubscription.map { subscription =>
+        log.debug("Feed url mapped to whakaoko subscription: " + subscription.id)
 
-      whakaokoService.getSubscriptionFeedItems(subscription.id).map { result =>
-        result.fold(
-          { l =>
-            Left(l)
-          },
-          { subscriptionFeedItems =>
-            Right((subscriptionFeedItems, subscription))
-          }
-        )
+        whakaokoService.getSubscriptionFeedItems(subscription.id).map { result =>
+          result.fold(
+            { l =>
+              Left(l)
+            },
+            { subscriptionFeedItems =>
+              Right((subscriptionFeedItems, subscription))
+            }
+          )
+        }
+
+      }.getOrElse {
+        Future.successful(Left("No whakaoko subscription found for feed url"))
       }
-
-    }.getOrElse {
-      Future.successful(Left("No whakaoko subscription found for feed url"))
     }
   }
 

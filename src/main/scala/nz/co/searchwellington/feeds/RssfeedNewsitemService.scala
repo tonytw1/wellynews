@@ -45,7 +45,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
     }
 
-    val eventualSubscriptions = whakaokoService.getSubscriptions()
+    val eventualSubscriptions = whakaokoService.getSubscriptions
     val eventualChannelFeedItems = whakaokoFeedReader.fetchChannelFeedItems(page)
 
     for {
@@ -81,27 +81,32 @@ import scala.concurrent.{Await, ExecutionContext, Future}
     }
   }
 
-  def isUrlInAcceptedFeeds(url: String): Boolean = { // TODO should be option
-    val autoAcceptFeeds = Await.result(mongoRepository.getAllFeeds, TenSeconds).filter { f =>
-      f.acceptance == FeedAcceptancePolicy.ACCEPT || f.getAcceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES
+  def isUrlInAcceptedFeeds(url: String)(implicit ec: ExecutionContext): Future[Boolean] = { // TODO should be option
+    val eventualAutoAcceptingFeeds = mongoRepository.getAllFeeds.map { autoAcceptFeeds =>
+      autoAcceptFeeds.filter { f =>
+        f.acceptance == FeedAcceptancePolicy.ACCEPT || f.getAcceptancePolicy == FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES
+      }
     }
-    autoAcceptFeeds.exists { feed =>
-      getFeedItemsFor(feed).getOrElse(Seq.empty).exists(ni => ni.url == url)
+    eventualAutoAcceptingFeeds.map { autoAcceptFeeds =>
+      autoAcceptFeeds.exists { feed =>
+        Await.result(getFeedItemsFor(feed), TenSeconds).getOrElse(Seq.empty).exists(ni => ni.url == url)
+      }
     }
   }
 
   @Deprecated() // Should really use the Either return
-  private def getFeedItemsFor(feed: Feed): Option[Seq[FeedItem]] = {
+  private def getFeedItemsFor(feed: Feed)(implicit ec: ExecutionContext): Future[Option[Seq[FeedItem]]] = {
     log.info("Getting feed items for: " + feed.title + " / " + feed.page)
-    val feedItems = Await.result(whakaokoFeedReader.fetchFeedItems(feed), TenSeconds)
-    feedItems.fold(
-      { l =>
-        log.warn("Fetch feed items failed for " + feed.title + ": " + l)
-        None
-      }, { r =>
-        Some(r._1)
-      }
-    )
+    whakaokoFeedReader.fetchFeedItems(feed).map { feedItems =>
+      feedItems.fold(
+        { l =>
+          log.warn("Fetch feed items failed for " + feed.title + ": " + l)
+          None
+        }, { r =>
+          Some(r._1)
+        }
+      )
+    }
   }
 
 }
