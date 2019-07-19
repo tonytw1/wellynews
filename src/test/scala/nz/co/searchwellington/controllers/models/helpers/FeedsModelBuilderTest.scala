@@ -15,6 +15,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class FeedsModelBuilderTest {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
