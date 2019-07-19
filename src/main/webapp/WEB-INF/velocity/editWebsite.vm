@@ -42,8 +42,8 @@
                 #springBind("editWebsite.tags")
                 <label for="${status.expression}">Tags:</label>
                 <select name="${status.expression}" multiple >
-                    #foreach($option in $tags)
-                        <option value="$tag.id" #if(${status.value} == $tag.id) SELECTED #end>tag.name
+                    #foreach($tag in $tags)
+                        <option value="$tag.id" #if(${status.value} == $tag.id) SELECTED #end>$tag.name
                     #end
                 </select>
                 <br />
