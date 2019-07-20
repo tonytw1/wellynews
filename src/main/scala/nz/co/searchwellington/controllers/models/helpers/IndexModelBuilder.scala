@@ -40,7 +40,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     Await.result(if (isValid(request)) {
       for {
-        latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS, getPage(request), loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+        latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
       } yield {
         val mv = new ModelAndView
         log.info("Main content newitems: " + latestNewsitems.size)
