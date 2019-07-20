@@ -55,7 +55,7 @@ class IndexModelBuilderTest {
 
   @Test
   def indexPageMainContentIsTheLatestNewsitems {
-    when(contentRetrievalService.getLatestNewsitems(30, 1, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
+    when(contentRetrievalService.getLatestNewsitems(90, 1, loggedInUser)).thenReturn(Future.successful(latestNewsitems))
 
     val mv = modelBuilder.populateContentModel(request).get
 
