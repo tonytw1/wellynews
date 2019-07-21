@@ -3,9 +3,9 @@ package nz.co.searchwellington.controllers
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.linkchecking.LinkCheckerQueue
 import nz.co.searchwellington.model.Newsitem
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Test

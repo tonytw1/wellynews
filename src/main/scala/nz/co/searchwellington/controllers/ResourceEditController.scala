@@ -13,7 +13,6 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.modification.{ContentDeletionService, ContentUpdateService}
 import nz.co.searchwellington.permissions.EditPermissionService
-import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.HandTaggingDAO
 import nz.co.searchwellington.spam.SpamFilter
 import nz.co.searchwellington.tagging.AutoTaggingService
@@ -33,7 +32,7 @@ import org.springframework.web.servlet.view.RedirectView
                                                        tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, commonModelObjectsService: CommonModelObjectsService,
                                                        feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
                                                        whakaoroService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
-                                                       spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
+                                                       spamFilter: SpamFilter) {
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
   private val ACCEPTANCE = "acceptance"
@@ -281,7 +280,7 @@ import org.springframework.web.servlet.view.RedirectView
           // autoTagger.autotag(editResource) TODO
         }
         saveResource(request, loggedInUser, editResource)
-        linkCheckerQueue.add(editResource.id)
+        //linkCheckerQueue.add(editResource.id)
       }
       else {
         log.info("Could not save resource. Spam question not answered?")

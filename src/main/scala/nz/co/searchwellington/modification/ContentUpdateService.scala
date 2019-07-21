@@ -1,7 +1,7 @@
 package nz.co.searchwellington.modification
 
+import nz.co.searchwellington.linkchecking.LinkCheckerQueue
 import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
