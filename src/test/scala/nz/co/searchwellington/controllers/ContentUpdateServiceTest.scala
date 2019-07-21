@@ -17,13 +17,12 @@ import scala.concurrent.{Await, Future}
 class ContentUpdateServiceTest extends ReasonableWaits {
 
   private val mongoRepository = mock(classOf[MongoRepository])
-  private val linkCheckerQueue = mock(classOf[LinkCheckerQueue])
   private val frontendContentUpdater = mock(classOf[FrontendContentUpdater])
 
   private val resourceId = UUID.randomUUID().toString
   private val updatedResource = Newsitem(id = resourceId, page = Some("http://test/123"))
 
-  private val service = new ContentUpdateService(mongoRepository, linkCheckerQueue, frontendContentUpdater)
+  private val service = new ContentUpdateService(mongoRepository, frontendContentUpdater)
   private val successfulUpdateResult = mock(classOf[UpdateWriteResult])
 
   @Test

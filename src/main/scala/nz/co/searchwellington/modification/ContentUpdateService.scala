@@ -7,12 +7,11 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import reactivemongo.api.commands.UpdateWriteResult
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class ContentUpdateService @Autowired() (mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue,
+@Component class ContentUpdateService @Autowired() (mongoRepository: MongoRepository,
                                                     frontendContentUpdater: FrontendContentUpdater) {
 
   private val log = Logger.getLogger(classOf[ContentUpdateService])
@@ -57,7 +56,7 @@ import scala.concurrent.Future
     mongoRepository.saveResource(resource).map { r =>
       log.info("Result of save for " + resource._id + " " + resource.page + ": " + r)
       frontendContentUpdater.update(resource)
-      linkCheckerQueue.add(resource._id.stringify)
+      // TODO linkCheckerQueue.add(resource._id.stringify)
     }
   }
 

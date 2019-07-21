@@ -1,6 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
+import nz.co.searchwellington.linkchecking.LinkCheckerQueue
 import nz.co.searchwellington.model.{Feed, Newsitem, Tagging, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.tagging.AutoTaggingService
@@ -11,7 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
-                                         feedItemAcceptor: FeedItemAcceptor) {
+                                         feedItemAcceptor: FeedItemAcceptor, linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
 
@@ -28,6 +29,7 @@ import scala.concurrent.Future
         log.info("With autotaggings: " + withAutoTaggings)
         contentUpdateService.create(withAutoTaggings).map { _ =>
           log.info("Created accepted newsitem: " + notHeld)
+          linkCheckerQueue.add(withAutoTaggings.id)
           withAutoTaggings
         }
       }
