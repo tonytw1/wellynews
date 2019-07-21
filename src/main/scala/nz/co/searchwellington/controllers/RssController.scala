@@ -27,7 +27,7 @@ import scala.concurrent.Await
 
     val model: util.HashMap[String, Any] = Maps.newHashMap()
     import scala.collection.JavaConverters._
-    model.put("data", Await.result(contentRetrievalService.getLatestNewsitems(loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
+    model.put("data", Await.result(contentRetrievalService.getLatestNewsitems(maxItems = 90, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
     new ModelAndView(viewFactory.getRssView(title, link, description), model)
   }
 
