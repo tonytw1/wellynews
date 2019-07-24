@@ -1,6 +1,6 @@
 package nz.co.searchwellington.jobs
 
-import nz.co.searchwellington.linkchecking.LinkCheckerQueue
+import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.joda.time.DateTime

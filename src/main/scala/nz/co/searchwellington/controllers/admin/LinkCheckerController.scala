@@ -3,8 +3,8 @@ package nz.co.searchwellington.controllers.admin
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.controllers.UrlStack
 import nz.co.searchwellington.filters.AdminRequestFilter
-import nz.co.searchwellington.linkchecking.LinkCheckerQueue
 import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.queues.LinkCheckerQueue
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
