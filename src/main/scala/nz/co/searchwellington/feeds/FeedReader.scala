@@ -75,6 +75,10 @@ import scala.concurrent.{ExecutionContext, Future}
         if (acceptanceErrors.isEmpty) {
           feedReaderUpdateService.acceptFeeditem(feedReaderUser, withCleanedUrl, feed).map { acceptedNewsitem =>
             Some(acceptedNewsitem)
+          }.recover {
+            case e: Exception =>
+              log.error("Error while accepting feeditem", e)
+              None
           }
 
         } else {

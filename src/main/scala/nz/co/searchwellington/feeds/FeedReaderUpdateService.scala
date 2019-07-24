@@ -17,27 +17,20 @@ import scala.concurrent.Future
   private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
 
   def acceptFeeditem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Future[Newsitem] = {
-    try {
-      log.info("Accepting newsitem: " + feednewsitem.url)
-      val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
-      log.info("Got newsitem to accept: " + newsitem)
-      val notHeld = newsitem.copy(held = false)
+    log.info("Accepting newsitem: " + feednewsitem.url)
+    val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
+    log.info("Got newsitem to accept: " + newsitem)
+    val notHeld = newsitem.copy(held = false)
 
-      autoTagger.autotag(notHeld).flatMap { autoTaggings =>
-        log.info("Got autotaggings: " + autoTaggings)
-        val withAutoTaggings = notHeld.withTags(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
-        log.info("With autotaggings: " + withAutoTaggings)
-        contentUpdateService.create(withAutoTaggings).map { _ =>
-          log.info("Created accepted newsitem: " + notHeld)
-          linkCheckerQueue.add(withAutoTaggings.id)
-          withAutoTaggings
-        }
+    autoTagger.autotag(notHeld).flatMap { autoTaggings =>
+      log.info("Got autotaggings: " + autoTaggings)
+      val withAutoTaggings = notHeld.withTags(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
+      log.info("With autotaggings: " + withAutoTaggings)
+      contentUpdateService.create(withAutoTaggings).map { _ =>
+        log.info("Created accepted newsitem: " + notHeld)
+        linkCheckerQueue.add(withAutoTaggings.id)
+        withAutoTaggings
       }
-
-    } catch {
-      case e: Exception =>
-        log.error("Error while accepting feeditem", e)
-        throw(e)
     }
   }
 

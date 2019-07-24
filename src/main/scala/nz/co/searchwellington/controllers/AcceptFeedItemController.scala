@@ -44,6 +44,10 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
               feedReaderUpdateService.acceptFeeditem(loggedInUser, feedItemToAccept, feed).map { accepted =>
                 log.info("Accepted newsitem: " + accepted.title)
                 new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
+              } recover {
+                case e: Exception =>
+                  log.error("Error while accepting feeditem", e)
+                  NotFound
               }
 
             }.getOrElse {
@@ -56,7 +60,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
         }
       }
 
-    }.getOrElse{
+    }.getOrElse {
       Future.successful(new ModelAndView()) // TODO logged in
     }
 
