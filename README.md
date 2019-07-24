@@ -9,4 +9,6 @@ Milage may vary.
 
 ## Local dev
 
+docker-compose -f docker/docker-compose.yml up
+
 mvn tomcat7:run
