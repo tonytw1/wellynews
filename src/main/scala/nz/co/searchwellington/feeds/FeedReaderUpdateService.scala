@@ -1,9 +1,9 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
-import nz.co.searchwellington.linkchecking.LinkCheckerQueue
 import nz.co.searchwellington.model.{Feed, Newsitem, Tagging, User}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.tagging.AutoTaggingService
 import org.apache.log4j.Logger
 import org.springframework.stereotype.Component
