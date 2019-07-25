@@ -8,7 +8,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext}
 
 @Component class WhakaokoFeedSyncService @Autowired() (mongoReposity: MongoRepository, whakaokoService: WhakaokoService) extends ReasonableWaits {
 
@@ -19,7 +19,7 @@ import scala.concurrent.Await
     //registerFeedsWithWhakaoko(Await.result(mongoReposity.getAllFeeds, TenSeconds))
   }
 
-  private def registerFeedsWithWhakaoko(feeds: Seq[Feed]) {
+  private def registerFeedsWithWhakaoko(feeds: Seq[Feed])(implicit ec: ExecutionContext) {
     log.info("Registering feeds with whakaoko")
     feeds.map { feed =>
       feed.page.map { p =>
