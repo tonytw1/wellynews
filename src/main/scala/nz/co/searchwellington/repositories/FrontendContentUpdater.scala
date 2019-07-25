@@ -6,12 +6,14 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
+import scala.concurrent.ExecutionContext
+
 @Component class FrontendContentUpdater @Autowired()(elasticSearchIndexUpdateService: ElasticSearchIndexUpdateService,
                                                      elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService) {
 
   private val log = Logger.getLogger(classOf[FrontendContentUpdater])
 
-  def update(updatedResource: Resource): Unit = {
+  def update(updatedResource: Resource)(implicit ec: ExecutionContext): Unit = {
     log.debug("Updating elastic search record for resource: " + updatedResource.title)
     elasticSearchIndexRebuildService.index(updatedResource)
   }

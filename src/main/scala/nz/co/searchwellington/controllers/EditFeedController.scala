@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
 class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService,

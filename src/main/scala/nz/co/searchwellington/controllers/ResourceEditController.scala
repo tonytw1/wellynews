@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 @Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
                                                        tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory,
                                                        loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class PublisherAutoGatherController @Autowired()(requestFilter: AdminRequestFilter, mongoRepository: MongoRepository, resourceDAO: HibernateResourceDAO,
                                                              contentUpdateService: ContentUpdateService,

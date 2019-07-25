@@ -16,6 +16,8 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import org.joda.time.DateTime
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 @Controller
 class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateService,
                                         mongoRepository: MongoRepository,

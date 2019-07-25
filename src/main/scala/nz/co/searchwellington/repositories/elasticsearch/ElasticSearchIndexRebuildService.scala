@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer,
                                                                taggingReturnsOfficerService: TaggingReturnsOfficerService) extends ReasonableWaits {
@@ -20,16 +19,16 @@ import scala.concurrent.{Await, Future}
 
   private val BATCH_COMMIT_SIZE = 1000
 
-  def buildIndex(): Unit = {
+  def buildIndex()(implicit ec: ExecutionContext): Unit = {
     val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), OneMinute)
     reindexResources(resourcesToIndex)
   }
 
-  def index(resource: Resource): Unit = {
+  def index(resource: Resource)(implicit ec: ExecutionContext): Unit = {
     reindexResources(Seq(resource._id))
   }
 
-  private def reindexResources(resourcesToIndex: Seq[BSONObjectID]): Unit = {
+  private def reindexResources(resourcesToIndex: Seq[BSONObjectID])(implicit ec: ExecutionContext): Unit = {
     log.debug("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
     val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
 

@@ -1,22 +1,20 @@
 package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.model.Resource
-import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ContentUpdateService @Autowired() (mongoRepository: MongoRepository,
                                                     frontendContentUpdater: FrontendContentUpdater) {
 
   private val log = Logger.getLogger(classOf[ContentUpdateService])
 
-  def update(resource: Resource): Future[Unit] = {
+  def update(resource: Resource)(implicit ec: ExecutionContext): Future[Unit] = {
     log.info("Updating content for: " + resource.title + " - " + resource.http_status + " " + resource.page)
     try {
       /*
@@ -50,7 +48,7 @@ import scala.concurrent.Future
     }
   }
 
-  def create(resource: Resource): Future[Unit] = {
+  def create(resource: Resource)(implicit ec: ExecutionContext): Future[Unit] = {
     resource.setHttpStatus(0)
     log.info("Creating resource: " + resource.page )
     mongoRepository.saveResource(resource).map { r =>

@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.{mock, verify, when, verifyZeroInteractions}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class HandTaggingServiceTest {
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
@@ -67,13 +68,9 @@ class HandTaggingServiceTest {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
     when(mongoRepository.getResourceByObjectId(taggedResource._id)).thenReturn(Future.successful(Some(taggedResource)))
 
-    val updated = ArgumentCaptor.forClass(classOf[Resource])
-
     handTaggingService.clearTaggingsForTag(tag)
 
-    verify(frontendContentUpdater).update(updated.capture())
-    assertEquals(taggedResource._id, updated.getValue._id)
-    assertTrue(updated.getValue.resource_tags.isEmpty)
+    verify(frontendContentUpdater).update(taggedResource.copy(resource_tags = Seq.empty))
   }
 
   @Test
