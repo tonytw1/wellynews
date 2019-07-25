@@ -21,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   override def setAttributes(request: HttpServletRequest): Boolean = {
     val matcher = combinerPattern.matcher(request.getPathInfo)
-    log.info("Returning: " + (if (matcher.matches) {
+    if (matcher.matches) {
       val left = matcher.group(1)
       val right = matcher.group(2)
       log.info("Path matches combiner pattern for '" + left + "', '" + right + "'")
@@ -52,7 +52,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     } else {
       false
-    }))
+    }
+
     if (matcher.matches) {
       val left = matcher.group(1)
       val right = matcher.group(2)
