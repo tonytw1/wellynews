@@ -55,7 +55,6 @@ import scala.concurrent.{ExecutionContext, Future}
               latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems),
               http_status = inferredHttpStatus
             ))
-            Thread.sleep(1000)
           }
         })
       }

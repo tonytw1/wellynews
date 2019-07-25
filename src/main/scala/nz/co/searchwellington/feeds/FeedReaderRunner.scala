@@ -9,7 +9,7 @@ import org.springframework.core.task.TaskExecutor
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class FeedReaderRunner @Autowired()(feedReader: FeedReader, mongoRepository: MongoRepository,
                                                feedReaderTaskExecutor: TaskExecutor) // TODO named bean
@@ -24,18 +24,24 @@ import scala.concurrent.{ExecutionContext, Future}
   def readFeeds {
 
     def readAllFeeds(feeds: Seq[Feed]): Future[Boolean] = {
-      getFeedReaderUser.flatMap { maybyFeedUser =>
+      getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>
           log.info("Reading " + feeds.size + " feeds as user " + feedReaderUser.name)
-          Future.sequence(feeds.map { feed =>
+
+          val eventualUnits = feeds.map { feed =>
             feedReader.processFeed(feed, feedReaderUser)
-          }).map { _ =>
-            log.info("Finished reading feeds")
-            true
           }
+
+          eventualUnits.foreach( f =>
+            Await.result(f, TenSeconds)
+          )
+
+          log.info("Finished reading feeds")
+          true
+
         }.getOrElse {
           log.warn("Feed reader could not run as no user was found with profile name: " + FEED_READER_PROFILE_NAME)
-          Future.successful(false)
+          false
         }
       }
     }
