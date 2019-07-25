@@ -41,7 +41,7 @@
 	<bean id="feedReaderTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
 		<property name="corePoolSize" value="2" />
 		<property name="maxPoolSize" value="3" />
-		<property name="queueCapacity" value="5000" />
+		<property name="queueCapacity" value="50000" />
 	</bean>
 
 </beans>
