@@ -10,6 +10,8 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Random
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class MongoRepositoryTest {
 
   val TenSeconds = Duration(10, SECONDS)

@@ -7,6 +7,7 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, verify, when}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class LoginResourceOwnershipServiceTest {
   private val mongoRepository = mock(classOf[MongoRepository])

@@ -9,12 +9,14 @@ import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 // TODO depricate be using a url tagname instead of a form parameter - move to adminFilter?
 // Used by the rssfeeds index page?
 @Component
 @Scope("request") class TagParameterFilter @Autowired()(mongoRepository: MongoRepository)
   extends RequestAttributeFilter with ReasonableWaits {
+
   override def filter(request: HttpServletRequest): Unit = {
     if (request.getParameter("tag") != null) {
       val urlWords = request.getParameter("tag")

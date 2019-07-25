@@ -16,7 +16,7 @@ import scala.concurrent.Await
 
   // @Scheduled(fixedRate = 3600000)
   def run {
-    registerFeedsWithWhakaoko(Await.result(mongoReposity.getAllFeeds, TenSeconds))
+    //registerFeedsWithWhakaoko(Await.result(mongoReposity.getAllFeeds, TenSeconds))
   }
 
   private def registerFeedsWithWhakaoko(feeds: Seq[Feed]) {

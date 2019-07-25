@@ -12,8 +12,7 @@ import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{DB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
 class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: String) extends ReasonableWaits {
@@ -21,7 +20,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   private val log = Logger.getLogger(classOf[MongoRepository])
   private val AllDocuments: Int = Integer.MAX_VALUE
 
-  def connect(): DB = {
+  def connect()(implicit ec: ExecutionContext): DB = {
     log.info("Connecting to Mongo: " + mongoUri)
 
     val driver = MongoDriver()
@@ -43,7 +42,10 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     db
   }
 
-  val db = connect()
+  val db = {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    connect()
+  }
 
   val resourceCollection: BSONCollection = db.collection("resource")
   val supressionCollection: BSONCollection = db.collection("supression")
@@ -70,11 +72,11 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def websiteReader = Macros.reader[Website]
   implicit def discoveredFeedReader = Macros.reader[DiscoveredFeed]
 
-  def getResourceById(id: String): Future[Option[Resource]] = {
+  def getResourceById(id: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("id" -> id))
   }
 
-  def getResourceByObjectId(id: BSONObjectID): Future[Option[Resource]] = {
+  def getResourceByObjectId(id: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("_id" -> id))
   }
 
@@ -95,7 +97,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   implicit def websiteWriter = Macros.writer[Website]
   implicit def discoveredFeedWriter = Macros.writer[DiscoveredFeed]
 
-  def saveResource(resource: Resource): Future[UpdateWriteResult] = {
+  def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> resource._id)
     log.info("Updating resource: " + resource._id + " / " + resource.last_scanned)
     resource match { // TODO sick of dealing with Scala implicits and just want to write features so this hack
@@ -106,97 +108,97 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  def saveSupression(suppression: Supression): Future[UpdateWriteResult] = {
+  def saveSupression(suppression: Supression)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> suppression._id)
     supressionCollection.update(id, suppression, upsert = true)
   }
 
-  def removeSupressionFor(url: String): Future[WriteResult] = {
+  def removeSupressionFor(url: String)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val byUrl = BSONDocument("url" -> url)
     supressionCollection.remove(byUrl)
   }
 
-  def removeResource(resource: Resource): Future[WriteResult] = {
+  def removeResource(resource: Resource)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val id = BSONDocument("_id" -> resource._id)
     resourceCollection.remove(id)
   }
 
-  def removeUser(user: User): Future[WriteResult] = {
+  def removeUser(user: User)(implicit ec: ExecutionContext): Future[WriteResult] = {
     val id = BSONDocument("_id" -> user._id)
     userCollection.remove(id)
   }
 
-  def saveUser(user: User): Future[UpdateWriteResult] = {
+  def saveUser(user: User)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> user._id)
     log.info("Updating user: " + user._id)
     userCollection.update(id, user, upsert = true)
   }
 
-  def getSupressionByUrl(url: String): Future[Option[Supression]] = {
+  def getSupressionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Supression]] = {
     val byUrl = BSONDocument("url" -> url)
     supressionCollection.find(byUrl).one[Supression]
   }
 
-  def getResourceByUrl(url: String): Future[Option[Resource]] = {
+  def getResourceByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("page" -> url))
   }
 
-  def getFeedByUrl(url: String): Future[Option[Feed]] = {
+  def getFeedByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = {
     getResourceBy(BSONDocument("type" -> "F", "page" -> url)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
-  def getFeedByUrlwords(urlWords: String): Future[Option[Feed]] = {
+  def getFeedByUrlwords(urlWords: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = {
     getResourceBy(BSONDocument("type" -> "F", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
-  def getWebsiteByName(name: String): Future[Option[Website]] = {
+  def getWebsiteByName(name: String)(implicit ec: ExecutionContext): Future[Option[Website]] = {
     getResourceBy(BSONDocument("type" -> "W", "title" -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
-  def getWebsiteByNamePrefix(q: String): Future[List[Website]] = {
+  def getWebsiteByNamePrefix(q: String)(implicit ec: ExecutionContext): Future[List[Website]] = {
     val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*")) // TODO How to escape
     resourceCollection.find(BSONDocument("type" -> "W", "title" -> prefixRegex)).
       sort(BSONDocument("title" -> 1)).
       cursor[Website]().collect[List](10)
   }
 
-  def getWebsiteByUrlwords(urlWords: String): Future[Option[Website]] = {
+  def getWebsiteByUrlwords(urlWords: String)(implicit ec: ExecutionContext): Future[Option[Website]] = {
     getResourceBy(BSONDocument("type" -> "W", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
-  def getTagById(id: String): Future[Option[Tag]] = {
+  def getTagById(id: String)(implicit ec: ExecutionContext): Future[Option[Tag]] = {
     tagCollection.find(BSONDocument("id" -> id)).one[Tag]
   }
 
-  def getTagByObjectId(objectId: BSONObjectID): Future[Option[Tag]] = {
+  def getTagByObjectId(objectId: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[Tag]] = {
     tagCollection.find(BSONDocument("_id" -> objectId)).one[Tag]
   }
 
-  def getTagByUrlWords(urlWords: String): Future[Option[Tag]] = {
+  def getTagByUrlWords(urlWords: String)(implicit ec: ExecutionContext): Future[Option[Tag]] = {
     tagCollection.find(BSONDocument("name" -> urlWords)).one[Tag] // TODO rename field
   }
 
-  def getTagsByParent(parent: BSONObjectID): Future[List[Tag]] = {
+  def getTagsByParent(parent: BSONObjectID)(implicit ec: ExecutionContext): Future[List[Tag]] = {
     tagCollection.find(BSONDocument("parent" -> parent)).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
   }
 
-  def saveTag(tag: Tag): Future[UpdateWriteResult] = {
+  def saveTag(tag: Tag)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> tag._id)
     tagCollection.update(id, tag, upsert = true)
   }
 
-  def getAllTags(): Future[Seq[Tag]] = {
+  def getAllTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
     tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List](AllDocuments)
   }
 
-  def getAllResourceIds(): Future[Seq[BSONObjectID]] = {
+  def getAllResourceIds()(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val projection = BSONDocument("_id" -> 1)
     resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](AllDocuments).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
   }
 
-  def getNotCheckedSince(lastScanned: DateTime, maxItems: Int): Future[Seq[BSONObjectID]] = {
+  def getNotCheckedSince(lastScanned: DateTime, maxItems: Int)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val projection = BSONDocument("_id" -> 1)
 
     val selector = BSONDocument(
@@ -204,7 +206,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
         "$lt" -> BSONDateTime(lastScanned.getMillis)
       )
     )
-
     resourceCollection.find(selector, projection).cursor[BSONDocument]().collect[List](maxItems).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
@@ -215,20 +216,20 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     // addOrder(Order.asc("lastScanned")).setMaxResults(maxItems).list.asInstanceOf[List[Resource]]
   }
 
-  def getAllFeeds(): Future[Seq[Feed]] = {
+  def getAllFeeds()(implicit ec: ExecutionContext): Future[Seq[Feed]] = {
     resourceCollection.find(BSONDocument("type" -> "F")).
       cursor[Feed]().
       collect[List](maxDocs = AllDocuments)
   }
 
-  def getAllNewsitemsForFeed(feed: Feed): Future[Seq[Newsitem]] = {
+  def getAllNewsitemsForFeed(feed: Feed)(implicit ec: ExecutionContext): Future[Seq[Newsitem]] = {
     val newsitemsFromFeed = BSONDocument("type" -> "N", "feed" -> feed._id.stringify)
     resourceCollection.find(newsitemsFromFeed).
       cursor[Newsitem]().
       collect[List](maxDocs = AllDocuments)
   }
 
-  def getResourceIdsByTag(tag: Tag): Future[Seq[BSONObjectID]] = {
+  def getResourceIdsByTag(tag: Tag)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val selector = BSONDocument(
       "resource_tags.tag_id" -> tag._id
     )
@@ -241,7 +242,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  def getResourceIdsByTaggingUser(user: User): Future[Seq[BSONObjectID]] = {
+  def getResourceIdsByTaggingUser(user: User)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val selector = BSONDocument(
       "resource_tags.user_id" -> user._id
     )
@@ -254,44 +255,44 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  def getAllDiscoveredFeeds(): Future[Seq[DiscoveredFeed]] = {
+  def getAllDiscoveredFeeds()(implicit ec: ExecutionContext): Future[Seq[DiscoveredFeed]] = {
     discoveredFeedCollection.find(BSONDocument.empty).
       sort(BSONDocument("seen" -> -1)).
       cursor[DiscoveredFeed]().
       collect[List](maxDocs = AllDocuments)
   }
 
-  def getDiscoveredFeedByUrlAndReference(url: String, referencedFrom: String): Future[Option[DiscoveredFeed]] = {
+  def getDiscoveredFeedByUrlAndReference(url: String, referencedFrom: String)(implicit ec: ExecutionContext): Future[Option[DiscoveredFeed]] = {
     val selector = BSONDocument("url" -> url, "referencedFrom" -> referencedFrom)
     discoveredFeedCollection.find(selector).one[DiscoveredFeed]
   }
 
-  def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed): Future[UpdateWriteResult] = {
+  def saveDiscoveredFeed(discoveredFeed: DiscoveredFeed)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> discoveredFeed._id)
     discoveredFeedCollection.update(id, discoveredFeed, upsert = true)
   }
 
-  def getAllWatchlists: Future[Seq[Watchlist]] = {
+  def getAllWatchlists()(implicit ec: ExecutionContext): Future[Seq[Watchlist]] = {
     resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List](AllDocuments)
   }
 
-  def getAllUsers: Future[Seq[User]] = {
+  def getAllUsers()(implicit ec: ExecutionContext): Future[Seq[User]] = {
     userCollection.find(BSONDocument.empty).cursor[User]().collect[List](AllDocuments)
   }
 
-  def getUserByObjectId(objectId: BSONObjectID): Future[Option[User]] = {
+  def getUserByObjectId(objectId: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[User]] = {
     userCollection.find(BSONDocument("_id" -> objectId)).one[User]
   }
 
-  def getUserByProfilename(profileName: String): Future[Option[User]] = {
+  def getUserByProfilename(profileName: String)(implicit ec: ExecutionContext): Future[Option[User]] = {
     userCollection.find(BSONDocument("profilename" -> profileName)).one[User]
   }
 
-  def getUserByTwitterId(twitterId: Long): Future[Option[User]] = {
+  def getUserByTwitterId(twitterId: Long)(implicit ec: ExecutionContext): Future[Option[User]] = {
     userCollection.find(BSONDocument("twitterid" -> twitterId)).one[User]
   }
 
-  private def getResourceBy(selector: BSONDocument) = {
+  private def getResourceBy(selector: BSONDocument)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     resourceCollection.find(selector).one[BSONDocument].map { bo =>
       bo.flatMap { b =>
         b.get("type").get match {
@@ -312,6 +313,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])
 
   {
+    import scala.concurrent.ExecutionContext.Implicits.global
     resourceCollection.create()
     log.info("Ensuring mongo indexes")
     log.info("resource type/url_words index result: " +

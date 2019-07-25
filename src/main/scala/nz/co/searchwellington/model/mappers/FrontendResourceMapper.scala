@@ -1,5 +1,6 @@
 package nz.co.searchwellington.model.mappers
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -8,33 +9,32 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration.{Duration, SECONDS}
 
 @Component class FrontendResourceMapper @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
-                                                     mongoRepository: MongoRepository) {
+                                                     mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
-  private val tenSeconds = Duration(10, SECONDS)
 
-  def createFrontendResourceFrom(contentItem: Resource): FrontendResource = {
+  def createFrontendResourceFrom(contentItem: Resource)(implicit ec: ExecutionContext): FrontendResource = {
     val place: Option[Geocode] = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
     contentItem match {
       case n: Newsitem =>
         val publisher = n.publisher.flatMap { pid =>
-          Await.result(mongoRepository.getResourceByObjectId(pid), tenSeconds)
+          Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
         }
 
         val feed: Option[FrontendFeed] = n.feed.flatMap { fid =>
-          Await.result(mongoRepository.getResourceByObjectId(fid), tenSeconds).map { f =>
+          Await.result(mongoRepository.getResourceByObjectId(fid), TenSeconds).map { f =>
             createFrontendResourceFrom(f).asInstanceOf[FrontendFeed]
           }
         }
 
         val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem)
         val acceptedByUser = n.acceptedBy.flatMap { uid =>
-          Await.result(mongoRepository.getUserByObjectId(uid), tenSeconds)
+          Await.result(mongoRepository.getUserByObjectId(uid), TenSeconds)
         }
 
         FrontendNewsitem(
@@ -58,7 +58,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
       case f: Feed =>
         val publisher = f.publisher.flatMap { pid =>
-          Await.result(mongoRepository.getResourceByObjectId(pid), tenSeconds)
+          Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
         }
 
         val frontendPublisher = publisher.map(p => createFrontendResourceFrom(p).asInstanceOf[FrontendWebsite])

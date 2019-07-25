@@ -13,6 +13,7 @@ import org.mockito.Mockito.{mock, verify, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class AdminRequestFilterTest {
   val mongoRepository = mock(classOf[MongoRepository])

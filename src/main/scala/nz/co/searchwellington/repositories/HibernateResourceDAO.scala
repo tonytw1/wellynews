@@ -1,17 +1,18 @@
 package nz.co.searchwellington.repositories
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext}
 import scala.concurrent.duration._
 
-@Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) {
+@Component class HibernateResourceDAO @Autowired() (mongoRepository: MongoRepository) extends ReasonableWaits {
 
-  def loadFeedByUrlWords(urlWords: String): Option[Feed] = {
-    Await.result(mongoRepository.getFeedByUrlwords(urlWords), Duration(1, MINUTES))
+  def loadFeedByUrlWords(urlWords: String)(implicit ec: ExecutionContext): Option[Feed] = {
+    Await.result(mongoRepository.getFeedByUrlwords(urlWords), TenSeconds)
   }
 
   @SuppressWarnings(Array("unchecked")) def getAllPublishersMatchingStem(stem: String, showBroken: Boolean): Seq[Resource] = {

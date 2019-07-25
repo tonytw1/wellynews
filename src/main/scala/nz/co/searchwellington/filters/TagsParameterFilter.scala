@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TagsParameterFilter @Autowired() (var tagDAO: TagDAO, mongoRepository: MongoRepository)
   extends RequestAttributeFilter with ReasonableWaits {

@@ -17,6 +17,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import reactivemongo.api.commands.UpdateWriteResult
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TagEditControllerTest {
    val requestFilter = mock(classOf[AdminRequestFilter])

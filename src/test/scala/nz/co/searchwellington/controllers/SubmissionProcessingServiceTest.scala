@@ -23,6 +23,8 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.Mockito.{verify, when}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class SubmissionProcessingServiceTest {
 
   private val FEED_NAME: String = "A feed"

@@ -12,16 +12,17 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext}
 
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
                                                          rssLinkExtractor: RssLinkExtractor,
                                                          commentFeedDetector: CommentFeedDetectorService,
-                                                         commentFeedGuesser: CommentFeedGuesserService) extends LinkCheckerProcessor with ReasonableWaits {
+                                                         commentFeedGuesser: CommentFeedGuesserService)
+  extends LinkCheckerProcessor with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedAutodiscoveryProcesser])
 
-  override def process(checkResource: Resource, pageContent: String, seen: DateTime): Unit = {
+  override def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Unit = {
     if (!checkResource.`type`.equals("F")) {
       checkResource.page.map { p =>
         val pageUrl = new URL(p)  // TODO catch
@@ -72,7 +73,7 @@ import scala.concurrent.Await
 
   private def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
 
-  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime): Unit = {
+  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Unit = {
     if (Await.result(mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page.get), TenSeconds).isEmpty) {
       mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page.get, seen = seen.toDate))
     }

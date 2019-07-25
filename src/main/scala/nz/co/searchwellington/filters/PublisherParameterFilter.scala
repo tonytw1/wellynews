@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @deprecated
 @Component

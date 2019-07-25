@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.{Scope, ScopedProxyMode}
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext}
   
 @Component
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -25,7 +25,7 @@ class AdminRequestFilter @Autowired() (mongoRepository: MongoRepository, tagDAO:
   private val DATE_FIELD = "date"
   private val EMBARGO_DATE_FIELD = "embargo_date"
   
-  def loadAttributesOntoRequest(request: HttpServletRequest) {
+  def loadAttributesOntoRequest(request: HttpServletRequest)(implicit ec: ExecutionContext) {
 
     log.debug("Looking for tag parameter")
     if (request.getParameter("tag") != null) {

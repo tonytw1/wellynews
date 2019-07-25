@@ -10,6 +10,7 @@ import org.mockito.Mockito.{mock, verify, verifyNoMoreInteractions, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class RequestFilterTest {
 

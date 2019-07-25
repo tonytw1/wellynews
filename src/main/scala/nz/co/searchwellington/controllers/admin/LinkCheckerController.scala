@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 @Controller class LinkCheckerController @Autowired()(requestFilter: AdminRequestFilter, queue: LinkCheckerQueue, urlStack: UrlStack) {
 
   private val log = Logger.getLogger(classOf[LinkCheckerController])

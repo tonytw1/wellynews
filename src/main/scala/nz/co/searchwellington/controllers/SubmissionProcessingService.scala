@@ -1,6 +1,6 @@
 package nz.co.searchwellington.controllers
 
-import java.util.{Calendar, Date, UUID}
+import java.util.{Calendar, Date}
 
 import com.google.common.base.Strings
 import javax.servlet.http.HttpServletRequest
@@ -18,7 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SubmissionProcessingService @Autowired()(nominatimGeocodeService: CachingNominatimGeocodingService, tagDAO: TagDAO,
                                                           tagVoteDAO: HandTaggingDAO, resourceDAO: HibernateResourceDAO, urlProcessor: UrlProcessor,

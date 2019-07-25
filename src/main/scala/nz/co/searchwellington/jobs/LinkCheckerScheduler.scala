@@ -1,5 +1,6 @@
 package nz.co.searchwellington.jobs
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -9,18 +10,17 @@ import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 
 import scala.concurrent.Await
-import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class LinkCheckerScheduler @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue) {
+@Component class LinkCheckerScheduler @Autowired()(mongoRepository: MongoRepository, linkCheckerQueue: LinkCheckerQueue)
+  extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkCheckerScheduler])
-  private val tenSeconds = Duration(10, SECONDS)
-  private val oneMinute = Duration(1, MINUTES)
 
   //@Scheduled(fixedRate = 86400000)
   def queueWatchlistItems {
     log.info("Queuing watchlist items for checking.")
-    Await.result(mongoRepository.getAllWatchlists, tenSeconds).foreach{ w =>
+    Await.result(mongoRepository.getAllWatchlists, TenSeconds).foreach { w =>
       log.info("Queuing watchlist item for checking: " + w.title)
       linkCheckerQueue.add(w._id.stringify)
     }
@@ -43,8 +43,7 @@ import scala.concurrent.duration.{Duration, MINUTES, SECONDS}
 
     log.info("Queuing " + numberOfItemsToQueue + " items not scanned for more than one month.")
     val oneMonthAgo = DateTime.now.minusMonths(1)
-    val eventualDs = Await.result(mongoRepository.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue), oneMinute)
-    eventualDs.foreach { r =>
+    Await.result(mongoRepository.getNotCheckedSince(oneMonthAgo, numberOfItemsToQueue), TenSeconds).foreach { r =>
       log.info("Queuing for scheduled checking: " + r.stringify)
       linkCheckerQueue.add(r.stringify)
     }

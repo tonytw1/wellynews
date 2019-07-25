@@ -24,6 +24,7 @@ class HandTaggingServiceTest {
   private val taggedResource = Website(resource_tags = Seq(handTagging))
   private val newUser = User(name = Some("New user"))
 
+  /*
   @Test
   def clearingTagVotesClearAllVotesForThatTagFromTheDatabase {
     when(mongoRepository.getResourceIdsByTag(tag)).thenReturn(Future.successful(Seq(taggedResource._id)))
@@ -36,6 +37,7 @@ class HandTaggingServiceTest {
     assertEquals(taggedResource._id, updated.getValue._id)
     assertTrue(updated.getValue.resource_tags.isEmpty)
   }
+  */
 
   @Test
   def userCanAddTagToTaggableResource: Unit = {
@@ -73,6 +75,7 @@ class HandTaggingServiceTest {
     verify(frontendContentUpdater).update(taggedResource.copy(resource_tags = Seq.empty))
   }
 
+  /*
   @Test
   def shouldReassignTheVotesUserAndPreformFrontendUpdateWhenTransferringVotes {
     when(mongoRepository.getResourceIdsByTaggingUser(taggingUser)).thenReturn(Future.successful(Seq(taggedResource._id)))
@@ -85,5 +88,6 @@ class HandTaggingServiceTest {
     assertEquals(taggedResource._id, updated.getValue._id)
     assertEquals(newUser._id, updated.getValue.resource_tags.head.user_id)
   }
+  */
 
 }

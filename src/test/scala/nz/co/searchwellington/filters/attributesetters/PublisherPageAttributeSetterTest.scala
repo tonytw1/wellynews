@@ -12,6 +12,7 @@ import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class PublisherPageAttributeSetterTest {
   @Mock val mongoRepository: MongoRepository = null

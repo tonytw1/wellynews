@@ -16,6 +16,7 @@ import twitter4j.{Twitter, TwitterException}
 
 import scala.collection.mutable
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TwitterLoginHandler @Autowired()(mongoRepository: MongoRepository, twitterApiFactory: TwitterApiFactory,
                                                   urlBuilder: UrlBuilder) extends SigninHandler with ReasonableWaits {

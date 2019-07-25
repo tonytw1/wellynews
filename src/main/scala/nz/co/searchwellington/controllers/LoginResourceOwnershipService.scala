@@ -7,12 +7,12 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext}
 
 @Component class LoginResourceOwnershipService @Autowired()(mongoRepository: MongoRepository, handTaggingService: HandTaggingService)
   extends ReasonableWaits {
 
-  def reassignOwnership(previousOwner: User, newOwner: User) {
+  def reassignOwnership(previousOwner: User, newOwner: User)(implicit ec: ExecutionContext) {
     Await.result(mongoRepository.getResourcesOwnedBy(previousOwner), TenSeconds).foreach { resource => // TODO should do all or not at all
       //resource.setOwner(newOwner)
       //mongoRepository.saveResource(resource)

@@ -9,6 +9,8 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 class FrontendResourceMapperTest {
 
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])

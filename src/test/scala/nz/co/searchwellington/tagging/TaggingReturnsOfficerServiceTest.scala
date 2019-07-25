@@ -9,6 +9,7 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class TaggingReturnsOfficerServiceTest {
 

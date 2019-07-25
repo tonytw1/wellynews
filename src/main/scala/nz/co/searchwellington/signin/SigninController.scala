@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 @Controller class SigninController @Autowired()(loggedInUserFilter: LoggedInUserFilter, mongoRepository: MongoRepository, anonUserService: AnonUserService, loginResourceOwnershipService: LoginResourceOwnershipService, urlStack: UrlStack, signinHandler: SigninHandler) {
 
   private val log = Logger.getLogger(classOf[SigninController])

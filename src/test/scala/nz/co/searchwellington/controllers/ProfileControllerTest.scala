@@ -11,6 +11,7 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ProfileControllerTest {
 

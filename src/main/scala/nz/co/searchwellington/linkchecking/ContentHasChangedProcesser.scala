@@ -7,13 +7,16 @@ import org.joda.time.DateTime
 import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.archiving.FilesystemSnapshotArchive
 
+import scala.concurrent.ExecutionContext
+
 @Component class ContentHasChangedProcesser() extends LinkCheckerProcessor {
 
   private val log = Logger.getLogger(classOf[ContentHasChangedProcesser])
 
   private val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
-  override def process(checkResource: Resource, pageContent: String, seen: DateTime): Unit = checkForChangeUsingSnapshots(checkResource, pageContent)
+  override def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Unit =
+    checkForChangeUsingSnapshots(checkResource, pageContent)
 
   // TODO cleaning and filtering?
   private def checkForChangeUsingSnapshots(checkResource: Resource, after: String) = {

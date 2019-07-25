@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class NewsitemPageModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                        taggingReturnsOfficerService: TaggingReturnsOfficerService,
