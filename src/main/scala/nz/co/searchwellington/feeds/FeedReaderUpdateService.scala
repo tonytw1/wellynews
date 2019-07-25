@@ -8,15 +8,14 @@ import nz.co.searchwellington.tagging.AutoTaggingService
 import org.apache.log4j.Logger
 import org.springframework.stereotype.Component
 
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedReaderUpdateService(contentUpdateService: ContentUpdateService, autoTagger: AutoTaggingService,
                                          feedItemAcceptor: FeedItemAcceptor, linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
 
-  def acceptFeeditem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed): Future[Newsitem] = {
+  def acceptFeeditem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed)(implicit ec: ExecutionContext): Future[Newsitem] = {
     log.info("Accepting newsitem: " + feednewsitem.url)
     val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
     log.info("Got newsitem to accept: " + newsitem)

@@ -37,7 +37,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   private val Resources = "resources"
 
   val client = {
-
     def ensureIndexes(client: ElasticClient): Unit = {
       val exists = Await.result((client execute indexExists(Index)).map { r =>
         if (r.isSuccess) {
@@ -218,7 +217,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   private def executeResourceQuery(query: ResourceQuery, order: SearchRequest => SearchRequest, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
     val request = order(search(Index / Resources) query composeQueryFor(query, loggedInUser)) start query.startIndex limit query.maxItems
-    log.info("Request: " + request)
     client.execute(request).map { r =>
       val hits = r.result.hits.hits
       val ids = hits.map(h => BSONObjectID(h.id))
