@@ -9,25 +9,23 @@ import org.apache.http.HttpStatus
 import org.apache.log4j.Logger
 import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.task.TaskExecutor
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Component class LinkChecker @Autowired()(mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
-                                          httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser,
-                                          feedReaderTaskExecutor: TaskExecutor) extends ReasonableWaits {
+                                          httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser)
+  extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[LinkChecker])
   private val CANT_CONNECT = -1
 
-  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
   private val processers: Seq[LinkCheckerProcessor] = Seq(feedAutodiscoveryProcesser) // TODO inject all
 
   //val snapshotArchive = new FilesystemSnapshotArchive("/home/tony/snapshots")
 
-  def scanResource(checkResourceId: String) {
+  def scanResource(checkResourceId: String)(implicit ec: ExecutionContext) {
     log.info("Scanning resource: " + checkResourceId)
 
     mongoRepository.getResourceByObjectId(BSONObjectID(checkResourceId)).flatMap { maybeResource =>
@@ -72,7 +70,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def httpCheck(checkResource: Resource, url: String): Future[Option[String]] = {
+  private def httpCheck(checkResource: Resource, url: String)(implicit ec: ExecutionContext): Future[Option[String]] = {
     httpFetcher.httpFetch(url).map { httpResult =>
       try {
         checkResource.setHttpStatus(httpResult.status)

@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @Scheduled(cron = "0 */10 * * * *")
   def queueExpiredItems {
-    val numberOfItemsToQueue = 5
+    val numberOfItemsToQueue = 100
     /*
     log.info("Queuing items launched within the last 24 hours with but not scanned within the last 4 hours")
     val oneDayAgo: Date = new DateTime(()).minusDays(1).toDate
