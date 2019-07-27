@@ -21,8 +21,8 @@ class WSHttpFetcher(feedReaderTaskExecutor: TaskExecutor) extends HttpFetcher wi
   private val wsClient = StandaloneAhcWSClient()
 
   override def httpFetch(url: String)(implicit ec: ExecutionContext): Future[HttpFetchResult] = {
-    val eventualResult = wsClient.url(url).get.map { r =>
-      val result = new HttpFetchResult(r.status, r.body)
+    val eventualResult = wsClient.url(url).withRequestTimeout(TenSeconds).get.map { r =>
+      val result = HttpFetchResult(r.status, r.body)
       log.info("Got HTTP fetch result from WS: " + result.status)
       result
     }
