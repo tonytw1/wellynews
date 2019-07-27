@@ -58,7 +58,7 @@ import scala.concurrent.{Await, ExecutionContext}
             log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
 
           } else {
-            val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), TenSeconds).nonEmpty
+            val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), ThirtySeconds).nonEmpty
             if (!isUrlOfExistingFeed) {
               recordDiscoveredFeedUrl(checkResource, discoveredUrl, seen)
 
