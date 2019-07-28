@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class ElasticSearchIndexRebuildService @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexer: ElasticSearchIndexer,
                                                                taggingReturnsOfficerService: TaggingReturnsOfficerService) extends ReasonableWaits {
@@ -20,20 +20,18 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   private val BATCH_COMMIT_SIZE = 1000
 
   def buildIndex()(implicit ec: ExecutionContext): Unit = {
+    import scala.concurrent.Await
     val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), OneMinute)
-    reindexResources(resourcesToIndex)
+    Await.result(reindexResources(resourcesToIndex), OneMinute)
   }
 
-  def index(resource: Resource)(implicit ec: ExecutionContext): Unit = {
+  def index(resource: Resource)(implicit ec: ExecutionContext): Future[Int] = {
     reindexResources(Seq(resource._id))
   }
 
-  private def reindexResources(resourcesToIndex: Seq[BSONObjectID])(implicit ec: ExecutionContext): Unit = {
-    log.debug("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
-    val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE)
+  private def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0)(implicit ec: ExecutionContext): Future[Int] = {
 
-    var i = 0
-    batches.foreach { batch =>
+    def indexBatch(batch: Seq[BSONObjectID], i: Int): Future[Int] = {
       log.debug("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
       val start = DateTime.now
 
@@ -46,17 +44,30 @@ import scala.concurrent.{Await, ExecutionContext, Future}
         })
       }
 
-      val eventualIndexed = eventualWithIndexTags.flatMap { rs =>
+      eventualWithIndexTags.flatMap { rs =>
         log.debug("Submitting batch for indexing")
         elasticSearchIndexer.updateMultipleContentItems(rs).map { r =>
-          r.result.successes.size
+          i + r.result.successes.size
+        }
+      }
+    }
+
+    log.debug("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
+    val batches= resourcesToIndex.grouped(BATCH_COMMIT_SIZE).toSeq
+
+    batches.headOption.map { batch =>
+      indexBatch(batch, i).flatMap { j =>
+        val remaining = batches.tail
+        if (remaining.nonEmpty) {
+          reindexResources(remaining.flatten, j)
+        } else {
+          Future.successful(j)
         }
       }
 
-      i = i + Await.result(eventualIndexed, TenSeconds)
+    }.getOrElse {
+      Future.successful(i)
     }
-
-    log.info("Index rebuild complete")
   }
 
   private def getIndexTagIdsFor(resource: Resource): Future[Seq[String]] = {
