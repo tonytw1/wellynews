@@ -46,7 +46,7 @@ import scala.concurrent.{ExecutionContext, Future}
             Future.successful(Seq.empty)
           }
 
-          eventuallyAcceptedNewsitems.map { accepted =>
+          eventuallyAcceptedNewsitems.flatMap { accepted =>
             if (accepted.nonEmpty) {
               log.info("Accepted " + accepted.size + " newsitems from " + feed.title)
             }
