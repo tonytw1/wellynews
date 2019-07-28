@@ -27,14 +27,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       getFeedReaderUser.map { maybyFeedUser =>
         maybyFeedUser.map { feedReaderUser =>
           log.info("Reading " + feeds.size + " feeds as user " + feedReaderUser.name)
-
-          val eventualUnits = feeds.map { feed =>
-            feedReader.processFeed(feed, feedReaderUser)
+          feeds.foreach { feed =>
+            Await.result(feedReader.processFeed(feed, feedReaderUser), TenSeconds)
           }
-
-          eventualUnits.foreach( f =>
-            Await.result(f, TenSeconds)
-          )
 
           log.info("Finished reading feeds")
           true
