@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class LinkChecker @Autowired()(mongoRepository: MongoRepository, contentUpdateService: ContentUpdateService,
                                           httpFetcher: RobotsAwareHttpFetcher, feedAutodiscoveryProcesser: FeedAutodiscoveryProcesser)
@@ -43,16 +43,13 @@ import scala.concurrent.{ExecutionContext, Future}
         log.info("Checking: " + toCheck._1.title + " (" + toCheck + ")")
         httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
           maybePageBody.map { pageBody =>
-            processers.foreach { processor =>
+            val x: Seq[Future[Boolean]] = processers.map { processor =>
               log.debug("Running processor: " + processor.getClass.toString)
-              try {
-                processor.process(toCheck._1, pageBody, DateTime.now)
-              } catch {
-                case e: Exception =>
-                  log.error("An exception occured while running a link checker processor", e)
-              }
+              processor.process(toCheck._1, pageBody, DateTime.now)
               //snapshotArchive.put(new Snapshot(p, DateTime.now.toDate, pageContent))
             }
+
+            Await.result(Future.sequence(x), TenSeconds)
             true
           }
 

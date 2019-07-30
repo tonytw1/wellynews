@@ -12,7 +12,7 @@ import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component class FeedAutodiscoveryProcesser @Autowired()(mongoRepository: MongoRepository,
                                                          rssLinkExtractor: RssLinkExtractor,
@@ -22,10 +22,10 @@ import scala.concurrent.{Await, ExecutionContext}
 
   private val log = Logger.getLogger(classOf[FeedAutodiscoveryProcesser])
 
-  override def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Unit = {
+  override def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean] = {
     if (!checkResource.`type`.equals("F")) {
       checkResource.page.map { p =>
-        val pageUrl = new URL(p)  // TODO catch
+        val pageUrl = new URL(p) // TODO catch
 
         def expandUrl(url: String): String = {
           if (!isFullQualified(url)) {
@@ -50,32 +50,54 @@ import scala.concurrent.{Await, ExecutionContext}
           }
         }
 
-        rssLinkExtractor.extractLinks(pageContent).map(expandUrl).foreach { discoveredUrl =>
-          log.info("Processing discovered url: " + discoveredUrl)
+        val newlyDiscovered: Future[Seq[String]] = Future.sequence {
+          rssLinkExtractor.extractLinks(pageContent).map(expandUrl).map { discoveredUrl =>
+            log.info("Processing discovered url: " + discoveredUrl)
 
-          val isCommentFeedUrl = commentFeedDetector.isCommentFeedUrl(discoveredUrl)
-          if (isCommentFeedUrl) {
-            log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
-
-          } else {
-            val isUrlOfExistingFeed = Await.result(mongoRepository.getFeedByUrl(discoveredUrl), ThirtySeconds).nonEmpty
-            if (!isUrlOfExistingFeed) {
-              recordDiscoveredFeedUrl(checkResource, discoveredUrl, seen)
+            if (commentFeedDetector.isCommentFeedUrl(discoveredUrl)) {
+              log.info("Discovered url is a comment feed; ignoring: " + discoveredUrl)
+              Future.successful(None)
 
             } else {
-              log.info("Ignoring discovered url of existing feed")
+              mongoRepository.getFeedByUrl(discoveredUrl).map { maybeExistingFeed =>
+                if (maybeExistingFeed.isEmpty) {
+                  Some(discoveredUrl)
+                } else {
+                  None
+                }
+              }
             }
           }
+        }.map(_.flatten)
+
+        val z: Future[Boolean] = newlyDiscovered.flatMap { ds =>
+          Future.sequence {
+            ds.map { d =>
+              recordDiscoveredFeedUrl(checkResource, d, seen)
+            }
+          }.map { _ => true }
         }
+        z
+
+      }.getOrElse {
+        Future.successful(false)
       }
+
+    } else {
+      Future.successful(false)
     }
   }
 
   private def isFullQualified(discoveredUrl: String): Boolean = discoveredUrl.startsWith("http://") || discoveredUrl.startsWith("https://")
 
-  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Unit = {
-    if (Await.result(mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page.get), TenSeconds).isEmpty) {
-      mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page.get, seen = seen.toDate))
+  private def recordDiscoveredFeedUrl(checkResource: Resource, discoveredFeedUrl: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Object] = {
+    val eventualMaybeExistingDiscoveredFeed = mongoRepository.getDiscoveredFeedByUrlAndReference(discoveredFeedUrl, checkResource.page.get)
+    eventualMaybeExistingDiscoveredFeed.flatMap { maybeExistingDiscoveredFeed =>
+      if (maybeExistingDiscoveredFeed.isEmpty) {
+        mongoRepository.saveDiscoveredFeed(DiscoveredFeed(url = discoveredFeedUrl, referencedFrom = checkResource.page.get, seen = seen.toDate))
+      } else {
+        Future.successful(Unit)
+      }
     }
   }
 

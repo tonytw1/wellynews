@@ -3,8 +3,8 @@ package nz.co.searchwellington.linkchecking
 import nz.co.searchwellington.model.Resource
 import org.joda.time.DateTime
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 trait LinkCheckerProcessor {
-  def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Unit
+  def process(checkResource: Resource, pageContent: String, seen: DateTime)(implicit ec: ExecutionContext): Future[Boolean]
 }
