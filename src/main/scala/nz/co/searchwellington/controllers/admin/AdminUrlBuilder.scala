@@ -65,11 +65,11 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
   }
 
   def getFeedNewsitemSuppressUrl(newsitem: FrontendNewsitem): String = {
-    siteInformation.getUrl + "/supress/supress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
+    siteInformation.getUrl + "/suppress/suppress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
   def getFeedNewsitemUnsuppressUrl(newsitem: FrontendNewsitem): String = {
-    siteInformation.getUrl + "/supress/unsupress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
+    siteInformation.getUrl + "/suppress/unsuppress?url=" + UrlParameterEncoder.encode(newsitem.getUrl)
   }
 
   def getPublisherAutoGatherUrl(resource: FrontendWebsite): String = {
