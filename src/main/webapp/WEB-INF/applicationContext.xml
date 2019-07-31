@@ -44,4 +44,9 @@
 		<property name="queueCapacity" value="50000" />
 	</bean>
 
+	<bean id="linkCheckerTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+		<property name="corePoolSize" value="4" />
+		<property name="maxPoolSize" value="5" />
+		<property name="queueCapacity" value="50000" />
+	</bean>
 </beans>

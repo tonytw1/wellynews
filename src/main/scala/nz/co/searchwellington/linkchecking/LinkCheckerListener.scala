@@ -14,11 +14,11 @@ import org.springframework.core.task.TaskExecutor
 import scala.concurrent.ExecutionContext
 
 @Component class LinkCheckerListener @Autowired() (linkChecker: LinkChecker, rabbitConnectionFactory: RabbitConnectionFactory,
-                                                   feedReaderTaskExecutor: TaskExecutor) {
+                                                   linkCheckerTaskExecutor: TaskExecutor) {
 
   val QUEUE_NAME = LinkCheckerQueue.QUEUE_NAME
 
-  implicit val executionContext = ExecutionContext.fromExecutor(feedReaderTaskExecutor)
+  implicit val executionContext = ExecutionContext.fromExecutor(linkCheckerTaskExecutor)
 
   {
     val connection = rabbitConnectionFactory.connect
