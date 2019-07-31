@@ -130,8 +130,6 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
         feedLatestItemDate.map(fid => FeedLatestItemDate -> new DateTime(fid))
       )
 
-      log.info(fields.flatten)
-
       indexInto(Index / Resources).fields(fields.flatten) id r._1._id.stringify
     }
 
