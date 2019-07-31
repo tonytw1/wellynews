@@ -11,29 +11,30 @@ import org.springframework.web.servlet.view.RedirectView
 
 @Controller class SuppressionController @Autowired()(suppressionDAO: SuppressionDAO, urlStack: UrlStack,
                                                      loggedInUserFilter: LoggedInUserFilter) {
-
   @RequestMapping(Array("/supress/supress"))
-  def supress(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
+  def suppress(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
-    if (loggedInUser != null && request.getParameter("url") != null) {
-      val urlToSupress = request.getParameter("url")
-      suppressionDAO.addSuppression(urlToSupress)
+
+    Option(loggedInUser).map { user =>
+      Option(request.getParameter("url")).map { url =>
+        suppressionDAO.addSuppression(url)
+      }
     }
-    setRedirect(mv, request)
-    mv
+
+    returnRedirect(request)
   }
 
   @RequestMapping(Array("/supress/unsupress"))
-  def unsupress(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  def unsuppress(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView
     val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (loggedInUser != null && request.getParameter("url") != null) {
       suppressionDAO.removeSupressionForUrl(request.getParameter("url"))
     }
-    setRedirect(mv, request)
-    mv
+    returnRedirect(request)
   }
 
-  private def setRedirect(modelAndView: ModelAndView, request: HttpServletRequest) = modelAndView.setView(new RedirectView(urlStack.getExitUrlFromStack(request)))
+  private def returnRedirect(request: HttpServletRequest): ModelAndView = {
+    new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
+  }
 }
