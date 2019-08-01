@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
       log.info("With autotaggings: " + withAutoTaggings)
       contentUpdateService.create(withAutoTaggings).map { _ =>
         log.info("Created accepted newsitem: " + notHeld)
-        linkCheckerQueue.add(withAutoTaggings.id)
+        linkCheckerQueue.add(withAutoTaggings._id.stringify)
         withAutoTaggings
       }
     }
