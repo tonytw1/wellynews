@@ -23,7 +23,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
     autoTagger.autotag(notHeld).flatMap { autoTaggings =>
       log.info("Got autotaggings: " + autoTaggings)
-      val withAutoTaggings = notHeld.withTags(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)).toSeq)
+      val withAutoTaggings = notHeld.withTags(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)))
       log.info("With autotaggings: " + withAutoTaggings)
       contentUpdateService.create(withAutoTaggings).map { _ =>
         log.info("Created accepted newsitem: " + notHeld)

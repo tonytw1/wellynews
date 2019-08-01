@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
   private val log = Logger.getLogger(classOf[ContentUpdateService])
 
   def update(resource: Resource)(implicit ec: ExecutionContext): Future[Unit] = {
-    log.info("Updating content for: " + resource.title + " - " + resource.http_status + " " + resource.page)
+    log.debug("Updating content for: " + resource.title + " - " + resource.http_status + " " + resource.page)
     try {
       /*
       var resourceUrlHasChanged = false
@@ -50,9 +50,9 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def create(resource: Resource)(implicit ec: ExecutionContext): Future[Unit] = {
     resource.setHttpStatus(0)
-    log.info("Creating resource: " + resource.page )
+    log.debug("Creating resource: " + resource.page )
     mongoRepository.saveResource(resource).map { r =>
-      log.info("Result of save for " + resource._id + " " + resource.page + ": " + r)
+      log.debug("Result of save for " + resource._id + " " + resource.page + ": " + r)
       frontendContentUpdater.update(resource)
       // TODO linkCheckerQueue.add(resource._id.stringify)
     }
