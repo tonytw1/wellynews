@@ -140,6 +140,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
   */
 
+  @Deprecated
   @RequestMapping(Array("/edit/submit/website")) def submitWebsite(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitWebsite")
     modelAndView.addObject("heading", "Submitting a Website")
@@ -159,6 +160,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     modelAndView
   }
 
+  @Deprecated
   @RequestMapping(Array("/edit/submit/feed")) def submitFeed(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val modelAndView: ModelAndView = new ModelAndView("submitFeed")
     modelAndView.addObject("heading", "Submitting a Feed")

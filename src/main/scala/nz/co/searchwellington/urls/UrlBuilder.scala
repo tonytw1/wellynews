@@ -183,7 +183,7 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
   }
 
   def getSubmitWebsiteUrl: String = {
-    siteInformation.getUrl + "/edit/submit/website"
+    siteInformation.getUrl + "/new-website"
   }
 
   def getSubmitNewsitemUrl: String = {
@@ -191,7 +191,7 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
   }
 
   def getSubmitFeedUrl: String = {
-    siteInformation.getUrl + "/edit/submit/feed"
+    siteInformation.getUrl + "/new-feed"
   }
 
   def getResourceUrl(resource: FrontendResource): String = {
