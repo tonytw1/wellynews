@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                        contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
                                                        tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, commonModelObjectsService: CommonModelObjectsService,
                                                        feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
-                                                       whakaoroService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
+                                                       whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
                                                        spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
