@@ -8,9 +8,8 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
 
 import scala.concurrent.Await
-import scala.concurrent.duration._
-import scala.util.Random
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.Random
 
 class MongoRepositoryTest extends ReasonableWaits {
 
