@@ -9,7 +9,7 @@
     <description>Search Wellington application.</description>
 
     <properties>
-        <org.springframework.version>4.3.23.RELEASE</org.springframework.version>
+        <org.springframework.version>4.3.25.RELEASE</org.springframework.version>
         <elastic4s.version>6.3.8</elastic4s.version>
     </properties>
 
@@ -377,7 +377,7 @@
             <version>1.9.0</version>
             <scope>test</scope>
         </dependency>
-        
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
