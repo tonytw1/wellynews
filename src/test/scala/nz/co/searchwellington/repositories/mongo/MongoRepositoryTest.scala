@@ -2,6 +2,7 @@ package nz.co.searchwellington.repositories.mongo
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.Test
@@ -9,12 +10,9 @@ import org.junit.Test
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Random
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class MongoRepositoryTest {
-
-  val TenSeconds = Duration(10, SECONDS)
+class MongoRepositoryTest extends ReasonableWaits {
 
   val mongoRepository = new MongoRepository("mongodb://localhost:27017/wellynews")
 

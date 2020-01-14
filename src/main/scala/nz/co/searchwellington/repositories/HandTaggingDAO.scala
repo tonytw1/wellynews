@@ -1,5 +1,6 @@
 package nz.co.searchwellington.repositories
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -13,10 +14,9 @@ import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Deprecated // "tags are attached to resource document now"
-@Component class HandTaggingDAO @Autowired() (mongoRepository: MongoRepository) {
-  
+@Component class HandTaggingDAO @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
+
   private val log = Logger.getLogger(classOf[HandTaggingDAO])
-  private val TenSeconds = Duration(10, SECONDS)
 
   def getHandTaggingsForResource(resource: Tagged): Future[Seq[HandTagging]] = {
     Future.sequence {
@@ -56,7 +56,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       // sessionFactory.getCurrentSession.delete(handTagging)
     }
   }
-  
+
   @SuppressWarnings(Array("unchecked")) private def getHandTaggingsForResourceByUser(resource: Resource, user: User): Seq[HandTagging] = {
     // sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).add(Restrictions.eq("user", user)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
     Seq() // TODO
