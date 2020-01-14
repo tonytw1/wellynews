@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import org.joda.time.DateTime
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
@@ -28,37 +29,43 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    val mv = new ModelAndView("newWebsite")
-    mv.addObject("newWebsite", new NewWebsite())
-    return mv
+    new ModelAndView("newWebsite").addObject("newWebsite", new NewWebsite())
   }
 
   @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("newWebsite") newWebsite: NewWebsite, result: BindingResult): ModelAndView = {
-
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
-      val mv = new ModelAndView("newWebsite")
-      mv.addObject("newWebsite", newWebsite)
-      return mv
+      renderNewWebsiteForm(newWebsite)
 
     } else {
       log.info("Got valid new website submission: " + newWebsite)
 
-      val owner = Option(loggedInUserFilter.getLoggedInUser)
+      val proposedUrlWords = urlWordsGenerator.makeUrlWordsFromName(newWebsite.getTitle)
 
-      val website = Website(title = Some(newWebsite.getTitle),
-        page = Some(newWebsite.getUrl),
-        url_words = Some(urlWordsGenerator.makeUrlWordsFromName(newWebsite.getTitle)),
-        owner = owner.map(_._id),
-        date = Some(DateTime.now.toDate)
-      )
+      Await.result(mongoRepository.getWebsiteByUrlwords(proposedUrlWords), TenSeconds).fold {
+        val owner = Option(loggedInUserFilter.getLoggedInUser)
 
-      contentUpdateService.create(website)
-      log.info("Created website: " + website)
+        val website = Website(title = Some(newWebsite.getTitle),
+          page = Some(newWebsite.getUrl),
+          url_words = Some(proposedUrlWords),
+          owner = owner.map(_._id),
+          date = Some(DateTime.now.toDate)
+        )
 
-      new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(website.title.get)))
+        contentUpdateService.create(website)
+        log.info("Created website: " + website)
+        new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(website.title.get)))
+
+      } { existing =>
+        log.warn("Found existing website site same url words: " + existing.title)
+        renderNewWebsiteForm(newWebsite) // TODO show error
+      }
     }
+  }
+
+  private def renderNewWebsiteForm(newWebsite: nz.co.searchwellington.forms.NewWebsite): ModelAndView = {
+    new ModelAndView("newWebsite").addObject("newWebsite", newWebsite)
   }
 
 }
