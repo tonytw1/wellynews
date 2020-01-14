@@ -16,10 +16,10 @@ import scala.concurrent.Await
 import scala.concurrent.duration.{Duration, SECONDS}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Controller class SimplePageController @Autowired() (tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
-                                                     commonModelObjectsService: CommonModelObjectsService, urlStack: UrlStack,
-                                                     contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper,
-                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter) {
+@Controller class SimplePageController @Autowired()(tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
+                                                    commonModelObjectsService: CommonModelObjectsService, urlStack: UrlStack,
+                                                    contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper,
+                                                    mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter) {
 
   val TenSeconds = Duration(10, SECONDS)
 
@@ -107,14 +107,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     mv.setViewName("publishers")
     mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-    mv
-  }
-
-  @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "Sign in")
-    mv.setViewName("signin")
     mv
   }
 
