@@ -5,7 +5,6 @@ import com.sksamuel.elastic4s.analyzers.StandardAnalyzer
 import com.sksamuel.elastic4s.http.ElasticDsl._
 import com.sksamuel.elastic4s.http.bulk.BulkResponse
 import com.sksamuel.elastic4s.http.delete.DeleteResponse
-import com.sksamuel.elastic4s.http.index.admin.IndexExistsResponse
 import com.sksamuel.elastic4s.http.{bulk => _, delete => _, search => _, _}
 import com.sksamuel.elastic4s.mappings.FieldType._
 import com.sksamuel.elastic4s.searches.queries.Query
@@ -144,6 +143,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def getResources(query: ResourceQuery, order: SearchRequest => SearchRequest = byDateDescending, loggedInUser: Option[User]): Future[(Seq[BSONObjectID], Long)] = {
     executeResourceQuery(query, order, loggedInUser)
+  }
+
+  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: String, showBroken: Boolean, user: User, tag: Tag): Future[(Seq[BSONObjectID], Long)] = {
+    // TODO exclude tagged by user
+    val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
+    getResources(query, loggedInUser = Some(user))
   }
 
   def getAllPublishers(loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {

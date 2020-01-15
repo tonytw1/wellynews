@@ -7,7 +7,7 @@ import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.HandTaggingService
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService}
 import nz.co.searchwellington.repositories.elasticsearch.KeywordSearchService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.ImpliedTagService
@@ -27,7 +27,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                  contentUpdateService: ContentUpdateService,
                                                  loggedInUserFilter: LoggedInUserFilter,
                                                  commonModelObjectsService: CommonModelObjectsService,
-                                                 handTaggingService: HandTaggingService) extends ReasonableWaits {
+                                                 handTaggingService: HandTaggingService,
+                                                 contentRetrievalService: ContentRetrievalService) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[AutoTagController])
 
@@ -94,6 +95,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def getPossibleAutotagResources(user: User, tag: Tag): Seq[FrontendResource] =
-    keywordSearchService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName, showBroken = true, user, tag)
+    contentRetrievalService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName, showBroken = true, user, tag)
 
 }
