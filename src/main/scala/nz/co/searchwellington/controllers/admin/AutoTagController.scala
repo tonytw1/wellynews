@@ -33,25 +33,23 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
 
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
-    if (loggedInUser == null) {
+    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+    loggedInUser.fold {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN)
-      null
+      null: ModelAndView
 
-    } else {
-      val mv = new ModelAndView
-      mv.setViewName("autoTagPrompt")
-      commonModelObjectsService.populateCommonLocal(mv)
-      mv.addObject("heading", "Autotagging")
-      requestFilter.loadAttributesOntoRequest(request)
-
-      val tag = request.getAttribute("tag").asInstanceOf[Tag]
-      if (tag == null) {
+    } { loggedInUser =>
+      Option(request.getAttribute("tag").asInstanceOf[Tag]).fold {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-        null
-      } else {
+        null: ModelAndView
+
+      } { tag =>
+        val mv = new ModelAndView("autoTagPrompt")
+        commonModelObjectsService.populateCommonLocal(mv)
+        mv.addObject("heading", "Autotagging")
+        requestFilter.loadAttributesOntoRequest(request)
         mv.addObject("tag", tag)
-        mv.addObject("resources_to_tag", getPossibleAutotagResources(loggedInUserFilter.getLoggedInUser, tag))
+        mv.addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag))
         mv
       }
     }
