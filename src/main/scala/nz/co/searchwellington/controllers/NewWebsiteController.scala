@@ -10,7 +10,7 @@ import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.validation.BindingResult
+import org.springframework.validation.{BindingResult, ObjectError}
 import org.springframework.web.bind.annotation.{ModelAttribute, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
@@ -59,7 +59,9 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
       } { existing =>
         log.warn("Found existing website site same url words: " + existing.title)
-        renderNewWebsiteForm(newWebsite) // TODO show error
+        result.addError(new ObjectError("newWebsite",
+          "Found existing website with same name"))
+        renderNewWebsiteForm(newWebsite)
       }
     }
   }
