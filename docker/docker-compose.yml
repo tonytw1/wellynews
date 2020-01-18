@@ -10,3 +10,8 @@ services:
     image: mongo:3.2
     ports:
     - "27017:27017"
+  rabbit:
+    image: rabbitmq:3
+    ports:
+    - "5672:5672"
+
