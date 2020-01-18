@@ -10,19 +10,17 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
 @Controller
-class ContentController @Autowired() (contentModelBuilderService: ContentModelBuilderService, urlStack: UrlStack) {
+class ContentController @Autowired()(contentModelBuilderService: ContentModelBuilderService, urlStack: UrlStack) {
 
   private val log = Logger.getLogger(classOf[ContentController])
 
   @RequestMapping(value = Array("/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/tags", "/tags/json", "/*/json", "/*/rss", "/*/*/*/*/*"))
   @Timed(timingNotes = "")
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mvo = contentModelBuilderService.populateContentModel(request)
-    mvo.fold {
+    contentModelBuilderService.populateContentModel(request).fold {
       log.warn("Model was null; returning 404")
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      val a: ModelAndView = null
-      a
+      null: ModelAndView
 
     } { mv =>
       if (isHtmlView(mv)) {
@@ -32,8 +30,6 @@ class ContentController @Autowired() (contentModelBuilderService: ContentModelBu
     }
   }
 
-  private def isHtmlView(mv: ModelAndView): Boolean = {
-    mv.getViewName != null
-  }
+  private def isHtmlView(mv: ModelAndView): Boolean = mv.getViewName != null
 
 }
