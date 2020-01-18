@@ -44,14 +44,24 @@ import scala.concurrent.{Await, Future}
     Await.result(elasticSearchIndexer.getResourcesMatchingKeywordsNotTaggedByUser(keywords, showBroken, user, tag).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 
-  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): (Seq[FrontendResource], Long) = {
     val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap { i =>
+      val eventualResources = fetchByIds(i._1)
+      eventualResources.map { rs =>
+        (rs, i._2)
+      }
+    }, TenSeconds)
   }
 
-  def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): (Seq[FrontendResource], Long) = {
     val query = ResourceQuery(`type` = Some("N"), q = Some(keywords), tags = Some(Set(tag)))
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap { i =>
+      val eventualResources = fetchByIds(i._1)
+      eventualResources.map { rs =>
+        (rs, i._2)
+      }
+    }, TenSeconds)
   }
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
@@ -125,14 +135,6 @@ import scala.concurrent.{Await, Future}
 
   def getWebsitesMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
     keywordSearchService.getWebsitesMatchingKeywords(keywords, showBrokenDecisionService.shouldShowBroken(loggedInUser), tag, startIndex, maxItems)
-  }
-
-  def getNewsitemsMatchingKeywordsCount(keywords: String, tag: Tag, loggedInUser: Option[User]): Int = {
-    keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken(loggedInUser), tag)
-  }
-
-  def getNewsitemsMatchingKeywordsCount(keywords: String, loggedInUser: Option[User]): Int = {
-    keywordSearchService.getNewsitemsMatchingKeywordsCount(keywords, showBrokenDecisionService.shouldShowBroken(loggedInUser), null)
   }
 
   def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = elasticSearchIndexer.getArchiveMonths(loggedInUser)

@@ -34,19 +34,13 @@ import scala.concurrent.Await
       t.asInstanceOf[Seq[Tag]].headOption
     }
 
-    val contentWithCount = maybeTag.fold { // The problem here is that you should be able to content and count in one go
+    val contentWithCount = maybeTag.fold {
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
-
-      val content = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
-      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, Option(loggedInUserFilter.getLoggedInUser))
-      (content, contentCount)
+      contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
 
     } { tag =>
       mv.addObject("tag", tag)
-
-      val content = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
-      val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag, Option(loggedInUserFilter.getLoggedInUser))
-      (content, contentCount)
+      contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
     }
 
     import scala.collection.JavaConverters._
