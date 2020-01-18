@@ -1,52 +1,41 @@
 #parse("includes/header.vm")
 
 <div class="page">
-#parse("includes/topbar.vm")
+    #parse("includes/topbar.vm")
+    <div class="left">
+        #parse("includes/tag_tree.vm")
+    </div>
 
-<div class="left">
-#parse("includes/tag_tree.vm")
-</div>
+    <div class="main">
+        #if($tag)
+            <h2><a href="$site_information.url/$tag.name">$tag.displayName</a> / &ldquo;$query&rdquo;</h2>
+        #else
+            <h2>Search Results / &ldquo;$query&rdquo;</h2>
+        #end
 
-<div class="main">
+        #parse("includes/search_widget.vm")
 
-#if($tag)
-	<h2><a href="$site_information.url/$tag.name">$tag.displayName</a> / &ldquo;$query&rdquo;</h2>	
-#else
-	<h2>Search Results / &ldquo;$query&rdquo;</h2>
-#end
+        <ul class="childtags">
+            #foreach ($related_tag in $related_tags)
+                <li><a href="$urlBuilder.getTagSearchUrl($related_tag.tag, $query)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
+            #end
+        </ul>
 
-#parse("includes/search_widget.vm")
+        <div class="tag_main_content">
+            #parse("includes/main_content.vm")
+            #parse("includes/search_page_links.vm")
+        </div>
 
-	<ul class="childtags">	
-	#foreach ($related_tag in $related_tags)
-        <li><a href="$urlBuilder.getTagSearchUrl($related_tag.tag, $query)">$related_tag.tag.displayName.toLowerCase()</a> ($related_tag.count)</li>
-	#end
-	</ul>
+        <div class="tag_secondary_content">
+            #parse("includes/secondary_content.vm")
+        </div>
+    </div>
 
-<div class="tag_main_content">
-#parse("includes/main_content.vm")
-#parse("includes/search_page_links.vm")
-</div>
-
-<div class="tag_secondary_content">
-#parse("includes/secondary_content.vm")
-</div>
-
-
-</div>
-
-<div class="right">
-
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-</div>
-
-
-
-
-</div>
-
-
+    <div class="right">
+        <div class="box">
+            #parse("includes/latest_newsitems.vm")
+        </div>
+    </div>
 </div>
 
 #parse("includes/footer.vm")
