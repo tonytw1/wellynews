@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
 
-@Component class SearchModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, loggedInUserFilter: LoggedInUserFilter)
+@Component class SearchModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, loggedInUserFilter: LoggedInUserFilter)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val KEYWORDS_PARAMETER = "keywords"
@@ -30,7 +30,9 @@ import scala.concurrent.Await
 
     val startIndex = getStartIndex(page)
 
-    val maybeTag =  if (request.getAttribute("tags") != null) (request.getAttribute("tags").asInstanceOf[Seq[Tag]].headOption) else None
+    val maybeTag = Option(request.getAttribute("tags")).flatMap { t =>
+      t.asInstanceOf[Seq[Tag]].headOption
+    }
 
     val contentWithCount = maybeTag.fold { // The problem here is that you should be able to content and count in one go
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
@@ -39,9 +41,9 @@ import scala.concurrent.Await
       val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, Option(loggedInUserFilter.getLoggedInUser))
       (content, contentCount)
 
-    }{ tag =>
+    } { tag =>
       mv.addObject("tag", tag)
-      
+
       val content = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
       val contentCount = contentRetrievalService.getNewsitemsMatchingKeywordsCount(keywords, tag, Option(loggedInUserFilter.getLoggedInUser))
       (content, contentCount)
