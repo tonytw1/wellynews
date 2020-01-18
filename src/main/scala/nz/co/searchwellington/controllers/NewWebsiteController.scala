@@ -67,7 +67,9 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
   }
 
   private def renderNewWebsiteForm(newWebsite: nz.co.searchwellington.forms.NewWebsite): ModelAndView = {
-    new ModelAndView("newWebsite").addObject("newWebsite", newWebsite)
+    new ModelAndView("newWebsite").
+      addObject("heading", "Adding a website").
+      addObject("newWebsite", newWebsite)
   }
 
 }

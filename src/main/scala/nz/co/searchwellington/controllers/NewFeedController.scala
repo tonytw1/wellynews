@@ -108,12 +108,11 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   private def renderForm(newFeed: NewFeed) = {
-    val mv = new ModelAndView("newFeed")
-    mv.addObject("Add a new feed")
     import scala.collection.JavaConverters._
-    mv.addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
-    mv.addObject("newFeed", newFeed)
-    mv
+    new ModelAndView("newFeed").
+      addObject("heading", "Adding a feed").
+      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
+      .addObject("newFeed", newFeed)
   }
 
 }
