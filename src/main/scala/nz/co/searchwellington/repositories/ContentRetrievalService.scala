@@ -17,12 +17,12 @@ import uk.co.eelpieconsulting.common.geo.model.LatLong
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-@Component class ContentRetrievalService @Autowired()( resourceDAO: HibernateResourceDAO,
-                                                       keywordSearchService: KeywordSearchService,
-                                                       showBrokenDecisionService: ShowBrokenDecisionService,
-                                                       tagDAO: TagDAO,  relatedTagsService: RelatedTagsService,
-                                                       frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
-                                                       mongoRepository: MongoRepository) extends ReasonableWaits {
+@Component class ContentRetrievalService @Autowired()(resourceDAO: HibernateResourceDAO,
+                                                      keywordSearchService: KeywordSearchService,
+                                                      showBrokenDecisionService: ShowBrokenDecisionService,
+                                                      tagDAO: TagDAO, relatedTagsService: RelatedTagsService,
+                                                      frontendResourceMapper: FrontendResourceMapper, elasticSearchIndexer: ElasticSearchIndexer,
+                                                      mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ContentRetrievalService])
 
@@ -45,23 +45,13 @@ import scala.concurrent.{Await, Future}
   }
 
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): (Seq[FrontendResource], Long) = {
-    val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap { i =>
-      val eventualResources = fetchByIds(i._1)
-      eventualResources.map { rs =>
-        (rs, i._2)
-      }
-    }, TenSeconds)
+    val newsitemsByKeywords = ResourceQuery(`type` = Some("N"), q = Some(keywords))
+    Await.result(toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(newsitemsByKeywords, loggedInUser = loggedInUser)), TenSeconds)
   }
 
   def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): (Seq[FrontendResource], Long) = {
-    val query = ResourceQuery(`type` = Some("N"), q = Some(keywords), tags = Some(Set(tag)))
-    Await.result(elasticSearchIndexer.getResources(query, loggedInUser = loggedInUser).flatMap { i =>
-      val eventualResources = fetchByIds(i._1)
-      eventualResources.map { rs =>
-        (rs, i._2)
-      }
-    }, TenSeconds)
+    val taggedNewsitemsByKeywords = ResourceQuery(`type` = Some("N"), q = Some(keywords), tags = Some(Set(tag)))
+    Await.result(toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(taggedNewsitemsByKeywords, loggedInUser = loggedInUser)), TenSeconds)
   }
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
@@ -196,7 +186,7 @@ import scala.concurrent.{Await, Future}
   }
 
   def getFeedworthyTags(loggedInUser: Option[User]): Seq[Tag] = {
-    var feedworthTags: Seq[Tag]= Seq()
+    var feedworthTags: Seq[Tag] = Seq()
     import scala.collection.JavaConversions._
     for (tagContentCount <- relatedTagsService.getFeedworthyTags(showBrokenDecisionService.shouldShowBroken(loggedInUser))) {
       feedworthTags.add(tagContentCount.getTag)
@@ -235,9 +225,11 @@ import scala.concurrent.{Await, Future}
   }
 
   private def fetchByIds(ids: Seq[BSONObjectID]): Future[Seq[FrontendResource]] = {
-    val eventualResources = Future.sequence{ ids.map { id =>
-      mongoRepository.getResourceByObjectId(id)
-    }}.map(_.flatten)
+    val eventualResources = Future.sequence {
+      ids.map { id =>
+        mongoRepository.getResourceByObjectId(id)
+      }
+    }.map(_.flatten)
 
     eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
   }
@@ -245,5 +237,13 @@ import scala.concurrent.{Await, Future}
   private val geocodedNewsitems = ResourceQuery(`type` = Some("N"), geocoded = Some(true))
 
   private def nearbyNewsitems(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
+
+  private def toFrontendResourcesWithTotalCount(elasticSearchResults: Future[(Seq[BSONObjectID], Long)]): Future[(Seq[FrontendResource], Long)] = {
+    elasticSearchResults.flatMap { i =>
+      fetchByIds(i._1).map { rs =>
+        (rs, i._2)
+      }
+    }
+  }
 
 }
