@@ -26,7 +26,9 @@ class SearchModelBuilderTest {
 
   val tagNewsitem = mock(classOf[FrontendResource])
   val anotherTagNewsitem = mock(classOf[FrontendResource])
-  val tagKeywordNewsitemResults: Seq[FrontendResource] = Seq(tagNewsitem, anotherTagNewsitem)
+
+  val keywordNewsitemResults: (Seq[FrontendResource], Long) = (Seq.empty, 0L)
+  val tagKeywordNewsitemResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
 
   private val loggedInUser = None
 
@@ -46,6 +48,8 @@ class SearchModelBuilderTest {
 
   @Test
   def pageHeadingShouldBeSearchKeyword {
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).thenReturn(keywordNewsitemResults)
+
     request.setParameter("keywords", "widgets")
 
     assertEquals("Search results - widgets", modelBuilder.populateContentModel(request).get.getModel.get("heading"))
@@ -56,6 +60,7 @@ class SearchModelBuilderTest {
   def shouldShowTagIfTagFilterIsSet {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
+    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -71,7 +76,8 @@ class SearchModelBuilderTest {
     val mv = modelBuilder.populateContentModel(request).get
 
     import scala.collection.JavaConverters._
-    assertEquals(tagKeywordNewsitemResults.asJava, mv.getModel.get("main_content"))
+    assertEquals(tagKeywordNewsitemResults._1.asJava, mv.getModel.get("main_content"))
+    assertEquals(2L, mv.getModel.get("main_content_total"))
   }
 
 }
