@@ -93,19 +93,4 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mv
   }
 
-  @RequestMapping(Array("/publishers")) def publishers(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
-    urlStack.setUrlStack(request)
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "All Publishers")
-
-    import scala.collection.JavaConverters._
-    val publishers = Await.result(contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).sortBy(_.title).map(p => frontendResourceMapper.createFrontendResourceFrom(p))
-    mv.addObject("publishers", publishers.asJava)
-
-    mv.setViewName("publishers")
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-    mv
-  }
-
 }
