@@ -23,7 +23,7 @@
 			#end
 
             #if ($editPermissionService.canEdit($feed))
-                <p><a href="$adminUrlBuilder.getWhakaokoPreviewUrl($whakaoko_subscription)">$subscription</a></p>
+                <p><a href="$adminUrlBuilder.getWhakaokoPreviewUrl($subscription)">$subscription</a></p>
             #end
 
 			#if ($editPermissionService.canAcceptAllFrom($feed))			
