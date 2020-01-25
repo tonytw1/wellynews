@@ -4,6 +4,7 @@ import java.util.UUID
 
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
+import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendFeed, FrontendNewsitem}
@@ -26,6 +27,7 @@ class FeedModelBuilderTest {
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
   private val feeditemToNewsitemService = mock(classOf[FeeditemToNewsitemService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val whakaokoService = mock(classOf[WhakaokoService])
 
   var feed = Feed(id = UUID.randomUUID().toString, page = Some("http://localhost/a-feed"))
 
@@ -55,7 +57,7 @@ class FeedModelBuilderTest {
   var request: MockHttpServletRequest = null
 
   val modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
-    feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, loggedInUserFilter)
+    feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, loggedInUserFilter, whakaokoService)
 
   @Before
   def setUp {
