@@ -5,7 +5,6 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.reading.WhakaokoService
-import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, Subscription}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
@@ -49,46 +48,34 @@ import scala.concurrent.{Await, Future}
 
     def populateFeedItems(mv: ModelAndView, feed: Feed) {
 
-      val z: Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap {
-        feedItemsForFeed =>
-          val x = feedItemsForFeed.fold({
-            l =>
-              Future.successful(Left(l))
+      val z: Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
+        val x = feedItemsForFeed.fold({ l =>
+          Future.successful(Left(l))
+        }, {
+          result =>
+            val feedItems = result._1
+            val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
+            val eventualWithSuppressionAndLocalCopyInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
 
-          }, {
-            result =>
-              val a: (Seq[FeedItem], Subscription) = result
-              val feedItems = result._1
-              val feedNewsitems = feedItems.map(i => feeditemToNewsitemService.makeNewsitemFromFeedItem(i, feed))
-              val eventualWithSuppressionAndLocalCopyInformation = feedNewsItemLocalCopyDecorator.addSupressionAndLocalCopyInformation(feedNewsitems)
-
-              eventualWithSuppressionAndLocalCopyInformation.map {
-                i =>
-                  Right(i)
-              }
-          })
-          x
+            eventualWithSuppressionAndLocalCopyInformation.map { i =>
+              Right(i)
+            }
+        })
+        x
       }
 
-      val x = z.map {
-        y =>
-          y.fold({
-            l =>
-              mv.addObject("feed_error", l)
-              mv
+      val x = z.map { y =>
+        y.fold({
+          l =>
+            mv.addObject("feed_error", l)
+            mv
 
-          }, {
-            result =>
-              val a = result
-
-              import scala.collection.JavaConverters._
-
-              mv.addObject(MAIN_CONTENT, result.asJava)
-              populateGeotaggedFeedItems(mv, result.map(_.newsitem))
-
-              //mv.addObject("whakaoko_subscription", result._2)
-              mv
-          })
+        }, { result =>
+          import scala.collection.JavaConverters._
+          mv.addObject(MAIN_CONTENT, result.asJava)
+          populateGeotaggedFeedItems(mv, result.map(_.newsitem))
+          mv
+        })
       }
 
       Await.result(x, TenSeconds)
