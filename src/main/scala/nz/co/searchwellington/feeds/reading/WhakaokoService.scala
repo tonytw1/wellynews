@@ -23,15 +23,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def getWhakaokoSubscriptionByUrl(url: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
     client.getChannelSubscriptions.map { channelSubscriptions =>
-      // TODO API should allow us to pass the url rather than scanning the entire collection
-    channelSubscriptions.find(s => s.url == url)
+      channelSubscriptions.find(s => s.url == url) // TODO API should allow us to pass the url rather than scanning the entire collection
     }
   }
 
   def getSubscriptionFeedItems(subscriptionId: String)(implicit ec: ExecutionContext): Future[Either[String, Seq[FeedItem]]] = {
-      client.getSubscriptionFeedItems(subscriptionId).map { r =>
-        Right(r)
-      }
+    client.getSubscriptionFeedItems(subscriptionId).map { r =>
+      Right(r)
+    }
   }
 
   def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = client.getChannelFeedItems(page)
