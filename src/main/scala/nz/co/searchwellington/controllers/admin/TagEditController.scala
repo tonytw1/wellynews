@@ -118,9 +118,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.info("No tag seen on request; creating a new instance.")
       editTag = Tag(id = UUID.randomUUID().toString)
     }
-    //editTag.setName(request.getParameter("name"))
-    //editTag.setDisplayName(request.getParameter("displayName"))
-    //editTag.setDescription(request.getParameter("description"))
+
+    editTag = editTag.copy(name = request.getParameter("name"))
+    editTag = editTag.copy(display_name = request.getParameter("displayName"))
+    editTag = editTag.copy(description = Option(request.getParameter("description")))
+
     val isFeatured: Boolean = request.getParameter("featured") != null
     //editTag.setFeatured(isFeatured)
     //editTag.setGeocode(submissionProcessingService.processGeocode(request))
