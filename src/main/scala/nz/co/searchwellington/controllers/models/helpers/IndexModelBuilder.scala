@@ -31,7 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/$") ||
       request.getPathInfo.matches("^/json$") ||
-      request.getPathInfo.matches("^/rss")
+      request.getPathInfo.matches("^/rss$")
   }
 
   def getViewName(mv: ModelAndView): String = "index"
