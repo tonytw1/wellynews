@@ -92,7 +92,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  private def getPossibleAutotagResources(user: User, tag: Tag): Seq[FrontendResource] =
-    contentRetrievalService.getResourcesMatchingKeywordsNotTaggedByUser(tag.getDisplayName, showBroken = true, user, tag)
+  private def getPossibleAutotagResources(user: User, tag: Tag): Seq[FrontendResource] = {
+    val keywords = tag.getDisplayName // TODO OR with autotagging hints
+    contentRetrievalService.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag)
+  }
 
 }

@@ -145,7 +145,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     executeResourceQuery(query, order, loggedInUser)
   }
 
-  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: String, showBroken: Boolean, user: User, tag: Tag): Future[(Seq[BSONObjectID], Long)] = {
+  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: String, user: User, tag: Tag): Future[(Seq[BSONObjectID], Long)] = {
     // TODO exclude tagged by user
     val query = ResourceQuery(`type` = Some("N"), q = Some(keywords))
     getResources(query, loggedInUser = Some(user))
