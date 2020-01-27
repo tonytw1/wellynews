@@ -45,6 +45,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
         latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
       } yield {
         val mv = new ModelAndView
+
+        mv.addObject("heading", "Wellynews")
+        mv.addObject("description", "Wellington related newsitems")
+        mv.addObject("link", urlBuilder.getHomeUrl())
+
         log.info("Main content newitems: " + latestNewsitems.size)
         mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
         monthOfLastItem(latestNewsitems).map { d =>
