@@ -58,7 +58,6 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
       } else {
         log.warn("New tag submission has errors: " + result)
         renderForm(newTag)
-
       }
 
     } else {
