@@ -33,9 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[AutoTagController])
 
   @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-
-    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
-    loggedInUser.fold {
+    Option(loggedInUserFilter.getLoggedInUser).fold {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN)
       null: ModelAndView
 
@@ -45,12 +43,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
         null: ModelAndView
 
       } { tag =>
-        val mv = new ModelAndView("autoTagPrompt")
+        val mv = new ModelAndView("autoTagPrompt").
+          addObject("heading", "Autotagging").
+          addObject("tag", tag).
+          addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag))
+
         commonModelObjectsService.populateCommonLocal(mv)
-        mv.addObject("heading", "Autotagging")
-        requestFilter.loadAttributesOntoRequest(request)
-        mv.addObject("tag", tag)
-        mv.addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag))
         mv
       }
     }
