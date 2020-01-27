@@ -16,7 +16,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
 
   private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
 
-  @RequestMapping(value = Array("/", "/rss", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/*/*/*/*/*"))
+  @RequestMapping(value = Array("/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/*/*/*/*/*"))
   @Timed(timingNotes = "")
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     contentModelBuilderService.populateContentModel(request).fold {
