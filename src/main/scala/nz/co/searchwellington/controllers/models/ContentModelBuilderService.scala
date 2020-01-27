@@ -4,14 +4,12 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-@Component class ContentModelBuilderService @Autowired()(viewFactory: ViewFactory,
-                                                         val contentRetrievalService: ContentRetrievalService,
-                                                         modelBuilders: Seq[ModelBuilder]) extends CommonModelObjectsService {
+class ContentModelBuilderService(viewFactory: ViewFactory,
+                                 val contentRetrievalService: ContentRetrievalService,
+                                 modelBuilders: Seq[ModelBuilder]) extends CommonModelObjectsService {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
