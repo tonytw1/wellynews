@@ -6,6 +6,10 @@ services:
     - "./elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml"
     ports:
     - "9200:9200"
+  memcached:
+    image: memcached
+    ports:
+    - "11211:11211"
   mongo:
     image: mongo:3.2
     ports:
