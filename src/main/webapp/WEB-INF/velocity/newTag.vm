@@ -1,0 +1,41 @@
+#parse("includes/header.vm")
+
+<div class="page">
+    #parse("includes/topbar.vm")
+
+    <div class="left">
+        #parse("includes/tag_tree.vm")
+    </div>
+
+    <div class="main">
+        <h2>Adding a tag</h2>
+
+        <form action="/new-tag" method="POST">
+
+            #springBind("newTag")
+            #foreach($error in $status.errorMessages)
+                <div class="alert">$error</div>
+            #end
+
+            <fieldset>
+                #springBind("newTag.displayName")
+                <label for="${status.expression}">Display name:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("newTag.description")
+                <label for="${status.expression}">Description:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                <input type="submit" value="Add" />
+            </fieldset>
+        </form>
+
+        <form action="/cancel" method="POST">
+            <input type="submit" value="cancel" />
+        </form>
+    </div>
+</div>
+
+#parse("includes/footer.vm")

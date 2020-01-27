@@ -76,34 +76,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mv
   }
 
-  @RequestMapping(Array("/edit/tag/add")) def add(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val modelAndView = new ModelAndView("savedTag")
-    modelAndView.addObject("heading", "Tag Added")
-    val displayName = request.getParameter("displayName")
-
-    Option(displayName).fold {
-      new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request))) // TODO migrate to form backing object
-
-    } { dn =>
-      val tagUrlWords = urlWordsGenerator.makeUrlWordsFromName(dn)
-
-      val existingTag = Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds)
-
-      existingTag.fold {
-        val newTag = tagDAO.createNewTag(tagUrlWords, dn)
-
-        log.info("Adding new tag: " + tagUrlWords)
-        Await.result(mongoRepository.saveTag(newTag), TenSeconds)
-        modelAndView.addObject("tag", newTag)
-        modelAndView
-
-      }{ et =>
-        log.info("A tag already exists with url words: " + tagUrlWords + ". Not adding: " + et)
-        new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
-      }
-    }
-  }
-
   @RequestMapping(value = Array("/edit/tag/save"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("savedTag")
     mv.addObject("heading", "Tag Saved")
