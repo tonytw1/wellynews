@@ -73,12 +73,7 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
   }
 
   def getPublisherAutoGatherUrl(resource: FrontendWebsite): String = {
-    val resourceUrl: String = urlBuilder.getResourceUrl(resource)
-    if (resourceUrl != null) {
-      resourceUrl + "/gather"
-    } else {
-      null
-    }
+    Option(urlBuilder.getResourceUrl(resource)).map ( _ + "/gather").orNull
   }
 
   def getAddTagUrl: String = {
