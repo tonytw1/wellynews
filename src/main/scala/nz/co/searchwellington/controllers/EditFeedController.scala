@@ -96,12 +96,11 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
   }
 
   private def renderEditForm(f: Feed, editFeed: EditFeed): ModelAndView = {
-    val mv = new ModelAndView("editFeed")
-    mv.addObject("feed", f)
-    mv.addObject("editFeed", editFeed)
     import scala.collection.JavaConverters._
-    mv.addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
-    return mv
+    new ModelAndView("editFeed").
+      addObject("feed", f).
+      addObject("editFeed", editFeed).
+      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
   }
 
 }
