@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
@@ -10,8 +11,10 @@ import nz.co.searchwellington.views.Errors
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
-import org.springframework.web.bind.annotation.{PathVariable, RequestMapping, RequestMethod}
+import org.springframework.validation.BindingResult
+import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
+import org.springframework.web.servlet.view.RedirectView
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -32,6 +35,22 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
       editTag.setDescription(tag.description.getOrElse(""))
       renderEditForm(tag, editTag)
 
+    }.getOrElse {
+      NotFound
+    }
+  }
+
+  @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
+  def submit(@PathVariable id: String, @Valid @ModelAttribute("editTag") editTag: EditTag, result: BindingResult): ModelAndView = {
+    Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
+      if (result.hasErrors) {
+        log.warn("Edit tag submission has errors: " + result)
+        renderEditForm(tag, editTag)
+
+      } else {
+        // TODO implement
+        new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
+      }
     }.getOrElse {
       NotFound
     }
