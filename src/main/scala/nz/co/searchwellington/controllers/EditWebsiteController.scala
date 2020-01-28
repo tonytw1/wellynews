@@ -128,12 +128,11 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   }
 
   private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {
-    val mv = new ModelAndView("editWebsite")
-    mv.addObject("website", w)
-    mv.addObject("editWebsite", editWebsite)
     import scala.collection.JavaConverters._
-    mv.addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
-    mv
+    new ModelAndView("editWebsite").
+      addObject("website", w).
+      addObject("editWebsite", editWebsite).
+      addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
   }
 
 }
