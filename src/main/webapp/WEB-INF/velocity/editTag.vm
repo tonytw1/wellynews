@@ -7,65 +7,35 @@
 		#parse("includes/tag_tree.vm")
 	</div>
 
-
 	<div class="main">
-		<h2>Editing a Tag</h2>
+		<h2>Editing a tag</h2>
 
-		#if ($tag)
-			<form action="/edit/tag/save" method="POST"> 
-				<input name="tag" type="hidden" value="$!tag.name" />
-				<fieldset>
-					
-					<label for="displayName">Name: </label>
-					<input name="displayName" value="$!tag.displayName" />
-					<br />
-					
-					<label for="name">Url word: </label>
-					<input name="name" value="$!tag.name" />
-					<br />
-		
-					<label for="description">Description: </label>
-					<input name="description" value="$!tag.description" />
-					<br />
-			
-					#set($geocode = $tag.geocode)
-					#parse("includes/geocodeFields.vm")
-															
-					#if ($tag_select) 
-						<label for="parent">Parent Tag: </label>
-				    	$tag_select	
-						<br />
-					#end
-					
-					<label for="feed">Related Feed: </label>
-					$related_feed_select
-					<br />
+		<form id="editForm" action="$adminUrlBuilder.getEditTagUrl($tag)" method="POST">
 
-					<label for="autotag_hints">Autotag hints: </label>
-					<input name="autotag_hints" value="$!tag.autotagHints" />
-					<br />
-							
-					<label for="main_image">Main Image: </label>
-					<input name="main_image" #if ($tag.mainImage) value="$!tag.mainImage" #end />
-					<br />
-				
-					<label for="secondary_image">Secondary Image: </label>
-					<input name="secondary_image" #if ($tag.secondaryImage) value="$!tag.secondaryImage" #end />
-					<br />
-					
-					<label for="featured">Featured: </label>
-					<input name="featured" type="checkbox"  #if ($tag.featured2) CHECKED #end>
-																
-					<input type="submit" value="Save" />		
-				</fieldset>
-			</form>
-		#else
-			<p>No tag was found on the request. Could not edit.</p>
-		#end
+            #springBind("newTag")
+            #foreach($error in $status.errorMessages)
+                <div class="alert">$error</div>
+            #end
 
-		<form action="../../cancel" method="POST">
-			<input type="submit" value="cancel" />
+            <fieldset>
+                #springBind("editTag.displayName")
+                <label for="${status.expression}">Display name:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("editTag.description")
+                <label for="${status.expression}">Description:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+				<input type="submit" value="Submit" />
+			</fieldset>
 		</form>
+
+		<form action="/cancel" method="POST">
+			<input type="submit" value="Cancel" />
+		</form>
+
 	</div>
 
 </div>
