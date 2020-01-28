@@ -48,7 +48,14 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         renderEditForm(tag, editTag)
 
       } else {
-        // TODO implement
+        val updatedTag = tag.copy(
+          display_name = editTag.getDisplayName,
+          description = Option(editTag.getDescription)
+        )
+
+        Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
+        log.info("Updated feed: " + updatedTag)
+
         new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
       }
     }.getOrElse {
