@@ -30,37 +30,29 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-
     Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
-
-      Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
-        r match {
-          case w: Website =>
-            val editWebsite = new EditWebsite()
-            editWebsite.setTitle(w.title.getOrElse(""))
-            editWebsite.setUrl(w.page.getOrElse(""))
-            editWebsite.setDescription(w.description.getOrElse(""))
-            w.geocode.map { g =>
-              editWebsite.setGeocode(g.getAddress)
-              val osmId = g.osmId.flatMap { i =>
-                g.osmType.map { t =>
-                  i + t
-                }
-              }
-              editWebsite.setSelectedGeocode(osmId.getOrElse(""))
+      getWebsiteById(id).map { w =>
+        val editWebsite = new EditWebsite()
+        editWebsite.setTitle(w.title.getOrElse(""))
+        editWebsite.setUrl(w.page.getOrElse(""))
+        editWebsite.setDescription(w.description.getOrElse(""))
+        w.geocode.map { g =>
+          editWebsite.setGeocode(g.getAddress)
+          val osmId = g.osmId.flatMap { i =>
+            g.osmType.map { t =>
+              i + t
             }
-
-            val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
-
-            import scala.collection.JavaConverters._
-            editWebsite.setTags(usersTags.map(_.tag_id.stringify).asJava)
-
-            Some(renderEditForm(w, editWebsite))
-
-          case _ =>
-            log.info("Not a website")
-            None
+          }
+          editWebsite.setSelectedGeocode(osmId.getOrElse(""))
         }
+
+        val usersTags = w.resource_tags.filter(_.user_id == loggedInUser._id)
+
+        import scala.collection.JavaConverters._
+        editWebsite.setTags(usersTags.map(_.tag_id.stringify).asJava)
+
+        renderEditForm(w, editWebsite)
+
 
       }.getOrElse {
         NotFound
@@ -76,54 +68,58 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
     Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
 
-      Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
-        r match {
-          case w: Website =>
-            if (result.hasErrors) {
-              log.warn("Edit website submission has errors: " + result)
-              Some(renderEditForm(w, editWebsite))
+      getWebsiteById(id).map { w =>
+        if (result.hasErrors) {
+          log.warn("Edit website submission has errors: " + result)
+          renderEditForm(w, editWebsite)
 
-            } else {
-              log.info("Got valid edit website submission: " + editWebsite)
+        } else {
+          log.info("Got valid edit website submission: " + editWebsite)
 
-              val geocode = Option(editWebsite.getGeocode).flatMap { address =>
-                Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
-                  if (osmId.nonEmpty) {
-                    val id = osmId.split("/")(0).toLong
-                    val `type` = osmId.split("/")(1)
-                    Some(Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`)))
-                  } else {
-                    None
-                  }
-                }
+          val geocode = Option(editWebsite.getGeocode).flatMap { address =>
+            Option(editWebsite.getSelectedGeocode).flatMap { osmId =>
+              if (osmId.nonEmpty) {
+                val id = osmId.split("/")(0).toLong
+                val `type` = osmId.split("/")(1)
+                Some(Geocode(address = Some(address), osmId = Some(id), osmType = Some(`type`)))
+              } else {
+                None
               }
-
-              import scala.collection.JavaConverters._
-              val taggings = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds).map { tag =>
-                Tagging(tag_id = tag._id, user_id = loggedInUser._id)
-              }
-
-              val updatedWebsite = w.copy(
-                title = Some(editWebsite.getTitle),
-                page = Some(editWebsite.getUrl),
-                description = Some(editWebsite.getDescription),
-                geocode = geocode
-              ).withTags(taggings)
-
-
-              contentUpdateService.update(updatedWebsite)
-              log.info("Updated website: " + updatedWebsite)
-
-              Some(new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updatedWebsite.url_words.get))))
             }
-          case _ =>
-            None
+          }
+
+          import scala.collection.JavaConverters._
+          val taggings = Await.result(tagDAO.loadTagsById(editWebsite.getTags.asScala), TenSeconds).map { tag =>
+            Tagging(tag_id = tag._id, user_id = loggedInUser._id)
+          }
+
+          val updatedWebsite = w.copy(
+            title = Some(editWebsite.getTitle),
+            page = Some(editWebsite.getUrl),
+            description = Some(editWebsite.getDescription),
+            geocode = geocode
+          ).withTags(taggings)
+
+
+          contentUpdateService.update(updatedWebsite)
+          log.info("Updated website: " + updatedWebsite)
+
+          new ModelAndView(new RedirectView(urlBuilder.getPublisherUrl(updatedWebsite.url_words.get)))
         }
 
       }.getOrElse(NotFound)
 
     }.getOrElse {
       NotFound // TODO logged in user
+    }
+  }
+
+  private def getWebsiteById(id: String): Option[Website] = {
+    Await.result(mongoRepository.getResourceById(id), TenSeconds).flatMap { r =>
+      r match {
+        case w: Website => Some(w)
+        case _ => None
+      }
     }
   }
 
