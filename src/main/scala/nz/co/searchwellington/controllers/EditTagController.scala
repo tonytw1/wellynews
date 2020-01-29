@@ -40,7 +40,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
     }
   }
 
-  @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
+  @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editTag") editTag: EditTag, result: BindingResult): ModelAndView = {
     Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
       if (result.hasErrors) {
