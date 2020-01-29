@@ -33,32 +33,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[TagEditController])
   private val pattern = Pattern.compile("^/edit/tag/(.*)$")
 
-  /*
-  @RequestMapping(Array("/edit/tag/*")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView("editTag")
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "Editing a Tag")
-
-    tagFromPage(request).map { tag =>
-      mv.addObject("tag", tag)
-      //var children = editTag.getChildren.asScala.toSet
-      //mv.addObject("tag_select", tagWidgetFactory.createTagSelect("parent", editTag.getParent, children).toString)
-      //mv.addObject("related_feed_select", tagWidgetFactory.createRelatedFeedSelect("feed", editTag.getRelatedFeed))
-    }.getOrElse {
-      null
-    }
-  }
-  */
-
-  /*
-  @RequestMapping(Array("/edit/tag/submit")) def submit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView("submitTag")
-    mv.addObject("heading", "Submitting a Tag")
-    commonModelObjectsService.populateCommonLocal(mv)
-    return mv
-  }
-  */
-
   @RequestMapping(Array("/edit/tag/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser: User = loggedInUserFilter.getLoggedInUser
     if (!editPermissionService.canDeleteTags(loggedInUser)) {
