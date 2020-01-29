@@ -103,9 +103,11 @@ class FeedModelBuilderTest {
 
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModeAsFrontendNewsitemsSeperately {
+    val whakaokoSubscription = Subscription(id = "a-subscription", name = None, channelId = "", url = "http://somewhere/rss", lastRead = None, latestItemDate = None);
+
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq(anotherFrontendNewsitem))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
-    when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
+    when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
     val mv = modelBuilder.populateContentModel(request).get
 
@@ -113,6 +115,7 @@ class FeedModelBuilderTest {
 
     import scala.collection.JavaConverters._
     assertEquals(Seq(anotherFrontendNewsitem).asJava, mv.getModel.get("geocoded"))
+    assertEquals("Expected whakaoko subscription to be shown", whakaokoSubscription, mv.getModel.get("subscription"))
   }
 
 }
