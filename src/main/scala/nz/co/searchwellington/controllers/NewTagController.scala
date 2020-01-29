@@ -30,7 +30,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
     renderForm(new NewTag())
   }
 
-  @RequestMapping(value = Array("/new-feed"), method = Array(RequestMethod.POST))
+  @RequestMapping(value = Array("/new-tag"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("newTag") newTag: NewTag, result: BindingResult): ModelAndView = {
 
     if (!result.hasErrors) {
