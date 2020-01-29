@@ -33,6 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[TagEditController])
   private val pattern = Pattern.compile("^/edit/tag/(.*)$")
 
+  /*
   @RequestMapping(Array("/edit/tag/*")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("editTag")
     commonModelObjectsService.populateCommonLocal(mv)
@@ -47,13 +48,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
       null
     }
   }
+  */
 
+  /*
   @RequestMapping(Array("/edit/tag/submit")) def submit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val mv = new ModelAndView("submitTag")
     mv.addObject("heading", "Submitting a Tag")
     commonModelObjectsService.populateCommonLocal(mv)
     return mv
   }
+  */
 
   @RequestMapping(Array("/edit/tag/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser: User = loggedInUserFilter.getLoggedInUser
