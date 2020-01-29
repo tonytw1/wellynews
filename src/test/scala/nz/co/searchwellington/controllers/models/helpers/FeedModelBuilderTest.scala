@@ -103,7 +103,7 @@ class FeedModelBuilderTest {
 
   @Test
   def shouldPushGeotaggedFeeditemsOntoTheModeAsFrontendNewsitemsSeperately {
-    val whakaokoSubscription = Subscription(id = "a-subscription", name = None, channelId = "", url = "http://somewhere/rss", lastRead = None, latestItemDate = None);
+    val whakaokoSubscription = Subscription(id = "a-subscription", name = None, channelId = "", url = "http://somewhere/rss", lastRead = None, latestItemDate = None)
 
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq(anotherFrontendNewsitem))
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
