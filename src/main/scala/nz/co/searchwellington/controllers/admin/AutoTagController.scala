@@ -43,10 +43,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
         null: ModelAndView
 
       } { tag =>
+        import scala.collection.JavaConverters._
         val mv = new ModelAndView("autoTagPrompt").
           addObject("heading", "Autotagging").
           addObject("tag", tag).
-          addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag))
+          addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag).asJava)
 
         commonModelObjectsService.populateCommonLocal(mv)
         mv
