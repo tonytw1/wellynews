@@ -10,17 +10,11 @@ case class Geocode(address: Option[String] = None,
 
   def getAddress: String = address.orNull
 
-  def getLatitude: Double = {
-    latitude.getOrElse(0)
-  }
+  def getLatitude: Double = latitude.getOrElse(0)
 
-  def getLongitude: Double = {
-    longitude.getOrElse(0)
-  }
+  def getLongitude: Double = longitude.getOrElse(0)
 
-  def isValid: Boolean = {
-    return latitude != null && longitude != null
-  }
+  def isValid: Boolean = latitude != null && longitude != null
 
   def getType: String = `type`.orNull
 
@@ -32,9 +26,10 @@ case class Geocode(address: Option[String] = None,
 
   @deprecated def getOsmPlaceId: String = {
     if (osmId != null && osmType != null) {
-      return osmId + "/" + osmType
+      osmId + "/" + osmType
+    } else {
+      null
     }
-    return null
   }
 
   def getResolver: String = resolver.orNull
@@ -46,7 +41,7 @@ case class Geocode(address: Option[String] = None,
   }
 
   override def toString: String = {
-    return "Geocode [address=" + address + ", latitude=" + latitude + ", longitude=" + longitude + ", osmPlaceId=" + osmId + ", type=" + `type` + "]"
+    "Geocode [address=" + address + ", latitude=" + latitude + ", longitude=" + longitude + ", osmPlaceId=" + osmId + ", type=" + `type` + "]"
   }
 
 }
