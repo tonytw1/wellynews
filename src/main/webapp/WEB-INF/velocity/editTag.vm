@@ -28,6 +28,15 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("editTag.parent")
+                <label for="${status.expression}">Parent:</label>
+                <select name="${status.expression}">
+                    #foreach($parent in $parents)
+                        <option value="$parent._id.stringify" #if($parent._id.stringify == ${status.value}) SELECTED #end>$option
+                    #end
+                </select>
+                <br />
+
 				<input type="submit" value="Submit" />
 			</fieldset>
 		</form>

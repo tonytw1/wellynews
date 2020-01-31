@@ -35,6 +35,7 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
       val editTag = new EditTag()
       editTag.setDisplayName(tag.display_name)
       editTag.setDescription(tag.description.getOrElse(""))
+      editTag.setParent(tag.parent.map(_.stringify).orNull)
       renderEditForm(tag, editTag)
 
     }.getOrElse {
