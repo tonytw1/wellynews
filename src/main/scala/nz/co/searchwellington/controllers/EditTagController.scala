@@ -5,6 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -21,8 +22,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
 class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
-                                     mongoRepository: MongoRepository,
-                                     urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
+                                     mongoRepository: MongoRepository, tagDAO: TagDAO,
+                                     urlWordsGenerator: UrlWordsGenerator,
+                                     urlBuilder: UrlBuilder,
                                      loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with Errors {
 
   private val log = Logger.getLogger(classOf[EditTagController])
@@ -64,8 +66,11 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
   }
 
   private def renderEditForm(tag: Tag, editTag: EditTag): ModelAndView = {
+    import scala.collection.JavaConverters._
+    val possibleParents = Await.result(tagDAO.getAllTags, TenSeconds).filterNot(_ == tag)
     new ModelAndView("editTag").
       addObject("tag", tag).
+      addObject("parents", possibleParents.asJava).
       addObject("editTag", editTag)
   }
 
