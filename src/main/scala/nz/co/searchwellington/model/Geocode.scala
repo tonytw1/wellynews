@@ -22,9 +22,7 @@ case class Geocode(address: Option[String] = None,
     return latitude != null && longitude != null
   }
 
-  def getType: String = {
-    `type`.getOrElse(null)
-  }
+  def getType: String = `type`.orNull
 
   def getOsmId: OsmId = osmId.flatMap { id =>
     osmType.map { `type` =>
@@ -39,9 +37,7 @@ case class Geocode(address: Option[String] = None,
     return null
   }
 
-  def getResolver: String = {
-    resolver.getOrElse(null)
-  }
+  def getResolver: String = resolver.orNull
 
   def getDisplayName: String = {
     address.getOrElse {
