@@ -40,7 +40,7 @@ import scala.concurrent.{Await, Future}
 
   def getTopLevelTags: Future[Seq[Tag]] = tagDAO.getTopLevelTags
 
-  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: String, user: User, tag: Tag): Seq[FrontendResource] = {
+  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Seq[FrontendResource] = {
     Await.result(elasticSearchIndexer.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag).flatMap(i => fetchByIds(i._1)), TenSeconds)
   }
 

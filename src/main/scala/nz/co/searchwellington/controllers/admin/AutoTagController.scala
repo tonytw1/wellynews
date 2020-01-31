@@ -94,7 +94,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def getPossibleAutotagResources(user: User, tag: Tag): Seq[FrontendResource] = {
-    val keywords = tag.getDisplayName // TODO OR with autotagging hints
+    val keywords: Set[String] = Set(tag.autotag_hints, Some(tag.display_name)).flatten
     contentRetrievalService.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag)
   }
 
