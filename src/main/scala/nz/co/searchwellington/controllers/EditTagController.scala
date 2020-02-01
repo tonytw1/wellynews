@@ -26,7 +26,8 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository, tagDAO: TagDAO,
                                      urlWordsGenerator: UrlWordsGenerator,
                                      urlBuilder: UrlBuilder,
-                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with Errors {
+                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
+  with Errors with InputParsing {
 
   private val log = Logger.getLogger(classOf[EditTagController])
 
@@ -52,17 +53,6 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         renderEditForm(tag, editTag)
 
       } else {
-
-        def optionalInputString(i: String): Option[String] = {
-          Option(i).flatMap { t =>
-            val trimmed = t.trim
-            if (trimmed.nonEmpty) {
-              Some(trimmed)
-            } else {
-              None
-            }
-          }
-        }
 
         def optionalBsonObjectId(i: String): Option[BSONObjectID] = {
           optionalInputString(i).flatMap { bid =>

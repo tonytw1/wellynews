@@ -21,7 +21,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class NewTagController @Autowired()(mongoRepository: MongoRepository,
                                     urlWordsGenerator: UrlWordsGenerator,
                                     urlBuilder: UrlBuilder,
-                                    loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits with AcceptancePolicyOptions {
+                                    loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
+  with AcceptancePolicyOptions with InputParsing {
 
   private val log = Logger.getLogger(classOf[NewTagController])
 
@@ -47,7 +48,7 @@ class NewTagController @Autowired()(mongoRepository: MongoRepository,
         val tag = Tag(
           name = urlWordsFromDisplayName,
           display_name = newTag.getDisplayName,
-          description = Option(newTag.getDescription)
+          description = optionalInputString(newTag.getDescription)
         )
 
         Await.result(mongoRepository.saveTag(tag), TenSeconds)
