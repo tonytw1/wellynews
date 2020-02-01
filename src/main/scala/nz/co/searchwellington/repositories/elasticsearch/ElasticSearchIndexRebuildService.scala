@@ -5,7 +5,6 @@ import nz.co.searchwellington.model.Resource
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
 import org.apache.log4j.Logger
-import org.joda.time.DateTime
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
@@ -31,7 +30,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
     def indexBatch(batch: Seq[BSONObjectID], i: Int): Future[Int] = {
       log.debug("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)
-      val start = DateTime.now
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
