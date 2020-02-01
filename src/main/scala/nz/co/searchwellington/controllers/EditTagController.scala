@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.{ModelAttribute, PathVariable, RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
+import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -51,9 +52,39 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         renderEditForm(tag, editTag)
 
       } else {
+
+        def optionalInputString(i: String): Option[String] = {
+          Option(i).flatMap { t =>
+            val trimmed = t.trim
+            if (trimmed.nonEmpty) {
+              Some(trimmed)
+            } else {
+              None
+            }
+          }
+        }
+
+        def optionalBsonObjectId(i: String): Option[BSONObjectID] = {
+          optionalInputString(i).flatMap { bid =>
+            val maybeParsed = BSONObjectID.parse(bid)
+            if (maybeParsed.isSuccess) {
+              Some(maybeParsed.get)
+            } else {
+              None  // TODO push error up
+            }
+          }
+        }
+
+        val parent = optionalBsonObjectId(editTag.getParent).flatMap { p =>
+          Await.result(tagDAO.loadTagByObjectId(p), TenSeconds).map { parentTag =>
+            parentTag._id
+          }
+        }
+
         val updatedTag = tag.copy(
           display_name = editTag.getDisplayName,
-          description = Option(editTag.getDescription)
+          description = Option(editTag.getDescription),
+          parent = parent
         )
 
         Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
