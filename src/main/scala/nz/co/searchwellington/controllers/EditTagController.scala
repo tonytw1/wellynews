@@ -4,8 +4,9 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditTag
 import nz.co.searchwellington.model.{Tag, UrlWordsGenerator}
-import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.modification.{ContentUpdateService, TagModificationService}
 import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebuildService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import nz.co.searchwellington.views.Errors
@@ -18,7 +19,7 @@ import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 import reactivemongo.bson.BSONObjectID
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
@@ -26,8 +27,10 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
                                      mongoRepository: MongoRepository, tagDAO: TagDAO,
                                      urlWordsGenerator: UrlWordsGenerator,
                                      urlBuilder: UrlBuilder,
-                                     loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits
-  with Errors with InputParsing {
+                                     loggedInUserFilter: LoggedInUserFilter,
+                                     tagModificationService: TagModificationService,
+                                     elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService)
+  extends ReasonableWaits with Errors with InputParsing {
 
   private val log = Logger.getLogger(classOf[EditTagController])
 
@@ -60,25 +63,32 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
             if (maybeParsed.isSuccess) {
               Some(maybeParsed.get)
             } else {
-              None  // TODO push error up
+              None // TODO push error up
             }
           }
         }
 
-        val parent = optionalBsonObjectId(editTag.getParent).flatMap { p =>
-          Await.result(tagDAO.loadTagByObjectId(p), TenSeconds).map { parentTag =>
-            parentTag._id
-          }
+        val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
+          Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
         }
 
         val updatedTag = tag.copy(
           display_name = editTag.getDisplayName,
           description = Option(editTag.getDescription),
-          parent = parent
+          parent = parentTag.map(_._id)
         )
 
         Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)
         log.info("Updated feed: " + updatedTag)
+
+        val parentHasChanged = tag.parent != updatedTag.parent
+        if (parentHasChanged) {
+          mongoRepository.getResourceIdsByTag(tag).flatMap { taggedResourceIds =>
+            elasticSearchIndexRebuildService.reindexResources(taggedResourceIds)
+          }.map { i =>
+            log.info("Reindexed resource after tag parent change: " + i)
+          }
+        }
 
         new ModelAndView(new RedirectView(urlBuilder.getTagUrl(tag)))
       }

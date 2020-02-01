@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
     reindexResources(Seq(resource._id))
   }
 
-  private def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0)(implicit ec: ExecutionContext): Future[Int] = {
+  def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0)(implicit ec: ExecutionContext): Future[Int] = {
 
     def indexBatch(batch: Seq[BSONObjectID], i: Int): Future[Int] = {
       log.debug("Processing batch: " + batch.size + " - " + i + " / " + resourcesToIndex.size)

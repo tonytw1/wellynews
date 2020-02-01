@@ -10,11 +10,6 @@ import org.springframework.stereotype.Component
 
   private val log = Logger.getLogger(classOf[TagModificationService])
 
-  def updateTagParent(editTag: Tag, parentTag: Tag) {
-    log.debug("Setting parent tag to: " + parentTag.getName)
-    //editTag.setParent(parentTag)
-  }
-
   def deleteTag(tag: Tag) {
     log.info("Deleting tag " + tag.getName)
     handTaggingService.clearTaggingsForTag(tag)
