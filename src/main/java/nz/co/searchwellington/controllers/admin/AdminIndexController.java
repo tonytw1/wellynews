@@ -1,17 +1,14 @@
 package nz.co.searchwellington.controllers.admin;
 
-import java.io.IOException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import nz.co.searchwellington.controllers.LoggedInUserFilter;
 import nz.co.searchwellington.model.User;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 public class AdminIndexController {
@@ -24,7 +21,7 @@ public class AdminIndexController {
 	}
 	
 	@RequestMapping("/admin")
-	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public ModelAndView index(HttpServletRequest request, HttpServletResponse response) {
 		final User loggedInUser = loggedInUserFilter.getLoggedInUser();
     	if (loggedInUser == null || !loggedInUser.isAdmin()) {
     		response.setStatus(HttpServletResponse.SC_FORBIDDEN);
