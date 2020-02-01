@@ -19,8 +19,12 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val BATCH_COMMIT_SIZE = 1000
 
-  def index(resource: Resource)(implicit ec: ExecutionContext): Future[Int] = {
-    reindexResources(Seq(resource._id))
+  def index(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
+    withTags(resource).map { toIndex =>
+      elasticSearchIndexer.updateMultipleContentItems(Seq(toIndex))
+    }.map { r =>
+      r.isCompleted
+    }
   }
 
   def reindexResources(resourcesToIndex: Seq[BSONObjectID], i: Int = 0)(implicit ec: ExecutionContext): Future[Int] = {
@@ -31,13 +35,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
-
-        def withTags(resource: Resource): Future[(Resource, Seq[String])] = {
-          getIndexTagIdsFor(resource).map { tagIds =>
-            (resource, tagIds)
-          }
-        }
-
         Future.sequence(rs.map(withTags))
       }
 
@@ -66,6 +63,13 @@ import scala.concurrent.{ExecutionContext, Future}
       Future.successful(i)
     }
   }
+
+  private def withTags(resource: Resource)(implicit ec: ExecutionContext): Future[(Resource, Seq[String])] = {
+    getIndexTagIdsFor(resource).map { tagIds =>
+      (resource, tagIds)
+    }
+  }
+
 
   private def getIndexTagIdsFor(resource: Resource): Future[Seq[String]] = {
     val tags = taggingReturnsOfficerService.getIndexTagsForResource(resource)

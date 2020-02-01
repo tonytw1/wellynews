@@ -13,7 +13,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FrontendContentUpdater])
 
-  def update(updatedResource: Resource)(implicit ec: ExecutionContext): Future[Int] = {
+  def update(updatedResource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     log.debug("Updating elastic search record for resource: " + updatedResource.title)
     elasticSearchIndexRebuildService.index(updatedResource)
   }
