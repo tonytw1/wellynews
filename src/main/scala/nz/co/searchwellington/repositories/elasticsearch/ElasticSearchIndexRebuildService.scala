@@ -31,11 +31,14 @@ import scala.concurrent.{ExecutionContext, Future}
 
       val eventualResources = Future.sequence(batch.map(i => mongoRepository.getResourceByObjectId(i))).map(_.flatten)
       val eventualWithIndexTags = eventualResources.flatMap { rs =>
-        Future.sequence(rs.map { r =>
-          getIndexTagIdsFor(r).map { tagIds =>
-            (r, tagIds)
+
+        def withTags(resource: Resource): Future[(Resource, Seq[String])] = {
+          getIndexTagIdsFor(resource).map { tagIds =>
+            (resource, tagIds)
           }
-        })
+        }
+
+        Future.sequence(rs.map(withTags))
       }
 
       eventualWithIndexTags.flatMap { rs =>
