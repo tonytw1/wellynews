@@ -19,12 +19,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val BATCH_COMMIT_SIZE = 1000
 
-  def buildIndex()(implicit ec: ExecutionContext): Unit = {
-    import scala.concurrent.Await
-    val resourcesToIndex = Await.result(mongoRepository.getAllResourceIds(), OneMinute)
-    Await.result(reindexResources(resourcesToIndex), OneMinute)
-  }
-
   def index(resource: Resource)(implicit ec: ExecutionContext): Future[Int] = {
     reindexResources(Seq(resource._id))
   }
@@ -53,7 +47,7 @@ import scala.concurrent.{ExecutionContext, Future}
     }
 
     log.debug("Reindexing: " + resourcesToIndex.size + " in batches of " + BATCH_COMMIT_SIZE)
-    val batches= resourcesToIndex.grouped(BATCH_COMMIT_SIZE).toSeq
+    val batches = resourcesToIndex.grouped(BATCH_COMMIT_SIZE).toSeq
 
     batches.headOption.map { batch =>
       indexBatch(batch, i).flatMap { j =>
