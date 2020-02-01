@@ -13,7 +13,7 @@ public class LinkCheckerQueue {
 
     private final static Logger log = Logger.getLogger(LinkCheckerQueue.class);
 
-    public static final String QUEUE_NAME = "linkchecker";
+    private static final String QUEUE_NAME = "linkchecker";
 
     private final Channel channel;
 

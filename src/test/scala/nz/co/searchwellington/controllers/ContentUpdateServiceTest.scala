@@ -3,8 +3,9 @@ package nz.co.searchwellington.controllers
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.Newsitem
+import nz.co.searchwellington.model.{Newsitem, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
+import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Test
@@ -18,15 +19,16 @@ class ContentUpdateServiceTest extends ReasonableWaits {
 
   private val mongoRepository = mock(classOf[MongoRepository])
   private val frontendContentUpdater = mock(classOf[FrontendContentUpdater])
+  private val linkCheckerQueue = mock(classOf[LinkCheckerQueue])
 
   private val resourceId = UUID.randomUUID().toString
   private val updatedResource = Newsitem(id = resourceId, page = Some("http://test/123"))
 
-  private val service = new ContentUpdateService(mongoRepository, frontendContentUpdater)
+  private val service = new ContentUpdateService(mongoRepository, frontendContentUpdater, linkCheckerQueue)
   private val successfulUpdateResult = mock(classOf[UpdateWriteResult])
 
   @Test
-  def shouldPeristUpdatesInMongo {
+  def shouldPersistUpdatesInMongo {
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
 
     Await.result(service.update(updatedResource), TenSeconds)
@@ -41,6 +43,16 @@ class ContentUpdateServiceTest extends ReasonableWaits {
     Await.result(service.update(updatedResource), TenSeconds)
 
     verify(frontendContentUpdater).update(updatedResource)
+  }
+
+  @Test
+  def shouldQueueNewlyCreatedResourcesForLinkChecking: Unit = {
+    val newResource = Website()
+    when(mongoRepository.saveResource(newResource)).thenReturn(Future.successful(successfulUpdateResult))
+
+    Await.result(service.create(newResource), TenSeconds)
+
+    verify(linkCheckerQueue).add(newResource._id.stringify)
   }
 
 }

@@ -1,6 +1,7 @@
 package nz.co.searchwellington.modification
 
 import nz.co.searchwellington.model.Resource
+import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.repositories.FrontendContentUpdater
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
@@ -9,8 +10,9 @@ import org.springframework.stereotype.Component
 
 import scala.concurrent.{ExecutionContext, Future}
 
-@Component class ContentUpdateService @Autowired() (mongoRepository: MongoRepository,
-                                                    frontendContentUpdater: FrontendContentUpdater) {
+@Component class ContentUpdateService @Autowired()(mongoRepository: MongoRepository,
+                                                   frontendContentUpdater: FrontendContentUpdater,
+                                                   linkCheckerQueue: LinkCheckerQueue) {
 
   private val log = Logger.getLogger(classOf[ContentUpdateService])
 
@@ -50,11 +52,11 @@ import scala.concurrent.{ExecutionContext, Future}
 
   def create(resource: Resource)(implicit ec: ExecutionContext): Future[Unit] = {
     resource.setHttpStatus(0)
-    log.debug("Creating resource: " + resource.page )
+    log.debug("Creating resource: " + resource.page)
     mongoRepository.saveResource(resource).map { r =>
       log.debug("Result of save for " + resource._id + " " + resource.page + ": " + r)
       frontendContentUpdater.update(resource)
-      // TODO linkCheckerQueue.add(resource._id.stringify)
+      linkCheckerQueue.add(resource._id.stringify)
     }
   }
 
