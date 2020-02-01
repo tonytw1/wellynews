@@ -1,6 +1,5 @@
 package nz.co.searchwellington.controllers;
 
-import nz.co.searchwellington.annotations.Timed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +18,8 @@ public class PingController {
     }
 
     @RequestMapping(value = "/healthz", method = RequestMethod.GET)
-    @Timed(timingNotes = "")
     public ModelAndView ping() {
-        final ModelAndView mv = new ModelAndView(viewFactory.getJsonView());
-        mv.addObject("data", "ok");
-        return mv;
+        return new ModelAndView(viewFactory.getJsonView()).addObject("data", "ok");
     }
 
 }
