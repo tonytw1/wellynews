@@ -14,18 +14,18 @@ import scala.concurrent.Future
 
 class IndexModelBuilderTest {
 
-  val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  val rssUrlBuilder = mock(classOf[RssUrlBuilder])
-  val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
-  val urlBuilder = mock(classOf[UrlBuilder])
-  val archiveLinksService = mock(classOf[ArchiveLinksService])
-  val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+  private val urlBuilder = mock(classOf[UrlBuilder])
+  private val archiveLinksService = mock(classOf[ArchiveLinksService])
+  private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
 
   val request = new MockHttpServletRequest
 
-  val newsitem = mock(classOf[FrontendResource])
-  val anotherNewsitem = mock(classOf[FrontendResource])
-  val latestNewsitems = Seq(newsitem, anotherNewsitem)
+  private val newsitem = mock(classOf[FrontendResource])
+  private val anotherNewsitem = mock(classOf[FrontendResource])
+  private val latestNewsitems = Seq(newsitem, anotherNewsitem)
 
   private val loggedInUser = None
 
