@@ -29,7 +29,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val MAX_OWNED_TO_SHOW_IN_RHS = 4
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/$") || request.getPathInfo.matches("^/json$")
+    request.getPathInfo.matches("^/$") ||
+      request.getPathInfo.matches("^/json$") ||
+      request.getPathInfo.matches("^/rss")
   }
 
   def getViewName(mv: ModelAndView): String = "index"

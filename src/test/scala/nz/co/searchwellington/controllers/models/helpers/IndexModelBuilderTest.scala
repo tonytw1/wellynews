@@ -42,9 +42,9 @@ class IndexModelBuilderTest {
   }
 
   @Test
-  def isNotValidForMainRssUrlAsThatsTakenCareOfByFeedBurner {
+  def isValidForMainRssUrl {
     request.setPathInfo("/rss")
-    assertFalse(modelBuilder.isValid(request))
+    assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
