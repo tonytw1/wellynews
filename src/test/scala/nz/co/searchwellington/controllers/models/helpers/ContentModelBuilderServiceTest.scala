@@ -19,14 +19,13 @@ class ContentModelBuilderServiceTest {
 
   private var request: MockHttpServletRequest = null
 
-  private[helpers] var validModelAndView: ModelAndView = mock(classOf[ModelAndView])
+  private val validModelAndView = new ModelAndView("")
 
   private val invalidModelBuilder = mock(classOf[ModelBuilder])
   private val validModelBuilder =  mock(classOf[ModelBuilder])
 
   @Before def setup {
     request = new MockHttpServletRequest
-    validModelAndView = new ModelAndView
     request.setPathInfo("/something")
   }
 

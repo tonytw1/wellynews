@@ -1,61 +1,63 @@
 package nz.co.searchwellington.controllers
 
-import org.junit.Assert.assertEquals
-import javax.servlet.http.HttpServletRequest
-import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
-import org.junit.Before
+import org.junit.Assert.assertEquals
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
+import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
 import org.springframework.web.servlet.ModelAndView
 
 class ContentControllerTest {
-  @Mock private[controllers] val contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory = null
-  @Mock private[controllers] val contentModelBuilderService: ContentModelBuilderService = null
-  @Mock private[controllers] val urlStack: UrlStack = null
-  private val request: HttpServletRequest = null
-  private val unknownPathRequest: HttpServletRequest = null
-  @Mock private[controllers] val response: HttpServletResponse = null
-  private var contentController: ContentController = null
+  private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
+  private val contentModelBuilderService = mock(classOf[ContentModelBuilderService])
+  private val urlStack = mock(classOf[UrlStack])
 
-  @Before def setup {
-    MockitoAnnotations.initMocks(this)
-    contentController = new ContentController(contentModelBuilderServiceFactory, urlStack)
-  }
+  private val request = mock(classOf[HttpServletRequest])
+  private val unknownPathRequest = mock(classOf[HttpServletRequest])
+  private val response = mock(classOf[HttpServletResponse])
+
+  private val contentController: ContentController = new ContentController(contentModelBuilderServiceFactory, urlStack)
 
   @Test
-  @throws[Exception]
   def shouldDelegateTotTheContentModelBuilderToGetTheModelForThisRequest {
-    val expectedModelAndView: ModelAndView = new ModelAndView("a-view")
-    Mockito.when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    Mockito.when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
-    assertEquals(expectedModelAndView, contentController.normal(request, response))
+    val expectedModelAndView = new ModelAndView("a-view") // TODO mock
+    when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
+    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
+
+    val modelAndView = contentController.normal(request, response)
+
+    assertEquals(expectedModelAndView, modelAndView)
   }
 
   @Test
-  @throws[Exception]
   def should404IfNotModelWasAvailableForThisRequest {
-    Mockito.when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
+    when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
+    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
+
     contentController.normal(unknownPathRequest, response)
-    Mockito.verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND)
+
+    verify(response).setStatus(HttpServletResponse.SC_NOT_FOUND)
   }
 
   @Test
-  @throws[Exception]
   def shouldNotPush404sOntoTheReturnToUrlStack {
-    Mockito.when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
+    when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
+    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
+
     contentController.normal(unknownPathRequest, response)
-    Mockito.verifyZeroInteractions(urlStack)
+
+    verifyZeroInteractions(urlStack)
   }
 
   @Test
-  @throws[Exception]
   def htmlPageViewsShouldBePutOntoTheUrlStack {
     val expectedModelAndView: ModelAndView = new ModelAndView("a-view")
-    Mockito.when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
+    when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
+    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
+
     contentController.normal(request, response)
-    Mockito.verify(urlStack).setUrlStack(request)
+
+    verify(urlStack).setUrlStack(request)
   }
+
 }
