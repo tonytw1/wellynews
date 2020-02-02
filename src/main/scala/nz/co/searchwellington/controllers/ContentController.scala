@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.annotations.Timed
-import nz.co.searchwellington.controllers.models.ContentModelBuilderService
+import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -10,9 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
 @Controller
-class ContentController @Autowired()(contentModelBuilderService: ContentModelBuilderService, urlStack: UrlStack) {
+class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack) {
 
   private val log = Logger.getLogger(classOf[ContentController])
+
+  private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
 
   @RequestMapping(value = Array("/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/*/*/*/*/*"))
   @Timed(timingNotes = "")

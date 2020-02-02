@@ -1,9 +1,7 @@
 package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
-
 import nz.co.searchwellington.controllers.CommonModelObjectsService
-import nz.co.searchwellington.controllers.models.helpers._
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -12,28 +10,11 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
 @Component class ContentModelBuilderService @Autowired()(viewFactory: ViewFactory,
                                                          commonModelObjectsService: CommonModelObjectsService,
-                                                         indexModelBuilder: IndexModelBuilder,
-                                                         tagsModelBuilder: TagsModelBuilder,
-                                                         tagModelBuilder: TagModelBuilder,
-                                                         feedsModelBuilder: FeedsModelBuilder,
-                                                         publishersModelBuilder: PublishersModelBuilder,
-                                                         publisherModelBuilder: PublisherModelBuilder,
-                                                         publisherTagCombinerModelBuilder: PublisherTagCombinerModelBuilder,
-                                                         watchlistModelBuilder: WatchlistModelBuilder,
-                                                         feedModelBuilder: FeedModelBuilder,
-                                                         justinModelBuilder: JustinModelBuilder,
-                                                         suggestionsModelBuilder: SuggestionsModelBuilder,
-                                                         archiveModelBuilder: ArchiveModelBuilder,
-                                                         searchModelBuilder: SearchModelBuilder,
-                                                         geotaggedModelBuilder: GeotaggedModelBuilder) {
+                                                         modelBuilders: Seq[ModelBuilder]) {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-    val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder, feedsModelBuilder,
-      publishersModelBuilder, publisherModelBuilder, publisherTagCombinerModelBuilder, watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder,
-      searchModelBuilder, suggestionsModelBuilder, geotaggedModelBuilder)
-
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
 

@@ -31,7 +31,7 @@ class ContentModelBuilderServiceTest {
   @Mock private[helpers] val validModelBuilder: ModelBuilder = null
   private[helpers] var contentModelBuilderService: ContentModelBuilderService = null
 
-  /*
+
   @Before def setup {
     MockitoAnnotations.initMocks(this)
     request = new MockHttpServletRequest
@@ -40,24 +40,25 @@ class ContentModelBuilderServiceTest {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request)).thenReturn(Some(validModelAndView))
-    contentModelBuilderService = new ContentModelBuilderService(viewFactory, commonModelObjectsService, invalidModelBuilder, validModelBuilder)
+    contentModelBuilderService = new ContentModelBuilderService(
+      viewFactory,
+      commonModelObjectsService,
+      Seq(invalidModelBuilder, validModelBuilder)
+    )
   }
 
   @Test
-  @throws[Exception]
   def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid {
     assertEquals(Some(validModelAndView), contentModelBuilderService.populateContentModel(request))
   }
 
   @Test
-  @throws[Exception]
   def shouldReturnNullIfNoModelBuilderWasFoundForRequest {
-    contentModelBuilderService = new ContentModelBuilderService(viewFactory, commonModelObjectsService, invalidModelBuilder)
+    contentModelBuilderService = new ContentModelBuilderService(viewFactory, commonModelObjectsService, Seq(invalidModelBuilder))
     assertEquals(None, contentModelBuilderService.populateContentModel(request))
   }
 
   @Test
-  @throws[Exception]
   def rssSuffixedRequestsShouldBeGivenTheRssView {
     when(viewFactory.getRssView(anyString, anyString, anyString)).thenReturn(rssView)
     request.setPathInfo("/something/rss")
@@ -65,12 +66,10 @@ class ContentModelBuilderServiceTest {
   }
 
   @Test
-  @throws[Exception]
   def jsonSuffixedRequestsShouldBeGivenTheRssView {
     when(viewFactory.getJsonView).thenReturn(jsonView)
     request.setPathInfo("/something/json")
     assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).get.getView)
   }
-  */
 
 }

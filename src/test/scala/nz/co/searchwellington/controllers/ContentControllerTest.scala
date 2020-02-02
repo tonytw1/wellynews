@@ -3,8 +3,7 @@ package nz.co.searchwellington.controllers
 import org.junit.Assert.assertEquals
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-
-import nz.co.searchwellington.controllers.models.ContentModelBuilderService
+import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ContentModelBuilderServiceFactory}
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -13,6 +12,7 @@ import org.mockito.MockitoAnnotations
 import org.springframework.web.servlet.ModelAndView
 
 class ContentControllerTest {
+  @Mock private[controllers] val contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory = null
   @Mock private[controllers] val contentModelBuilderService: ContentModelBuilderService = null
   @Mock private[controllers] val urlStack: UrlStack = null
   private val request: HttpServletRequest = null
@@ -22,13 +22,14 @@ class ContentControllerTest {
 
   @Before def setup {
     MockitoAnnotations.initMocks(this)
-    contentController = new ContentController(contentModelBuilderService, urlStack)
+    contentController = new ContentController(contentModelBuilderServiceFactory, urlStack)
   }
 
   @Test
   @throws[Exception]
   def shouldDelegateTotTheContentModelBuilderToGetTheModelForThisRequest {
     val expectedModelAndView: ModelAndView = new ModelAndView("a-view")
+    Mockito.when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     Mockito.when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
     assertEquals(expectedModelAndView, contentController.normal(request, response))
   }
