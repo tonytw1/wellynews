@@ -18,18 +18,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
 class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder,
-                                                 contentRetrievalService: ContentRetrievalService,
-                                     commonModelObjectsService: CommonModelObjectsService)
-  extends ReasonableWaits {
+                                     val contentRetrievalService: ContentRetrievalService)
+  extends ReasonableWaits with CommonModelObjectsService {
 
   private val log = Logger.getLogger(classOf[ProfileController])
 
   @RequestMapping(Array("/profiles"))
   def profiles(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView("profiles").
+    withCommonLocal(new ModelAndView("profiles").
       addObject("heading", "Profiles").
-      addObject("profiles", Await.result(mongoRepository.getAllUsers, TenSeconds))
-    commonModelObjectsService.withCommonLocal(mv)
+      addObject("profiles", Await.result(mongoRepository.getAllUsers, TenSeconds)))
   }
 
   @RequestMapping(Array("/profiles/*"))
@@ -56,8 +54,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
         addObject("profileuser", user).
         addObject("submitted", contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava).
         addObject("tagged", contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava)
-
-      commonModelObjectsService.withCommonLocal(mv)
+      withCommonLocal(mv)
 
     }.getOrElse {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
@@ -68,10 +65,9 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
   @RequestMapping(Array("/profile/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
-    val mv = new ModelAndView("editProfile").
+    withCommonLocal(new ModelAndView("editProfile").
       addObject("heading", "Editing your profile").
-      addObject("user", loggedInUser)
-    commonModelObjectsService.withCommonLocal(mv)
+      addObject("user", loggedInUser))
   }
 
   // TODO reinstate
@@ -86,7 +82,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       mongoRepository.saveUser(loggedInUser)
     }
 
-    return new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(Option(loggedInUserFilter.getLoggedInUser).get.getProfilename)))
+    new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(Option(loggedInUserFilter.getLoggedInUser).get.getProfilename)))
   }
 
   def isValidAvailableProfilename(profilename: String): Boolean = {

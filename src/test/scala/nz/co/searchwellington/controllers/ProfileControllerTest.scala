@@ -22,7 +22,6 @@ class ProfileControllerTest {
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val commonModelObjectsService = mock(classOf[CommonModelObjectsService])
   private val existingUser: User = mock(classOf[User])
 
   private val aUser = mock(classOf[User])
@@ -34,7 +33,7 @@ class ProfileControllerTest {
   private val existingUsersSubmittedItems = Seq(aResource, anotherResource)
   private val existingUsersTaggedItems = Seq(anotherResource)
 
-  private val controller = new ProfileController(mongoRepository, loggedInUserFilter, urlBuilder, contentRetrievalService, commonModelObjectsService)
+  private val controller = new ProfileController(mongoRepository, loggedInUserFilter, urlBuilder, contentRetrievalService)
 
   private var request: MockHttpServletRequest = null
   private var response: MockHttpServletResponse = null
@@ -49,7 +48,11 @@ class ProfileControllerTest {
   @Test
   def allActiveProfilesShouldBeShownOnProfilesIndex {
     when(mongoRepository.getAllUsers).thenReturn(Future.successful(allActiveUsers))
+    when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
+
     val mv = controller.profiles(request, response)
+
     assertEquals(allActiveUsers, mv.getModel.get("profiles"))
   }
 
@@ -59,6 +62,8 @@ class ProfileControllerTest {
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
     when(contentRetrievalService.getOwnedBy(existingUser, loggedInUser)).thenReturn(existingUsersSubmittedItems)
     when(contentRetrievalService.getTaggedBy(existingUser, loggedInUser)).thenReturn(existingUsersTaggedItems)
+    when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
     val mv = controller.profile(request, response)
 

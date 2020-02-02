@@ -26,9 +26,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                  keywordSearchService: KeywordSearchService,
                                                  contentUpdateService: ContentUpdateService,
                                                  loggedInUserFilter: LoggedInUserFilter,
-                                                 commonModelObjectsService: CommonModelObjectsService,
                                                  handTaggingService: HandTaggingService,
-                                                 contentRetrievalService: ContentRetrievalService) extends ReasonableWaits {
+                                                 val contentRetrievalService: ContentRetrievalService)
+  extends ReasonableWaits with CommonModelObjectsService {
 
   private val log = Logger.getLogger(classOf[AutoTagController])
 
@@ -44,7 +44,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       } { tag =>
         import scala.collection.JavaConverters._
-        commonModelObjectsService.withCommonLocal(new ModelAndView("autoTagPrompt").
+        withCommonLocal(new ModelAndView("autoTagPrompt").
           addObject("heading", "Autotagging").
           addObject("tag", tag).
           addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag).asJava))
@@ -84,7 +84,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         }
 
         mv.addObject("resources_to_tag", resourcesAutoTagged)
-        commonModelObjectsService.withCommonLocal(mv)
+        withCommonLocal(mv)
       }
     }
   }

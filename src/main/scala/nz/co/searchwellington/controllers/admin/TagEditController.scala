@@ -10,7 +10,7 @@ import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Feed, Tag, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.TagModificationService
 import nz.co.searchwellington.permissions.EditPermissionService
-import nz.co.searchwellington.repositories.TagDAO
+import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.widgets.TagsWidgetFactory
 import org.apache.log4j.Logger
@@ -27,8 +27,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                  urlStack: UrlStack, tagDAO: TagDAO, tagModifcationService: TagModificationService,
                                                  loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService,
                                                  submissionProcessingService: SubmissionProcessingService,
-                                                 commonModelObjectsService: CommonModelObjectsService,
-                                                 urlWordsGenerator: UrlWordsGenerator, mongoRepository: MongoRepository) extends ReasonableWaits {
+                                                 urlWordsGenerator: UrlWordsGenerator, mongoRepository: MongoRepository,
+                                                 val contentRetrievalService: ContentRetrievalService)
+  extends ReasonableWaits with CommonModelObjectsService {
 
   private val log = Logger.getLogger(classOf[TagEditController])
 
@@ -53,7 +54,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mv.addObject("tag", tag)
     tagModifcationService.deleteTag(tag)
     urlStack.setUrlStack(request, "")
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   @RequestMapping(value = Array("/edit/tag/save"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -108,7 +109,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(mongoRepository.saveTag(editTag), TenSeconds)
 
     mv.addObject("tag", editTag)
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   private def populateAutotagHints(request: HttpServletRequest, editTag: Tag) {

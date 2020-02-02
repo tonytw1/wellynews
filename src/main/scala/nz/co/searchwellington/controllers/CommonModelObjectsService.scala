@@ -1,16 +1,15 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Await
 
-@Component class CommonModelObjectsService @Autowired()(contentRetrievalService: ContentRetrievalService,
-                                                        frontendResourceMapper: FrontendResourceMapper) extends ReasonableWaits {
+trait CommonModelObjectsService extends ReasonableWaits {
+
+  def contentRetrievalService: ContentRetrievalService
+
   def withCommonLocal(mv: ModelAndView): ModelAndView = {
     populateCommonLocal(mv)
     mv

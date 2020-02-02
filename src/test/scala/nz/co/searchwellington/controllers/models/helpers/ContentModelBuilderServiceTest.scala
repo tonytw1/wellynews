@@ -1,7 +1,8 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ModelBuilder}
+import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
 import org.mockito.Matchers.anyString
@@ -12,10 +13,12 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 import uk.co.eelpieconsulting.common.views.json.JsonView
 import uk.co.eelpieconsulting.common.views.rss.RssView
 
+import scala.concurrent.Future
+
 class ContentModelBuilderServiceTest {
 
   private val viewFactory = mock(classOf[ViewFactory])
-  private val commonModelObjectsService = mock(classOf[CommonModelObjectsService])
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
 
   private var request: MockHttpServletRequest = null
 
@@ -34,9 +37,11 @@ class ContentModelBuilderServiceTest {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request)).thenReturn(Some(validModelAndView))
+    when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
     val contentModelBuilderService = new ContentModelBuilderService(viewFactory,
-      commonModelObjectsService,
+      contentRetrievalService,
       Seq(invalidModelBuilder, validModelBuilder)
     )
 
@@ -46,10 +51,11 @@ class ContentModelBuilderServiceTest {
   @Test
   def shouldReturnNullIfNoModelBuilderWasFoundForRequest {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
+    val contentModelBuilderService = new ContentModelBuilderService(viewFactory, contentRetrievalService, Seq(invalidModelBuilder))
 
-    val contentModelBuilderService = new ContentModelBuilderService(viewFactory, commonModelObjectsService, Seq(invalidModelBuilder))
+    val view = contentModelBuilderService.populateContentModel(request)
 
-    assertEquals(None, contentModelBuilderService.populateContentModel(request))
+    assertEquals(None, view)
   }
 
   @Test
@@ -60,7 +66,7 @@ class ContentModelBuilderServiceTest {
 
     val contentModelBuilderService = new ContentModelBuilderService(
       viewFactory,
-      commonModelObjectsService,
+      contentRetrievalService,
       Seq(invalidModelBuilder, validModelBuilder)
     )
 
@@ -78,7 +84,7 @@ class ContentModelBuilderServiceTest {
 
     val contentModelBuilderService = new ContentModelBuilderService(
       viewFactory,
-      commonModelObjectsService,
+      contentRetrievalService,
       Seq(invalidModelBuilder, validModelBuilder)
     )
 

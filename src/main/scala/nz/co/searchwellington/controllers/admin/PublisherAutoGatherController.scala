@@ -6,7 +6,7 @@ import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.{Newsitem, Resource, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.HibernateResourceDAO
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HibernateResourceDAO}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlParser
 import org.apache.log4j.Logger
@@ -20,7 +20,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class PublisherAutoGatherController @Autowired()(requestFilter: AdminRequestFilter, mongoRepository: MongoRepository, resourceDAO: HibernateResourceDAO,
                                                              contentUpdateService: ContentUpdateService,
-                                                             commonModelObjectsService: CommonModelObjectsService, urlParser: UrlParser) extends ReasonableWaits {
+                                                             urlParser: UrlParser,
+                                                             val contentRetrievalService: ContentRetrievalService) extends ReasonableWaits with CommonModelObjectsService {
 
   private val log = Logger.getLogger(classOf[PublisherAutoGatherController])
 
@@ -38,7 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       mv.addObject("resources_to_tag", resourcesToAutoTag)
     }
 
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   @RequestMapping(value = Array("/admin/gather/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -61,7 +62,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       mv.addObject("resources_to_tag", autotaggedNewsitems)
     }
 
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {

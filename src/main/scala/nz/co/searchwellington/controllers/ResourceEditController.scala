@@ -14,7 +14,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.modification.{ContentDeletionService, ContentUpdateService}
 import nz.co.searchwellington.permissions.EditPermissionService
 import nz.co.searchwellington.queues.LinkCheckerQueue
-import nz.co.searchwellington.repositories.HandTaggingDAO
+import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.spam.SpamFilter
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.widgets.{AcceptanceWidgetFactory, TagsWidgetFactory}
@@ -32,10 +32,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                        loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
                                                        submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
                                                        contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
-                                                       tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor, commonModelObjectsService: CommonModelObjectsService,
+                                                       tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor,
                                                        feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
                                                        whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
-                                                       spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue) {
+                                                       spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue,
+                                                       val contentRetrievalService: ContentRetrievalService) extends CommonModelObjectsService {
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
   private val ACCEPTANCE = "acceptance"
@@ -69,7 +70,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
     }
 
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   @RequestMapping(Array("/edit/viewsnapshot")) def viewSnapshot(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -92,7 +93,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource)).
         addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource))).
         addObject("show_additional_tags", 1)
-      return commonModelObjectsService.withCommonLocal(mv)
+      return withCommonLocal(mv)
 
     }
     new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
@@ -197,7 +198,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
 
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   @RequestMapping(value = Array("/save"), method = Array(RequestMethod.POST))
@@ -300,7 +301,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.warn("No edit resource could be setup.")
     }
 
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   private def createAndSetAnonUser(request: HttpServletRequest): User = {
@@ -339,7 +340,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     if (userIsLoggedIn) {
       mv.addObject("show_additional_tags", 1)
     }
-    commonModelObjectsService.withCommonLocal(mv)
+    withCommonLocal(mv)
   }
 
   private def populatePublisherField(modelAndView: ModelAndView, userIsLoggedIn: Boolean, editResource: Resource) {

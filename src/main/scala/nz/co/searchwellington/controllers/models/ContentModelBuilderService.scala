@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -9,8 +10,8 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
 @Component class ContentModelBuilderService @Autowired()(viewFactory: ViewFactory,
-                                                         commonModelObjectsService: CommonModelObjectsService,
-                                                         modelBuilders: Seq[ModelBuilder]) {
+                                                         val contentRetrievalService: ContentRetrievalService,
+                                                         modelBuilders: Seq[ModelBuilder]) extends CommonModelObjectsService {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
@@ -37,7 +38,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
         } else {
           mb.populateExtraModelContent(request, mv)
           mv.setViewName(mb.getViewName(mv))
-          commonModelObjectsService.withCommonLocal(mv)
+          withCommonLocal(mv)
         }
       }
 

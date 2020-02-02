@@ -15,9 +15,11 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class SimplePageController @Autowired()(tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
-                                                    commonModelObjectsService: CommonModelObjectsService, urlStack: UrlStack,
-                                                    contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper,
-                                                    mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
+                                                    urlStack: UrlStack,
+                                                    val contentRetrievalService: ContentRetrievalService,
+                                                    frontendResourceMapper: FrontendResourceMapper,
+                                                    mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter)
+  extends ReasonableWaits with CommonModelObjectsService {
 
   @RequestMapping(Array("/about"))
   @Timed(timingNotes = "")
@@ -25,7 +27,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
-    commonModelObjectsService.withCommonLocal(new ModelAndView("about").
+    withCommonLocal(new ModelAndView("about").
       addObject("heading", "About").
       addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava))
   }
@@ -35,7 +37,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
-    commonModelObjectsService.withCommonLocal(new ModelAndView("archiveIndex").
+    withCommonLocal(new ModelAndView("archiveIndex").
       addObject("heading", "Archive").
       addObject("archiveLinks", Await.result(contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava))
   }
@@ -44,19 +46,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def api(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    val mv = new ModelAndView("api").
+    withCommonLocal(new ModelAndView("api").
       addObject("heading", "The Wellynews API").
       addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = Option(loggedInUserFilter.getLoggedInUser))).
       addObject("publishers", contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser))).
-      addObject("api_tags", contentRetrievalService.getTopLevelTags)
-    commonModelObjectsService.withCommonLocal(mv)
+      addObject("api_tags", contentRetrievalService.getTopLevelTags))
   }
 
   @RequestMapping(Array("/rssfeeds"))
   def rssfeeds(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    commonModelObjectsService.withCommonLocal(new ModelAndView("rssfeeds").
+    withCommonLocal(new ModelAndView("rssfeeds").
       addObject("heading", "RSS feeds").
       addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(Option(loggedInUserFilter.getLoggedInUser))))
   }
@@ -66,7 +67,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
-    commonModelObjectsService.withCommonLocal(new ModelAndView("discoveredFeeds").
+    withCommonLocal(new ModelAndView("discoveredFeeds").
       addObject("heading", "Discovered Feeds").
       addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava))
   }
