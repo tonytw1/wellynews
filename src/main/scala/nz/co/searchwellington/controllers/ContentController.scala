@@ -14,11 +14,11 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
 
   private val log = Logger.getLogger(classOf[ContentController])
 
+  private val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService()
+
   @RequestMapping(value = Array("/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/*/*/*/*/*"))
   @Timed(timingNotes = "")
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val contentModelBuilderService = contentModelBuilderServiceFactory.makeContentModelBuilderService() // TODO push to constructor
-
     contentModelBuilderService.populateContentModel(request).fold {
       log.warn("Model was null; returning 404")
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)

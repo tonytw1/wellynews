@@ -16,7 +16,7 @@ class ContentControllerTest {
   private val unknownPathRequest = mock(classOf[HttpServletRequest])
   private val response = mock(classOf[HttpServletResponse])
 
-  private val contentController: ContentController = new ContentController(contentModelBuilderServiceFactory, urlStack)
+  private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack)
 
   @Test
   def shouldDelegateTotTheContentModelBuilderToGetTheModelForThisRequest {
