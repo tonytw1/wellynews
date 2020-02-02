@@ -56,18 +56,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.info("No logged in user or user not allowed to edit resource; returning 403")
       return null
     }
-    val mv: ModelAndView = new ModelAndView("editResource")
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "Editing a Resource")
-    mv.addObject("resource", resource)
-    mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource)))
-    mv.addObject("show_additional_tags", 1)
-    val userIsLoggedIn: Boolean = loggedInUser != null
+
+    val mv = new ModelAndView("editResource").
+      addObject("heading", "Editing a Resource").
+      addObject("resource", resource).
+      addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource))).
+      addObject("show_additional_tags", 1)
+
+    val userIsLoggedIn = loggedInUser != null
     populatePublisherField(mv, userIsLoggedIn, resource)
     if (resource.`type` == "F") {
       // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
     }
-    mv
+
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   @RequestMapping(Array("/edit/viewsnapshot")) def viewSnapshot(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -84,14 +86,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
     val editResource: Resource = request.getAttribute("resource").asInstanceOf[Resource]
     if (request.getAttribute("resource") != null && userIsAllowedToEdit(editResource, request, loggedInUser)) {
-      val mv: ModelAndView = new ModelAndView("viewSnapshot")
-      commonModelObjectsService.populateCommonLocal(mv)
-      mv.addObject("heading", "Resource snapshot")
-      mv.addObject("resource", editResource)
-      mv.addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource))
-      mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource)))
-      mv.addObject("show_additional_tags", 1)
-      return mv
+      val mv = new ModelAndView("viewSnapshot").
+        addObject("heading", "Resource snapshot").
+        addObject("resource", editResource).
+        addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource)).
+        addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource))).
+        addObject("show_additional_tags", 1)
+      return commonModelObjectsService.withCommonLocal(mv)
+
     }
     new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
   }
@@ -181,20 +183,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(Array("/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val modelAndView: ModelAndView = new ModelAndView("deletedResource")
-    commonModelObjectsService.populateCommonLocal(modelAndView)
-    modelAndView.addObject("heading", "Resource Deleted")
+    val mv = new ModelAndView("deletedResource").
+      addObject("heading", "Resource Deleted")
+
     adminRequestFilter.loadAttributesOntoRequest(request)
-    var editResource: Resource = request.getAttribute("resource").asInstanceOf[Resource]
+    var editResource = request.getAttribute("resource").asInstanceOf[Resource]
     if (editResource != null && editPermissionService.canDelete(editResource)) {
-      modelAndView.addObject("resource", editResource)
+      mv.addObject("resource", editResource)
       editResource = request.getAttribute("resource").asInstanceOf[Resource]
       contentDeletionService.performDelete(editResource)
       if (editResource.`type` == "F") {
         urlStack.setUrlStack(request, "")
       }
     }
-    modelAndView
+
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   @RequestMapping(value = Array("/save"), method = Array(RequestMethod.POST))
@@ -202,9 +205,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     request.setCharacterEncoding("UTF-8")
     response.setCharacterEncoding("UTF-8")
-    val modelAndView: ModelAndView = new ModelAndView("savedResource")
-    commonModelObjectsService.populateCommonLocal(modelAndView)
-    modelAndView.addObject("heading", "Resource Saved")
+
+    val mv = new ModelAndView("savedResource").
+      addObject("heading", "Resource Saved")
+
     var loggedInUser: User = loggedInUserFilter.getLoggedInUser
     adminRequestFilter.loadAttributesOntoRequest(request)
     var editResource: Resource = null
@@ -290,12 +294,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
       else {
         log.info("Could not save resource. Spam question not answered?")
       }
-      modelAndView.addObject("item", frontendResourceMapper.createFrontendResourceFrom(editResource))
+      mv.addObject("item", frontendResourceMapper.createFrontendResourceFrom(editResource))
     }
     else {
       log.warn("No edit resource could be setup.")
     }
-    modelAndView
+
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   private def createAndSetAnonUser(request: HttpServletRequest): User = {
@@ -326,19 +331,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
     editPermissionService.canEdit(editResource)
   }
 
-  private def populateSubmitCommonElements(request: HttpServletRequest, modelAndView: ModelAndView) {
-    commonModelObjectsService.populateCommonLocal(modelAndView)
-    modelAndView.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
-    val userIsLoggedIn: Boolean = loggedInUser != null
-    modelAndView.addObject("publisher_select", "1")
+  private def populateSubmitCommonElements(request: HttpServletRequest, mv: ModelAndView) {
+    mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(Set()))
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
+    val userIsLoggedIn = loggedInUser != null
+    mv.addObject("publisher_select", "1")
     if (userIsLoggedIn) {
-      modelAndView.addObject("show_additional_tags", 1)
+      mv.addObject("show_additional_tags", 1)
     }
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   private def populatePublisherField(modelAndView: ModelAndView, userIsLoggedIn: Boolean, editResource: Resource) {
-    val isPublishedResource: Boolean = editResource.isInstanceOf[PublishedResource]
+    val isPublishedResource = editResource.isInstanceOf[PublishedResource]
     if (isPublishedResource) {
       modelAndView.addObject("publisher_select", "1")
     }

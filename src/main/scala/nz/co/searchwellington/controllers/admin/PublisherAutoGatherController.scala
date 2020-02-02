@@ -25,12 +25,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[PublisherAutoGatherController])
 
   @RequestMapping(Array("/admin/gather/prompt")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
-    mv.setViewName("autoGatherPrompt")
-    mv.addObject("heading", "Auto Gathering")
-    commonModelObjectsService.populateCommonLocal(mv)
+    val mv = new ModelAndView("autoGatherPrompt").
+      addObject("heading", "Auto Gathering")
+
     requestFilter.loadAttributesOntoRequest(request)
-    val publisher: Website = request.getAttribute("publisher").asInstanceOf[Website]
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     mv.addObject("publisher", publisher)
     if (publisher != null) {
       val resourcesToAutoTag = getPossibleAutotagResources(publisher).filter { resource =>
@@ -38,14 +37,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
       mv.addObject("resources_to_tag", resourcesToAutoTag)
     }
-    mv
+
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   @RequestMapping(value = Array("/admin/gather/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
-    mv.setViewName("autoGatherApply")
-    mv.addObject("heading", "Auto Gathering")
-    commonModelObjectsService.populateCommonLocal(mv)
+    val mv = new ModelAndView("autoGatherApply").
+      addObject("heading", "Auto Gathering")
+
     requestFilter.loadAttributesOntoRequest(request)
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     mv.addObject("publisher", publisher)
@@ -61,7 +60,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       mv.addObject("resources_to_tag", autotaggedNewsitems)
     }
-    mv
+
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {

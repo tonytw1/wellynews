@@ -11,11 +11,10 @@ import org.springframework.web.servlet.view.RedirectView
 @Controller class LoginController @Autowired()(urlStack: UrlStack, commonModelObjectsService: CommonModelObjectsService) {
 
   @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "Sign in")
-    mv.setViewName("signin")
-    mv
+    commonModelObjectsService.withCommonLocal {
+      new ModelAndView("signin").
+        addObject("heading", "Sign in")
+    }
   }
 
   @RequestMapping(Array("/logout")) def logout(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

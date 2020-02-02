@@ -44,13 +44,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       } { tag =>
         import scala.collection.JavaConverters._
-        val mv = new ModelAndView("autoTagPrompt").
+        commonModelObjectsService.withCommonLocal(new ModelAndView("autoTagPrompt").
           addObject("heading", "Autotagging").
           addObject("tag", tag).
-          addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag).asJava)
-
-        commonModelObjectsService.populateCommonLocal(mv)
-        mv
+          addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag).asJava))
       }
     }
   }
@@ -69,10 +66,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
         null
 
       } else {
-        val mv = new ModelAndView("autoTagApply")
-        mv.addObject("heading", "Autotagging")
-        mv.addObject("tag", tag)
-        commonModelObjectsService.populateCommonLocal(mv)
+        val mv = new ModelAndView("autoTagApply").
+          addObject("heading", "Autotagging").
+          addObject("tag", tag)
 
         val autotaggedResourceIds = request.getParameterValues("autotag")
 
@@ -88,7 +84,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         }
 
         mv.addObject("resources_to_tag", resourcesAutoTagged)
-        mv
+        commonModelObjectsService.withCommonLocal(mv)
       }
     }
   }

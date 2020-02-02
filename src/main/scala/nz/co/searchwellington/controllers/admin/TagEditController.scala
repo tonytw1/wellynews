@@ -23,14 +23,15 @@ import org.springframework.web.servlet.view.RedirectView
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Controller class TagEditController @Autowired() (requestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory,
-                                                  urlStack: UrlStack, tagDAO: TagDAO, tagModifcationService: TagModificationService,
-                                                  loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService,
-                                                  submissionProcessingService: SubmissionProcessingService,
-                                                  commonModelObjectsService: CommonModelObjectsService,
-                                                  urlWordsGenerator: UrlWordsGenerator, mongoRepository: MongoRepository) extends ReasonableWaits {
+@Controller class TagEditController @Autowired()(requestFilter: AdminRequestFilter, tagWidgetFactory: TagsWidgetFactory,
+                                                 urlStack: UrlStack, tagDAO: TagDAO, tagModifcationService: TagModificationService,
+                                                 loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService,
+                                                 submissionProcessingService: SubmissionProcessingService,
+                                                 commonModelObjectsService: CommonModelObjectsService,
+                                                 urlWordsGenerator: UrlWordsGenerator, mongoRepository: MongoRepository) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagEditController])
+
   private val pattern = Pattern.compile("^/edit/tag/(.*)$")
 
   @RequestMapping(Array("/edit/tag/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -44,20 +45,21 @@ import scala.concurrent.ExecutionContext.Implicits.global
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       return null
     }
-    val mv: ModelAndView = new ModelAndView("deleteTag")
-    mv.addObject("heading", "Editing a Tag")
-    commonModelObjectsService.populateCommonLocal(mv)
-    val tag: Tag = request.getAttribute("tag").asInstanceOf[Tag]
+
+    val mv = new ModelAndView("deleteTag").
+      addObject("heading", "Editing a Tag")
+
+    val tag = request.getAttribute("tag").asInstanceOf[Tag]
     mv.addObject("tag", tag)
     tagModifcationService.deleteTag(tag)
     urlStack.setUrlStack(request, "")
-    mv
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   @RequestMapping(value = Array("/edit/tag/save"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView("savedTag")
-    mv.addObject("heading", "Tag Saved")
-    commonModelObjectsService.populateCommonLocal(mv)
+    val mv = new ModelAndView("savedTag").
+      addObject("heading", "Tag Saved")
+
     var editTag: Tag = null
     requestFilter.loadAttributesOntoRequest(request)
     if (request.getAttribute("tag") != null) {
@@ -89,13 +91,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
     if (parentTag != null) {
       //val parentTagHasChanged: Boolean = parentTag ne editTag.getParent
       //if (parentTagHasChanged) {
-        //val newParentIsOneOfOurChildren: Boolean = editTag.getChildren.contains(parentTag)
-        //if (!newParentIsOneOfOurChildren) {
-        //  tagModifcationService.updateTagParent(editTag, parentTag)
-       // }
-        //else {
-         // log.warn("Not setting parent to one of our current children; this would be a circular reference")
-       // }
+      //val newParentIsOneOfOurChildren: Boolean = editTag.getChildren.contains(parentTag)
+      //if (!newParentIsOneOfOurChildren) {
+      //  tagModifcationService.updateTagParent(editTag, parentTag)
+      // }
+      //else {
+      // log.warn("Not setting parent to one of our current children; this would be a circular reference")
+      // }
       //}
     }
     else {
@@ -106,8 +108,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(mongoRepository.saveTag(editTag), TenSeconds)
 
     mv.addObject("tag", editTag)
-    commonModelObjectsService.populateCommonLocal(mv)
-    return mv
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   private def populateAutotagHints(request: HttpServletRequest, editTag: Tag) {

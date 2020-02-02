@@ -26,11 +26,10 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
 
   @RequestMapping(Array("/profiles"))
   def profiles(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv: ModelAndView = new ModelAndView("profiles")
-    mv.addObject("heading", "Profiles")
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("profiles", Await.result(mongoRepository.getAllUsers, TenSeconds))
-    return mv
+    val mv = new ModelAndView("profiles").
+      addObject("heading", "Profiles").
+      addObject("profiles", Await.result(mongoRepository.getAllUsers, TenSeconds))
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   @RequestMapping(Array("/profiles/*"))
@@ -51,14 +50,14 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       if (loggedInUser != null && loggedInUser.getId == user.getId) {
         mv = new ModelAndView("profile")
       }
-      mv.addObject("heading", "User profile")
-      commonModelObjectsService.populateCommonLocal(mv)
-      mv.addObject("profileuser", user)
 
       import scala.collection.JavaConverters._
-      mv.addObject("submitted", contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava)
-      mv.addObject("tagged", contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava)
-      mv
+      mv.addObject("heading", "User profile").
+        addObject("profileuser", user).
+        addObject("submitted", contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava).
+        addObject("tagged", contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava)
+
+      commonModelObjectsService.withCommonLocal(mv)
 
     }.getOrElse {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
@@ -67,12 +66,12 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
   }
 
   @RequestMapping(Array("/profile/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView("editProfile")
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "Editing your profile")
     val loggedInUser = loggedInUserFilter.getLoggedInUser
-    mv.addObject("user", loggedInUser)
-    return mv
+
+    val mv = new ModelAndView("editProfile").
+      addObject("heading", "Editing your profile").
+      addObject("user", loggedInUser)
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   // TODO reinstate

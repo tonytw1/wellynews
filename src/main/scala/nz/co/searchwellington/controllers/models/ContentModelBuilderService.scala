@@ -25,20 +25,20 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
           logger.debug("Selecting rss view for path: " + path)
           mv.setView(viewFactory.getRssView(mv.getModel.get("heading").asInstanceOf[String], mv.getModel.get("link").asInstanceOf[String], mv.getModel.get("description").asInstanceOf[String]))
           mv.addObject("data", mv.getModel.get("main_content"))
+          mv
 
         } else if (path.endsWith("/json")) {
           logger.debug("Selecting json view for path: " + path)
           val jsonView = viewFactory.getJsonView
           jsonView.setDataField("main_content")
           mv.setView(jsonView)
+          mv
 
         } else {
           mb.populateExtraModelContent(request, mv)
           mv.setViewName(mb.getViewName(mv))
-          commonModelObjectsService.populateCommonLocal(mv)
+          commonModelObjectsService.withCommonLocal(mv)
         }
-
-        mv
       }
 
     }.getOrElse {

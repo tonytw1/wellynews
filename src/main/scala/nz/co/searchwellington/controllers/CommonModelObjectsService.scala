@@ -11,7 +11,12 @@ import scala.concurrent.Await
 
 @Component class CommonModelObjectsService @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                         frontendResourceMapper: FrontendResourceMapper) extends ReasonableWaits {
-  def populateCommonLocal(mv: ModelAndView) {
+  def withCommonLocal(mv: ModelAndView): ModelAndView = {
+    populateCommonLocal(mv)
+    mv
+  }
+
+  private def populateCommonLocal(mv: ModelAndView) {
     import scala.collection.JavaConverters._
 
     val topLevelTags = contentRetrievalService.getTopLevelTags
@@ -20,5 +25,6 @@ import scala.concurrent.Await
     val featuredTags = contentRetrievalService.getFeaturedTags
     mv.addObject("featuredTags", Await.result(featuredTags, TenSeconds).asJava)
   }
+
 
 }

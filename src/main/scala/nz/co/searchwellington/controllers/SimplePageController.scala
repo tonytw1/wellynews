@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers
 
-import java.io.IOException
-
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.annotations.Timed
@@ -23,74 +21,54 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   @RequestMapping(Array("/about"))
   @Timed(timingNotes = "")
-  @throws[IOException]
   def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
     urlStack.setUrlStack(request)
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "About")
-    mv.setViewName("about")
+
     import scala.collection.JavaConverters._
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-    mv
+    commonModelObjectsService.withCommonLocal(new ModelAndView("about").
+      addObject("heading", "About").
+      addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava))
   }
 
   @RequestMapping(Array("/archive"))
-  @throws[IOException]
   def archive(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
     urlStack.setUrlStack(request)
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "Archive")
+
     import scala.collection.JavaConverters._
-    mv.addObject("archiveLinks", Await.result(contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-    mv.setViewName("archiveIndex")
-    mv
+    commonModelObjectsService.withCommonLocal(new ModelAndView("archiveIndex").
+      addObject("heading", "Archive").
+      addObject("archiveLinks", Await.result(contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava))
   }
 
   @RequestMapping(Array("/api"))
-  @throws[IOException]
   def api(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
     urlStack.setUrlStack(request)
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "The Wellynews API")
-    mv.addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = Option(loggedInUserFilter.getLoggedInUser)))
-    mv.addObject("publishers", contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser)))
-    mv.addObject("api_tags", contentRetrievalService.getTopLevelTags)
-    mv.setViewName("api")
-    mv
+
+    val mv = new ModelAndView("api").
+      addObject("heading", "The Wellynews API").
+      addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = Option(loggedInUserFilter.getLoggedInUser))).
+      addObject("publishers", contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser))).
+      addObject("api_tags", contentRetrievalService.getTopLevelTags)
+    commonModelObjectsService.withCommonLocal(mv)
   }
 
   @RequestMapping(Array("/rssfeeds"))
-  @throws[IOException]
   def rssfeeds(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
     urlStack.setUrlStack(request)
-    commonModelObjectsService.populateCommonLocal(mv)
-    mv.addObject("heading", "RSS feeds")
-    setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-    mv.addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(Option(loggedInUserFilter.getLoggedInUser)))
-    mv.setViewName("rssfeeds")
-    mv
-  }
 
-  protected def setRss(mv: ModelAndView, title: String, url: String) {
-    mv.addObject("rss_title", title)
-    mv.addObject("rss_url", url)
+    commonModelObjectsService.withCommonLocal(new ModelAndView("rssfeeds").
+      addObject("heading", "RSS feeds").
+      addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(Option(loggedInUserFilter.getLoggedInUser))))
   }
 
   @RequestMapping(Array("/feeds/discovered"))
-  @throws[IOException]
   def discovered(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val mv = new ModelAndView
-    commonModelObjectsService.populateCommonLocal(mv)
     urlStack.setUrlStack(request)
-    mv.addObject("heading", "Discovered Feeds")
+
     import scala.collection.JavaConverters._
-    mv.addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava)
-    mv.setViewName("discoveredFeeds")
-    mv
+    commonModelObjectsService.withCommonLocal(new ModelAndView("discoveredFeeds").
+      addObject("heading", "Discovered Feeds").
+      addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava))
   }
 
 }
