@@ -29,7 +29,7 @@ import scala.concurrent.Await
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
 
     def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Option[ModelAndView] = {
-      val startIndex = getStartIndex(page)
+      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
       val taggedNewsitemsAndCount = Await.result(contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
       val totalNewsitemCount = taggedNewsitemsAndCount._2
 
@@ -47,7 +47,7 @@ import scala.concurrent.Await
           mv.addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName)
           mv.addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".")
           mv.addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag))
-          populatePagination(mv, startIndex, totalNewsitemCount)
+          populatePagination(mv, startIndex, totalNewsitemCount, MAX_NEWSITEMS)
 
           val taggedNewsitems = taggedNewsitemsAndCount._1
           mv.addObject(MAIN_CONTENT, taggedNewsitems)

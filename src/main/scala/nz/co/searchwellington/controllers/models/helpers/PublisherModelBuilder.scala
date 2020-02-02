@@ -41,7 +41,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
       val frontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
 
-      val startIndex = getStartIndex(page)
+      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
@@ -67,7 +67,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
           mv.addObject("feeds", publisherFeeds.asJava)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-          populatePagination(mv, startIndex, totalPublisherNewsitems)
+          populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS)
         }
         mv
       }

@@ -44,7 +44,7 @@ import scala.concurrent.Await
 
       val page = getPage(request)
       mv.addObject("page", page)
-      val startIndex = getStartIndex(page)
+      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
       if (hasUserSuppliedALocation) {
         val radius = getLocationSearchRadius(request)
@@ -54,7 +54,7 @@ import scala.concurrent.Await
           None
         }
 
-        populatePagination(mv, startIndex, totalNearbyCount)
+        populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS)
         mv.addObject("location", userSuppliedPlace)
         mv.addObject("radius", radius)
         mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)).asJava)
@@ -78,7 +78,7 @@ import scala.concurrent.Await
         if (startIndex > totalGeotaggedCount) {
           None
         }
-        populatePagination(mv, startIndex, totalGeotaggedCount)
+        populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS)
 
         mv.addObject("heading", "Geotagged newsitems")
         mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
@@ -95,9 +95,7 @@ import scala.concurrent.Await
     mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "geocoded"
-  }
+  def getViewName(mv: ModelAndView): String = "geocoded"
 
   private def setRssUrlForLocation(mv: ModelAndView, place: Place, radius: Double) {
     commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPlace(place, radius), rssUrlBuilder.getRssUrlForPlace(place, radius))

@@ -50,7 +50,7 @@ import scala.concurrent.{Await, Future}
 
       val mv = new ModelAndView
       mv.addObject(PAGE, page)
-      val startIndex = getStartIndex(page)
+      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
       val x = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser).flatMap { taggedNewsitemsAndTotalCount =>
         val totalNewsitems = taggedNewsitemsAndTotalCount._2
@@ -78,7 +78,7 @@ import scala.concurrent.{Await, Future}
             import scala.collection.JavaConverters._
             mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
 
-            populatePagination(mv, startIndex,  totalNewsitems)
+            populatePagination(mv, startIndex,  totalNewsitems, MAX_NEWSITEMS)
             if (taggedNewsitems.nonEmpty) {
               commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
             }

@@ -23,16 +23,18 @@ import scala.concurrent.Await
   }
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-    val mv = new ModelAndView()
     val keywords = request.getParameter(KEYWORDS_PARAMETER)
     val page = getPage(request)
-    mv.addObject("page", page)
 
-    val startIndex = getStartIndex(page)
+
+    val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
     val maybeTag = Option(request.getAttribute("tags")).flatMap { t =>
       t.asInstanceOf[Seq[Tag]].headOption
     }
+
+    val mv = new ModelAndView()
+    mv.addObject("page", page)
 
     val contentWithCount = maybeTag.fold {
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
@@ -48,7 +50,7 @@ import scala.concurrent.Await
 
     val contentCount = contentWithCount._2
     mv.addObject("main_content_total", contentCount)
-    populatePagination(mv, startIndex, contentCount)
+    populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS)
 
     /*
     if (startIndex > contentCount) {
