@@ -19,6 +19,8 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
 
   def getId: String = id
 
+  def getBSONId: String = _id.stringify
+
   def getName: String = name
 
   def getDisplayName: String = display_name

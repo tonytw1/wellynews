@@ -12,7 +12,7 @@
 
 		<form id="editForm" action="$adminUrlBuilder.getEditTagUrl($tag)" method="POST">
 
-            #springBind("newTag")
+            #springBind("editTag")
             #foreach($error in $status.errorMessages)
                 <div class="alert">$error</div>
             #end
@@ -31,8 +31,9 @@
                 #springBind("editTag.parent")
                 <label for="${status.expression}">Parent:</label>
                 <select name="${status.expression}">
+                    <option value="">
                     #foreach($parent in $parents)
-                        <option value="$parent._id.stringify" #if($parent._id.stringify == ${status.value}) SELECTED #end>$option
+                        <option value="$parent.BSONId" #if($parent.BSONId == ${status.value}) SELECTED #end>$parent.name
                     #end
                 </select>
                 <br />

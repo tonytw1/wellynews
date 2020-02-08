@@ -1,7 +1,7 @@
 #if ($editPermissionService.canEdit($tag))
 	<ul>
-		<li class="admin"><a href="$site_information.url/edit/tag/$tag.name">edit</a></li>		
+		<li class="admin"><a href="$adminUrlBuilder.getEditTagUrl($tag)">edit</a></li>
 		#if ($editPermissionService.canEdit($tag)) <li class="admin"><a href="$site_information.url/edit/tag/delete?tag=$tag.name">delete</a></li> #end
-		<li class="admin"><a href="$urlBuilder.getAutoTagUrl($tag)">autotag</a></li>	
+		<li class="admin"><a href="$urlBuilder.getAutoTagUrl($tag)">autotag</a></li>
 	</ul>
 #end
