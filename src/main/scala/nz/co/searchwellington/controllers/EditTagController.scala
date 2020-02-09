@@ -69,7 +69,9 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         }
 
         val parentTag = optionalBsonObjectId(editTag.getParent).flatMap { p =>
-          Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
+          val maybeTag = Await.result(tagDAO.loadTagByObjectId(p), TenSeconds)
+          log.info("Found parent for tag id " + p.stringify + ": " + maybeTag)
+          maybeTag
         }
 
         val updatedTag = tag.copy(
