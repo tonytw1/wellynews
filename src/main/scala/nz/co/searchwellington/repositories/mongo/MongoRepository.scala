@@ -42,7 +42,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     db
   }
 
-  val db = {
+  private val db = {
     import scala.concurrent.ExecutionContext.Implicits.global
     connect()
   }
