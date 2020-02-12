@@ -10,7 +10,7 @@ import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{DB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
+import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -61,16 +61,16 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  implicit def taggingReader = Macros.reader[Tagging]
-  implicit def geocodeReader = Macros.reader[Geocode]
-  implicit def feedReader = Macros.reader[Feed]
-  implicit def newsitemReader = Macros.reader[Newsitem]
-  implicit def supressionReader = Macros.reader[Supression]
-  implicit def tagReader = Macros.reader[Tag]
-  implicit def userReader = Macros.reader[User]
-  implicit def watchlistReader = Macros.reader[Watchlist]
-  implicit def websiteReader = Macros.reader[Website]
-  implicit def discoveredFeedReader = Macros.reader[DiscoveredFeed]
+  implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
+  implicit def geocodeReader: BSONDocumentReader[Geocode] = Macros.reader[Geocode]
+  implicit def feedReader: BSONDocumentReader[Feed] = Macros.reader[Feed]
+  implicit def newsitemReader: BSONDocumentReader[Newsitem] = Macros.reader[Newsitem]
+  implicit def supressionReader: BSONDocumentReader[Supression] = Macros.reader[Supression]
+  implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
+  implicit def userReader: BSONDocumentReader[User] = Macros.reader[User]
+  implicit def watchlistReader: BSONDocumentReader[Watchlist] = Macros.reader[Watchlist]
+  implicit def websiteReader: BSONDocumentReader[Website] = Macros.reader[Website]
+  implicit def discoveredFeedReader: BSONDocumentReader[DiscoveredFeed] = Macros.reader[DiscoveredFeed]
 
   def getResourceById(id: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
     getResourceBy(BSONDocument("id" -> id))
@@ -86,16 +86,16 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     }
   }
 
-  implicit def taggingWriter = Macros.writer[Tagging]
-  implicit def geocodeWriter = Macros.writer[Geocode]
-  implicit def feedWriter = Macros.writer[Feed]
-  implicit def newsitemWriter = Macros.writer[Newsitem]
-  implicit def supressionWriter = Macros.writer[Supression]
-  implicit def tagWriter = Macros.writer[Tag]
-  implicit def userWriter = Macros.writer[User]
-  implicit def watchlistWriter = Macros.writer[Watchlist]
-  implicit def websiteWriter = Macros.writer[Website]
-  implicit def discoveredFeedWriter = Macros.writer[DiscoveredFeed]
+  implicit def taggingWriter: BSONDocumentWriter[Tagging] = Macros.writer[Tagging]
+  implicit def geocodeWriter: BSONDocumentWriter[Geocode] = Macros.writer[Geocode]
+  implicit def feedWriter: BSONDocumentWriter[Feed] = Macros.writer[Feed]
+  implicit def newsitemWriter: BSONDocumentWriter[Newsitem] = Macros.writer[Newsitem]
+  implicit def supressionWriter: BSONDocumentWriter[Supression] = Macros.writer[Supression]
+  implicit def tagWriter: BSONDocumentWriter[Tag] = Macros.writer[Tag]
+  implicit def userWriter: BSONDocumentWriter[User] = Macros.writer[User]
+  implicit def watchlistWriter: BSONDocumentWriter[Watchlist] = Macros.writer[Watchlist]
+  implicit def websiteWriter: BSONDocumentWriter[Website] = Macros.writer[Website]
+  implicit def discoveredFeedWriter: BSONDocumentWriter[DiscoveredFeed] = Macros.writer[DiscoveredFeed]
 
   def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> resource._id)
