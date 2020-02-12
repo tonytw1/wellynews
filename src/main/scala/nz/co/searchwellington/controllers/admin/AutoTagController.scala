@@ -66,10 +66,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
         null
 
       } else {
-        val mv = new ModelAndView("autoTagApply").
-          addObject("heading", "Autotagging").
-          addObject("tag", tag)
-
         val autotaggedResourceIds = request.getParameterValues("autotag")
 
         def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
@@ -92,7 +88,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
         }
 
         import scala.collection.JavaConverters._
-        mv.addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
+        val mv = new ModelAndView("autoTagApply").
+          addObject("heading", "Autotagging").
+          addObject("tag", tag).
+          addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
+
         withCommonLocal(mv)
       }
     }
