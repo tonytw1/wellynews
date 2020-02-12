@@ -54,7 +54,9 @@ import scala.concurrent.{ExecutionContext, Future}
               last_read = Some(DateTime.now.toDate),
               latestItemDate = rssfeedNewsitemService.latestPublicationDateOf(feedNewsitems),
               http_status = inferredHttpStatus
-            ))
+            )).map { _ =>
+              Unit
+            }
           }
         })
       }
