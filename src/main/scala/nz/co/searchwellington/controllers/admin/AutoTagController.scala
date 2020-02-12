@@ -17,7 +17,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class AutoTagController @Autowired()(mongoRepository: MongoRepository,
@@ -80,11 +80,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
           contentUpdateService.update(resource)
         }
 
-        val resourcesAutoTagged = autotaggedResourceIds.flatMap { resourceId =>
-          Await.result(mongoRepository.getResourceById(resourceId), TenSeconds).map(applyTagTo(_, tag))
-        }
+        val eventuallyAutoTaggedResources = Future.sequence {
+          autotaggedResourceIds.toSeq.map(mongoRepository.getResourceById).map { ero =>
+            ero.map { ro =>
+              ro.map(applyTagTo(_, tag))
+            }
+          }
+        }.map(_.flatten)
 
-        mv.addObject("resources_to_tag", resourcesAutoTagged)
+        mv.addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds))
         withCommonLocal(mv)
       }
     }
