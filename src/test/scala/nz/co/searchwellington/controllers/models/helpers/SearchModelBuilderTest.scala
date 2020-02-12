@@ -14,31 +14,31 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 class SearchModelBuilderTest {
-  val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  val urlBuilder = mock(classOf[UrlBuilder])
-  val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
+  private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val urlBuilder = mock(classOf[UrlBuilder])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
-  val tag = Tag(id = UUID.randomUUID().toString, name = "A tag")
-  val tags = Seq(tag)
+  private val tag = Tag(id = UUID.randomUUID().toString, name = "A tag")
+  private val tags = Seq(tag)
 
-  private var request: MockHttpServletRequest = null
-  private var modelBuilder: SearchModelBuilder = null
+  private var request: MockHttpServletRequest = _
+  private var modelBuilder: SearchModelBuilder = _
 
-  val tagNewsitem = mock(classOf[FrontendResource])
-  val anotherTagNewsitem = mock(classOf[FrontendResource])
+  private val tagNewsitem = mock(classOf[FrontendResource])
+  private val anotherTagNewsitem = mock(classOf[FrontendResource])
 
-  val keywordNewsitemResults: (Seq[FrontendResource], Long) = (Seq.empty, 0L)
-  val tagKeywordNewsitemResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
+  private val keywordNewsitemResults = (Seq.empty, 0L)
+  private val tagKeywordNewsitemResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
 
   private val loggedInUser = None
 
-  @Before def setup {
+  @Before def setup() {
     request = new MockHttpServletRequest
     modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, loggedInUserFilter)
   }
 
   @Test
-  def keywordShouldBeSetToIndicateASearch {
+  def keywordShouldBeSetToIndicateASearch() {
     request.setPathInfo("")
     assertFalse(modelBuilder.isValid(request))
 
@@ -47,7 +47,7 @@ class SearchModelBuilderTest {
   }
 
   @Test
-  def pageHeadingShouldBeSearchKeyword {
+  def pageHeadingShouldBeSearchKeyword() {
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).thenReturn(keywordNewsitemResults)
 
     request.setParameter("keywords", "widgets")
@@ -57,7 +57,7 @@ class SearchModelBuilderTest {
 
 
   @Test
-  def shouldShowTagIfTagFilterIsSet {
+  def shouldShowTagIfTagFilterIsSet() {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
     when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
@@ -68,7 +68,7 @@ class SearchModelBuilderTest {
   }
 
   @Test
-  def shouldShowTagResultsIfTagFilterIsSet {
+  def shouldShowTagResultsIfTagFilterIsSet() {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
     when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
