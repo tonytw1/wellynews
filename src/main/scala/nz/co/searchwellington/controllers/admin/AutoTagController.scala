@@ -69,12 +69,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
         val autotaggedResourceIds = request.getParameterValues("autotag")
 
         def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
-          log.info("Applying tag " + tag.getName + " to:" + resource.title)
-          if (!autoTagService.alreadyHasTag(resource, tag)) {
-            handTaggingService.addTag(loggedInUser, tag, resource)
-          }
-          contentUpdateService.update(resource).map { _ =>
-            resource
+          autoTagService.alreadyHasTag(resource, tag).flatMap { alreadyHasTag =>
+            if (!alreadyHasTag) {
+              log.info("Applying tag " + tag.getName + " to:" + resource.title)
+              handTaggingService.addTag(loggedInUser, tag, resource)
+            }
+            contentUpdateService.update(resource).map { _ =>
+              resource
+            }
           }
         }
 

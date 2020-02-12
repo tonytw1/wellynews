@@ -6,25 +6,31 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Component
 class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService,
                                      mongoRepository: MongoRepository) extends ReasonableWaits {
 
-  def alreadyHasTag(resource: Tagged, tag: Tag)(implicit ec: ExecutionContext): Boolean = {
-    val isNewsitemWhosPublisherAlreadyHasThisTag = resource match {
+  def alreadyHasTag(resource: Tagged, tag: Tag)(implicit ec: ExecutionContext): Future[Boolean] = {
+    val eventualIsNewsitemWhosPublisherAlreadyHasThisTag = resource match {
       case n: Newsitem =>
-        n.publisher.exists { publisherId =>
-          Await.result(mongoRepository.getResourceByObjectId(publisherId), TenSeconds).exists { publisher =>
-            taggingReturnsOfficerService.getHandTagsForResource(publisher).contains(tag)
+        n.publisher.map { publisherId =>
+          mongoRepository.getResourceByObjectId(publisherId).map { publisher =>
+            publisher.exists { publisher =>
+              taggingReturnsOfficerService.getHandTagsForResource(publisher).contains(tag)
+            }
           }
+        }.getOrElse {
+          Future.successful(false)
         }
       case _ =>
-        false
+        Future.successful(false)
     }
 
-    isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
+    eventualIsNewsitemWhosPublisherAlreadyHasThisTag.map { isNewsitemWhosPublisherAlreadyHasThisTag =>
+      isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
+    }
   }
 
 }
