@@ -5,7 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{CommonModelObjectsService, LoggedInUserFilter}
 import nz.co.searchwellington.filters.AdminRequestFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
-import nz.co.searchwellington.model.{Tag, User}
+import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingService}
 import nz.co.searchwellington.repositories.elasticsearch.KeywordSearchService
@@ -72,15 +72,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
         val autotaggedResourceIds = request.getParameterValues("autotag")
 
-        val resourcesAutoTagged = autotaggedResourceIds.flatMap { resourceId =>
-          Await.result(mongoRepository.getResourceById(resourceId), TenSeconds).map { resource =>
-            log.info("Applying tag " + tag.getName + " to:" + resource.title)
-            if (!autoTagService.alreadyHasTag(resource, tag)) {
-              handTaggingService.addTag(loggedInUser, tag, resource)
-            }
-            contentUpdateService.update(resource)
-            resource
+        def applyTagTo(resource: Resource, tag: Tag): Resource = {
+          log.info("Applying tag " + tag.getName + " to:" + resource.title)
+          if (!autoTagService.alreadyHasTag(resource, tag)) {
+            handTaggingService.addTag(loggedInUser, tag, resource)
           }
+          contentUpdateService.update(resource)
+        }
+
+        val resourcesAutoTagged = autotaggedResourceIds.flatMap { resourceId =>
+          Await.result(mongoRepository.getResourceById(resourceId), TenSeconds).map(applyTagTo(_, tag))
         }
 
         mv.addObject("resources_to_tag", resourcesAutoTagged)
