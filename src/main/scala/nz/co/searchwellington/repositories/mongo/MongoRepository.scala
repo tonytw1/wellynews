@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component
 import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
-import reactivemongo.api.{DB, MongoConnection, MongoDriver}
+import reactivemongo.api.{Cursor, DB, MongoConnection, MongoDriver}
 import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -62,14 +62,23 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   implicit def taggingReader: BSONDocumentReader[Tagging] = Macros.reader[Tagging]
+
   implicit def geocodeReader: BSONDocumentReader[Geocode] = Macros.reader[Geocode]
+
   implicit def feedReader: BSONDocumentReader[Feed] = Macros.reader[Feed]
+
   implicit def newsitemReader: BSONDocumentReader[Newsitem] = Macros.reader[Newsitem]
+
   implicit def supressionReader: BSONDocumentReader[Supression] = Macros.reader[Supression]
+
   implicit def tagReader: BSONDocumentReader[Tag] = Macros.reader[Tag]
+
   implicit def userReader: BSONDocumentReader[User] = Macros.reader[User]
+
   implicit def watchlistReader: BSONDocumentReader[Watchlist] = Macros.reader[Watchlist]
+
   implicit def websiteReader: BSONDocumentReader[Website] = Macros.reader[Website]
+
   implicit def discoveredFeedReader: BSONDocumentReader[DiscoveredFeed] = Macros.reader[DiscoveredFeed]
 
   def getResourceById(id: String)(implicit ec: ExecutionContext): Future[Option[Resource]] = {
@@ -87,14 +96,23 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   implicit def taggingWriter: BSONDocumentWriter[Tagging] = Macros.writer[Tagging]
+
   implicit def geocodeWriter: BSONDocumentWriter[Geocode] = Macros.writer[Geocode]
+
   implicit def feedWriter: BSONDocumentWriter[Feed] = Macros.writer[Feed]
+
   implicit def newsitemWriter: BSONDocumentWriter[Newsitem] = Macros.writer[Newsitem]
+
   implicit def supressionWriter: BSONDocumentWriter[Supression] = Macros.writer[Supression]
+
   implicit def tagWriter: BSONDocumentWriter[Tag] = Macros.writer[Tag]
+
   implicit def userWriter: BSONDocumentWriter[User] = Macros.writer[User]
+
   implicit def watchlistWriter: BSONDocumentWriter[Watchlist] = Macros.writer[Watchlist]
+
   implicit def websiteWriter: BSONDocumentWriter[Website] = Macros.writer[Website]
+
   implicit def discoveredFeedWriter: BSONDocumentWriter[DiscoveredFeed] = Macros.writer[DiscoveredFeed]
 
   def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
@@ -147,7 +165,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getFeedByUrlwords(urlWords: String)(implicit ec: ExecutionContext): Future[Option[Feed]] = {
-    getResourceBy(BSONDocument("type" -> "F", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Feed]))
+    getResourceBy(BSONDocument("type" -> "F", "url_words" -> urlWords)).map(ro => ro.map(r => r.asInstanceOf[Feed]))
   }
 
   def getWebsiteByName(name: String)(implicit ec: ExecutionContext): Future[Option[Website]] = {
@@ -158,11 +176,11 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*")) // TODO How to escape
     resourceCollection.find(BSONDocument("type" -> "W", "title" -> prefixRegex)).
       sort(BSONDocument("title" -> 1)).
-      cursor[Website]().collect[List](10)
+      cursor[Website]().collect[List](maxDocs = 10, err = Cursor.FailOnError[List[Website]]())
   }
 
   def getWebsiteByUrlwords(urlWords: String)(implicit ec: ExecutionContext): Future[Option[Website]] = {
-    getResourceBy(BSONDocument("type" -> "W", "url_words" -> urlWords)).map( ro => ro.map(r => r.asInstanceOf[Website]))
+    getResourceBy(BSONDocument("type" -> "W", "url_words" -> urlWords)).map(ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
   def getTagById(id: String)(implicit ec: ExecutionContext): Future[Option[Tag]] = {
@@ -178,7 +196,8 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getTagsByParent(parent: BSONObjectID)(implicit ec: ExecutionContext): Future[List[Tag]] = {
-    tagCollection.find(BSONDocument("parent" -> parent)).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List]()
+    tagCollection.find(BSONDocument("parent" -> parent)).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().
+      collect[List](maxDocs = Integer.MAX_VALUE, err = Cursor.FailOnError[List[Tag]]())
   }
 
   def saveTag(tag: Tag)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
@@ -187,12 +206,14 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getAllTags()(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
-    tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().collect[List](AllDocuments)
+    tagCollection.find(BSONDocument.empty).sort(BSONDocument("display_name" -> 1)).cursor[Tag]().
+      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[Tag]]())
   }
 
   def getAllResourceIds()(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val projection = BSONDocument("_id" -> 1)
-    resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().collect[List](AllDocuments).map { r =>
+    resourceCollection.find(BSONDocument.empty, projection).cursor[BSONDocument]().
+      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
   }
@@ -205,7 +226,8 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
         "$lt" -> BSONDateTime(lastScanned.getMillis)
       )
     )
-    resourceCollection.find(selector, projection).cursor[BSONDocument]().collect[List](maxItems).map { r =>
+    resourceCollection.find(selector, projection).cursor[BSONDocument]().
+      collect[List](maxDocs = maxItems, err = Cursor.FailOnError[List[BSONDocument]]()).map { r =>
       r.flatMap(i => i.getAs[BSONObjectID]("_id"))
     }
 
@@ -218,23 +240,24 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   def getAllFeeds()(implicit ec: ExecutionContext): Future[Seq[Feed]] = {
     resourceCollection.find(BSONDocument("type" -> "F")).
       cursor[Feed]().
-      collect[List](maxDocs = AllDocuments)
+      collect[List](maxDocs = AllDocuments, Cursor.FailOnError[List[Feed]]())
   }
 
   def getAllNewsitemsForFeed(feed: Feed)(implicit ec: ExecutionContext): Future[Seq[Newsitem]] = {
     val newsitemsFromFeed = BSONDocument("type" -> "N", "feed" -> feed._id.stringify)
     resourceCollection.find(newsitemsFromFeed).
       cursor[Newsitem]().
-      collect[List](maxDocs = AllDocuments)
+      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[Newsitem]]())
   }
 
   def getResourceIdsByTag(tag: Tag)(implicit ec: ExecutionContext): Future[Seq[BSONObjectID]] = {
     val selector = BSONDocument(
       "resource_tags.tag_id" -> tag._id
     )
+
     resourceCollection.find(selector).
       cursor[BSONDocument]().
-      collect[List](maxDocs = AllDocuments).map { d =>
+      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { d =>
       d.flatMap { i =>
         i.getAs[BSONObjectID]("_id")
       }
@@ -247,7 +270,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     )
     resourceCollection.find(selector).
       cursor[BSONDocument]().
-      collect[List](maxDocs = AllDocuments).map { d =>
+      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[BSONDocument]]()).map { d =>
       d.flatMap { i =>
         i.getAs[BSONObjectID]("_id")
       }
@@ -258,7 +281,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     discoveredFeedCollection.find(BSONDocument.empty).
       sort(BSONDocument("seen" -> -1)).
       cursor[DiscoveredFeed]().
-      collect[List](maxDocs = AllDocuments)
+      collect[List](maxDocs = AllDocuments, err = Cursor.FailOnError[List[DiscoveredFeed]]())
   }
 
   def getDiscoveredFeedByUrlAndReference(url: String, referencedFrom: String)(implicit ec: ExecutionContext): Future[Option[DiscoveredFeed]] = {
@@ -272,11 +295,11 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getAllWatchlists()(implicit ec: ExecutionContext): Future[Seq[Watchlist]] = {
-    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List](AllDocuments)
+    resourceCollection.find(BSONDocument("type" -> "L")).cursor[Watchlist]().collect[List](AllDocuments, Cursor.FailOnError[List[Watchlist]]())
   }
 
   def getAllUsers()(implicit ec: ExecutionContext): Future[Seq[User]] = {
-    userCollection.find(BSONDocument.empty).cursor[User]().collect[List](AllDocuments)
+    userCollection.find(BSONDocument.empty).cursor[User]().collect[List](AllDocuments, Cursor.FailOnError[List[User]]())
   }
 
   def getUserByObjectId(objectId: BSONObjectID)(implicit ec: ExecutionContext): Future[Option[User]] = {
@@ -306,19 +329,19 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   }
 
   def getResourcesOwnedBy(owner: User): Future[Seq[Resource]] = {
-    Future.successful(Seq.empty)  // TODO implement
+    Future.successful(Seq.empty) // TODO implement
   }
 
-  case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long])
+  case class MongoUser(id: Int, profilename: Option[String], twitterid: Option[Long]) {
 
-  {
     import scala.concurrent.ExecutionContext.Implicits.global
+
     resourceCollection.create()
     log.info("Ensuring mongo indexes")
     log.info("resource type/url_words index result: " +
       Await.result(resourceCollection.indexesManager.ensure(
         Index(Seq("type" -> IndexType.Ascending, "url_words" -> IndexType.Ascending), name = Some("type_with_url_words"),
-        unique = false)), OneMinute))
+          unique = false)), OneMinute))
   }
 
 }
