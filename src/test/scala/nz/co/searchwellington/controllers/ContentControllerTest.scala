@@ -19,7 +19,7 @@ class ContentControllerTest {
   private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack)
 
   @Test
-  def shouldDelegateTotTheContentModelBuilderToGetTheModelForThisRequest {
+  def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest() {
     val expectedModelAndView = new ModelAndView("a-view") // TODO mock
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
@@ -30,7 +30,7 @@ class ContentControllerTest {
   }
 
   @Test
-  def should404IfNotModelWasAvailableForThisRequest {
+  def should404IfNotModelWasAvailableForThisRequest() {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
 
@@ -40,7 +40,7 @@ class ContentControllerTest {
   }
 
   @Test
-  def shouldNotPush404sOntoTheReturnToUrlStack {
+  def shouldNotPush404sOntoTheReturnToUrlStack() {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
 
@@ -50,7 +50,7 @@ class ContentControllerTest {
   }
 
   @Test
-  def htmlPageViewsShouldBePutOntoTheUrlStack {
+  def htmlPageViewsShouldBePutOntoTheUrlStack() {
     val expectedModelAndView: ModelAndView = new ModelAndView("a-view")
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
     when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
