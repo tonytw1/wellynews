@@ -4,6 +4,15 @@ import org.hibernate.validator.constraints.NotBlank;
 
 public class EditTag {
 
+    public EditTag() {
+    }
+
+    public EditTag(String displayName, String description, String parent) {
+        this.displayName = displayName;
+        this.description = description;
+        this.parent = parent;
+    }
+
     @NotBlank
     private String displayName, description, parent;
 

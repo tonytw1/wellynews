@@ -37,11 +37,10 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
   @RequestMapping(value = Array("/edit-tag/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
     Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
-      val editTag = new EditTag()
-      editTag.setDisplayName(tag.display_name)
-      editTag.setDescription(tag.description.getOrElse(""))
-      editTag.setParent(tag.parent.map(_.stringify).orNull)
-      renderEditForm(tag, editTag)
+      renderEditForm(tag, new EditTag(tag.display_name,
+        tag.description.getOrElse(""),
+        tag.parent.map(_.stringify).orNull
+      ))
 
     }.getOrElse {
       NotFound
