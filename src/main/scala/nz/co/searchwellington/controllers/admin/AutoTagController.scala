@@ -72,23 +72,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
         val autotaggedResourceIds = request.getParameterValues("autotag")
 
-        def applyTagTo(resource: Resource, tag: Tag): Resource = {
+        def applyTagTo(resource: Resource, tag: Tag): Future[Resource] = {
           log.info("Applying tag " + tag.getName + " to:" + resource.title)
           if (!autoTagService.alreadyHasTag(resource, tag)) {
             handTaggingService.addTag(loggedInUser, tag, resource)
           }
-          contentUpdateService.update(resource)
+          contentUpdateService.update(resource).map { _ =>
+            resource
+          }
         }
 
         val eventuallyAutoTaggedResources = Future.sequence {
           autotaggedResourceIds.toSeq.map(mongoRepository.getResourceById).map { ero =>
-            ero.map { ro =>
-              ro.map(applyTagTo(_, tag))
+            ero.flatMap { ro =>
+              ro.map(applyTagTo(_, tag).map(Some(_))).
+                getOrElse(Future.successful(None))
             }
           }
-        }.map(_.flatten)
+        }
 
-        mv.addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds))
+        import scala.collection.JavaConverters._
+        mv.addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
         withCommonLocal(mv)
       }
     }

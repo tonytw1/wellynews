@@ -16,7 +16,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[ContentUpdateService])
 
-  def update(resource: Resource)(implicit ec: ExecutionContext): Future[Unit] = {
+  def update(resource: Resource)(implicit ec: ExecutionContext): Future[Boolean] = {
     log.debug("Updating content for: " + resource.title + " - " + resource.http_status + " " + resource.page)
     try {
       /*
@@ -39,7 +39,7 @@ import scala.concurrent.{ExecutionContext, Future}
       }
       */
 
-      mongoRepository.saveResource(resource).map { _ =>
+      mongoRepository.saveResource(resource).flatMap { _ =>
         frontendContentUpdater.update(resource)
       }
     }
