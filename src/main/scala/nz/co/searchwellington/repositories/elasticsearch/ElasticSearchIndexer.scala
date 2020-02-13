@@ -35,7 +35,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   private val Index = "searchwellington"
   private val Resources = "resources"
 
-  val client = {
+  private val client = {
     def ensureIndexes(client: ElasticClient): Unit = {
       val exists = Await.result((client execute indexExists(Index)).map { r =>
         if (r.isSuccess) {
@@ -51,23 +51,23 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
       }
     }
 
-    def createIndexes(client: ElasticClient) = {
+    def createIndexes(client: ElasticClient): Unit = {
       try {
         val eventualCreateIndexResult = client.execute {
           createIndex(Index) mappings mapping(Resources).fields(
             field(Title) typed TextType analyzer StandardAnalyzer,
-            field(TitleSort) typed KeywordType,
-            field(Type) typed KeywordType,
-            field(Date) typed DateType,
+            keywordField(TitleSort),
+            keywordField(Type),
+            dateField(Date),
             field(Description) typed TextType analyzer StandardAnalyzer,
-            field(Tags) typed KeywordType,
-            field(TaggingUsers) typed KeywordType,
-            field(Publisher) typed KeywordType,
-            field(Held) typed BooleanType,
-            field(Owner) typed KeywordType,
-            field(LatLong) typed GeoPointType,
-            field(FeedAcceptancePolicy) typed KeywordType,
-            field(FeedLatestItemDate) typed DateType
+            keywordField(Tags),
+            keywordField(TaggingUsers),
+            keywordField(Publisher),
+            booleanField(Held),
+            keywordField(Owner),
+            geopointField(LatLong),
+            keywordField(FeedAcceptancePolicy),
+            dateField(FeedLatestItemDate)
           )
         }
 
@@ -180,7 +180,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   private def getAggregationFor(query: ResourceQuery, aggName: String,loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     val aggs = Seq(termsAgg(aggName, aggName) size Integer.MAX_VALUE)
-    val request = (search(Index / Resources) query composeQueryFor(query, loggedInUser)) limit 0 aggregations (aggs)
+    val request = (search(Index / Resources) query composeQueryFor(query, loggedInUser)) limit 0 aggregations aggs
     client.execute(request).map { r =>
       r.result.aggregations.terms(aggName).buckets.map(b => (b.key, b.docCount))
     }
@@ -188,12 +188,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
     val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-    val request = search(Index / Resources) query composeQueryFor(allNewsitems, loggedInUser) limit 0 aggregations (aggs)
+    val request = search(Index / Resources) query composeQueryFor(allNewsitems, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
       val dateAgg = r.result.aggregations.dateHistogram("date")
       val archiveLinks = dateAgg.buckets.map { b =>
-        new ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
+        ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
       }
       archiveLinks.filter(_.getCount > 0).reverse
     }
@@ -202,7 +202,7 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = {
     val everyThing = matchAllQuery
     val aggs = Seq(termsAgg("type", "type"))
-    val request = search(Index / Resources) query withModeration(everyThing, loggedInUser) limit 0 aggregations (aggs)
+    val request = search(Index / Resources) query withModeration(everyThing, loggedInUser) limit 0 aggregations aggs
 
     client.execute(request).map { r =>
       val typeAgg = r.result.aggregations.terms("type")
