@@ -30,6 +30,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
   @Test
   def shouldPersistUpdatesInMongo {
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
+    when(frontendContentUpdater.update(updatedResource)).thenReturn(Future.successful(true))
 
     Await.result(service.update(updatedResource), TenSeconds)
 
@@ -39,6 +40,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
   @Test
   def shouldUpdateTheElasticsearchIndexWhenUpdating {
     when(mongoRepository.saveResource(updatedResource)).thenReturn(Future.successful(successfulUpdateResult))
+    when(frontendContentUpdater.update(updatedResource)).thenReturn(Future.successful(true))
 
     Await.result(service.update(updatedResource), TenSeconds)
 
