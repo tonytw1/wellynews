@@ -32,9 +32,10 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) extends ReasonableWaits {
       }
     }
 
-    val autoTags = Await.result(tagDAO.getAllTags, TenSeconds).filter(t => t.autotag_hints.exists(!Strings.isNullOrEmpty(_)))
+    val allTags = Await.result(tagDAO.getAllTags, TenSeconds)
+    val tagsWithAutotaggingHints = allTags.filter(t => t.autotag_hints.exists(!Strings.isNullOrEmpty(_))) // TODO include the tag name?
 
-    autoTags.filter(tag => matches(resource, tag)).toSet
+    tagsWithAutotaggingHints.filter(tag => matches(resource, tag)).toSet
   }
 
 }
