@@ -22,8 +22,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter)
   extends ReasonableWaits with CommonModelObjectsService {
 
-  @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET))
-  def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+  @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
