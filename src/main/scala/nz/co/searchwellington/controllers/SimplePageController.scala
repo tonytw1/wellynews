@@ -7,6 +7,7 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
@@ -14,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@Order(1)
 @Controller class SimplePageController @Autowired()(tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
                                                     urlStack: UrlStack,
                                                     val contentRetrievalService: ContentRetrievalService,

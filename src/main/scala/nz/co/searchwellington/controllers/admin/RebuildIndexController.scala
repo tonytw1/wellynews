@@ -6,12 +6,15 @@ import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexRebui
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.Order
+import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class RebuildIndexController @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService) {
+@Order(2)
+@Controller class RebuildIndexController @Autowired()(mongoRepository: MongoRepository, elasticSearchIndexRebuildService: ElasticSearchIndexRebuildService) {
   private val log = Logger.getLogger(classOf[AcceptFeedItemController])
 
 

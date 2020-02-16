@@ -5,10 +5,12 @@ import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
+@Order(3)
 @Controller
 class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack) {
 
