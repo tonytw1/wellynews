@@ -7,6 +7,6 @@ trait ReasonableWaits {
   val ThirtySeconds = Duration(30, SECONDS)
   val TenSeconds = Duration(10, SECONDS)
   val OneMinute = Duration(1, MINUTES)
+  val FiveMinutes = Duration(5, MINUTES)
   val OneHundredMilliSeconds = Duration(100, MILLISECONDS)
-
 }
