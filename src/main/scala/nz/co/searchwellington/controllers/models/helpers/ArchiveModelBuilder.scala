@@ -8,6 +8,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.ArchiveLink
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
@@ -53,17 +54,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getArchiveMonthFromPath(request.getPathInfo).map { month =>
       val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
       val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser))
-      val eventualMonthPublishers = contentRetrievalService.getPublisherForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
+      val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
 
       val eventuallyPopulated = for {
         archiveLinks <- eventualArchiveMonths
         archiveStatistics <- eventualArchiveCounts
-        monthPublishers <- eventualMonthPublishers
+        monthPublishers: Seq[(FrontendResource, Long)] <- eventualMonthPublishers
       } yield {
         populateNextAndPreviousLinks(mv, month, archiveLinks)
         archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
         import scala.collection.JavaConverters._
-        mv.addObject("publishers", monthPublishers.map(_._1).asJava)
+        mv.addObject("publishers", monthPublishers.map(_._1.name).asJava)
       }
 
       Await.result(eventuallyPopulated, ThirtySeconds)

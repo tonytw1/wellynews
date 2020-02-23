@@ -95,8 +95,18 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(newsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
 }
 
-  def getPublisherForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
-    elasticSearchIndexer.getPublishersForInterval(interval, loggedInUser)
+  def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(FrontendResource, Long)]] = {
+    elasticSearchIndexer.getPublishersForInterval(interval, loggedInUser).flatMap { meh =>
+      Future.sequence(meh.map { t =>
+        val bid = BSONObjectID.parse(t._1).get // TODO naked get
+      val eventualMaybeResource = mongoRepository.getResourceByObjectId(bid)
+        eventualMaybeResource.map { ro =>
+          ro.map { r =>
+            (frontendResourceMapper.createFrontendResourceFrom(r), t._2)
+          }
+        }
+      }).map(_.flatten)
+    }
   }
 
   def getLatestWebsites(maxItems: Int, page: Int = 1, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
@@ -228,16 +238,6 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  private def fetchByIds(ids: Seq[BSONObjectID]): Future[Seq[FrontendResource]] = {
-    val eventualResources = Future.sequence {
-      ids.map { id =>
-        mongoRepository.getResourceByObjectId(id)
-      }
-    }.map(_.flatten)
-
-    eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
-  }
-
   private val geocodedNewsitems = ResourceQuery(`type` = Some("N"), geocoded = Some(true))
 
   private def nearbyNewsitems(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
@@ -248,6 +248,16 @@ import scala.concurrent.{Await, Future}
         (rs, i._2)
       }
     }
+  }
+
+  private def fetchByIds(ids: Seq[BSONObjectID]): Future[Seq[FrontendResource]] = {
+    val eventualResources = Future.sequence {
+      ids.map { id =>
+        mongoRepository.getResourceByObjectId(id)
+      }
+    }.map(_.flatten)
+
+    eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
   }
 
 }
