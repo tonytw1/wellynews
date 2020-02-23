@@ -52,11 +52,16 @@ import scala.concurrent.Await
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
     getArchiveDateFromPath(request.getPathInfo).map { month =>
-      val archiveLinks = Await.result(contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
-      populateNextAndPreviousLinks(mv, month, archiveLinks)
-      val archiveStatistics = Await.result(contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
+      val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
+      val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser))
 
-      archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
+      Await.result(for {
+        archiveLinks <- eventualArchiveMonths
+        archiveStatistics <- eventualArchiveCounts
+      } yield {
+        populateNextAndPreviousLinks(mv, month, archiveLinks)
+        archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
+      }, TenSeconds)
     }
   }
 
