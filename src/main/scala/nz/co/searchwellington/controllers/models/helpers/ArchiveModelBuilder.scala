@@ -66,7 +66,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         mv.addObject("publishers", monthPublishers.map(_._1).asJava)
       }
 
-      Await.result(eventuallyPopulated, TenSeconds)
+      Await.result(eventuallyPopulated, ThirtySeconds)
     }
   }
 
