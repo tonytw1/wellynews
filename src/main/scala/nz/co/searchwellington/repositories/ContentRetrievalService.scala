@@ -90,9 +90,13 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("N"), maxItems = maxItems, startIndex = maxItems * (page - 1)), loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getNewsitemsForInterval(interval: Interval, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getNewsitemsForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val newsitemsForMonth = ResourceQuery(`type` = Some("N"), interval = Some(interval), maxItems = ALL_ITEMS)
-    Await.result(elasticSearchIndexer.getResources(newsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(newsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
+}
+
+  def getPublisherForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+    elasticSearchIndexer.getPublishersForInterval(interval, loggedInUser)
   }
 
   def getLatestWebsites(maxItems: Int, page: Int = 1, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

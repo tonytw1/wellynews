@@ -13,7 +13,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.ShowBrokenDecisionService
 import nz.co.searchwellington.model._
 import org.apache.log4j.Logger
-import org.joda.time.DateTime
+import org.joda.time.{DateTime, Interval}
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
@@ -163,6 +163,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
 
   def getPublishersNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     getPublisherAggregationFor(nearbyNewsitemsQuery(latLong, radius), loggedInUser)
+  }
+
+  def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
+    val newsitemsForInterval = ResourceQuery(`type` = Some("N"), interval = Some(interval))
+    getPublisherAggregationFor(newsitemsForInterval, loggedInUser)
   }
 
   def getTagsNear(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
