@@ -26,7 +26,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
 
-  private val dateFormatter = new DateFormatter(DateTimeZone.UTC)
+  private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO use global
+  private val pathMonthParser = new SimpleDateFormat("yyyy MMM")
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/archive/.*?/.*?$")
@@ -34,14 +35,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
-      getArchiveDateFromPath(request.getPathInfo).map { month =>
-        val monthLabel = dateFormatter.fullMonthYear(month)
-
+      getArchiveMonthFromPath(request.getPathInfo).map { month =>
         val mv = new ModelAndView
+        val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
         mv.addObject("heading", monthLabel)
-        mv.addObject("description", "Archived newsitems for the month of " + dateFormatter.fullMonthYear(month))
+        mv.addObject("description", "Archived newsitems for the month of " + monthLabel)
         import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getNewsitemsForInterval(intervalForMonth(month), Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
+        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
       }
 
     } else {
@@ -50,10 +50,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    getArchiveDateFromPath(request.getPathInfo).map { month =>
+    getArchiveMonthFromPath(request.getPathInfo).map { month =>
       val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
       val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser))
-      val eventualMonthPublishers = contentRetrievalService.getPublisherForInterval(intervalForMonth(month), Option(loggedInUserFilter.getLoggedInUser))
+      val eventualMonthPublishers = contentRetrievalService.getPublisherForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
 
       Await.result(for {
         archiveLinks <- eventualArchiveMonths
@@ -71,11 +71,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getViewName(mv: ModelAndView): String = "archivePage"
 
-  private def populateNextAndPreviousLinks(mv: ModelAndView, month: Date, archiveLinks: Seq[ArchiveLink]) {
+  private def populateNextAndPreviousLinks(mv: ModelAndView, month: Interval, archiveLinks: Seq[ArchiveLink]) {
     var selected: ArchiveLink = null
     import scala.collection.JavaConversions._
     for (link <- archiveLinks) {
-      if (link.getMonth == month) {
+      if (link.getMonth == month.getStart.toDate) {
         selected = link
       }
     }
@@ -92,18 +92,23 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  private def getArchiveDateFromPath(path: String): Option[Date] = {
+  private def getArchiveMonthFromPath(path: String): Option[Interval] = {
+    def intervalForMonth(month: Date): Interval = {
+      new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
+    }
+
     if (path.startsWith("/archive/")) {
       val fields = path.split("/")
       if (fields.length == 4) {
         val archiveMonthString = fields(2) + " " + fields(3)
-        val df: SimpleDateFormat = new SimpleDateFormat("yyyy MMM")
         try {
-          return Some(df.parse(archiveMonthString))
+          val month = pathMonthParser.parse(archiveMonthString)
+          Some(intervalForMonth(month))
         }
         catch {
           case e: ParseException => {
-            throw (new IllegalArgumentException(e.getMessage))
+            log.warn("Could not parse archive month; ignoring: " + archiveMonthString, e)
+            None
           }
         }
       } else {
@@ -112,10 +117,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     } else {
       None
     }
-  }
-
-  private def intervalForMonth(month: Date): Interval = { // TODO merge with above
-    new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
   }
 
 }
