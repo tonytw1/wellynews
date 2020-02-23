@@ -49,13 +49,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView): Unit = {
     getArchiveMonthFromPath(request.getPathInfo).map { month =>
       val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
       val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser))
       val eventualMonthPublishers = contentRetrievalService.getPublisherForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
 
-      Await.result(for {
+      val eventuallyPopulated = for {
         archiveLinks <- eventualArchiveMonths
         archiveStatistics <- eventualArchiveCounts
         monthPublishers <- eventualMonthPublishers
@@ -64,8 +64,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
         archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
         import scala.collection.JavaConverters._
         mv.addObject("publishers", monthPublishers.map(_._1).asJava)
+      }
 
-      }, TenSeconds)
+      Await.result(eventuallyPopulated, TenSeconds)
     }
   }
 

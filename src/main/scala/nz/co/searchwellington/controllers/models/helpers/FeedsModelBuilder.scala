@@ -58,6 +58,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeeds.asJava)
       commonAttributesModelBuilder.populateSecondaryFeeds(mv, currentFeeds)
+      mv
     }
 
     Await.result(eventuallyPopulated, ThirtySeconds)
