@@ -37,7 +37,13 @@
         </div>
 
         <div class="box">
-            $publishers
+            <h2>Publishers</h2>
+            <p>$publishers.size()</p>
+           <ul>
+                #foreach ($publisher in $publishers)
+                    <li>$publisher</li>
+                #end
+            </ul>
         </div>
 
         <div class="box">
