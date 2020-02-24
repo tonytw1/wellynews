@@ -37,14 +37,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
     if (isValid(request)) {
       getArchiveMonthFromPath(request.getPathInfo).map { month =>
-        val mv = new ModelAndView
-        val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
-        mv.addObject("heading", monthLabel)
-        mv.addObject("description", "Archived newsitems for the month of " + monthLabel)
-        import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-      }
+        val eventuallyPopulated = for {
+          newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
+        } yield {
+          val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
+          import scala.collection.JavaConverters._
+          new ModelAndView().
+            addObject("heading", monthLabel).
+            addObject("description", "Archived newsitems for the month of " + monthLabel).
+            addObject(MAIN_CONTENT, newsitemsForMonth.asJava)
+        }
 
+        Await.result(eventuallyPopulated, TenSeconds)
+      }
     } else {
       None
     }
