@@ -2,13 +2,12 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, FeeditemToNewsitemService, RssfeedNewsitemService}
-import nz.co.searchwellington.model.Feed
 import nz.co.searchwellington.model.frontend.{FeedNewsitemForAcceptance, FrontendNewsitem}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.model.{Feed, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +22,6 @@ import scala.concurrent.{Await, Future}
                                                frontendResourceMapper: FrontendResourceMapper,
                                                commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                feeditemToNewsitemService: FeeditemToNewsitemService,
-                                               loggedInUserFilter: LoggedInUserFilter,
                                                whakaokoService: WhakaokoService) extends ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[FeedModelBuilder])
@@ -33,7 +31,7 @@ import scala.concurrent.{Await, Future}
     request.getAttribute(FEED_ATTRIBUTE) != null
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
 
     def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendNewsitem]) {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
@@ -110,8 +108,8 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User = null) {
+    Await.result(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUser)).map {
       feeds =>
         commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
     }, TenSeconds)

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,17 +15,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class PublishersModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
-                                                     frontendResourceMapper: FrontendResourceMapper,
-                                                     loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with ReasonableWaits {
+                                                     frontendResourceMapper: FrontendResourceMapper)
+  extends ModelBuilder with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/publishers$") || request.getPathInfo.matches("^/publishers/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       for {
-        publishers <- contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser))
+        publishers <- contentRetrievalService.getAllPublishers(Option(loggedInUser))
       } yield {
         val frontendPublishers = publishers.
           sortBy(_.title).
@@ -40,7 +41,7 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
   }
 
   def getViewName(mv: ModelAndView): String = "publishers"

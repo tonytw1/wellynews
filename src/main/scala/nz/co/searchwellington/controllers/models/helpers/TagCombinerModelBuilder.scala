@@ -5,20 +5,19 @@ import java.util.List
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.{Resource, Tag}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class TagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
-                                                      relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                      loggedInUserFilter: LoggedInUserFilter)
+                                                      relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
@@ -27,12 +26,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
     isTagCombinerPage
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
 
     def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Future[Option[ModelAndView]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
       for {
-        taggedNewsitemsAndCount <- contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+        taggedNewsitemsAndCount <- contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
       } yield {
         val totalNewsitemCount = taggedNewsitemsAndCount._2
         if (startIndex > totalNewsitemCount) {
@@ -71,14 +70,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     if (tags.nonEmpty) {
       val tag = tags.head
-      mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUserFilter.getLoggedInUser)))
+      mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUser)))
       import scala.collection.JavaConverters._
-      mv.addObject("latest_news", Await.result(contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-      val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+      mv.addObject("latest_news", Await.result(contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUser)), TenSeconds).asJava)
+      val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = Option(loggedInUser))
       mv.addObject("websites", taggedWebsites)
     }
   }

@@ -5,7 +5,7 @@ import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Tag, Website}
+import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -18,7 +18,7 @@ import scala.concurrent.Future
 
 @Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                               frontendResourceMapper: FrontendResourceMapper, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
+                                                               frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with ReasonableWaits {
 
   private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
@@ -29,14 +29,14 @@ import scala.concurrent.Future
     publisher != null && tag != null
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       logger.info("Building publisher tag combiner page model")
       val tag = request.getAttribute("tag").asInstanceOf[Tag]
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
 
       for {
-        publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+        publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUser))
 
       } yield {
         import scala.collection.JavaConverters._
@@ -59,7 +59,7 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
     if (relatedTagLinks.nonEmpty) {

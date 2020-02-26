@@ -4,8 +4,8 @@ import java.util.Date
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
@@ -17,11 +17,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
-                                                loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
+                                                urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[IndexModelBuilder])
@@ -36,13 +36,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getViewName(mv: ModelAndView): String = "index"
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
 
     def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
 
     if (isValid(request)) {
       for {
-        latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+        latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUser))
       } yield {
         val mv = new ModelAndView().
           addObject("heading", "Wellynews").
@@ -63,10 +63,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView): Unit = {
-
-    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
-
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Unit = {
     def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
       if (loggedInUser != null) {
         val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
@@ -79,10 +76,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
 
-    val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = loggedInUser)
-    val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(loggedInUser)
-    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(loggedInUser)
-    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
+    val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = Option(loggedInUser))
+    val eventualArchiveMonths = contentRetrievalService.getArchiveMonths( Option(loggedInUser))
+    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts( Option(loggedInUser))
+    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW,  Option(loggedInUser))
 
     val eventualPopulated = for {
       websites <- eventualWebsites

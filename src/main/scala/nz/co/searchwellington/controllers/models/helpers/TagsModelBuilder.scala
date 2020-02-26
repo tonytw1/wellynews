@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.TagDAO
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,7 +19,7 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/tags$") || request.getPathInfo.matches("^/tags/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       for {
         tags <- tagDAO.getAllTags
@@ -33,7 +34,7 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
   }
 
   def getViewName(mv: ModelAndView): String = "tags"

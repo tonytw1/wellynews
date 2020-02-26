@@ -17,7 +17,6 @@ class IndexModelBuilderTest extends ReasonableWaits {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val archiveLinksService = mock(classOf[ArchiveLinksService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
@@ -30,7 +29,7 @@ class IndexModelBuilderTest extends ReasonableWaits {
 
   private val loggedInUser = None
 
-  val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, loggedInUserFilter, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
+  val modelBuilder =  new IndexModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, archiveLinksService, commonAttributesModelBuilder)
 
   @Before
   def setup {

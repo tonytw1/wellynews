@@ -59,7 +59,7 @@ class FeedModelBuilderTest extends ReasonableWaits {
   var request: MockHttpServletRequest = null
 
   val modelBuilder = new FeedModelBuilder(rssfeedNewsitemService, contentRetrievalService, geotaggedNewsitemExtractor,
-    feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, loggedInUserFilter, whakaokoService)
+    feedItemLocalCopyDecorator, frontendResourceMapper, commonAttributesModelBuilder, feeditemToNewsitemService, whakaokoService)
 
   @Before
   def setUp {

@@ -2,9 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
-import akka.actor.FSM.Reason
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote
 import nz.co.searchwellington.model.{Geocode, Newsitem, Resource}
@@ -17,8 +15,8 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
@@ -28,7 +26,6 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val tagWidgetFactory = mock(classOf[TagsWidgetFactory])
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val mongoRepository = mock(classOf[MongoRepository])
 
   private val request = {
@@ -38,7 +35,7 @@ class NewsitemPageModelBuilderTest extends ReasonableWaits {
   }
 
   private val modelBuilder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
-    tagWidgetFactory, handTaggingDAO, loggedInUserFilter, mongoRepository)
+    tagWidgetFactory, handTaggingDAO, mongoRepository)
 
   @Test
   def shouldAcceptValidFormatPath {

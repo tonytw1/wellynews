@@ -5,11 +5,10 @@ import java.util.Date
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.model.ArchiveLink
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
+import nz.co.searchwellington.model.{ArchiveLink, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.joda.time.{DateTime, DateTimeZone, Interval}
@@ -18,11 +17,10 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
-@Component class ArchiveModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService,
-                                                  loggedInUserFilter: LoggedInUserFilter) extends
+@Component class ArchiveModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
   ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
@@ -34,11 +32,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
     request.getPathInfo.matches("^/archive/.*?/.*?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       getArchiveMonthFromPath(request.getPathInfo).map { month =>
         for {
-          newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
+          newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUser))
         } yield {
           val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
           import scala.collection.JavaConverters._
@@ -55,11 +53,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView): Unit = {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Unit = {
     getArchiveMonthFromPath(request.getPathInfo).map { month =>
-      val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
-      val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUserFilter.getLoggedInUser))
-      val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
+      val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(Option(loggedInUser))
+      val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUser))
+      val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, Option(loggedInUser))
 
       val eventuallyPopulated = for {
         archiveLinks <- eventualArchiveMonths

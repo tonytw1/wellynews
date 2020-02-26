@@ -37,7 +37,7 @@ class SearchModelBuilderTest extends ReasonableWaits {
 
   @Before def setup() {
     request = new MockHttpServletRequest
-    modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder, loggedInUserFilter)
+    modelBuilder = new SearchModelBuilder(contentRetrievalService, urlBuilder)
   }
 
   @Test

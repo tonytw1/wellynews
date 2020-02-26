@@ -2,8 +2,8 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, HandTaggingDAO}
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -21,7 +21,6 @@ import scala.concurrent.Future
                                                        taggingReturnsOfficerService: TaggingReturnsOfficerService,
                                                        tagWidgetFactory: TagsWidgetFactory,
                                                        tagVoteDAO: HandTaggingDAO,
-                                                       loggedInUserFilter: LoggedInUserFilter,
                                                        mongoRepository: MongoRepository) extends ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NewsitemPageModelBuilder])
@@ -30,7 +29,7 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/.*?/\\d\\d\\d\\d/[a-z]{3}/\\d\\d?/.*?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     contentRetrievalService.getNewsPage(request.getPathInfo).map { frontendResource =>
       val mv = new ModelAndView
       mv.addObject("item", frontendResource)
@@ -45,7 +44,7 @@ import scala.concurrent.Future
         maybeResource.map { resource => // TODO abit strange that we have to load this database object just to pass it as an argument to someone else
           mv.addObject("votes", taggingReturnsOfficerService.compileTaggingVotes(resource).asJava)
           mv.addObject("geotag_votes", taggingReturnsOfficerService.getGeotagVotesForResource(resource).asJava)
-          mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUserFilter.getLoggedInUser, resource)))
+          mv.addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource)))
           mv
         }
       }
@@ -54,8 +53,8 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)))
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
+    mv.addObject("latest_newsitems", contentRetrievalService.getLatestNewsitems(5, 1, loggedInUser = Option(loggedInUser)))
   }
 
   def getViewName(mv: ModelAndView): String = "newsitemPage"

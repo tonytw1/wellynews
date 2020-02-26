@@ -5,10 +5,10 @@ import java.util.List
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Resource, Tag}
+import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -23,8 +23,7 @@ import scala.concurrent.{Await, Future}
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
-                                              frontendResourceMapper: FrontendResourceMapper,
-                                              loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
+                                              frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagModelBuilder])
@@ -42,13 +41,12 @@ import scala.concurrent.{Await, Future}
   }
 
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
-    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
 
     def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelAndView]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
-      val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser)
+      val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
       val eventualChildTags = tagDAO.loadTagsByParent(tag._id)
       val eventualMaybeParent = tag.parent.map { pid =>
         tagDAO.loadTagByObjectId(pid)
@@ -101,8 +99,8 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User) {
+    val loggedInUser = Option(l)
 
     val tag = tagFromRequest(request)
 

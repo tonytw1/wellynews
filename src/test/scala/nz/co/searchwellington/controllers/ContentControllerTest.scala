@@ -13,12 +13,13 @@ class ContentControllerTest {
   private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
   private val contentModelBuilderService = mock(classOf[ContentModelBuilderService])
   private val urlStack = mock(classOf[UrlStack])
+  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
   private val request = mock(classOf[HttpServletRequest])
   private val unknownPathRequest = mock(classOf[HttpServletRequest])
   private val response = mock(classOf[HttpServletResponse])
 
-  private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack)
+  private def contentController = new ContentController(contentModelBuilderServiceFactory, urlStack, loggedInUserFilter)
 
   @Test
   def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest() {

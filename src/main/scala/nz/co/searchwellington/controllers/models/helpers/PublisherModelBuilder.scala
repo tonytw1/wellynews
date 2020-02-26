@@ -3,10 +3,10 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, ModelBuilder}
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Tag, Website}
+import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class PublisherModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder,
                                                     relatedTagsService: RelatedTagsService,
@@ -23,8 +23,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
                                                     urlBuilder: UrlBuilder,
                                                     geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                    frontendResourceMapper: FrontendResourceMapper,
-                                                    loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
+                                                    frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
+  with CommonSizes with Pagination with ReasonableWaits {
 
   private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
@@ -35,8 +35,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
     isPublisherPage
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
-    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+  def populateContentModel(request: HttpServletRequest, l: User): Future[Option[ModelAndView]] = {
+    val loggedInUser = Option(l)
 
     def populatePublisherPageModelAndView(publisher: Website, page: Int) = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
@@ -81,8 +81,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User) {
+    val loggedInUser = Option(l)
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     import scala.collection.JavaConverters._

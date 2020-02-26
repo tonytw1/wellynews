@@ -4,9 +4,9 @@ import java.util.List
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -19,8 +19,8 @@ import scala.concurrent.Future
 
 @Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                        urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder,
-                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                       loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder with CommonSizes with ReasonableWaits {
+                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
+  with CommonSizes with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagGeotaggedModelBuilder])
 
@@ -31,10 +31,10 @@ import scala.concurrent.Future
     isSingleTagPage && hasCommentPath
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     def populateTagCommentPageModelAndView(tag: Tag): Future[Some[ModelAndView]] = {
       for {
-        newsitems <- contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+        newsitems <- contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = Option(loggedInUser))
       } yield {
         val mv = new ModelAndView().
           addObject("tag", tag).
@@ -60,7 +60,7 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
   }
 
   def getViewName(mv: ModelAndView): String = "tagGeotagged"

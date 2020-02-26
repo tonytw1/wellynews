@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.springframework.web.servlet.ModelAndView
@@ -16,10 +17,10 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User = null): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
-      mb.populateContentModel(request).map { eventualMaybeModelAndView =>
+      mb.populateContentModel(request, loggedInUser).map { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
           val path = request.getPathInfo
 
@@ -37,7 +38,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             mv
 
           } else {
-            mb.populateExtraModelContent(request, mv)
+            mb.populateExtraModelContent(request, mv, loggedInUser)
             mv.setViewName(mb.getViewName(mv))
             withCommonLocal(mv)
           }

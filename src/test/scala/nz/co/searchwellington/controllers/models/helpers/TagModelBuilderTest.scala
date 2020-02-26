@@ -41,8 +41,7 @@ class TagModelBuilderTest extends ReasonableWaits {
   val request = new MockHttpServletRequest()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
-    contentRetrievalService, feedItemLocalCopyDecorator, commonAttributesModelBuilder, tagDAO, frontendResourceMapper, loggedInUserFilter)
-
+    contentRetrievalService, feedItemLocalCopyDecorator, commonAttributesModelBuilder, tagDAO, frontendResourceMapper)
 
   @Before
   def setup {

@@ -1,8 +1,9 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,17 +16,16 @@ import scala.concurrent.Future
 @Component class WatchlistModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                     rssUrlBuilder: RssUrlBuilder,
                                                     urlBuilder: UrlBuilder,
-                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                    loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder {
+                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/watchlist(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       for {
-        watchlists <- contentRetrievalService.getAllWatchlists(Option(loggedInUserFilter.getLoggedInUser))
+        watchlists <- contentRetrievalService.getAllWatchlists(Option(loggedInUser))
       } yield {
         import scala.collection.JavaConverters._
         val mv = new ModelAndView().
@@ -41,7 +41,7 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
   }
 
   def getViewName(mv: ModelAndView): String = "watchlist"

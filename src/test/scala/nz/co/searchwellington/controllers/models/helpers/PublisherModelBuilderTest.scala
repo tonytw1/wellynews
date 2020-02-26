@@ -26,13 +26,12 @@ class PublisherModelBuilderTest extends ReasonableWaits {
   private val geotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
   private val publisher = Website()
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
 
   private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor,
-    commonAttributesModelBuilder, frontendResourceMapper, loggedInUserFilter)
+    commonAttributesModelBuilder, frontendResourceMapper)
 
   @Test
   def shouldHightlightPublishersGeotaggedContent {

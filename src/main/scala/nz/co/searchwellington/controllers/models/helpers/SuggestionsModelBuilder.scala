@@ -2,8 +2,9 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
@@ -11,14 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
                                                       rssUrlBuilder: RssUrlBuilder,
                                                       urlBuilder: UrlBuilder,
                                                       contentRetrievalService: ContentRetrievalService,
-                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder, loggedInUserFilter: LoggedInUserFilter) extends ModelBuilder
+                                                      commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
   with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[SuggestionsModelBuilder])
@@ -28,7 +29,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     request.getPathInfo.matches("^/feeds/inbox(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       for {
         suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)
@@ -48,8 +49,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {
-    Await.result(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUserFilter.getLoggedInUser)).map { feeds =>
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
+    Await.result(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUser)).map { feeds =>
       commonAttributesModelBuilder.populateSecondaryFeeds(mv, feeds)
     }, TenSeconds)
   }

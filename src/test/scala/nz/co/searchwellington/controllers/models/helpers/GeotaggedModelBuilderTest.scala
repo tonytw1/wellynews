@@ -34,7 +34,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
 
   private val loggedInUser = None
 
-  val modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService, commonAttributesModelBuilder, loggedInUserFilter)
+  val modelBuilder = new GeotaggedModelBuilder(contentRetrievalService, urlBuilder, rssUrlBuilder, relatedTagsService, commonAttributesModelBuilder)
 
   @Test
   def shouldBeValidForGeotaggedPath {

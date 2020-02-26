@@ -42,9 +42,7 @@ class TagCombinerModelBuilderTest {
 
   val request = new MockHttpServletRequest()
 
-  private val modelBuilder = new TagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder,
-    relatedTagsService, commonAttributesModelBuilder,
-    loggedInUserFilter)
+  private val modelBuilder = new TagCombinerModelBuilder(contentRetrievalService, rssUrlBuilder, urlBuilder, relatedTagsService, commonAttributesModelBuilder)
 
   @Before
   def setup {

@@ -3,7 +3,6 @@ package nz.co.searchwellington.controllers.models.helpers
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.DiscoveredFeed
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
@@ -15,21 +14,20 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 class FeedsModelBuilderTest extends ReasonableWaits {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val suggestedFeeditemsService = mock(classOf[SuggestedFeeditemsService])
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
   private val urlBuilder = mock(classOf[UrlBuilder])
 
   private val loggedInUser = None
 
   var request = new MockHttpServletRequest
 
-  val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder, loggedInUserFilter)
+  val modelBuilder = new FeedsModelBuilder(contentRetrievalService, suggestedFeeditemsService, urlBuilder, commonAttributesModelBuilder)
 
   @Before
   def setUp {
