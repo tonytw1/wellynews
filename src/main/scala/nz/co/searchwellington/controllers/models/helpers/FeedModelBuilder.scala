@@ -33,7 +33,7 @@ import scala.concurrent.{Await, Future}
     request.getAttribute(FEED_ATTRIBUTE) != null
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
 
     def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendNewsitem]) {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)
@@ -83,22 +83,30 @@ import scala.concurrent.{Await, Future}
 
     if (isValid(request)) {
       val feedOnRequest = Option(request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed])
-      feedOnRequest.flatMap {
-        feed =>
-          feed.page.map { p =>
-            val mv = new ModelAndView
-            mv.addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed))
-            Await.result(whakaokoService.getWhakaokoSubscriptionByUrl(p), TenSeconds).map { s =>
-              mv.addObject("subscription", s)
-            }
-            commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), p)
-            populateFeedItems(mv, feed)
-            mv
+
+      feedOnRequest.map { feed =>
+        for {
+          maybeSubscription <- feed.page.map { p =>
+            whakaokoService.getWhakaokoSubscriptionByUrl(p)
+          }.getOrElse {
+            Future.successful(None)
           }
+        } yield {
+          val mv = new ModelAndView().
+            addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed)).
+            addObject("subscription", maybeSubscription.orNull)
+
+          commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page.orNull)
+          populateFeedItems(mv, feed) // TODO inline
+          Some(mv)
+        }
+
+      }.getOrElse {
+        Future.successful(None)
       }
 
     } else {
-      None
+      Future.successful(None)
     }
   }
 

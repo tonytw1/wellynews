@@ -14,26 +14,26 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.collection.JavaConverters._
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
-@Component class GeotaggedModelBuilder @Autowired() (contentRetrievalService: ContentRetrievalService,
-                                                     urlBuilder: UrlBuilder,
-                                                     rssUrlBuilder: RssUrlBuilder,
-                                                     relatedTagsService: RelatedTagsService,
-                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
-                                                     loggedInUserFilter: LoggedInUserFilter)
+@Component class GeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
+                                                    urlBuilder: UrlBuilder,
+                                                    rssUrlBuilder: RssUrlBuilder,
+                                                    relatedTagsService: RelatedTagsService,
+                                                    commonAttributesModelBuilder: CommonAttributesModelBuilder,
+                                                    loggedInUserFilter: LoggedInUserFilter)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[GeotaggedModelBuilder])
 
-  private val REFINEMENTS_TO_SHOW = 8
   private val HOW_FAR_IS_CLOSE_IN_KILOMETERS = 1.0
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       val mv = new ModelAndView
       mv.addObject("description", "Geotagged newsitems")
@@ -46,48 +46,61 @@ import scala.concurrent.Await
       mv.addObject("page", page)
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
-      if (hasUserSuppliedALocation) {
+      if (hasUserSuppliedALocation) { // TODO split into seperate model
         val radius = getLocationSearchRadius(request)
-        val latLong = userSuppliedPlace.getLatLong
-        val totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
-        if (startIndex > totalNearbyCount) {
-          None
-        }
 
-        populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS)
-        mv.addObject("location", userSuppliedPlace)
-        mv.addObject("radius", radius)
-        mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)).asJava)
+        val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, Option(loggedInUserFilter.getLoggedInUser))
+        val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, Option(loggedInUserFilter.getLoggedInUser))
+        for {
+          relatedTagLinks <- eventualRelatedTagsForLocation
+          relatedPublisherLinks <- eventualPublishersForLocation
 
-        val relatedTagLinks = Await.result(relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds)
-        if (relatedTagLinks.nonEmpty) {
-          log.info("Found geo related tags: " + relatedTagLinks)
-          mv.addObject("related_tags", relatedTagLinks.asJava)
-        }
-        val relatedPublisherLinks = Await.result(relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).toList
-        if (relatedPublisherLinks.nonEmpty) {
-          mv.addObject("related_publishers", relatedPublisherLinks.asJava)
-        }
+        } yield {
+          val latLong = userSuppliedPlace.getLatLong
+          val totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+          if (startIndex > totalNearbyCount) {
+            None
+          }
 
-        mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
-        setRssUrlForLocation(mv, userSuppliedPlace, radius)
-        Some(mv)
+          populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS)
+          mv.addObject("location", userSuppliedPlace)
+          mv.addObject("radius", radius)
+          mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)).asJava)
+
+          if (relatedTagLinks.nonEmpty) {
+            log.info("Found geo related tags: " + relatedTagLinks)
+            mv.addObject("related_tags", relatedTagLinks.asJava)
+          }
+          if (relatedPublisherLinks.nonEmpty) {
+            mv.addObject("related_publishers", relatedPublisherLinks.asJava)
+          }
+
+          mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
+          setRssUrlForLocation(mv, userSuppliedPlace, radius)
+          Some(mv)
+
+        }
 
       } else {
-        val totalGeotaggedCount = contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUserFilter.getLoggedInUser))
-        if (startIndex > totalGeotaggedCount) {
-          None
-        }
-        populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS)
+        for {
+          geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
+        } yield {
 
-        mv.addObject("heading", "Geotagged newsitems")
-        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
-        Some(mv)
+          val totalGeotaggedCount = contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUserFilter.getLoggedInUser))
+          if (startIndex > totalGeotaggedCount) {
+            None
+          }
+          populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS)
+
+          mv.addObject("heading", "Geotagged newsitems")
+          mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
+          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
+          Some(mv)
+        }
       }
 
     } else {
-      None
+      Future.successful(None)
     }
   }
 

@@ -42,66 +42,62 @@ import scala.concurrent.{Await, Future}
   }
 
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
 
-    def populateTagPageModelAndView(tag: Tag, page: Int): Option[ModelAndView] = {
-
-      val mv = new ModelAndView
-      mv.addObject(PAGE, page)
+    def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelAndView]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
-      val x = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser).flatMap { taggedNewsitemsAndTotalCount =>
-        val totalNewsitems = taggedNewsitemsAndTotalCount._2
-        if (startIndex > totalNewsitems) {
-          Future.successful(None)
-
-        } else {
-          mv.addObject(TAG, tag)
-          mv.addObject("heading", tag.display_name)
-          mv.addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag))
-          mv.addObject("link", urlBuilder.getTagUrl(tag))
-
-          tag.parent.map { pid =>
-            tagDAO.loadTagByObjectId(pid).map { p =>
-              mv.addObject("parent", p.orNull)
-            }
-          }
-
-          for {
-            children <- tagDAO.loadTagsByParent(tag._id)
-
-          } yield {
-            val taggedNewsitems = taggedNewsitemsAndTotalCount._1
-            log.info("Got tagged newsitems: " + taggedNewsitems.size)
-            import scala.collection.JavaConverters._
-            mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
-
-            populatePagination(mv, startIndex,  totalNewsitems, MAX_NEWSITEMS)
-            if (taggedNewsitems.nonEmpty) {
-              commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
-            }
-
-            if (children.nonEmpty) {
-              import scala.collection.JavaConverters._
-              mv.addObject("children", children.asJava)
-            }
-
-            Some(mv)
-          }
-        }
+      val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser)
+      val eventualChildTags = tagDAO.loadTagsByParent(tag._id)
+      val eventualMaybeParent = tag.parent.map { pid =>
+        tagDAO.loadTagByObjectId(pid)
+      }.getOrElse {
+        Future.successful(None)
       }
 
-      Await.result(x, TenSeconds)
+      for {
+        taggedNewsitemsAndTotalCount <- eventualTaggedNewsitems
+        children <- eventualChildTags
+        maybeParent <- eventualMaybeParent
+
+      } yield {
+        val totalNewsitems = taggedNewsitemsAndTotalCount._2
+        if (startIndex > totalNewsitems) {
+          None
+
+        } else {
+          val mv = new ModelAndView().
+            addObject(PAGE, page).
+            addObject(TAG, tag).
+            addObject("heading", tag.display_name).
+            addObject("description", rssUrlBuilder.getRssDescriptionForTag(tag)).
+            addObject("link", urlBuilder.getTagUrl(tag))
+            .addObject("parent", maybeParent.orNull)
+
+          val taggedNewsitems = taggedNewsitemsAndTotalCount._1
+          import scala.collection.JavaConverters._
+          mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
+
+          populatePagination(mv, startIndex, totalNewsitems, MAX_NEWSITEMS)
+          if (taggedNewsitems.nonEmpty) {
+            commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
+          }
+
+          if (children.nonEmpty) {
+            import scala.collection.JavaConverters._
+            mv.addObject("children", children.asJava)
+          }
+
+          Some(mv)
+        }
+      }
     }
 
     if (isValid(request)) {
-      val page = getPage(request)
-      populateTagPageModelAndView(tagFromRequest(request), page)
-
+      populateTagPageModelAndView(tagFromRequest(request), getPage(request))
     } else {
-      None
+      Future.successful(None)
     }
   }
 

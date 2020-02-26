@@ -9,7 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder with ReasonableWaits {
 
@@ -17,17 +18,18 @@ import scala.concurrent.Await
     request.getPathInfo.matches("^/tags$") || request.getPathInfo.matches("^/tags/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
-      val mv = new ModelAndView
-      val allFrontendTags = tagDAO.getAllTags
-      import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, Await.result(allFrontendTags, TenSeconds).asJava)
-      mv.addObject("heading", "All tags")
-      Some(mv)
-
+      for {
+        tags <- tagDAO.getAllTags
+      } yield {
+        import scala.collection.JavaConverters._
+        Some(new ModelAndView().
+          addObject(MAIN_CONTENT, tags.asJava).
+          addObject("heading", "All tags"))
+      }
     } else {
-      None
+      Future.successful(None)
     }
   }
 

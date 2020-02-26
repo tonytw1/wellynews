@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class PublisherModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder,
@@ -35,28 +35,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
     isPublisherPage
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
 
-    def populatePublisherPageModelAndView(publisher: Website, page: Int): ModelAndView = {
-      val frontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
-
+    def populatePublisherPageModelAndView(publisher: Website, page: Int) = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
-
-      val eventualModelAndView = for {
+      for {
         publisherNewsitems <- eventualPublisherNewsitems
         publisherFeeds <- eventualPublisherFeeds
 
       } yield {
-        val mv = new ModelAndView
-        mv.addObject("heading", publisher.title.getOrElse(""))
-        mv.addObject("description", publisher.title.getOrElse("") + " newsitems")
+        val mv = new ModelAndView().addObject("heading", publisher.title.getOrElse("")).
+          addObject("description", publisher.title.getOrElse("") + " newsitems").
+          addObject("publisher", frontendResourceMapper.mapFrontendWebsite(publisher)).
+          addObject("location", frontendResourceMapper.mapFrontendWebsite(publisher).getPlace)
+
         publisher.title.map(t => mv.addObject("link", urlBuilder.getPublisherUrl(t)))
-        mv.addObject("publisher", frontendPublisher)
-        mv.addObject("location", frontendPublisher.getPlace)
 
         val totalPublisherNewsitems = publisherNewsitems._2
         if (publisherNewsitems._1.nonEmpty) {
@@ -69,20 +66,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
           populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS)
         }
-        mv
+        Some(mv)
       }
-
-      Await.result(eventualModelAndView, TenSeconds)
     }
 
     if (isValid(request)) {
       logger.info("Building publisher page model")
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
       val page = getPage(request)
-      Some(populatePublisherPageModelAndView(publisher, page))
+      populatePublisherPageModelAndView(publisher, page)
 
     } else {
-      None
+      Future.successful(None)
     }
   }
 

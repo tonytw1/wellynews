@@ -184,9 +184,9 @@ import scala.concurrent.{Await, Future}
     elasticSearchIndexer.getResources(publisherFeeds, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getAllWatchlists(loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getAllWatchlists(loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val allWatchlists = ResourceQuery(`type` = Some("L"))
-    Await.result(elasticSearchIndexer.getResources(allWatchlists, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(allWatchlists, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
   def getPublisherWatchlist(publisher: Website, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

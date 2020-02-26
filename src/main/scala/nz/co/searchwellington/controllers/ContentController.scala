@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
 import org.apache.log4j.Logger
@@ -10,9 +11,11 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Await
+
 @Order(3)
 @Controller
-class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack) {
+class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentModelBuilderServiceFactory, urlStack: UrlStack) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ContentController])
 
@@ -21,7 +24,7 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
   @RequestMapping(value = Array("/", "/*", "/search", "/archive/*/*", "/*/comment", "/*/geotagged", "/feed/*", "/feeds/inbox", "/publishers", "/publishers/json", "/tags", "/tags/json", "/*/json", "/*/rss", "/*/*/*/*/*"))
   @Timed(timingNotes = "")
   def normal(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    contentModelBuilderService.populateContentModel(request).fold {
+    Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).fold {
       log.warn("Model was null; returning 404")
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       null: ModelAndView

@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component class PublishersModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                      frontendResourceMapper: FrontendResourceMapper,
@@ -21,19 +21,22 @@ import scala.concurrent.ExecutionContext.Implicits.global
     request.getPathInfo.matches("^/publishers$") || request.getPathInfo.matches("^/publishers/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
-      val mv = new ModelAndView
-      import scala.collection.JavaConverters._
-      val publishers = Await.result(contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).
-        sortBy(_.title).
-        map(p => frontendResourceMapper.createFrontendResourceFrom(p))
-      mv.addObject(MAIN_CONTENT, publishers.asJava)
-      mv.addObject("heading", "All publishers")
-      Some(mv)
-
+      for {
+        publishers <- contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser))
+      } yield {
+        val frontendPublishers = publishers.
+          sortBy(_.title).
+          map(frontendResourceMapper.createFrontendResourceFrom)
+        import scala.collection.JavaConverters._
+        val mv = new ModelAndView().
+          addObject(MAIN_CONTENT, frontendPublishers.asJava).
+          addObject("heading", "All publishers")
+        Some(mv)
+      }
     } else {
-      None
+      Future.successful(None)
     }
   }
 

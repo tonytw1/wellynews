@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class ArchiveModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService,
@@ -34,24 +34,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
     request.getPathInfo.matches("^/archive/.*?/.*?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       getArchiveMonthFromPath(request.getPathInfo).map { month =>
-        val eventuallyPopulated = for {
+        for {
           newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUserFilter.getLoggedInUser))
         } yield {
           val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
           import scala.collection.JavaConverters._
-          new ModelAndView().
+          Some(new ModelAndView().
             addObject("heading", monthLabel).
             addObject("description", "Archived newsitems for the month of " + monthLabel).
-            addObject(MAIN_CONTENT, newsitemsForMonth.asJava)
+            addObject(MAIN_CONTENT, newsitemsForMonth.asJava))
         }
-
-        Await.result(eventuallyPopulated, TenSeconds)
+      }.getOrElse {
+        Future.successful(None)
       }
     } else {
-      None
+      Future.successful(None)
     }
   }
 

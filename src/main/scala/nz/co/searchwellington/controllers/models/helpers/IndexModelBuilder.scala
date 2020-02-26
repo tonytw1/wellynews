@@ -36,21 +36,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getViewName(mv: ModelAndView): String = "index"
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
 
     def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
 
-    Await.result(if (isValid(request)) {
+    if (isValid(request)) {
       for {
         latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
       } yield {
         val mv = new ModelAndView().
           addObject("heading", "Wellynews").
           addObject("description", "Wellington related newsitems").
-          addObject("link", urlBuilder.getHomeUrl)
+          addObject("link", urlBuilder.getHomeUrl).
+          addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
-        log.info("Main content newitems: " + latestNewsitems.size)
-        mv.addObject(MAIN_CONTENT, latestNewsitems.asJava)
         monthOfLastItem(latestNewsitems).map { d =>
           mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
         }
@@ -61,7 +60,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     } else {
       Future.successful(None)
-    }, TenSeconds)
+    }
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView): Unit = {

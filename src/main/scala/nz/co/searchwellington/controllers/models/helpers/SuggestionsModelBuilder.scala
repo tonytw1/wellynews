@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
@@ -28,19 +28,23 @@ import scala.concurrent.ExecutionContext.Implicits.global
     request.getPathInfo.matches("^/feeds/inbox(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
-      val mv = new ModelAndView
-      import scala.collection.JavaConverters._
-      mv.addObject(MAIN_CONTENT, Await.result(suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS), TenSeconds).asJava)
-      mv.addObject("heading", "Inbox")
-      mv.addObject("link", urlBuilder.getFeedsInboxUrl)
-      mv.addObject("description", "Suggested newsitems from local feeds.")
-      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
-      Some(mv)
+      for {
+        suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)
+      } yield {
+        val mv = new ModelAndView
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, Await.result(suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS), TenSeconds).asJava)
+        mv.addObject("heading", "Inbox")
+        mv.addObject("link", urlBuilder.getFeedsInboxUrl)
+        mv.addObject("description", "Suggested newsitems from local feeds.")
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
+        Some(mv)
+      }
 
     } else {
-      None
+      Future.successful(None)
     }
   }
 
@@ -50,8 +54,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }, TenSeconds)
   }
 
-  def getViewName(mv: ModelAndView): String = {
-    "suggestions"
-  }
+  def getViewName(mv: ModelAndView): String = "suggestions"
 
 }

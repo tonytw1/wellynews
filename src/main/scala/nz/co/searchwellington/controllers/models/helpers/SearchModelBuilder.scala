@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 
 @Component class SearchModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, loggedInUserFilter: LoggedInUserFilter)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
@@ -22,7 +22,7 @@ import scala.concurrent.Await
     request.getParameter(KEYWORDS_PARAMETER) != null
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     val keywords = request.getParameter(KEYWORDS_PARAMETER)
     val page = getPage(request)
 
@@ -65,7 +65,7 @@ import scala.concurrent.Await
     mv.addObject("main_description", "Found " + contentCount + " matching newsitems")
     mv.addObject("description", "Search results for '" + keywords + "'")
     mv.addObject("link", urlBuilder.getSearchUrlFor(keywords))
-    Some(mv)
+    Future.successful(Some(mv))
   }
 
   @Override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

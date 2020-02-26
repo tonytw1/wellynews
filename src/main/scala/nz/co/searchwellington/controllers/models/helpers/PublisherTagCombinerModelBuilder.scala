@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
@@ -29,26 +29,23 @@ import scala.concurrent.{Await, Future}
     publisher != null && tag != null
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
-
-    val eventualModelAndView = if (isValid(request)) {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
+    if (isValid(request)) {
       logger.info("Building publisher tag combiner page model")
       val tag = request.getAttribute("tag").asInstanceOf[Tag]
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-
-      val mv = new ModelAndView
-      mv.addObject("publisher", frontendResourceMapper.mapFrontendWebsite(publisher))
-      mv.addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName)
-      mv.addObject("description", "")
-      mv.addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag))
 
       for {
         publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUserFilter.getLoggedInUser))
 
       } yield {
-
         import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, publisherTagNewsitems.asJava)
+        val mv = new ModelAndView().
+          addObject("publisher", frontendResourceMapper.mapFrontendWebsite(publisher)).
+          addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName).
+          addObject("description", "").
+          addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag)).
+          addObject(MAIN_CONTENT, publisherTagNewsitems.asJava)
 
         if (publisherTagNewsitems.nonEmpty) {
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
@@ -60,8 +57,6 @@ import scala.concurrent.{Await, Future}
     } else {
       Future.successful(None)
     }
-
-    Await.result(eventualModelAndView, TenSeconds)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView) {

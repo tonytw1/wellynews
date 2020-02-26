@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class FeedsModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, suggestedFeeditemsService: SuggestedFeeditemsService,
@@ -25,21 +25,25 @@ import scala.concurrent.ExecutionContext.Implicits.global
     request.getPathInfo.matches("^/feeds(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest): Option[ModelAndView] = {
+  def populateContentModel(request: HttpServletRequest): Future[Option[ModelAndView]] = {
     if (isValid(request)) {
       log.info("Building feed page model")
-      val mv: ModelAndView = new ModelAndView
-      mv.addObject("heading", "Feeds")
-      mv.addObject("description", "Incoming feeds")
-      mv.addObject("link", urlBuilder.getFeedsUrl)
-
-      import scala.collection.JavaConverters._
       val withAcceptancePolicy = Option(request.getParameter("acceptance")).map(FeedAcceptancePolicy.valueOf)
-      mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
-      Some(mv)
+      for {
+        feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUserFilter.getLoggedInUser))
+      } yield {
+        val mv: ModelAndView = new ModelAndView
+        mv.addObject("heading", "Feeds")
+        mv.addObject("description", "Incoming feeds")
+        mv.addObject("link", urlBuilder.getFeedsUrl)
+
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava)
+        Some(mv)
+      }
 
     } else {
-      None
+      Future.successful(None)
     }
   }
 
