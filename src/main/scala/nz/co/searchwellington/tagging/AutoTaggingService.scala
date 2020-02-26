@@ -19,13 +19,16 @@ import scala.concurrent.{ExecutionContext, Future}
   private val AUTOTAGGER_PROFILE_NAME = "autotagger"
 
   def autotag(resource: Newsitem)(implicit ec: ExecutionContext): Future[Seq[HandTagging]] = { // TODO should return TaggingVotes
-    val eventualTaggings: Future[Seq[HandTagging]] = mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).flatMap { maybyAutotagUser =>
+    val eventualTaggings = mongoRepository.getUserByProfilename(AUTOTAGGER_PROFILE_NAME).flatMap { maybyAutotagUser =>
       maybyAutotagUser.map { autotagUser =>
         val eventualSuggestedPlaces = placeAutoTagger.suggestTags(resource)
+        val eventualAutoTags = tagHintAutoTagger.suggestTags(resource)
         for {
           suggestedPlaces <- eventualSuggestedPlaces
+          suggestedAutoTags <- eventualAutoTags
+
         } yield {
-          val suggestedTags = suggestedPlaces ++ tagHintAutoTagger.suggestTags(resource)
+          val suggestedTags = suggestedPlaces ++ suggestedAutoTags
           log.debug("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
           suggestedTags.map(t => HandTagging(tag = t, user = autotagUser))
         }
