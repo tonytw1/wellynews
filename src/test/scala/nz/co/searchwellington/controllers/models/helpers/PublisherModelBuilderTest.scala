@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
@@ -14,9 +15,9 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class PublisherModelBuilderTest {
+class PublisherModelBuilderTest extends ReasonableWaits {
 
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
   private val urlBuilder = mock(classOf[UrlBuilder])
@@ -52,7 +53,8 @@ class PublisherModelBuilderTest {
 
     val request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)
-    val mv = modelBuilder.populateContentModel(request).get
+
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     val geotaggedPublisherNewsitemsOnModel = mv.getModel.get("geocoded").asInstanceOf[java.util.List[FrontendResource]]
     assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitemsOnModel.get(0))

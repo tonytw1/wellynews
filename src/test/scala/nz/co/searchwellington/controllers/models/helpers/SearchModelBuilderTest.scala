@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
 import nz.co.searchwellington.model.Tag
@@ -13,7 +14,9 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-class SearchModelBuilderTest {
+import scala.concurrent.Await
+
+class SearchModelBuilderTest extends ReasonableWaits {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
@@ -49,10 +52,11 @@ class SearchModelBuilderTest {
   @Test
   def pageHeadingShouldBeSearchKeyword() {
     when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).thenReturn(keywordNewsitemResults)
-
     request.setParameter("keywords", "widgets")
 
-    assertEquals("Search results - widgets", modelBuilder.populateContentModel(request).get.getModel.get("heading"))
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
+
+    assertEquals("Search results - widgets", mv.getModel.get("heading"))
   }
 
 
@@ -62,7 +66,7 @@ class SearchModelBuilderTest {
     request.setAttribute("tags", tags)
     when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(tag, mv.getModel.get("tag"))
   }
@@ -73,7 +77,7 @@ class SearchModelBuilderTest {
     request.setAttribute("tags", tags)
     when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
     assertEquals(tagKeywordNewsitemResults._1.asJava, mv.getModel.get("main_content"))

@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.DiscoveredFeed
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
@@ -14,10 +15,10 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class FeedsModelBuilderTest {
+class FeedsModelBuilderTest extends ReasonableWaits {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val suggestedFeeditemsService = mock(classOf[SuggestedFeeditemsService])
@@ -45,7 +46,7 @@ class FeedsModelBuilderTest {
     val feeds = Seq(FrontendFeed(id = UUID.randomUUID().toString), FrontendFeed(id = UUID.randomUUID().toString))
     when(contentRetrievalService.getFeeds(None, loggedInUser)).thenReturn(Future.successful(feeds))
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
     assertEquals(feeds.asJava, mv.getModel.get("main_content"))

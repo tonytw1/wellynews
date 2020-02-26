@@ -2,6 +2,8 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import akka.actor.FSM.Reason
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import nz.co.searchwellington.model.taggingvotes.GeotaggingVote
@@ -15,10 +17,10 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class NewsitemPageModelBuilderTest {
+class NewsitemPageModelBuilderTest extends ReasonableWaits {
 
   private val VALID_NEWSITEM_PAGE_PATH = "/wellington-city-council/2010/feb/01/something-about-rates"
 
@@ -35,22 +37,23 @@ class NewsitemPageModelBuilderTest {
     request
   }
 
-  private val builder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
+  private val modelBuilder = new NewsitemPageModelBuilder(contentRetrievalService, taggingReturnsOfficerService,
     tagWidgetFactory, handTaggingDAO, loggedInUserFilter, mongoRepository)
 
   @Test
   def shouldAcceptValidFormatPath {
-    assertTrue(builder.isValid(request))
+    assertTrue(modelBuilder.isValid(request))
   }
 
   @Test
   def shouldShowNewsitemOnMapIfItIsGeotagged {
+    val id = UUID.randomUUID()
     val place = Geocode(address = Some("Somewhere"))
-    val geotaggedNewsitem = FrontendNewsitem(id = "123", place = Some(place))
+    val geotaggedNewsitem = FrontendNewsitem(id = id.toString, place = Some(place))
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(geotaggedNewsitem))
-    when(mongoRepository.getResourceById("123")).thenReturn(Future.successful(None)) // TODO properly exercise mapped option branch
+    when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(Newsitem()))) // TODO properly exercise mapped option branch
 
-    val mv = builder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     val geotagged = mv.getModel.get("geocoded").asInstanceOf[java.util.List[Resource]]
     assertEquals(1, geotagged.size)
@@ -59,11 +62,12 @@ class NewsitemPageModelBuilderTest {
 
   @Test
   def shouldNotPopulateGeotaggedItemsIfNewsitemIsNotGeotagged {
-    val frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
+    val id = UUID.randomUUID()
+    val frontendNewsitem = FrontendNewsitem(id = id.toString)
     when(contentRetrievalService.getNewsPage(VALID_NEWSITEM_PAGE_PATH)).thenReturn(Some(frontendNewsitem))
-    when(mongoRepository.getResourceById(frontendNewsitem.id)).thenReturn(Future.successful(None)) // TODO properly exercise mapped option branch
+    when(mongoRepository.getResourceById(id.toString)).thenReturn(Future.successful(Some(Newsitem()))) // TODO properly exercise mapped option branch
 
-    val mv = builder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertNull(mv.getModel.get("geocoded"))
   }
@@ -78,7 +82,7 @@ class NewsitemPageModelBuilderTest {
     when(mongoRepository.getResourceById(newsitem.id)).thenReturn(Future.successful(Some(newsitem)))
     when(taggingReturnsOfficerService.getGeotagVotesForResource(newsitem)).thenReturn(List(geotaggingVote))
 
-    val mv = builder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     val geotaggedVotesOnModel = mv.getModel.get("geotag_votes").asInstanceOf[java.util.List[GeotaggingVote]]
     assertEquals(1, geotaggedVotesOnModel.size)

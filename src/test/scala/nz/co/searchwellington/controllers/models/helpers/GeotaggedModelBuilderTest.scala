@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
 import nz.co.searchwellington.model.frontend.FrontendResource
@@ -12,9 +13,9 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class GeotaggedModelBuilderTest {
+class GeotaggedModelBuilderTest extends ReasonableWaits {
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
   val urlBuilder = mock(classOf[UrlBuilder])
   val rssUrlBuilder = mock(classOf[RssUrlBuilder])
@@ -59,7 +60,7 @@ class GeotaggedModelBuilderTest {
     when(contentRetrievalService.getGeocodedNewitemsCount(loggedInUser)).thenReturn(TOTAL_GEOTAGGED_COUNT)
     when(contentRetrievalService.getGeocodedNewsitems(0, 30, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
-    val modelAndView = modelBuilder.populateContentModel(request).get
+    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(1, modelAndView.getModel.get("page"))
     assertEquals(TOTAL_GEOTAGGED_COUNT, modelAndView.getModel.get("main_content_total"))
@@ -73,7 +74,7 @@ class GeotaggedModelBuilderTest {
     request.setPathInfo("/geotagged")
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
 
-    val modelAndView = modelBuilder.populateContentModel(request).get
+    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel.get("main_content"))
   }
@@ -87,7 +88,7 @@ class GeotaggedModelBuilderTest {
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute(LocationParameterFilter.RADIUS, 3.0)
 
-    val modelAndView = modelBuilder.populateContentModel(request).get
+    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(newsitemsNearPetoneStationFirstPage, modelAndView.getModel.get("main_content"))
   }
@@ -100,7 +101,7 @@ class GeotaggedModelBuilderTest {
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
 
-    val modelAndView = modelBuilder.populateContentModel(request).get
+    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(1, modelAndView.getModel.get("page"))
     assertEquals(LOCATION_RESULTS_COUNT, modelAndView.getModel.get("main_content_total"))
@@ -116,7 +117,7 @@ class GeotaggedModelBuilderTest {
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
 
-    val modelAndView = modelBuilder.populateContentModel(request).get
+    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(2, modelAndView.getModel.get("page"))
     assertEquals(newsitemsNearPetoneStationSecondPage, modelAndView.getModel.get("main_content"))
@@ -128,7 +129,7 @@ class GeotaggedModelBuilderTest {
     request.setAttribute(LocationParameterFilter.LOCATION, invalidLocation)
     when(contentRetrievalService.getGeocodedNewsitems(0, 30, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
-    val modelAndView = modelBuilder.populateContentModel(request).get
+    val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertNull(modelAndView.getModel.get("location"))
   }

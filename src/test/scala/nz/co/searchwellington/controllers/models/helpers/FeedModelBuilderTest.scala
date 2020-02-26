@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.feeds.reading.WhakaokoService
@@ -18,9 +19,9 @@ import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class FeedModelBuilderTest {
+class FeedModelBuilderTest extends ReasonableWaits {
   private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
@@ -84,7 +85,7 @@ class FeedModelBuilderTest {
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq.empty)
     when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(frontendFeed, mv.getModel.get("feed"))
   }
@@ -95,7 +96,7 @@ class FeedModelBuilderTest {
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(Seq(frontendNewsitem, anotherFrontendNewsitem))).thenReturn(Seq.empty)
     when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(None))
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
     assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation.asJava, mv.getModel.get("main_content"))
@@ -109,7 +110,7 @@ class FeedModelBuilderTest {
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq()))
     when(whakaokoService.getWhakaokoSubscriptionByUrl(Matchers.any())(Matchers.any())).thenReturn(Future.successful(Some(whakaokoSubscription)))
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     modelBuilder.populateExtraModelContent(request, mv)
 

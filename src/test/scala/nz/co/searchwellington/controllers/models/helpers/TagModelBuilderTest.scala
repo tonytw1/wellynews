@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
 import nz.co.searchwellington.model.Tag
@@ -12,9 +13,9 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class TagModelBuilderTest {
+class TagModelBuilderTest extends ReasonableWaits {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
@@ -72,7 +73,7 @@ class TagModelBuilderTest {
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(TAG_DISPLAY_NAME, mv.getModel.get("heading"))
   }
@@ -83,7 +84,7 @@ class TagModelBuilderTest {
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
     assertEquals(tagNewsitems.asJava, mv.getModel.get("main_content"))
@@ -95,7 +96,7 @@ class TagModelBuilderTest {
     val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
 
-    val mv = modelBuilder.populateContentModel(request).get
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(parentTag, mv.getModel.get("parent"))
   }

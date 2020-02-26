@@ -7,6 +7,8 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, verify, verifyZeroInteractions, when}
 import org.springframework.web.servlet.ModelAndView
 
+import scala.concurrent.Future
+
 class ContentControllerTest {
   private val contentModelBuilderServiceFactory = mock(classOf[ContentModelBuilderServiceFactory])
   private val contentModelBuilderService = mock(classOf[ContentModelBuilderService])
@@ -22,7 +24,7 @@ class ContentControllerTest {
   def shouldDelegateToTheContentModelBuilderToGetTheModelForThisRequest() {
     val expectedModelAndView = new ModelAndView("a-view") // TODO mock
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
+    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
 
     val modelAndView = contentController.normal(request, response)
 
@@ -32,7 +34,7 @@ class ContentControllerTest {
   @Test
   def should404IfNotModelWasAvailableForThisRequest() {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
+    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
 
     contentController.normal(unknownPathRequest, response)
 
@@ -42,7 +44,7 @@ class ContentControllerTest {
   @Test
   def shouldNotPush404sOntoTheReturnToUrlStack() {
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(None)
+    when(contentModelBuilderService.populateContentModel(unknownPathRequest)).thenReturn(Future.successful(None))
 
     contentController.normal(unknownPathRequest, response)
 
@@ -53,7 +55,7 @@ class ContentControllerTest {
   def htmlPageViewsShouldBePutOntoTheUrlStack() {
     val expectedModelAndView: ModelAndView = new ModelAndView("a-view")
     when(contentModelBuilderServiceFactory.makeContentModelBuilderService()).thenReturn(contentModelBuilderService)
-    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Some(expectedModelAndView))
+    when(contentModelBuilderService.populateContentModel(request)).thenReturn(Future.successful(Some(expectedModelAndView)))
 
     contentController.normal(request, response)
 

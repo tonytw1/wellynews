@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.{ContentModelBuilderService, ModelBuilder}
-import nz.co.searchwellington.model.Tag
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
@@ -13,9 +13,9 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 import uk.co.eelpieconsulting.common.views.json.JsonView
 import uk.co.eelpieconsulting.common.views.rss.RssView
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class ContentModelBuilderServiceTest {
+class ContentModelBuilderServiceTest extends ReasonableWaits {
 
   private val viewFactory = mock(classOf[ViewFactory])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -36,7 +36,7 @@ class ContentModelBuilderServiceTest {
   def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request)).thenReturn(Some(validModelAndView))
+    when(validModelBuilder.populateContentModel(request)).thenReturn(Future.successful(Some(validModelAndView)))
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 
@@ -45,7 +45,9 @@ class ContentModelBuilderServiceTest {
       Seq(invalidModelBuilder, validModelBuilder)
     )
 
-    assertEquals(Some(validModelAndView), contentModelBuilderService.populateContentModel(request))
+    val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
+
+    assertEquals(Some(validModelAndView), result)
   }
 
   @Test
@@ -53,16 +55,16 @@ class ContentModelBuilderServiceTest {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     val contentModelBuilderService = new ContentModelBuilderService(viewFactory, contentRetrievalService, Seq(invalidModelBuilder))
 
-    val view = contentModelBuilderService.populateContentModel(request)
+    val result = Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds)
 
-    assertEquals(None, view)
+    assertEquals(None, result)
   }
 
   @Test
   def rssSuffixedRequestsShouldBeGivenTheRssView {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request)).thenReturn(Some(validModelAndView))
+    when(validModelBuilder.populateContentModel(request)).thenReturn(Future.successful(Some(validModelAndView)))
 
     val contentModelBuilderService = new ContentModelBuilderService(
       viewFactory,
@@ -73,14 +75,14 @@ class ContentModelBuilderServiceTest {
     val rssView = mock(classOf[RssView])
     when(viewFactory.getRssView(anyString, anyString, anyString)).thenReturn(rssView)
     request.setPathInfo("/something/rss")
-    assertEquals(rssView, contentModelBuilderService.populateContentModel(request).get.getView)
+    assertEquals(rssView, Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).get.getView)
   }
 
   @Test
   def jsonSuffixedRequestsShouldBeGivenTheRssView {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request)).thenReturn(Some(validModelAndView))
+    when(validModelBuilder.populateContentModel(request)).thenReturn(Future.successful(Some(validModelAndView)))
 
     val contentModelBuilderService = new ContentModelBuilderService(
       viewFactory,
@@ -91,7 +93,7 @@ class ContentModelBuilderServiceTest {
     val jsonView = mock(classOf[JsonView])
     when(viewFactory.getJsonView).thenReturn(jsonView)
     request.setPathInfo("/something/json")
-    assertEquals(jsonView, contentModelBuilderService.populateContentModel(request).get.getView)
+    assertEquals(jsonView, Await.result(contentModelBuilderService.populateContentModel(request), TenSeconds).get.getView)
   }
 
 }
