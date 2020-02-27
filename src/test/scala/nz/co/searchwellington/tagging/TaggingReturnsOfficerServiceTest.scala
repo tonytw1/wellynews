@@ -1,5 +1,6 @@
 package nz.co.searchwellington.tagging
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.taggingvotes.HandTagging
 import nz.co.searchwellington.repositories.HandTaggingDAO
@@ -8,10 +9,10 @@ import org.junit.Assert._
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class TaggingReturnsOfficerServiceTest {
+class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
   private val placesTag = Tag(name = "places", display_name = "Places")
   private val aroValleyTag = Tag(name = "arovalley", display_name = "Aro Valley", parent = Some(placesTag._id))
@@ -42,7 +43,7 @@ class TaggingReturnsOfficerServiceTest {
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
-    val taggings = taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem)
+    val taggings = Await.result(taggingReturnsOfficerService.compileTaggingVotes(aroValleyNewsitem), TenSeconds)
 
     assertTrue(taggings.head.tag.equals(aroValleyTag)); // TODO not a great assert
   }

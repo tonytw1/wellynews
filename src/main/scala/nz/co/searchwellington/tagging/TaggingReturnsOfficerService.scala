@@ -25,7 +25,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   // TODO These are a different responsibility to tagging votes
   def getIndexTagsForResource(resource: Resource): Seq[Tag] = {
-    compileTaggingVotes(resource).toList.map(taggingVote => (taggingVote.tag)).distinct
+    val eventualTaggingVotes = compileTaggingVotes(resource)
+    Await.result(eventualTaggingVotes, TenSeconds).map(taggingVote => taggingVote.tag).distinct
   }
 
   // TODO These are a different responsibility to tagging votes
@@ -33,14 +34,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
     getGeotagVotesForResource(resource).headOption.map(_.geocode)
   }
 
-  def compileTaggingVotes(resource: Resource): Seq[TaggingVote] = {
-    val handTaggings: Future[Seq[taggingvotes.HandTagging]] = handTaggingDAO.getHandTaggingsForResource(resource)
+  def compileTaggingVotes(resource: Resource): Future[Seq[TaggingVote]] = {
+    val eventualHandTaggings = handTaggingDAO.getHandTaggingsForResource(resource)
 
-    val publisherVotes: Future[Seq[TaggingVote]] = resource match {
+    val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
         val ancestorTagVotes = Future.sequence {
           getHandTagsForResource(resource).map { rt =>
-            parentsOf(rt).map(parents => parents.map(fat => new GeneratedTaggingVote(fat, new AncestorTagVoter())))
+            parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, new AncestorTagVoter())))
           }
         }.map(_.flatten)
         Future.sequence(Seq(ancestorTagVotes, Future.successful(generatePublisherDerivedTagVotes(p)))).map(_.flatten) // TODO test coverage for ancestor tag votes
@@ -49,14 +50,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
         Future.successful(Seq.empty)
     }
 
-    val newsitemSpecificVotes: Future[Seq[GeneratedTaggingVote]] = resource match {
+    val eventualNewsitemSpecificVotes = resource match {
       case n: Newsitem =>
         generateFeedRelatedTags(n)
       case _ =>
         Future.successful(Seq.empty)
     }
 
-    Await.result(handTaggings, TenSeconds) ++ Await.result(publisherVotes, TenSeconds) ++ Await.result(newsitemSpecificVotes, TenSeconds)
+    for {
+      handTaggings <- eventualHandTaggings
+      publisherVotes <- eventualPublisherVotes
+      newsitemSpecificVotes <- eventualNewsitemSpecificVotes
+    } yield {
+      handTaggings ++ publisherVotes ++ newsitemSpecificVotes
+    }
   }
 
   def getGeotagVotesForResource(resource: Resource): Seq[GeotaggingVote] = {
