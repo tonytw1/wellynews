@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 
+import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
 
 @Deprecated // "tags are attached to resource document now"
 @Component class HandTaggingDAO @Autowired()(mongoRepository: MongoRepository) extends ReasonableWaits {
@@ -27,8 +27,13 @@ import scala.concurrent.{Await, Future}
   }
 
   def getHandTaggingsForResourceId(id: BSONObjectID): Future[Seq[HandTagging]] = {
-    val resource = Await.result(mongoRepository.getResourceByObjectId(id), TenSeconds).get
-    getHandTaggingsForResource(resource)
+    mongoRepository.getResourceByObjectId(id).flatMap { maybeResource =>
+      maybeResource.map { resource =>
+        getHandTaggingsForResource(resource)
+      }.getOrElse {
+        Future.successful(Seq.empty)
+      }
+    }
   }
 
   def getHandpickedTagsForThisResourceByUser(user: User, resource: Resource): Set[Tag] = {
@@ -49,11 +54,11 @@ import scala.concurrent.{Await, Future}
 
   def clearTags(resource: Resource) {
     for (handTagging <- this.getHandTaggingsForResource(resource)) {
-      // sessionFactory.getCurrentSession.delete(handTagging)
+      // TODO sessionFactory.getCurrentSession.delete(handTagging)
     }
   }
 
-  @SuppressWarnings(Array("unchecked")) private def getHandTaggingsForResourceByUser(resource: Resource, user: User): Seq[HandTagging] = {
+  private def getHandTaggingsForResourceByUser(resource: Resource, user: User): Seq[HandTagging] = {
     // sessionFactory.getCurrentSession.createCriteria(classOf[HandTagging]).add(Restrictions.eq("resource", resource)).add(Restrictions.eq("user", user)).setCacheable(true).list.asInstanceOf[java.util.List[HandTagging]]
     Seq() // TODO
   }
