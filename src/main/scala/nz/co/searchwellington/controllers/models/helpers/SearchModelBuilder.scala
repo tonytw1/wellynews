@@ -3,6 +3,7 @@ package nz.co.searchwellington.controllers.models
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.{Tag, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class SearchModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
@@ -25,7 +27,6 @@ import scala.concurrent.{Await, Future}
     val keywords = request.getParameter(KEYWORDS_PARAMETER)
     val page = getPage(request)
 
-
     val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
     val maybeTag = Option(request.getAttribute("tags")).flatMap { t =>
@@ -35,43 +36,49 @@ import scala.concurrent.{Await, Future}
     val mv = new ModelAndView()
     mv.addObject("page", page)
 
-    val contentWithCount = maybeTag.fold {
+    val eventualContentWithCount: Future[(Seq[FrontendResource], Long)] = maybeTag.fold {
       mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
-      contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
-
+      val eventualNewsitemsMatchingKeyword = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      eventualNewsitemsMatchingKeyword
     } { tag =>
       mv.addObject("tag", tag)
-      contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      val eventualTaggedNewsitemsMatchingKeywords = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      eventualTaggedNewsitemsMatchingKeywords
     }
 
-    import scala.collection.JavaConverters._
-    mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
+    for {
+      contentWithCount <- eventualContentWithCount
+    } yield {
+      import scala.collection.JavaConverters._
+      mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
 
-    val contentCount = contentWithCount._2
-    mv.addObject("main_content_total", contentCount)
-    populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS)
+      val contentCount = contentWithCount._2
+      mv.addObject("main_content_total", contentCount)
+      populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS)
 
-    /*
+      /*
     if (startIndex > contentCount) {
       return null
     }
     */
 
-    mv.addObject("query", keywords)
-    mv.addObject("heading", "Search results - " + keywords)
+      mv.addObject("query", keywords)
+      mv.addObject("heading", "Search results - " + keywords)
 
-    mv.addObject("main_heading", "Matching Newsitems")
-    mv.addObject("main_description", "Found " + contentCount + " matching newsitems")
-    mv.addObject("description", "Search results for '" + keywords + "'")
-    mv.addObject("link", urlBuilder.getSearchUrlFor(keywords))
-    Future.successful(Some(mv))
+      mv.addObject("main_heading", "Matching Newsitems")
+      mv.addObject("main_description", "Found " + contentCount + " matching newsitems")
+      mv.addObject("description", "Search results for '" + keywords + "'")
+      mv.addObject("link", urlBuilder.getSearchUrlFor(keywords))
+
+      Some(mv)
+    }
   }
 
-  @Override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
     import scala.collection.JavaConverters._
     mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser)), TenSeconds).asJava)
   }
 
-  @Override def getViewName(mv: ModelAndView): String = "search"
+  def getViewName(mv: ModelAndView): String = "search"
 
 }

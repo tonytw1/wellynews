@@ -43,11 +43,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
         null: ModelAndView
 
       } { tag =>
-        import scala.collection.JavaConverters._
-        withCommonLocal(new ModelAndView("autoTagPrompt").
-          addObject("heading", "Autotagging").
-          addObject("tag", tag).
-          addObject("resources_to_tag", getPossibleAutotagResources(loggedInUser, tag).asJava))
+        Await.result(for {
+          suggestions <- getPossibleAutotagResources(loggedInUser, tag)
+        } yield {
+          import scala.collection.JavaConverters._
+          withCommonLocal(new ModelAndView("autoTagPrompt").
+            addObject("heading", "Autotagging").
+            addObject("tag", tag).
+            addObject("resources_to_tag", suggestions.asJava))
+        }, TenSeconds)
       }
     }
   }
@@ -100,7 +104,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  private def getPossibleAutotagResources(user: User, tag: Tag): Seq[FrontendResource] = {
+  private def getPossibleAutotagResources(user: User, tag: Tag): Future[Seq[FrontendResource]] = {
     val keywords: Set[String] = Set(tag.autotag_hints, Some(tag.display_name)).flatten
     contentRetrievalService.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag)
   }

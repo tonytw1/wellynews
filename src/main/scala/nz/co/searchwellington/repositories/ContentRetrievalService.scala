@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class ContentRetrievalService @Autowired()(resourceDAO: HibernateResourceDAO,
                                                       keywordSearchService: KeywordSearchService,
@@ -40,18 +40,18 @@ import scala.concurrent.{Await, Future}
 
   def getTopLevelTags: Future[Seq[Tag]] = tagDAO.getTopLevelTags
 
-  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag).flatMap(i => fetchByIds(i._1)), TenSeconds)
+  def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[Seq[FrontendResource]] = {
+    elasticSearchIndexer.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag).flatMap(i => fetchByIds(i._1))
   }
 
-  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): (Seq[FrontendResource], Long) = {
+  def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val newsitemsByKeywords = ResourceQuery(`type` = Some("N"), q = Some(keywords))
-    Await.result(toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(newsitemsByKeywords, loggedInUser = loggedInUser)), TenSeconds)
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(newsitemsByKeywords, loggedInUser = loggedInUser))
   }
 
-  def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): (Seq[FrontendResource], Long) = {
+  def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val taggedNewsitemsByKeywords = ResourceQuery(`type` = Some("N"), q = Some(keywords), tags = Some(Set(tag)))
-    Await.result(toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(taggedNewsitemsByKeywords, loggedInUser = loggedInUser)), TenSeconds)
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(taggedNewsitemsByKeywords, loggedInUser = loggedInUser))
   }
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

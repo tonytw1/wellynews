@@ -14,7 +14,7 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 
 class SearchModelBuilderTest extends ReasonableWaits {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
@@ -51,7 +51,8 @@ class SearchModelBuilderTest extends ReasonableWaits {
 
   @Test
   def pageHeadingShouldBeSearchKeyword() {
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).thenReturn(keywordNewsitemResults)
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).
+      thenReturn(Future.successful(keywordNewsitemResults))
     request.setParameter("keywords", "widgets")
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -64,7 +65,8 @@ class SearchModelBuilderTest extends ReasonableWaits {
   def shouldShowTagIfTagFilterIsSet() {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
+    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).
+      thenReturn(Future.successful(tagKeywordNewsitemResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -75,7 +77,8 @@ class SearchModelBuilderTest extends ReasonableWaits {
   def shouldShowTagResultsIfTagFilterIsSet() {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).thenReturn(tagKeywordNewsitemResults)
+    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).
+      thenReturn(Future.successful(tagKeywordNewsitemResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
