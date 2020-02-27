@@ -68,10 +68,10 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-
-  private def getIndexTagIdsFor(resource: Resource): Future[Seq[String]] = {
-    val tags = taggingReturnsOfficerService.getIndexTagsForResource(resource)
-    Future.successful(tags.map(_._id.stringify))
+  private def getIndexTagIdsFor(resource: Resource)(implicit ec: ExecutionContext): Future[Seq[String]] = {
+    taggingReturnsOfficerService.getIndexTagsForResource(resource).map { tags =>
+      tags.map(_._id.stringify)
+    }
   }
 
 }

@@ -34,7 +34,7 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
   private val handTaggingDAO = mock(classOf[HandTaggingDAO])
   private val mongoRepository = mock(classOf[MongoRepository])
 
-  private val taggingReturnsOfficerService: TaggingReturnsOfficerService =  new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
+  private val taggingReturnsOfficerService: TaggingReturnsOfficerService = new TaggingReturnsOfficerService(handTaggingDAO, mongoRepository)
 
   @Test
   def compliedTagsShouldContainAtLeastOneCopyOfEachManuallyAppliedTag {
@@ -55,18 +55,18 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
     when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
-    var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
+    val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem), TenSeconds)
 
     assertTrue(indexTags.contains(aroValleyTag))
   }
 
   @Test
   def shouldIncludePublishersTagsInNewsitemsIndexTags = {
-    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = aroValleyTag))))
-    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = educationTag))))
+    when(handTaggingDAO.getHandTaggingsForResource(aroValleyNewsitem)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = aroValleyTag))))
+    when(handTaggingDAO.getHandTaggingsForResourceId(victoriaUniversity._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = educationTag))))
     when(mongoRepository.getTagByObjectId(placesTag._id)).thenReturn(Future.successful(Some(placesTag)))
 
-    val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem)
+    val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(aroValleyNewsitem), TenSeconds)
 
     assertTrue(indexTags.contains(educationTag))
   }
@@ -80,9 +80,9 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     when(mongoRepository.getTagByObjectId(sportTag._id)).thenReturn(Future.successful(Some(sportTag)))
     when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Future.successful(Seq.empty))
-    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellington._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = cricketTag))))
+    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellington._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = cricketTag))))
 
-    val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem)
+    val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem), TenSeconds)
 
     assertTrue(indexTags.contains(sportTag))
   }
@@ -96,10 +96,10 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
       feed = Some(publicInputFeed._id)
     )
 
-    when(handTaggingDAO.getHandTaggingsForResourceId(publicInputFeed._id)).thenReturn(Future.successful(Seq(new HandTagging(user =taggingUser, tag = consultationTag))))
+    when(handTaggingDAO.getHandTaggingsForResourceId(publicInputFeed._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = consultationTag))))
     when(handTaggingDAO.getHandTaggingsForResource(publicInputNewsitem)).thenReturn(Future.successful(Seq.empty))
 
-    var indexTags = taggingReturnsOfficerService.getIndexTagsForResource(publicInputNewsitem)
+    val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(publicInputNewsitem), TenSeconds)
 
     assertTrue(indexTags.contains(consultationTag))
   }
@@ -115,9 +115,9 @@ class TaggingReturnsOfficerServiceTest extends ReasonableWaits {
 
     when(mongoRepository.getTagByObjectId(sportTag._id)).thenReturn(Future.successful(Some(sportTag)))
     when(handTaggingDAO.getHandTaggingsForResource(cricketWellingtonNewsitem)).thenReturn(Future.successful(Seq.empty))
-    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellingtonNewsFeed._id)).thenReturn(Future.successful(Seq(new HandTagging(user = taggingUser, tag = cricketTag))))
+    when(handTaggingDAO.getHandTaggingsForResourceId(cricketWellingtonNewsFeed._id)).thenReturn(Future.successful(Seq(HandTagging(user = taggingUser, tag = cricketTag))))
 
-    val indexTags = taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem)
+    val indexTags = Await.result(taggingReturnsOfficerService.getIndexTagsForResource(cricketWellingtonNewsitem), TenSeconds)
 
     assertTrue(indexTags.contains(sportTag))
   }

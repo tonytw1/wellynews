@@ -6,7 +6,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component
 class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService,
@@ -18,7 +18,7 @@ class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturn
         n.publisher.map { publisherId =>
           mongoRepository.getResourceByObjectId(publisherId).map { publisher =>
             publisher.exists { publisher =>
-              taggingReturnsOfficerService.getHandTagsForResource(publisher).contains(tag)
+              Await.result(taggingReturnsOfficerService.getHandTagsForResource(publisher), TenSeconds).contains(tag)
             }
           }
         }.getOrElse {
@@ -29,7 +29,8 @@ class ImpliedTagService @Autowired()(taggingReturnsOfficerService: TaggingReturn
     }
 
     eventualIsNewsitemWhosPublisherAlreadyHasThisTag.map { isNewsitemWhosPublisherAlreadyHasThisTag =>
-      isNewsitemWhosPublisherAlreadyHasThisTag || taggingReturnsOfficerService.getHandTagsForResource(resource).contains(tag)
+      isNewsitemWhosPublisherAlreadyHasThisTag ||
+        Await.result(taggingReturnsOfficerService.getHandTagsForResource(resource), TenSeconds).contains(tag)
     }
   }
 

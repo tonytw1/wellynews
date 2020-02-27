@@ -19,14 +19,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
   // TODO These are a different responsibility to tagging votes
-  def getHandTagsForResource(resource: Tagged): Seq[Tag] = {
-    Await.result(handTaggingDAO.getHandTaggingsForResource(resource), TenSeconds).map(_.tag)
+  def getHandTagsForResource(resource: Tagged): Future[Seq[Tag]] = {
+    handTaggingDAO.getHandTaggingsForResource(resource).map { handTaggings =>
+      handTaggings.map(_.tag)
+    }
   }
 
   // TODO These are a different responsibility to tagging votes
-  def getIndexTagsForResource(resource: Resource): Seq[Tag] = {
-    val eventualTaggingVotes = compileTaggingVotes(resource)
-    Await.result(eventualTaggingVotes, TenSeconds).map(taggingVote => taggingVote.tag).distinct
+  def getIndexTagsForResource(resource: Resource): Future[Seq[Tag]] = {
+    compileTaggingVotes(resource).map { taggingVotes =>
+      taggingVotes.map(_.tag).distinct
+    }
   }
 
   // TODO These are a different responsibility to tagging votes
@@ -39,12 +42,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
-        val ancestorTagVotes = Future.sequence {
-          getHandTagsForResource(resource).map { rt =>
+        val eventualAncestorTagVotes: Future[Seq[GeneratedTaggingVote]] = Future.sequence {
+          Await.result(getHandTagsForResource(resource), TenSeconds).map { rt =>
             parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, new AncestorTagVoter())))
           }
         }.map(_.flatten)
-        Future.sequence(Seq(ancestorTagVotes, Future.successful(generatePublisherDerivedTagVotes(p)))).map(_.flatten) // TODO test coverage for ancestor tag votes
+
+        val eventualGeneratePublisherDerivedTagVotes = generatePublisherDerivedTagVotes(p)
+
+        for {
+          ancestorTagVotes <- eventualAncestorTagVotes
+          generatePublisherDerivedTagVotes <- eventualGeneratePublisherDerivedTagVotes
+        } yield {
+          Seq(ancestorTagVotes, generatePublisherDerivedTagVotes).flatten // TODO test coverage for ancestor tag votes
+        }
 
       case _ =>
         Future.successful(Seq.empty)
@@ -92,13 +103,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Seq(resourceGeocodeVote, publisherGeocodeVote).flatten.filter(gv => gv.geocode.isValid)
   }
 
-  private def generatePublisherDerivedTagVotes(p: PublishedResource): Seq[TaggingVote] = {
+  private def generatePublisherDerivedTagVotes(p: PublishedResource): Future[Seq[GeneratedTaggingVote]] = {
     p.publisher.map { pid =>
-      Await.result(handTaggingDAO.getHandTaggingsForResourceId(pid), TenSeconds).flatMap { pt =>
-        val publisherAncestorTagVotes = Await.result(parentsOf(pt.tag), TenSeconds).map(pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
-        publisherAncestorTagVotes :+ new GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
+      handTaggingDAO.getHandTaggingsForResourceId(pid).map { handTaggings =>
+        handTaggings.flatMap { pt =>
+          val publisherAncestorTagVotes = Await.result(parentsOf(pt.tag), TenSeconds).map(pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
+          publisherAncestorTagVotes :+ GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
+        }
       }
-    }.getOrElse(Seq.empty)
+    }.getOrElse{
+      Future.successful(Seq.empty)
+    }
   }
 
   private def generateFeedRelatedTags(n: Newsitem): Future[Seq[GeneratedTaggingVote]] = {

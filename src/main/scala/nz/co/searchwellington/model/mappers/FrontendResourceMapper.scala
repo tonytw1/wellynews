@@ -32,7 +32,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           }
         }
 
-        val handTags = taggingReturnsOfficerService.getHandTagsForResource(contentItem)
+        val handTags = Await.result(taggingReturnsOfficerService.getHandTagsForResource(contentItem), TenSeconds)
         val acceptedByUser = n.acceptedBy.flatMap { uid =>
           Await.result(mongoRepository.getUserByObjectId(uid), TenSeconds)
         }
@@ -151,7 +151,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   }
 
   private def frontendTagsFor(resource: Resource): Seq[Tag] = {
-    taggingReturnsOfficerService.getHandTagsForResource(resource)
+    Await.result(taggingReturnsOfficerService.getHandTagsForResource(resource), TenSeconds)
   }
 
 }
