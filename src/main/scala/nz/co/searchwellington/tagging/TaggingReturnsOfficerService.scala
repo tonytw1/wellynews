@@ -49,14 +49,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
         Future.successful(Seq.empty)
     }
 
-    val newsitemSpecificVotes: Seq[TaggingVote] = resource match {
+    val newsitemSpecificVotes: Future[Seq[GeneratedTaggingVote]] = resource match {
       case n: Newsitem =>
         generateFeedRelatedTags(n)
       case _ =>
-        Seq.empty
+        Future.successful(Seq.empty)
     }
 
-    Await.result(handTaggings, TenSeconds) ++ Await.result(publisherVotes, TenSeconds) ++ newsitemSpecificVotes
+    Await.result(handTaggings, TenSeconds) ++ Await.result(publisherVotes, TenSeconds) ++ Await.result(newsitemSpecificVotes, TenSeconds)
   }
 
   def getGeotagVotesForResource(resource: Resource): Seq[GeotaggingVote] = {
@@ -94,19 +94,32 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }.getOrElse(Seq.empty)
   }
 
-  private def generateFeedRelatedTags(n: Newsitem) = {
-    def generateAcceptedFromFeedTags(feedTags: Seq[Tag]): Seq[TaggingVote] = {
-      feedTags.flatMap { ft =>
-        val feedAncestorTagVotes = Await.result(parentsOf(ft), TenSeconds).map ( fat => new GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
-        feedAncestorTagVotes :+ new GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
+  private def generateFeedRelatedTags(n: Newsitem): Future[Seq[GeneratedTaggingVote]] = {
+    def generateAcceptedFromFeedTags(feedTags: Seq[Tag]): Future[Seq[GeneratedTaggingVote]] = {
+      Future.sequence{
+        feedTags.map { ft =>
+          for {
+            parentsOfFeedTag <- parentsOf(ft)
+          } yield {
+            val feedAncestorTagVotes = parentsOfFeedTag.map(fat => GeneratedTaggingVote(fat, new FeedTagAncestorTagVoter))
+            feedAncestorTagVotes :+ GeneratedTaggingVote(ft, new FeedsTagsTagVoter)
+          }
+        }
       }
-    }
+    }.map(_.flatten)
 
     n.feed.map { fid =>
-      val taggingsForFeed = Await.result(handTaggingDAO.getHandTaggingsForResourceId(fid), TenSeconds)
-      val feedTags: Seq[Tag] = taggingsForFeed.map(_.tag)
-      generateAcceptedFromFeedTags(feedTags)
-    }.getOrElse(Seq.empty)
+      for {
+        handTaggingForFeed <- handTaggingDAO.getHandTaggingsForResourceId(fid)
+        feedHandTags = handTaggingForFeed.map(_.tag)
+        acceptedFromFeedTags <- generateAcceptedFromFeedTags(feedHandTags)
+      } yield {
+        acceptedFromFeedTags
+      }
+
+    }.getOrElse{
+      Future.successful(Seq.empty)
+    }
   }
 
   private def parentsOf(tag: Tag, soFar: Seq[Tag] = Seq.empty): Future[Seq[Tag]] = {
