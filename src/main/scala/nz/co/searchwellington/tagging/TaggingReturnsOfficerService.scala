@@ -116,11 +116,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private def generatePublisherDerivedTagVotes(p: PublishedResource): Future[Seq[GeneratedTaggingVote]] = {
     p.publisher.map { pid =>
-      handTaggingDAO.getHandTaggingsForResourceId(pid).map { handTaggings =>
-        handTaggings.flatMap { pt =>
-          val publisherAncestorTagVotes = Await.result(parentsOf(pt.tag), TenSeconds).map(pat => new GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
-          publisherAncestorTagVotes :+ GeneratedTaggingVote(pt.tag, new PublishersTagsVoter)
-        }
+      handTaggingDAO.getHandTaggingsForResourceId(pid).flatMap { handTaggings =>
+        Future.sequence(handTaggings.map { publishersTagging =>
+          for {
+            parentTags <- parentsOf(publishersTagging.tag)
+          } yield {
+            val publisherAncestorTagVotes = parentTags.map(pat => GeneratedTaggingVote(pat, new PublishersTagAncestorTagVoter))
+            publisherAncestorTagVotes :+ GeneratedTaggingVote(publishersTagging.tag, new PublishersTagsVoter)
+          }
+        }).map(_.flatten)
       }
     }.getOrElse{
       Future.successful(Seq.empty)
