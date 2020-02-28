@@ -33,8 +33,10 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   // TODO These are a different responsibility to tagging votes
-  def getIndexGeocodeForResource(resource: Resource): Option[Geocode] = {
-    getGeotagVotesForResource(resource).headOption.map(_.geocode)
+  def getIndexGeocodeForResource(resource: Resource): Future[Option[Geocode]] = {
+    getGeotagVotesForResource(resource).map { i =>
+      i.headOption.map(_.geocode)
+    }
   }
 
   def compileTaggingVotes(resource: Resource): Future[Seq[TaggingVote]] = {
@@ -77,8 +79,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def getGeotagVotesForResource(resource: Resource): Seq[GeotaggingVote] = {
-
+  def getGeotagVotesForResource(resource: Resource): Future[Seq[GeotaggingVote]] = {
     val resourceGeocodeVote: Option[GeotaggingVote] = resource.geocode.map { g =>
       new GeotaggingVote(g, new PublishersTagsVoter, 1) // TODO resource owner as the voter
     }
@@ -103,12 +104,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
 
-    val publisherGeocodeVote = Await.result(eventualPublisherGeocodeVote, TenSeconds)
-
     // TODO val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
     // TODO votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
 
-    Seq(resourceGeocodeVote, publisherGeocodeVote).flatten.filter(gv => gv.geocode.isValid)
+    for {
+      publisherGeocodeVote <- eventualPublisherGeocodeVote
+    } yield {
+      Seq(resourceGeocodeVote, publisherGeocodeVote).flatten.filter(gv => gv.geocode.isValid)
+    }
   }
 
   private def generatePublisherDerivedTagVotes(p: PublishedResource): Future[Seq[GeneratedTaggingVote]] = {

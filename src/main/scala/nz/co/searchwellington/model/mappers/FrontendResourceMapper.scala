@@ -18,7 +18,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
 
   def createFrontendResourceFrom(contentItem: Resource)(implicit ec: ExecutionContext): FrontendResource = {
-    val place: Option[Geocode] = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
+    val place = Await.result(taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem), TenSeconds)
 
     contentItem match {
       case n: Newsitem =>
