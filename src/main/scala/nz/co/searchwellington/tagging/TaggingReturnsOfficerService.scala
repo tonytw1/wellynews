@@ -83,19 +83,27 @@ import scala.concurrent.ExecutionContext.Implicits.global
       new GeotaggingVote(g, new PublishersTagsVoter, 1) // TODO resource owner as the voter
     }
 
-    val publisherGeocodeVote = resource match {
-      case pr: PublishedResource =>
-        pr.publisher.flatMap { p =>
-          Await.result(mongoRepository.getResourceByObjectId(p), TenSeconds).flatMap { publisher =>
-            publisher.geocode.map { pg =>
-              log.debug("Adding publisher geotag: " + pg)
-              new GeotaggingVote(pg, new PublishersTagsVoter, 1)
+    val eventualPublisherGeocodeVote: Future[Option[GeotaggingVote]] = {
+      (resource match {
+        case pr: PublishedResource =>
+          pr.publisher.map { p =>
+            mongoRepository.getResourceByObjectId(p).map { maybePublisher =>
+              maybePublisher.flatMap { publisher =>
+                publisher.geocode.map { pg =>
+                  log.debug("Adding publisher geotag: " + pg)
+                  new GeotaggingVote(pg, new PublishersTagsVoter, 1)
+                }
+              }
             }
           }
-        }
-      case _ =>
-        None
+        case _ =>
+          None
+      }).getOrElse{
+        Future.successful(None)
+      }
     }
+
+    val publisherGeocodeVote = Await.result(eventualPublisherGeocodeVote, TenSeconds)
 
     // TODO val tagsWithGeocodes: List[Tag] = getIndexTagsForResource(resource).toList.filter(t => {t.getGeocode != null && t.getGeocode.isValid})
     // TODO votes ++= tagsWithGeocodes.map(t => {new GeotaggingVote(t.getGeocode, new AncestorTagVoter, 1)})
