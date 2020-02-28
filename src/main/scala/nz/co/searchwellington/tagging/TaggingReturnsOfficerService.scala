@@ -10,8 +10,8 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 @Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository)
   extends ReasonableWaits {
@@ -44,11 +44,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     val eventualPublisherVotes = resource match {
       case p: PublishedResource =>
-        val eventualAncestorTagVotes: Future[Seq[GeneratedTaggingVote]] = Future.sequence {
-          Await.result(getHandTagsForResource(resource), TenSeconds).map { rt =>
-            parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, new AncestorTagVoter())))
-          }
-        }.map(_.flatten)
+        val eventualAncestorTagVotes: Future[Seq[GeneratedTaggingVote]] = {
+          getHandTagsForResource(resource).map { taggings =>
+            taggings.map { rt =>
+              parentsOf(rt).map(parents => parents.map(fat => GeneratedTaggingVote(fat, new AncestorTagVoter())))
+            }
+          }.flatMap(Future.sequence(_)).map(_.flatten)
+        }
 
         val eventualGeneratePublisherDerivedTagVotes = generatePublisherDerivedTagVotes(p)
 
