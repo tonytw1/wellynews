@@ -4,7 +4,7 @@ import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Geocode, Website}
@@ -15,6 +15,7 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class PublisherModelBuilderTest extends ReasonableWaits {
@@ -37,8 +38,8 @@ class PublisherModelBuilderTest extends ReasonableWaits {
   def shouldHightlightPublishersGeotaggedContent {
     val loggedInUser = None
 
-     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
-     val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = Some(Geocode(address = Some("Somewhere"))))
+    val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
+    val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = Some(Geocode(address = Some("Somewhere"))))
 
     val publisherNewsitems = Seq(newsitem, geotaggedNewsitem)
     val geotaggedNewsitems = Seq(geotaggedNewsitem)
@@ -48,7 +49,7 @@ class PublisherModelBuilderTest extends ReasonableWaits {
 
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
     when(relatedTagsService.getRelatedLinksForPublisher(publisher)).thenReturn(Seq())
-    when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(frontendPublisher)
+    when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(Future.successful(frontendPublisher))
 
     val request = new MockHttpServletRequest
     request.setAttribute("publisher", publisher)
