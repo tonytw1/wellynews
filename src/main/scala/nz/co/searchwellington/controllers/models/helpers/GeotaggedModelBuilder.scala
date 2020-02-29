@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.filters.LocationParameterFilter
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -15,8 +15,8 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class GeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
                                                     urlBuilder: UrlBuilder,
@@ -48,16 +48,19 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       if (hasUserSuppliedALocation) { // TODO split into seperate model
         val radius = getLocationSearchRadius(request)
+        val latLong = userSuppliedPlace.getLatLong
 
         val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, Option(loggedInUser))
         val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, Option(loggedInUser))
+        val eventualNewsitemsNearCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUser))
+        val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
         for {
           relatedTagLinks <- eventualRelatedTagsForLocation
           relatedPublisherLinks <- eventualPublishersForLocation
+          totalNearbyCount <- eventualNewsitemsNearCount
+          newsitemsNear <- eventualNewsitemsNear
 
         } yield {
-          val latLong = userSuppliedPlace.getLatLong
-          val totalNearbyCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUser))
           if (startIndex > totalNearbyCount) {
             None
           }
@@ -65,7 +68,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS)
           mv.addObject("location", userSuppliedPlace)
           mv.addObject("radius", radius)
-          mv.addObject(MAIN_CONTENT, contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUser)).asJava)
+          mv.addObject(MAIN_CONTENT, newsitemsNear.asJava)
 
           if (relatedTagLinks.nonEmpty) {
             log.info("Found geo related tags: " + relatedTagLinks)
@@ -83,17 +86,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
       } else {
         for {
+          // TODO combine queries?
+          totalGeotaggedCount <- contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUser))
           geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUser))
         } yield {
-
-          val totalGeotaggedCount = contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUser))
           if (startIndex > totalGeotaggedCount) {
             None
           }
           populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS)
 
           mv.addObject("heading", "Geotagged newsitems")
-          mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUser)), TenSeconds).asJava)
+          mv.addObject(MAIN_CONTENT, geocodedNewsitems.asJava)
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
           Some(mv)
         }

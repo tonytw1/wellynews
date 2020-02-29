@@ -57,7 +57,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
   @Test
   def geotaggedNewsitemsPageShouldHavePaginationInformation {
     request.setPathInfo("/geotagged")
-    when(contentRetrievalService.getGeocodedNewitemsCount(loggedInUser)).thenReturn(TOTAL_GEOTAGGED_COUNT)
+    when(contentRetrievalService.getGeocodedNewitemsCount(loggedInUser)).thenReturn(Future.successful(TOTAL_GEOTAGGED_COUNT))
     when(contentRetrievalService.getGeocodedNewsitems(0, 30, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -68,7 +68,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
 
   @Test
   def locationSearchesShouldHaveNearbyNewsitemsAsTheMainContent {
-    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30, loggedInUser)).thenReturn(newsitemsNearPetoneStationFirstPage)
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 0, 30, loggedInUser)).
+      thenReturn(Future.successful(newsitemsNearPetoneStationFirstPage))
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     request.setPathInfo("/geotagged")
@@ -81,7 +82,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
 
   @Test
   def locationSearchRadiusShouldBeTweakableFromTheRequestParameters {
-    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 0, 30, loggedInUser)).thenReturn(newsitemsNearPetoneStationFirstPage)
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 3.0, 0, 30, loggedInUser)).
+      thenReturn(Future.successful(newsitemsNearPetoneStationFirstPage))
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     request.setPathInfo("/geotagged")
@@ -96,7 +98,8 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
   @Test
   def locationSearchesShouldHavePagination {
     request.setPathInfo("/geotagged")
-    when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0, loggedInUser)).thenReturn(LOCATION_RESULTS_COUNT)
+    when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0, loggedInUser)).
+      thenReturn(Future.successful(LOCATION_RESULTS_COUNT))
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     when(relatedTagsService.getRelatedPublishersForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
@@ -110,8 +113,10 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
   @Test
   def locationSearchesShouldHaveCorrectContentOnSecondPaginationPage {
     request.setPathInfo("/geotagged")
-    when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0, loggedInUser)).thenReturn(LOCATION_RESULTS_COUNT)
-    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30, loggedInUser)).thenReturn(newsitemsNearPetoneStationSecondPage)
+    when(contentRetrievalService.getNewsitemsNearCount(new LatLong(1.1, 2.2), 1.0, loggedInUser)).
+      thenReturn(Future.successful(LOCATION_RESULTS_COUNT))
+    when(contentRetrievalService.getNewsitemsNear(new LatLong(1.1, 2.2), 1.0, 30, 30, loggedInUser)).
+      thenReturn(Future.successful(newsitemsNearPetoneStationSecondPage))
     request.setAttribute(LocationParameterFilter.LOCATION, validLocation)
     request.setAttribute("page", 2)
     when(relatedTagsService.getRelatedTagsForLocation(any(), any(), any())).thenReturn(Future.successful(Seq()))

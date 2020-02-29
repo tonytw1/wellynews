@@ -68,17 +68,17 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchIndexer.getResources(geocodedNewsitems, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getGeocodedNewitemsCount(loggedInUser: Option[User]): Long = {
-    Await.result(elasticSearchIndexer.getResources(geocodedNewsitems, loggedInUser = loggedInUser).map(_._2), TenSeconds)
+  def getGeocodedNewitemsCount(loggedInUser: Option[User]): Future[Long] = {
+    elasticSearchIndexer.getResources(geocodedNewsitems, loggedInUser = loggedInUser).map(_._2)
   }
 
-  def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Seq[FrontendResource] = {
+  def getNewsitemsNear(latLong: LatLong, radius: Double, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val withPagination = nearbyNewsitems(latLong, radius).copy(startIndex = startIndex, maxItems = maxNewsitems)
-    Await.result(elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    elasticSearchIndexer.getResources(withPagination, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getNewsitemsNearCount(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Long = {
-    Await.result(elasticSearchIndexer.getResources(nearbyNewsitems(latLong, radius), loggedInUser = loggedInUser).map(i => i._2), TenSeconds)
+  def getNewsitemsNearCount(latLong: LatLong, radius: Double, loggedInUser: Option[User]): Future[Long] = {
+    elasticSearchIndexer.getResources(nearbyNewsitems(latLong, radius), loggedInUser = loggedInUser).map(i => i._2)
   }
 
   def getGeotaggedNewsitemsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
