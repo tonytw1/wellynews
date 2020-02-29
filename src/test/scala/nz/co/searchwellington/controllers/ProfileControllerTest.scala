@@ -60,8 +60,8 @@ class ProfileControllerTest {
   def usersPostsAndTaggingHistoryShouldBeFetchedFromTheContentRetrievalService {
     request.setPathInfo("/profiles/" + VALID_PROFILE_NAME)
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
-    when(contentRetrievalService.getOwnedBy(existingUser, loggedInUser)).thenReturn(existingUsersSubmittedItems)
-    when(contentRetrievalService.getTaggedBy(existingUser, loggedInUser)).thenReturn(existingUsersTaggedItems)
+    when(contentRetrievalService.getOwnedBy(existingUser, loggedInUser)).thenReturn(Future.successful(existingUsersSubmittedItems))
+    when(contentRetrievalService.getTaggedBy(existingUser, loggedInUser)).thenReturn(Future.successful(existingUsersTaggedItems))
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 

@@ -113,24 +113,24 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = maxItems * (page - 1)), loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
   }
 
-  def getOwnedBy(user: User, loggedInUser: Option[User]): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(
+  def getOwnedBy(user: User, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+    elasticSearchIndexer.getResources(
       ResourceQuery(
         owner = Some(user._id),
         maxItems = MAX_NEWSITEMS_TO_SHOW
       ),
       loggedInUser = loggedInUser
-    ).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    ).flatMap(i => fetchByIds(i._1))
   }
 
-  def getTaggedBy(user: User, loggedInUser: Option[User]): Seq[FrontendResource] = {
-    Await.result(elasticSearchIndexer.getResources(
+  def getTaggedBy(user: User, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+    elasticSearchIndexer.getResources(
       ResourceQuery(
         taggingUser = Some(user._id),
         maxItems = MAX_NEWSITEMS_TO_SHOW
       ),
       loggedInUser = loggedInUser
-    ).flatMap(i => fetchByIds(i._1)), TenSeconds)
+    ).flatMap(i => fetchByIds(i._1))
   }
 
   def getKeywordSearchFacets(keywords: String): Seq[TagContentCount] = {

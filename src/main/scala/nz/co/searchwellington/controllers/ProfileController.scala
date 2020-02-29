@@ -43,18 +43,27 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
     }
 
     userByPath(request.getPathInfo).map { user =>
-      var mv = new ModelAndView("viewProfile")
-      val loggedInUser = loggedInUserFilter.getLoggedInUser
-      if (loggedInUser != null && loggedInUser.getId == user.getId) {
-        mv = new ModelAndView("profile")
-      }
+      val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser))
+      val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser))
+      Await.result(for {
+        ownedBy <- eventualOwnedBy
+        taggedBy <- eventualTaggedBy
+      } yield {
 
-      import scala.collection.JavaConverters._
-      mv.addObject("heading", "User profile").
-        addObject("profileuser", user).
-        addObject("submitted", contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava).
-        addObject("tagged", contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser)).asJava)
-      withCommonLocal(mv)
+        var mv = new ModelAndView("viewProfile")
+        val loggedInUser = loggedInUserFilter.getLoggedInUser
+        if (loggedInUser != null && loggedInUser.getId == user.getId) {
+          mv = new ModelAndView("profile")
+        }
+
+        import scala.collection.JavaConverters._
+        mv.addObject("heading", "User profile").
+          addObject("profileuser", user).
+          addObject("submitted", ownedBy.asJava).
+          addObject("tagged", taggedBy.asJava)
+        withCommonLocal(mv)
+
+      }, TenSeconds)
 
     }.getOrElse {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
