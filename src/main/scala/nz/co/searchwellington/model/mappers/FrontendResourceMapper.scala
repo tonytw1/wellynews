@@ -9,8 +9,7 @@ import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
-import scala.concurrent.{Await, ExecutionContext}
-import scala.concurrent.duration.{Duration, SECONDS}
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 @Component class FrontendResourceMapper @Autowired()(taggingReturnsOfficerService: TaggingReturnsOfficerService, urlWordsGenerator: UrlWordsGenerator,
                                                      mongoRepository: MongoRepository) extends ReasonableWaits {
@@ -37,6 +36,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
           Await.result(mongoRepository.getUserByObjectId(uid), TenSeconds)
         }
 
+        val tags = Await.result(frontendTagsFor(n), TenSeconds)
+
         FrontendNewsitem(
           id = n.id,
           `type` = n.`type`,
@@ -51,7 +52,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           image = null, // TODO
           urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
           publisher = publisher.map(_.asInstanceOf[Website]),
-          tags = frontendTagsFor(n),
+          tags = tags,
           handTags = handTags,
           httpStatus = n.http_status
         )
@@ -63,6 +64,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
 
         val frontendPublisher = publisher.map(p => createFrontendResourceFrom(p).asInstanceOf[FrontendWebsite])
 
+        val tags = Await.result(frontendTagsFor(f), TenSeconds)
+
         FrontendFeed(
           id = f.id,
           `type` = f.`type`,
@@ -73,7 +76,7 @@ import scala.concurrent.duration.{Duration, SECONDS}
           description = f.description.orNull,
           place = place,
           latestItemDate = f.getLatestItemDate,
-          tags = frontendTagsFor(f),
+          tags = tags,
           lastRead = f.last_read,
           acceptancePolicy = f.acceptance,
           publisher = frontendPublisher,
@@ -81,6 +84,8 @@ import scala.concurrent.duration.{Duration, SECONDS}
         )
 
       case l: Watchlist =>
+        val tags = Await.result(frontendTagsFor(l), TenSeconds)
+
         FrontendWatchlist(
           id = l.id,
           `type` = l.`type`,
@@ -89,12 +94,12 @@ import scala.concurrent.duration.{Duration, SECONDS}
           date = l.date.orNull,
           description = l.description.orNull,
           place = place,
-          tags = frontendTagsFor(l),
+          tags = tags,
           httpStatus = l.http_status
         )
 
       case w: Website =>
-        mapFrontendWebsite(w)
+        Await.result(mapFrontendWebsite(w), TenSeconds)
 
       case _ =>
         throw new RuntimeException("Unknown type")
@@ -136,22 +141,27 @@ import scala.concurrent.duration.{Duration, SECONDS}
     */
   // }
 
-  def mapFrontendWebsite(website: Website): FrontendWebsite = {
-    FrontendWebsite(
-      id = website.id,
-      name = website.title.orNull,
-      url = website.page.orNull,
-      urlWords = website.url_words.orNull,
-      description = website.description.getOrElse(""),
-      place = website.geocode,
-      tags = frontendTagsFor(website),
-      httpStatus = website.http_status,
-      date = website.date.orNull
-    )
+  def mapFrontendWebsite(website: Website)(implicit ec: ExecutionContext): Future[FrontendWebsite] = {
+    val eventualTags = frontendTagsFor(website)
+    for {
+      tags <- eventualTags
+    } yield {
+      FrontendWebsite(
+        id = website.id,
+        name = website.title.orNull,
+        url = website.page.orNull,
+        urlWords = website.url_words.orNull,
+        description = website.description.getOrElse(""),
+        place = website.geocode,
+        tags = tags,
+        httpStatus = website.http_status,
+        date = website.date.orNull
+      )
+    }
   }
 
-  private def frontendTagsFor(resource: Resource): Seq[Tag] = {
-    Await.result(taggingReturnsOfficerService.getHandTagsForResource(resource), TenSeconds)
+  private def frontendTagsFor(resource: Resource): Future[Seq[Tag]] = {
+    taggingReturnsOfficerService.getHandTagsForResource(resource)
   }
 
 }
