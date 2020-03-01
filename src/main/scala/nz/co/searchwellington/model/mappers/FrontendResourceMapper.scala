@@ -21,19 +21,27 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
     contentItem match {
       case n: Newsitem =>
+        val eventualFeed = n.feed.map { fid =>
+          mongoRepository.getResourceByObjectId(fid).flatMap { fo =>
+            fo.map { f =>
+              createFrontendResourceFrom(f).map { r =>
+                Some(r.asInstanceOf[FrontendFeed])
+              }
+            }.getOrElse{
+              Future.successful(None)
+            }
+          }
+        }.getOrElse{
+          Future.successful(None)
+        }
+
         for {
           place <- eventualPlace
           tags <- frontendTagsFor(n)
+          feed <- eventualFeed
         } yield {
-
           val publisher = n.publisher.flatMap { pid =>
             Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
-          }
-
-          val feed: Option[FrontendFeed] = n.feed.flatMap { fid =>
-            Await.result(mongoRepository.getResourceByObjectId(fid), TenSeconds).map { f =>
-              createFrontendResourceFrom(f).asInstanceOf[FrontendFeed]
-            }
           }
 
           val handTags = Await.result(taggingReturnsOfficerService.getHandTagsForResource(contentItem), TenSeconds)
@@ -71,7 +79,9 @@ import scala.concurrent.{Await, ExecutionContext, Future}
             Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
           }
 
-          val frontendPublisher = publisher.map(p => createFrontendResourceFrom(p).asInstanceOf[FrontendWebsite])
+          val frontendPublisher = publisher.map { p =>
+            Await.result(createFrontendResourceFrom(p), TenSeconds).asInstanceOf[FrontendWebsite]
+          }
 
           FrontendFeed(
             id = f.id,
