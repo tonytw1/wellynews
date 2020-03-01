@@ -27,11 +27,23 @@ import scala.concurrent.{Await, ExecutionContext, Future}
               createFrontendResourceFrom(f).map { r =>
                 Some(r.asInstanceOf[FrontendFeed])
               }
-            }.getOrElse{
+            }.getOrElse {
               Future.successful(None)
             }
           }
-        }.getOrElse{
+        }.getOrElse {
+          Future.successful(None)
+        }
+
+        val eventualPublisher = n.publisher.map { pid =>
+          mongoRepository.getResourceByObjectId(pid)
+        }.getOrElse {
+          Future.successful(None)
+        }
+
+        val eventualAcceptedByUser = n.acceptedBy.map { uid =>
+          mongoRepository.getUserByObjectId(uid)
+        }.getOrElse {
           Future.successful(None)
         }
 
@@ -39,16 +51,11 @@ import scala.concurrent.{Await, ExecutionContext, Future}
           place <- eventualPlace
           tags <- frontendTagsFor(n)
           feed <- eventualFeed
+          handTags <- taggingReturnsOfficerService.getHandTagsForResource(contentItem)
+          publisher <- eventualPublisher
+          acceptedByUser <- eventualAcceptedByUser
+
         } yield {
-          val publisher = n.publisher.flatMap { pid =>
-            Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
-          }
-
-          val handTags = Await.result(taggingReturnsOfficerService.getHandTagsForResource(contentItem), TenSeconds)
-          val acceptedByUser = n.acceptedBy.flatMap { uid =>
-            Await.result(mongoRepository.getUserByObjectId(uid), TenSeconds)
-          }
-
           FrontendNewsitem(
             id = n.id,
             `type` = n.`type`,
