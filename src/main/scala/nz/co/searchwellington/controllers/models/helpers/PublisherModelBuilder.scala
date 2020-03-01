@@ -43,15 +43,18 @@ import scala.concurrent.{Await, Future}
 
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, loggedInUser)
       val eventualPublisherFeeds = contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)
+      val eventualFrontendWebsite = frontendResourceMapper.mapFrontendWebsite(publisher)
+
       for {
         publisherNewsitems <- eventualPublisherNewsitems
         publisherFeeds <- eventualPublisherFeeds
+        frontendWebsite <- eventualFrontendWebsite
 
       } yield {
         val mv = new ModelAndView().addObject("heading", publisher.title.getOrElse("")).
           addObject("description", publisher.title.getOrElse("") + " newsitems").
-          addObject("publisher", frontendResourceMapper.mapFrontendWebsite(publisher)).
-          addObject("location", frontendResourceMapper.mapFrontendWebsite(publisher).getPlace)
+          addObject("publisher", frontendWebsite).
+          addObject("location", frontendWebsite.getPlace)
 
         publisher.title.map(t => mv.addObject("link", urlBuilder.getPublisherUrl(t)))
 
