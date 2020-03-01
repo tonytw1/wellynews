@@ -17,95 +17,104 @@ import scala.concurrent.{Await, ExecutionContext, Future}
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
 
   def createFrontendResourceFrom(contentItem: Resource)(implicit ec: ExecutionContext): Future[FrontendResource] = {
-    val place = Await.result(taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem), TenSeconds)
+    val eventualPlace = taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem)
 
-    val x: FrontendResource = contentItem match {
+    contentItem match {
       case n: Newsitem =>
-        val publisher = n.publisher.flatMap { pid =>
-          Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
-        }
+        for {
+          place <- eventualPlace
+          tags <- frontendTagsFor(n)
+        } yield {
 
-        val feed: Option[FrontendFeed] = n.feed.flatMap { fid =>
-          Await.result(mongoRepository.getResourceByObjectId(fid), TenSeconds).map { f =>
-            createFrontendResourceFrom(f).asInstanceOf[FrontendFeed]
+          val publisher = n.publisher.flatMap { pid =>
+            Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
           }
+
+          val feed: Option[FrontendFeed] = n.feed.flatMap { fid =>
+            Await.result(mongoRepository.getResourceByObjectId(fid), TenSeconds).map { f =>
+              createFrontendResourceFrom(f).asInstanceOf[FrontendFeed]
+            }
+          }
+
+          val handTags = Await.result(taggingReturnsOfficerService.getHandTagsForResource(contentItem), TenSeconds)
+          val acceptedByUser = n.acceptedBy.flatMap { uid =>
+            Await.result(mongoRepository.getUserByObjectId(uid), TenSeconds)
+          }
+
+          FrontendNewsitem(
+            id = n.id,
+            `type` = n.`type`,
+            name = n.title.getOrElse(""),
+            url = n.page.orNull, // TODO push to the getters
+            date = n.date.orNull,
+            description = n.description.orNull,
+            place = place,
+            acceptedFrom = feed,
+            acceptedBy = acceptedByUser,
+            accepted = n.accepted.orNull,
+            image = null, // TODO
+            urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
+            publisher = publisher.map(_.asInstanceOf[Website]),
+            tags = tags,
+            handTags = handTags,
+            httpStatus = n.http_status
+          )
         }
-
-        val handTags = Await.result(taggingReturnsOfficerService.getHandTagsForResource(contentItem), TenSeconds)
-        val acceptedByUser = n.acceptedBy.flatMap { uid =>
-          Await.result(mongoRepository.getUserByObjectId(uid), TenSeconds)
-        }
-
-        val tags = Await.result(frontendTagsFor(n), TenSeconds)
-
-        FrontendNewsitem(
-          id = n.id,
-          `type` = n.`type`,
-          name = n.title.getOrElse(""),
-          url = n.page.orNull, // TODO push to the getters
-          date = n.date.orNull,
-          description = n.description.orNull,
-          place = place,
-          acceptedFrom = feed,
-          acceptedBy = acceptedByUser,
-          accepted = n.accepted.orNull,
-          image = null, // TODO
-          urlWords = urlWordsGenerator.makeUrlForNewsitem(n).getOrElse(""),
-          publisher = publisher.map(_.asInstanceOf[Website]),
-          tags = tags,
-          handTags = handTags,
-          httpStatus = n.http_status
-        )
 
       case f: Feed =>
-        val publisher = f.publisher.flatMap { pid =>
-          Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
+        for {
+          place <- eventualPlace
+          tags <- frontendTagsFor(f)
+        } yield {
+
+          val publisher = f.publisher.flatMap { pid =>
+            Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
+          }
+
+          val frontendPublisher = publisher.map(p => createFrontendResourceFrom(p).asInstanceOf[FrontendWebsite])
+
+          FrontendFeed(
+            id = f.id,
+            `type` = f.`type`,
+            name = f.title.getOrElse(""),
+            url = f.page.orNull,
+            urlWords = f.url_words.orNull,
+            date = f.date.orNull,
+            description = f.description.orNull,
+            place = place,
+            latestItemDate = f.getLatestItemDate,
+            tags = tags,
+            lastRead = f.last_read,
+            acceptancePolicy = f.acceptance,
+            publisher = frontendPublisher,
+            httpStatus = f.http_status
+          )
         }
 
-        val frontendPublisher = publisher.map(p => createFrontendResourceFrom(p).asInstanceOf[FrontendWebsite])
-
-        val tags = Await.result(frontendTagsFor(f), TenSeconds)
-
-        FrontendFeed(
-          id = f.id,
-          `type` = f.`type`,
-          name = f.title.getOrElse(""),
-          url = f.page.orNull,
-          urlWords = f.url_words.orNull,
-          date = f.date.orNull,
-          description = f.description.orNull,
-          place = place,
-          latestItemDate = f.getLatestItemDate,
-          tags = tags,
-          lastRead = f.last_read,
-          acceptancePolicy = f.acceptance,
-          publisher = frontendPublisher,
-          httpStatus = f.http_status
-        )
-
       case l: Watchlist =>
-        val tags = Await.result(frontendTagsFor(l), TenSeconds)
-
-        FrontendWatchlist(
-          id = l.id,
-          `type` = l.`type`,
-          name = l.title.getOrElse(""),
-          url = l.page.orNull,
-          date = l.date.orNull,
-          description = l.description.orNull,
-          place = place,
-          tags = tags,
-          httpStatus = l.http_status
-        )
+        for {
+          place <- eventualPlace
+          tags <- frontendTagsFor(l)
+        } yield {
+          FrontendWatchlist(
+            id = l.id,
+            `type` = l.`type`,
+            name = l.title.getOrElse(""),
+            url = l.page.orNull,
+            date = l.date.orNull,
+            description = l.description.orNull,
+            place = place,
+            tags = tags,
+            httpStatus = l.http_status
+          )
+        }
 
       case w: Website =>
-        Await.result(mapFrontendWebsite(w), TenSeconds)
+        mapFrontendWebsite(w)
 
       case _ =>
         throw new RuntimeException("Unknown type")
     }
-
-    Future.successful(x)
   }
 
   /*
