@@ -102,7 +102,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
       val eventualMaybeResource = mongoRepository.getResourceByObjectId(bid)
         eventualMaybeResource.map { ro =>
           ro.map { r =>
-            (frontendResourceMapper.createFrontendResourceFrom(r), t._2)
+            val eventualFrontennResource = frontendResourceMapper.createFrontendResourceFrom(r)
+            (Await.result(eventualFrontennResource, TenSeconds), t._2)
           }
         }
       }).map(_.flatten)
@@ -257,7 +258,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }.map(_.flatten)
 
-    eventualResources.map(rs => rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
+    eventualResources.flatMap { rs =>
+      Future.sequence(rs.map(r => frontendResourceMapper.createFrontendResourceFrom(r)))
+    }
   }
 
 }

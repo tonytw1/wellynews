@@ -90,8 +90,10 @@ import scala.concurrent.{Await, Future}
             Future.successful(None)
           }
         } yield {
+          val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed)
+          val frontendFeed = Await.result(eventualFrontendFeed, TenSeconds)
           val mv = new ModelAndView().
-            addObject("feed", frontendResourceMapper.createFrontendResourceFrom(feed)).
+            addObject("feed", frontendFeed).
             addObject("subscription", maybeSubscription.orNull)
 
           commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page.orNull)

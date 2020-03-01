@@ -2,6 +2,7 @@ package nz.co.searchwellington.model.mappers
 
 import java.util.UUID
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.{Newsitem, Tag, UrlWordsGenerator}
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.tagging.TaggingReturnsOfficerService
@@ -10,9 +11,9 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
-class FrontendResourceMapperTest {
+class FrontendResourceMapperTest extends ReasonableWaits {
 
   private val taggingReturnsOfficerService = mock(classOf[TaggingReturnsOfficerService])
   private val urlWordsGenerator = mock(classOf[UrlWordsGenerator])
@@ -27,7 +28,7 @@ class FrontendResourceMapperTest {
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
 
-    val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
+    val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertEquals(newsitem.id, frontendNewsitem.id)
     assertEquals("some-url-words", frontendNewsitem.getUrlWords)
@@ -44,7 +45,7 @@ class FrontendResourceMapperTest {
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq(tag)))
     when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
 
-    val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
+    val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertFalse(frontendNewsitem.handTags.isEmpty)
     assertEquals(tag.id, frontendNewsitem.handTags.head.id)
@@ -60,7 +61,7 @@ class FrontendResourceMapperTest {
     when(taggingReturnsOfficerService.getHandTagsForResource(newsitem)).thenReturn(Future.successful(Seq.empty))
     when(taggingReturnsOfficerService.getIndexGeocodeForResource(newsitem)).thenReturn(Future.successful(None))
 
-    val frontendNewsitem = mapper.createFrontendResourceFrom(newsitem)
+    val frontendNewsitem = Await.result(mapper.createFrontendResourceFrom(newsitem), TenSeconds)
 
     assertTrue(frontendNewsitem.tags.isEmpty)
   }

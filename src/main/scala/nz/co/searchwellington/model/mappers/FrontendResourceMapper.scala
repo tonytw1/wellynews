@@ -16,10 +16,10 @@ import scala.concurrent.{Await, ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FrontendResourceMapper])
 
-  def createFrontendResourceFrom(contentItem: Resource)(implicit ec: ExecutionContext): FrontendResource = {
+  def createFrontendResourceFrom(contentItem: Resource)(implicit ec: ExecutionContext): Future[FrontendResource] = {
     val place = Await.result(taggingReturnsOfficerService.getIndexGeocodeForResource(contentItem), TenSeconds)
 
-    contentItem match {
+    val x: FrontendResource = contentItem match {
       case n: Newsitem =>
         val publisher = n.publisher.flatMap { pid =>
           Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
@@ -104,6 +104,8 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       case _ =>
         throw new RuntimeException("Unknown type")
     }
+
+    Future.successful(x)
   }
 
   /*
