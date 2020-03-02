@@ -77,19 +77,24 @@ import scala.concurrent.{Await, ExecutionContext, Future}
         }
 
       case f: Feed =>
+        val eventualFrontendPublisher = f.publisher.map { pid =>
+          mongoRepository.getResourceByObjectId(pid).flatMap { po =>
+            po.map { p =>
+              createFrontendResourceFrom(p).map(i => Some(i.asInstanceOf[FrontendWebsite]))
+            }.getOrElse {
+              Future.successful(None)
+            }
+          }
+        }.getOrElse {
+          Future.successful(None)
+        }
+
         for {
           place <- eventualPlace
           tags <- frontendTagsFor(f)
+          frontendPublisher <- eventualFrontendPublisher
+
         } yield {
-
-          val publisher = f.publisher.flatMap { pid =>
-            Await.result(mongoRepository.getResourceByObjectId(pid), TenSeconds)
-          }
-
-          val frontendPublisher = publisher.map { p =>
-            Await.result(createFrontendResourceFrom(p), TenSeconds).asInstanceOf[FrontendWebsite]
-          }
-
           FrontendFeed(
             id = f.id,
             `type` = f.`type`,
