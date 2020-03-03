@@ -2,7 +2,6 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
@@ -41,7 +40,8 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+    Future.successful(mv)
   }
 
   def getViewName(mv: ModelAndView): String = "publishers"

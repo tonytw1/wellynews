@@ -37,6 +37,8 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateExtraModelContent(request, validModelAndView, null)).thenReturn(Future.successful(validModelAndView))
+
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getFeaturedTags).thenReturn(Future.successful(Seq.empty))
 

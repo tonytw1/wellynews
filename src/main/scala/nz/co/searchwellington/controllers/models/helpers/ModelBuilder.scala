@@ -12,7 +12,7 @@ trait ModelBuilder {
 
   def isValid(request: HttpServletRequest): Boolean
   def populateContentModel(request: HttpServletRequest, loggedInUser: User = null): Future[Option[ModelAndView]]
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User)
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView]
   def getViewName(mv: ModelAndView): String
 
 }

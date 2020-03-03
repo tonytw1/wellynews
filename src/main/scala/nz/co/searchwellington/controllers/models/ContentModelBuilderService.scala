@@ -20,28 +20,31 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   def populateContentModel(request: HttpServletRequest, loggedInUser: User = null): Future[Option[ModelAndView]] = {
     modelBuilders.find(mb => mb.isValid(request)).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
-      mb.populateContentModel(request, loggedInUser).map { eventualMaybeModelAndView =>
+      mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
           val path = request.getPathInfo
-
-          if (path.endsWith("/rss")) {
+          val eventualWithViewAndExtraContent = if (path.endsWith("/rss")) {
             logger.debug("Selecting rss view for path: " + path)
             mv.setView(viewFactory.getRssView(mv.getModel.get("heading").asInstanceOf[String], mv.getModel.get("link").asInstanceOf[String], mv.getModel.get("description").asInstanceOf[String]))
             mv.addObject("data", mv.getModel.get("main_content"))
-            mv
+            Future.successful(Some(mv))
 
           } else if (path.endsWith("/json")) {
             logger.debug("Selecting json view for path: " + path)
             val jsonView = viewFactory.getJsonView
             jsonView.setDataField("main_content") // TODO push to a parameter of getJsonView
             mv.setView(jsonView)
-            mv
+            Future.successful(Some(mv))
 
           } else {
-            mb.populateExtraModelContent(request, mv, loggedInUser)
-            mv.setViewName(mb.getViewName(mv))
-            withCommonLocal(mv)
+            mb.populateExtraModelContent(request, mv, loggedInUser).map { mv =>
+              mv.setViewName(mb.getViewName(mv))
+              Some(withCommonLocal(mv))
+            }
           }
+          eventualWithViewAndExtraContent
+        }.getOrElse {
+          Future.successful(None)
         }
       }
 

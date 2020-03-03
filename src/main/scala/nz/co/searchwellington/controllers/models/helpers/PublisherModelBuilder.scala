@@ -84,7 +84,7 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User): Future[ModelAndView] = {
     val loggedInUser = Option(l)
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
@@ -93,10 +93,9 @@ import scala.concurrent.{Await, Future}
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
 
-    val eventuallyPopulated = for {
+    for {
       publisherWatchlist <- eventualPublisherWatchlist
       latestNewsitems <- eventualLatestNewsitems
-
     } yield {
       mv.addObject("watchlist", publisherWatchlist.asJava)
       val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
@@ -104,10 +103,7 @@ import scala.concurrent.{Await, Future}
         mv.addObject("related_tags", relatedTagLinks.asJava)
       }
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
-      mv
     }
-
-    Await.result(eventuallyPopulated, TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = "publisher"

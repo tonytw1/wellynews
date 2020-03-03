@@ -46,12 +46,12 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User = null) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User = null): Future[ModelAndView] = {
     val eventualSuggestedFeednewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
     val eventualCurrentFeeds = contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUser))
 
-    val eventuallyPopulated = for {
+    for {
       suggestedFeednewsitems <- eventualSuggestedFeednewsitems
       discoveredFeeds <- eventualDiscoveredFeeds
       currentFeeds <- eventualCurrentFeeds
@@ -60,11 +60,8 @@ import scala.concurrent.{Await, Future}
       import scala.collection.JavaConverters._
       mv.addObject("suggestions", suggestedFeednewsitems.asJava)
       mv.addObject("discovered_feeds", discoveredFeeds.asJava)
-      commonAttributesModelBuilder.populateSecondaryFeeds(mv, currentFeeds)
-      mv
+      commonAttributesModelBuilder.withSecondaryFeeds(mv, currentFeeds)
     }
-
-    Await.result(eventuallyPopulated, ThirtySeconds)
   }
 
   def getViewName(mv: ModelAndView): String = "feeds"

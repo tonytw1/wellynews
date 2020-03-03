@@ -59,7 +59,7 @@ class FeedsModelBuilderTest extends ReasonableWaits {
     when(contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser)).thenReturn(Future.successful(Seq.empty))
     val mv = new ModelAndView()
 
-    modelBuilder.populateExtraModelContent(request, mv)
+    Await.result(modelBuilder.populateExtraModelContent(request, mv), TenSeconds)
 
     import scala.collection.JavaConverters._
     assertEquals(suggestedFeeditems.asJava, mv.getModel.get("suggestions"))

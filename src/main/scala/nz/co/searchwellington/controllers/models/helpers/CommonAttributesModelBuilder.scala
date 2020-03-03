@@ -15,13 +15,14 @@ with ReasonableWaits {
     mv.addObject("rss_url", url)
   }
 
-  def populateSecondaryFeeds(mv: ModelAndView, feeds: Seq[FrontendResource]) = {
+  def withSecondaryFeeds(mv: ModelAndView, feeds: Seq[FrontendResource]): ModelAndView = {
     mv.addObject("righthand_heading", "Local Feeds")
     mv.addObject("righthand_description", "Recently updated feeds from local organisations.")
     if (feeds.nonEmpty) {
       import scala.collection.JavaConverters._
       mv.addObject("righthand_content", feeds.asJava)
     }
+    mv
   }
 
 }

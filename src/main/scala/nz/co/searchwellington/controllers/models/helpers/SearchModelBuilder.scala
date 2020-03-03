@@ -74,9 +74,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
-    import scala.collection.JavaConverters._
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser)), TenSeconds).asJava)
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+    for {
+         latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser))
+    } yield {
+      import scala.collection.JavaConverters._
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+    }
   }
 
   def getViewName(mv: ModelAndView): String = "search"

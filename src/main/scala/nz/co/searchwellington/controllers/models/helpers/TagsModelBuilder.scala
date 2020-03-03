@@ -34,7 +34,8 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+    Future.successful(mv)
   }
 
   def getViewName(mv: ModelAndView): String = "tags"

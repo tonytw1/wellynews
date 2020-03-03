@@ -99,7 +99,7 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User): Future[ModelAndView] = {
     val loggedInUser = Option(l)
 
     val tag = tagFromRequest(request)
@@ -112,7 +112,7 @@ import scala.concurrent.{Await, Future}
     val eventualTagFeeds = contentRetrievalService.getTaggedFeeds(tag, loggedInUser)
     val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
 
-    val eventuallyPopulated = for {
+    for {
       geotaggedNewsitems <- eventualGeotaggedNewsitems
       taggedWebsites <- eventualTaggedWebsites
       relatedTagLinks <- eventualRelatedTagLinks
@@ -143,8 +143,6 @@ import scala.concurrent.{Await, Future}
       mv.addObject(TAG_FEEDS, tagFeeds.asJava)
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
     }
-
-    Await.result(eventuallyPopulated, TenSeconds)
   }
 
   def getViewName(mv: ModelAndView): String = {

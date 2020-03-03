@@ -63,7 +63,7 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Unit = {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
     def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
       if (loggedInUser != null) {
         val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
@@ -81,7 +81,7 @@ import scala.concurrent.{Await, Future}
     val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts( Option(loggedInUser))
     val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW,  Option(loggedInUser))
 
-    val eventualPopulated = for {
+    for {
       websites <- eventualWebsites
       archiveMonths <- eventualArchiveMonths
       archiveStatistics <- eventualArchiveStatistics
@@ -92,9 +92,8 @@ import scala.concurrent.{Await, Future}
       populateGeocoded(mv, geocoded)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
       archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)
+      mv
     }
-
-    Await.result(eventualPopulated, TenSeconds)
   }
 
   private def populateGeocoded(mv: ModelAndView, geocoded: Seq[FrontendResource]) {

@@ -59,12 +59,13 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
     if (relatedTagLinks.nonEmpty) {
       mv.addObject("related_tags", relatedTagLinks)
     }
+    Future.successful(mv)
   }
 
   def getViewName(mv: ModelAndView): String = "publisherCombiner"

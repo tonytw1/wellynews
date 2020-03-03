@@ -70,15 +70,20 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
-    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-    if (tags.nonEmpty) {
-      val tag = tags.head
-      mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUser)))
-      import scala.collection.JavaConverters._
-      mv.addObject("latest_news", Await.result(contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUser)), TenSeconds).asJava)
-      val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = Option(loggedInUser))
-      mv.addObject("websites", taggedWebsites)
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+    for {
+      latestWebsites <- contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUser))
+    } yield {
+      val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+      if (tags.nonEmpty) {
+        val tag = tags.head
+        mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUser)))
+        import scala.collection.JavaConverters._
+        mv.addObject("latest_news", latestWebsites.asJava)
+        val taggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = Option(loggedInUser))
+        mv.addObject("websites", taggedWebsites)
+      }
+      mv
     }
   }
 

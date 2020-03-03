@@ -107,8 +107,12 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User) {
-    mv.addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser)), TenSeconds).asJava)
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+    for {
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser))
+    } yield {
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+    }
   }
 
   def getViewName(mv: ModelAndView): String = "geocoded"
