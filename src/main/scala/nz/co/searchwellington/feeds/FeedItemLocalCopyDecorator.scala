@@ -26,9 +26,11 @@ import scala.concurrent.Future
       val eventuallyIsSuppressed = feedNewsitem.page.map(suppressionDAO.isSupressed).getOrElse(Future.successful(false))
 
       eventuallyLocalCopy.flatMap { localCopy =>
-        eventuallyIsSuppressed.map { isSuppressed =>
-          FeedNewsitemForAcceptance(frontendResourceMapper.createFrontendResourceFrom(feedNewsitem).asInstanceOf[FrontendNewsitem],
-            localCopy, isSuppressed)
+        eventuallyIsSuppressed.flatMap { isSuppressed =>
+          frontendResourceMapper.createFrontendResourceFrom(feedNewsitem).map { resource =>
+            FeedNewsitemForAcceptance(resource.asInstanceOf[FrontendNewsitem],
+              localCopy, isSuppressed)
+          }
         }
       }
     }
