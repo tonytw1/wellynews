@@ -83,15 +83,15 @@ import scala.concurrent.{Await, Future}
       val feedOnRequest = Option(request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed])
 
       feedOnRequest.map { feed =>
+        val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed)
         for {
+          frontendFeed <- eventualFrontendFeed
           maybeSubscription <- feed.page.map { p =>
             whakaokoService.getWhakaokoSubscriptionByUrl(p)
           }.getOrElse {
             Future.successful(None)
           }
         } yield {
-          val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed)
-          val frontendFeed = Await.result(eventualFrontendFeed, TenSeconds)
           val mv = new ModelAndView().
             addObject("feed", frontendFeed).
             addObject("subscription", maybeSubscription.orNull)
