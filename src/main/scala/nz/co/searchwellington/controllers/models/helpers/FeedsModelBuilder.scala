@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class FeedsModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, suggestedFeeditemsService: SuggestedFeeditemsService,
                                                 urlBuilder: UrlBuilder,
@@ -31,13 +31,13 @@ import scala.concurrent.{Await, Future}
       for {
         feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUser))
       } yield {
-        val mv: ModelAndView = new ModelAndView
-        mv.addObject("heading", "Feeds")
-        mv.addObject("description", "Incoming feeds")
-        mv.addObject("link", urlBuilder.getFeedsUrl)
 
+        val mv = new ModelAndView().
+          addObject("heading", "Feeds").
+          addObject("description", "Incoming feeds").
+          addObject("link", urlBuilder.getFeedsUrl)
         import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, Await.result(contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUser)), TenSeconds).asJava)
+        mv.addObject(MAIN_CONTENT, feeds.asJava)
         Some(mv)
       }
 
