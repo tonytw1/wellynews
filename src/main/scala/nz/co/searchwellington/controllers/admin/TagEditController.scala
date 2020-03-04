@@ -53,7 +53,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mv.addObject("tag", tag)
     tagModifcationService.deleteTag(tag)
     urlStack.setUrlStack(request, "")
-    withCommonLocal(mv)
+    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   @RequestMapping(value = Array("/edit/tag/save"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -108,7 +108,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(mongoRepository.saveTag(editTag), TenSeconds)
 
     mv.addObject("tag", editTag)
-    withCommonLocal(mv)
+    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   private def populateAutotagHints(request: HttpServletRequest, editTag: Tag) {

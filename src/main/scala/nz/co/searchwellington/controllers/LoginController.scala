@@ -8,13 +8,15 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import scala.concurrent.Await
+
 @Controller class LoginController @Autowired()(urlStack: UrlStack, val contentRetrievalService: ContentRetrievalService) extends CommonModelObjectsService {
 
   @RequestMapping(Array("/signin")) def signin(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    withCommonLocal {
+    Await.result(withCommonLocal {
       new ModelAndView("signin").
         addObject("heading", "Sign in")
-    }
+    }, TenSeconds)
   }
 
   @RequestMapping(Array("/logout")) def logout(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {

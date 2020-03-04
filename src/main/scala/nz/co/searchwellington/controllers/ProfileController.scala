@@ -25,9 +25,17 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
 
   @RequestMapping(Array("/profiles"))
   def profiles(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    withCommonLocal(new ModelAndView("profiles").
-      addObject("heading", "Profiles").
-      addObject("profiles", Await.result(mongoRepository.getAllUsers, TenSeconds)))
+    val eventualUsers = mongoRepository.getAllUsers
+
+    Await.result((for {
+      users <- eventualUsers
+    } yield {
+      new ModelAndView("profiles").
+        addObject("heading", "Profiles").
+        addObject("profiles", users)
+    }).flatMap {
+      withCommonLocal
+    }, TenSeconds)
   }
 
   @RequestMapping(Array("/profiles/*"))
@@ -45,7 +53,8 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
     userByPath(request.getPathInfo).map { user =>
       val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser))
       val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser))
-      Await.result(for {
+
+      Await.result((for {
         ownedBy <- eventualOwnedBy
         taggedBy <- eventualTaggedBy
       } yield {
@@ -61,9 +70,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
           addObject("profileuser", user).
           addObject("submitted", ownedBy.asJava).
           addObject("tagged", taggedBy.asJava)
-        withCommonLocal(mv)
-
-      }, TenSeconds)
+      }).flatMap(withCommonLocal), TenSeconds)
 
     }.getOrElse {
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
@@ -74,9 +81,9 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
   @RequestMapping(Array("/profile/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val loggedInUser = loggedInUserFilter.getLoggedInUser
 
-    withCommonLocal(new ModelAndView("editProfile").
+    Await.result(withCommonLocal(new ModelAndView("editProfile").
       addObject("heading", "Editing your profile").
-      addObject("user", loggedInUser))
+      addObject("user", loggedInUser)), TenSeconds)
   }
 
   // TODO reinstate

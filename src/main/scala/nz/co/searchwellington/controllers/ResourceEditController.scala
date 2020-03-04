@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
@@ -70,7 +71,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
     }
 
-    withCommonLocal(mv)
+    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   @RequestMapping(Array("/edit/viewsnapshot")) def viewSnapshot(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -93,8 +94,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
         addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource)).
         addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource))).
         addObject("show_additional_tags", 1)
-      return withCommonLocal(mv)
 
+      Await.result(withCommonLocal(mv), TenSeconds)
     }
     new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
   }
@@ -198,7 +199,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
     }
 
-    withCommonLocal(mv)
+    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   @RequestMapping(value = Array("/save"), method = Array(RequestMethod.POST))
@@ -301,7 +302,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.warn("No edit resource could be setup.")
     }
 
-    withCommonLocal(mv)
+    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   private def createAndSetAnonUser(request: HttpServletRequest): User = {

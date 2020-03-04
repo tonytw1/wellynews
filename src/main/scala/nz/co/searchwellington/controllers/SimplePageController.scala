@@ -26,39 +26,47 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
-    withCommonLocal(new ModelAndView("about").
-      addObject("heading", "About").
-      addObject("latest_newsitems", Await.result(contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava))
+    Await.result((for {
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+    } yield {
+      new ModelAndView("about").
+        addObject("heading", "About").
+        addObject("latest_newsitems", latestNewsitems.asJava)
+    }).flatMap(withCommonLocal), TenSeconds)
   }
 
   @RequestMapping(Array("/archive"))
   def archive(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    import scala.collection.JavaConverters._
-    withCommonLocal(new ModelAndView("archiveIndex").
-      addObject("heading", "Archive").
-      addObject("archiveLinks", Await.result(contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser)), TenSeconds).asJava))
+    Await.result((for {
+      links <- contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
+    } yield {
+      import scala.collection.JavaConverters._
+      new ModelAndView("archiveIndex").
+        addObject("heading", "Archive").
+        addObject("archiveLinks", links.asJava)
+    }).flatMap(withCommonLocal), TenSeconds)
   }
 
   @RequestMapping(Array("/api"))
   def api(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    withCommonLocal(new ModelAndView("api").
+    Await.result(withCommonLocal(new ModelAndView("api").
       addObject("heading", "The Wellynews API").
       addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = Option(loggedInUserFilter.getLoggedInUser))).
       addObject("publishers", contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser))).
-      addObject("api_tags", contentRetrievalService.getTopLevelTags))
+      addObject("api_tags", contentRetrievalService.getTopLevelTags)), TenSeconds)
   }
 
   @RequestMapping(Array("/rssfeeds"))
   def rssfeeds(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
 
-    withCommonLocal(new ModelAndView("rssfeeds").
+    Await.result(withCommonLocal(new ModelAndView("rssfeeds").
       addObject("heading", "RSS feeds").
-      addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(Option(loggedInUserFilter.getLoggedInUser))))
+      addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(Option(loggedInUserFilter.getLoggedInUser)))), TenSeconds)
   }
 
   @RequestMapping(Array("/feeds/discovered"))
@@ -66,9 +74,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
     urlStack.setUrlStack(request)
 
     import scala.collection.JavaConverters._
-    withCommonLocal(new ModelAndView("discoveredFeeds").
+    Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").
       addObject("heading", "Discovered Feeds").
-      addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava))
+      addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava)), TenSeconds)
   }
 
 }

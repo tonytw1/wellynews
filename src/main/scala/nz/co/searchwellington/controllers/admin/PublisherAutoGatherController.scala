@@ -39,7 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       mv.addObject("resources_to_tag", resourcesToAutoTag)
     }
 
-    withCommonLocal(mv)
+    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   @RequestMapping(value = Array("/admin/gather/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -62,7 +62,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       mv.addObject("resources_to_tag", autotaggedNewsitems)
     }
 
-    withCommonLocal(mv)
+    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   private def getPossibleAutotagResources(publisher: Resource): Seq[Resource] = {

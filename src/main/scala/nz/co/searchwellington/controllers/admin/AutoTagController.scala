@@ -43,15 +43,15 @@ import scala.concurrent.ExecutionContext.Implicits.global
         null: ModelAndView
 
       } { tag =>
-        Await.result(for {
+        Await.result((for {
           suggestions <- getPossibleAutotagResources(loggedInUser, tag)
         } yield {
           import scala.collection.JavaConverters._
-          withCommonLocal(new ModelAndView("autoTagPrompt").
+          new ModelAndView("autoTagPrompt").
             addObject("heading", "Autotagging").
             addObject("tag", tag).
-            addObject("resources_to_tag", suggestions.asJava))
-        }, TenSeconds)
+            addObject("resources_to_tag", suggestions.asJava)
+        }).flatMap(withCommonLocal), TenSeconds)
       }
     }
   }
@@ -99,7 +99,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
           addObject("tag", tag).
           addObject("resources_to_tag", Await.result(eventuallyAutoTaggedResources, ThirtySeconds).flatten.asJava)
 
-        withCommonLocal(mv)
+        Await.result(withCommonLocal(mv), TenSeconds)
       }
     }
   }

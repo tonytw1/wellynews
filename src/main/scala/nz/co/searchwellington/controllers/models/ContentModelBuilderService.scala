@@ -8,8 +8,8 @@ import org.apache.log4j.Logger
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ContentModelBuilderService(viewFactory: ViewFactory,
                                  val contentRetrievalService: ContentRetrievalService,
@@ -37,9 +37,11 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             Future.successful(Some(mv))
 
           } else {
-            mb.populateExtraModelContent(request, mv, loggedInUser).map { mv =>
+            mb.populateExtraModelContent(request, mv, loggedInUser).flatMap { mv =>
               mv.setViewName(mb.getViewName(mv))
-              Some(withCommonLocal(mv))
+              withCommonLocal(mv).map { mv =>
+                Some(mv)
+              }
             }
           }
           eventualWithViewAndExtraContent
