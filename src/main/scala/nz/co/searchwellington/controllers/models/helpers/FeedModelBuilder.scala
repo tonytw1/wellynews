@@ -44,9 +44,8 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    def populateFeedItems(mv: ModelAndView, feed: Feed) {
-
-      val z: Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
+    def feedItemsFor(feed: Feed): Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = {
+      rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
         val x = feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
         }, {
@@ -61,22 +60,19 @@ import scala.concurrent.{Await, Future}
         })
         x
       }
+    }
 
-      val x = z.map { y =>
-        y.fold({
-          l =>
-            mv.addObject("feed_error", l)
-            mv
-
-        }, { result =>
-          import scala.collection.JavaConverters._
-          mv.addObject(MAIN_CONTENT, result.asJava)
-          populateGeotaggedFeedItems(mv, result.map(_.newsitem))
+    def populateFeedItems(mv: ModelAndView, feedItems: Either[String, Seq[FeedNewsitemForAcceptance]]): ModelAndView = {
+      feedItems.fold({
+        l =>
+          mv.addObject("feed_error", l)
           mv
-        })
-      }
-
-      Await.result(x, TenSeconds)
+      }, { result =>
+        import scala.collection.JavaConverters._
+        mv.addObject(MAIN_CONTENT, result.asJava)
+        populateGeotaggedFeedItems(mv, result.map(_.newsitem))
+        mv
+      })
     }
 
     if (isValid(request)) {
@@ -97,7 +93,8 @@ import scala.concurrent.{Await, Future}
             addObject("subscription", maybeSubscription.orNull)
 
           commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page.orNull)
-          populateFeedItems(mv, feed) // TODO inline
+          val feedItems = Await.result(feedItemsFor(feed), TenSeconds)
+          populateFeedItems(mv, feedItems) // TODO inline
           Some(mv)
         }
 
