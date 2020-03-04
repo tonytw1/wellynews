@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, contentRetrievalService: ContentRetrievalService,
                                                geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedNewsItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
@@ -46,7 +46,7 @@ import scala.concurrent.{Await, Future}
 
     def feedItemsFor(feed: Feed): Future[Either[String, Seq[FeedNewsitemForAcceptance]]] = {
       rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).flatMap { feedItemsForFeed =>
-        val x = feedItemsForFeed.fold({ l =>
+        feedItemsForFeed.fold({ l =>
           Future.successful(Left(l))
         }, {
           result =>
@@ -58,7 +58,6 @@ import scala.concurrent.{Await, Future}
               Right(i)
             }
         })
-        x
       }
     }
 
@@ -80,8 +79,10 @@ import scala.concurrent.{Await, Future}
 
       feedOnRequest.map { feed =>
         val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed)
+        val eventualFeedItems = feedItemsFor(feed)
         for {
           frontendFeed <- eventualFrontendFeed
+          feedItems <- eventualFeedItems
           maybeSubscription <- feed.page.map { p =>
             whakaokoService.getWhakaokoSubscriptionByUrl(p)
           }.getOrElse {
@@ -93,7 +94,6 @@ import scala.concurrent.{Await, Future}
             addObject("subscription", maybeSubscription.orNull)
 
           commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page.orNull)
-          val feedItems = Await.result(feedItemsFor(feed), TenSeconds)
           populateFeedItems(mv, feedItems) // TODO inline
           Some(mv)
         }
