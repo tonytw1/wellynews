@@ -31,7 +31,6 @@ import scala.concurrent.Future
       for {
         feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUser))
       } yield {
-
         val mv = new ModelAndView().
           addObject("heading", "Feeds").
           addObject("description", "Incoming feeds").
@@ -47,7 +46,7 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User = null): Future[ModelAndView] = {
-    val eventualSuggestedFeednewsitems = suggestedFeeditemsService.getSuggestionFeednewsitems(6)
+    val eventualSuggestedFeednewsitems = Future.successful(Seq.empty) // TODO suggestedFeeditemsService.getSuggestionFeednewsitems(6)
     val eventualDiscoveredFeeds = contentRetrievalService.getDiscoveredFeeds
     val eventualCurrentFeeds = contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUser))
 
