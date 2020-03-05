@@ -25,10 +25,12 @@ import scala.concurrent.Future
     if (isValid(request)) {
       for {
         publishers <- contentRetrievalService.getAllPublishers(Option(loggedInUser))
+        frontendPublishers <- Future.sequence {
+          publishers.
+            sortBy(_.title).
+            map(frontendResourceMapper.createFrontendResourceFrom)
+        }
       } yield {
-        val frontendPublishers = publishers.
-          sortBy(_.title).
-          map(frontendResourceMapper.createFrontendResourceFrom)
         import scala.collection.JavaConverters._
         val mv = new ModelAndView().
           addObject(MAIN_CONTENT, frontendPublishers.asJava).
