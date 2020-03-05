@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class PublisherModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder,
                                                     relatedTagsService: RelatedTagsService,
