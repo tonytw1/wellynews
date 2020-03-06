@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.collection.JavaConverters._
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class IndexModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder,
                                                 urlBuilder: UrlBuilder, archiveLinksService: ArchiveLinksService,
