@@ -1,27 +1,37 @@
 package nz.co.searchwellington.controllers.ajax
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.ReasonableWaits
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
+import scala.concurrent.{Await, Future}
+import scala.concurrent.ExecutionContext.Implicits.global
+
 // TODO should be able to dog food these end points by consuming the json put of the main publishers and tags models
-abstract class BaseAjaxController {
+abstract class BaseAjaxController extends ReasonableWaits {
 
   private val TERM = "term"
 
   def viewFactory: ViewFactory
 
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val suggestions = Option(request.getParameter(TERM)).map { q =>
+    val eventualSuggestions = Option(request.getParameter(TERM)).map { q =>
       getSuggestions(q)
-    }.getOrElse(Seq.empty)
+    }.getOrElse{
+      Future.successful(Seq.empty)
+    }
 
-    val mv = new ModelAndView(viewFactory.getJsonView)
-    import scala.collection.JavaConverters._
-    mv.addObject("data", suggestions.asJava)
-    mv
+    Await.result(for {
+      suggestions <- eventualSuggestions
+    } yield {
+      val mv = new ModelAndView(viewFactory.getJsonView)
+      import scala.collection.JavaConverters._
+      mv.addObject("data", suggestions.asJava)
+      mv
+    }, TenSeconds)
   }
 
-  protected def getSuggestions(q: String): Seq[String]
+  protected def getSuggestions(q: String): Future[Seq[String]]
 
 }

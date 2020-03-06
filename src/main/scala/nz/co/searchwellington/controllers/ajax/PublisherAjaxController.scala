@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
+import scala.concurrent.Future
+
 @Controller class PublisherAjaxController  @Autowired() (val viewFactory: ViewFactory,
                                                          contentRetrievalService: ContentRetrievalService)
   extends BaseAjaxController {
@@ -20,7 +22,7 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
     super.handleRequest(request, response)
   }
 
-  override protected def getSuggestions(q: String): Seq[String] = {
+  override protected def getSuggestions(q: String): Future[Seq[String]] = {
     log.info("Looking up possible publishers starting with: " + q)
     contentRetrievalService.getPublisherNamesByStartingLetters(q)
   }

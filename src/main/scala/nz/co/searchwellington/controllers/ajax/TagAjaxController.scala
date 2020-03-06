@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
-import scala.concurrent.Await
+import scala.concurrent.Future
 
 @Controller class TagAjaxController @Autowired()(val viewFactory: ViewFactory, var contentRetrievalService: ContentRetrievalService) extends BaseAjaxController with ReasonableWaits {
 
@@ -24,9 +24,9 @@ import scala.concurrent.Await
     super.handleRequest(request, response)
   }
 
-  override protected def getSuggestions(q: String): Seq[String] = {
+  override protected def getSuggestions(q: String): Future[Seq[String]] = {
     log.debug("Looking up possible tags starting with: " + q)
-    Await.result(contentRetrievalService.getTagNamesStartingWith(q), TenSeconds)
+    contentRetrievalService.getTagNamesStartingWith(q)
   }
 
 }

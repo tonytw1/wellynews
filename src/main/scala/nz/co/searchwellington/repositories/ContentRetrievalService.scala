@@ -215,11 +215,13 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getTagNamesStartingWith(q: String): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
 
-  def getPublisherNamesByStartingLetters(q: String): Seq[String] = {
+  def getPublisherNamesByStartingLetters(q: String): Future[Seq[String]] = {
     log.info("Get publishers starting with '" + q + "'")
-    val results = Await.result(mongoRepository.getWebsiteByNamePrefix(q), TenSeconds).map(p => p.title.getOrElse(""))
-    log.info("Got: " + results.size)
-    results
+    mongoRepository.getWebsiteByNamePrefix(q).map { ps =>
+      ps.map { p =>
+        p.title.getOrElse("")
+      }
+    }
   }
 
   def getOwnedByCount(loggedInUser: User): Int = {
