@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
                                                       rssUrlBuilder: RssUrlBuilder,
@@ -34,12 +34,12 @@ import scala.concurrent.{Await, Future}
       for {
         suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)
       } yield {
-        val mv = new ModelAndView
         import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, Await.result(suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS), TenSeconds).asJava)
-        mv.addObject("heading", "Inbox")
-        mv.addObject("link", urlBuilder.getFeedsInboxUrl)
-        mv.addObject("description", "Suggested newsitems from local feeds.")
+        val mv = new ModelAndView().
+          addObject(MAIN_CONTENT, suggestions.asJava).
+          addObject("heading", "Inbox").
+          addObject("link", urlBuilder.getFeedsInboxUrl).
+          addObject("description", "Suggested newsitems from local feeds.")
         commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
         Some(mv)
       }
