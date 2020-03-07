@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import nz.co.searchwellington.feeds.reading.whakaoko.model.{FeedItem, LatLong, Place, Subscription}
 import org.apache.log4j.Logger
+import org.joda.time.{DateTime, Duration}
 import org.springframework.beans.factory.annotation.{Autowired, Value}
 import org.springframework.stereotype.Component
 import play.api.libs.json.{JodaReads, Json}
@@ -49,11 +50,11 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
   }
 
   def getChannelFeedItems(page: Int)(implicit ec: ExecutionContext): Future[Seq[FeedItem]] = {
-    log.info("Channel items page: " + page)
+    log.info("Fetching channel items page: " + page)
     val channelItemsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/items"
-    val self = wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString)
-    log.info(self.toString)
-    self.get.map { r =>
+    val start = DateTime.now()
+    wsClient.url(channelItemsUrl).addQueryStringParameters("page" -> page.toString).get.map { r =>
+      log.info("Channel channel items returned after: " + new Duration(start, DateTime.now).getMillis)
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[FeedItem]]
       } else {
@@ -64,8 +65,10 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
 
   def getChannelSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
     val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
-    log.debug("Fetching from: " + channelSubscriptionsUrl)
+    log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
+    val start = DateTime.now()
     wsClient.url(channelSubscriptionsUrl).get.map { r =>
+      log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[Subscription]]
       } else {
