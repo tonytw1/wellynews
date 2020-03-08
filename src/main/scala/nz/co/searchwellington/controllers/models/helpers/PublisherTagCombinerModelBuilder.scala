@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models.helpers
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
+import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -34,14 +34,14 @@ import scala.concurrent.Future
       logger.info("Building publisher tag combiner page model")
       val tag = request.getAttribute("tag").asInstanceOf[Tag]
       val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-
+      val eventualFrontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
       for {
+        frontendPublisher <- eventualFrontendPublisher
         publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUser))
-
       } yield {
         import scala.collection.JavaConverters._
         val mv = new ModelAndView().
-          addObject("publisher", frontendResourceMapper.mapFrontendWebsite(publisher)).
+          addObject("publisher", frontendPublisher).
           addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName).
           addObject("description", "").
           addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag)).
