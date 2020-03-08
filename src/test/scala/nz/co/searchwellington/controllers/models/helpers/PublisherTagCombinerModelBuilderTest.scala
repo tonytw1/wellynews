@@ -2,7 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.FrontendNewsitem
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -12,6 +12,7 @@ import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
 class PublisherTagCombinerModelBuilderTest extends ReasonableWaits {
@@ -43,8 +44,9 @@ class PublisherTagCombinerModelBuilderTest extends ReasonableWaits {
   def mainContentIsNewsitemsWithPublisherAndTag(): Unit = {
     request.setAttribute("publisher", apublisher)
     request.setAttribute("tag", atag)
-    val expectedNewsitems= Seq(FrontendNewsitem(id = "123"), FrontendNewsitem(id = "456"))
+    when(frontendResourceMapper.mapFrontendWebsite(apublisher)).thenReturn(Future.successful(FrontendWebsite(id = "123", name = "A publisher")))
 
+    val expectedNewsitems = Seq(FrontendNewsitem(id = "123"), FrontendNewsitem(id = "456"))
     when(contentRetrievalService.getPublisherTagCombinerNewsitems(apublisher, atag, 30, None)).thenReturn(Future.successful(expectedNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
