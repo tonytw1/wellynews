@@ -3,7 +3,7 @@
 	<p>The lastest Newslog Items.</p>
 	#set ($righthand_content_one = $columnSplitter.left($latest_newsitems))
 	#set ($righthand_content_two = $columnSplitter.right($latest_newsitems))
-	#set ($righthand_content_moreurl = "index#newslog")
+	#set ($righthand_content_moreurl = "/#newslog")
 	
 	#parse("includes/righthand_two_columns.vm")
 #end
