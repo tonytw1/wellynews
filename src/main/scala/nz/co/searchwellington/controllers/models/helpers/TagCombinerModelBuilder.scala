@@ -85,13 +85,12 @@ import scala.concurrent.Future
         taggedWebsites <- eventualTaggedWebsites
         latestWebsites <- eventualLatestWebsites
       } yield {
-
         mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUser)))
         import scala.collection.JavaConverters._
         mv.addObject("latest_news", latestWebsites.asJava)
-        mv.addObject("websites", eventualTaggedWebsites)
+        mv.addObject("websites", taggedWebsites.asJava)
+        mv
       }
-      mv
     } else {
       Future.successful(mv)
     }
