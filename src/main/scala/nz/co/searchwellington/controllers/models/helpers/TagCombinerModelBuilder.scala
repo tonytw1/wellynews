@@ -81,21 +81,22 @@ import scala.concurrent.Future
       val tag = tags.head
       val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = Option(loggedInUser))
       val eventualLatestWebsites = contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUser))
+      val eventualRelatedTags = relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUser))
       for {
         taggedWebsites <- eventualTaggedWebsites
         latestWebsites <- eventualLatestWebsites
+        relatedTags <- eventualRelatedTags
       } yield {
-        mv.addObject("related_tags", relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUser)))
         import scala.collection.JavaConverters._
-        mv.addObject("latest_news", latestWebsites.asJava)
+        mv.addObject("related_tags", relatedTags.asJava)
         mv.addObject("websites", taggedWebsites.asJava)
+        mv.addObject("latest_news", latestWebsites.asJava)
         mv
       }
     } else {
       Future.successful(mv)
     }
   }
-
 
   def getViewName(mv: ModelAndView): String = {
     val taggedNewsitemsCount = mv.getModel.get("main_content_total").asInstanceOf[Long]
