@@ -49,15 +49,10 @@ import scala.concurrent.Future
       }
     }
 
-    if (isValid(request)) {
-      log.debug("Building tag geotagged page model")
-      val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
-      val tag = tags.get(0)
-      populateTagCommentPageModelAndView(tag)
-
-    } else {
-      Future.successful(None)
-    }
+    log.debug("Building tag geotagged page model")
+    val tags = request.getAttribute("tags").asInstanceOf[List[Tag]]
+    val tag = tags.get(0)
+    populateTagCommentPageModelAndView(tag)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {

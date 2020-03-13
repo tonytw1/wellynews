@@ -20,17 +20,13 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      for {
-        tags <- tagDAO.getAllTags
-      } yield {
-        import scala.collection.JavaConverters._
-        Some(new ModelAndView().
-          addObject(MAIN_CONTENT, tags.asJava).
-          addObject("heading", "All tags"))
-      }
-    } else {
-      Future.successful(None)
+    for {
+      tags <- tagDAO.getAllTags
+    } yield {
+      import scala.collection.JavaConverters._
+      Some(new ModelAndView().
+        addObject(MAIN_CONTENT, tags.asJava).
+        addObject("heading", "All tags"))
     }
   }
 

@@ -30,22 +30,17 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      for {
-        suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)
-      } yield {
-        import scala.collection.JavaConverters._
-        val mv = new ModelAndView().
-          addObject(MAIN_CONTENT, suggestions.asJava).
-          addObject("heading", "Inbox").
-          addObject("link", urlBuilder.getFeedsInboxUrl).
-          addObject("description", "Suggested newsitems from local feeds.")
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
-        Some(mv)
-      }
-
-    } else {
-      Future.successful(None)
+    for {
+      suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)
+    } yield {
+      import scala.collection.JavaConverters._
+      val mv = new ModelAndView().
+        addObject(MAIN_CONTENT, suggestions.asJava).
+        addObject("heading", "Inbox").
+        addObject("link", urlBuilder.getFeedsInboxUrl).
+        addObject("description", "Suggested newsitems from local feeds.")
+      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getTitleForSuggestions, rssUrlBuilder.getRssUrlForFeedSuggestions)
+      Some(mv)
     }
   }
 

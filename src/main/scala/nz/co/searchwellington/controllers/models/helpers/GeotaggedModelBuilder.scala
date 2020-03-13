@@ -34,76 +34,71 @@ import scala.concurrent.{Await, Future}
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      val mv = new ModelAndView
-      mv.addObject("description", "Geotagged newsitems")
-      mv.addObject("link", urlBuilder.getGeotaggedUrl)
+    val mv = new ModelAndView
+    mv.addObject("description", "Geotagged newsitems")
+    mv.addObject("link", urlBuilder.getGeotaggedUrl)
 
-      val userSuppliedPlace = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
-      val hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
+    val userSuppliedPlace = request.getAttribute(LocationParameterFilter.LOCATION).asInstanceOf[Place]
+    val hasUserSuppliedALocation = userSuppliedPlace != null && userSuppliedPlace.getLatLong != null
 
-      val page = getPage(request)
-      mv.addObject("page", page)
-      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
+    val page = getPage(request)
+    mv.addObject("page", page)
+    val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
-      if (hasUserSuppliedALocation) { // TODO split into seperate model
-        val radius = getLocationSearchRadius(request)
-        val latLong = userSuppliedPlace.getLatLong
+    if (hasUserSuppliedALocation) { // TODO split into seperate model
+      val radius = getLocationSearchRadius(request)
+      val latLong = userSuppliedPlace.getLatLong
 
-        val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, Option(loggedInUser))
-        val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, Option(loggedInUser))
-        val eventualNewsitemsNearCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUser))
-        val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
-        for {
-          relatedTagLinks <- eventualRelatedTagsForLocation
-          relatedPublisherLinks <- eventualPublishersForLocation
-          totalNearbyCount <- eventualNewsitemsNearCount
-          newsitemsNear <- eventualNewsitemsNear
+      val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, Option(loggedInUser))
+      val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, Option(loggedInUser))
+      val eventualNewsitemsNearCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUser))
+      val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      for {
+        relatedTagLinks <- eventualRelatedTagsForLocation
+        relatedPublisherLinks <- eventualPublishersForLocation
+        totalNearbyCount <- eventualNewsitemsNearCount
+        newsitemsNear <- eventualNewsitemsNear
 
-        } yield {
-          if (startIndex > totalNearbyCount) {
-            None
-          }
-
-          populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS)
-          mv.addObject("location", userSuppliedPlace)
-          mv.addObject("radius", radius)
-          mv.addObject(MAIN_CONTENT, newsitemsNear.asJava)
-
-          if (relatedTagLinks.nonEmpty) {
-            log.info("Found geo related tags: " + relatedTagLinks)
-            mv.addObject("related_tags", relatedTagLinks.asJava)
-          }
-          if (relatedPublisherLinks.nonEmpty) {
-            mv.addObject("related_publishers", relatedPublisherLinks.asJava)
-          }
-
-          mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
-          setRssUrlForLocation(mv, userSuppliedPlace, radius)
-          Some(mv)
-
+      } yield {
+        if (startIndex > totalNearbyCount) {
+          None
         }
 
-      } else {
-        for {
-          // TODO combine queries?
-          totalGeotaggedCount <- contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUser))
-          geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUser))
-        } yield {
-          if (startIndex > totalGeotaggedCount) {
-            None
-          }
-          populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS)
+        populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS)
+        mv.addObject("location", userSuppliedPlace)
+        mv.addObject("radius", radius)
+        mv.addObject(MAIN_CONTENT, newsitemsNear.asJava)
 
-          mv.addObject("heading", "Geotagged newsitems")
-          mv.addObject(MAIN_CONTENT, geocodedNewsitems.asJava)
-          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
-          Some(mv)
+        if (relatedTagLinks.nonEmpty) {
+          log.info("Found geo related tags: " + relatedTagLinks)
+          mv.addObject("related_tags", relatedTagLinks.asJava)
         }
+        if (relatedPublisherLinks.nonEmpty) {
+          mv.addObject("related_publishers", relatedPublisherLinks.asJava)
+        }
+
+        mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
+        setRssUrlForLocation(mv, userSuppliedPlace, radius)
+        Some(mv)
+
       }
 
     } else {
-      Future.successful(None)
+      for {
+        // TODO combine queries?
+        totalGeotaggedCount <- contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUser))
+        geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      } yield {
+        if (startIndex > totalGeotaggedCount) {
+          None
+        }
+        populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS)
+
+        mv.addObject("heading", "Geotagged newsitems")
+        mv.addObject(MAIN_CONTENT, geocodedNewsitems.asJava)
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForGeotagged, rssUrlBuilder.getRssUrlForGeotagged)
+        Some(mv)
+      }
     }
   }
 

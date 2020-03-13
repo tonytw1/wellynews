@@ -40,26 +40,21 @@ import scala.concurrent.Future
 
     def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
 
-    if (isValid(request)) {
-      for {
-        latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUser))
-      } yield {
-        val mv = new ModelAndView().
-          addObject("heading", "Wellynews").
-          addObject("description", "Wellington related newsitems").
-          addObject("link", urlBuilder.getHomeUrl).
-          addObject(MAIN_CONTENT, latestNewsitems.asJava)
+    for {
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUser))
+    } yield {
+      val mv = new ModelAndView().
+        addObject("heading", "Wellynews").
+        addObject("description", "Wellington related newsitems").
+        addObject("link", urlBuilder.getHomeUrl).
+        addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
-        monthOfLastItem(latestNewsitems).map { d =>
-          mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
-        }
-
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
-        Some(mv)
+      monthOfLastItem(latestNewsitems).map { d =>
+        mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
       }
 
-    } else {
-      Future.successful(None)
+      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
+      Some(mv)
     }
   }
 

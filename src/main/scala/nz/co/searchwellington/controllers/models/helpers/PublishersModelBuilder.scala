@@ -22,23 +22,19 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      for {
-        publishers <- contentRetrievalService.getAllPublishers(Option(loggedInUser))
-        frontendPublishers <- Future.sequence {
-          publishers.
-            sortBy(_.title).
-            map(frontendResourceMapper.createFrontendResourceFrom)
-        }
-      } yield {
-        import scala.collection.JavaConverters._
-        val mv = new ModelAndView().
-          addObject(MAIN_CONTENT, frontendPublishers.asJava).
-          addObject("heading", "All publishers")
-        Some(mv)
+    for {
+      publishers <- contentRetrievalService.getAllPublishers(Option(loggedInUser))
+      frontendPublishers <- Future.sequence {
+        publishers.
+          sortBy(_.title).
+          map(frontendResourceMapper.createFrontendResourceFrom)
       }
-    } else {
-      Future.successful(None)
+    } yield {
+      import scala.collection.JavaConverters._
+      val mv = new ModelAndView().
+        addObject(MAIN_CONTENT, frontendPublishers.asJava).
+        addObject("heading", "All publishers")
+      Some(mv)
     }
   }
 

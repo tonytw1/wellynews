@@ -73,15 +73,10 @@ import scala.concurrent.Future
       }
     }
 
-    if (isValid(request)) {
-      logger.info("Building publisher page model")
-      val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-      val page = getPage(request)
-      populatePublisherPageModelAndView(publisher, page)
-
-    } else {
-      Future.successful(None)
-    }
+    logger.info("Building publisher page model")
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val page = getPage(request)
+    populatePublisherPageModelAndView(publisher, page)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User): Future[ModelAndView] = {

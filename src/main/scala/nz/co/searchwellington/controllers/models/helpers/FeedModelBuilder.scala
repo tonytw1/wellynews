@@ -74,35 +74,30 @@ import scala.concurrent.Future
       })
     }
 
-    if (isValid(request)) {
-      val feedOnRequest = Option(request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed])
+    val feedOnRequest = Option(request.getAttribute(FEED_ATTRIBUTE).asInstanceOf[Feed])
 
-      feedOnRequest.map { feed =>
-        val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed)
-        val eventualFeedItems = feedItemsFor(feed)
-        for {
-          frontendFeed <- eventualFrontendFeed
-          feedItems <- eventualFeedItems
-          maybeSubscription <- feed.page.map { p =>
-            whakaokoService.getWhakaokoSubscriptionByUrl(p)
-          }.getOrElse {
-            Future.successful(None)
-          }
-        } yield {
-          val mv = new ModelAndView().
-            addObject("feed", frontendFeed).
-            addObject("subscription", maybeSubscription.orNull)
-
-          commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page.orNull)
-          populateFeedItems(mv, feedItems) // TODO inline
-          Some(mv)
+    feedOnRequest.map { feed =>
+      val eventualFrontendFeed = frontendResourceMapper.createFrontendResourceFrom(feed)
+      val eventualFeedItems = feedItemsFor(feed)
+      for {
+        frontendFeed <- eventualFrontendFeed
+        feedItems <- eventualFeedItems
+        maybeSubscription <- feed.page.map { p =>
+          whakaokoService.getWhakaokoSubscriptionByUrl(p)
+        }.getOrElse {
+          Future.successful(None)
         }
+      } yield {
+        val mv = new ModelAndView().
+          addObject("feed", frontendFeed).
+          addObject("subscription", maybeSubscription.orNull)
 
-      }.getOrElse {
-        Future.successful(None)
+        commonAttributesModelBuilder.setRss(mv, feed.title.getOrElse(""), feed.page.orNull)
+        populateFeedItems(mv, feedItems) // TODO inline
+        Some(mv)
       }
 
-    } else {
+    }.getOrElse {
       Future.successful(None)
     }
   }

@@ -24,23 +24,18 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      for {
-        websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = Option(loggedInUser))
-      } yield {
-        import scala.collection.JavaConverters._
-        val mv = new ModelAndView().
-          addObject("heading", "Latest additions").
-          addObject("description", "The most recently submitted website listings.").
-          addObject("link", urlBuilder.getJustinUrl).
-          addObject(MAIN_CONTENT, websites.asJava)
+    for {
+      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = Option(loggedInUser))
+    } yield {
+      import scala.collection.JavaConverters._
+      val mv = new ModelAndView().
+        addObject("heading", "Latest additions").
+        addObject("description", "The most recently submitted website listings.").
+        addObject("link", urlBuilder.getJustinUrl).
+        addObject(MAIN_CONTENT, websites.asJava)
 
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
-        Some(mv)
-      }
-
-    } else {
-      Future.successful(None)
+      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
+      Some(mv)
     }
   }
 

@@ -30,32 +30,27 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      logger.info("Building publisher tag combiner page model")
-      val tag = request.getAttribute("tag").asInstanceOf[Tag]
-      val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-      val eventualFrontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
-      for {
-        frontendPublisher <- eventualFrontendPublisher
-        publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUser))
-      } yield {
-        import scala.collection.JavaConverters._
-        val mv = new ModelAndView().
-          addObject("publisher", frontendPublisher).
-          addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName).
-          addObject("description", "").
-          addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag)).
-          addObject(MAIN_CONTENT, publisherTagNewsitems.asJava)
+    logger.info("Building publisher tag combiner page model")
+    val tag = request.getAttribute("tag").asInstanceOf[Tag]
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val eventualFrontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
+    for {
+      frontendPublisher <- eventualFrontendPublisher
+      publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUser))
+    } yield {
+      import scala.collection.JavaConverters._
+      val mv = new ModelAndView().
+        addObject("publisher", frontendPublisher).
+        addObject("heading", publisher.title.getOrElse("") + " and " + tag.getDisplayName).
+        addObject("description", "").
+        addObject("link", urlBuilder.getPublisherCombinerUrl(publisher, tag)).
+        addObject(MAIN_CONTENT, publisherTagNewsitems.asJava)
 
-        if (publisherTagNewsitems.nonEmpty) {
-          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
-        }
-
-        Some(mv)
+      if (publisherTagNewsitems.nonEmpty) {
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisherCombiner(publisher, tag), rssUrlBuilder.getRssUrlForPublisherCombiner(publisher, tag))
       }
 
-    } else {
-      Future.successful(None)
+      Some(mv)
     }
   }
 

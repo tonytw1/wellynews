@@ -92,11 +92,7 @@ import scala.concurrent.{Await, Future}
       }
     }
 
-    if (isValid(request)) {
-      populateTagPageModelAndView(tagFromRequest(request), getPage(request))
-    } else {
-      Future.successful(None)
-    }
+    populateTagPageModelAndView(tagFromRequest(request), getPage(request))
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User): Future[ModelAndView] = {

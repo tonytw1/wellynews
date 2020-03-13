@@ -33,22 +33,18 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      getArchiveMonthFromPath(request.getPathInfo).map { month =>
-        for {
-          newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUser))
-        } yield {
-          val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
-          import scala.collection.JavaConverters._
-          Some(new ModelAndView().
-            addObject("heading", monthLabel).
-            addObject("description", "Archived newsitems for the month of " + monthLabel).
-            addObject(MAIN_CONTENT, newsitemsForMonth.asJava))
-        }
-      }.getOrElse {
-        Future.successful(None)
+    getArchiveMonthFromPath(request.getPathInfo).map { month =>
+      for {
+        newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUser))
+      } yield {
+        val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
+        import scala.collection.JavaConverters._
+        Some(new ModelAndView().
+          addObject("heading", monthLabel).
+          addObject("description", "Archived newsitems for the month of " + monthLabel).
+          addObject(MAIN_CONTENT, newsitemsForMonth.asJava))
       }
-    } else {
+    }.getOrElse {
       Future.successful(None)
     }
   }

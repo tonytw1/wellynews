@@ -25,23 +25,18 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      log.info("Building feed page model")
-      val withAcceptancePolicy = Option(request.getParameter("acceptance")).map(FeedAcceptancePolicy.valueOf)
-      for {
-        feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUser))
-      } yield {
-        val mv = new ModelAndView().
-          addObject("heading", "Feeds").
-          addObject("description", "Incoming feeds").
-          addObject("link", urlBuilder.getFeedsUrl)
-        import scala.collection.JavaConverters._
-        mv.addObject(MAIN_CONTENT, feeds.asJava)
-        Some(mv)
-      }
-
-    } else {
-      Future.successful(None)
+    log.info("Building feed page model")
+    val withAcceptancePolicy = Option(request.getParameter("acceptance")).map(FeedAcceptancePolicy.valueOf)
+    for {
+      feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUser))
+    } yield {
+      val mv = new ModelAndView().
+        addObject("heading", "Feeds").
+        addObject("description", "Incoming feeds").
+        addObject("link", urlBuilder.getFeedsUrl)
+      import scala.collection.JavaConverters._
+      mv.addObject(MAIN_CONTENT, feeds.asJava)
+      Some(mv)
     }
   }
 
