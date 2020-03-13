@@ -66,13 +66,9 @@ import scala.concurrent.Future
       }
     }
 
-    if (isValid(request)) {
-      val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-      val page = getPage(request)
-      populateTagCombinerModelAndView(tags, page)
-    } else {
-      Future.successful(None)
-    }
+    val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
+    val page = getPage(request)
+    populateTagCombinerModelAndView(tags, page)
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
