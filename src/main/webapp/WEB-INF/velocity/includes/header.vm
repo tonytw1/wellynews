@@ -27,7 +27,6 @@
 	 
  	function showAddress(lat, long, title, url, description) {
  		markers.push({lat: lat, long: long, title: title, description: description});
- 		console.log("Pushed location", lat, long);
  	}
  	
  	function positionSuccess(position) {
