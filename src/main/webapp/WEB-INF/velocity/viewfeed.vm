@@ -59,6 +59,7 @@
 			
 			#if($geocoded)
 				<div id="map" style="width: 520px; height: 520px"></div>
+				<p>$geocoded</p>
 				#parse("includes/geocodedjs.vm")
 			#end
 
