@@ -7,10 +7,7 @@
 #parse("includes/related_publisher_tags.vm")
 
 #parse("includes/tag_tree.vm")
-
-
 </div>
-
 
 <div class="main">
 
@@ -49,7 +46,6 @@
 		#parse("includes/publisher_page_links.vm")
 	</div>
 
-
 	<div class="tag_secondary_content">
 		#set($secondary_heading = "Feeds")
 		#set($secondary_content = $feeds)
@@ -58,15 +54,15 @@
 		#parse("includes/publisher_watchlist.vm")
 	</div>
 
-
 </div>
 
 <div class="right">
-
-<div class="box">
-#parse("includes/latest_newsitems.vm")
-</div>
-
+    <div class="box">
+        #parse("includes/archive.vm")
+    </div>
+    <div class="box">
+        #parse("includes/latest_newsitems.vm")
+    </div>
 </div>
 
 </div>

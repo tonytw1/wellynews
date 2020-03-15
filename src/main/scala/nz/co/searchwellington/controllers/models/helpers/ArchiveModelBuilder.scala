@@ -51,12 +51,12 @@ import scala.concurrent.Future
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
     getArchiveMonthFromPath(request.getPathInfo).map { month =>
-      val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(Option(loggedInUser))
+      val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(Option(loggedInUser))
       val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUser))
       val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, Option(loggedInUser))
 
       for {
-        archiveLinks <- eventualArchiveMonths
+        archiveLinks <- eventualArchiveLinks
         archiveStatistics <- eventualArchiveCounts
         monthPublishers <- eventualMonthPublishers
       } yield {

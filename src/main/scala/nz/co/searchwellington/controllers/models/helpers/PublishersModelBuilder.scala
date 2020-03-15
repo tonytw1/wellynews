@@ -39,7 +39,13 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    Future.successful(mv)
+    for {
+      archiveLinks <- contentRetrievalService.getArchiveMonths(Option(loggedInUser))
+    } yield {
+      import scala.collection.JavaConverters._
+      mv.addObject("archive_links", archiveLinks.asJava)
+      mv
+    }
   }
 
   def getViewName(mv: ModelAndView): String = "publishers"
