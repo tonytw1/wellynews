@@ -58,6 +58,7 @@
 
 <div class="right">
     <div class="box">
+        <p>$archive_links</p>
         #parse("includes/archive.vm")
     </div>
     <div class="box">
