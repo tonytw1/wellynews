@@ -58,12 +58,13 @@ import scala.concurrent.Future
       for {
         archiveLinks <- eventualArchiveMonths
         archiveStatistics <- eventualArchiveCounts
-        monthPublishers: Seq[(FrontendResource, Long)] <- eventualMonthPublishers
+        monthPublishers <- eventualMonthPublishers
       } yield {
         populateNextAndPreviousLinks(mv, month, archiveLinks)
         archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
+
         import scala.collection.JavaConverters._
-        mv.addObject("publishers", monthPublishers.map(_._1.name).asJava)
+        mv.addObject("publishers", monthPublishers.map(_._1).asJava)
       }
 
     }.getOrElse{
