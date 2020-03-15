@@ -41,7 +41,7 @@
             <p>$publishers.size()</p>
            <ul>
                 #foreach ($publisher in $publishers)
-                    <li><a href="$urlBuilder.getPublisherUrl($publisher.name)">$publisher</a></li>
+                    <li><a href="$urlBuilder.getPublisherUrl($publisher.name)">$publisher.name</a></li>
                 #end
             </ul>
         </div>
