@@ -87,10 +87,13 @@ import scala.concurrent.Future
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+    val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
 
     for {
       publisherWatchlist <- eventualPublisherWatchlist
       latestNewsitems <- eventualLatestNewsitems
+      archiveLinks <- eventualArchiveLinks
+
     } yield {
       mv.addObject("watchlist", publisherWatchlist.asJava)
       val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
@@ -98,6 +101,7 @@ import scala.concurrent.Future
         mv.addObject("related_tags", relatedTagLinks.asJava)
       }
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
+      mv.addObject("archive_links", archiveLinks.asJava)
     }
   }
 
