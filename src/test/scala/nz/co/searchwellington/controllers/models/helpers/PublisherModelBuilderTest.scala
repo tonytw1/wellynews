@@ -35,7 +35,7 @@ class PublisherModelBuilderTest extends ReasonableWaits {
     commonAttributesModelBuilder, frontendResourceMapper)
 
   @Test
-  def shouldHightlightPublishersGeotaggedContent {
+  def shouldHighlightPublishersGeotaggedContent {
     val loggedInUser = None
 
     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
