@@ -144,6 +144,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = elasticSearchIndexer.getArchiveMonths(loggedInUser)
 
+  def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = elasticSearchIndexer.getPublisherArchiveMonths(publisher, loggedInUser)
+
   def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = elasticSearchIndexer.getArchiveCounts(loggedInUser)
 
   def getFeeds(acceptancePolicy: Option[FeedAcceptancePolicy] = None, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

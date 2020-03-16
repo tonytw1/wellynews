@@ -87,7 +87,7 @@ import scala.concurrent.Future
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
     val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
-    val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
+    val eventualArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
 
     for {
       publisherWatchlist <- eventualPublisherWatchlist

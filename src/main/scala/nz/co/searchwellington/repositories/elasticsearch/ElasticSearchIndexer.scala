@@ -192,16 +192,12 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   }
 
   def getArchiveMonths(loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
-    val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
-    val request = search(Index / Resources) query composeQueryFor(allNewsitems, loggedInUser) limit 0 aggregations aggs
+    archiveMonthsAggregationFor(allNewsitems, loggedInUser)
+  }
 
-    client.execute(request).map { r =>
-      val dateAgg = r.result.aggregations.dateHistogram("date")
-      val archiveLinks = dateAgg.buckets.map { b =>
-        ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
-      }
-      archiveLinks.filter(_.getCount > 0).reverse
-    }
+  def getPublisherArchiveMonths(publisher: Website, loggedInUser: Option[User]): Future[Seq[ArchiveLink]] = {
+    val publisherNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+    archiveMonthsAggregationFor(publisherNewsitems, loggedInUser)
   }
 
   def getArchiveCounts(loggedInUser: Option[User]): Future[Map[String, Long]] = {
@@ -281,5 +277,18 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
   private val allNewsitems = ResourceQuery(`type` = Some("N"))
 
   private def nearbyNewsitemsQuery(latLong: LatLong, radius: Double) = ResourceQuery(`type` = Some("N"), circle = Some(Circle(latLong, radius)))
+
+  private def archiveMonthsAggregationFor(query: ResourceQuery, loggedInUser: Option[User]) = {
+    val aggs = Seq(dateHistogramAgg("date", "date").interval(DateHistogramInterval.Month))
+    val request = search(Index / Resources) query composeQueryFor(query, loggedInUser) limit 0 aggregations aggs
+
+    client.execute(request).map { r =>
+      val dateAgg = r.result.aggregations.dateHistogram("date")
+      val archiveLinks = dateAgg.buckets.map { b =>
+        ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
+      }
+      archiveLinks.filter(_.getCount > 0).reverse
+    }
+  }
 
 }
