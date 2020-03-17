@@ -76,9 +76,7 @@ class AdminUrlBuilder @Autowired()(siteInformation: SiteInformation,
     Option(urlBuilder.getResourceUrl(resource)).map ( _ + "/gather").orNull
   }
 
-  def getAddTagUrl: String = {
-    siteInformation.getUrl + "/edit/tag/submit"
-  }
+  def getAddTagUrl: String = siteInformation.getUrl + "/new-tag"
 
   def getEditTagUrl(tag: Tag): String = {
     siteInformation.getUrl + "/edit-tag/" + tag.id

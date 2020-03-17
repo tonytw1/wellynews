@@ -10,7 +10,7 @@
     <div class="main">
         <h2>Adding a tag</h2>
 
-        <form action="/new-tag" method="POST">
+        <form action="$adminUrlBuilder.addTagUrl" method="POST">
 
             #springBind("newTag")
             #foreach($error in $status.errorMessages)
