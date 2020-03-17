@@ -48,7 +48,7 @@ class PublisherModelBuilderTest extends ReasonableWaits {
     when(contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
     when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
-    when(relatedTagsService.getRelatedLinksForPublisher(publisher)).thenReturn(Seq())
+    when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq()))
     when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(Future.successful(frontendPublisher))
 
     val request = new MockHttpServletRequest

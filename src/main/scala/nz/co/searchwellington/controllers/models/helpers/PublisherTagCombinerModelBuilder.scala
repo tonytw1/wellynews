@@ -57,13 +57,15 @@ import scala.concurrent.Future
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
 
-    val relatedTagLinks = relatedTagsService.getRelatedLinksForPublisher(publisher)
+    val eventualRelatedTags = relatedTagsService.getRelatedTagsForPublisher(publisher, Option(loggedInUser))
+    val eventualLatestNewsitems = contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUser))
     for {
-      latestNewsitems <- contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUser))
+      relatedTags <- eventualRelatedTags
+      latestNewsitems <- eventualLatestNewsitems
     } yield {
       import scala.collection.JavaConverters._
-      if (relatedTagLinks.nonEmpty) {
-        mv.addObject("related_tags", relatedTagLinks.asJava)
+      if (relatedTags.nonEmpty) {
+        mv.addObject("related_tags", relatedTags.asJava)
       }
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
       mv

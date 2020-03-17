@@ -60,14 +60,16 @@ import scala.concurrent.Future
     }
   }
 
-  def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
-    elasticSearchIndexer.getTagsNear(place.getLatLong, radius, loggedInUser).flatMap { ts =>
+  def getRelatedTagsForPublisher(publisher: Website, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
+    elasticSearchIndexer.getPublisherTags(publisher, loggedInUser).flatMap { ts =>
       Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
     }
   }
 
-  def getRelatedLinksForPublisher(publisher: Website): Seq[TagContentCount] = {
-    Seq()
+  def getRelatedTagsForLocation(place: Place, radius: Double, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
+    elasticSearchIndexer.getTagsNear(place.getLatLong, radius, loggedInUser).flatMap { ts =>
+      Future.sequence(ts.map(toTagContentCount)).map(_.flatten)
+    }
   }
 
   def getFeedworthyTags(shouldShowBroken: Boolean): Seq[TagContentCount] = {

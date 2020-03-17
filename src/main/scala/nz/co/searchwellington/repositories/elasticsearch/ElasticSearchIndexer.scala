@@ -174,6 +174,11 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     getAggregationFor(nearbyNewsitemsQuery(latLong, radius), Tags, loggedInUser)
   }
 
+  def getPublisherTags(publisher: Website, loggedInUser: Option[User]):  Future[Seq[(String, Long)]] = {
+    val publishersNewsitems = ResourceQuery(`type` = Some("N"), publisher = Some(publisher))
+    getAggregationFor(publishersNewsitems, Tags, loggedInUser)
+  }
+
   def getTagAggregation(tag: Tag, loggedInUser: Option[User]): Future[Seq[(String, Long)]] = {
     val newsitemsForTag = ResourceQuery(`type` = Some("N"), tags = Some(Set(tag)))
     getAggregationFor(newsitemsForTag, Tags, loggedInUser)
