@@ -23,26 +23,27 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
-    if (isValid(request)) {
-      for {
-        watchlists <- contentRetrievalService.getAllWatchlists(Option(loggedInUser))
-      } yield {
-        import scala.collection.JavaConverters._
-        val mv = new ModelAndView().
-          addObject("heading", "News watchlist").
-          addObject("description", "The news watchlist").
-          addObject("link", urlBuilder.getWatchlistUrl).
-          addObject(MAIN_CONTENT, watchlists.asJava)
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
-        Some(mv)
-      }
-    } else {
-      Future.successful(None)
+    for {
+      watchlists <- contentRetrievalService.getAllWatchlists(Option(loggedInUser))
+    } yield {
+      import scala.collection.JavaConverters._
+      val mv = new ModelAndView().
+        addObject("heading", "News watchlist").
+        addObject("description", "The news watchlist").
+        addObject("link", urlBuilder.getWatchlistUrl).
+        addObject(MAIN_CONTENT, watchlists.asJava)
+      commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForWatchlist)
+      Some(mv)
     }
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    Future.successful(mv)
+    for {
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+    } yield {
+      import scala.collection.JavaConverters._
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+    }
   }
 
   def getViewName(mv: ModelAndView): String = "watchlist"
