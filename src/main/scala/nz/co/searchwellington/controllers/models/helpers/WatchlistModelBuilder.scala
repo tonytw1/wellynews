@@ -39,7 +39,7 @@ import scala.concurrent.Future
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
     for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser))
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
