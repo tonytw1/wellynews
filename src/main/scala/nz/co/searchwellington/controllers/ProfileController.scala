@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 import org.springframework.web.servlet.view.RedirectView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(3)
@@ -94,7 +94,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
   // TODO reinstate
   @RequestMapping(value = Array("/profile/edit"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
-      if (request.getParameter("profilename") != null && isValidAvailableProfilename(request.getParameter("profilename"))) {
+      if (request.getParameter("profilename") != null && Await.result(isValidAvailableProfilename(request.getParameter("profilename")), TenSeconds)) {
         //  loggedInUser.setProfilename(request.getParameter("profilename"))
       }
       //  loggedInUser.setName(request.getParameter("name"))
@@ -106,8 +106,12 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
     new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(Option(loggedInUserFilter.getLoggedInUser).get.getProfilename)))
   }
 
-  def isValidAvailableProfilename(profilename: String): Boolean = {
-    profilename.matches("[a-z|A-Z|0-9]+") && Await.result(mongoRepository.getUserByProfilename(profilename), TenSeconds).isEmpty
+  def isValidAvailableProfilename(profilename: String): Future[Boolean] = {
+    for {
+      existingUser <- mongoRepository.getUserByProfilename(profilename)
+    } yield {
+      profilename.matches("[a-z|A-Z|0-9]+") && existingUser.isEmpty
+    }
   }
 
 }
