@@ -29,7 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
         } yield {
           val suggestedTags = suggestedPlaces ++ suggestedAutoTags
-          log.debug("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
+          log.info("Suggested tags for '" + resource.title + "' are: " + suggestedTags)
           suggestedTags.map(t => HandTagging(tag = t, user = autotagUser))
         }
 
