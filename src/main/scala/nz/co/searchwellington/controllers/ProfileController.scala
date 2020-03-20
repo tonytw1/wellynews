@@ -8,6 +8,7 @@ import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.view.RedirectView
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
+@Order(3)
 @Controller
 class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter, urlBuilder: UrlBuilder,
                                      val contentRetrievalService: ContentRetrievalService)
