@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
       val withAutoTaggings = notHeld.withTags(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)))
       log.info("With autotaggings: " + withAutoTaggings)
       contentUpdateService.create(withAutoTaggings).map { _ =>
-        log.info("Created accepted newsitem: " + notHeld)
+        log.info("Created accepted newsitem: " + withAutoTaggings)
         withAutoTaggings
       }
     }
