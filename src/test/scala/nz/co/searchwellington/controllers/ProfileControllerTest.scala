@@ -1,5 +1,6 @@
 package nz.co.searchwellington.controllers
 
+import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -10,10 +11,10 @@ import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.{MockHttpServletRequest, MockHttpServletResponse}
 
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ProfileControllerTest {
+class ProfileControllerTest extends ReasonableWaits {
 
   private val VALID_PROFILE_NAME = "tonytw1"
   private val INVALID_PROFILE_NAME = "tony-tw1"
@@ -53,7 +54,8 @@ class ProfileControllerTest {
 
     val mv = controller.profiles(request, response)
 
-    assertEquals(allActiveUsers, mv.getModel.get("profiles"))
+    import scala.collection.JavaConverters._
+    assertEquals(allActiveUsers.asJava, mv.getModel.get("profiles"))
   }
 
   @Test
@@ -75,19 +77,19 @@ class ProfileControllerTest {
   @Test
   def lettersAndNumbersIsValidNewProfileName {
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(None))
-    assertTrue(controller.isValidAvailableProfilename(VALID_PROFILE_NAME))
+    assertTrue(Await.result(controller.isValidAvailableProfilename(VALID_PROFILE_NAME), TenSeconds))
   }
 
   @Test
   def nonLettersAndNumbersAreNotValidInProfileNames {
     when(mongoRepository.getUserByProfilename(INVALID_PROFILE_NAME)).thenReturn(Future.successful(None))
-    assertFalse(controller.isValidAvailableProfilename(INVALID_PROFILE_NAME))
+    assertFalse(Await.result(controller.isValidAvailableProfilename(INVALID_PROFILE_NAME), TenSeconds))
   }
 
   @Test
   def newProfileNamesMustBeValidNotAlreadyTaken {
     when(mongoRepository.getUserByProfilename(VALID_PROFILE_NAME)).thenReturn(Future.successful(Some(existingUser)))
-    assertFalse(controller.isValidAvailableProfilename(VALID_PROFILE_NAME))
+    assertFalse(Await.result(controller.isValidAvailableProfilename(VALID_PROFILE_NAME), TenSeconds))
   }
 
 }
