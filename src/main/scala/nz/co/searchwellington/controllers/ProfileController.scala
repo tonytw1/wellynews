@@ -30,9 +30,10 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
     Await.result((for {
       users <- eventualUsers
     } yield {
+      import scala.collection.JavaConverters._
       new ModelAndView("profiles").
         addObject("heading", "Profiles").
-        addObject("profiles", users)
+        addObject("profiles", users.asJava)
     }).flatMap {
       withCommonLocal
     }, TenSeconds)
@@ -50,7 +51,8 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       }
     }
 
-    userByPath(request.getPathInfo).map { user =>
+    val path = request.getPathInfo
+    userByPath(path).map { user =>
       val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser))
       val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser))
 
@@ -73,6 +75,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       }).flatMap(withCommonLocal), TenSeconds)
 
     }.getOrElse {
+      log.info("User not found for path: " + path)
       response.setStatus(HttpServletResponse.SC_NOT_FOUND)
       null
     }
