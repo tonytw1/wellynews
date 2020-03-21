@@ -40,7 +40,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
       }
 
       mayToCheck.map { toCheck =>
-        log.info("Checking: " + toCheck._1.title + " (" + toCheck + ")")
+        log.info("Checking: " + toCheck._1.title + " (" + toCheck._1.page + ")")
         httpCheck(toCheck._1, toCheck._2).map { maybePageBody =>
           maybePageBody.map { pageBody =>
             val x: Seq[Future[Boolean]] = processers.map { processor =>
@@ -57,7 +57,7 @@ import scala.concurrent.{Await, ExecutionContext, Future}
           toCheck._1.setLastScanned(DateTime.now.toDate)
 
           contentUpdateService.update(toCheck._1) // TODO should be a specific field set
-          log.info("Finished linkchecking")
+          log.info("Finished link checking")
           true
         }
 
