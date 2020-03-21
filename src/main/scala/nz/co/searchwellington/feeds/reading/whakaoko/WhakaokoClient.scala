@@ -31,10 +31,10 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
   private implicit val sr = Json.reads[Subscription]
 
   def createFeedSubscription(feedUrl: String)(implicit ec: ExecutionContext): Future[Option[Subscription]] = {
-    val createFeedSubscriptionUrl =  whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/feeds"
+    val createFeedSubscriptionUrl = whakaokoUrl + "/" + whakaokoUsername + "/subscriptions/feeds"
     log.debug("Posting new feed to: " + createFeedSubscriptionUrl)
 
-    val params: Map[String, Seq[String]] = Map (
+    val params: Map[String, Seq[String]] = Map(
       "channel" -> Seq(whakaokoChannel),
       "url" -> Seq(feedUrl)
     )
@@ -63,16 +63,20 @@ class WhakaokoClient @Autowired()(@Value("#{config['whakaoko.url']}") whakaokoUr
     }
   }
 
-  def getChannelSubscriptions()(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
-    val channelSubscriptionsUrl = whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"
-    log.info("Fetching channel subscriptions from: " + channelSubscriptionsUrl)
+  def getChannelSubscriptions(url: Option[String] = None)(implicit ec: ExecutionContext): Future[Seq[Subscription]] = {
+    val channelSubscriptionsRequest = wsClient.url(whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions")
+    val withUrl = url.map { u =>
+      channelSubscriptionsRequest.addQueryStringParameters(("url", u))
+    }.getOrElse(channelSubscriptionsRequest)
+
+    log.info("Fetching channel subscriptions from: " + (whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions"))
     val start = DateTime.now()
-    wsClient.url(channelSubscriptionsUrl).get.map { r =>
+    withUrl.get.map { r =>
       log.info("Channel subscriptions returned after: " + new Duration(start, DateTime.now).getMillis)
       if (r.status == 200) {
         Json.parse(r.body).as[Seq[Subscription]]
       } else {
-        log.warn("Get channel subscriptions failed (" + channelSubscriptionsUrl + "): " + r.status + " / " + r.body)
+        log.warn("Get channel subscriptions failed (" + (whakaokoUrl + "/" + whakaokoUsername + "/channels/" + whakaokoChannel + "/subscriptions") + "): " + r.status + " / " + r.body)
         Seq.empty
       }
     }
