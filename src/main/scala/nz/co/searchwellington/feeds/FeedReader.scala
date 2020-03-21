@@ -2,7 +2,7 @@ package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Newsitem, User}
+import nz.co.searchwellington.model.{Feed, FeedAcceptancePolicy, Resource, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.tagging.AutoTaggingService
 import nz.co.searchwellington.utils.UrlCleaner
@@ -68,8 +68,8 @@ import scala.concurrent.{ExecutionContext, Future}
     }
   }
 
-  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Newsitem]] = {
-    val eventualProcessed: Seq[Future[Option[Newsitem]]] = feedNewsitems.map { feednewsitem =>
+  private def processFeedItems(feed: Feed, feedReaderUser: User, acceptancePolicy: FeedAcceptancePolicy, feedNewsitems: Seq[FeedItem])(implicit ec: ExecutionContext): Future[Seq[Resource]] = {
+    val eventualProcessed: Seq[Future[Option[Resource]]] = feedNewsitems.map { feednewsitem =>
       val withCleanedUrl = feednewsitem.copy(url = urlCleaner.cleanSubmittedItemUrl(feednewsitem.url))
       feedItemAcceptanceDecider.getAcceptanceErrors(withCleanedUrl, acceptancePolicy).flatMap { acceptanceErrors =>
         if (acceptanceErrors.isEmpty) {

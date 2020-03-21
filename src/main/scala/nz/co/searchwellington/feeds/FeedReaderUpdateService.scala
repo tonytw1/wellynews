@@ -1,7 +1,7 @@
 package nz.co.searchwellington.feeds
 
 import nz.co.searchwellington.feeds.reading.whakaoko.model.FeedItem
-import nz.co.searchwellington.model.{Feed, Newsitem, Tagging, User}
+import nz.co.searchwellington.model.{Feed, Resource, Tagging, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.queues.LinkCheckerQueue
 import nz.co.searchwellington.tagging.AutoTaggingService
@@ -15,7 +15,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
   private val log = Logger.getLogger(classOf[FeedReaderUpdateService])
 
-  def acceptFeeditem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed)(implicit ec: ExecutionContext): Future[Newsitem] = {
+  def acceptFeeditem(feedReaderUser: User, feednewsitem: FeedItem, feed: Feed)(implicit ec: ExecutionContext): Future[Resource] = {
     log.info("Accepting newsitem: " + feednewsitem.url)
     val newsitem = feedItemAcceptor.acceptFeedItem(feedReaderUser: User, (feednewsitem, feed))
     log.info("Got newsitem to accept: " + newsitem)
@@ -25,9 +25,9 @@ import scala.concurrent.{ExecutionContext, Future}
       log.info("Got autotaggings: " + autoTaggings)
       val withAutoTaggings = notHeld.withTags(autoTaggings.map(t => Tagging(tag_id = t.tag._id, user_id = t.user._id)))
       log.info("With autotaggings: " + withAutoTaggings)
-      contentUpdateService.create(withAutoTaggings).map { _ =>
+      contentUpdateService.create(withAutoTaggings).map { created =>
         log.info("Created accepted newsitem: " + withAutoTaggings)
-        withAutoTaggings
+        created
       }
     }
   }
