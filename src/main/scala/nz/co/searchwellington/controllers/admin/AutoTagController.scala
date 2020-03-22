@@ -77,9 +77,11 @@ import scala.concurrent.ExecutionContext.Implicits.global
             if (!alreadyHasTag) {
               log.info("Applying tag " + tag.getName + " to:" + resource.title)
               handTaggingService.addTag(loggedInUser, tag, resource)
-            }
-            contentUpdateService.update(resource).map { _ =>
-              resource
+              contentUpdateService.update(resource).map { _ =>
+                resource
+              }
+            } else {
+              Future.successful(resource)
             }
           }
         }
