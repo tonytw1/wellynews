@@ -50,7 +50,6 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
   val resourceCollection: BSONCollection = db.collection("resource")
   val supressionCollection: BSONCollection = db.collection("supression")
   val tagCollection: BSONCollection = db.collection("tag")
-  val taggingCollection: BSONCollection = db.collection("resource_tags")
   val userCollection: BSONCollection = db.collection("user")
   val discoveredFeedCollection: BSONCollection = db.collection("discovered_feed")
 
