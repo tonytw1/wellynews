@@ -1,6 +1,7 @@
 package nz.co.searchwellington.model.frontend
 
-import java.util.{Date, UUID}
+import java.util
+import java.util.Date
 
 import nz.co.searchwellington.model.{Geocode, Tag, User, Website}
 import uk.co.eelpieconsulting.common.views.rss.RssFeedable
@@ -38,5 +39,10 @@ case class FrontendNewsitem(id: String,
   def getFrontendImage: FrontendImage = image
 
   override def getImageUrl: String = if (image != null) image.getUrl else null
+
+  def getHangTags: util.List[Tag] = {
+    import scala.collection.JavaConverters._
+    handTags.asJava
+  }
 
 }
