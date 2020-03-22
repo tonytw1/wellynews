@@ -117,7 +117,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
 
   def saveResource(resource: Resource)(implicit ec: ExecutionContext): Future[UpdateWriteResult] = {
     val id = BSONDocument("_id" -> resource._id)
-    log.debug("Updating resource: " + resource._id + " / " + resource.last_scanned)
+    log.info("Updating resource: " + resource._id + " / " + resource.last_scanned + " / " + resource.resource_tags)
     resource match { // TODO sick of dealing with Scala implicits and just want to write features so this hack
       case n: Newsitem => resourceCollection.update(id, n, upsert = true)
       case w: Website => resourceCollection.update(id, w, upsert = true)
