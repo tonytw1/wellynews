@@ -47,13 +47,14 @@ import scala.concurrent.Future
           val secondTag = tags(1)
 
           if (totalNewsitemCount > 0) {
+            import scala.collection.JavaConverters._
             val mv = new ModelAndView().
               addObject("tag", firstTag).
               addObject("tags", tags).
               addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName).
               addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".").
               addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag)).
-              addObject(MAIN_CONTENT, taggedNewsitemsAndCount._1)
+              addObject(MAIN_CONTENT, taggedNewsitemsAndCount._1.asJava)
 
             populatePagination(mv, startIndex, totalNewsitemCount, MAX_NEWSITEMS)
             commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTagCombiner(firstTag, secondTag), rssUrlBuilder.getRssUrlForTagCombiner(firstTag, secondTag))

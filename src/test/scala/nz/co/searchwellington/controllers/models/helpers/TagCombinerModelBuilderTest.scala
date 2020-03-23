@@ -55,14 +55,15 @@ class TagCombinerModelBuilderTest extends ReasonableWaits {
   }
 
   @Test
-  def mainContentIsTagCombinerNewsitem(): Unit = {
+  def mainContentIsTagCombinerNewsitems(): Unit = {
     request.setAttribute("tags", Seq(tag, anotherTag))
     val tagCombinerNewsitems = (Seq[FrontendResource](FrontendNewsitem(id = "123"), FrontendNewsitem(id = "456")), 2L)
     when(contentRetrievalService.getTaggedNewsitems(Set(tag, anotherTag), 0, 30, None)).thenReturn(Future.successful(tagCombinerNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    assertEquals(tagCombinerNewsitems._1, mv.getModel.get("main_content"))
+    import scala.collection.JavaConverters._
+    assertEquals(tagCombinerNewsitems._1.asJava, mv.getModel.get("main_content"))
   }
 
 }
