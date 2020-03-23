@@ -50,7 +50,7 @@ import scala.concurrent.Future
             import scala.collection.JavaConverters._
             val mv = new ModelAndView().
               addObject("tag", firstTag).
-              addObject("tags", tags).
+              addObject("tags", tags.asJava).
               addObject("heading", firstTag.getDisplayName + " and " + secondTag.getDisplayName).
               addObject("description", "Items tagged with " + firstTag.getDisplayName + " and " + secondTag.getDisplayName + ".").
               addObject("link", urlBuilder.getTagCombinerUrl(firstTag, secondTag)).

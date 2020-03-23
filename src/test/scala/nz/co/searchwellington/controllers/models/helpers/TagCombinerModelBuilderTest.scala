@@ -26,7 +26,7 @@ class TagCombinerModelBuilderTest extends ReasonableWaits {
   private val tagDAO = mock(classOf[TagDAO])
 
   private val tag = Tag(_id = BSONObjectID.generate, id = UUID.randomUUID().toString, display_name = "Penguins")
-  private val anotherTag = Tag(_id =  BSONObjectID.generate, id = UUID.randomUUID().toString, display_name = "Airport")
+  private val anotherTag = Tag(_id = BSONObjectID.generate, id = UUID.randomUUID().toString, display_name = "Airport")
 
   val request = new MockHttpServletRequest()
 
@@ -58,11 +58,13 @@ class TagCombinerModelBuilderTest extends ReasonableWaits {
   def mainContentIsTagCombinerNewsitems(): Unit = {
     request.setAttribute("tags", Seq(tag, anotherTag))
     val tagCombinerNewsitems = (Seq[FrontendResource](FrontendNewsitem(id = "123"), FrontendNewsitem(id = "456")), 2L)
-    when(contentRetrievalService.getTaggedNewsitems(Set(tag, anotherTag), 0, 30, None)).thenReturn(Future.successful(tagCombinerNewsitems))
+    val tags = Seq(tag, anotherTag)
+    when(contentRetrievalService.getTaggedNewsitems(tags.toSet, 0, 30, None)).thenReturn(Future.successful(tagCombinerNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
+    assertEquals(tags.asJava, mv.getModel.get("tags"))
     assertEquals(tagCombinerNewsitems._1.asJava, mv.getModel.get("main_content"))
   }
 
