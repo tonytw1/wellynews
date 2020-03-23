@@ -107,7 +107,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   private def getPossibleAutotagResources(user: User, tag: Tag): Future[Seq[FrontendResource]] = {
-    val keywords: Set[String] = Set(tag.autotag_hints, Some(tag.display_name)).flatten
+    val keywords = Set(tag.autotag_hints, Some(tag.display_name)).flatten
     contentRetrievalService.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag)
   }
 
