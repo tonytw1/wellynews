@@ -98,6 +98,10 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
     siteInformation.getUrl + "/" + publisher.url_words.get + "+" + tag.getName // TODO Naked get - make url words mandatory for publishers
   }
 
+  def getPublisherTagCombinerUrl(publisher: FrontendWebsite, tag: Tag): String = {
+    siteInformation.getUrl + "/" + publisher.urlWords + "+" + tag.getName
+  }
+
   def getTagCommentUrl(tag: Tag): String = {
     siteInformation.getUrl + "/" + tag.getName + "/comment"
   }
