@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class PublisherTagCombinerModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
+@Component class PublisherTagCombinerModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                                relatedTagsService: RelatedTagsService, commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                                frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with ReasonableWaits {

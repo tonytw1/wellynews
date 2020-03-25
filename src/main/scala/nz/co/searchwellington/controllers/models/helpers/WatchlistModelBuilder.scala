@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class WatchlistModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
+@Component class WatchlistModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                     rssUrlBuilder: RssUrlBuilder,
                                                     urlBuilder: UrlBuilder,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder {
@@ -38,12 +38,7 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser))
-    } yield {
-      import scala.collection.JavaConverters._
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)
-    }
+    withLatestNewsitems(mv, Option(loggedInUser))
   }
 
   def getViewName(mv: ModelAndView): String = "watchlist"

@@ -18,7 +18,7 @@ import scala.concurrent.Future
 @Component class SuggestionsModelBuilder @Autowired()(suggestedFeeditemsService: SuggestedFeeditemsService,
                                                       rssUrlBuilder: RssUrlBuilder,
                                                       urlBuilder: UrlBuilder,
-                                                      contentRetrievalService: ContentRetrievalService,
+                                                      val contentRetrievalService: ContentRetrievalService,
                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
   with ReasonableWaits {
 

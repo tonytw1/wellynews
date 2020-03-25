@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class JustinModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
+@Component class JustinModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                  rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                  commonAttributesModelBuilder: CommonAttributesModelBuilder)
   extends ModelBuilder with CommonSizes with ReasonableWaits {
@@ -40,7 +40,7 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    Future.successful(mv)
+    withLatestNewsitems(mv, Option(loggedInUser))
   }
 
   def getViewName(mv: ModelAndView) = "justin"

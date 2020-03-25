@@ -14,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class TagsModelBuilder @Autowired()(tagDAO: TagDAO, frontendResourceMapper: FrontendResourceMapper,
-                                               contentRetrievalService: ContentRetrievalService) extends ModelBuilder with ReasonableWaits {
+                                               val contentRetrievalService: ContentRetrievalService) extends ModelBuilder with ReasonableWaits {
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/tags$") || request.getPathInfo.matches("^/tags/json$")
@@ -32,12 +32,7 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUser))
-    } yield {
-      import scala.collection.JavaConverters._
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)
-    }
+    withLatestNewsitems(mv, Option(loggedInUser))
   }
 
   def getViewName(mv: ModelAndView): String = "tags"

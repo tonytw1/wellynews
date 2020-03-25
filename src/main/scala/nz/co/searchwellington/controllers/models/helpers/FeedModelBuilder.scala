@@ -17,7 +17,8 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, contentRetrievalService: ContentRetrievalService,
+@Component class FeedModelBuilder @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService,
+                                               val contentRetrievalService: ContentRetrievalService,
                                                geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor, feedNewsItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                                frontendResourceMapper: FrontendResourceMapper,
                                                commonAttributesModelBuilder: CommonAttributesModelBuilder,

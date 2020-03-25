@@ -6,7 +6,6 @@ import java.util.Date
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
-import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.model.{ArchiveLink, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -20,7 +19,7 @@ import uk.co.eelpieconsulting.common.dates.DateFormatter
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class ArchiveModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
+@Component class ArchiveModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
   ModelBuilder with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[ArchiveModelBuilder])

@@ -14,7 +14,8 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class FeedsModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService, suggestedFeeditemsService: SuggestedFeeditemsService,
+@Component class FeedsModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
+                                                suggestedFeeditemsService: SuggestedFeeditemsService,
                                                 urlBuilder: UrlBuilder,
                                                 commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder with ReasonableWaits {
 

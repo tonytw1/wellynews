@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class TagGeotaggedModelBuilder @Autowired()(contentRetrievalService: ContentRetrievalService,
+@Component class TagGeotaggedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                        urlBuilder: UrlBuilder, rssUrlBuilder: RssUrlBuilder,
                                                        commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
   with CommonSizes with ReasonableWaits {

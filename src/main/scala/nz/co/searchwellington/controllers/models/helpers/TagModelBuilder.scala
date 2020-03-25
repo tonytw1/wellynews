@@ -17,11 +17,11 @@ import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Await, Future}
+import scala.concurrent.Future
 
 @Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
-                                              contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
+                                              val contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
                                               frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {
