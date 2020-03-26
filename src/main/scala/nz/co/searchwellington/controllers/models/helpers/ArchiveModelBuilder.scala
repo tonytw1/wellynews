@@ -25,7 +25,6 @@ import scala.concurrent.Future
   private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
 
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO use global
-  private val pathMonthParser = new SimpleDateFormat("yyyy MMM")
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/archive/.*?/.*?$")
@@ -95,24 +94,11 @@ import scala.concurrent.Future
   }
 
   private def getArchiveMonthFromPath(path: String): Option[Interval] = {
-    def intervalForMonth(month: Date): Interval = {
-      new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
-    }
-
     if (path.startsWith("/archive/")) {
       val fields = path.split("/")
       if (fields.length == 4) {
         val archiveMonthString = fields(2) + " " + fields(3)
-        try {
-          val month = pathMonthParser.parse(archiveMonthString)
-          Some(intervalForMonth(month))
-        }
-        catch {
-          case e: ParseException => {
-            log.warn("Could not parse archive month; ignoring: " + archiveMonthString, e)
-            None
-          }
-        }
+        parseYearMonth(archiveMonthString)
       } else {
         None
       }
@@ -121,4 +107,20 @@ import scala.concurrent.Future
     }
   }
 
+  private def parseYearMonth(archiveMonthString: String): Option[Interval] = {
+    def intervalForMonth(month: Date): Interval = {
+      new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
+    }
+
+    try {
+      val pathMonthParser = new SimpleDateFormat("yyyy MMM")
+      val month = pathMonthParser.parse(archiveMonthString)
+      Some(intervalForMonth(month))
+    }
+    catch {
+      case e: ParseException =>
+        log.warn("Could not parse archive month; ignoring: " + archiveMonthString, e)
+        None
+    }
+  }
 }
