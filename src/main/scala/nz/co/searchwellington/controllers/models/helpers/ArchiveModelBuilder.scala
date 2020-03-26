@@ -1,8 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.text.{ParseException, SimpleDateFormat}
-import java.util.Date
-
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
@@ -10,7 +7,7 @@ import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.model.{ArchiveLink, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
-import org.joda.time.{DateTime, DateTimeZone, Interval}
+import org.joda.time.{DateTimeZone, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -20,7 +17,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class ArchiveModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
-  ModelBuilder with ReasonableWaits {
+  ModelBuilder with ReasonableWaits with ArchiveMonth {
 
   private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
 
@@ -107,20 +104,4 @@ import scala.concurrent.Future
     }
   }
 
-  private def parseYearMonth(archiveMonthString: String): Option[Interval] = {
-    def intervalForMonth(month: Date): Interval = {
-      new Interval(new DateTime(month), new DateTime(month).plusMonths(1))
-    }
-
-    try {
-      val pathMonthParser = new SimpleDateFormat("yyyy MMM")
-      val month = pathMonthParser.parse(archiveMonthString)
-      Some(intervalForMonth(month))
-    }
-    catch {
-      case e: ParseException =>
-        log.warn("Could not parse archive month; ignoring: " + archiveMonthString, e)
-        None
-    }
-  }
 }
