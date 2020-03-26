@@ -12,19 +12,17 @@ import scala.concurrent.Future
 class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService) extends ModelBuilder with ArchiveMonth {
 
   override def isValid(request: HttpServletRequest): Boolean = {
-    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    if (publisher != null) {
-      val path = request.getContextPath
-      val str = "/" + publisher.url_words.get
-      if (path.startsWith(str)) {
-        val last = path.split("/").last
-        parseYearMonth(last).nonEmpty
-      } else {
-        false
+    Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
+      publisher.url_words.flatMap { publisherUrlWords =>
+        val path = request.getContextPath
+        if (path.startsWith("/" + publisherUrlWords)) {
+          val last = path.split("/").last
+          parseYearMonth(last)
+        } else {
+          None
+        }
       }
-    } else {
-      false
-    }
+    }.nonEmpty
   }
 
   override def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = ???
