@@ -7,12 +7,13 @@ import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper)
+@Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with ArchiveMonth {
 
   override def isValid(request: HttpServletRequest): Boolean = {
