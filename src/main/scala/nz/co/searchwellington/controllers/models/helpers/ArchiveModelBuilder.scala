@@ -24,7 +24,7 @@ import scala.concurrent.Future
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO use global
 
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/archive/.*?/.*?$")
+    request.getPathInfo.matches("^/archive/.*?$")
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
