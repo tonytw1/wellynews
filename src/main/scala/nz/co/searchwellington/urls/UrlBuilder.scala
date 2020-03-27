@@ -1,5 +1,6 @@
 package nz.co.searchwellington.urls
 
+import java.text.SimpleDateFormat
 import java.util.Date
 
 import nz.co.searchwellington.model._
@@ -135,7 +136,8 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
   }
 
   def getArchiveLinkUrl(date: Date): String = {
-    siteInformation.getUrl + "/archive/" + dateFormatter.yearMonthUrlStub(date)
+    val pathMonthParser = new SimpleDateFormat("yyyy-MMM")
+    siteInformation.getUrl + "/archive/" + pathMonthParser.format(date)
   }
 
   def getOpenIDCallbackUrl: String = {
