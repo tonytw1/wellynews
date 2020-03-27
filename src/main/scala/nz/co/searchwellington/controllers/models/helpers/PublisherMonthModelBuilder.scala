@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.joda.time.Interval
@@ -9,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
-class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService) extends ModelBuilder with ArchiveMonth {
+class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper)
+  extends ModelBuilder with ArchiveMonth {
 
   override def isValid(request: HttpServletRequest): Boolean = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
@@ -22,7 +25,15 @@ class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: Conte
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
 
       parseMonth(publisher, request.getContextPath).map { month =>
-        Future.successful(None)
+        for {
+          eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher)
+          newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, Option(loggedInUser))
+        } yield {
+          import scala.collection.JavaConverters._
+          Some(new ModelAndView().
+            addObject("publisher", eventualFrontendWebsite).
+            addObject(MAIN_CONTENT, newsitemsForMonth.asJava))
+        }
 
       }.getOrElse {
         Future.successful(None)
@@ -35,7 +46,7 @@ class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: Conte
 
   override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = ???
 
-  override def getViewName(mv: ModelAndView): String = ???
+  override def getViewName(mv: ModelAndView): String = "publisher"
 
   private def parseMonth(publisher: Website, path: String): Option[Interval] = {
     publisher.url_words.flatMap { publisherUrlWords =>

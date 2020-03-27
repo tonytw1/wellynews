@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Website
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.junit.Assert.{assertFalse, assertTrue}
 import org.junit.Test
@@ -11,10 +12,11 @@ import org.springframework.mock.web.MockHttpServletRequest
 class PublisherMonthModelBuilderTest extends ReasonableWaits {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
+  private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
   private val aPublisher = Website(title = Some("A publisher"), url_words = Some("a-publisher"))
 
-  private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService)
+  private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper)
 
   @Test
   def isValidForPublisherAndMonthPath(): Unit = {

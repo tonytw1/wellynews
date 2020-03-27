@@ -93,7 +93,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
   def getNewsitemsForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
     val newsitemsForMonth = ResourceQuery(`type` = Some("N"), interval = Some(interval), maxItems = ALL_ITEMS)
     elasticSearchIndexer.getResources(newsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
-}
+  }
+
+  def getNewsitemsForPublisherInterval(publisher: Website, interval: Interval, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
+    val publisherNewsitemsForMonth = ResourceQuery(`type` = Some("N"), publisher = Some(publisher), interval = Some(interval), maxItems = ALL_ITEMS)
+    elasticSearchIndexer.getResources(publisherNewsitemsForMonth, loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
+  }
 
   def getPublishersForInterval(interval: Interval, loggedInUser: Option[User]): Future[Seq[(FrontendResource, Long)]] = {
     elasticSearchIndexer.getPublishersForInterval(interval, loggedInUser).flatMap { meh =>
