@@ -19,8 +19,6 @@ import scala.concurrent.Future
 @Component class ArchiveModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, archiveLinksService: ArchiveLinksService) extends
   ModelBuilder with ReasonableWaits with ArchiveMonth {
 
-  private val log = Logger.getLogger(classOf[ArchiveModelBuilder])
-
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO use global
 
   private val archiveMonthPath = "^/archive/.*?$"
@@ -97,12 +95,9 @@ import scala.concurrent.Future
   }
 
   private def getArchiveMonthFromPath(path: String): Option[Interval] = {
-    log.info("Archive path", path, path)
     if (path.matches(archiveMonthPath)) {
       val fields = path.split("/")
-      val archiveMonthString = fields(1)
-      log.info("Archive month string" + archiveMonthString)
-      parseYearMonth(archiveMonthString)
+      parseYearMonth(fields.last)
     } else {
       None
     }
