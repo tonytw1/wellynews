@@ -5,6 +5,7 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
+import org.apache.log4j.Logger
 import org.joda.time.Interval
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -16,9 +17,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with ArchiveMonth {
 
+  private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
+
   override def isValid(request: HttpServletRequest): Boolean = {
-    Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
-      parseMonth(publisher, request.getContextPath)
+    val maybeWebsite = Option(request.getAttribute("publisher").asInstanceOf[Website])
+    val path = request.getContextPath
+    logger.info("Publisher / month path", maybeWebsite, path)
+    maybeWebsite.flatMap { publisher =>
+      parseMonth(publisher, path)
     }.nonEmpty
   }
 
