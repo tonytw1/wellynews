@@ -137,7 +137,7 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
 
   def getArchiveLinkUrl(date: Date): String = {
     val pathMonthParser = new SimpleDateFormat("yyyy-MMM")
-    siteInformation.getUrl + "/archive/" + pathMonthParser.format(date)
+    "/archive/" + pathMonthParser.format(date).toLowerCase
   }
 
   def getOpenIDCallbackUrl: String = {

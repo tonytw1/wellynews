@@ -62,10 +62,9 @@ class UrlBuilderTest {
   @Test
   def canGenerateFrontendPublisherPageUrl(): Unit = assertEquals(SITE_URL + "/wellington-city-council", urlBuilder.getPublisherUrl("Wellington City Council"))
 
-
   @Test
   def urlForFeedsShouldPointToOurFeedPage(): Unit = {
-    val frontendFeed = new FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
+    val frontendFeed = FrontendFeed(id = UUID.randomUUID().toString, urlWords = "my-local-sports-team-match-reports")
 
     assertEquals(SITE_URL + "/feed/my-local-sports-team-match-reports", urlBuilder.getFeedUrl(frontendFeed))
   }
@@ -74,6 +73,15 @@ class UrlBuilderTest {
   def canComposeOsmWebsiteLinkforOsmIds(): Unit = {
     val osmId = new OsmId(24724709, OsmType.WAY)
     assertEquals("http://www.openstreetmap.org/browse/way/24724709", urlBuilder.getOsmWebsiteUrl(osmId))
+  }
+
+  @Test
+  def archiveLinksAreYearMonthFormatted(): Unit = {
+    val feb = new DateTime(2020, 2, 12, 0, 0, 0)
+
+    val link = urlBuilder.getArchiveLinkUrl(feb.toDate)
+
+    assertEquals("/archive/2020-feb", link)
   }
 
 }
