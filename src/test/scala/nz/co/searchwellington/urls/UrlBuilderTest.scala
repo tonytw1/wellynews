@@ -2,7 +2,7 @@ package nz.co.searchwellington.urls
 
 import java.util.UUID
 
-import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
 import nz.co.searchwellington.model.{SiteInformation, Tag, UrlWordsGenerator, Website}
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertNull}
@@ -86,7 +86,7 @@ class UrlBuilderTest {
 
   @Test
   def publisherArchiveLinksAreYearMonthFormatted(): Unit = {
-    val publisher = Website(url_words = Some("a-publisher"))
+    val publisher = FrontendWebsite(id = "123", urlWords = "a-publisher")
     val feb = new DateTime(2020, 2, 12, 0, 0, 0)
 
     val link = urlBuilder.getPublisherArchiveLinkUrl(publisher, feb.toDate)

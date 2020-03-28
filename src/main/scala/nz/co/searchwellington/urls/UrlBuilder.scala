@@ -140,8 +140,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/archive/" + archiveMonthFormat.format(date).toLowerCase
   }
 
-  def getPublisherArchiveLinkUrl(publisher: Website, date: Date): String = {
-    getPublisherUrl(publisher) + "/" + archiveMonthFormat.format(date).toLowerCase
+  def getPublisherArchiveLinkUrl(publisher: FrontendResource, date: Date): String = {
+    "/" + publisher.getUrlWords + "/" + archiveMonthFormat.format(date).toLowerCase
   }
 
   def getOpenIDCallbackUrl: String = {

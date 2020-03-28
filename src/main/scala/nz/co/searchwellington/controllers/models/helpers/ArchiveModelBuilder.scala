@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
-import nz.co.searchwellington.model.{ArchiveLink, User}
+import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.joda.time.{DateTimeZone, Interval}
@@ -58,8 +58,12 @@ import scala.concurrent.Future
         populateNextAndPreviousLinks(mv, month, archiveLinks)
         archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
 
+        val resources: Seq[PublisherArchiveLink] = monthPublishers.map{ i =>
+          PublisherArchiveLink(i._1, month, i._2)
+        }
+
         import scala.collection.JavaConverters._
-        mv.addObject("publishers", monthPublishers.map(_._1).asJava)
+        mv.addObject("publishers", resources.asJava)
       }
 
     }.getOrElse{
