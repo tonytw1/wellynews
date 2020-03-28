@@ -85,7 +85,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getUrl + "/" + resource.getUrlWords
   }
 
-  def getPublisherUrl(publisher: Website): String = siteInformation.getUrl + "/" + publisher.url_words.get // TODO Naked get
+  def getPublisherUrl(publisher: Website): String = "/" + publisher.url_words.get // TODO Naked get
 
   @Deprecated
   def getPublisherUrl(publisherName: String): String = { // TODO use pubslishers url words
@@ -138,6 +138,10 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
 
   def getArchiveLinkUrl(date: Date): String = {
     "/archive/" + archiveMonthFormat.format(date).toLowerCase
+  }
+
+  def getPublisherArchiveLinkUrl(publisher: Website, date: Date): String = {
+    getPublisherUrl(publisher) + "/" + archiveMonthFormat.format(date).toLowerCase
   }
 
   def getOpenIDCallbackUrl: String = {

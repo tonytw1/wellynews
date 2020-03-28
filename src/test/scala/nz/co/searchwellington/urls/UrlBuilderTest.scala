@@ -84,4 +84,14 @@ class UrlBuilderTest {
     assertEquals("/archive/2020-feb", link)
   }
 
+  @Test
+  def publisherArchiveLinksAreYearMonthFormatted(): Unit = {
+    val publisher = Website(url_words = Some("a-publisher"))
+    val feb = new DateTime(2020, 2, 12, 0, 0, 0)
+
+    val link = urlBuilder.getPublisherArchiveLinkUrl(publisher, feb.toDate)
+
+    assertEquals("/a-publisher/2020-feb", link)
+  }
+
 }
