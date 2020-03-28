@@ -16,7 +16,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   extends AttributeSetter with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[PublisherPageAttributeSetter])
-  private val publisherPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged))?(/(edit|save|rss|json))?$")
+  private val publisherPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|.*?-.*?))?(/(edit|save|rss|json))?$")
 
   def setAttributes(request: HttpServletRequest): Boolean = {
     val contentMatcher: Matcher = publisherPagePathPattern.matcher(request.getPathInfo)

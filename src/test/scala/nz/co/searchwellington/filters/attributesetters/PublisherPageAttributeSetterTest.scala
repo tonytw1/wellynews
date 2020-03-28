@@ -3,7 +3,6 @@ package nz.co.searchwellington.filters.attributesetters
 import java.util.UUID
 
 import nz.co.searchwellington.model.Website
-import nz.co.searchwellington.repositories.HibernateResourceDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.junit.Assert.assertEquals
 import org.junit.{Before, Test}
@@ -11,8 +10,8 @@ import org.mockito.Mockito.when
 import org.mockito.{Mock, MockitoAnnotations}
 import org.springframework.mock.web.MockHttpServletRequest
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class PublisherPageAttributeSetterTest {
   @Mock val mongoRepository: MongoRepository = null
@@ -29,6 +28,15 @@ class PublisherPageAttributeSetterTest {
 
   @Test def shouldSetPublisherAttributeForPublisherPath(): Unit = {
     request.setPathInfo("/wellington-city-council")
+
+    pageAttributeSetter.setAttributes(request)
+
+    assertEquals(publisher, request.getAttribute("publisher"))
+  }
+
+
+  @Test def shouldSetPublisherAttributeForPublisherArchivePath(): Unit = {
+    request.setPathInfo("/wellington-city-council/2020-mar")
 
     pageAttributeSetter.setAttributes(request)
 
