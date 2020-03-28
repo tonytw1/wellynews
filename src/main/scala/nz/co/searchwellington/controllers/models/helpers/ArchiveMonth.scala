@@ -7,7 +7,7 @@ import org.joda.time.{DateTime, Interval}
 
 trait ArchiveMonth {
 
-  val pathMonthParser = new SimpleDateFormat("yyyy MMM")
+  val pathMonthParser = new SimpleDateFormat("yyyy-MMM")
 
   def parseYearMonth(archiveMonthString: String): Option[Interval] = {
     def intervalForMonth(month: Date): Interval = {

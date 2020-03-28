@@ -24,7 +24,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   override def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
-
       parseMonth(publisher, request.getContextPath).map { month =>
         for {
           eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher)
