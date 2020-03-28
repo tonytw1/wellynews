@@ -1,18 +1,19 @@
 package nz.co.searchwellington.urls
 
-import java.text.SimpleDateFormat
 import java.util.Date
 
+import nz.co.searchwellington.controllers.models.helpers.ArchiveMonth
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendWebsite}
 import org.joda.time.DateTimeZone
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.stereotype.Component
 import uk.co.eelpieconsulting.common.dates.DateFormatter
 import uk.co.eelpieconsulting.common.geo.model.{OsmId, Place}
-import org.springframework.stereotype.Component
 
 @Component
-class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator) {
+class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerator: UrlWordsGenerator)
+  extends ArchiveMonth {
 
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC);
 
@@ -84,10 +85,10 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
     siteInformation.getUrl + "/" + resource.getUrlWords
   }
 
-  def getPublisherUrl(publisher: Website): String = siteInformation.getUrl + "/" + publisher.url_words.get  // TODO Naked get
+  def getPublisherUrl(publisher: Website): String = siteInformation.getUrl + "/" + publisher.url_words.get // TODO Naked get
 
   @Deprecated
-  def getPublisherUrl(publisherName: String): String = {  // TODO use pubslishers url words
+  def getPublisherUrl(publisherName: String): String = { // TODO use pubslishers url words
     if (publisherName != null) {
       siteInformation.getUrl + "/" + urlWordsGenerator.makeUrlWordsFromName(publisherName)
     } else {
@@ -136,8 +137,7 @@ class UrlBuilder @Autowired() (siteInformation: SiteInformation, urlWordsGenerat
   }
 
   def getArchiveLinkUrl(date: Date): String = {
-    val pathMonthParser = new SimpleDateFormat("yyyy-MMM")
-    "/archive/" + pathMonthParser.format(date).toLowerCase
+    "/archive/" + archiveMonthFormat.format(date).toLowerCase
   }
 
   def getOpenIDCallbackUrl: String = {
