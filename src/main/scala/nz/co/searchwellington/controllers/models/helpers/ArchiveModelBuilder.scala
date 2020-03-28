@@ -23,8 +23,10 @@ import scala.concurrent.Future
 
   private val dateFormatter = new DateFormatter(DateTimeZone.UTC) // TODO use global
 
+  private val archiveMonthPath = "^/archive/.*?$"
+
   def isValid(request: HttpServletRequest): Boolean = {
-    request.getPathInfo.matches("^/archive/.*?$")
+    request.getPathInfo.matches(archiveMonthPath)
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
@@ -95,14 +97,10 @@ import scala.concurrent.Future
   }
 
   private def getArchiveMonthFromPath(path: String): Option[Interval] = {
-    if (path.startsWith("/archive/")) {
+    if (path.matches(archiveMonthPath)) {
       val fields = path.split("/")
-      if (fields.length == 4) {
-        val archiveMonthString = fields(2) + " " + fields(3)
-        parseYearMonth(archiveMonthString)
-      } else {
-        None
-      }
+      val archiveMonthString = fields(1)
+      parseYearMonth(archiveMonthString)
     } else {
       None
     }
