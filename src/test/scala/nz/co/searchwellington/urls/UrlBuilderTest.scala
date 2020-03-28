@@ -2,44 +2,31 @@ package nz.co.searchwellington.urls
 
 import java.util.UUID
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem}
 import nz.co.searchwellington.model.{SiteInformation, Tag, UrlWordsGenerator, Website}
-import nz.co.searchwellington.model.frontend.FrontendFeed
-import nz.co.searchwellington.model.frontend.FrontendNewsitem
 import org.joda.time.DateTime
-import org.junit.Before
-import org.junit.Test
-import org.mockito.Mock
+import org.junit.Assert.{assertEquals, assertNull}
+import org.junit.{Before, Test}
 import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
-import uk.co.eelpieconsulting.common.geo.model.LatLong
-import uk.co.eelpieconsulting.common.geo.model.OsmId
-import uk.co.eelpieconsulting.common.geo.model.OsmType
-import uk.co.eelpieconsulting.common.geo.model.Place
-
-object UrlBuilderTest {
-}
+import org.mockito.Mockito.mock
+import uk.co.eelpieconsulting.common.geo.model.{LatLong, OsmId, OsmType, Place}
 
 class UrlBuilderTest {
 
   private val SITE_URL = "http://siteurl.test"
 
-  @Mock private[urls] val siteInformation: SiteInformation = null
-  private var urlBuilder: UrlBuilder = null
-  private var frontendNewsitem: FrontendNewsitem = null
-  private var tag: Tag = null
+  private val siteInformation = mock(classOf[SiteInformation])
+
+  private val urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
+
+  private val frontendNewsitem: FrontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
+    name = "Quick brown fox jumps over the lazy dog",
+    date = new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate,
+    urlWords = "2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
+  private val tag = Tag(name = "atag")
 
   @Before def setup(): Unit = {
-    MockitoAnnotations.initMocks(this)
     Mockito.when(siteInformation.getUrl).thenReturn(SITE_URL)
-    urlBuilder = new UrlBuilder(siteInformation, new UrlWordsGenerator)
-    frontendNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString,
-      name = "Quick brown fox jumps over the lazy dog",
-      date = new DateTime(2010, 10, 12, 0, 0, 0, 0).toDate,
-      urlWords = "2010/oct/12/quick-brown-fox-jumps-over-lazy-dog")
-
-    tag = Tag(name = "atag")
   }
 
   @Test
