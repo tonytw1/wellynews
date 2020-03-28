@@ -97,9 +97,11 @@ import scala.concurrent.Future
   }
 
   private def getArchiveMonthFromPath(path: String): Option[Interval] = {
+    log.info("Archive path", path, path)
     if (path.matches(archiveMonthPath)) {
       val fields = path.split("/")
       val archiveMonthString = fields(1)
+      log.info("Archive month string" + archiveMonthString)
       parseYearMonth(archiveMonthString)
     } else {
       None
