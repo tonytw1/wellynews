@@ -38,10 +38,10 @@
 
         <div class="box">
             <h2>Publishers</h2>
-            <p>$publishers.size()</p>
+            <p>$publisher_archive_links.size() publishers have published news items this month.</p>
            <ul>
-                #foreach ($publisher in $publishers)
-                    <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($publisher.publisher, $publisher.date)">$publisher.publisher.name $publisher.count</a></li>
+                #foreach ($link in $publisher_archive_links)
+                    <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$link</a></li>
                 #end
             </ul>
         </div>

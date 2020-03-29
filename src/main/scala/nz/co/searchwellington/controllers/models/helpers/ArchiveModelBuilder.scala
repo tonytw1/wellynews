@@ -58,12 +58,12 @@ import scala.concurrent.Future
         populateNextAndPreviousLinks(mv, month, archiveLinks)
         archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
 
-        val resources: Seq[PublisherArchiveLink] = monthPublishers.map{ i =>
+        val publisherArchiveLinks = monthPublishers.map{ i =>
           PublisherArchiveLink(i._1, month, i._2)
         }
 
         import scala.collection.JavaConverters._
-        mv.addObject("publishers", resources.asJava)
+        mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
       }
 
     }.getOrElse{

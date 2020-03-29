@@ -3,8 +3,8 @@ package nz.co.searchwellington.urls
 import java.util.UUID
 
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
-import nz.co.searchwellington.model.{ArchiveLink, SiteInformation, Tag, UrlWordsGenerator, Website}
-import org.joda.time.DateTime
+import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, SiteInformation, Tag, UrlWordsGenerator, Website}
+import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.{assertEquals, assertNull}
 import org.junit.{Before, Test}
 import org.mockito.Mockito
@@ -87,9 +87,11 @@ class UrlBuilderTest {
   @Test
   def publisherArchiveLinksAreYearMonthFormatted(): Unit = {
     val publisher = FrontendWebsite(id = "123", urlWords = "a-publisher")
-    val feb = new DateTime(2020, 2, 12, 0, 0, 0)
 
-    val link = urlBuilder.getPublisherArchiveLinkUrl(publisher, feb.toDate)
+    val feb = new DateTime(2020, 2, 12, 0, 0, 0)
+    val monthOfFeb = new Interval(feb, feb.plusMonths(1))
+
+    val link = urlBuilder.getPublisherArchiveLinkUrl(PublisherArchiveLink(publisher, monthOfFeb, 3))
 
     assertEquals("/a-publisher/2020-feb", link)
   }
