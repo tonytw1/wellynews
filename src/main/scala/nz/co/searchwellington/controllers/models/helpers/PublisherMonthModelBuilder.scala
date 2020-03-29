@@ -21,16 +21,14 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   override def isValid(request: HttpServletRequest): Boolean = {
     val maybeWebsite = Option(request.getAttribute("publisher").asInstanceOf[Website])
-    val path = request.getContextPath
-    logger.info("Publisher / month path", maybeWebsite, path)
     maybeWebsite.flatMap { publisher =>
-      parseMonth(publisher, path)
+      parseMonth(publisher, request.getPathInfo)
     }.nonEmpty
   }
 
   override def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
-      parseMonth(publisher, request.getContextPath).map { month =>
+      parseMonth(publisher, request.getPathInfo).map { month =>
         for {
           eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher)
           newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, Option(loggedInUser))
