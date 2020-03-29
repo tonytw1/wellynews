@@ -136,8 +136,8 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getUrl + "/archive"
   }
 
-  def getArchiveLinkUrl(date: Date): String = {
-    "/archive/" + archiveMonthFormat.format(date).toLowerCase
+  def getArchiveLinkUrl(link: ArchiveLink): String = {
+    "/archive/" + archiveMonthFormat.format(link.month).toLowerCase
   }
 
   def getPublisherArchiveLinkUrl(publisher: FrontendResource, date: Date): String = {

@@ -50,7 +50,7 @@ import scala.concurrent.Future
         addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
       monthOfLastItem(latestNewsitems).map { d =>
-        mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
+        // mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
       }
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)

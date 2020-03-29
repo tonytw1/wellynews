@@ -19,11 +19,11 @@
 
         #if ($previous_page || $next_page)
             #if ($previous_page)
-                <a href="$urlBuilder.getArchiveLinkUrl($previous_page.month)">$dateFormatter.fullMonthYear($previous_page.month)</a>
+                <a href="$urlBuilder.getArchiveLinkUrl($previous_page)">$dateFormatter.fullMonthYear($previous_page.month)</a>
             #end
             |
             #if ($next_page)
-                <a href="$urlBuilder.getArchiveLinkUrl($next_page.month)">$dateFormatter.fullMonthYear($next_page.month)</a>
+                <a href="$urlBuilder.getArchiveLinkUrl($next_page)">$dateFormatter.fullMonthYear($next_page.month)</a>
             #end
         #end
 

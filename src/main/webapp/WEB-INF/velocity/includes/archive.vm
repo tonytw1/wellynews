@@ -12,7 +12,7 @@
             #if ($archive_month && $link == $archive_month)
                 <b>$dateFormatter.fullMonthYear($link.month)</b>
             #else
-                <a href="$urlBuilder.getArchiveLinkUrl($link.month)">$dateFormatter.fullMonthYear($link.month)</a>
+                <a href="$urlBuilder.getArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a>
             #end
             #if ($first == 1)
                 ($link.count #showPluralWord($link.count "newsitem"))

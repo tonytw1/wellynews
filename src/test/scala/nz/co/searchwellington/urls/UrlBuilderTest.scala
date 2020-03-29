@@ -3,7 +3,7 @@ package nz.co.searchwellington.urls
 import java.util.UUID
 
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendWebsite}
-import nz.co.searchwellington.model.{SiteInformation, Tag, UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{ArchiveLink, SiteInformation, Tag, UrlWordsGenerator, Website}
 import org.joda.time.DateTime
 import org.junit.Assert.{assertEquals, assertNull}
 import org.junit.{Before, Test}
@@ -79,7 +79,7 @@ class UrlBuilderTest {
   def archiveLinksAreYearMonthFormatted(): Unit = {
     val feb = new DateTime(2020, 2, 12, 0, 0, 0)
 
-    val link = urlBuilder.getArchiveLinkUrl(feb.toDate)
+    val link = urlBuilder.getArchiveLinkUrl(new ArchiveLink(feb.toDate, 1))
 
     assertEquals("/archive/2020-feb", link)
   }
