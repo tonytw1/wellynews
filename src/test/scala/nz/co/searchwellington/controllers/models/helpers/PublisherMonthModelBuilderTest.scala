@@ -31,7 +31,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   def isValidForPublisherAndMonthPath(): Unit = {
     val request = new MockHttpServletRequest()
     request.setAttribute("publisher", aPublisher)
-    request.setContextPath("/a-publisher/2020-feb")
+    request.setPathInfo("/a-publisher/2020-feb")
 
     assertTrue(modelBuilder.isValid(request))
   }
@@ -39,7 +39,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   @Test
   def isNotValidForPublisherAndMonthPath(): Unit = {
     val archiveMonthRequest = new MockHttpServletRequest
-    archiveMonthRequest.setContextPath("/2020-may")
+    archiveMonthRequest.setPathInfo("/2020-may")
 
     assertFalse(modelBuilder.isValid(archiveMonthRequest))
   }
@@ -48,7 +48,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   def isValidForPublisherNonDate(): Unit = {
     val request = new MockHttpServletRequest()
     request.setAttribute("publisher", aPublisher)
-    request.setContextPath("/a-publisher/something")
+    request.setPathInfo("/a-publisher/something")
 
     assertFalse(modelBuilder.isValid(request))
   }
