@@ -16,23 +16,20 @@ class TagHintAutoTagger @Autowired() (tagDAO: TagDAO) {
 
   def suggestTags(resource: Resource)(implicit ec: ExecutionContext): Future[Set[Tag]] = {
 
-    def matches(resource: Resource, tag: Tag) : Boolean = {
-      def resourceMatchesHint(resource: Resource, hint: String) : Boolean = {
-        def matches(hint: String, value: String): Boolean = {
-          !Strings.isNullOrEmpty(value) && value.toLowerCase().contains(hint.toLowerCase())
-        }
-        resource.title.exists(t => matches(hint, t)) || resource.description.exists(d => matches(hint, d))
-      }
+    val resourceContent = (resource.title + " " + resource.description).toLowerCase
 
-      tag.getAutotagHints.exists { hintsString =>
-        val hints = commaSplitter.split(hintsString)
-        hints.exists(hint => resourceMatchesHint(resource, hint))
-      }
+    def matches(resource: Resource, tag: Tag) : Boolean = {
+      val autotagHints = tag.autotag_hints.map { autotagHints =>
+        commaSplitter.split(autotagHints).map(_.trim).toSeq
+      }.getOrElse(Seq.empty)
+
+      val keywordsForTags = (autotagHints:+ tag.name.trim).filter(!Strings.isNullOrEmpty(_))
+
+      keywordsForTags.exists(keyword => resourceContent.contains(keyword.toLowerCase))
     }
 
     tagDAO.getAllTags.map { allTags =>
-      val tagsWithAutotaggingHints = allTags.filter(t => t.autotag_hints.exists(!Strings.isNullOrEmpty(_))) // TODO include the tag name?
-      tagsWithAutotaggingHints.filter(tag => matches(resource, tag)).toSet
+      allTags.filter(tag => matches(resource, tag)).toSet
     }
   }
 

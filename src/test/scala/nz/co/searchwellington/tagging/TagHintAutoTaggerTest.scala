@@ -18,7 +18,8 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
 
   private val tagHintAutoTagger = new TagHintAutoTagger(tagDAO)
 
-  @Test def shouldMatchTitlesWhichContainAutotaggingHint() {
+  @Test
+  def shouldMatchResourcesWhichContainAutotaggingHints() {
     val tag = Tag(autotag_hints = Some("fox,animal"))
     val anotherTag = Tag(autotag_hints = Some("cat"))
     when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag, anotherTag)))
@@ -28,6 +29,17 @@ class TagHintAutoTaggerTest extends ReasonableWaits {
 
     assertTrue(suggestions.contains(tag))
     assertFalse(suggestions.contains(anotherTag))
+  }
+
+  @Test
+  def shouldMatchResourcesWhichContainTagName() {
+    val tag = Tag(name = "fox")
+    when(tagDAO.getAllTags).thenReturn(Future.successful(Seq(tag)))
+    val resource = Newsitem(id = UUID.randomUUID().toString, description = Some("The quick brown fox jumped over the lazy dog"))
+
+    val suggestions = Await.result(tagHintAutoTagger.suggestTags(resource), TenSeconds)
+
+    assertTrue(suggestions.contains(tag))
   }
 
 }
