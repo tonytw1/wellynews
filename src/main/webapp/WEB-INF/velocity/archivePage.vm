@@ -38,7 +38,7 @@
 
         <div class="box">
             <h2>Publishers</h2>
-            <p>$publisher_archive_links.size() publishers have published news items this month.</p>
+            <p>#showPluralWord($publisher_archive_links.size() "publisher") have published news items this month.</p>
            <ul>
                 #foreach ($link in $publisher_archive_links)
                     <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$link</a></li>
