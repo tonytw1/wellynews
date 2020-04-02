@@ -12,9 +12,9 @@ class ArchiveLinksService @Autowired()() {
 
   def populateArchiveLinks(mv: ModelAndView, archiveMonths: Seq[ArchiveLink], archiveStatistics: Map[String, Long]): Unit = {
     def populateArchiveStatistics(mv: ModelAndView): Unit = {
-      mv.addObject("site_count", archiveStatistics.get("W"))
-      mv.addObject("newsitem_count", archiveStatistics.get("N"))
-      mv.addObject("feed_count", archiveStatistics.get("F"))
+      mv.addObject("site_count", archiveStatistics.get("W").orNull)
+      mv.addObject("newsitem_count", archiveStatistics.get("N").orNull)
+      mv.addObject("feed_count", archiveStatistics.get("F").orNull)
     }
 
     import scala.collection.JavaConverters._
