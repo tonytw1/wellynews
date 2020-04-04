@@ -18,7 +18,12 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: User = null): Future[Option[ModelAndView]] = {
-    modelBuilders.find(mb => mb.isValid(request)).map { mb =>
+    logger.info("Serving path: " + request.getPathInfo)
+    modelBuilders.find(mb => {
+      val r = mb.isValid(request)
+      logger.info(mb.getClass.getCanonicalName + " / " + request.getPathInfo + ": " + r)
+      r
+    }).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
       mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
