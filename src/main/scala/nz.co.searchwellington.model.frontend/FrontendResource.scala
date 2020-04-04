@@ -28,6 +28,8 @@ trait FrontendResource extends RssFeedable with Serializable {
 
   final def getName: String = name
 
+  final def getLabel: String = Option(name).getOrElse(id)
+
   final def getHeadline: String = name
 
   final def getUrl: String = url

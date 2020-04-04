@@ -12,15 +12,18 @@
 
 <ul>
 #set($letter = "")
+#set($current = "")
 #foreach ($publisher in $main_content)
-	#set($current = $publisher.name.substring(0, 1).toUpperCase())
+	#if ($tag.name.length() > 0)
+	    #set($current = $publisher.name.substring(0, 1).toUpperCase())
+    #end
 	#if ($current != $letter)
 		#set($letter = $current)		
 		</ul>
 		<h4>$current.toUpperCase()</h4>
 		<ul>
 	#end
-	<li><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$publisher.name</a></li>
+	<li><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$publisher.label</a></li>
 #end
 </ul>
 </div>
