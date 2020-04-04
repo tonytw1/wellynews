@@ -28,16 +28,24 @@ class ContentController @Autowired()(contentModelBuilderServiceFactory: ContentM
     val TenSeconds = Duration(10, SECONDS)
 
     val eventualMaybeView = contentModelBuilderService.populateContentModel(request, loggedInUserFilter.getLoggedInUser)
-    Await.result(eventualMaybeView, TenSeconds).fold {
-      log.warn("Model was null; returning 404")
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      null: ModelAndView
 
-    } { mv =>
-      if (isHtmlView(mv)) {
-        urlStack.setUrlStack(request)
+    try {
+      Await.result(eventualMaybeView, TenSeconds).fold {
+        log.warn("Model was null; returning 404")
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+        null: ModelAndView
+
+      } { mv =>
+        if (isHtmlView(mv)) {
+          urlStack.setUrlStack(request)
+        }
+        mv
       }
-      mv
+    } catch {
+      case e: Exception => {
+        log.error("Error building content", e)
+        throw e
+      }
     }
   }
 
