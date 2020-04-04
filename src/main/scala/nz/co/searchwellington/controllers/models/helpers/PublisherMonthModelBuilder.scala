@@ -11,19 +11,25 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
 
 @Component class PublisherMonthModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with ArchiveMonth {
 
-  private val logger = Logger.getLogger(classOf[PublisherTagCombinerModelBuilder])
+  val PublisherMonthPath = "/*/[0-9]+-.*?"
+
+  private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
   override def isValid(request: HttpServletRequest): Boolean = {
     val maybeWebsite = Option(request.getAttribute("publisher").asInstanceOf[Website])
-    maybeWebsite.flatMap { publisher =>
+    val r = maybeWebsite.flatMap { publisher =>
       parseMonth(publisher, request.getPathInfo)
     }.nonEmpty
+
+    logger.info("Publiser month builder is valid", maybeWebsite, request.getPathInfo, r)
+    r
   }
 
   override def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
