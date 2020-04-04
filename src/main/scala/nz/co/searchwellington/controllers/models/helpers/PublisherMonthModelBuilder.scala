@@ -56,7 +56,7 @@ import scala.concurrent.Future
 
   override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = Future.successful(mv)
 
-  override def getViewName(mv: ModelAndView): String = "publisher"
+  override def getViewName(mv: ModelAndView): String = "publisherMonth"
 
   private def parseMonth(publisher: Website, path: String): Option[Interval] = {
     publisher.url_words.flatMap { publisherUrlWords =>
