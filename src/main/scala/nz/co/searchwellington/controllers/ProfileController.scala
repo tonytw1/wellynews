@@ -43,6 +43,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
 
   @RequestMapping(Array("/profiles/*"))
   def profile(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
 
     def userByPath(path: String): Option[User] = {
       if (path.matches("^/profiles/.*$")) {
@@ -63,14 +64,17 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
         taggedBy <- eventualTaggedBy
       } yield {
 
-        var mv = new ModelAndView("viewProfile")
-        val loggedInUser = loggedInUserFilter.getLoggedInUser
-        if (loggedInUser != null && loggedInUser.getId == user.getId) {
-          mv = new ModelAndView("profile")
+        def selectView: String = {
+          if (loggedInUser != null && loggedInUser.getId == user.getId) {
+            "profile"
+          } else {
+            "viewProfile"
+          }
         }
 
         import scala.collection.JavaConverters._
-        mv.addObject("heading", "User profile").
+        new ModelAndView(selectView).
+          addObject("heading", "User profile").
           addObject("profileuser", user).
           addObject("submitted", ownedBy.asJava).
           addObject("tagged", taggedBy.asJava)

@@ -1,7 +1,6 @@
 package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
-import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.annotations.Timed
 import nz.co.searchwellington.controllers.models.ContentModelBuilderServiceFactory
 import org.apache.log4j.Logger
