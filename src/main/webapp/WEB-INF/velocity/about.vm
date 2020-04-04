@@ -64,7 +64,7 @@ London by an <a href="http://wah.wellington.gen.nz">expatriate Wellingtonian</a>
 <a name="nikau"></a>
 <h3>Nikau Palms</h3>
 
-<img src="/images/civic8.jpg" align="right"
+<img src="$urlBuilder.getStaticUrl('civic8.jpg')" align="right"
 alt="Nikau Palm in the Civic Square" />
 
 <p><i>Right</i> - One of the copper clad Nikau palm trees which dot the Civic Square and line the exterior of the Central Library building.</p>
