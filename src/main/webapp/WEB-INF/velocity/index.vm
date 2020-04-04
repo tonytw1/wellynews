@@ -40,7 +40,7 @@
 	<div class="right">
 		
 		<div class="box">
-			<a href="$site_information.url/about#nikau"><img src="http://im.wellington.gen.nz/images/palm.jpg" width="255" border="0"></a>
+			<a href="$site_information.url/about#nikau"><img src="$urlBuilder.getStaticUrl('palm.jpg')" width="255" border="0"></a>
 		</div>
 		
 		#parse("includes/your_listing.vm")

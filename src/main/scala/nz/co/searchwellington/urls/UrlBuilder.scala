@@ -21,9 +21,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getUrl
   }
 
-  def getImageUrl(filename: String): String = {
-    siteInformation.getImageRoot + filename
-  }
+  def getImageUrl(filename: String): String = getStaticUrl(filename)
 
   def getStaticUrl(filename: String): String = {
     siteInformation.getStaticRoot + filename
