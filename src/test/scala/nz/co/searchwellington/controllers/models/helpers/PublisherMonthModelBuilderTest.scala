@@ -1,5 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
+import java.util.regex.Pattern
+
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.model.Website
 import nz.co.searchwellington.model.frontend.{FrontendResource, FrontendWebsite}
@@ -26,6 +28,15 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   private val monthNewsitems = Seq(newsitem, anotherNewsitem)
 
   private val modelBuilder = new PublisherMonthModelBuilder(contentRetrievalService, frontendResourceMapper)
+
+  @Test
+  def testPathMatcher(): Unit = {
+    val regex = "/.*/[0-9]+-.*?"
+    val pattern = Pattern.compile(regex)
+
+    assertTrue(pattern.matcher("/wcc/2019-feb").matches())
+    assertFalse(pattern.matcher("/wcc/rss").matches())
+  }
 
   @Test
   def isValidForPublisherAndMonthPath(): Unit = {
