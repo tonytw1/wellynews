@@ -70,7 +70,6 @@ public class RequestFilter {
     reservedUrlWords.add("/about");
     reservedUrlWords.add("/api");
     reservedUrlWords.add("/autotag");
-    reservedUrlWords.add("/index");
     reservedUrlWords.add("/feeds");
     reservedUrlWords.add("/comment");
     reservedUrlWords.add("/geotagged");
