@@ -47,7 +47,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     return null
   }
 
-  override def getExternalUserIdentifierFromCallbackRequest(request: HttpServletRequest): Option[Any] = {
+  override def getExternalUserIdentifierFromCallbackRequest(request: HttpServletRequest): Option[twitter4j.User] = {
     if (twitterApiFactory.apiIsConfigured) {
       if (request.getParameter("oauth_token") != null && request.getParameter("oauth_verifier") != null) {
         val token = request.getParameter("oauth_token")
@@ -67,8 +67,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
               getTwitteUserCredentials(accessToken).map { twitterUser =>
                 log.info("Authenticated user is: " + twitterUser.getName)
-                Some(twitterUser) // TODO needs to be the return
-
+                Some(twitterUser)
               }.getOrElse {
                 log.warn("Failed up obtain twitter user details")
                 None

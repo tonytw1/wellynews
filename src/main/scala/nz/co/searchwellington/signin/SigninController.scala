@@ -27,7 +27,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(Array("/twitter/callback"))
-  @throws[Exception]
   def callback(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     signinHandler.getExternalUserIdentifierFromCallbackRequest(request).map { externalIdentifier =>
       log.info("External user identifier is: " + externalIdentifier.toString)
