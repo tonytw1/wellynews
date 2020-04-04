@@ -54,7 +54,7 @@ import scala.concurrent.Future
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = ???
+  override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = Future.successful(mv)
 
   override def getViewName(mv: ModelAndView): String = "publisher"
 
