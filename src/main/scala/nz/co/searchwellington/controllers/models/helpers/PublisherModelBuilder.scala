@@ -84,11 +84,11 @@ import scala.concurrent.Future
     val loggedInUser = Option(l)
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
-    val frontendPublisher = request.getAttribute("publisher").asInstanceOf[FrontendResource]  // TODO
+    val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
     import scala.collection.JavaConverters._
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
-    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+    val eventualLatestNewsitems = contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = loggedInUser)
     val eventualArchiveLinks = contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
     val eventualRelatedTagsForPublisher = relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
 
@@ -110,7 +110,7 @@ import scala.concurrent.Future
         mv.addObject("related_tags", relatedTagsForPublisher.asJava)
       }
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
-      mv.addObject("archive_links", publisherArchiveLinks.asJava)
+      mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
     }
   }
 

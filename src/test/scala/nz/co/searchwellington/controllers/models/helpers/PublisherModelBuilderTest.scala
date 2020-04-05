@@ -7,13 +7,15 @@ import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Geocode, Website}
+import nz.co.searchwellington.model.{ArchiveLink, Geocode, PublisherArchiveLink, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
+import org.joda.time.{DateTime, Interval}
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
@@ -58,6 +60,32 @@ class PublisherModelBuilderTest extends ReasonableWaits {
 
     val geotaggedPublisherNewsitemsOnModel = mv.getModel.get("geocoded").asInstanceOf[java.util.List[FrontendResource]]
     assertEquals(geotaggedNewsitem, geotaggedPublisherNewsitemsOnModel.get(0))
+  }
+
+  @Test
+  def extraContentIncludesPublisherArchiveLinks(): Unit = {
+    val request = new MockHttpServletRequest
+    request.setAttribute("publisher", publisher)
+    val mv = new ModelAndView().addObject("publisher", frontendPublisher)
+
+    val july = new DateTime(2020, 7, 1, 0, 0)
+    val monthOfJuly = new Interval(july, july.plusMonths(1))
+
+    val archiveLinks = Seq(ArchiveLink(count = 2, month = july.toDate))
+    when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(archiveLinks))
+    when(contentRetrievalService.getPublisherWatchlist(publisher, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+    when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
+
+    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, null), TenSeconds)
+
+    val publisherArchiveLinksOnExtras = withExtras.getModel.get("publisher_archive_links").asInstanceOf[java.util.List[PublisherArchiveLink]]
+    assertEquals(1, publisherArchiveLinksOnExtras.size())
+
+    val firstPublisherLink = publisherArchiveLinksOnExtras.get(0)
+    assertEquals(frontendPublisher, firstPublisherLink.publisher)
+    assertEquals(monthOfJuly, firstPublisherLink.month)
+    assertEquals(2, firstPublisherLink.count)
   }
 
 }

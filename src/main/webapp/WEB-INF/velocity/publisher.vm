@@ -58,7 +58,11 @@
 
 <div class="right">
     <div class="box">
-        #parse("includes/archive.vm")
+        <ul>
+            #foreach ($link in $publisher_archive_links)
+                <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$link.publisher.name</a> ($link.count)</li>
+            #end
+        </ul>
     </div>
     <div class="box">
         #parse("includes/latest_newsitems.vm")

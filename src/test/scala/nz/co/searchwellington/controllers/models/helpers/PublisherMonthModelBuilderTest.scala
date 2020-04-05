@@ -21,7 +21,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
-  private val aPublisher = Website(title = Some("A publisher"), url_words = Some("a-publisher"))
+  private val publisher = Website(title = Some("A publisher"), url_words = Some("a-publisher"))
 
   private val newsitem = mock(classOf[FrontendResource])
   private val anotherNewsitem = mock(classOf[FrontendResource])
@@ -41,7 +41,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   @Test
   def isValidForPublisherAndMonthPath(): Unit = {
     val request = new MockHttpServletRequest()
-    request.setAttribute("publisher", aPublisher)
+    request.setAttribute("publisher", publisher)
     request.setPathInfo("/a-publisher/2020-feb")
 
     assertTrue(modelBuilder.isValid(request))
@@ -58,7 +58,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   @Test
   def isValidForPublisherNonDate(): Unit = {
     val request = new MockHttpServletRequest()
-    request.setAttribute("publisher", aPublisher)
+    request.setAttribute("publisher", publisher)
     request.setPathInfo("/a-publisher/something")
 
     assertFalse(modelBuilder.isValid(request))
@@ -67,12 +67,12 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
   @Test
   def mainContentIsPublishersNewsitemsForMonth(): Unit = {
     val request = new MockHttpServletRequest
-    request.setAttribute("publisher", aPublisher)
+    request.setAttribute("publisher", publisher)
     request.setPathInfo("/a-publisher/2020-jul")
 
     val july = new DateTime(2020, 7, 1, 0, 0)
-    when(contentRetrievalService.getNewsitemsForPublisherInterval(aPublisher, new Interval(july, july.plusMonths(1)), None)).thenReturn(Future.successful(monthNewsitems))
-    when(frontendResourceMapper.createFrontendResourceFrom(aPublisher)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
+    when(contentRetrievalService.getNewsitemsForPublisherInterval(publisher, new Interval(july, july.plusMonths(1)), None)).thenReturn(Future.successful(monthNewsitems))
+    when(frontendResourceMapper.createFrontendResourceFrom(publisher)).thenReturn(Future.successful(FrontendWebsite(id = "123")))
 
     val mv = Await.result(modelBuilder.populateContentModel(request, null), TenSeconds).get
 

@@ -28,7 +28,7 @@ import scala.concurrent.Future
       parseMonth(publisher, request.getPathInfo)
     }.nonEmpty
 
-    logger.info("Publiser month builder is valid", maybeWebsite, request.getPathInfo, r)
+    logger.info("Publisher month builder is valid", maybeWebsite, request.getPathInfo, r)
     r
   }
 
