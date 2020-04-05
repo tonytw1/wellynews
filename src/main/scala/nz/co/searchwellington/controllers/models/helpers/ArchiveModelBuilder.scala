@@ -6,7 +6,6 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.model.{ArchiveLink, PublisherArchiveLink, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
-import org.apache.log4j.Logger
 import org.joda.time.{DateTimeZone, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
@@ -77,7 +76,7 @@ import scala.concurrent.Future
     var selected: ArchiveLink = null
     import scala.collection.JavaConversions._
     for (link <- archiveLinks) {
-      if (link.getMonth == month.getStart.toDate) {
+      if (link.interval == month) {
         selected = link
       }
     }
