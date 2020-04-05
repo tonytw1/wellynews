@@ -14,7 +14,7 @@
 #set($letter = "")
 #set($current = "")
 #foreach ($publisher in $main_content)
-	#if ($tag.name.length() > 0)
+	#if ($publisher.name.length() > 0)
 	    #set($current = $publisher.name.substring(0, 1).toUpperCase())
     #end
 	#if ($current != $letter)
