@@ -6,10 +6,11 @@ import nz.co.searchwellington.controllers.models.{GeotaggedNewsitemExtractor, Mo
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{Tag, User, Website}
+import nz.co.searchwellington.model.{PublisherArchiveLink, Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
+import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -83,6 +84,7 @@ import scala.concurrent.Future
     val loggedInUser = Option(l)
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val frontendPublisher = request.getAttribute("publisher").asInstanceOf[FrontendResource]  // TODO
     import scala.collection.JavaConverters._
 
     val eventualPublisherWatchlist = contentRetrievalService.getPublisherWatchlist(publisher, loggedInUser)
@@ -97,12 +99,18 @@ import scala.concurrent.Future
       relatedTagsForPublisher <- eventualRelatedTagsForPublisher
 
     } yield {
+      val publisherArchiveLinks = archiveLinks.map { a =>
+        val month = new DateTime(a.month)
+        val interval = new Interval(month, month.plusMonths(1))
+        PublisherArchiveLink(publisher = frontendPublisher, month = interval, count = a.count)
+      }
+
       mv.addObject("watchlist", publisherWatchlist.asJava)
       if (relatedTagsForPublisher.nonEmpty) {
         mv.addObject("related_tags", relatedTagsForPublisher.asJava)
       }
       mv.addObject("latest_newsitems", latestNewsitems.asJava)
-      mv.addObject("archive_links", archiveLinks.asJava)
+      mv.addObject("archive_links", publisherArchiveLinks.asJava)
     }
   }
 
