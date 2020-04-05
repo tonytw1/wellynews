@@ -43,6 +43,7 @@ import scala.concurrent.Future
           Some(new ModelAndView().
             addObject("publisher", eventualFrontendWebsite).
             addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
+            addObject("heading", publisher.getTitle + " - " + month)
             addObject("month", month))
         }
 
