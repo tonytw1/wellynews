@@ -55,7 +55,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits {
     val july = new DateTime(2020, 7, 1, 0, 0)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
 
-    val archiveLinks: Seq[ArchiveLink] = Seq(ArchiveLink(july.toDate, 3))
+    val archiveLinks: Seq[ArchiveLink] = Seq(ArchiveLink(monthOfJuly, 3))
 
     when(contentRetrievalService.getArchiveMonths(None)).thenReturn(Future.successful(archiveLinks))
     when(contentRetrievalService.getArchiveCounts(None)).thenReturn(Future.successful(Map[String, Long]()))

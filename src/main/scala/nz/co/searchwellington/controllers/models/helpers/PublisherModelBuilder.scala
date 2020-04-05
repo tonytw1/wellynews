@@ -100,9 +100,7 @@ import scala.concurrent.Future
 
     } yield {
       val publisherArchiveLinks = archiveLinks.map { a =>
-        val month = new DateTime(a.month)
-        val interval = new Interval(month, month.plusMonths(1))
-        PublisherArchiveLink(publisher = frontendPublisher, month = interval, count = a.count)
+        PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
       }
 
       mv.addObject("watchlist", publisherWatchlist.asJava)

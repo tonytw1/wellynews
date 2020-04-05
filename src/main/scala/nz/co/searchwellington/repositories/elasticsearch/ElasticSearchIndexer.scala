@@ -290,7 +290,9 @@ class ElasticSearchIndexer @Autowired()(val showBrokenDecisionService: ShowBroke
     client.execute(request).map { r =>
       val dateAgg = r.result.aggregations.dateHistogram("date")
       val archiveLinks = dateAgg.buckets.map { b =>
-        ArchiveLink(ISODateTimeFormat.dateTimeParser().parseDateTime(b.date).toDate, b.docCount)
+        val startOfMonth = ISODateTimeFormat.dateTimeParser().parseDateTime(b.date)
+        val month = new Interval(startOfMonth, startOfMonth.plusMonths(1))
+        ArchiveLink(month, b.docCount)
       }
       archiveLinks.filter(_.getCount > 0).reverse
     }

@@ -1,7 +1,5 @@
 package nz.co.searchwellington.urls
 
-import java.util.Date
-
 import nz.co.searchwellington.controllers.models.helpers.ArchiveMonth
 import nz.co.searchwellington.model._
 import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendResource, FrontendWebsite}
@@ -135,7 +133,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
   }
 
   def getArchiveLinkUrl(link: ArchiveLink): String = {
-    "/archive/" + archiveMonthFormat.format(link.month).toLowerCase
+    "/archive/" + archiveMonthFormat.format(link.getMonth).toLowerCase
   }
 
   def getPublisherArchiveLinkUrl(link: PublisherArchiveLink): String = {

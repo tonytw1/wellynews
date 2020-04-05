@@ -78,8 +78,9 @@ class UrlBuilderTest {
   @Test
   def archiveLinksAreYearMonthFormatted(): Unit = {
     val feb = new DateTime(2020, 2, 12, 0, 0, 0)
+    val monthOfFeb = new Interval(feb, feb.plusMonths(1))
 
-    val link = urlBuilder.getArchiveLinkUrl(new ArchiveLink(feb.toDate, 1))
+    val link = urlBuilder.getArchiveLinkUrl(new ArchiveLink(monthOfFeb, 1))
 
     assertEquals("/archive/2020-feb", link)
   }

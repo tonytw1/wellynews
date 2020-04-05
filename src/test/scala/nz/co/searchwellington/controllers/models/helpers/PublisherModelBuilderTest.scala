@@ -71,7 +71,7 @@ class PublisherModelBuilderTest extends ReasonableWaits {
     val july = new DateTime(2020, 7, 1, 0, 0)
     val monthOfJuly = new Interval(july, july.plusMonths(1))
 
-    val archiveLinks = Seq(ArchiveLink(count = 2, month = july.toDate))
+    val archiveLinks = Seq(ArchiveLink(count = 2, interval = monthOfJuly))
     when(contentRetrievalService.getPublisherArchiveMonths(publisher, None)).thenReturn(Future.successful(archiveLinks))
     when(contentRetrievalService.getPublisherWatchlist(publisher, None)).thenReturn(Future.successful(Seq.empty))
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
@@ -84,7 +84,7 @@ class PublisherModelBuilderTest extends ReasonableWaits {
 
     val firstPublisherLink = publisherArchiveLinksOnExtras.get(0)
     assertEquals(frontendPublisher, firstPublisherLink.publisher)
-    assertEquals(monthOfJuly, firstPublisherLink.month)
+    assertEquals(monthOfJuly, firstPublisherLink.interval)
     assertEquals(2, firstPublisherLink.count)
   }
 

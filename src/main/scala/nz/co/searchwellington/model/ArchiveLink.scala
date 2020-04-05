@@ -2,9 +2,11 @@ package nz.co.searchwellington.model
 
 import java.util.Date
 
-case class ArchiveLink(var month: Date, var count: Long) {
+import org.joda.time.Interval
+
+case class ArchiveLink(var interval: Interval, var count: Long) {
 
   def getCount: Long = count
-  def getMonth: Date = month
+  def getMonth: Date = interval.getStart.toDate
 
 }
