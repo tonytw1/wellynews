@@ -42,7 +42,8 @@ import scala.concurrent.Future
           import scala.collection.JavaConverters._
           Some(new ModelAndView().
             addObject("publisher", eventualFrontendWebsite).
-            addObject(MAIN_CONTENT, newsitemsForMonth.asJava))
+            addObject(MAIN_CONTENT, newsitemsForMonth.asJava).
+            addObject("month", month))
         }
 
       }.getOrElse {
