@@ -2,8 +2,9 @@ package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.models.ModelBuilder
+import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
-import nz.co.searchwellington.model.{User, Website}
+import nz.co.searchwellington.model.{PublisherArchiveLink, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.joda.time.Interval
@@ -23,13 +24,9 @@ import scala.concurrent.Future
   private val logger = Logger.getLogger(classOf[PublisherModelBuilder])
 
   override def isValid(request: HttpServletRequest): Boolean = {
-    val maybeWebsite = Option(request.getAttribute("publisher").asInstanceOf[Website])
-    val r = maybeWebsite.flatMap { publisher =>
+    Option(request.getAttribute("publisher").asInstanceOf[Website]).flatMap { publisher =>
       parseMonth(publisher, request.getPathInfo)
     }.nonEmpty
-
-    logger.info("Publisher month builder is valid", maybeWebsite, request.getPathInfo, r)
-    r
   }
 
   override def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
@@ -56,7 +53,24 @@ import scala.concurrent.Future
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = Future.successful(mv)
+  override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+    val loggedInUser = Option(loggedInUser)
+
+    val publisher = request.getAttribute("publisher").asInstanceOf[Website]
+    val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
+    import scala.collection.JavaConverters._
+
+    for {
+      archiveLinks <- contentRetrievalService.getPublisherArchiveMonths(publisher, loggedInUser)
+    } yield {
+      val publisherArchiveLinks = archiveLinks.map { a =>
+        PublisherArchiveLink(publisher = frontendPublisher, interval = a.interval, count = a.count)
+      }
+      mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+    }
+
+    Future.successful(mv)
+  }
 
   override def getViewName(mv: ModelAndView): String = "publisherMonth"
 

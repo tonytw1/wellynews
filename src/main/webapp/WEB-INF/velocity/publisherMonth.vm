@@ -15,7 +15,7 @@
 #parse("includes/rss_widget_for_publisher.vm")
 </div>
 
-<h2><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$heading</a> / $month</h2>
+<h2><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$publisher.name</a> / $month</h2>
 
 	<div class="tag_main_content">	
 		#set($main_heading = "$publisher.getName() newsitems")
@@ -27,7 +27,11 @@
 
 <div class="right">
     <div class="box">
-        #parse("includes/archive.vm")
+        <ul>
+            #foreach ($link in $publisher_archive_links)
+                <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
+            #end
+        </ul>
     </div>
     <div class="box">
         #parse("includes/latest_newsitems.vm")
