@@ -53,8 +53,8 @@ import scala.concurrent.Future
     }
   }
 
-  override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    val loggedInUser = Option(loggedInUser)
+  override def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User): Future[ModelAndView] = {
+    val loggedInUser = Option(l)
 
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
