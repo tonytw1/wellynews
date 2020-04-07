@@ -28,7 +28,7 @@
 <div class="right">
     <div class="box">
         <h2>Archive</h2>
-        <p>$publisher.name</p> has publisher newsitems during these months.<p>
+        <p>$publisher.name has publisher newsitems during these months.<p>
         <ul>
             #foreach ($link in $publisher_archive_links)
                 <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
