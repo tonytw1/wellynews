@@ -17,7 +17,7 @@
 
 <h2><a href="$urlBuilder.getPublisherUrl($publisher.urlWords)">$publisher.name</a> / $month</h2>
 
-	<div class="tag_main_content">	
+	<div class="tag_main_content">
 		#set($main_heading = "$publisher.getName() newsitems")
 		#parse("includes/main_content.vm")	
 		#parse("includes/publisher_page_links.vm")
@@ -27,6 +27,8 @@
 
 <div class="right">
     <div class="box">
+        <h2>Archive</h2>
+        <p>$publisher.name</p> has publisher newsitems during these months.<p>
         <ul>
             #foreach ($link in $publisher_archive_links)
                 <li><a href="$urlBuilder.getPublisherArchiveLinkUrl($link)">$dateFormatter.fullMonthYear($link.month)</a> ($link.count)</li>
