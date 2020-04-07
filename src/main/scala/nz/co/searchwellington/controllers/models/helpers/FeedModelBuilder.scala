@@ -103,8 +103,8 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User = null): Future[ModelAndView] = {
-    contentRetrievalService.getAllFeedsOrderedByLatestItemDate(Option(loggedInUser)).map { feeds =>
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+    contentRetrievalService.getAllFeedsOrderedByLatestItemDate(loggedInUser).map { feeds =>
       commonAttributesModelBuilder.withSecondaryFeeds(mv, feeds)
     }
   }

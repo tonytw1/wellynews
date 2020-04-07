@@ -17,7 +17,7 @@ import scala.concurrent.{Await, Future}
 class ArchiveModelBuilderTest extends ReasonableWaits {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  val request = new MockHttpServletRequest
+  private val request = new MockHttpServletRequest
 
   private val newsitem = mock(classOf[FrontendResource])
   private val anotherNewsitem = mock(classOf[FrontendResource])
@@ -61,7 +61,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits {
     when(contentRetrievalService.getArchiveCounts(None)).thenReturn(Future.successful(Map[String, Long]()))
     when(contentRetrievalService.getPublishersForInterval(monthOfJuly, None)).thenReturn(Future.successful(Seq.empty))
 
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, null), TenSeconds)
+    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
 
     import scala.collection.JavaConverters._
     assertEquals(archiveLinks.asJava, withExtras.getModel.get("archive_links"))

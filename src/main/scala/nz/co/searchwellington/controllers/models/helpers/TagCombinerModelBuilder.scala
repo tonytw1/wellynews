@@ -72,13 +72,13 @@ import scala.concurrent.Future
     populateTagCombinerModelAndView(tags, page)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
     if (tags.nonEmpty) {
       val tag = tags.head
-      val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = Option(loggedInUser))
-      val eventualLatestWebsites = contentRetrievalService.getLatestWebsites(5, loggedInUser = Option(loggedInUser))
-      val eventualRelatedTags = relatedTagsService.getRelatedTagsForTag(tag, 8, Option(loggedInUser))
+      val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = loggedInUser)
+      val eventualLatestWebsites = contentRetrievalService.getLatestWebsites(5, loggedInUser = loggedInUser)
+      val eventualRelatedTags = relatedTagsService.getRelatedTagsForTag(tag, 8, loggedInUser)
       for {
         taggedWebsites <- eventualTaggedWebsites
         latestWebsites <- eventualLatestWebsites

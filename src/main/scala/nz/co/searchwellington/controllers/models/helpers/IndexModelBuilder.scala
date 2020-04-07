@@ -58,9 +58,9 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    def populateUserOwnedResources(mv: ModelAndView, loggedInUser: User) {
-      if (loggedInUser != null) {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+    def populateUserOwnedResources(mv: ModelAndView, l: Option[User]) {
+      l.map { loggedInUser =>
         val ownedCount: Int = contentRetrievalService.getOwnedByCount(loggedInUser)
         if (ownedCount > 0) {
           mv.addObject("owned", contentRetrievalService.getOwnedBy(loggedInUser, Some(loggedInUser)))
@@ -71,10 +71,10 @@ import scala.concurrent.Future
       }
     }
 
-    val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = Option(loggedInUser))
-    val eventualArchiveMonths = contentRetrievalService.getArchiveMonths( Option(loggedInUser))
-    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts( Option(loggedInUser))
-    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW,  Option(loggedInUser))
+    val eventualWebsites = contentRetrievalService.getLatestWebsites(4, loggedInUser = loggedInUser)
+    val eventualArchiveMonths = contentRetrievalService.getArchiveMonths(loggedInUser)
+    val eventualArchiveStatistics = contentRetrievalService.getArchiveCounts(loggedInUser)
+    val eventualGeocoded = contentRetrievalService.getGeocodedNewsitems(0, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser)
 
     for {
       websites <- eventualWebsites

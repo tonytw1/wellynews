@@ -55,7 +55,7 @@ import scala.concurrent.Future
     populateTagCommentPageModelAndView(tag)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     Future.successful(mv)
   }
 

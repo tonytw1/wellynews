@@ -14,8 +14,11 @@ trait ModelBuilder {
   def contentRetrievalService: ContentRetrievalService
 
   def isValid(request: HttpServletRequest): Boolean
+
   def populateContentModel(request: HttpServletRequest, loggedInUser: User = null): Future[Option[ModelAndView]]
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView]
+
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView]
+
   def getViewName(mv: ModelAndView): String
 
   def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelAndView] = {

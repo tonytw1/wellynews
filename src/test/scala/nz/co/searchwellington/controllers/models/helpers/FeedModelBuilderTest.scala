@@ -114,7 +114,7 @@ class FeedModelBuilderTest extends ReasonableWaits {
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
-    modelBuilder.populateExtraModelContent(request, mv)
+    modelBuilder.populateExtraModelContent(request, mv, None)
 
     import scala.collection.JavaConverters._
     assertEquals(Seq(anotherFrontendNewsitem).asJava, mv.getModel.get("geocoded"))

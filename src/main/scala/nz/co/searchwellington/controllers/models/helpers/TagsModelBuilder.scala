@@ -31,8 +31,8 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
-    withLatestNewsitems(mv, Option(loggedInUser))
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+    withLatestNewsitems(mv, loggedInUser)
   }
 
   def getViewName(mv: ModelAndView): String = "tags"

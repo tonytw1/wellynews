@@ -95,9 +95,7 @@ import scala.concurrent.Future
     populateTagPageModelAndView(tagFromRequest(request), getPage(request))
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User): Future[ModelAndView] = {
-    val loggedInUser = Option(l)
-
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     val tag = tagFromRequest(request)
 
     val eventualGeotaggedNewsitems = contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)

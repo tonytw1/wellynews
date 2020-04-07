@@ -10,7 +10,6 @@ import nz.co.searchwellington.model.{PublisherArchiveLink, Tag, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
-import org.joda.time.{DateTime, Interval}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -80,9 +79,7 @@ import scala.concurrent.Future
     populatePublisherPageModelAndView(publisher, page)
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, l: User): Future[ModelAndView] = {
-    val loggedInUser = Option(l)
-
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val frontendPublisher = mv.getModel.get("publisher").asInstanceOf[FrontendResource]
     import scala.collection.JavaConverters._

@@ -54,11 +54,11 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
 
     val eventualWithExtras = for {
-      relatedTags <- relatedTagsService.getRelatedTagsForPublisher(publisher, Option(loggedInUser))
+      relatedTags <- relatedTagsService.getRelatedTagsForPublisher(publisher, loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
       if (relatedTags.nonEmpty) {
@@ -67,7 +67,7 @@ import scala.concurrent.Future
       mv
     }
 
-    eventualWithExtras.flatMap(withLatestNewsitems(_, Option(loggedInUser)))
+    eventualWithExtras.flatMap(withLatestNewsitems(_, loggedInUser))
   }
 
   def getViewName(mv: ModelAndView): String = "publisherCombiner"

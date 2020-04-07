@@ -43,11 +43,11 @@ import scala.concurrent.Future
     }
   }
 
-  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: User): Future[ModelAndView] = {
+  def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     getArchiveMonthFromPath(request.getPathInfo).map { month =>
-      val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(Option(loggedInUser))
-      val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(Option(loggedInUser))
-      val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, Option(loggedInUser))
+      val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
+      val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(loggedInUser)
+      val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, loggedInUser)
 
       for {
         archiveLinks <- eventualArchiveLinks
@@ -57,7 +57,7 @@ import scala.concurrent.Future
         populateNextAndPreviousLinks(mv, month, archiveLinks)
         archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
 
-        val publisherArchiveLinks = monthPublishers.map{ i =>
+        val publisherArchiveLinks = monthPublishers.map { i =>
           PublisherArchiveLink(i._1, month, i._2)
         }
 
@@ -65,7 +65,7 @@ import scala.concurrent.Future
         mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
       }
 
-    }.getOrElse{
+    }.getOrElse {
       Future.successful(mv)
     }
   }

@@ -77,7 +77,7 @@ class PublisherModelBuilderTest extends ReasonableWaits {
     when(contentRetrievalService.getLatestNewsitems(maxItems = 5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq.empty))
 
-    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, null), TenSeconds)
+    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
 
     val publisherArchiveLinksOnExtras = withExtras.getModel.get("publisher_archive_links").asInstanceOf[java.util.List[PublisherArchiveLink]]
     assertEquals(1, publisherArchiveLinksOnExtras.size())
