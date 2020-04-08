@@ -44,29 +44,31 @@ import scala.concurrent.Future
   }
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    getArchiveMonthFromPath(request.getPathInfo).map { month =>
-      val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
-      val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(loggedInUser)
-      val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, loggedInUser)
+    withLatestNewsitems(mv, loggedInUser).flatMap { mv =>
+      getArchiveMonthFromPath(request.getPathInfo).map { month =>
+        val eventualArchiveLinks = contentRetrievalService.getArchiveMonths(loggedInUser)
+        val eventualArchiveCounts = contentRetrievalService.getArchiveCounts(loggedInUser)
+        val eventualMonthPublishers = contentRetrievalService.getPublishersForInterval(month, loggedInUser)
 
-      for {
-        archiveLinks <- eventualArchiveLinks
-        archiveStatistics <- eventualArchiveCounts
-        monthPublishers <- eventualMonthPublishers
-      } yield {
-        populateNextAndPreviousLinks(mv, month, archiveLinks)
-        archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
+        for {
+          archiveLinks <- eventualArchiveLinks
+          archiveStatistics <- eventualArchiveCounts
+          monthPublishers <- eventualMonthPublishers
+        } yield {
+          populateNextAndPreviousLinks(mv, month, archiveLinks)
+          archiveLinksService.populateArchiveLinks(mv, archiveLinks, archiveStatistics)
 
-        val publisherArchiveLinks = monthPublishers.map { i =>
-          PublisherArchiveLink(i._1, month, i._2)
+          val publisherArchiveLinks = monthPublishers.map { i =>
+            PublisherArchiveLink(i._1, month, i._2)
+          }
+
+          import scala.collection.JavaConverters._
+          mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
         }
 
-        import scala.collection.JavaConverters._
-        mv.addObject("publisher_archive_links", publisherArchiveLinks.asJava)
+      }.getOrElse {
+        Future.successful(mv)
       }
-
-    }.getOrElse {
-      Future.successful(mv)
     }
   }
 
