@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(1)
@@ -38,15 +39,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @RequestMapping(Array("/archive"))
   def archive(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
+    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
 
     Await.result((for {
-      links <- contentRetrievalService.getArchiveMonths(Option(loggedInUserFilter.getLoggedInUser))
+      links <- contentRetrievalService.getArchiveMonths(loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
       new ModelAndView("archiveIndex").
         addObject("heading", "Archive").
         addObject("archiveLinks", links.asJava)
-    }).flatMap(withCommonLocal), TenSeconds)
+    }).flatMap(withCommonLocal).flatMap(mv => withLatestNewsitems(mv, loggedInUser)), TenSeconds)
   }
 
   @RequestMapping(Array("/api"))
@@ -77,6 +79,16 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").
       addObject("heading", "Discovered Feeds").
       addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava)), TenSeconds)
+  }
+
+  // TODO duplication
+  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelAndView] = {
+    for {
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+    } yield {
+      import scala.collection.JavaConverters._
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+    }
   }
 
 }
