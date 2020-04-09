@@ -27,9 +27,9 @@ case class Tag(_id: BSONObjectID = BSONObjectID.generate,
 
   def getParent: Option[BSONObjectID] = parent
 
-  def getMainImage: Option[String] = main_image
+  def getMainImage: String = main_image.orNull
 
-  def getSecondaryImage: Option[String] = secondary_image
+  def getSecondaryImage: String = secondary_image.orNull
 
   def getAutotagHints: Option[String] = autotag_hints
 
