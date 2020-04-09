@@ -82,7 +82,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   // TODO duplication
-  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelAndView] = {
+  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
     } yield {
