@@ -3,8 +3,8 @@ package nz.co.searchwellington.controllers.models.helpers
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.{LoggedInUserFilter, RelatedTagsService, RssUrlBuilder}
 import nz.co.searchwellington.feeds.{FeedItemLocalCopyDecorator, RssfeedNewsitemService}
-import nz.co.searchwellington.model.Tag
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.{Geocode, Tag}
+import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
@@ -12,6 +12,7 @@ import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
 import org.junit.{Before, Test}
 import org.mockito.Mockito.{mock, when}
 import org.springframework.mock.web.MockHttpServletRequest
+import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.{Await, Future}
 
@@ -98,6 +99,26 @@ class TagModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(parentTag, mv.getModel.get("parent"))
+  }
+
+  @Test
+  def tagPageExtras = {
+    request.setAttribute("tags", Seq(tag))
+    val mv = new ModelAndView()
+
+    val geotagged = Seq(FrontendNewsitem(id = "123", place = Some(Geocode(address = Some("Somewhere")))))
+    when(contentRetrievalService.getGeotaggedNewsitemsForTag(tag, 30, loggedInUser = None)).thenReturn(Future.successful(geotagged))
+    when(contentRetrievalService.getTaggedWebsites(tag, 500, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+    when(relatedTagsService.getRelatedTagsForTag(tag, 8, None)).thenReturn(Future.successful(Seq.empty))
+    when(relatedTagsService.getRelatedPublishersForTag(tag, 8, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getTagWatchlist(tag, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getTaggedFeeds(tag, None)).thenReturn(Future.successful(Seq.empty))
+    when(contentRetrievalService.getLatestNewsitems(5, loggedInUser = None)).thenReturn(Future.successful(Seq.empty))
+
+    val withExtras = Await.result(modelBuilder.populateExtraModelContent(request, mv, None), TenSeconds)
+
+    import scala.collection.JavaConverters._
+    assertEquals(geotagged.asJava, withExtras.getModel.get("geocoded"))
   }
 
 }

@@ -118,11 +118,11 @@ import scala.concurrent.Future
     } yield {
       def populateGeocoded(mv: ModelAndView, tag: Tag) {
         if (geotaggedNewsitems.nonEmpty) {
-          mv.addObject("geocoded", geotaggedNewsitems)
+          import scala.collection.JavaConverters._
+          mv.addObject("geocoded", geotaggedNewsitems.asJava)
         }
       }
 
-      log.info("Tag websites: " + taggedWebsites.size)
       import scala.collection.JavaConverters._
       mv.addObject(WEBSITES, taggedWebsites.asJava)
 
