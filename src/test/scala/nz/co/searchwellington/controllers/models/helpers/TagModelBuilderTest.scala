@@ -38,6 +38,8 @@ class TagModelBuilderTest extends ReasonableWaits {
 
   private val loggedInUser = None
 
+  private val noNewsitems = (Seq.empty, 0L)
+
   val request = new MockHttpServletRequest()
 
   private val modelBuilder = new TagModelBuilder(rssUrlBuilder, urlBuilder, relatedTagsService, rssfeedNewsitemService,
@@ -69,8 +71,7 @@ class TagModelBuilderTest extends ReasonableWaits {
   @Test
   def tagPageHeadingShouldBeTheTagDisplayName {
     request.setAttribute("tags", Seq(tag))
-    val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -80,7 +81,7 @@ class TagModelBuilderTest extends ReasonableWaits {
   @Test
   def mainContentShouldBeTagNewsitems {
     request.setAttribute("tags", Seq(tag))
-    val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
+    val tagNewsitems = Seq(newsitem1, newsitem2)
     when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -92,8 +93,7 @@ class TagModelBuilderTest extends ReasonableWaits {
   @Test
   def shouldIncludeTagParent = {
     request.setAttribute("tags", Seq(tag))
-    val tagNewsitems = Seq(newsitem1, newsitem2) // TODO populate with content; mocking breaks asJava
-    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful((tagNewsitems, tagNewsitems.size.toLong)))
+    when(contentRetrievalService.getTaggedNewsitems(tag, 0, 30, loggedInUser)).thenReturn(Future.successful(noNewsitems))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
