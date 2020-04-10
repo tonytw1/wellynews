@@ -5,7 +5,7 @@ import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
-import nz.co.searchwellington.model.Tag
+import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -19,7 +19,6 @@ import scala.concurrent.{Await, Future}
 class SearchModelBuilderTest extends ReasonableWaits {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val urlBuilder = mock(classOf[UrlBuilder])
-  private val loggedInUserFilter = mock(classOf[LoggedInUserFilter])
 
   private val tag = Tag(id = UUID.randomUUID().toString, name = "A tag")
   private val tags = Seq(tag)
@@ -60,6 +59,20 @@ class SearchModelBuilderTest extends ReasonableWaits {
     assertEquals("Search results - widgets", mv.getModel.get("heading"))
   }
 
+  @Test
+  def canSearchSpecificPublishersNewsitems(): Unit = {
+    request.setParameter("keywords", "sausages")
+    request.setAttribute("publisher", new Website(id = "123", title = Some("A publisher with lots of newsitems")))
+
+    val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
+    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).
+      thenReturn(Future.successful(publisherNewsitemSearchResults))
+
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
+
+    import scala.collection.JavaConverters._
+    assertEquals(publisherNewsitemSearchResults._1.asJava, mv.getModel.get("main_content"))
+  }
 
   @Test
   def shouldShowTagIfTagFilterIsSet() {
