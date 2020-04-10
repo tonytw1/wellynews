@@ -33,7 +33,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid {
+  def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid() {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
@@ -53,7 +53,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def shouldReturnNullIfNoModelBuilderWasFoundForRequest {
+  def shouldReturnNullIfNoModelBuilderWasFoundForRequest() {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     val contentModelBuilderService = new ContentModelBuilderService(viewFactory, contentRetrievalService, Seq(invalidModelBuilder))
 
@@ -63,7 +63,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def rssSuffixedRequestsShouldBeGivenTheRssView {
+  def rssSuffixedRequestsShouldBeGivenTheRssView() {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
@@ -81,7 +81,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   }
 
   @Test
-  def jsonSuffixedRequestsShouldBeGivenTheRssView {
+  def jsonSuffixedRequestsShouldBeGivenTheRssView() {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
     when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
