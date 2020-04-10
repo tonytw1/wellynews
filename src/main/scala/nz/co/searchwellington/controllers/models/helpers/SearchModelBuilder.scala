@@ -36,18 +36,8 @@ import scala.concurrent.Future
     val mv = new ModelAndView()
     mv.addObject("page", page)
 
-    val eventualContentWithCount: Future[(Seq[FrontendResource], Long)] = maybeTag.fold {
-      mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
-      val eventualNewsitemsMatchingKeyword = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
-      eventualNewsitemsMatchingKeyword
-    } { tag =>
-      mv.addObject("tag", tag)
-      val eventualTaggedNewsitemsMatchingKeywords = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
-      eventualTaggedNewsitemsMatchingKeywords
-    }
-
     for {
-      contentWithCount <- eventualContentWithCount
+      contentWithCount <- getMatchingNewsitems(loggedInUser, keywords, startIndex, maybeTag, mv)
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
@@ -71,6 +61,18 @@ import scala.concurrent.Future
       mv.addObject("link", urlBuilder.getSearchUrlFor(keywords))
 
       Some(mv)
+    }
+  }
+
+  private def getMatchingNewsitems(loggedInUser: User, keywords: String, startIndex: Int, maybeTag: Option[Tag], mv: ModelAndView) = {
+    maybeTag.fold {
+      mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
+      val eventualNewsitemsMatchingKeyword = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      eventualNewsitemsMatchingKeyword
+    } { tag =>
+      mv.addObject("tag", tag)
+      val eventualTaggedNewsitemsMatchingKeywords = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      eventualTaggedNewsitemsMatchingKeywords
     }
   }
 
