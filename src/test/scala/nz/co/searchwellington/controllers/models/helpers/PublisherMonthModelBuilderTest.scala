@@ -16,7 +16,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class PublisherMonthModelBuilderTest extends ReasonableWaits {
+class PublisherMonthModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
@@ -77,7 +77,7 @@ class PublisherMonthModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request, null), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(monthNewsitems.asJava, mv.getModel.get("main_content"))
+    assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
 }

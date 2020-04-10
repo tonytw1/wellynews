@@ -2,6 +2,7 @@ package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.controllers.CommonModelObjectsService
+import nz.co.searchwellington.controllers.models.helpers.ContentFields
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
@@ -13,7 +14,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 class ContentModelBuilderService(viewFactory: ViewFactory,
                                  val contentRetrievalService: ContentRetrievalService,
-                                 modelBuilders: Seq[ModelBuilder]) extends CommonModelObjectsService {
+                                 modelBuilders: Seq[ModelBuilder]) extends CommonModelObjectsService with ContentFields {
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
@@ -31,13 +32,13 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
           val eventualWithViewAndExtraContent = if (path.endsWith("/rss")) {
             logger.debug("Selecting rss view for path: " + path)
             mv.setView(viewFactory.getRssView(mv.getModel.get("heading").asInstanceOf[String], mv.getModel.get("link").asInstanceOf[String], mv.getModel.get("description").asInstanceOf[String]))
-            mv.addObject("data", mv.getModel.get("main_content"))
+            mv.addObject("data", mv.getModel.get(MAIN_CONTENT))
             Future.successful(Some(mv))
 
           } else if (path.endsWith("/json")) {
             logger.debug("Selecting json view for path: " + path)
             val jsonView = viewFactory.getJsonView
-            jsonView.setDataField("main_content") // TODO push to a parameter of getJsonView
+            jsonView.setDataField(MAIN_CONTENT) // TODO push to a parameter of getJsonView
             mv.setView(jsonView)
             Future.successful(Some(mv))
 

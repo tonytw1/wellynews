@@ -15,7 +15,7 @@ import uk.co.eelpieconsulting.common.geo.model.{LatLong, Place}
 
 import scala.concurrent.{Await, Future}
 
-class GeotaggedModelBuilderTest extends ReasonableWaits {
+class GeotaggedModelBuilderTest extends ReasonableWaits with ContentFields {
   val contentRetrievalService = mock(classOf[ContentRetrievalService])
   val urlBuilder = mock(classOf[UrlBuilder])
   val rssUrlBuilder = mock(classOf[RssUrlBuilder])
@@ -80,7 +80,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get("main_content"))
+    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
   }
 
   @Test
@@ -98,7 +98,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get("main_content"))
+    assertEquals(newsitemsNearPetoneStationFirstPage.asJava, modelAndView.getModel.get(MAIN_CONTENT))
   }
 
   @Test
@@ -133,7 +133,7 @@ class GeotaggedModelBuilderTest extends ReasonableWaits {
     val modelAndView = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     assertEquals(2, modelAndView.getModel.get("page"))
-    assertEquals(newsitemsNearPetoneStationSecondPage, modelAndView.getModel.get("main_content"))
+    assertEquals(newsitemsNearPetoneStationSecondPage, modelAndView.getModel.get(MAIN_CONTENT))
   }
 
   @Test

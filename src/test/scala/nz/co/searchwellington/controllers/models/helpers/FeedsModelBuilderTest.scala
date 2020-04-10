@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class FeedsModelBuilderTest extends ReasonableWaits {
+class FeedsModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val suggestedFeeditemsService = mock(classOf[SuggestedFeeditemsService])
@@ -47,7 +47,7 @@ class FeedsModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(feeds.asJava, mv.getModel.get("main_content"))
+    assertEquals(feeds.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
   @Test

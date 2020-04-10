@@ -16,7 +16,7 @@ import reactivemongo.bson.BSONObjectID
 
 import scala.concurrent.{Await, Future}
 
-class TagCombinerModelBuilderTest extends ReasonableWaits {
+class TagCombinerModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
@@ -65,7 +65,7 @@ class TagCombinerModelBuilderTest extends ReasonableWaits {
 
     import scala.collection.JavaConverters._
     assertEquals(tags.asJava, mv.getModel.get("tags"))
-    assertEquals(tagCombinerNewsitems._1.asJava, mv.getModel.get("main_content"))
+    assertEquals(tagCombinerNewsitems._1.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
 }

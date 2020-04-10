@@ -21,7 +21,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class FeedModelBuilderTest extends ReasonableWaits {
+class FeedModelBuilderTest extends ReasonableWaits with ContentFields {
   private val rssfeedNewsitemService = mock(classOf[RssfeedNewsitemService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val geotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
@@ -100,7 +100,7 @@ class FeedModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation.asJava, mv.getModel.get("main_content"))
+    assertEquals(feedNewsitemsDecoratedWithLocalCopyAndSuppressionInformation.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
   @Test

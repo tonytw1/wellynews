@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.{Await, Future}
 
-class ArchiveModelBuilderTest extends ReasonableWaits {
+class ArchiveModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val request = new MockHttpServletRequest
@@ -46,7 +46,7 @@ class ArchiveModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(monthNewsitems.asJava, mv.getModel.get("main_content"))
+    assertEquals(monthNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
   @Test

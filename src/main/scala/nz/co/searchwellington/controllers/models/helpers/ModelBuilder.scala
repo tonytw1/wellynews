@@ -1,16 +1,14 @@
 package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.controllers.models.helpers.ContentFields
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ModelBuilder {
-
-  val MAIN_CONTENT = "main_content"
-  val LATEST_NEWSITEMS = "latest_newsitems"
+trait ModelBuilder extends ContentFields {
 
   def contentRetrievalService: ContentRetrievalService
 

@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView
 
 import scala.concurrent.{Await, Future}
 
-class TagModelBuilderTest extends ReasonableWaits {
+class TagModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
@@ -88,7 +88,7 @@ class TagModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(tagNewsitems.asJava, mv.getModel.get("main_content"))
+    assertEquals(tagNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
   @Test

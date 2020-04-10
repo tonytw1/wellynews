@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.{LoggedInUserFilter, RssUrlBuilder}
+import nz.co.searchwellington.controllers.RssUrlBuilder
 import nz.co.searchwellington.model.frontend.FrontendResource
 import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -13,7 +13,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.{Await, Future}
 
-class IndexModelBuilderTest extends ReasonableWaits {
+class IndexModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
@@ -60,7 +60,7 @@ class IndexModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(latestNewsitems.asJava, mv.getModel.get("main_content"))
+    assertEquals(latestNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
 }

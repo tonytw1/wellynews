@@ -15,7 +15,7 @@ import org.springframework.mock.web.MockHttpServletRequest
 
 import scala.concurrent.{Await, Future}
 
-class SearchModelBuilderTest extends ReasonableWaits {
+class SearchModelBuilderTest extends ReasonableWaits with ContentFields {
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
   private val urlBuilder = mock(classOf[UrlBuilder])
 
@@ -72,7 +72,7 @@ class SearchModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(publisherNewsitemSearchResults._1.asJava, mv.getModel.get("main_content"))
+    assertEquals(publisherNewsitemSearchResults._1.asJava, mv.getModel.get(MAIN_CONTENT))
   }
 
   @Test
@@ -97,7 +97,7 @@ class SearchModelBuilderTest extends ReasonableWaits {
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
     import scala.collection.JavaConverters._
-    assertEquals(tagKeywordNewsitemResults._1.asJava, mv.getModel.get("main_content"))
+    assertEquals(tagKeywordNewsitemResults._1.asJava, mv.getModel.get(MAIN_CONTENT))
     assertEquals(2L, mv.getModel.get("main_content_total"))
   }
 
