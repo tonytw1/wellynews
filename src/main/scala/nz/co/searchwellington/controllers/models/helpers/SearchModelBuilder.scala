@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
 import nz.co.searchwellington.model.frontend.FrontendResource
-import nz.co.searchwellington.model.{Tag, User}
+import nz.co.searchwellington.model.{Tag, TagContentCount, User}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
@@ -37,7 +37,7 @@ import scala.concurrent.Future
     mv.addObject("page", page)
 
     for {
-      contentWithCount <- getMatchingNewsitems(loggedInUser, keywords, startIndex, maybeTag, mv)
+      contentWithCount <- getMatchingNewsitems(loggedInUser, keywords, startIndex, maybeTag)
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
@@ -45,6 +45,18 @@ import scala.concurrent.Future
       val contentCount = contentWithCount._2
       mv.addObject("main_content_total", contentCount)
       populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS)
+
+      maybeTag.map { tag =>
+        mv.addObject("tag", tag)
+      }
+      val tagRefinements: Seq[TagContentCount] = maybeTag.fold {
+        contentRetrievalService.getKeywordSearchFacets(keywords)
+      }{ _ =>
+        Seq.empty
+      }
+      if (tagRefinements.nonEmpty) {
+        mv.addObject("related_tags", tagRefinements.asJava)
+      }
 
       /*
     if (startIndex > contentCount) {
@@ -64,13 +76,11 @@ import scala.concurrent.Future
     }
   }
 
-  private def getMatchingNewsitems(loggedInUser: User, keywords: String, startIndex: Int, maybeTag: Option[Tag], mv: ModelAndView) = {
+  private def getMatchingNewsitems(loggedInUser: User, keywords: String, startIndex: Int, maybeTag: Option[Tag]): Future[(Seq[FrontendResource], Long)] = {
     maybeTag.fold {
-      mv.addObject("related_tags", contentRetrievalService.getKeywordSearchFacets(keywords))
       val eventualNewsitemsMatchingKeyword = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
       eventualNewsitemsMatchingKeyword
     } { tag =>
-      mv.addObject("tag", tag)
       val eventualTaggedNewsitemsMatchingKeywords = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
       eventualTaggedNewsitemsMatchingKeywords
     }

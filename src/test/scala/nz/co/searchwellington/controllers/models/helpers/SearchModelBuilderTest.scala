@@ -50,9 +50,9 @@ class SearchModelBuilderTest extends ReasonableWaits {
 
   @Test
   def pageHeadingShouldBeSearchKeyword() {
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).
-      thenReturn(Future.successful(keywordNewsitemResults))
     request.setParameter("keywords", "widgets")
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).thenReturn(Future.successful(keywordNewsitemResults))
+    when(contentRetrievalService.getKeywordSearchFacets("widgets")).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 
@@ -61,11 +61,12 @@ class SearchModelBuilderTest extends ReasonableWaits {
 
   @Test
   def canSearchSpecificPublishersNewsitems(): Unit = {
+    val publisher = new Website(id = "123", title = Some("A publisher with lots of newsitems"))
     request.setParameter("keywords", "sausages")
-    request.setAttribute("publisher", new Website(id = "123", title = Some("A publisher with lots of newsitems")))
+    request.setAttribute("publisher", publisher)
 
     val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
-    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getPubslisherNewsitemsMatchingKeywords("widgets", publisher = publisher, 0, 30, loggedInUser)).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
