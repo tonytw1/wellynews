@@ -10,6 +10,7 @@ import scala.concurrent.{ExecutionContext, Future}
 trait ModelBuilder {
 
   val MAIN_CONTENT = "main_content"
+  val LATEST_NEWSITEMS = "latest_newsitems"
 
   def contentRetrievalService: ContentRetrievalService
 
@@ -26,7 +27,7 @@ trait ModelBuilder {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+      mv.addObject(LATEST_NEWSITEMS, latestNewsitems.asJava)
     }
   }
 
