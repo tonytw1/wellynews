@@ -26,11 +26,13 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
                                                                 geotaggedModelBuilder: GeotaggedModelBuilder) {
 
   def makeContentModelBuilderService(): ContentModelBuilderService = {
-    val modelBuilders = Seq(indexModelBuilder, tagsModelBuilder, tagModelBuilder, tagCombinerModelBuilder,
+    val modelBuilders = Seq(indexModelBuilder,
+      searchModelBuilder,
+      tagsModelBuilder, tagModelBuilder, tagCombinerModelBuilder,
       feedsModelBuilder,
       publishersModelBuilder, publisherMonthModelBuilder, publisherModelBuilder, publisherTagCombinerModelBuilder,
       watchlistModelBuilder, feedModelBuilder, justinModelBuilder, archiveModelBuilder,
-      searchModelBuilder, suggestionsModelBuilder, geotaggedModelBuilder)
+      suggestionsModelBuilder, geotaggedModelBuilder)
 
     new ContentModelBuilderService(viewFactory, contentRetrievalService, modelBuilders)
   }
