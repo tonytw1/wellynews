@@ -33,12 +33,11 @@ import scala.concurrent.Future
       t.asInstanceOf[Seq[Tag]].headOption
     }
     val maybePublisher = Option(request.getAttribute("publisher").asInstanceOf[Website])
-
     val mv = new ModelAndView()
     mv.addObject("page", page)
 
     for {
-      contentWithCount <- getMatchingNewsitems(Option(loggedInUser), keywords, startIndex, maybeTag, maybePublisher)
+      contentWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser), maybeTag, maybePublisher)
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
@@ -74,18 +73,6 @@ import scala.concurrent.Future
       mv.addObject("link", urlBuilder.getSearchUrlFor(keywords))
 
       Some(mv)
-    }
-  }
-
-  private def getMatchingNewsitems(loggedInUser: Option[User], keywords: String, startIndex: Int, maybeTag: Option[Tag], maybePublisher: Option[Website]): Future[(Seq[FrontendResource], Long)] = {
-    maybeTag.fold {
-      maybePublisher.fold {
-        contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser)
-      } { publisher =>
-        contentRetrievalService.getPublisherNewsitemsMatchingKeywords(keywords, publisher, startIndex, MAX_NEWSITEMS, loggedInUser)
-      }
-    } { tag =>
-      contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, loggedInUser)
     }
   }
 

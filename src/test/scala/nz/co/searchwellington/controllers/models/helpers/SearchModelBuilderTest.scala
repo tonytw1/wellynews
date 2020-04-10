@@ -3,10 +3,9 @@ package nz.co.searchwellington.controllers.models.helpers
 import java.util.UUID
 
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.controllers.LoggedInUserFilter
 import nz.co.searchwellington.controllers.models.SearchModelBuilder
-import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.{Tag, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.junit.Assert.{assertEquals, assertFalse, assertTrue}
@@ -51,7 +50,7 @@ class SearchModelBuilderTest extends ReasonableWaits {
   @Test
   def pageHeadingShouldBeSearchKeyword() {
     request.setParameter("keywords", "widgets")
-    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser)).thenReturn(Future.successful(keywordNewsitemResults))
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = None, publisher = None)).thenReturn(Future.successful(keywordNewsitemResults))
     when(contentRetrievalService.getKeywordSearchFacets("widgets")).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -66,7 +65,7 @@ class SearchModelBuilderTest extends ReasonableWaits {
     request.setAttribute("publisher", publisher)
 
     val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
-    when(contentRetrievalService.getPublisherNewsitemsMatchingKeywords("sausages", publisher = publisher, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("sausages", 0, 30, loggedInUser, tag = None, publisher = Some(publisher))).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
     when(contentRetrievalService.getKeywordSearchFacets("sausages")).thenReturn(Seq.empty)
 
@@ -80,7 +79,7 @@ class SearchModelBuilderTest extends ReasonableWaits {
   def shouldShowTagIfTagFilterIsSet() {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
@@ -92,7 +91,7 @@ class SearchModelBuilderTest extends ReasonableWaits {
   def shouldShowTagResultsIfTagFilterIsSet() {
     request.setParameter("keywords", "widgets")
     request.setAttribute("tags", tags)
-    when(contentRetrievalService.getTagNewsitemsMatchingKeywords("widgets", tag, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getNewsitemsMatchingKeywords("widgets", 0, 30, loggedInUser, tag = Some(tag), publisher = None)).
       thenReturn(Future.successful(tagKeywordNewsitemResults))
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
