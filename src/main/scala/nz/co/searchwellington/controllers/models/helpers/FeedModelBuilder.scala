@@ -32,7 +32,7 @@ import scala.concurrent.Future
     request.getAttribute(FEED_ATTRIBUTE) != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
     def populateGeotaggedFeedItems(mv: ModelAndView, feedNewsitems: Seq[FrontendNewsitem]) {
       val geotaggedItems = geotaggedNewsitemExtractor.extractGeotaggedItems(feedNewsitems)

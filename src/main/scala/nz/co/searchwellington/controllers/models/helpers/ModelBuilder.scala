@@ -14,7 +14,7 @@ trait ModelBuilder extends ContentFields {
 
   def isValid(request: HttpServletRequest): Boolean
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User = null): Future[Option[ModelAndView]]
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]]
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView]
 

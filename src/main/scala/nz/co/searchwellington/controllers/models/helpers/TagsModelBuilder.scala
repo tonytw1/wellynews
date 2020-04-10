@@ -20,7 +20,7 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/tags$") || request.getPathInfo.matches("^/tags/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     for {
       tags <- tagDAO.getAllTags
     } yield {

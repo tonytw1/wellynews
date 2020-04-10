@@ -36,12 +36,12 @@ import scala.concurrent.Future
 
   def getViewName(mv: ModelAndView): String = "index"
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
     def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
 
     for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = Option(loggedInUser))
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = loggedInUser)
     } yield {
       val mv = new ModelAndView().
         addObject("heading", "Wellynews").

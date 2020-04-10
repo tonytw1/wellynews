@@ -35,10 +35,9 @@ import scala.concurrent.Future
     isPublisherPage
   }
 
-  def populateContentModel(request: HttpServletRequest, l: User): Future[Option[ModelAndView]] = {
-    val loggedInUser = Option(l)
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
-    def populatePublisherPageModelAndView(publisher: Website, page: Int) = {
+    def populatePublisherPageModelAndView(publisher: Website, page: Int): Future[Option[ModelAndView]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
       val eventualPublisherNewsitems = contentRetrievalService.getPublisherNewsitems(publisher, MAX_NEWSITEMS, startIndex, loggedInUser)

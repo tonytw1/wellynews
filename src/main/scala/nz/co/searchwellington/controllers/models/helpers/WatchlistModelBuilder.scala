@@ -22,9 +22,9 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/watchlist(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     for {
-      watchlists <- contentRetrievalService.getAllWatchlists(Option(loggedInUser))
+      watchlists <- contentRetrievalService.getAllWatchlists(loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().

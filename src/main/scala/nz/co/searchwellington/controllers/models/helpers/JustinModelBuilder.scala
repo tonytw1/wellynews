@@ -23,9 +23,9 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/justin(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     for {
-      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = Option(loggedInUser))
+      websites <- contentRetrievalService.getLatestWebsites(MAX_NEWSITEMS, loggedInUser = loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().

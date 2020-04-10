@@ -7,7 +7,6 @@ import nz.co.searchwellington.controllers.models.ModelBuilder
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.{ContentRetrievalService, SuggestedFeeditemsService}
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -22,14 +21,13 @@ import scala.concurrent.Future
                                                       commonAttributesModelBuilder: CommonAttributesModelBuilder) extends ModelBuilder
   with ReasonableWaits {
 
-  private val log = Logger.getLogger(classOf[SuggestionsModelBuilder])
   private val MAX_SUGGESTIONS = 50
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/feeds/inbox(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     for {
       suggestions <- suggestedFeeditemsService.getSuggestionFeednewsitems(MAX_SUGGESTIONS)
     } yield {

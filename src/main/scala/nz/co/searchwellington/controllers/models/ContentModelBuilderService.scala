@@ -26,7 +26,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       r
     }).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
-      mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
+      mb.populateContentModel(request, Option(loggedInUser)).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
           val path = request.getPathInfo
           val eventualWithViewAndExtraContent = if (path.endsWith("/rss")) {

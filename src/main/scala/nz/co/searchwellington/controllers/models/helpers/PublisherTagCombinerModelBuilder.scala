@@ -29,14 +29,14 @@ import scala.concurrent.Future
     publisher != null && tag != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     logger.info("Building publisher tag combiner page model")
     val tag = request.getAttribute("tag").asInstanceOf[Tag]
     val publisher = request.getAttribute("publisher").asInstanceOf[Website]
     val eventualFrontendPublisher = frontendResourceMapper.mapFrontendWebsite(publisher)
     for {
       frontendPublisher <- eventualFrontendPublisher
-      publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, Option(loggedInUser))
+      publisherTagNewsitems <- contentRetrievalService.getPublisherTagCombinerNewsitems(publisher, tag, MAX_NEWSITEMS, loggedInUser)
     } yield {
       import scala.collection.JavaConverters._
       val mv = new ModelAndView().

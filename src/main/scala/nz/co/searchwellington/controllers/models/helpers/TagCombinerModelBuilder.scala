@@ -31,12 +31,12 @@ import scala.concurrent.Future
     isTagCombinerPage
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
     def populateTagCombinerModelAndView(tags: Seq[Tag], page: Int): Future[Option[ModelAndView]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
       for {
-        taggedNewsitemsAndCount <- contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+        taggedNewsitemsAndCount <- contentRetrievalService.getTaggedNewsitems(tags.toSet, startIndex, MAX_NEWSITEMS, loggedInUser)
       } yield {
         val totalNewsitemCount = taggedNewsitemsAndCount._2
         if (startIndex > totalNewsitemCount) {

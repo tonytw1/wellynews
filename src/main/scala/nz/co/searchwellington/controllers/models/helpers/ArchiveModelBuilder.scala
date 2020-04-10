@@ -26,10 +26,10 @@ import scala.concurrent.Future
     request.getPathInfo.matches(archiveMonthPath)
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     getArchiveMonthFromPath(request.getPathInfo).map { month =>
       for {
-        newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, Option(loggedInUser))
+        newsitemsForMonth <- contentRetrievalService.getNewsitemsForInterval(month, loggedInUser)
       } yield {
         val monthLabel = dateFormatter.fullMonthYear(month.getStart.toDate)
         import scala.collection.JavaConverters._

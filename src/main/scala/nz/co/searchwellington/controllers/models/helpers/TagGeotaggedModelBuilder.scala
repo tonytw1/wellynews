@@ -31,10 +31,10 @@ import scala.concurrent.Future
     isSingleTagPage && hasCommentPath
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     def populateTagCommentPageModelAndView(tag: Tag): Future[Some[ModelAndView]] = {
       for {
-        newsitems <- contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = Option(loggedInUser))
+        newsitems <- contentRetrievalService.getGeotaggedNewsitemsForTag(tag, MAX_NUMBER_OF_GEOTAGGED_TO_SHOW, loggedInUser = loggedInUser)
       } yield {
         val mv = new ModelAndView().
           addObject("tag", tag).

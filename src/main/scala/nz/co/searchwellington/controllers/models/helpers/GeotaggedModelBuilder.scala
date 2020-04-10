@@ -33,7 +33,7 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/geotagged(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     val mv = new ModelAndView
     mv.addObject("description", "Geotagged newsitems")
     mv.addObject("link", urlBuilder.getGeotaggedUrl)
@@ -49,10 +49,10 @@ import scala.concurrent.Future
       val radius = getLocationSearchRadius(request)
       val latLong = userSuppliedPlace.getLatLong
 
-      val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, Option(loggedInUser))
-      val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, Option(loggedInUser))
-      val eventualNewsitemsNearCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = Option(loggedInUser))
-      val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      val eventualRelatedTagsForLocation = relatedTagsService.getRelatedTagsForLocation(userSuppliedPlace, radius, loggedInUser)
+      val eventualPublishersForLocation = relatedTagsService.getRelatedPublishersForLocation(userSuppliedPlace, radius, loggedInUser)
+      val eventualNewsitemsNearCount = contentRetrievalService.getNewsitemsNearCount(latLong, radius, loggedInUser = loggedInUser)
+      val eventualNewsitemsNear = contentRetrievalService.getNewsitemsNear(latLong, radius, startIndex, MAX_NEWSITEMS, loggedInUser)
       for {
         relatedTagLinks <- eventualRelatedTagsForLocation
         relatedPublisherLinks <- eventualPublishersForLocation
@@ -86,8 +86,8 @@ import scala.concurrent.Future
     } else {
       for {
         // TODO combine queries?
-        totalGeotaggedCount <- contentRetrievalService.getGeocodedNewitemsCount(Option(loggedInUser))
-        geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+        totalGeotaggedCount <- contentRetrievalService.getGeocodedNewitemsCount(loggedInUser)
+        geocodedNewsitems <- contentRetrievalService.getGeocodedNewsitems(startIndex, MAX_NEWSITEMS, loggedInUser)
       } yield {
         if (startIndex > totalGeotaggedCount) {
           None

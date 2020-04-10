@@ -29,12 +29,12 @@ import scala.concurrent.Future
     }.nonEmpty
   }
 
-  override def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  override def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     Option(request.getAttribute("publisher").asInstanceOf[Website]).map { publisher =>
       parseMonth(publisher, request.getPathInfo).map { month =>
         for {
           eventualFrontendWebsite <- frontendResourceMapper.createFrontendResourceFrom(publisher)
-          newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, Option(loggedInUser))
+          newsitemsForMonth <- contentRetrievalService.getNewsitemsForPublisherInterval(publisher, month, loggedInUser)
         } yield {
           import scala.collection.JavaConverters._
           Some(new ModelAndView().

@@ -21,9 +21,9 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/publishers$") || request.getPathInfo.matches("^/publishers/json$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     for {
-      publishers <- contentRetrievalService.getAllPublishers(Option(loggedInUser))
+      publishers <- contentRetrievalService.getAllPublishers(loggedInUser)
       frontendPublishers <- Future.sequence {
         publishers.
           sortBy(_.title).

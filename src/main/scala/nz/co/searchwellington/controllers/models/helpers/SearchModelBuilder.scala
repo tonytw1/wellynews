@@ -23,7 +23,7 @@ import scala.concurrent.Future
     request.getParameter(KEYWORDS_PARAMETER) != null
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     val keywords = request.getParameter(KEYWORDS_PARAMETER)
     val page = getPage(request)
 
@@ -37,7 +37,7 @@ import scala.concurrent.Future
     mv.addObject("page", page)
 
     for {
-      contentWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser), maybeTag, maybePublisher)
+      contentWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)

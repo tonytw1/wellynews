@@ -36,7 +36,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   def shouldDelegateModelBuildingToTheFirstBuildWhoSaysTheyAreValid {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
     when(validModelBuilder.populateExtraModelContent(request, validModelAndView, None)).thenReturn(Future.successful(validModelAndView))
 
     when(contentRetrievalService.getTopLevelTags).thenReturn(Future.successful(Seq.empty))
@@ -66,7 +66,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   def rssSuffixedRequestsShouldBeGivenTheRssView {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
 
     val contentModelBuilderService = new ContentModelBuilderService(
       viewFactory,
@@ -84,7 +84,7 @@ class ContentModelBuilderServiceTest extends ReasonableWaits {
   def jsonSuffixedRequestsShouldBeGivenTheRssView {
     when(invalidModelBuilder.isValid(request)).thenReturn(false)
     when(validModelBuilder.isValid(request)).thenReturn(true)
-    when(validModelBuilder.populateContentModel(request)).thenReturn(Future.successful(Some(validModelAndView)))
+    when(validModelBuilder.populateContentModel(request, None)).thenReturn(Future.successful(Some(validModelAndView)))
 
     val contentModelBuilderService = new ContentModelBuilderService(
       viewFactory,

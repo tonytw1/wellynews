@@ -25,11 +25,11 @@ import scala.concurrent.Future
     request.getPathInfo.matches("^/feeds(/(rss|json))?$")
   }
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
     log.info("Building feed page model")
     val withAcceptancePolicy = Option(request.getParameter("acceptance")).map(FeedAcceptancePolicy.valueOf)
     for {
-      feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, Option(loggedInUser))
+      feeds <- contentRetrievalService.getFeeds(withAcceptancePolicy, loggedInUser)
     } yield {
       val mv = new ModelAndView().
         addObject("heading", "Feeds").

@@ -40,13 +40,12 @@ import scala.concurrent.Future
     tags != null && tags.size == 1
   }
 
-
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
     def populateTagPageModelAndView(tag: Tag, page: Int): Future[Option[ModelAndView]] = {
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
-      val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
+      val eventualTaggedNewsitems = contentRetrievalService.getTaggedNewsitems(tag, startIndex, MAX_NEWSITEMS, loggedInUser)
       val eventualChildTags = tagDAO.loadTagsByParent(tag._id)
       val eventualMaybeParent = tag.parent.map { pid =>
         tagDAO.loadTagByObjectId(pid)
