@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
 import nz.co.searchwellington.model.frontend.FrontendResource
-import nz.co.searchwellington.model.{Tag, TagContentCount, User}
+import nz.co.searchwellington.model.{Tag, TagContentCount, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,12 +32,13 @@ import scala.concurrent.Future
     val maybeTag = Option(request.getAttribute("tags")).flatMap { t =>
       t.asInstanceOf[Seq[Tag]].headOption
     }
+    val maybePublisher = Option(request.getAttribute("publisher").asInstanceOf[Website])
 
     val mv = new ModelAndView()
     mv.addObject("page", page)
 
     for {
-      contentWithCount <- getMatchingNewsitems(loggedInUser, keywords, startIndex, maybeTag)
+      contentWithCount <- getMatchingNewsitems(Option(loggedInUser), keywords, startIndex, maybeTag, maybePublisher)
     } yield {
       import scala.collection.JavaConverters._
       mv.addObject(MAIN_CONTENT, contentWithCount._1.asJava)
@@ -76,13 +77,15 @@ import scala.concurrent.Future
     }
   }
 
-  private def getMatchingNewsitems(loggedInUser: User, keywords: String, startIndex: Int, maybeTag: Option[Tag]): Future[(Seq[FrontendResource], Long)] = {
+  private def getMatchingNewsitems(loggedInUser: Option[User], keywords: String, startIndex: Int, maybeTag: Option[Tag], maybePublisher: Option[Website]): Future[(Seq[FrontendResource], Long)] = {
     maybeTag.fold {
-      val eventualNewsitemsMatchingKeyword = contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
-      eventualNewsitemsMatchingKeyword
+      maybePublisher.fold {
+        contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser)
+      } { publisher =>
+        contentRetrievalService.getPublisherNewsitemsMatchingKeywords(keywords, publisher, startIndex, MAX_NEWSITEMS, loggedInUser)
+      }
     } { tag =>
-      val eventualTaggedNewsitemsMatchingKeywords = contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, Option(loggedInUser))
-      eventualTaggedNewsitemsMatchingKeywords
+      contentRetrievalService.getTagNewsitemsMatchingKeywords(keywords, tag, startIndex, MAX_NEWSITEMS, loggedInUser)
     }
   }
 

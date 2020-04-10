@@ -66,8 +66,9 @@ class SearchModelBuilderTest extends ReasonableWaits {
     request.setAttribute("publisher", publisher)
 
     val publisherNewsitemSearchResults = (Seq(tagNewsitem, anotherTagNewsitem), 2L)
-    when(contentRetrievalService.getPubslisherNewsitemsMatchingKeywords("widgets", publisher = publisher, 0, 30, loggedInUser)).
+    when(contentRetrievalService.getPublisherNewsitemsMatchingKeywords("sausages", publisher = publisher, 0, 30, loggedInUser)).
       thenReturn(Future.successful(publisherNewsitemSearchResults))
+    when(contentRetrievalService.getKeywordSearchFacets("sausages")).thenReturn(Seq.empty)
 
     val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
 

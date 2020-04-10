@@ -44,14 +44,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
     elasticSearchIndexer.getResourcesMatchingKeywordsNotTaggedByUser(keywords, user, tag).flatMap(i => fetchByIds(i._1))
   }
 
+  // TODO Should be able to merge these 3 into a more general method
   def getNewsitemsMatchingKeywords(keywords: String, startIndex: Int, maxNewsitems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val newsitemsByKeywords = ResourceQuery(`type` = Some("N"), q = Some(keywords))
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(newsitemsByKeywords, loggedInUser = loggedInUser))
   }
-
   def getTagNewsitemsMatchingKeywords(keywords: String, tag: Tag, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
     val taggedNewsitemsByKeywords = ResourceQuery(`type` = Some("N"), q = Some(keywords), tags = Some(Set(tag)))
     toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(taggedNewsitemsByKeywords, loggedInUser = loggedInUser))
+  }
+  def getPublisherNewsitemsMatchingKeywords(keywords: String, publisher: Website, startIndex: Int, maxItems: Int, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
+    val publisherNewsitemsByKeywords = ResourceQuery(`type` = Some("N"), q = Some(keywords), publisher = Some(publisher))
+    toFrontendResourcesWithTotalCount(elasticSearchIndexer.getResources(publisherNewsitemsByKeywords, loggedInUser = loggedInUser))
   }
 
   def getTagWatchlist(tag: Tag, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
