@@ -14,7 +14,7 @@ import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Component class TagPageAttributeSetter @Autowired()(var tagDAO: TagDAO, mongoRepository: MongoRepository) extends AttributeSetter
-with ReasonableWaits {
+  with ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[TagPageAttributeSetter])
   private val tagPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|autotag))?(/(rss|json))?$")
@@ -23,19 +23,23 @@ with ReasonableWaits {
     log.debug("Looking for single tag path")
     val contentMatcher = tagPagePathPattern.matcher(request.getPathInfo)
     if (contentMatcher.matches) {
-      val `match` = contentMatcher.group(1)
-      if (!(isReservedUrlWord(`match`))) {
-        log.debug("'" + `match` + "' matches content")
-        log.debug("Looking for tag '" + `match` + "'")
+      val tagUrlWords = contentMatcher.group(1)
+      if (!(isReservedUrlWord(tagUrlWords))) {
+        log.debug("'" + tagUrlWords + "' matches content")
 
-        Await.result(mongoRepository.getTagByUrlWords(`match`), TenSeconds).map { tag =>
-          log.debug("Setting tag: " + tag.getName)
-          request.setAttribute("tag", tag) // TODO deprecate
+        if (tagUrlWords.trim.nonEmpty) {
+          log.debug("Looking for tag '" + tagUrlWords + "'")
+          Await.result(mongoRepository.getTagByUrlWords(tagUrlWords), TenSeconds).map { tag =>
+            log.debug("Setting tag: " + tag.getName)
+            request.setAttribute("tag", tag) // TODO deprecate
           val tags = Seq(tag)
-          log.debug("Setting tags: " + tags)
-          request.setAttribute("tags", tags)
-          true
-        }.getOrElse{
+            log.debug("Setting tags: " + tags)
+            request.setAttribute("tags", tags)
+            true
+          }.getOrElse {
+            false
+          }
+        } else {
           false
         }
       } else {

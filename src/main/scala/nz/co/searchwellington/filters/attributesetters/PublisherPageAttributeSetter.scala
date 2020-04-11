@@ -19,16 +19,20 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val publisherPagePathPattern = Pattern.compile("^/(.*?)(/(comment|geotagged|.*?-.*?))?(/(edit|save|rss|json))?$")
 
   def setAttributes(request: HttpServletRequest): Boolean = {
-    val contentMatcher: Matcher = publisherPagePathPattern.matcher(request.getPathInfo)
+    val contentMatcher = publisherPagePathPattern.matcher(request.getPathInfo)
     if (contentMatcher.matches) {
-      val `match` = contentMatcher.group(1)
-      log.debug("'" + `match` + "' matches content")
-      log.debug("Looking for publisher '" + `match` + "'")
-      Await.result(mongoRepository.getWebsiteByUrlwords(`match`), TenSeconds).map { publisher =>
-        request.setAttribute("publisher", publisher)
-        request.setAttribute("resource", publisher)
-        true
-      }.getOrElse {
+      val publisherUrlWords = contentMatcher.group(1)
+      if (publisherUrlWords.trim.nonEmpty) {
+        log.debug("'" + publisherUrlWords + "' matches content")
+        log.debug("Looking for publisher '" + publisherUrlWords + "'")
+        Await.result(mongoRepository.getWebsiteByUrlwords(publisherUrlWords), TenSeconds).map { publisher =>
+          request.setAttribute("publisher", publisher)
+          request.setAttribute("resource", publisher)
+          true
+        }.getOrElse {
+          false
+        }
+      } else {
         false
       }
     } else {
