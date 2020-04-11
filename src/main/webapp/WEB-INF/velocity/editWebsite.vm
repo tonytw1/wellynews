@@ -22,7 +22,7 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                 #springBind("editWebsite.description")
+                #springBind("editWebsite.description")
                 <label for="${status.expression}">Description:</label>
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
@@ -39,11 +39,14 @@
                 <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                <p>$editWebsite</p>
+                <p>$tags</p>
+
                 #springBind("editWebsite.tags")
                 <label for="${status.expression}">Tags:</label>
                 <select name="${status.expression}" multiple >
                     #foreach($tag in $tags)
-                        <option value="$tag.id" #if(${status.value} == $tag.id) SELECTED #end>$tag.name
+                        <option value="$tag.id" #if($status.actualValue.contains($tag.getBSONId())) SELECTED #end>$tag.name
                     #end
                 </select>
                 <br />
