@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.LatLong
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.{Await, Future}
 
 @Component class ContentRetrievalService @Autowired()(resourceDAO: HibernateResourceDAO,
                                                       keywordSearchService: KeywordSearchService,
@@ -215,11 +215,12 @@ import scala.concurrent.ExecutionContext.Implicits.global
     mongoRepository.getAllDiscoveredFeeds()
   }
 
-  def getTagNamesStartingWith(q: String): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
+  def getTagNamesStartingWith(q: String, loggedInUser: Option[User]): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
 
-  def getPublisherNamesByStartingLetters(q: String): Future[Seq[String]] = {
+  def getPublisherNamesByStartingLetters(q: String, loggedInUser: Option[User]): Future[Seq[String]] = {
     log.info("Get publishers starting with '" + q + "'")
-    mongoRepository.getWebsiteByNamePrefix(q).map { ps =>
+    val isAdminUser = loggedInUser.exists(_.isAdmin)
+    mongoRepository.getWebsiteByNamePrefix(q, isAdminUser).map { ps =>
       ps.map { p =>
         p.title.getOrElse("")
       }

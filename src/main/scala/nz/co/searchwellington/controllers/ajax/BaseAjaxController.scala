@@ -2,6 +2,8 @@ package nz.co.searchwellington.controllers.ajax
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.controllers.LoggedInUserFilter
+import nz.co.searchwellington.model.User
 import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
@@ -13,12 +15,14 @@ abstract class BaseAjaxController extends ReasonableWaits {
 
   private val TERM = "term"
 
+  def loggedInUserFilter: LoggedInUserFilter
+
   def viewFactory: ViewFactory
 
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val eventualSuggestions = Option(request.getParameter(TERM)).map { q =>
-      getSuggestions(q)
-    }.getOrElse{
+      getSuggestions(q, Option(loggedInUserFilter.getLoggedInUser))
+    }.getOrElse {
       Future.successful(Seq.empty)
     }
 
@@ -32,6 +36,6 @@ abstract class BaseAjaxController extends ReasonableWaits {
     }, TenSeconds)
   }
 
-  protected def getSuggestions(q: String): Future[Seq[String]]
+  protected def getSuggestions(q: String, loggedInUser: Option[User]): Future[Seq[String]]
 
 }

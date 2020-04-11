@@ -1,6 +1,8 @@
 package nz.co.searchwellington.controllers.ajax
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
+import nz.co.searchwellington.controllers.LoggedInUserFilter
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,8 +13,9 @@ import uk.co.eelpieconsulting.common.views.ViewFactory
 
 import scala.concurrent.Future
 
-@Controller class PublisherAjaxController  @Autowired() (val viewFactory: ViewFactory,
-                                                         contentRetrievalService: ContentRetrievalService)
+@Controller class PublisherAjaxController @Autowired()(val loggedInUserFilter: LoggedInUserFilter,
+                                                       val viewFactory: ViewFactory,
+                                                       contentRetrievalService: ContentRetrievalService)
   extends BaseAjaxController {
 
   private val log = Logger.getLogger(classOf[PublisherAjaxController])
@@ -22,9 +25,9 @@ import scala.concurrent.Future
     super.handleRequest(request, response)
   }
 
-  override protected def getSuggestions(q: String): Future[Seq[String]] = {
+  override protected def getSuggestions(q: String, loggedInUser: Option[User]): Future[Seq[String]] = {
     log.info("Looking up possible publishers starting with: " + q)
-    contentRetrievalService.getPublisherNamesByStartingLetters(q)
+    contentRetrievalService.getPublisherNamesByStartingLetters(q, loggedInUser)
   }
 
 }

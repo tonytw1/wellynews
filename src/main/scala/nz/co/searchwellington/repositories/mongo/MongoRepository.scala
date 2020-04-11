@@ -10,7 +10,7 @@ import reactivemongo.api.collections.bson.BSONCollection
 import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.api.{Cursor, DB, MongoConnection, MongoDriver}
-import reactivemongo.bson.{BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
+import reactivemongo.bson.{BSONBoolean, BSONDateTime, BSONDocument, BSONDocumentReader, BSONDocumentWriter, BSONObjectID, BSONReader, BSONString, BSONValue, BSONWriter, Macros}
 
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -171,9 +171,20 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("type" -> "W", "title" -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
-  def getWebsiteByNamePrefix(q: String)(implicit ec: ExecutionContext): Future[List[Website]] = {
+  def getWebsiteByNamePrefix(q: String, showHeld: Boolean)(implicit ec: ExecutionContext): Future[List[Website]] = {
     val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*")) // TODO How to escape
-    resourceCollection.find(BSONDocument("type" -> "W", "title" -> prefixRegex)).
+
+    val selector = BSONDocument(
+      "type" -> "W",
+      "title" -> prefixRegex
+    )
+    val withHeldFilter = if (!showHeld) {
+      selector ++ BSONDocument("held" -> false)
+    } else {
+      selector
+    }
+
+    resourceCollection.find(withHeldFilter).
       sort(BSONDocument("title" -> 1)).
       cursor[Website]().collect[List](maxDocs = 10, err = Cursor.FailOnError[List[Website]]())
   }
