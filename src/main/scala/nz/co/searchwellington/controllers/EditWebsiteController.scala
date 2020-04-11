@@ -126,6 +126,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
   private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {
     import scala.collection.JavaConverters._
     new ModelAndView("editWebsite").
+      addObject("title", "Editing a website").
       addObject("website", w).
       addObject("editWebsite", editWebsite).
       addObject("tags", Await.result(tagDAO.getAllTags, TenSeconds).asJava)
