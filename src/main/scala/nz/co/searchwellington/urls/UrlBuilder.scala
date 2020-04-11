@@ -208,7 +208,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "http://www.openstreetmap.org/browse/" + osmId.getType.toString.toLowerCase + "/" + osmId.getId
   }
 
-  private def formattedInterval(interval: Interval) = {
+  def formattedInterval(interval: Interval) = {
     archiveMonthFormat.format(interval.getStart.toDate).toLowerCase
   }
 

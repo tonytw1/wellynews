@@ -1,7 +1,5 @@
 package nz.co.searchwellington.controllers.models.helpers
 
-import java.util.Date
-
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.RssUrlBuilder
@@ -12,6 +10,7 @@ import nz.co.searchwellington.model.helpers.ArchiveLinksService
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
+import org.joda.time.{DateTime, Interval, YearMonth}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -38,7 +37,9 @@ import scala.concurrent.Future
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
 
-    def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Date] = newsitems.lastOption.map(i => i.getDate)
+    def monthOfLastItem(newsitems: Seq[FrontendResource]): Option[Interval] = newsitems.lastOption.map { i =>
+      new YearMonth(new DateTime(i.date)).toInterval()
+    }
 
     for {
       latestNewsitems <- contentRetrievalService.getLatestNewsitems(MAX_NEWSITEMS * 3, getPage(request), loggedInUser = loggedInUser)
@@ -49,8 +50,8 @@ import scala.concurrent.Future
         addObject("link", urlBuilder.getHomeUrl).
         addObject(MAIN_CONTENT, latestNewsitems.asJava)
 
-      monthOfLastItem(latestNewsitems).map { d =>
-        // mv.addObject("main_content_moreurl", urlBuilder.getArchiveLinkUrl(d))
+      monthOfLastItem(latestNewsitems).map { month =>
+        mv.addObject("main_content_moreurl", urlBuilder.formattedInterval(month))
       }
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getBaseRssTitle, rssUrlBuilder.getBaseRssUrl)
