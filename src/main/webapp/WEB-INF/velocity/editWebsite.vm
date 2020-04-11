@@ -39,9 +39,6 @@
                 <input id="selectedGeocode" name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
-                <p>$editWebsite</p>
-                <p>$tags</p>
-
                 #springBind("editWebsite.tags")
                 <label for="${status.expression}">Tags:</label>
                 <select name="${status.expression}" multiple >
