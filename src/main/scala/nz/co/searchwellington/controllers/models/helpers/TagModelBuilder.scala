@@ -11,7 +11,6 @@ import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Resource, Tag, User}
 import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import nz.co.searchwellington.urls.UrlBuilder
-import org.apache.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import org.springframework.web.servlet.ModelAndView
@@ -25,8 +24,6 @@ import scala.concurrent.Future
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
                                               frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder
   with CommonSizes with Pagination with ReasonableWaits {
-
-  private val log = Logger.getLogger(classOf[TagModelBuilder])
 
   private val PAGE = "page"
   private val TAG = "tag"
