@@ -136,6 +136,10 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "/archive/" + formattedInterval(link.interval)
   }
 
+  def getIntervalUrl(interval: Interval): String = {
+    "/archive/" + formattedInterval(interval)
+  }
+
   def getPublisherArchiveLinkUrl(link: PublisherArchiveLink): String = {
     "/" + link.publisher.getUrlWords + "/" + formattedInterval(link.interval)
   }
@@ -208,7 +212,7 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     "http://www.openstreetmap.org/browse/" + osmId.getType.toString.toLowerCase + "/" + osmId.getId
   }
 
-  def formattedInterval(interval: Interval) = {
+  private def formattedInterval(interval: Interval) = {
     archiveMonthFormat.format(interval.getStart.toDate).toLowerCase
   }
 
