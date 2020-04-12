@@ -27,14 +27,12 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
 
   private val log = Logger.getLogger(classOf[NewWebsiteController])
 
-  private val newWebsitePath = "/new-website"
-
-  @RequestMapping(value = Array(newWebsitePath), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
     new ModelAndView("newWebsite").addObject("newWebsite", new NewWebsite())
   }
 
-  @RequestMapping(value = Array(newWebsitePath), method = Array(RequestMethod.POST))
+  @RequestMapping(value = Array("/new-website"), method = Array(RequestMethod.POST))
   def submit(@Valid @ModelAttribute("newWebsite") newWebsite: NewWebsite, result: BindingResult): ModelAndView = {
     if (result.hasErrors) {
       log.warn("New website submission has errors: " + result)
