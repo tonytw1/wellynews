@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers.models
 import javax.servlet.http.HttpServletRequest
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.helpers.{CommonSizes, Pagination}
-import nz.co.searchwellington.model.frontend.FrontendResource
+import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{Tag, TagContentCount, User, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.urls.UrlBuilder
@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class SearchModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder)
+@Component class SearchModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val KEYWORDS_PARAMETER = "keywords"
@@ -36,7 +36,14 @@ import scala.concurrent.Future
     val mv = new ModelAndView()
     mv.addObject("page", page)
 
+    val eventualMaybePublisher = maybePublisher.map { publisher =>
+      frontendResourceMapper.createFrontendResourceFrom(publisher).map(Some(_))
+    }.getOrElse{
+      Future.successful(None)
+    }
+
     for {
+      maybeFrontendPublisher <- eventualMaybePublisher
       contentWithCount <- contentRetrievalService.getNewsitemsMatchingKeywords(keywords, startIndex, MAX_NEWSITEMS, loggedInUser, maybeTag, maybePublisher)
     } yield {
       import scala.collection.JavaConverters._
@@ -45,6 +52,8 @@ import scala.concurrent.Future
       val contentCount = contentWithCount._2
       mv.addObject("main_content_total", contentCount)
       populatePagination(mv, startIndex, contentCount, MAX_NEWSITEMS)
+
+      mv.addObject("publisher", maybeFrontendPublisher.orNull)
 
       maybeTag.map { tag =>
         mv.addObject("tag", tag)
