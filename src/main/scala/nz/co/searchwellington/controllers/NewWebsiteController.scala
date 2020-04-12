@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewWebsite
-import nz.co.searchwellington.model.{UrlWordsGenerator, Website}
+import nz.co.searchwellington.model.{UrlWordsGenerator, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -53,7 +53,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
           url_words = Some(proposedUrlWords),
           owner = owner.map(_._id),
           date = Some(DateTime.now.toDate),
-          held = !owner.exists(_.isAdmin),
+          held = submissionShouldBeHeld(owner),
         )
 
         contentUpdateService.create(website)
@@ -67,6 +67,10 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
         renderNewWebsiteForm(newWebsite)
       }
     }
+  }
+
+  private def submissionShouldBeHeld(owner: Option[User]) = {
+    !owner.exists(_.isAdmin)
   }
 
   private def renderNewWebsiteForm(newWebsite: nz.co.searchwellington.forms.NewWebsite): ModelAndView = {

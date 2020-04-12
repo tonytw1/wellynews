@@ -3,7 +3,7 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.EditWebsite
-import nz.co.searchwellington.model.{Geocode, Tagging, UrlWordsGenerator, Website}
+import nz.co.searchwellington.model._
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.mongo.MongoRepository
@@ -97,7 +97,8 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
             title = Some(editWebsite.getTitle),
             page = Some(editWebsite.getUrl),
             description = Some(editWebsite.getDescription),
-            geocode = geocode
+            geocode = geocode,
+            held = submissionShouldBeHeld(loggedInUser)
           ).withTags(taggings)
 
 
@@ -121,6 +122,10 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
         case _ => None
       }
     }
+  }
+
+  private def submissionShouldBeHeld(owner: User): Boolean = {
+    !owner.isAdmin
   }
 
   private def renderEditForm(w: Website, editWebsite: EditWebsite): ModelAndView = {
