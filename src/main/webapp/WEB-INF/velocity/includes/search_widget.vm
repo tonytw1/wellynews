@@ -6,8 +6,7 @@
             <input type="checkbox" name="tag" value="$tag.name">Just $tag.displayName
         #end
         #if ($publisher)
-            <p>Publisher: $publisher</p>
-            <input type="checkbox" name="publisher">Just $publisher.name
+            <input type="checkbox" checked name="publisher" value="$publisher.urlWords">Just $publisher.name
         #end
     </fieldset>
 </form>
