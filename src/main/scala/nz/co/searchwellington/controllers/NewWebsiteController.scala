@@ -50,7 +50,8 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
           page = Some(newWebsite.getUrl),
           url_words = Some(proposedUrlWords),
           owner = owner.map(_._id),
-          date = Some(DateTime.now.toDate)
+          date = Some(DateTime.now.toDate),
+          held = !owner.exists(_.isAdmin),
         )
 
         contentUpdateService.create(website)
