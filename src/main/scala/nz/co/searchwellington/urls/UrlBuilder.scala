@@ -53,10 +53,6 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getUrl + "/feeds"
   }
 
-  def getNewFeedUrl: String = {
-    "/new-feed"
-  }
-
   def getNewFeedForPublisherUrl(publisher: FrontendWebsite): String = {
     "/new-feed?publisher=" + publisher.urlWords
   }
@@ -192,16 +188,15 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     getTagUrl(tag) + "?keywords=" + UrlParameterEncoder.encode(keywords)
   }
 
-  def getSubmitWebsiteUrl: String = {
-    siteInformation.getUrl + "/new-website"
-  }
-
-  def getSubmitNewsitemUrl: String = {
-    siteInformation.getUrl + "/edit/submit/newsitem"
-  }
-
   def getSubmitFeedUrl: String = {
     siteInformation.getUrl + "/new-feed"
+  }
+  def getSubmitNewsitemUrl: String = {
+    siteInformation.getUrl + "/new-newsitem"
+  }
+
+  def getSubmitWebsiteUrl: String = {
+    siteInformation.getUrl + "/new-website"
   }
 
   def getResourceUrl(resource: FrontendResource): String = {

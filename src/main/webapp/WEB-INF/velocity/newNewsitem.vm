@@ -1,0 +1,48 @@
+#parse("includes/header.vm")
+
+<div class="page">
+	#parse("includes/topbar.vm")
+
+	<div class="left">
+		#parse("includes/tag_tree.vm")
+	</div>
+
+	<div class="main">
+		<h2>Submitting a Feed</h2>
+		
+		<form id="editForm" action="/new-newsitem" method="POST">
+
+            #springBind("newNewsitem")
+            #foreach($error in $status.errorMessages)
+                <div class="alert">$error</div>
+            #end
+
+            <fieldset>
+                #springBind("newNewsitem.title")
+                <label for="${status.expression}">Title:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("newNewsitem.url")
+                <label for="${status.expression}">URL:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("newNewsitem.publisher")
+                <label for="${status.expression}">Publisher:</label>
+                <input id="publisher" name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+				<input type="submit" value="Submit" />
+			</fieldset>
+		</form>
+	
+		<form action="/cancel" method="POST">
+			<input type="submit" value="Cancel" />
+		</form>
+
+	</div>
+
+</div>
+
+#parse("includes/footer.vm")
