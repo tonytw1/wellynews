@@ -6,6 +6,7 @@ import nz.co.searchwellington.forms.NewNewsitem
 import nz.co.searchwellington.model.{Newsitem, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import org.apache.log4j.Logger
+import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
@@ -21,10 +22,13 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
                                          loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NewNewsitemController])
+  private val dateFormatter = ISODateTimeFormat.basicDate()
 
   @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.GET))
   def prompt(): ModelAndView = {
-    new ModelAndView("newNewsitem").addObject("newNewsitem", new NewNewsitem())
+    val newsitem = new NewNewsitem()
+    newsitem.setDate(dateFormatter.print(DateTime.now()))
+    new ModelAndView("newNewsitem").addObject("newNewsitem", newsitem)
   }
 
   @RequestMapping(value = Array("/new-newsitem"), method = Array(RequestMethod.POST))
@@ -35,11 +39,8 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
     } else {
       log.info("Got valid new newsitem submission: " + newNewsitem)
-
-
       val owner = Option(loggedInUserFilter.getLoggedInUser)
 
-      val dateFormatter = ISODateTimeFormat.basicDate()
       val parsedDate = dateFormatter.parseDateTime(newNewsitem.getDate)
 
       val newsitem = Newsitem(
