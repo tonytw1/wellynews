@@ -3,12 +3,10 @@ package nz.co.searchwellington.controllers
 import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.forms.NewNewsitem
-import nz.co.searchwellington.model.{Newsitem, UrlWordsGenerator, User}
+import nz.co.searchwellington.model.{Newsitem, User}
 import nz.co.searchwellington.modification.ContentUpdateService
-import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.urls.UrlBuilder
 import org.apache.log4j.Logger
-import org.joda.time.DateTime
+import org.joda.time.format.ISODateTimeFormat
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import org.springframework.validation.BindingResult
@@ -20,8 +18,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller
 class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateService,
-                                         mongoRepository: MongoRepository,
-                                         urlWordsGenerator: UrlWordsGenerator, urlBuilder: UrlBuilder,
                                          loggedInUserFilter: LoggedInUserFilter) extends ReasonableWaits {
 
   private val log = Logger.getLogger(classOf[NewNewsitemController])
@@ -43,11 +39,14 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
       val owner = Option(loggedInUserFilter.getLoggedInUser)
 
+      val dateFormatter = ISODateTimeFormat.basicDate()
+      val parsedDate = dateFormatter.parseDateTime(newNewsitem.getDate)
+
       val newsitem = Newsitem(
         title = Some(newNewsitem.getTitle),
         page = Some(newNewsitem.getUrl),
         owner = owner.map(_._id),
-        date = Some(DateTime.now.toDate), // TODO
+        date = Some(parsedDate.toDate),
         held = submissionShouldBeHeld(owner),
       )
 
@@ -57,7 +56,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
     }
   }
 
-  private def submissionShouldBeHeld(owner: Option[User]) = {
+  private def submissionShouldBeHeld(owner: Option[User]): Boolean = {
     !owner.exists(_.isAdmin)
   }
 
