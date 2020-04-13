@@ -61,7 +61,8 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
         owner = owner.map(_._id),
         date = Some(parsedDate.toDate),
         held = submissionShouldBeHeld(owner),
-        publisher = publisher.map(_._id)
+        publisher = publisher.map(_._id),
+        description = Some(newNewsitem.getDescription.trim)
       )
 
       contentUpdateService.create(newsitem)

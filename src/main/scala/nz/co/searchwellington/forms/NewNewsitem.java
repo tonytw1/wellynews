@@ -5,13 +5,12 @@ import org.hibernate.validator.constraints.NotBlank;
 public class NewNewsitem {
 
     @NotBlank
-    private String title, url, date;
+    private String title, url, date, description;
     private String publisher;
 
     public String getTitle() {
         return title;
     }
-
     public void setTitle(String title) {
         this.title = title;
     }
@@ -19,7 +18,6 @@ public class NewNewsitem {
     public String getUrl() {
         return url;
     }
-
     public void setUrl(String url) {
         this.url = url;
     }
@@ -34,9 +32,15 @@ public class NewNewsitem {
     public String getPublisher() {
         return publisher;
     }
-
     public void setPublisher(String publisher) {
         this.publisher = publisher;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override
@@ -45,6 +49,7 @@ public class NewNewsitem {
                 "title='" + title + '\'' +
                 ", url='" + url + '\'' +
                 ", date='" + date + '\'' +
+                ", description='" + description + '\'' +
                 ", publisher='" + publisher + '\'' +
                 '}';
     }

@@ -38,6 +38,11 @@
                 <input name="${status.expression}" class="title" value="$!{status.value}" />
                 <br />
 
+                #springBind("newNewsitem.description")
+                <label for="${status.expression}">Description:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
 				<input type="submit" value="Submit" />
 			</fieldset>
 		</form>

@@ -31,6 +31,7 @@ class NewNewsitemControllerTest {
     newNewsitemSubmission.setUrl("https://localhost/a-newsitem")
     newNewsitemSubmission.setDate("20200122")
     newNewsitemSubmission.setPublisher("A publisher")
+    newNewsitemSubmission.setDescription("Something interesting")
 
     val publisher = Website(_id = BSONObjectID.generate(), title = Some("A publisher"))
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
@@ -45,6 +46,7 @@ class NewNewsitemControllerTest {
     assertEquals(Some("https://localhost/a-newsitem"), createdNewsitem.getValue.page)
     assertEquals(Some(new DateTime(2020, 1, 22, 0, 0).toDate), createdNewsitem.getValue.date)
     assertEquals(publisher._id, createdNewsitem.getValue.publisher.get)
+    assertEquals(Some("Something interesting"), createdNewsitem.getValue.description)
    }
 
 }
