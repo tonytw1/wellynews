@@ -17,7 +17,7 @@ class NewNewsitemControllerTest {
   val controller = new NewNewsitemController(contentUpdateService, loggedInUserFilter)
 
   @Test
-  def canSubmitNewsitems: Unit = {
+  def canSubmitNewsitems(): Unit = {
     implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
 
     val newNewsitemSubmission: NewNewsitem = new NewNewsitem()
