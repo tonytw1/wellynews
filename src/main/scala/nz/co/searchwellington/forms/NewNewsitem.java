@@ -5,8 +5,9 @@ import org.hibernate.validator.constraints.NotBlank;
 public class NewNewsitem {
 
     @NotBlank
-    private String title, url, date, description;
-    private String publisher;
+    private String title, url, date, publisher;
+
+    private String description;
 
     public String getTitle() {
         return title;
