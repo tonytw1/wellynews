@@ -30,7 +30,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.GET))
   def prompt(@PathVariable id: String): ModelAndView = {
-    Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
+    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       getWebsiteById(id).map { w =>
         val editWebsite = new EditWebsite()
         editWebsite.setTitle(w.title.getOrElse(""))
@@ -65,9 +65,7 @@ class EditWebsiteController @Autowired()(contentUpdateService: ContentUpdateServ
 
   @RequestMapping(value = Array("/edit-website/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editWebsite") editWebsite: EditWebsite, result: BindingResult): ModelAndView = {
-
-    Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
-
+    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       getWebsiteById(id).map { w =>
         if (result.hasErrors) {
           log.warn("Edit website submission has errors: " + result)

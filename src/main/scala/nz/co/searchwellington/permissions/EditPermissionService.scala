@@ -8,94 +8,96 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class EditPermissionService @Autowired() (loggedInUserFilter: LoggedInUserFilter) {
+class EditPermissionService @Autowired()(loggedInUserFilter: LoggedInUserFilter) {
 
   def canEdit(resource: FrontendResource): Boolean = {
-    return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
   def canEdit(resource: Resource): Boolean = {
-    return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
   def canDelete(resource: FrontendResource): Boolean = {
-    return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
   def canDelete(resource: Resource): Boolean = {
-    return isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
+    isAdminOrOwner(resource, loggedInUserFilter.getLoggedInUser)
   }
 
-  def canAcceptAll: Boolean ={
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canAcceptAll: Boolean = {
+    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
   def canAcceptAllFrom(feed: Feed): Boolean = {
-    return canAcceptAll
+    canAcceptAll
   }
 
   def canCheck(resource: FrontendResource): Boolean = {
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
+    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  def canSeeLocalPage(newsitem: Newsitem): Boolean ={
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canSeeLocalPage(newsitem: Newsitem): Boolean = {
+    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  def canEditSuggestions: Boolean ={
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
+  def canEditSuggestions: Boolean = {
+    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
   def canAddTag: Boolean = {
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
+    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  def canEdit(tag: Tag): Boolean ={
-    return loggedInUserFilter.getLoggedInUser != null && loggedInUserFilter.getLoggedInUser.isAdmin
+  def canEdit(tag: Tag): Boolean = {
+    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
   def canAddWatchlistAndTag: Boolean = {
-    return isAdmin(loggedInUserFilter.getLoggedInUser)
+    isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
   def canAcceptFeedItems(loggedInUser: User): Boolean = {
-    return isAdmin(loggedInUser)
+    isAdmin(Some(loggedInUser))
   }
 
-  def canDeleteTags(loggedInUser: User): Boolean = {
-    return isAdmin(loggedInUser)
+  def canDeleteTags(loggedInUser: Option[User]): Boolean = {
+    isAdmin(loggedInUser)
   }
 
   def isAdmin(): Boolean = {
     isAdmin(loggedInUserFilter.getLoggedInUser)
   }
 
-  private def isAdmin(loggedInUser: User): Boolean = {
-    loggedInUser != null && loggedInUser.isAdmin
+  private def isAdmin(loggedInUser: Option[User]): Boolean = {
+    loggedInUser.exists(_.isAdmin)
   }
 
-  private def isAdminOrOwner(resource: FrontendResource, loggedInUser: User): Boolean = {
+  private def isAdminOrOwner(resource: FrontendResource, loggedInUser: Option[User]): Boolean = {
     if (isAdmin(loggedInUser)) {
       return true
     }
-
-    val matchesOwnersName = loggedInUser != null && !Strings.isNullOrEmpty(resource.getOwner) && loggedInUser.getProfilename == resource.getOwner
-    matchesOwnersName
-  }
-
-  private def isAdminOrOwner(resource: Resource, loggedInUser: User): Boolean = {
-    if (isAdmin(loggedInUser)) {
-      return true
-    }
-
-    val isOwner = if (loggedInUser != null) {
-      resource.owner.map { o =>
-        loggedInUser.id == o
-      }.getOrElse(false)
-    } else {
+    loggedInUser.map { u =>
+      val matchesOwnersName = !Strings.isNullOrEmpty(resource.getOwner) && u.getProfilename == resource.getOwner
+      matchesOwnersName
+    }.getOrElse {
       false
     }
-    isOwner
   }
-  
+
+  private def isAdminOrOwner(resource: Resource, loggedInUser: Option[User]): Boolean = {
+    if (isAdmin(loggedInUser)) {
+      return true
+    }
+
+    loggedInUser.map { u =>
+      resource.owner.map { o =>
+        u.id == o
+      }.getOrElse(false)
+    }.getOrElse {
+      false
+    }
+  }
+
 }

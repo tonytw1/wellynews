@@ -32,9 +32,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
       log.info("External user identifier is: " + externalIdentifier.toString)
 
       val userToSignIn = signinHandler.getUserByExternalIdentifier(externalIdentifier).map { user =>
-        // Don't know what this does
-        val loggedInUser = loggedInUserFilter.getLoggedInUser
-        if (loggedInUserFilter.getLoggedInUser == null) {
+        // TODO Don't know what this does
+        loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
           log.info("Attaching external identifier to current user: " + externalIdentifier.toString)
           //signinHandler.decorateUserWithExternalSigninIdentifier(loggedInUser, externalIdentifier) // TODO why?
           loggedInUser
@@ -45,8 +44,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         createNewUser(externalIdentifier)
       }
 
-      val alreadyLoggedInUser = loggedInUserFilter.getLoggedInUser
-      if (alreadyLoggedInUser != null) {
+      loggedInUserFilter.getLoggedInUser.map { alreadyLoggedInUser =>
         if (alreadyLoggedInUser.isUnlinkedAccount && !(userToSignIn == alreadyLoggedInUser)) {
           log.info("Reassigning resource ownership from " + alreadyLoggedInUser.getProfilename + " to " + userToSignIn.getProfilename)
           loginResourceOwnershipService.reassignOwnership(alreadyLoggedInUser, userToSignIn)
@@ -54,7 +52,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
       }
 
       loggedInUserFilter.setLoggedInUser(request, userToSignIn)
-
 
       new ModelAndView(new RedirectView(urlStack.getExitUrlFromStack(request)))
     }

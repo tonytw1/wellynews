@@ -37,9 +37,8 @@ class AdminFeedControllerTest {
   }
 
   @Test
-  @throws[Exception]
   def manualFeedReaderRunsShouldBeAttributedToTheUserWhoKicksThemOffAndShouldAcceptAllEvenIfNoDateIsGivenOfNotCurrent(): Unit = {
-    Mockito.when(loggedInUserFilter.getLoggedInUser).thenReturn(loggedInUser)
+    Mockito.when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(loggedInUser))
     Mockito.when(permissionService.canAcceptAllFrom(feed)).thenReturn(true)
 
     val controller = new AdminFeedController(requestFilter, feedReader, urlBuilder, permissionService, loggedInUserFilter)

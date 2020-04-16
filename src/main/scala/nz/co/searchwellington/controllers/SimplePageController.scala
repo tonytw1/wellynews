@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     import scala.collection.JavaConverters._
     Await.result((for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = Option(loggedInUserFilter.getLoggedInUser))
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUserFilter.getLoggedInUser)
     } yield {
       new ModelAndView("about").
         addObject("heading", "About").
@@ -39,7 +39,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   @RequestMapping(Array("/archive"))
   def archive(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     urlStack.setUrlStack(request)
-    val loggedInUser = Option(loggedInUserFilter.getLoggedInUser)
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
 
     Await.result((for {
       links <- contentRetrievalService.getArchiveMonths(loggedInUser)
@@ -57,8 +57,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     Await.result(withCommonLocal(new ModelAndView("api").
       addObject("heading", "The Wellynews API").
-      addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = Option(loggedInUserFilter.getLoggedInUser))).
-      addObject("publishers", contentRetrievalService.getAllPublishers(Option(loggedInUserFilter.getLoggedInUser))).
+      addObject("feeds", contentRetrievalService.getFeeds(loggedInUser = loggedInUserFilter.getLoggedInUser)).
+      addObject("publishers", contentRetrievalService.getAllPublishers(loggedInUserFilter.getLoggedInUser)).
       addObject("api_tags", contentRetrievalService.getTopLevelTags)), TenSeconds)
   }
 
@@ -68,7 +68,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
     Await.result(withCommonLocal(new ModelAndView("rssfeeds").
       addObject("heading", "RSS feeds").
-      addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(Option(loggedInUserFilter.getLoggedInUser)))), TenSeconds)
+      addObject("feedable_tags", contentRetrievalService.getFeedworthyTags(loggedInUserFilter.getLoggedInUser))), TenSeconds)
   }
 
   @RequestMapping(Array("/feeds/discovered"))

@@ -26,8 +26,7 @@ class AcceptFeedItemController @Autowired()(mongoRepository: MongoRepository,
 
   @RequestMapping(value = Array("/accept-feed-item"), method = Array(RequestMethod.GET))
   def accept(feed: String, url: String): ModelAndView = {
-
-    val eventualModelAndView = Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
+    val eventualModelAndView = loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       mongoRepository.getFeedByUrlwords(feed).flatMap { fo =>
         fo.map { feed =>
           val eventualFeedItem = rssfeedNewsitemService.getFeedItemsAndDetailsFor(feed).map { fis =>

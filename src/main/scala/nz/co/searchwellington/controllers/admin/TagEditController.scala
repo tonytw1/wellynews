@@ -35,7 +35,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val pattern = Pattern.compile("^/edit/tag/(.*)$")
 
   @RequestMapping(Array("/edit/tag/delete")) def delete(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (!editPermissionService.canDeleteTags(loggedInUser)) {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN)
       return null

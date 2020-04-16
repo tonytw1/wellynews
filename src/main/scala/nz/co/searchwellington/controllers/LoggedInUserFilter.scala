@@ -27,8 +27,8 @@ class LoggedInUserFilter @Autowired()() {
     }
   }
 
-  def getLoggedInUser: User = {
-    loggedInUser
+  def getLoggedInUser: Option[User] = {
+    Option(loggedInUser)
   }
 
   def setLoggedInUser(request: HttpServletRequest, user: User): Unit = {

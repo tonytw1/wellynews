@@ -44,7 +44,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
       val proposedUrlWords = urlWordsGenerator.makeUrlWordsFromName(newWebsite.getTitle)
 
       Await.result(mongoRepository.getWebsiteByUrlwords(proposedUrlWords), TenSeconds).fold {
-        val owner = Option(loggedInUserFilter.getLoggedInUser)
+        val owner = loggedInUserFilter.getLoggedInUser
 
         val website = Website(title = Some(newWebsite.getTitle),
           page = Some(newWebsite.getUrl),

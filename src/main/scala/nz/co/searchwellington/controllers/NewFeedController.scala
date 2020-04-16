@@ -75,7 +75,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           Await.result(mongoRepository.getWebsiteByName(publisherName), TenSeconds)
         }
 
-        val owner = Option(loggedInUserFilter.getLoggedInUser)
+        val owner = loggedInUserFilter.getLoggedInUser
 
         val feed = Feed(title = Some(newFeed.getTitle),
           page = Some(newFeed.getUrl),

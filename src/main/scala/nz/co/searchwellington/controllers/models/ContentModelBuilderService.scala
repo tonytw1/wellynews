@@ -18,7 +18,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
 
   private val logger = Logger.getLogger(classOf[ContentModelBuilderService])
 
-  def populateContentModel(request: HttpServletRequest, loggedInUser: User = null): Future[Option[ModelAndView]] = {
+  def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User] = None): Future[Option[ModelAndView]] = {
     logger.info("Serving path: " + request.getPathInfo)
     modelBuilders.find(mb => {
       val r = mb.isValid(request)
@@ -26,7 +26,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
       r
     }).map { mb =>
       logger.info("Using " + mb.getClass.getName + " to serve path: " + request.getPathInfo)
-      mb.populateContentModel(request, Option(loggedInUser)).flatMap { eventualMaybeModelAndView =>
+      mb.populateContentModel(request, loggedInUser).flatMap { eventualMaybeModelAndView =>
         eventualMaybeModelAndView.map { mv =>
           val path = request.getPathInfo
           val eventualWithViewAndExtraContent = if (path.endsWith("/rss")) {
@@ -43,7 +43,7 @@ class ContentModelBuilderService(viewFactory: ViewFactory,
             Future.successful(Some(mv))
 
           } else {
-            mb.populateExtraModelContent(request, mv, Option(loggedInUser)).flatMap { mv =>
+            mb.populateExtraModelContent(request, mv, loggedInUser).flatMap { mv =>
               mv.setViewName(mb.getViewName(mv))
               withCommonLocal(mv).map { mv =>
                 Some(mv)

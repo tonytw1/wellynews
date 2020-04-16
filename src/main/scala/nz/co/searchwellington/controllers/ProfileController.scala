@@ -56,8 +56,8 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
 
     val path = request.getPathInfo
     userByPath(path).map { user =>
-      val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, Option(loggedInUserFilter.getLoggedInUser))
-      val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, Option(loggedInUserFilter.getLoggedInUser))
+      val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, loggedInUserFilter.getLoggedInUser)
+      val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, loggedInUserFilter.getLoggedInUser)
 
       Await.result((for {
         ownedBy <- eventualOwnedBy
@@ -65,9 +65,13 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       } yield {
 
         def selectView: String = {
-          if (loggedInUser != null && loggedInUser.getId == user.getId) {
-            "profile"
-          } else {
+          loggedInUser.map { u =>
+            if (u.getId == user.getId) {
+              "profile"
+            } else {
+              "viewProfile"
+            }
+          }.getOrElse {
             "viewProfile"
           }
         }
@@ -97,7 +101,7 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
 
   // TODO reinstate
   @RequestMapping(value = Array("/profile/edit"), method = Array(RequestMethod.POST)) def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
+    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       if (request.getParameter("profilename") != null && Await.result(isValidAvailableProfilename(request.getParameter("profilename")), TenSeconds)) {
         //  loggedInUser.setProfilename(request.getParameter("profilename"))
       }
@@ -105,9 +109,10 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
       // loggedInUser.setBio(request.getParameter("bio"))
       //   loggedInUser.setUrl(request.getParameter("url"))
       mongoRepository.saveUser(loggedInUser)
+      new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(loggedInUser.getProfilename)))
+    }.getOrElse {
+      null //TODO
     }
-
-    new ModelAndView(new RedirectView(urlBuilder.getProfileUrlFromProfileName(Option(loggedInUserFilter.getLoggedInUser).get.getProfilename)))
   }
 
   def isValidAvailableProfilename(profilename: String): Future[Boolean] = {

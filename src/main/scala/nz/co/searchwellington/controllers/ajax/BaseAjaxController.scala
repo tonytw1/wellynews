@@ -21,7 +21,7 @@ abstract class BaseAjaxController extends ReasonableWaits {
 
   def handleRequest(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     val eventualSuggestions = Option(request.getParameter(TERM)).map { q =>
-      getSuggestions(q, Option(loggedInUserFilter.getLoggedInUser))
+      getSuggestions(q, loggedInUserFilter.getLoggedInUser)
     }.getOrElse {
       Future.successful(Seq.empty)
     }

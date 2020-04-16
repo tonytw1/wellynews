@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[AutoTagController])
 
   @RequestMapping(Array("/*/autotag")) def prompt(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    Option(loggedInUserFilter.getLoggedInUser).fold {
+    loggedInUserFilter.getLoggedInUser.fold {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN)
       null: ModelAndView
 
@@ -57,12 +57,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(value = Array("/*/autotag/apply"), method = Array(RequestMethod.POST)) def apply(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
-    if (loggedInUser == null) {
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN)
-      null
-
-    } else {
+    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       requestFilter.loadAttributesOntoRequest(request)
       val tag = request.getAttribute("tag").asInstanceOf[Tag]
       if (tag == null) {
@@ -103,6 +98,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
         Await.result(withCommonLocal(mv), TenSeconds)
       }
+    }.getOrElse {
+      response.setStatus(HttpServletResponse.SC_FORBIDDEN)
+      null
     }
   }
 

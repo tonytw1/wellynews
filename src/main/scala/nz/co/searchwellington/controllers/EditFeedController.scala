@@ -51,7 +51,7 @@ class EditFeedController @Autowired()(contentUpdateService: ContentUpdateService
 
   @RequestMapping(value = Array("/edit-feed/{id}"), method = Array(RequestMethod.POST))
   def submit(@PathVariable id: String, @Valid @ModelAttribute("editFeed") editFeed: EditFeed, result: BindingResult): ModelAndView = {
-    Option(loggedInUserFilter.getLoggedInUser).map { loggedInUser =>
+    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       getFeedById(id).map { f =>
         if (result.hasErrors) {
           log.warn("Edit feed submission has errors: " + result)

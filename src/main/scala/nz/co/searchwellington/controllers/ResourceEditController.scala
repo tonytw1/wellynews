@@ -28,50 +28,54 @@ import org.springframework.web.servlet.view.RedirectView
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Controller class ResourceEditController @Autowired() (rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
-                                                       tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory,
-                                                       loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
-                                                       submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
-                                                       contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
-                                                       tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor,
-                                                       feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
-                                                       whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
-                                                       spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue,
-                                                       val contentRetrievalService: ContentRetrievalService) extends CommonModelObjectsService {
+@Controller class ResourceEditController @Autowired()(rssfeedNewsitemService: RssfeedNewsitemService, adminRequestFilter: AdminRequestFilter,
+                                                      tagWidgetFactory: TagsWidgetFactory, autoTagger: AutoTaggingService, acceptanceWidgetFactory: AcceptanceWidgetFactory,
+                                                      loggedInUserFilter: LoggedInUserFilter, editPermissionService: EditPermissionService, urlStack: UrlStack,
+                                                      submissionProcessingService: SubmissionProcessingService, contentUpdateService: ContentUpdateService,
+                                                      contentDeletionService: ContentDeletionService, snapBodyExtractor: SnapshotBodyExtractor, anonUserService: AnonUserService,
+                                                      tagVoteDAO: HandTaggingDAO, feedItemAcceptor: FeedItemAcceptor,
+                                                      feednewsItemToNewsitemService: FeeditemToNewsitemService, urlWordsGenerator: UrlWordsGenerator,
+                                                      whakaokoService: WhakaokoService, frontendResourceMapper: FrontendResourceMapper,
+                                                      spamFilter: SpamFilter, linkCheckerQueue: LinkCheckerQueue,
+                                                      val contentRetrievalService: ContentRetrievalService) extends CommonModelObjectsService {
 
   private val log = Logger.getLogger(classOf[ResourceEditController])
   private val ACCEPTANCE = "acceptance"
 
   @RequestMapping(Array("/edit")) def edit(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
-    log.info("Starting resource edit method")
-    response.setCharacterEncoding("UTF-8")
-    adminRequestFilter.loadAttributesOntoRequest(request)
-    val resource: Resource = request.getAttribute("resource").asInstanceOf[Resource]
-    if (request.getAttribute("resource") == null) {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND)
-      log.info("No resource attribute found on request; returning 404")
-      return null
-    }
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
-    if (!userIsAllowedToEdit(resource, request, loggedInUser)) {
-      response.setStatus(HttpServletResponse.SC_FORBIDDEN)
-      log.info("No logged in user or user not allowed to edit resource; returning 403")
-      return null
-    }
+    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
+      log.info("Starting resource edit method")
+      response.setCharacterEncoding("UTF-8")
+      adminRequestFilter.loadAttributesOntoRequest(request)
+      val resource: Resource = request.getAttribute("resource").asInstanceOf[Resource]
+      if (request.getAttribute("resource") == null) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND)
+        log.info("No resource attribute found on request; returning 404")
+        return null
+      }
+      val loggedInUser = loggedInUserFilter.getLoggedInUser
+      if (!userIsAllowedToEdit(resource, request, loggedInUser)) {
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN)
+        log.info("No logged in user or user not allowed to edit resource; returning 403")
+        return null
+      }
 
-    val mv = new ModelAndView("editResource").
-      addObject("heading", "Editing a Resource").
-      addObject("resource", resource).
-      addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, resource))).
-      addObject("show_additional_tags", 1)
+      val mv = new ModelAndView("editResource").
+        addObject("heading", "Editing a Resource").
+        addObject("resource", resource).
+        addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser.get, resource))).
+        addObject("show_additional_tags", 1)
 
-    val userIsLoggedIn = loggedInUser != null
-    populatePublisherField(mv, userIsLoggedIn, resource)
-    if (resource.`type` == "F") {
-      // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
+      val userIsLoggedIn = loggedInUser != null
+      populatePublisherField(mv, userIsLoggedIn, resource)
+      if (resource.`type` == "F") {
+        // mv.addObject("acceptance_select", acceptanceWidgetFactory.createAcceptanceSelect((resource.asInstanceOf[Feed]).getAcceptancePolicy))
+      }
+
+      Await.result(withCommonLocal(mv), TenSeconds)
+    }.getOrElse {
+      null // TODO
     }
-
-    Await.result(withCommonLocal(mv), TenSeconds)
   }
 
   @RequestMapping(Array("/edit/viewsnapshot")) def viewSnapshot(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -81,7 +85,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
       return null
     }
     val resource: Resource = request.getAttribute("resource").asInstanceOf[Resource]
-    val loggedInUser: User = loggedInUserFilter.getLoggedInUser
+    val loggedInUser = loggedInUserFilter.getLoggedInUser
     if (!userIsAllowedToEdit(resource, request, loggedInUser)) {
       response.setStatus(HttpServletResponse.SC_FORBIDDEN)
       return null
@@ -92,7 +96,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
         addObject("heading", "Resource snapshot").
         addObject("resource", editResource).
         addObject("body", snapBodyExtractor.extractLatestSnapshotBodyTextFor(editResource)).
-        addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser, editResource))).
+        addObject("tag_select", tagWidgetFactory.createMultipleTagSelect(tagVoteDAO.getHandpickedTagsForThisResourceByUser(loggedInUser.get, editResource))).
         addObject("show_additional_tags", 1)
 
       Await.result(withCommonLocal(mv), TenSeconds)
@@ -203,106 +207,112 @@ import scala.concurrent.ExecutionContext.Implicits.global
   }
 
   @RequestMapping(value = Array("/save"), method = Array(RequestMethod.POST))
-  @throws[UnsupportedEncodingException]
   def save(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     request.setCharacterEncoding("UTF-8")
     response.setCharacterEncoding("UTF-8")
 
-    val mv = new ModelAndView("savedResource").
-      addObject("heading", "Resource Saved")
+    loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
 
-    var loggedInUser: User = loggedInUserFilter.getLoggedInUser
-    adminRequestFilter.loadAttributesOntoRequest(request)
-    var editResource: Resource = null
-    if (request.getAttribute("resource") != null) {
-      editResource = request.getAttribute("resource").asInstanceOf[Resource]
-    }
-    else {
-      log.info("Creating new resource.")
-      if (request.getParameter("type") != null) {
-        val `type`: String = request.getParameter("type")
-        if (`type` == "W") {
-          editResource = Website(id = UUID.randomUUID().toString)
-        }
-        else if (`type` == "N") {
-          editResource = Newsitem(id = UUID.randomUUID().toString)
-        }
-        else if (`type` == "F") {
-          editResource = Feed(id = UUID.randomUUID().toString)
-        }
-        else if (`type` == "L") {
-          editResource = Watchlist(id = UUID.randomUUID().toString)
-        }
-        else {
-          editResource = Newsitem(id = UUID.randomUUID().toString)
-        }
+      val mv = new ModelAndView("savedResource").
+        addObject("heading", "Resource Saved")
+
+      adminRequestFilter.loadAttributesOntoRequest(request)
+      var editResource: Resource = null
+      if (request.getAttribute("resource") != null) {
+        editResource = request.getAttribute("resource").asInstanceOf[Resource]
       }
-    }
-    log.info("In save")
-    if (editResource != null) {
-      val newSubmission: Boolean = editResource.id == 0 // TODO
-      if (loggedInUser == null) {
-        loggedInUser = createAndSetAnonUser(request)
-      }
-      if (newSubmission) {
-        editResource.setOwner(loggedInUser)
-      }
-      submissionProcessingService.processUrl(request, editResource)
-      submissionProcessingService.processTitle(request, editResource)
-      // editResource.setGeocode(submissionProcessingService.processGeocode(request))
-      submissionProcessingService.processDate(request, editResource)
-      submissionProcessingService.processHeld(request, editResource)
-      submissionProcessingService.processEmbargoDate(request, editResource)
-      submissionProcessingService.processDescription(request, editResource)
-      submissionProcessingService.processPublisher(request, editResource)
-      if (editResource.`type` == "N") {
-        submissionProcessingService.processImage(request, editResource.asInstanceOf[Newsitem], loggedInUser)
-        submissionProcessingService.processAcceptance(request, editResource, loggedInUser)
-      }
-      if (editResource.`type` == "W" || editResource.`type` == "F") {
-        editResource.title.map { t =>
-          editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(t))
-        }
-      }
-      processFeedAcceptancePolicy(request, editResource)
-      val isSpamUrl: Boolean = spamFilter.isSpam(editResource)
-      val isPublicSubmission: Boolean = loggedInUser == null || (loggedInUser.isUnlinkedAccount)
-      if (isPublicSubmission) {
-        log.info("This is a public submission; marking as held")
-        editResource.setHeld(true)
-      }
-      if (editResource.`type` == "F") {
-        editResource.page.map { p =>
-          if (!Strings.isNullOrEmpty(p)) {
-            //whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
-            //  log.info("Created whakaoko subscription: " + createdFeedSubscription)
-            //}
+      else {
+        log.info("Creating new resource.")
+        if (request.getParameter("type") != null) {
+          val `type`: String = request.getParameter("type")
+          if (`type` == "W") {
+            editResource = Website(id = UUID.randomUUID().toString)
+          }
+          else if (`type` == "N") {
+            editResource = Newsitem(id = UUID.randomUUID().toString)
+          }
+          else if (`type` == "F") {
+            editResource = Feed(id = UUID.randomUUID().toString)
+          }
+          else if (`type` == "L") {
+            editResource = Watchlist(id = UUID.randomUUID().toString)
+          }
+          else {
+            editResource = Newsitem(id = UUID.randomUUID().toString)
           }
         }
       }
-
-      val okToSave = !newSubmission || !isSpamUrl || loggedInUser != null
-      if (okToSave) {
-        saveResource(request, loggedInUser, editResource)
-        log.info("Saved resource; id is now: " + editResource.id)
-        submissionProcessingService.processTags(request, editResource, loggedInUser)
-        if (newSubmission) {
-          log.info("Applying the auto tagger to new submission.")
-          // autoTagger.autotag(editResource) TODO
+      log.info("In save")
+      if (editResource != null) {
+        val loggedInUser = loggedInUserFilter.getLoggedInUser.getOrElse{
+          createAndSetAnonUser(request)
         }
-        saveResource(request, loggedInUser, editResource)
-        linkCheckerQueue.add(editResource.id)
+
+        val isNewSubmission = editResource.id == 0 // TODO
+        if (isNewSubmission) {
+          editResource.setOwner(loggedInUser)
+        }
+
+        submissionProcessingService.processUrl(request, editResource)
+        submissionProcessingService.processTitle(request, editResource)
+        // editResource.setGeocode(submissionProcessingService.processGeocode(request))
+        submissionProcessingService.processDate(request, editResource)
+        submissionProcessingService.processHeld(request, editResource)
+        submissionProcessingService.processEmbargoDate(request, editResource)
+        submissionProcessingService.processDescription(request, editResource)
+        submissionProcessingService.processPublisher(request, editResource)
+        if (editResource.`type` == "N") {
+          submissionProcessingService.processImage(request, editResource.asInstanceOf[Newsitem], loggedInUser)
+          submissionProcessingService.processAcceptance(request, editResource, loggedInUser)
+        }
+        if (editResource.`type` == "W" || editResource.`type` == "F") {
+          editResource.title.map { t =>
+            editResource.setUrlWords(urlWordsGenerator.makeUrlWordsFromName(t))
+          }
+        }
+        processFeedAcceptancePolicy(request, editResource)
+        val isSpamUrl: Boolean = spamFilter.isSpam(editResource)
+        val isPublicSubmission: Boolean = loggedInUser == null || (loggedInUser.isUnlinkedAccount)
+        if (isPublicSubmission) {
+          log.info("This is a public submission; marking as held")
+          editResource.setHeld(true)
+        }
+        if (editResource.`type` == "F") {
+          editResource.page.map { p =>
+            if (!Strings.isNullOrEmpty(p)) {
+              //whakaoroService.createFeedSubscription(p).map { createdFeedSubscription =>
+              //  log.info("Created whakaoko subscription: " + createdFeedSubscription)
+              //}
+            }
+          }
+        }
+
+        val okToSave = !isNewSubmission || !isSpamUrl || loggedInUser != null
+        if (okToSave) {
+          saveResource(request, loggedInUser, editResource)
+          log.info("Saved resource; id is now: " + editResource.id)
+          submissionProcessingService.processTags(request, editResource, loggedInUser)
+          if (isNewSubmission) {
+            log.info("Applying the auto tagger to new submission.")
+            // autoTagger.autotag(editResource) TODO
+          }
+          saveResource(request, loggedInUser, editResource)
+          linkCheckerQueue.add(editResource.id)
+        }
+        else {
+          log.info("Could not save resource. Spam question not answered?")
+        }
+        mv.addObject("item", frontendResourceMapper.createFrontendResourceFrom(editResource))
       }
       else {
-        log.info("Could not save resource. Spam question not answered?")
+        log.warn("No edit resource could be setup.")
       }
-      mv.addObject("item", frontendResourceMapper.createFrontendResourceFrom(editResource))
-    }
-    else {
-      log.warn("No edit resource could be setup.")
-    }
 
-    Await.result(withCommonLocal(mv), TenSeconds)
+      Await.result(withCommonLocal(mv), TenSeconds)
+
+    }.getOrElse {
+      null // TODO
+    }
   }
 
   private def createAndSetAnonUser(request: HttpServletRequest): User = {
@@ -329,7 +339,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     contentUpdateService.update(editResource)
   }
 
-  private def userIsAllowedToEdit(editResource: Resource, request: HttpServletRequest, loggedInUser: User): Boolean = {
+  private def userIsAllowedToEdit(editResource: Resource, request: HttpServletRequest, loggedInUser: Option[User]): Boolean = {
     editPermissionService.canEdit(editResource)
   }
 

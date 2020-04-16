@@ -42,7 +42,7 @@ class NewNewsitemController @Autowired()(contentUpdateService: ContentUpdateServ
 
     } else {
       log.info("Got valid new newsitem submission: " + newNewsitem)
-      val owner = Option(loggedInUserFilter.getLoggedInUser)
+      val owner = loggedInUserFilter.getLoggedInUser
 
       val parsedDate = dateFormatter.parseDateTime(newNewsitem.getDate)
 

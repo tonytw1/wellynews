@@ -16,23 +16,22 @@ import org.springframework.web.servlet.view.RedirectView
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-@Controller class AdminFeedController @Autowired()(requestFilter: AdminRequestFilter, feedReader: FeedReader, urlBuilder: UrlBuilder,
-                                                   editPermissionService: EditPermissionService, loggedInUserFilter: LoggedInUserFilter) {
+@Controller class AdminIndexController @Autowired()(requestFilter: AdminRequestFilter, feedReader: FeedReader, urlBuilder: UrlBuilder,
+                                                    editPermissionService: EditPermissionService, loggedInUserFilter: LoggedInUserFilter) {
 
-  private val log = Logger.getLogger(classOf[AdminFeedController])
+  private val log = Logger.getLogger(classOf[AdminIndexController])
 
   @RequestMapping(Array("/admin/feed/acceptall"))
   def acceptAllFrom(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
-      requestFilter.loadAttributesOntoRequest(request)
-      if (request.getAttribute("feedAttribute") == null) throw new RuntimeException("Not found") // TODO
-    val feed = request.getAttribute("feedAttribute").asInstanceOf[Feed]
-      if (!editPermissionService.canAcceptAllFrom(feed)) {
-        log.warn("Not allowed to read this feed") // TODO return http auth error
-        throw new RuntimeException("Not allowed")
+      if (loggedInUser.isAdmin) {
+        val mv = new ModelAndView("adminindex")
+        mv.addObject("heading", "Admin index")
+        return mv
+
+      } else {
+        null // TODO 403
       }
-      feedReader.processFeed(feed, loggedInUser, FeedAcceptancePolicy.ACCEPT_EVEN_WITHOUT_DATES)
-      new ModelAndView(new RedirectView(urlBuilder.getFeedUrl(feed)))
     }.getOrElse {
       null // TODO 403
     }
