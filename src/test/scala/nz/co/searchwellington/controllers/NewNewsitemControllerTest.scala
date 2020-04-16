@@ -1,7 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.forms.NewNewsitem
-import nz.co.searchwellington.model.{Newsitem, Website}
+import nz.co.searchwellington.model.{Newsitem, User, Website}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import org.joda.time.DateTime
@@ -34,6 +34,7 @@ class NewNewsitemControllerTest {
     newNewsitemSubmission.setDescription("Something interesting")
 
     val publisher = Website(_id = BSONObjectID.generate(), title = Some("A publisher"))
+    when(loggedInUserFilter.getLoggedInUser).thenReturn(Some(User()))
     when(mongoRepository.getWebsiteByName("A publisher")).thenReturn(Future.successful(Some(publisher)))
 
     val bindingResultWithNoErrors = mock(classOf[BindingResult])
