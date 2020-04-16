@@ -21,7 +21,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
   private val log = Logger.getLogger(classOf[AdminIndexController])
 
-  @RequestMapping(Array("/admin/feed/acceptall"))
+  @RequestMapping(Array("/admin"))
   def acceptAllFrom(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     loggedInUserFilter.getLoggedInUser.map { loggedInUser =>
       if (loggedInUser.isAdmin) {
