@@ -56,8 +56,8 @@ class ProfileController @Autowired()(mongoRepository: MongoRepository, loggedInU
 
     val path = request.getPathInfo
     userByPath(path).map { user =>
-      val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, loggedInUserFilter.getLoggedInUser)
-      val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, loggedInUserFilter.getLoggedInUser)
+      val eventualOwnedBy = contentRetrievalService.getOwnedBy(user, loggedInUser)
+      val eventualTaggedBy = contentRetrievalService.getTaggedBy(user, loggedInUser)
 
       Await.result((for {
         ownedBy <- eventualOwnedBy
