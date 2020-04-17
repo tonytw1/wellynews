@@ -2,25 +2,22 @@ package nz.co.searchwellington.controllers
 
 import javax.servlet.http.{HttpServletRequest, HttpServletResponse}
 import nz.co.searchwellington.ReasonableWaits
-import nz.co.searchwellington.model.User
-import nz.co.searchwellington.model.mappers.FrontendResourceMapper
+import nz.co.searchwellington.repositories.ContentRetrievalService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
-import nz.co.searchwellington.repositories.{ContentRetrievalService, TagDAO}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.{RequestMapping, RequestMethod}
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 
 @Order(1)
-@Controller class SimplePageController @Autowired()(tagDAO: TagDAO, rssUrlBuilder: RssUrlBuilder,
-                                                    urlStack: UrlStack,
-                                                    val contentRetrievalService: ContentRetrievalService,
-                                                    frontendResourceMapper: FrontendResourceMapper,
-                                                    mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter)
+@Controller class SimplePageController @Autowired()(
+                                                     urlStack: UrlStack,
+                                                     val contentRetrievalService: ContentRetrievalService,
+                                                     mongoRepository: MongoRepository, loggedInUserFilter: LoggedInUserFilter)
   extends ReasonableWaits with CommonModelObjectsService {
 
   @RequestMapping(value = Array("/about"), method = Array(RequestMethod.GET)) def about(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
@@ -79,16 +76,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Await.result(withCommonLocal(new ModelAndView("discoveredFeeds").
       addObject("heading", "Discovered Feeds").
       addObject("discovered_feeds", Await.result(mongoRepository.getAllDiscoveredFeeds, TenSeconds).asJava)), TenSeconds)
-  }
-
-  // TODO duplication
-  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
-    for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
-    } yield {
-      import scala.collection.JavaConverters._
-      mv.addObject("latest_newsitems", latestNewsitems.asJava)
-    }
   }
 
 }

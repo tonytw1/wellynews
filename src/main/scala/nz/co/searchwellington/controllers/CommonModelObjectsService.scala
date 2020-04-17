@@ -1,6 +1,7 @@
 package nz.co.searchwellington.controllers
 
 import nz.co.searchwellington.ReasonableWaits
+import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.web.servlet.ModelAndView
 
@@ -13,6 +14,15 @@ trait CommonModelObjectsService extends ReasonableWaits {
 
   def withCommonLocal(mv: ModelAndView): Future[ModelAndView] = {
     populateCommonLocal(mv)
+  }
+
+  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
+    for {
+      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
+    } yield {
+      import scala.collection.JavaConverters._
+      mv.addObject("latest_newsitems", latestNewsitems.asJava)
+    }
   }
 
   private def populateCommonLocal(mv: ModelAndView): Future[ModelAndView] = {

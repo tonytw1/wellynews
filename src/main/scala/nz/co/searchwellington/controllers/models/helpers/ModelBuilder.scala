@@ -1,14 +1,15 @@
 package nz.co.searchwellington.controllers.models
 
 import javax.servlet.http.HttpServletRequest
+import nz.co.searchwellington.controllers.CommonModelObjectsService
 import nz.co.searchwellington.controllers.models.helpers.ContentFields
 import nz.co.searchwellington.model.User
 import nz.co.searchwellington.repositories.ContentRetrievalService
 import org.springframework.web.servlet.ModelAndView
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-trait ModelBuilder extends ContentFields {
+trait ModelBuilder extends ContentFields with CommonModelObjectsService {
 
   def contentRetrievalService: ContentRetrievalService
 
@@ -19,14 +20,5 @@ trait ModelBuilder extends ContentFields {
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView]
 
   def getViewName(mv: ModelAndView): String
-
-  def withLatestNewsitems(mv: ModelAndView, loggedInUser: Option[User])(implicit ec: ExecutionContext): Future[ModelAndView] = {
-    for {
-      latestNewsitems <- contentRetrievalService.getLatestNewsitems(5, loggedInUser = loggedInUser)
-    } yield {
-      import scala.collection.JavaConverters._
-      mv.addObject(LATEST_NEWSITEMS, latestNewsitems.asJava)
-    }
-  }
 
 }
