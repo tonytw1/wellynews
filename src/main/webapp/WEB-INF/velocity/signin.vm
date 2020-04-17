@@ -3,53 +3,26 @@
 <div class="page">
 #parse("includes/topbar.vm")
 
-
-
 <div class="left">
 #parse("includes/tag_tree.vm")
 </div>
 
 <div class="main">
-
 <h2>$heading</h2>
 
 #if (!$loggedInUserFilter.isSignedIn())
 	<p>Sign in to have your submissions assigned to you. Signing in will allow you to edit your previous submissions and tinker with things.</p>	
 	#parse("includes/signin_form.vm")	
 #end
-
 </div>
 
 <div class="right">
-
-<!--
-<div class="box">
-	<h2>What is OpenID?</h2>
-
-	<p>$site_information.sitename uses <a href="http://openid.net/">OpenID</a> for sign in. 
-	
-	<p>We think OpenID is a good thing. It means we don't have to create you a new account or store your login details.
-	<a href="http://www.openid.co.uk/node/6">This video gives an overview of the system</a>. 
-	</p>
-		
-	<p>OpenID is a fairly new concept, so to be pragmatic, we also support OAuth sign ins
-	from Twitter.</p>
-	
-	<p>Twitter users can sign in using the sign in with Twitter icon.</p>
-	
-</div>
--->
-
 <div class="box">
 #parse("includes/latest_newsitems.vm")
-
 <br clear="all"/>
-
 </div>
 
-
 </div>
-
 </div>
 
 #parse("includes/footer.vm")
