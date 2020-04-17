@@ -8,7 +8,7 @@
 	</div>
 
 	<div class="main">
-		<h2>Submitting a Feed</h2>
+		<h2>Submitting a news item</h2>
 		
 		<form id="editForm" action="/new-newsitem" method="POST">
 
