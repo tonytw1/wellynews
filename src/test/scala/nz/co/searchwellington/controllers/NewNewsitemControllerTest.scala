@@ -26,7 +26,7 @@ class NewNewsitemControllerTest {
   def canSubmitNewsitems(): Unit = {
     implicit val ec = scala.concurrent.ExecutionContext.Implicits.global
 
-    val newNewsitemSubmission: NewNewsitem = new NewNewsitem()
+    val newNewsitemSubmission = new NewNewsitem()
     newNewsitemSubmission.setTitle("A newsitem")
     newNewsitemSubmission.setUrl("https://localhost/a-newsitem")
     newNewsitemSubmission.setDate("20200122")

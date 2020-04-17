@@ -21,8 +21,7 @@ class LoginResourceOwnershipServiceTest {
   private val loginResourceOwnershipService = new LoginResourceOwnershipService(mongoRepository, handTaggingService)
 
   @Test
-  @throws[Exception]
-  def shouldDeletePreviousUserAfterReassigningResources {
+  def shouldDeletePreviousUserAfterReassigningResources() {
     when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
 
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)
@@ -31,8 +30,7 @@ class LoginResourceOwnershipServiceTest {
   }
 
   @Test
-  @throws[Exception]
-  def shouldTransferAllTaggingVotesWhenReassigningUser {
+  def shouldTransferAllTaggingVotesWhenReassigningUser() {
     when(mongoRepository.getResourcesOwnedBy(previousOwner)).thenReturn(Future.successful(resourcesOwnedByUser))
 
     loginResourceOwnershipService.reassignOwnership(previousOwner, newOwner)

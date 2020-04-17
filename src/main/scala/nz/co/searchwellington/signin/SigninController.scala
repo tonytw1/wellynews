@@ -18,7 +18,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
   private val log = Logger.getLogger(classOf[SigninController])
 
   @RequestMapping(Array("/twitter/login"))
-  @throws[Exception]
   def login(request: HttpServletRequest, response: HttpServletResponse): ModelAndView = {
     log.info("Twitter login called")
     val loginView = signinHandler.getLoginView(request, response)
