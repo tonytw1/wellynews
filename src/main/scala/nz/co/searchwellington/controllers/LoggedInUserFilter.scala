@@ -40,4 +40,8 @@ class LoggedInUserFilter @Autowired()() {
       Option(loggedInUser).nonEmpty
   }
 
+  def getLoggedinUserProfileName(): String = {
+    Option(loggedInUser).flatMap(_.profilename).orNull
+  }
+
 }
