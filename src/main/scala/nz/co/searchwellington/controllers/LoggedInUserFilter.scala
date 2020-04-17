@@ -35,4 +35,9 @@ class LoggedInUserFilter @Autowired()() {
     log.info("Setting signed in user: " + user)
     request.getSession.setAttribute("user", user)
   }
+
+  def isLoggedIn(): Boolean = {
+      Option(loggedInUser).nonEmpty
+  }
+
 }

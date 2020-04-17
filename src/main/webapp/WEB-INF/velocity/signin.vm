@@ -13,7 +13,7 @@
 
 <h2>$heading</h2>
 
-#if (!$loggedInUserFilter.getLoggedInUser())
+#if (!$loggedInUserFilter.isSignedIn())
 	<p>Sign in to have your submissions assigned to you. Signing in will allow you to edit your previous submissions and tinker with things.</p>	
 	#parse("includes/signin_form.vm")	
 #end
