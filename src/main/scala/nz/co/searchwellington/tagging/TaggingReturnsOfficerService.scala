@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class TaggingReturnsOfficerService @Autowired() (handTaggingDAO: HandTaggingDAO, mongoRepository: MongoRepository)
-  extends ReasonableWaits {
+@Component class TaggingReturnsOfficerService @Autowired()(handTaggingDAO: HandTaggingDAO, val mongoRepository: MongoRepository)
+  extends ReasonableWaits with TagAncestors {
 
   private val log = Logger.getLogger(classOf[TaggingReturnsOfficerService])
 
@@ -101,7 +101,7 @@ import scala.concurrent.Future
           }
         case _ =>
           None
-      }).getOrElse{
+      }).getOrElse {
         Future.successful(None)
       }
     }
@@ -128,14 +128,14 @@ import scala.concurrent.Future
           }
         }).map(_.flatten)
       }
-    }.getOrElse{
+    }.getOrElse {
       Future.successful(Seq.empty)
     }
   }
 
   private def generateFeedRelatedTags(n: Newsitem): Future[Seq[GeneratedTaggingVote]] = {
     def generateAcceptedFromFeedTags(feedTags: Seq[Tag]): Future[Seq[GeneratedTaggingVote]] = {
-      Future.sequence{
+      Future.sequence {
         feedTags.map { ft =>
           for {
             parentsOfFeedTag <- parentsOf(ft)
@@ -156,22 +156,8 @@ import scala.concurrent.Future
         acceptedFromFeedTags
       }
 
-    }.getOrElse{
-      Future.successful(Seq.empty)
-    }
-  }
-
-  private def parentsOf(tag: Tag, soFar: Seq[Tag] = Seq.empty): Future[Seq[Tag]] = {
-    tag.parent.map { pid =>
-      mongoRepository.getTagByObjectId(pid).flatMap { pto =>
-        pto.map { p =>
-          parentsOf(p, soFar :+ p)
-        }.getOrElse {
-          Future.successful(soFar)
-        }
-      }
     }.getOrElse {
-      Future.successful(soFar)
+      Future.successful(Seq.empty)
     }
   }
 
