@@ -51,7 +51,7 @@ class NewWebsiteController @Autowired()(contentUpdateService: ContentUpdateServi
           url_words = Some(proposedUrlWords),
           owner = owner.map(_._id),
           date = Some(DateTime.now.toDate),
-          held = submissionShouldBeHeld(owner),
+          held = submissionShouldBeHeld(owner)
         )
 
         contentUpdateService.create(website)

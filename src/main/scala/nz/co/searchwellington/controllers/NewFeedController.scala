@@ -45,6 +45,7 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       new NewFeed()
     } { p =>
       val withPublisherPrepopulated = new NewFeed()
+      withPublisherPrepopulated.setTitle(p.title.map(t => t + " feed").getOrElse(""))
       withPublisherPrepopulated.setPublisher(p.title.getOrElse(""))
       withPublisherPrepopulated
     }
@@ -111,8 +112,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
     import scala.collection.JavaConverters._
     new ModelAndView("newFeed").
       addObject("heading", "Adding a feed").
-      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava)
-      .addObject("newFeed", newFeed)
+      addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
+      addObject("newFeed", newFeed)
   }
 
 }
