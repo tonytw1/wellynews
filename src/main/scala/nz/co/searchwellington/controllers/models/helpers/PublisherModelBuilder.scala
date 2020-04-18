@@ -62,14 +62,13 @@ import scala.concurrent.Future
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
           populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS)
+          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
 
-          populateGeotaggedItems(mv, publisherNewsitems._1)
-
+          populateGeotaggedItems(mv, publisherNewsitems._1) // TODO This should be a seperate query
         }
         import scala.collection.JavaConverters._
         mv.addObject("feeds", publisherFeeds.asJava)
 
-        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
         Some(mv)
       }
     }
