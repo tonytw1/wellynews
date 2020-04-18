@@ -34,7 +34,7 @@ class LoggedInUserFilter @Autowired()() {
     request.getSession.setAttribute("user", user)
   }
 
-  def isLoggedIn(): Boolean = loggedInUser.nonEmpty
+  def isSignedIn(): Boolean = loggedInUser.nonEmpty
 
   def getLoggedinUserProfileName(): String = {
     loggedInUser.flatMap(_.profilename).orNull
