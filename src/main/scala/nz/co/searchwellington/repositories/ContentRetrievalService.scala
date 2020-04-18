@@ -38,6 +38,12 @@ import scala.concurrent.{Await, Future}
     }
   }
 
+  def getPublisherNamesByStartingLetters(q: String, loggedInUser: Option[User]): Future[Seq[Website]] = {
+    log.info("Get publishers starting with '" + q + "'")
+    val isAdminUser = loggedInUser.exists(_.isAdmin)  // TODO push down to same level as all publishers
+    mongoRepository.getWebsitesByNamePrefix(q, isAdminUser)
+  }
+
   def getTopLevelTags: Future[Seq[Tag]] = tagDAO.getTopLevelTags
 
   def getResourcesMatchingKeywordsNotTaggedByUser(keywords: Set[String], user: User, tag: Tag): Future[Seq[FrontendResource]] = {
@@ -216,16 +222,6 @@ import scala.concurrent.{Await, Future}
   }
 
   def getTagNamesStartingWith(q: String, loggedInUser: Option[User]): Future[Seq[String]] = tagDAO.getTagNamesStartingWith(q)
-
-  def getPublisherNamesByStartingLetters(q: String, loggedInUser: Option[User]): Future[Seq[String]] = {
-    log.info("Get publishers starting with '" + q + "'")
-    val isAdminUser = loggedInUser.exists(_.isAdmin)
-    mongoRepository.getWebsiteByNamePrefix(q, isAdminUser).map { ps =>
-      ps.map { p =>
-        p.title.getOrElse("")
-      }
-    }
-  }
 
   def getOwnedByCount(loggedInUser: User): Int = {
     resourceDAO.getOwnedByUserCount(loggedInUser)

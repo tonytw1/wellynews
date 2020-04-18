@@ -22,8 +22,16 @@ import scala.concurrent.Future
   }
 
   def populateContentModel(request: HttpServletRequest, loggedInUser: Option[User]): Future[Option[ModelAndView]] = {
+    val q = Option(request.getParameter("q"))
+
+    val eventualPublishers = q.map { q =>
+      contentRetrievalService.getPublisherNamesByStartingLetters(q, loggedInUser)
+    }.getOrElse {
+      contentRetrievalService.getAllPublishers(loggedInUser)
+    }
+
     for {
-      publishers <- contentRetrievalService.getAllPublishers(loggedInUser)
+      publishers <- eventualPublishers
       frontendPublishers <- Future.sequence {
         publishers.
           sortBy(_.title).

@@ -171,7 +171,7 @@ class MongoRepository @Autowired()(@Value("#{config['mongo.uri']}") mongoUri: St
     getResourceBy(BSONDocument("type" -> "W", "title" -> name)).map(ro => ro.map(r => r.asInstanceOf[Website]))
   }
 
-  def getWebsiteByNamePrefix(q: String, showHeld: Boolean)(implicit ec: ExecutionContext): Future[List[Website]] = {
+  def getWebsitesByNamePrefix(q: String, showHeld: Boolean)(implicit ec: ExecutionContext): Future[Seq[Website]] = {
     val prefixRegex = BSONDocument("$regex" -> ("^" + q + ".*")) // TODO How to escape
 
     val selector = BSONDocument(
