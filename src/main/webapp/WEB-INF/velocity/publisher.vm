@@ -47,8 +47,6 @@
 	</div>
 
 	<div class="tag_secondary_content">
-	    <p>Feeds: $feeds</p>
-
 		#set($secondary_heading = "Feeds")
 		#set($secondary_content = $feeds)
 		#parse("includes/secondary_content.vm")
