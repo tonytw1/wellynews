@@ -38,6 +38,17 @@
                 </select>
                 <br />
 
+                #springBind("editTag.autotagHints")
+                <label for="${status.expression}">Autotag Hints:</label>
+                <input name="${status.expression}" class="title" value="$!{status.value}" />
+                <br />
+
+                #springBind("editTag.featured")
+                <label for="${status.expression}">Featured:</label>
+                <input name="${status.expression}" type="checkbox:" value="$!{status.value}" />
+                $!{status.value}
+                <br />
+
 				<input type="submit" value="Submit" />
 			</fieldset>
 		</form>

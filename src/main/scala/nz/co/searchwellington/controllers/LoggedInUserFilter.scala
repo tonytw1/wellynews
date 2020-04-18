@@ -14,30 +14,30 @@ class LoggedInUserFilter @Autowired()() {
 
   private val log = Logger.getLogger(classOf[LoggedInUserFilter])
 
-  private var loggedInUser: User = null
+  private var loggedInUser: Option[User] = None
 
   def loadLoggedInUser(request: HttpServletRequest): Unit = {
     if (request.getSession.getAttribute("user") != null) {
       val sessionUser = request.getSession.getAttribute("user").asInstanceOf[User]
       log.debug("Found user on session: " + sessionUser.getName)
-      loggedInUser = sessionUser
+      loggedInUser = Some(sessionUser)
     }
     else {
-      loggedInUser = null
+      loggedInUser = None
     }
   }
 
-  def getLoggedInUser: Option[User] = {
-    Option(loggedInUser)
-  }
+  def getLoggedInUser: Option[User] = loggedInUser
 
   def setLoggedInUser(request: HttpServletRequest, user: User): Unit = {
     log.info("Setting signed in user: " + user)
     request.getSession.setAttribute("user", user)
   }
 
-  def isLoggedIn(): Boolean = {
-      Option(loggedInUser).nonEmpty
+  def isLoggedIn(): Boolean = loggedInUser.nonEmpty
+
+  def getLoggedinUserProfileName(): String = {
+    loggedInUser.flatMap(_.profilename).orNull
   }
 
 }

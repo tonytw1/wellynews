@@ -39,7 +39,9 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
     Await.result(mongoRepository.getTagById(id), TenSeconds).map { tag =>
       renderEditForm(tag, new EditTag(tag.display_name,
         tag.description.getOrElse(""),
-        tag.parent.map(_.stringify).orNull
+        tag.parent.map(_.stringify).orNull,
+        tag.getAutotagHints.orNull,
+        tag.isFeatured,
       ))
 
     }.getOrElse {
@@ -76,7 +78,9 @@ class EditTagController @Autowired()(contentUpdateService: ContentUpdateService,
         val updatedTag = tag.copy(
           display_name = editTag.getDisplayName,
           description = Option(editTag.getDescription),
-          parent = parentTag.map(_._id)
+          parent = parentTag.map(_._id),
+          autotag_hints = Some(editTag.getAutotagHints),
+          featured =  editTag.getFeatured,
         )
 
         Await.result(mongoRepository.saveTag(updatedTag), TenSeconds)

@@ -12,7 +12,7 @@
 
 #if($editPermissionService.admin)
     <ul>
-        <li class="admin"><a href="$urlBuilder.newFeedUrl">Add new feed</a></li>
+        <li class="admin"><a href="$urlBuilder.getSubmitFeedUrl()">Add new feed</a></li>
     </ul>
 #end
 

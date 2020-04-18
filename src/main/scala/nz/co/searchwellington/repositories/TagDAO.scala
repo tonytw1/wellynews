@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
     Future.sequence(tagIds.map(mongoRepository.getTagById)).map(_.flatten)
   }
 
-  def loadTagsByParent(parentId: BSONObjectID): Future[List[Tag]] = {
+  def loadTagsByParent(parentId: BSONObjectID): Future[Seq[Tag]] = {
     mongoRepository.getTagsByParent(parentId)
   }
 

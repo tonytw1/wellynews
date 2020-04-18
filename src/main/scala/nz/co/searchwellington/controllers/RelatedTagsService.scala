@@ -7,25 +7,34 @@ import nz.co.searchwellington.model._
 import nz.co.searchwellington.repositories.TagDAO
 import nz.co.searchwellington.repositories.elasticsearch.ElasticSearchIndexer
 import nz.co.searchwellington.repositories.mongo.MongoRepository
+import nz.co.searchwellington.tagging.TagAncestors
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import reactivemongo.bson.BSONObjectID
 import uk.co.eelpieconsulting.common.geo.model.Place
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{Await, Future}
 
 @Component class RelatedTagsService @Autowired()(tagDAO: TagDAO, showBrokenDecisionService: ShowBrokenDecisionService,
                                                  frontendResourceMapper: FrontendResourceMapper,
-                                                 mongoRepository: MongoRepository,
-                                                 elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits {
+                                                 val mongoRepository: MongoRepository,
+                                                 elasticSearchIndexer: ElasticSearchIndexer) extends ReasonableWaits with TagAncestors {
 
   def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
+
+    val tagsAncestors = Await.result(parentsOf(tag), TenSeconds)  // TODO Await
+    val tagsDescendants = Await.result(descendantsOf(tag), TenSeconds) // TODO Await
+
 
     def suitableRelatedTag(tagFacetsForTag: TagContentCount): Boolean = {
       def isTagSuitableRelatedTag(relatedTag: Tag): Boolean = {
         //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
-        tag != relatedTag // TODO implement all
+
+        val isNotParentOf = !tagsAncestors.contains(relatedTag)
+        val isNotDescendantOf = !tagsDescendants.contains(relatedTag)
+
+        tag != relatedTag && isNotParentOf && isNotDescendantOf// TODO implement all
       }
 
       isTagSuitableRelatedTag(tagFacetsForTag.tag)

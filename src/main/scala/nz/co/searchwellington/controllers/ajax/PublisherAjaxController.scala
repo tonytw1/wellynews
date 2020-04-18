@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView
 import uk.co.eelpieconsulting.common.views.ViewFactory
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 @Controller class PublisherAjaxController @Autowired()(val loggedInUserFilter: LoggedInUserFilter,
                                                        val viewFactory: ViewFactory,
@@ -27,7 +28,9 @@ import scala.concurrent.Future
 
   override protected def getSuggestions(q: String, loggedInUser: Option[User]): Future[Seq[String]] = {
     log.info("Looking up possible publishers starting with: " + q)
-    contentRetrievalService.getPublisherNamesByStartingLetters(q, loggedInUser)
+    contentRetrievalService.getPublisherNamesByStartingLetters(q, loggedInUser).map { publishers =>
+      publishers.map(_.getTitle).filter(_.trim.nonEmpty)
+    }
   }
 
 }

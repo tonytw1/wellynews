@@ -16,7 +16,7 @@
 		<p>Access to this profile will cease when you close your browser.</p> 
 			
 		<p>If you wish to retain the ability to edit your submissions in the future,  
-		you can to link this profile to an OpenID or Twitter account by signing in below.</p>
+		you can to link this profile to your Twitter account by signing in below.</p>
 			
 		#parse("includes/signin_form.vm")
 		
