@@ -24,14 +24,17 @@ import scala.concurrent.{Await, Future}
   def getRelatedTagsForTag(tag: Tag, maxItems: Int, loggedInUser: Option[User]): Future[Seq[TagContentCount]] = {
 
     val tagsAncestors = Await.result(parentsOf(tag), TenSeconds)  // TODO Await
+    val tagsDescendants = Await.result(descendantsOf(tag), TenSeconds) // TODO Await
+
 
     def suitableRelatedTag(tagFacetsForTag: TagContentCount): Boolean = {
       def isTagSuitableRelatedTag(relatedTag: Tag): Boolean = {
         //  !(relatedTag.isHidden) && !(tag == relatedTag) && !(relatedTag.isParentOf(tag)) && !(tag.getAncestors.contains(relatedTag)) && !(tag.getChildren.contains(relatedTag)) && !(relatedTag.getName == "places") && !(relatedTag.getName == "blogs") // TODO push up
 
         val isNotParentOf = !tagsAncestors.contains(relatedTag)
+        val isNotDescendantOf = !tagsDescendants.contains(relatedTag)
 
-        tag != relatedTag && isNotParentOf// TODO implement all
+        tag != relatedTag && isNotParentOf && isNotDescendantOf// TODO implement all
       }
 
       isTagSuitableRelatedTag(tagFacetsForTag.tag)

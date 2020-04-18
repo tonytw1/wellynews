@@ -23,4 +23,8 @@ trait TagAncestors {
     }
   }
 
+  def descendantsOf(tag: Tag)(implicit ec: ExecutionContext): Future[Seq[Tag]] = {
+    mongoRepository.getTagsByParent(tag._id)  // TODO recurse
+  }
+
 }
