@@ -4,7 +4,7 @@ import javax.validation.Valid
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.feeds.reading.WhakaokoService
 import nz.co.searchwellington.forms.NewFeed
-import nz.co.searchwellington.model.{Feed, UrlWordsGenerator}
+import nz.co.searchwellington.model.{Feed, UrlWordsGenerator, User}
 import nz.co.searchwellington.modification.ContentUpdateService
 import nz.co.searchwellington.repositories.mongo.MongoRepository
 import nz.co.searchwellington.urls.UrlBuilder
@@ -84,7 +84,8 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
           publisher = publisher.map(_._id),
           acceptance = newFeed.getAcceptancePolicy,
           owner = owner.map(_._id),
-          date = Some(DateTime.now.toDate)
+          date = Some(DateTime.now.toDate),
+          held = submissionShouldBeHeld(owner),
         )
 
         contentUpdateService.create(feed)
@@ -114,6 +115,11 @@ class NewFeedController @Autowired()(contentUpdateService: ContentUpdateService,
       addObject("heading", "Adding a feed").
       addObject("acceptancePolicyOptions", acceptancePolicyOptions.asJava).
       addObject("newFeed", newFeed)
+  }
+
+  // TODO duplication
+  private def submissionShouldBeHeld(owner: Option[User]): Boolean = {
+    !owner.exists(_.isAdmin)
   }
 
 }
