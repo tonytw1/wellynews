@@ -16,9 +16,9 @@ public class EditTag {
     }
 
     @NotBlank
-    private String displayName, description, parent;
+    private String displayName, description;
 
-    private String autotagHints;
+    private String parent, autotagHints;
 
     private Boolean featured;
 
