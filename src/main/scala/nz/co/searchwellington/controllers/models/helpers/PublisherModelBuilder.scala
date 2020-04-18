@@ -61,13 +61,15 @@ import scala.concurrent.Future
         if (publisherNewsitems._1.nonEmpty) {
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
+          populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS)
 
           populateGeotaggedItems(mv, publisherNewsitems._1)
 
-          mv.addObject("feeds", publisherFeeds.asJava)
-          commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
-          populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS)
         }
+        import scala.collection.JavaConverters._
+        mv.addObject("feeds", publisherFeeds.asJava)
+
+        commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
         Some(mv)
       }
     }
