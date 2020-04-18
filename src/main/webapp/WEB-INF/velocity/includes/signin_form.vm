@@ -14,4 +14,4 @@
 -->
 	
 <p>Sign in using your twitter account:</p>
-<p><a href="$site_information.url/twitter/login"><img src="$urlBuilder.getImageUrl('sign-in-with-twitter-l.png')" border="0" alt="Sign in with Twitter"></a></p>
+<p><a href="$site_information.url/twitter/login"><img src="$urlBuilder.getImageUrl('sign-in-with-twitter-gray-1-png-img-fullhd-medium.png.img.fullhd.medium.png')" border="0" alt="Sign in with Twitter"></a></p>
