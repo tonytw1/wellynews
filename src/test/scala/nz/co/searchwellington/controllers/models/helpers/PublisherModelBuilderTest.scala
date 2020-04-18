@@ -5,7 +5,7 @@ import java.util.UUID
 import nz.co.searchwellington.ReasonableWaits
 import nz.co.searchwellington.controllers.models.GeotaggedNewsitemExtractor
 import nz.co.searchwellington.controllers.{RelatedTagsService, RssUrlBuilder}
-import nz.co.searchwellington.model.frontend.{FrontendNewsitem, FrontendResource, FrontendWebsite}
+import nz.co.searchwellington.model.frontend.{FrontendFeed, FrontendNewsitem, FrontendResource, FrontendWebsite}
 import nz.co.searchwellington.model.mappers.FrontendResourceMapper
 import nz.co.searchwellington.model.{ArchiveLink, Geocode, PublisherArchiveLink, Website}
 import nz.co.searchwellington.repositories.ContentRetrievalService
@@ -20,36 +20,52 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Await, Future}
 
-class PublisherModelBuilderTest extends ReasonableWaits {
+class PublisherModelBuilderTest extends ReasonableWaits with ContentFields {
 
   private val rssUrlBuilder = mock(classOf[RssUrlBuilder])
   private val urlBuilder = mock(classOf[UrlBuilder])
   private val relatedTagsService = mock(classOf[RelatedTagsService])
   private val contentRetrievalService = mock(classOf[ContentRetrievalService])
-  private val geotaggedNewsitemExtractor = mock(classOf[GeotaggedNewsitemExtractor])
+  private val geotaggedNewsitemExtractor = new GeotaggedNewsitemExtractor()
   private val commonAttributesModelBuilder = mock(classOf[CommonAttributesModelBuilder])
   private val frontendResourceMapper = mock(classOf[FrontendResourceMapper])
 
   private val publisher = Website()
   private val frontendPublisher = FrontendWebsite(id = UUID.randomUUID().toString)
 
-  private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder, geotaggedNewsitemExtractor,
-    commonAttributesModelBuilder, frontendResourceMapper)
+  private val modelBuilder = new PublisherModelBuilder(rssUrlBuilder, relatedTagsService, contentRetrievalService, urlBuilder,
+    geotaggedNewsitemExtractor, commonAttributesModelBuilder, frontendResourceMapper)
 
   @Test
-  def shouldHighlightPublishersGeotaggedContent {
+  def mainContentShouldBePublisherNewsitems() {
+    val request = new MockHttpServletRequest
+    request.setAttribute("publisher", publisher)
+    val publisherNewsitems = Seq(FrontendNewsitem(id = "456"))
+    val publisherFeeds = Seq(FrontendFeed(id = "789"))
+
+    when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(Future.successful(frontendPublisher))
+    when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, None)).thenReturn(Future.successful((publisherNewsitems, 1L)))
+    when(contentRetrievalService.getPublisherFeeds(publisher, None)).thenReturn(Future.successful(publisherFeeds))
+
+    val mv = Await.result(modelBuilder.populateContentModel(request), TenSeconds).get
+
+    import scala.collection.JavaConverters._
+    assertEquals(publisherNewsitems.asJava, mv.getModel.get(MAIN_CONTENT))
+    assertEquals(publisherFeeds.asJava, mv.getModel.get("feeds"))
+  }
+
+  @Test
+  def shouldHighlightPublishersGeotaggedContent() {
     val loggedInUser = None
 
     val newsitem = FrontendNewsitem(id = UUID.randomUUID().toString)
     val geotaggedNewsitem = FrontendNewsitem(id = UUID.randomUUID().toString, place = Some(Geocode(address = Some("Somewhere"))))
 
     val publisherNewsitems = Seq(newsitem, geotaggedNewsitem)
-    val geotaggedNewsitems = Seq(geotaggedNewsitem)
 
     when(contentRetrievalService.getPublisherNewsitems(publisher, 30, 0, loggedInUser)).thenReturn(Future.successful((publisherNewsitems, publisherNewsitems.size.toLong)))
     when(contentRetrievalService.getPublisherFeeds(publisher, loggedInUser)).thenReturn(Future.successful(Seq.empty))
 
-    when(geotaggedNewsitemExtractor.extractGeotaggedItems(publisherNewsitems)).thenReturn(geotaggedNewsitems)
     when(relatedTagsService.getRelatedTagsForPublisher(publisher, None)).thenReturn(Future.successful(Seq()))
     when(frontendResourceMapper.mapFrontendWebsite(publisher)).thenReturn(Future.successful(frontendPublisher))
 
