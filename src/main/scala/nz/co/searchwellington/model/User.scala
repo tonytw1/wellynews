@@ -18,23 +18,23 @@ case class User(_id: BSONObjectID = BSONObjectID.generate,
 
   def getId: String = id
 
-  def getOpenId: String = openid.getOrElse(null)
+  def getOpenId: String = openid.orNull
 
   def getTwitterId: Long = twitterid.getOrElse(0)
 
   def isUnlinkedAccount: Boolean = openid == null && twitterid == null
 
-  def getProfilename: String = profilename.getOrElse(null)
+  def getProfilename: String = profilename.orNull
 
   def getVoterName: String = this.getProfilename
 
   def isAdmin: Boolean = admin
 
-  def getUrl: String = url.getOrElse(null)
+  def getUrl: String = url.orNull
 
-  def getName: String = name.getOrElse(null)
+  def getName: String = name.orNull
 
-  def getBio: String = bio.getOrElse(null)
+  def getBio: String = bio.orNull
 
   def getApikey: String = apikey.getOrElse("")
 

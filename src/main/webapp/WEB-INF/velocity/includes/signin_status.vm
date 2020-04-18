@@ -2,8 +2,8 @@
 	<ul>
 	#if ($loggedInUserFilter.isSignedIn())
 		<li>Signed in as
-            #if ($loggedInUserFilter.getLoggedinUserProfileName())
-                <a href="$urlBuilder.getProfileUrl($loggedInUserFilter.getLoggedInUser())">$loggedInUserFilter.getLoggedInUser().orNull().profilename</a>
+            #if ($loggedInUserFilter.getLoggedInUserOrNull().getProfilename())
+                <a href="$urlBuilder.getProfileUrl($loggedInUserFilter.getLoggedInUserOrNull())">$loggedInUserFilter.getLoggedInUserOrNull().getProfilename()</a>
             #else
                 <a href="$urlBuilder.getProfileUrl()">new user with no profile name</a>
             #end
