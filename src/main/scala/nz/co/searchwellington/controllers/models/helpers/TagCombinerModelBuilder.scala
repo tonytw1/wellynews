@@ -74,7 +74,7 @@ import scala.concurrent.Future
 
   def populateExtraModelContent(request: HttpServletRequest, mv: ModelAndView, loggedInUser: Option[User]): Future[ModelAndView] = {
     val tags = request.getAttribute("tags").asInstanceOf[Seq[Tag]]
-    if (tags.nonEmpty) {
+    val eventualWithExtras = if (tags.nonEmpty) {
       val tag = tags.head
       val eventualTaggedWebsites = contentRetrievalService.getTaggedWebsites(tag, MAX_WEBSITES, loggedInUser = loggedInUser)
       val eventualLatestWebsites = contentRetrievalService.getLatestWebsites(5, loggedInUser = loggedInUser)
@@ -93,6 +93,8 @@ import scala.concurrent.Future
     } else {
       Future.successful(mv)
     }
+
+    eventualWithExtras.flatMap(withLatestNewsitems(_, loggedInUser))
   }
 
   def getViewName(mv: ModelAndView): String = {
