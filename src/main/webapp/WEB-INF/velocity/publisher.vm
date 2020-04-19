@@ -40,10 +40,12 @@
 		<p>	
 	#end
 
-	<div class="tag_main_content">	
-		#set($main_heading = "$publisher.getName() newsitems")
-		#parse("includes/main_content.vm")	
-		#parse("includes/publisher_page_links.vm")
+	<div class="tag_main_content">
+        #if (£main_content.size() > 0)
+    		#set($main_heading = "$publisher.getName() newsitems")
+	    	#parse("includes/main_content.vm")
+		    #parse("includes/publisher_page_links.vm")
+		#end
 	</div>
 
 	<div class="tag_secondary_content">
