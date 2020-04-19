@@ -53,11 +53,12 @@ import scala.concurrent.{ExecutionContext, Future}
   def create(resource: Resource)(implicit ec: ExecutionContext): Future[Resource] = {
     resource.setHttpStatus(0)
     log.debug("Creating resource: " + resource.page)
-    mongoRepository.saveResource(resource).map { r =>
+    mongoRepository.saveResource(resource).flatMap { r =>
       log.debug("Result of save for " + resource._id + " " + resource.page + ": " + r)
-      frontendContentUpdater.update(resource)
-      linkCheckerQueue.add(resource._id.stringify)
-      resource
+      frontendContentUpdater.update(resource).map { _
+        linkCheckerQueue.add(resource._id.stringify)
+        resource
+      }
     }
   }
 
