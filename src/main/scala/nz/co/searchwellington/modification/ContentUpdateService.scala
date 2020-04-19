@@ -55,7 +55,7 @@ import scala.concurrent.{ExecutionContext, Future}
     log.debug("Creating resource: " + resource.page)
     mongoRepository.saveResource(resource).flatMap { r =>
       log.debug("Result of save for " + resource._id + " " + resource.page + ": " + r)
-      frontendContentUpdater.update(resource).map { _
+      frontendContentUpdater.update(resource).map { _ =>
         linkCheckerQueue.add(resource._id.stringify)
         resource
       }
