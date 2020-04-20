@@ -84,7 +84,7 @@ import scala.concurrent.Future
       geocoded <- eventualGeocoded
 
     } yield {
-      populateSecondaryJustin(mv, websites)
+      populateSecondaryJustin(mv, websites._1)
       populateGeocoded(mv, geocoded)
       // populateUserOwnedResources(mv, loggedInUserFilter.getLoggedInUser)
       archiveLinksService.populateArchiveLinks(mv, archiveMonths, archiveStatistics)

@@ -22,6 +22,8 @@
 </ul>
 
 #parse("includes/main_content.vm")
+
+<p>$main_content_total</p>
 </div>
 
 

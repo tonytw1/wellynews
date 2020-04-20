@@ -116,8 +116,9 @@ import scala.concurrent.{Await, Future}
     }
   }
 
-  def getLatestWebsites(maxItems: Int, page: Int = 1, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {
-    elasticSearchIndexer.getResources(ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = maxItems * (page - 1)), loggedInUser = loggedInUser).flatMap(i => fetchByIds(i._1))
+  def getLatestWebsites(maxItems: Int, page: Int = 1, loggedInUser: Option[User]): Future[(Seq[FrontendResource], Long)] = {
+    val websites = ResourceQuery(`type` = Some("W"), maxItems = maxItems, startIndex = maxItems * (page - 1))
+    elasticSearchIndexer.getResources(websites, loggedInUser = loggedInUser).flatMap(buildFrontendResourcesFor)
   }
 
   def getOwnedBy(user: User, loggedInUser: Option[User]): Future[Seq[FrontendResource]] = {

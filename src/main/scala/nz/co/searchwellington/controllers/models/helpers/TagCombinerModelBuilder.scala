@@ -87,7 +87,7 @@ import scala.concurrent.Future
         import scala.collection.JavaConverters._
         mv.addObject("related_tags", relatedTags.asJava)
         mv.addObject("websites", taggedWebsites.asJava)
-        mv.addObject("latest_news", latestWebsites.asJava)
+        mv.addObject("latest_news", latestWebsites._1.asJava)
         mv
       }
     } else {

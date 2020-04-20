@@ -17,7 +17,7 @@ import scala.concurrent.Future
 @Component class JustinModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
                                                  rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
                                                  commonAttributesModelBuilder: CommonAttributesModelBuilder)
-  extends ModelBuilder with CommonSizes with ReasonableWaits {
+  extends ModelBuilder with CommonSizes with ReasonableWaits with Pagination {
 
   def isValid(request: HttpServletRequest): Boolean = {
     request.getPathInfo.matches("^/justin(/(rss|json))?$")
@@ -32,8 +32,13 @@ import scala.concurrent.Future
         addObject("heading", "Latest additions").
         addObject("description", "The most recently submitted website listings.").
         addObject("link", urlBuilder.getJustinUrl).
-        addObject(MAIN_CONTENT, websites.asJava)
+        addObject(MAIN_CONTENT, websites._1.asJava)
 
+
+      val page = getPage(request)
+      val startIndex = getStartIndex(page, MAX_NEWSITEMS)
+
+      populatePagination(mv, startIndex, websites._2, MAX_NEWSITEMS)
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
       Some(mv)
     }
