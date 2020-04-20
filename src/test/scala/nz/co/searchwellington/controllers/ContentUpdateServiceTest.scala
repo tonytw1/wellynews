@@ -51,6 +51,7 @@ class ContentUpdateServiceTest extends ReasonableWaits {
   def shouldQueueNewlyCreatedResourcesForLinkChecking(): Unit = {
     val newResource = Website()
     when(mongoRepository.saveResource(newResource)).thenReturn(Future.successful(successfulUpdateResult))
+    when(frontendContentUpdater.update(newResource)).thenReturn(Future.successful(true))
 
     Await.result(service.create(newResource), TenSeconds)
 
