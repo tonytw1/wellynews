@@ -15,7 +15,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class JustinModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
-                                                 rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
+                                                 rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
                                                  commonAttributesModelBuilder: CommonAttributesModelBuilder)
   extends ModelBuilder with CommonSizes with ReasonableWaits with Pagination {
 

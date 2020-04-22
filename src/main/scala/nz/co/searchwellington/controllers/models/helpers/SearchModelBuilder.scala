@@ -14,7 +14,8 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class SearchModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService, urlBuilder: UrlBuilder, frontendResourceMapper: FrontendResourceMapper)
+@Component class SearchModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
+                                                 val urlBuilder: UrlBuilder, frontendResourceMapper: FrontendResourceMapper)
   extends ModelBuilder with CommonSizes with Pagination with ReasonableWaits {
 
   private val KEYWORDS_PARAMETER = "keywords"

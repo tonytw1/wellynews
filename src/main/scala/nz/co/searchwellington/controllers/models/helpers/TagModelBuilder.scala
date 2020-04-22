@@ -18,7 +18,7 @@ import org.springframework.web.servlet.ModelAndView
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-@Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, urlBuilder: UrlBuilder,
+@Component class TagModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder, val urlBuilder: UrlBuilder,
                                               relatedTagsService: RelatedTagsService, rssfeedNewsitemService: RssfeedNewsitemService,
                                               val contentRetrievalService: ContentRetrievalService, feedItemLocalCopyDecorator: FeedItemLocalCopyDecorator,
                                               commonAttributesModelBuilder: CommonAttributesModelBuilder, tagDAO: TagDAO,
@@ -77,6 +77,9 @@ import scala.concurrent.Future
           if (taggedNewsitems.nonEmpty) {
             commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
           }
+
+          val links = tagPaginationLinks(startIndex, totalNewsitems, MAX_NEWSITEMS, tag)
+          mv.addObject("page_links", links)
 
           if (children.nonEmpty) {
             import scala.collection.JavaConverters._

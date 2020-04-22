@@ -11,6 +11,10 @@
 				#end
 			#end
 		</ul>
+
+		<ul>
+		    <p>$page_links</p>
+		</ul>
 	
 	<p>$start_index - $end_index of $main_content_total $tag.displayName.toLowerCase() newsitems</p>	
 	<hr>

@@ -19,7 +19,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 @Component class GeotaggedModelBuilder @Autowired()(val contentRetrievalService: ContentRetrievalService,
-                                                    urlBuilder: UrlBuilder,
+                                                    val urlBuilder: UrlBuilder,
                                                     rssUrlBuilder: RssUrlBuilder,
                                                     relatedTagsService: RelatedTagsService,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder)

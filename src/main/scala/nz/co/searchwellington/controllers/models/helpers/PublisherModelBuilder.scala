@@ -20,7 +20,7 @@ import scala.concurrent.Future
 @Component class PublisherModelBuilder @Autowired()(rssUrlBuilder: RssUrlBuilder,
                                                     relatedTagsService: RelatedTagsService,
                                                     val contentRetrievalService: ContentRetrievalService,
-                                                    urlBuilder: UrlBuilder,
+                                                    val urlBuilder: UrlBuilder,
                                                     geotaggedNewsitemExtractor: GeotaggedNewsitemExtractor,
                                                     commonAttributesModelBuilder: CommonAttributesModelBuilder,
                                                     frontendResourceMapper: FrontendResourceMapper) extends ModelBuilder

@@ -61,6 +61,10 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
     siteInformation.getUrl + "/" + tag.name
   }
 
+  def getTagPageUrl(tag: Tag, page: Long): String = {
+    getTagUrl(tag) + "?page=" + page
+  }
+
   def getAutoTagUrl(tag: Tag): String = {
     siteInformation.getUrl + "/" + tag.getName + "/autotag"
   }
