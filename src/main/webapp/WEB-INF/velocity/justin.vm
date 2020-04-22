@@ -23,7 +23,7 @@
 
 #parse("includes/main_content.vm")
 
-<p>$main_content_total</p>
+#parse("includes/page_links.vm")
 </div>
 
 
