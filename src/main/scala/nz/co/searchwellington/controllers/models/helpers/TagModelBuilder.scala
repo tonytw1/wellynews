@@ -78,8 +78,11 @@ import scala.concurrent.Future
             commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
           }
 
-          val links = tagPaginationLinks(startIndex, totalNewsitems, MAX_NEWSITEMS, tag)
-          mv.addObject("page_links", links)
+          def paginationLinks(page: Int): String = {
+            urlBuilder.getTagPageUrl(tag, page)
+          }
+
+          mv.addObject("page_links", makePaginationLinks(startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks))
 
           if (children.nonEmpty) {
             import scala.collection.JavaConverters._

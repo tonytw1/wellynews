@@ -35,11 +35,11 @@ trait Pagination {
     mv.addObject("end_index", endIndex)
   }
 
-  def tagPaginationLinks(startIndex: Int, totalCount: Long, pageSize: Int, tag: Tag): Seq[PaginationLink] = {
+  def makePaginationLinks(startIndex: Int, totalCount: Long, pageSize: Int, linkBuilder: Int => String): Seq[PaginationLink] = {
     val maxPageNumber = (totalCount / pageSize) + 1
     val pages = 1 to maxPageNumber.toInt
     pages.map { page =>
-      PaginationLink(page, urlBuilder.getTagPageUrl(tag, page))
+      PaginationLink(page, linkBuilder(page))
     }
   }
 
