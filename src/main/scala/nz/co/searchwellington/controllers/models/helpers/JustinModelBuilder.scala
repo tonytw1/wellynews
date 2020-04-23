@@ -38,12 +38,10 @@ import scala.concurrent.Future
       val page = getPage(request)
       val startIndex = getStartIndex(page, MAX_NEWSITEMS)
 
-      populatePagination(mv, startIndex, websites._2, MAX_NEWSITEMS)
-
       def paginationLinks(page: Int): String = {
         urlBuilder.getJustinUrl + "?page=" + page
       }
-      mv.addObject("page_links", makePaginationLinks(startIndex, websites._2, MAX_NEWSITEMS, paginationLinks).asJava)
+      populatePagination(mv, startIndex, websites._2, MAX_NEWSITEMS, paginationLinks)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
       Some(mv)

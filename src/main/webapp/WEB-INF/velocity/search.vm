@@ -23,7 +23,7 @@
 
         <div class="tag_main_content">
             #parse("includes/main_content.vm")
-            #parse("includes/search_page_links.vm")
+            #parse("includes/page_links.vm")
         </div>
 
         <div class="tag_secondary_content">

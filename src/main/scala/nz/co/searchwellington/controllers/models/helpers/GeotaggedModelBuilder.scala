@@ -64,7 +64,11 @@ import scala.concurrent.Future
           None
         }
 
-        populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS)
+        def paginationLinks(page: Int): String = {
+          urlBuilder.getGeotaggedUrl + "?page=" + page  // TODO push to URL builder
+        }
+        populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS, paginationLinks)
+
         mv.addObject("location", userSuppliedPlace)
         mv.addObject("radius", radius)
         mv.addObject(MAIN_CONTENT, newsitemsNear.asJava)
@@ -92,7 +96,6 @@ import scala.concurrent.Future
         if (startIndex > totalGeotaggedCount) {
           None
         }
-        populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS)
 
         mv.addObject("heading", "Geotagged newsitems")
         mv.addObject(MAIN_CONTENT, geocodedNewsitems.asJava)

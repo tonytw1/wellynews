@@ -73,15 +73,13 @@ import scala.concurrent.Future
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, taggedNewsitems.asJava)
 
-          populatePagination(mv, startIndex, totalNewsitems, MAX_NEWSITEMS)
-          if (taggedNewsitems.nonEmpty) {
-            commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
-          }
-
           def paginationLinks(page: Int): String = {
             urlBuilder.getTagPageUrl(tag, page)
           }
-          mv.addObject("page_links", makePaginationLinks(startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks).asJava)
+          populatePagination(mv, startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks)
+          if (taggedNewsitems.nonEmpty) {
+            commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForTag(tag), rssUrlBuilder.getRssUrlForTag(tag))
+          }
 
           if (children.nonEmpty) {
             import scala.collection.JavaConverters._
