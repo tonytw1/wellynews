@@ -1,7 +1,10 @@
 #if ($page_links)
+    <hr/>
     <ul class="pagelinks">
         #foreach ($page_link in $page_links)
             <li #if($page && $page_link.page == $page) class="currentpage" #end ><a href="$page_link.url">$page_link.page</a></li>
         #end
     </ul>
+    <p>$start_index - $end_index of $main_content_total</p>
+    <hr/>
 #end
