@@ -44,7 +44,7 @@
         #if ($main_content.size() > 0)
     		#set($main_heading = "$publisher.getName() newsitems")
 	    	#parse("includes/main_content.vm")
-		    #parse("includes/publisher_page_links.vm")
+		    #parse("includes/page_links.vm")
 		#end
 	</div>
 

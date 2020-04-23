@@ -1,11 +1,9 @@
 package nz.co.searchwellington.controllers.models.helpers
 
 import javax.servlet.http.HttpServletRequest
-import nz.co.searchwellington.model.{PaginationLink, Tag}
+import nz.co.searchwellington.model.PaginationLink
 import nz.co.searchwellington.urls.UrlBuilder
 import org.springframework.web.servlet.ModelAndView
-
-import scala.collection.immutable
 
 trait Pagination {
 

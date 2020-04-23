@@ -67,7 +67,7 @@
 
 			#parse("includes/main_content.vm")
 						
-			#parse("includes/tag_page_links.vm")
+			#parse("includes/page_links.vm")
 		</div>
 
 
