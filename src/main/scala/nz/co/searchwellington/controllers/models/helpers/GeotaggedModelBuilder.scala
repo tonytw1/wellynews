@@ -64,9 +64,6 @@ import scala.concurrent.Future
           None
         }
 
-        def paginationLinks(page: Int): String = {
-          urlBuilder.getGeotaggedUrl + "?page=" + page  // TODO push to URL builder
-        }
         populatePagination(mv, startIndex, totalNearbyCount, MAX_NEWSITEMS, paginationLinks)
 
         mv.addObject("location", userSuppliedPlace)
@@ -84,7 +81,6 @@ import scala.concurrent.Future
         mv.addObject("heading", rssUrlBuilder.getRssTitleForPlace(userSuppliedPlace, radius))
         setRssUrlForLocation(mv, userSuppliedPlace, radius)
         Some(mv)
-
       }
 
     } else {
@@ -96,6 +92,7 @@ import scala.concurrent.Future
         if (startIndex > totalGeotaggedCount) {
           None
         }
+        populatePagination(mv, startIndex, totalGeotaggedCount, MAX_NEWSITEMS, paginationLinks)
 
         mv.addObject("heading", "Geotagged newsitems")
         mv.addObject(MAIN_CONTENT, geocodedNewsitems.asJava)
@@ -121,6 +118,10 @@ import scala.concurrent.Future
     } else {
       HOW_FAR_IS_CLOSE_IN_KILOMETERS
     }
+  }
+
+  private def paginationLinks(page: Int): String = {
+    urlBuilder.getGeotaggedUrl + "?page=" + page  // TODO push to URL builder
   }
 
 }
