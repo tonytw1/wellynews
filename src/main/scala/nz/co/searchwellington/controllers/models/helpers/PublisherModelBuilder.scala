@@ -67,7 +67,7 @@ import scala.concurrent.Future
           def paginationLinks(page: Int): String = {
             urlBuilder.getPublisherPageUrl(publisher, page)
           }
-          mv.addObject("page_links", makePaginationLinks(startIndex, totalPublisherNewsitems, MAX_NEWSITEMS, paginationLinks))
+          mv.addObject("page_links", makePaginationLinks(startIndex, totalPublisherNewsitems, MAX_NEWSITEMS, paginationLinks).asJava)
 
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
 

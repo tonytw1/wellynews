@@ -81,7 +81,7 @@ import scala.concurrent.Future
           def paginationLinks(page: Int): String = {
             urlBuilder.getTagPageUrl(tag, page)
           }
-          mv.addObject("page_links", makePaginationLinks(startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks))
+          mv.addObject("page_links", makePaginationLinks(startIndex, totalNewsitems, MAX_NEWSITEMS, paginationLinks).asJava)
 
           if (children.nonEmpty) {
             import scala.collection.JavaConverters._
