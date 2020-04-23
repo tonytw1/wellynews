@@ -43,7 +43,7 @@ import scala.concurrent.Future
       def paginationLinks(page: Int): String = {
         urlBuilder.getJustinUrl + "?page=" + page
       }
-      mv.addObject("page_links", makePaginationLinks(startIndex, websites._2, MAX_NEWSITEMS, paginationLinks))
+      mv.addObject("page_links", makePaginationLinks(startIndex, websites._2, MAX_NEWSITEMS, paginationLinks).asJava)
 
       commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForJustin, rssUrlBuilder.getRssUrlForJustin)
       Some(mv)
