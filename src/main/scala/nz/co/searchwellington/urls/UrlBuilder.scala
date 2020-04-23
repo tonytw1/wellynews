@@ -83,6 +83,10 @@ class UrlBuilder @Autowired()(siteInformation: SiteInformation, urlWordsGenerato
 
   def getPublisherUrl(publisher: Website): String = "/" + publisher.url_words.get // TODO Naked get
 
+  def getPublisherPageUrl(publisher: Website, page: Int): String = {
+      getPublisherUrl(publisher) + "?page=" + page
+  }
+
   @Deprecated
   def getPublisherUrl(publisherName: String): String = { // TODO use pubslishers url words
     if (publisherName != null) {

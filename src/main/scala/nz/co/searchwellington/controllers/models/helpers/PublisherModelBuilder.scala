@@ -61,7 +61,14 @@ import scala.concurrent.Future
         if (publisherNewsitems._1.nonEmpty) {
           import scala.collection.JavaConverters._
           mv.addObject(MAIN_CONTENT, publisherNewsitems._1.asJava)
+
           populatePagination(mv, startIndex, totalPublisherNewsitems, MAX_NEWSITEMS)
+
+          def paginationLinks(page: Int): String = {
+            urlBuilder.getPublisherPageUrl(publisher, page)
+          }
+          mv.addObject("page_links", makePaginationLinks(startIndex, totalPublisherNewsitems, MAX_NEWSITEMS, paginationLinks))
+
           commonAttributesModelBuilder.setRss(mv, rssUrlBuilder.getRssTitleForPublisher(publisher), rssUrlBuilder.getRssUrlForPublisher(publisher))
 
           populateGeotaggedItems(mv, publisherNewsitems._1) // TODO This should be a seperate query
